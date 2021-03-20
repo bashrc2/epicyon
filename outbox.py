@@ -309,7 +309,7 @@ def postMessageToOutbox(session, translate: {},
 
     permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
                             'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Delegate', 'Skill', 'Bookmark', 'Event')
+                            'Delegate', 'Skill', 'Add', 'Remove', 'Event')
     if messageJson['type'] not in permittedOutboxTypes:
         if debug:
             print('DEBUG: POST to outbox - ' + messageJson['type'] +

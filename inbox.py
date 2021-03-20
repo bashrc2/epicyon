@@ -1082,60 +1082,73 @@ def _receiveBookmark(recentPostsCache: {},
                      debug: bool) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Bookmark':
-        return False
+    if not messageJson.get('type'):
+        if debug:
+            print('DEBUG: inbox bookmark - no type')
+        return
+    if not messageJson['type'] == 'Add':
+        if debug:
+            print('DEBUG: not a inbox bookmark Add')
+        return
     if not messageJson.get('actor'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no actor')
-        return False
+            print('DEBUG: no actor in inbox bookmark Add')
+        return
     if not messageJson.get('object'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
+            print('DEBUG: no object in inbox bookmark Add')
+        return
+    if not messageJson.get('target'):
+        if debug:
+            print('DEBUG: no target in inbox bookmark Add')
+        return
     if not isinstance(messageJson['object'], str):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object is not a string')
-        return False
-    if not messageJson.get('to'):
+            print('DEBUG: inbox bookmark Add object is not string')
+        return
+    if not isinstance(messageJson['target'], str):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
-        return False
-    if '/users/' not in messageJson['actor']:
-        if debug:
-            print('DEBUG: "users" missing from actor in ' +
-                  messageJson['type'])
-        return False
-    if '/statuses/' not in messageJson['object']:
-        if debug:
-            print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
-        return False
-    if domain not in handle.split('@')[1]:
-        if debug:
-            print('DEBUG: unrecognized domain ' + handle)
-        return False
+            print('DEBUG: inbox bookmark Add target is not string')
+        return
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
-            print('DEBUG: ' +
-                  'bookmark actor should be the same as the handle sent to ' +
-                  handle + ' != ' + messageJson['actor'])
-        return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        print('DEBUG: unknown recipient of bookmark - ' + handle)
-    # if this post in the outbox of the person?
-    postFilename = locatePost(baseDir, nickname, domain, messageJson['object'])
+            print('DEBUG: inbox bookmark Add unexpected actor')
+        return
+    if not messageJson['target'].endswith(messageJson['actor'] +
+                                          '/tlbookmarks'):
+        if debug:
+            print('DEBUG: inbox bookmark Add target invalid ' +
+                  messageJson['target'])
+        return
+    if messageJson['object']['type'] != 'Document':
+        if debug:
+            print('DEBUG: inbox bookmark Add type is not Document')
+        return
+    if not messageJson['object'].get('url'):
+        if debug:
+            print('DEBUG: inbox bookmark Add missing url')
+        return
+    if '/statuses/' not in messageJson['object']['url']:
+        if debug:
+            print('DEBUG: inbox bookmark Add missing statuses un url')
+        return
+    if debug:
+        print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
+
+    messageUrl = removeIdEnding(messageJson['object']['url'])
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
-            print('DEBUG: post not found in inbox or outbox')
-            print(messageJson['object'])
+            print('DEBUG: c2s inbox like post not found in inbox or outbox')
+            print(messageUrl)
         return True
-    if debug:
-        print('DEBUG: bookmarked post was found')
 
     updateBookmarksCollection(recentPostsCache, baseDir, postFilename,
-                              messageJson['object'],
+                              messageJson['object']['url'],
                               messageJson['actor'], domain, debug)
     return True
 
@@ -1148,63 +1161,74 @@ def _receiveUndoBookmark(recentPostsCache: {},
                          debug: bool) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
-        return False
+    if not messageJson.get('type'):
+        if debug:
+            print('DEBUG: inbox undo bookmark - no type')
+        return
+    if not messageJson['type'] == 'Remove':
+        if debug:
+            print('DEBUG: not a inbox undo bookmark Remove')
+        return
     if not messageJson.get('actor'):
-        return False
+        if debug:
+            print('DEBUG: no actor in inbox undo bookmark Remove')
+        return
     if not messageJson.get('object'):
-        return False
-    if not isinstance(messageJson['object'], dict):
-        return False
-    if not messageJson['object'].get('type'):
-        return False
-    if messageJson['object']['type'] != 'Bookmark':
-        return False
-    if not messageJson['object'].get('object'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' like has no object')
-        return False
-    if not isinstance(messageJson['object']['object'], str):
+            print('DEBUG: no object in inbox undo bookmark Remove')
+        return
+    if not messageJson.get('target'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] +
-                  ' like object is not a string')
-        return False
-    if '/users/' not in messageJson['actor']:
+            print('DEBUG: no target in inbox undo bookmark Remove')
+        return
+    if not isinstance(messageJson['object'], str):
         if debug:
-            print('DEBUG: "users" missing from actor in ' +
-                  messageJson['type'] + ' like')
-        return False
-    if '/statuses/' not in messageJson['object']['object']:
+            print('DEBUG: inbox undo bookmark Remove object is not string')
+        return
+    if not isinstance(messageJson['target'], str):
         if debug:
-            print('DEBUG: "statuses" missing from like object in ' +
-                  messageJson['type'])
-        return False
+            print('DEBUG: inbox undo bookmark Remove target is not string')
+        return
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
-    if domain not in handle.split('@')[1]:
-        if debug:
-            print('DEBUG: unrecognized bookmark domain ' + handle)
-        return False
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
-            print('DEBUG: ' +
-                  'bookmark actor should be the same as the handle sent to ' +
-                  handle + ' != ' + messageJson['actor'])
-        return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        print('DEBUG: unknown recipient of bookmark undo - ' + handle)
-    # if this post in the outbox of the person?
-    postFilename = locatePost(baseDir, nickname, domain,
-                              messageJson['object']['object'])
+            print('DEBUG: inbox undo bookmark Remove unexpected actor')
+        return
+    if not messageJson['target'].endswith(messageJson['actor'] +
+                                          '/tlbookmarks'):
+        if debug:
+            print('DEBUG: inbox undo bookmark Remove target invalid ' +
+                  messageJson['target'])
+        return
+    if messageJson['object']['type'] != 'Document':
+        if debug:
+            print('DEBUG: inbox undo bookmark Remove type is not Document')
+        return
+    if not messageJson['object'].get('url'):
+        if debug:
+            print('DEBUG: inbox undo bookmark Remove missing url')
+        return
+    if '/statuses/' not in messageJson['object']['url']:
+        if debug:
+            print('DEBUG: inbox undo bookmark Remove missing statuses un url')
+        return
+    if debug:
+        print('DEBUG: c2s inbox undo bookmark Remove ' +
+              'request arrived in outbox')
+
+    messageUrl = removeIdEnding(messageJson['object']['url'])
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
-            print('DEBUG: unbookmarked post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print('DEBUG: c2s inbox like post not found in inbox or outbox')
+            print(messageUrl)
         return True
-    if debug:
-        print('DEBUG: bookmarked post found. Now undoing.')
+
     undoBookmarksCollectionEntry(recentPostsCache, baseDir, postFilename,
-                                 messageJson['object'],
+                                 messageJson['object']['url'],
                                  messageJson['actor'], domain, debug)
     return True
 

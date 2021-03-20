@@ -68,6 +68,10 @@ def _desktopHelp() -> None:
           'Like the last post')
     print(indent + 'unlike                                ' +
           'Unlike the last post')
+    print(indent + 'bookmark                              ' +
+          'bookmark the last post')
+    print(indent + 'unbookmark                            ' +
+          'Unbookmark the last post')
     print(indent + 'reply                                 ' +
           'Reply to the last post')
     print(indent + 'post                                  ' +

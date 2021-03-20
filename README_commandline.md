@@ -440,6 +440,8 @@ sounds off                            Turn off notification sounds
 rp                                    Repeat the last post
 like                                  Like the last post
 unlike                                Unlike the last post
+bookmark                              Bookmark the last post
+unbookmark                            Unbookmark the last post
 reply                                 Reply to the last post
 post                                  Create a new post
 post to [handle]                      Create a new direct message
