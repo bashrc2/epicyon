@@ -262,6 +262,7 @@ def _desktopReplyToPost(session, postId: str,
         sayStr = 'No reply was entered.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
+    print('')
     sayStr = 'You entered this reply:'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     _sayCommand(replyMessage, replyMessage, screenreader,
@@ -651,6 +652,11 @@ def _desktopShowBox(boxName: str, boxJson: {},
         posStr = _padToWidth(ctrStr, numberWidth)
 
         authorActor = postJsonObject['object']['attributedTo']
+        contentWarning = None
+        if postJsonObject['object'].get('summary'):
+            contentWarning = '⚡' + \
+                _padToWidth(postJsonObject['object']['summary'],
+                            contentWidth)
         name = getNicknameFromActor(authorActor)
 
         # append icons to the end of the name
@@ -660,12 +666,6 @@ def _desktopShowBox(boxName: str, boxJson: {},
                 spaceAdded = True
                 name += ' '
             name += '↲'
-        if boxName != 'dm':
-            if isDM(postJsonObject):
-                if not spaceAdded:
-                    spaceAdded = True
-                    name += ' '
-                name += '📧'
         likesCount = noOfLikes(postJsonObject)
         if likesCount > 10:
             likesCount = 10
@@ -679,11 +679,24 @@ def _desktopShowBox(boxName: str, boxJson: {},
         published = _formatPublished(postJsonObject['published'])
 
         content = _textOnlyContent(postJsonObject['object']['content'])
-        if isPGPEncrypted(content):
-            content = '🔒' + content
-        elif '://' in content:
-            content = '🔗' + content
-        content = _padToWidth(content, contentWidth)
+        if boxName != 'dm':
+            if isDM(postJsonObject):
+                content = '📧' + content
+        if not contentWarning:
+            if isPGPEncrypted(content):
+                content = '🔒' + content
+            elif '://' in content:
+                content = '🔗' + content
+            content = _padToWidth(content, contentWidth)
+        else:
+            # display content warning
+            if isPGPEncrypted(content):
+                content = '🔒' + contentWarning
+            else:
+                if '://' in content:
+                    content = '🔗' + contentWarning
+                else:
+                    content = contentWarning
         print(indent + str(posStr) + ' | ' + name + ' | ' +
               published + ' | ' + content)
         ctr += 1
