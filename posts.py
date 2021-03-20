@@ -3256,7 +3256,7 @@ def _createBoxIndexed(recentPostsCache: {},
         # created by individualPostAsHtml
         p['hasReplies'] = hasReplies
 
-        # Don't show likes, replies, DMs or shares (announces) to
+        # Don't show likes, replies, bookmarks, DMs or shares (announces) to
         # unauthorized viewers
         if not authorized:
             if p.get('object'):
