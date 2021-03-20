@@ -2365,7 +2365,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
 def addToField(activityType: str, postJsonObject: {},
                debug: bool) -> ({}, bool):
-    """The Follow activity doesn't have a 'to' field and so one
+    """The Follow/Add/Remove activity doesn't have a 'to' field and so one
     needs to be added so that activity distribution happens in a consistent way
     Returns true if a 'to' field exists or was added
     """
@@ -2384,19 +2384,34 @@ def addToField(activityType: str, postJsonObject: {},
                 if postJsonObject['type'] == activityType:
                     isSameType = True
                     if debug:
-                        print('DEBUG: "to" field assigned to Follow')
+                        print('DEBUG: "to" field assigned to ' + activityType)
                     toAddress = postJsonObject['object']
                     if '/statuses/' in toAddress:
                         toAddress = toAddress.split('/statuses/')[0]
                     postJsonObject['to'] = [toAddress]
                     toFieldAdded = True
         elif isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('type'):
+            # add a to field to bookmark add or remove
+            if postJsonObject.get('type') and \
+               postJsonObject.get('actor') and \
+               postJsonObject['object'].get('type'):
+                if postJsonObject['type'] == 'Add' or \
+                   postJsonObject['type'] == 'Remove':
+                    if postJsonObject['object']['type'] == 'Document':
+                        postJsonObject['to'] = \
+                            [postJsonObject['actor']]
+                        postJsonObject['object']['to'] = \
+                            [postJsonObject['actor']]
+                        toFieldAdded = True
+
+            if not toFieldAdded and \
+               postJsonObject['object'].get('type'):
                 if postJsonObject['object']['type'] == activityType:
                     isSameType = True
                     if isinstance(postJsonObject['object']['object'], str):
                         if debug:
-                            print('DEBUG: "to" field assigned to Follow')
+                            print('DEBUG: "to" field assigned to ' +
+                                  activityType)
                         toAddress = postJsonObject['object']['object']
                         if '/statuses/' in toAddress:
                             toAddress = toAddress.split('/statuses/')[0]
