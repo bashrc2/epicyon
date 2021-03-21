@@ -707,7 +707,7 @@ def _desktopShowBox(boxName: str, boxJson: {},
         if postJsonObject['object'].get('ignores'):
             content = '🔇'
         if postJsonObject['object'].get('bookmarks'):
-            content = '🔖'
+            content = '🔖' + content
         print(indent + str(posStr) + ' | ' + name + ' | ' +
               published + ' | ' + content)
         ctr += 1
