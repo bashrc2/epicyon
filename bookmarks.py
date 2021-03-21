@@ -418,7 +418,7 @@ def sendBookmarkViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newBookmarkJson, [], inboxUrl,
-                          headers, 30, True)
+                          headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST bookmark failed for c2s to ' + inboxUrl)
@@ -502,7 +502,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newBookmarkJson, [], inboxUrl,
-                          headers, 30, True)
+                          headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST unbookmark failed for c2s to ' + inboxUrl)

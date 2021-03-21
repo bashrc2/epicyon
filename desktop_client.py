@@ -1241,6 +1241,17 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               httpPrefix, postJsonObject['id'],
                                               cachedWebfingers, personCache,
                                               False, __version__)
+
+                        boxJson = c2sBoxJson(baseDir, session,
+                                             nickname, password,
+                                             domain, port, httpPrefix,
+                                             currTimeline, pageNumber,
+                                             debug)
+                        if boxJson:
+                            _desktopShowBox(currTimeline, boxJson,
+                                            screenreader, systemLanguage,
+                                            espeak, pageNumber,
+                                            newRepliesExist, newDMsExist)
                 print('')
             elif (commandStr == 'mute' or
                   commandStr == 'ignore' or
@@ -1269,6 +1280,16 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, postJsonObject['id'],
                                           cachedWebfingers, personCache,
                                           False, __version__)
+                        boxJson = c2sBoxJson(baseDir, session,
+                                             nickname, password,
+                                             domain, port, httpPrefix,
+                                             currTimeline, pageNumber,
+                                             debug)
+                        if boxJson:
+                            _desktopShowBox(currTimeline, boxJson,
+                                            screenreader, systemLanguage,
+                                            espeak, pageNumber,
+                                            newRepliesExist, newDMsExist)
                 print('')
             elif (commandStr == 'undo bookmark' or
                   commandStr == 'remove bookmark' or

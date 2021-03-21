@@ -4199,8 +4199,8 @@ def sendMuteViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newMuteJson, [], inboxUrl,
-                          headers, 30, True)
-    if not postResult:
+                          headers, 3, True)
+    if postResult is None:
         print('WARN: mute unable to post')
 
     if debug:
@@ -4280,8 +4280,8 @@ def sendUndoMuteViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, undoMuteJson, [], inboxUrl,
-                          headers, 30, True)
-    if not postResult:
+                          headers, 3, True)
+    if postResult is None:
         print('WARN: undo mute unable to post')
 
     if debug:
