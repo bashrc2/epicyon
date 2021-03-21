@@ -1359,7 +1359,8 @@ def _isReservedName(nickname: str) -> bool:
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars',
                      'welcome', 'helpimages',
-                     'bookmark', 'bookmarks', 'tlbookmarks')
+                     'bookmark', 'bookmarks', 'tlbookmarks',
+                     'ignores')
     if nickname in reservedNames:
         return True
     return False

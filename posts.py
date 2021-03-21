@@ -3273,6 +3273,8 @@ def _createBoxIndexed(recentPostsCache: {},
                         p['shares'] = {}
                     if p['object'].get('bookmarks'):
                         p['bookmarks'] = {}
+                    if p['object'].get('ignores'):
+                        p['ignores'] = {}
 
         boxItems['orderedItems'].append(p)
 

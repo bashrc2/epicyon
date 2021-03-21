@@ -185,14 +185,14 @@ def updateBookmarksCollection(recentPostsCache: {},
                 if bookmarkItem.get('actor'):
                     if bookmarkItem['actor'] == actor:
                         return
-                    newBookmark = {
-                        'type': 'Bookmark',
-                        'actor': actor
-                    }
-                    nb = newBookmark
-                    bmIt = len(postJsonObject['object']['bookmarks']['items'])
-                    postJsonObject['object']['bookmarks']['items'].append(nb)
-                    postJsonObject['object']['bookmarks']['totalItems'] = bmIt
+            newBookmark = {
+                'type': 'Bookmark',
+                'actor': actor
+            }
+            nb = newBookmark
+            bmIt = len(postJsonObject['object']['bookmarks']['items'])
+            postJsonObject['object']['bookmarks']['items'].append(nb)
+            postJsonObject['object']['bookmarks']['totalItems'] = bmIt
 
         if debug:
             print('DEBUG: saving post with bookmarks added')

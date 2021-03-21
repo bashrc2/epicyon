@@ -11,6 +11,7 @@ import json
 from datetime import datetime
 from utils import getCachedPostFilename
 from utils import loadJson
+from utils import saveJson
 from utils import fileLastModified
 from utils import setConfigParam
 from utils import hasUsersPath
@@ -364,8 +365,9 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         print('DEBUG: post undo blocked via c2s - ' + postFilename)
 
 
-def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
-             recentPostsCache: {}) -> None:
+def mutePost(baseDir: str, nickname: str, domain: str, port: int,
+             httpPrefix: str, postId: str, recentPostsCache: {},
+             debug: bool) -> None:
     """ Mutes the given post
     """
     postFilename = locatePost(baseDir, nickname, domain, postId)
@@ -374,6 +376,42 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
     postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return
+
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            domainFull = getFullDomain(domain, port)
+            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+            # does this post have ignores on it from differenent actors?
+            if not postJsonObject['object'].get('ignores'):
+                if debug:
+                    print('DEBUG: Adding initial mute to ' + postId)
+                ignoresJson = {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    'id': postId,
+                    'type': 'Collection',
+                    "totalItems": 1,
+                    'items': [{
+                        'type': 'Ignore',
+                        'actor': actor
+                    }]
+                }
+                postJsonObject['object']['ignores'] = ignoresJson
+            else:
+                if not postJsonObject['object']['ignores'].get('items'):
+                    postJsonObject['object']['ignores']['items'] = []
+                itemsList = postJsonObject['object']['ignores']['items']
+                for ignoresItem in itemsList:
+                    if ignoresItem.get('actor'):
+                        if ignoresItem['actor'] == actor:
+                            return
+                newIgnore = {
+                    'type': 'Ignore',
+                    'actor': actor
+                }
+                igIt = len(itemsList)
+                itemsList.append(newIgnore)
+                postJsonObject['object']['ignores']['totalItems'] = igIt
+                saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -405,8 +443,9 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
                       ' marked as muted in recent posts memory cache')
 
 
-def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
-               recentPostsCache: {}) -> None:
+def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
+               httpPrefix: str, postId: str, recentPostsCache: {},
+               debug: bool) -> None:
     """ Unmutes the given post
     """
     postFilename = locatePost(baseDir, nickname, domain, postId)
@@ -420,6 +459,32 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if os.path.isfile(muteFilename):
         os.remove(muteFilename)
         print('UNMUTE: ' + muteFilename + ' file removed')
+
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('ignores'):
+                domainFull = getFullDomain(domain, port)
+                actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+                totalItems = 0
+                if postJsonObject['object']['ignores'].get('totalItems'):
+                    totalItems = \
+                        postJsonObject['object']['ignores']['totalItems']
+                itemsList = postJsonObject['object']['ignores']['items']
+                for ignoresItem in itemsList:
+                    if ignoresItem.get('actor'):
+                        if ignoresItem['actor'] == actor:
+                            if debug:
+                                print('DEBUG: mute was removed for ' + actor)
+                            itemsList.remove(ignoresItem)
+                            break
+                if totalItems == 1:
+                    if debug:
+                        print('DEBUG: mute was removed from post')
+                    del postJsonObject['object']['ignores']
+                else:
+                    igItLen = len(postJsonObject['object']['ignores']['items'])
+                    postJsonObject['object']['ignores']['totalItems'] = igItLen
+                saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
@@ -493,8 +558,9 @@ def outboxMute(baseDir: str, httpPrefix: str,
         print('WARN: unable to find nickname in ' + messageJson['object'])
         return
 
-    mutePost(baseDir, nickname, domain,
-             messageJson['object'], recentPostsCache)
+    mutePost(baseDir, nickname, domain, port,
+             httpPrefix, messageJson['object'], recentPostsCache,
+             debug)
 
     if debug:
         print('DEBUG: post muted via c2s - ' + postFilename)
@@ -553,9 +619,9 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
               messageJson['object']['object'])
         return
 
-    unmutePost(baseDir, nickname, domain,
-               messageJson['object']['object'],
-               recentPostsCache)
+    unmutePost(baseDir, nickname, domain, port,
+               httpPrefix, messageJson['object']['object'],
+               recentPostsCache, debug)
 
     if debug:
         print('DEBUG: post undo mute via c2s - ' + postFilename)

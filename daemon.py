@@ -471,6 +471,8 @@ class PubServer(BaseHTTPRequestHandler):
             postJsonObject['replies'] = {}
         if postJsonObject.get('bookmarks'):
             postJsonObject['bookmarks'] = {}
+        if postJsonObject.get('ignores'):
+            postJsonObject['ignores'] = {}
         if not postJsonObject.get('object'):
             return
         if not isinstance(postJsonObject['object'], dict):
@@ -483,6 +485,8 @@ class PubServer(BaseHTTPRequestHandler):
             postJsonObject['object']['replies'] = {}
         if postJsonObject['object'].get('bookmarks'):
             postJsonObject['object']['bookmarks'] = {}
+        if postJsonObject['object'].get('ignores'):
+            postJsonObject['object']['ignores'] = {}
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
@@ -7010,8 +7014,9 @@ class PubServer(BaseHTTPRequestHandler):
         actor = \
             httpPrefix + '://' + domainFull + path.split('?mute=')[0]
         nickname = getNicknameFromActor(actor)
-        mutePost(baseDir, nickname, domain,
-                 muteUrl, self.server.recentPostsCache)
+        mutePost(baseDir, nickname, domain, port,
+                 httpPrefix, muteUrl,
+                 self.server.recentPostsCache, debug)
         self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
@@ -7054,8 +7059,9 @@ class PubServer(BaseHTTPRequestHandler):
         actor = \
             httpPrefix + '://' + domainFull + path.split('?unmute=')[0]
         nickname = getNicknameFromActor(actor)
-        unmutePost(baseDir, nickname, domain,
-                   muteUrl, self.server.recentPostsCache)
+        unmutePost(baseDir, nickname, domain, port,
+                   httpPrefix, muteUrl,
+                   self.server.recentPostsCache, debug)
         self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
