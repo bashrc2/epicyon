@@ -1103,6 +1103,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage,
+                                    espeak, pageNumber,
+                                    newRepliesExist, newDMsExist)
                     postIndex = int(postIndexStr)
                     postJsonObject = \
                         _readLocalBoxPost(session, nickname, domain,
@@ -1634,11 +1638,6 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
 
             if refreshTimeline:
-                boxJson = c2sBoxJson(baseDir, session,
-                                     nickname, password,
-                                     domain, port, httpPrefix,
-                                     currTimeline, pageNumber,
-                                     debug)
                 if boxJson:
                     _desktopShowBox(currTimeline, boxJson,
                                     screenreader, systemLanguage,
