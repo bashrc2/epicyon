@@ -697,6 +697,8 @@ def _desktopShowBox(boxName: str, boxJson: {},
                     content = '🔗' + contentWarning
                 else:
                     content = contentWarning
+        if postJsonObject['object'].get('ignores'):
+            content = '🔇'
         print(indent + str(posStr) + ' | ' + name + ' | ' +
               published + ' | ' + content)
         ctr += 1
