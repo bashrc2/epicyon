@@ -328,6 +328,7 @@ def _desktopNewPost(session,
         sayStr = 'No post was entered.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
+    print('')
     sayStr = 'You entered this public post:'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     _sayCommand(newMessage, newMessage, screenreader, systemLanguage, espeak)
@@ -1157,6 +1158,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       debug,
                                       screenreader, systemLanguage,
                                       espeak)
+                        refreshTimeline = True
                 else:
                     # public post
                     _desktopNewPost(sessionPost,
@@ -1166,7 +1168,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     debug,
                                     screenreader, systemLanguage,
                                     espeak)
-                refreshTimeline = True
+                    refreshTimeline = True
                 print('')
             elif commandStr == 'like' or commandStr.startswith('like '):
                 currIndex = 0
