@@ -1607,19 +1607,30 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                         screenreader,
                                         systemLanguage, espeak)
                         else:
-                            sayStr = 'Deleting post'
-                            _sayCommand(sayStr, sayStr,
-                                        screenreader,
+                            print('')
+                            if postJsonObject['object'].get('summary'):
+                                print(postJsonObject['object']['summary'])
+                            print(postJsonObject['object']['content'])
+                            print('')
+                            sayStr = 'Confirm delete, yes or no?'
+                            _sayCommand(sayStr, sayStr, screenreader,
                                         systemLanguage, espeak)
-                            sessionrm = createSession(proxyType)
-                            sendDeleteViaServer(baseDir, sessionrm,
-                                                nickname, password,
-                                                domain, port,
-                                                httpPrefix,
-                                                postJsonObject['id'],
-                                                cachedWebfingers, personCache,
-                                                False, __version__)
-                            refreshTimeline = True
+                            yesno = input()
+                            if 'y' not in yesno.lower():
+                                sayStr = 'Deleting post'
+                                _sayCommand(sayStr, sayStr,
+                                            screenreader,
+                                            systemLanguage, espeak)
+                                sessionrm = createSession(proxyType)
+                                sendDeleteViaServer(baseDir, sessionrm,
+                                                    nickname, password,
+                                                    domain, port,
+                                                    httpPrefix,
+                                                    postJsonObject['id'],
+                                                    cachedWebfingers,
+                                                    personCache,
+                                                    False, __version__)
+                                refreshTimeline = True
                 print('')
 
             if refreshTimeline:
