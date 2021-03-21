@@ -29,6 +29,8 @@ from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from posts import sendMuteViaServer
+from posts import sendUndoMuteViaServer
 from posts import sendPostViaServer
 from posts import c2sBoxJson
 from posts import downloadAnnounce
@@ -69,9 +71,13 @@ def _desktopHelp() -> None:
     print(indent + 'unlike                                ' +
           'Unlike the last post')
     print(indent + 'bookmark                              ' +
-          'bookmark the last post')
+          'Bookmark the last post')
     print(indent + 'unbookmark                            ' +
           'Unbookmark the last post')
+    print(indent + 'mute                                  ' +
+          'Mute the last post')
+    print(indent + 'unmute                                ' +
+          'Unmute the last post')
     print(indent + 'reply                                 ' +
           'Reply to the last post')
     print(indent + 'post                                  ' +
@@ -1199,6 +1205,71 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           cachedWebfingers, personCache,
                                           False, __version__)
                 print('')
+            elif (commandStr == 'undo mute' or
+                  commandStr == 'undo ignore' or
+                  commandStr == 'remove mute' or
+                  commandStr == 'rm mute' or
+                  commandStr == 'unmute' or
+                  commandStr == 'unignore' or
+                  commandStr == 'mute undo' or
+                  commandStr.startswith('undo mute ') or
+                  commandStr.startswith('undo ignore ') or
+                  commandStr.startswith('remove mute ') or
+                  commandStr.startswith('remove ignore ') or
+                  commandStr.startswith('unignore ') or
+                  commandStr.startswith('unmute ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        muteActor = postJsonObject['object']['attributedTo']
+                        sayStr = 'Unmuting post by ' + \
+                            getNicknameFromActor(muteActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionMute = createSession(proxyType)
+                        sendUndoMuteViaServer(baseDir, sessionMute,
+                                              nickname, password,
+                                              domain, port,
+                                              httpPrefix, postJsonObject['id'],
+                                              cachedWebfingers, personCache,
+                                              False, __version__)
+                print('')
+            elif (commandStr == 'mute' or
+                  commandStr == 'ignore' or
+                  commandStr.startswith('mute ') or
+                  commandStr.startswith('ignore ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        muteActor = postJsonObject['object']['attributedTo']
+                        sayStr = 'Muting post by ' + \
+                            getNicknameFromActor(muteActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionMute = createSession(proxyType)
+                        sendMuteViaServer(baseDir, sessionMute,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, postJsonObject['id'],
+                                          cachedWebfingers, personCache,
+                                          False, __version__)
+                print('')
             elif (commandStr == 'undo bookmark' or
                   commandStr == 'remove bookmark' or
                   commandStr == 'rm bookmark' or
@@ -1224,14 +1295,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _desktopGetBoxPostObject(boxJson, currIndex)
                 if postJsonObject:
                     if postJsonObject.get('id'):
-                        likeActor = postJsonObject['object']['attributedTo']
+                        bmActor = postJsonObject['object']['attributedTo']
                         sayStr = 'Unbookmarking post by ' + \
-                            getNicknameFromActor(likeActor)
+                            getNicknameFromActor(bmActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionLike = createSession(proxyType)
-                        sendUndoBookmarkViaServer(baseDir, sessionLike,
+                        sessionbm = createSession(proxyType)
+                        sendUndoBookmarkViaServer(baseDir, sessionbm,
                                                   nickname, password,
                                                   domain, port, httpPrefix,
                                                   postJsonObject['id'],
@@ -1253,14 +1324,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _desktopGetBoxPostObject(boxJson, currIndex)
                 if postJsonObject:
                     if postJsonObject.get('id'):
-                        likeActor = postJsonObject['object']['attributedTo']
+                        bmActor = postJsonObject['object']['attributedTo']
                         sayStr = 'Bookmarking post by ' + \
-                            getNicknameFromActor(likeActor)
+                            getNicknameFromActor(bmActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionLike = createSession(proxyType)
-                        sendBookmarkViaServer(baseDir, sessionLike,
+                        sessionbm = createSession(proxyType)
+                        sendBookmarkViaServer(baseDir, sessionbm,
                                               nickname, password,
                                               domain, port, httpPrefix,
                                               postJsonObject['id'],

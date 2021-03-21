@@ -458,6 +458,8 @@ like                                  Like the last post
 unlike                                Unlike the last post
 bookmark                              Bookmark the last post
 unbookmark                            Unbookmark the last post
+mute                                  Mute the last post
+unmute                                Unmute the last post
 reply                                 Reply to the last post
 post                                  Create a new post
 post to [handle]                      Create a new direct message
