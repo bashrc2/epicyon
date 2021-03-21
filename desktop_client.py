@@ -994,6 +994,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         else:
             commandStr = _desktopWaitForCmd(30, debug)
         if commandStr:
+            refreshTimeline = False
+
             if commandStr.startswith('/'):
                 commandStr = commandStr[1:]
             if commandStr == 'q' or \
@@ -1072,29 +1074,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'inbox'
-                boxJson = c2sBoxJson(baseDir, session,
-                                     nickname, password,
-                                     domain, port, httpPrefix,
-                                     currTimeline, pageNumber,
-                                     debug)
-                if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
-                                    screenreader, systemLanguage, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                refreshTimeline = True
             elif commandStr.startswith('next'):
                 pageNumber += 1
                 prevTimelineFirstId = ''
-                boxJson = c2sBoxJson(baseDir, session,
-                                     nickname, password,
-                                     domain, port, httpPrefix,
-                                     currTimeline, pageNumber,
-                                     debug)
-                if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
-                                    screenreader, systemLanguage, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                refreshTimeline = True
             elif commandStr.startswith('prev'):
                 pageNumber -= 1
                 if pageNumber < 1:
@@ -1139,6 +1123,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             debug, subject,
                                             screenreader, systemLanguage,
                                             espeak)
+                refreshTimeline = True
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or
                   commandStr == 'send' or
@@ -1181,6 +1166,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     debug,
                                     screenreader, systemLanguage,
                                     espeak)
+                refreshTimeline = True
                 print('')
             elif commandStr == 'like' or commandStr.startswith('like '):
                 currIndex = 0
@@ -1206,6 +1192,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           postJsonObject['id'],
                                           cachedWebfingers, personCache,
                                           False, __version__)
+                        refreshTimeline = True
                 print('')
             elif (commandStr == 'undo mute' or
                   commandStr == 'undo ignore' or
@@ -1243,17 +1230,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               httpPrefix, postJsonObject['id'],
                                               cachedWebfingers, personCache,
                                               False, __version__)
-
-                        boxJson = c2sBoxJson(baseDir, session,
-                                             nickname, password,
-                                             domain, port, httpPrefix,
-                                             currTimeline, pageNumber,
-                                             debug)
-                        if boxJson:
-                            _desktopShowBox(currTimeline, boxJson,
-                                            screenreader, systemLanguage,
-                                            espeak, pageNumber,
-                                            newRepliesExist, newDMsExist)
+                        refreshTimeline = True
                 print('')
             elif (commandStr == 'mute' or
                   commandStr == 'ignore' or
@@ -1282,16 +1259,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, postJsonObject['id'],
                                           cachedWebfingers, personCache,
                                           False, __version__)
-                        boxJson = c2sBoxJson(baseDir, session,
-                                             nickname, password,
-                                             domain, port, httpPrefix,
-                                             currTimeline, pageNumber,
-                                             debug)
-                        if boxJson:
-                            _desktopShowBox(currTimeline, boxJson,
-                                            screenreader, systemLanguage,
-                                            espeak, pageNumber,
-                                            newRepliesExist, newDMsExist)
+                        refreshTimeline = True
                 print('')
             elif (commandStr == 'undo bookmark' or
                   commandStr == 'remove bookmark' or
@@ -1332,6 +1300,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   cachedWebfingers,
                                                   personCache,
                                                   False, __version__)
+                        refreshTimeline = True
                 print('')
             elif (commandStr == 'bookmark' or
                   commandStr == 'bm' or
@@ -1360,6 +1329,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               postJsonObject['id'],
                                               cachedWebfingers, personCache,
                                               False, __version__)
+                        refreshTimeline = True
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
                 currIndex = 0
@@ -1386,6 +1356,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               postJsonObject['id'],
                                               cachedWebfingers, personCache,
                                               False, __version__)
+                        refreshTimeline = True
                 print('')
             elif (commandStr.startswith('announce') or
                   commandStr.startswith('boost') or
@@ -1415,6 +1386,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               httpPrefix, postId,
                                               cachedWebfingers, personCache,
                                               True, __version__)
+                        refreshTimeline = True
                 print('')
             elif (commandStr.startswith('unannounce') or
                   commandStr.startswith('undo announce') or
@@ -1448,6 +1420,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   cachedWebfingers,
                                                   personCache,
                                                   True, __version__)
+                        refreshTimeline = True
                 print('')
             elif commandStr.startswith('follow '):
                 followHandle = commandStr.replace('follow ', '').strip()
@@ -1606,3 +1579,15 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
+
+            if refreshTimeline:
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage,
+                                    espeak, pageNumber,
+                                    newRepliesExist, newDMsExist)
