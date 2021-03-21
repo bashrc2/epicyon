@@ -92,7 +92,7 @@ def sendDeleteViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newDeleteJson, [], inboxUrl, headers, 30, True)
+        postJson(session, newDeleteJson, [], inboxUrl, headers, 3, True)
     if not postResult:
         if debug:
             print('DEBUG: POST delete failed for c2s to ' + inboxUrl)

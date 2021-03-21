@@ -14,6 +14,7 @@ import select
 import webbrowser
 import urllib.parse
 from random import randint
+from utils import getFullDomain
 from utils import isDM
 from utils import loadTranslationsFromFile
 from utils import removeHtml
@@ -43,6 +44,7 @@ from pgp import pgpPublicKeyUpload
 from like import noOfLikes
 from bookmarks import sendBookmarkViaServer
 from bookmarks import sendUndoBookmarkViaServer
+from delete import sendDeleteViaServer
 
 
 def _desktopHelp() -> None:
@@ -1581,6 +1583,44 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
+            elif (commandStr == 'delete' or
+                  commandStr == 'rm' or
+                  commandStr.startswith('delete ') or
+                  commandStr.startswith('rm ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        domainFull = getFullDomain(domain, port)
+                        actor = httpPrefix + '://' + \
+                            domainFull + '/users/' + nickname
+                        rmActor = postJsonObject['object']['attributedTo']
+                        if rmActor != actor:
+                            sayStr = 'You can only delete your own posts'
+                            _sayCommand(sayStr, sayStr,
+                                        screenreader,
+                                        systemLanguage, espeak)
+                        else:
+                            sayStr = 'Deleting post'
+                            _sayCommand(sayStr, sayStr,
+                                        screenreader,
+                                        systemLanguage, espeak)
+                            sessionrm = createSession(proxyType)
+                            sendDeleteViaServer(baseDir, sessionrm,
+                                                nickname, password,
+                                                domain, port,
+                                                httpPrefix,
+                                                postJsonObject['id'],
+                                                cachedWebfingers, personCache,
+                                                False, __version__)
+                            refreshTimeline = True
+                print('')
 
             if refreshTimeline:
                 boxJson = c2sBoxJson(baseDir, session,
