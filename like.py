@@ -204,7 +204,7 @@ def sendLikeViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newLikeJson, [], inboxUrl,
-                          headers, 30, True)
+                          headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST like failed for c2s to ' + inboxUrl)
@@ -286,7 +286,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newUndoLikeJson, [], inboxUrl,
-                          headers, 30, True)
+                          headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST unlike failed for c2s to ' + inboxUrl)

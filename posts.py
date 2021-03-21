@@ -2130,7 +2130,7 @@ def sendPostViaServer(projectVersion: str,
     postDumps = json.dumps(postJsonObject)
     postResult = \
         postJsonString(session, postDumps, [],
-                       inboxUrl, headers, debug, 60, True)
+                       inboxUrl, headers, debug, 5, True)
     if not postResult:
         if debug:
             print('DEBUG: POST failed for c2s to ' + inboxUrl)

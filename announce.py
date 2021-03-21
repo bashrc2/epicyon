@@ -258,7 +258,7 @@ def sendAnnounceViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newAnnounceJson, [], inboxUrl,
-                          headers, 30, True)
+                          headers, 3, True)
     if not postResult:
         print('WARN: announce not posted')
 
@@ -337,7 +337,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, unAnnounceJson, [], inboxUrl,
-                          headers, 30, True)
+                          headers, 3, True)
     if not postResult:
         print('WARN: undo announce not posted')
 
