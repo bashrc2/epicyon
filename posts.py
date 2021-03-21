@@ -4155,6 +4155,7 @@ def sendMuteViaServer(baseDir: str, session,
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Ignore',
         'actor': actor,
+        'to': [actor],
         'object': mutedUrl
     }
 
@@ -4229,9 +4230,11 @@ def sendUndoMuteViaServer(baseDir: str, session,
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': actor,
+        'to': [actor],
         'object': {
             'type': 'Ignore',
             'actor': actor,
+            'to': [actor],
             'object': mutedUrl
         }
     }
