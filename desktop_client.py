@@ -182,10 +182,16 @@ def _postIsToYou(actor: str, postJsonObject: {}) -> bool:
     if postJsonObject.get('to'):
         if actor in postJsonObject['to']:
             toYourActor = True
+    if not toYourActor and postJsonObject.get('cc'):
+        if actor in postJsonObject['cc']:
+            toYourActor = True
     if not toYourActor and postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
             if postJsonObject['object'].get('to'):
                 if actor in postJsonObject['object']['to']:
+                    toYourActor = True
+            if not toYourActor and postJsonObject['object'].get('cc'):
+                if actor in postJsonObject['object']['cc']:
                     toYourActor = True
     return toYourActor
 
