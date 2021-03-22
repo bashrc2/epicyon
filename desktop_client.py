@@ -1130,8 +1130,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             inboxJson = c2sBoxJson(baseDir, session,
                                    nickname, password,
                                    domain, port, httpPrefix,
-                                   'inbox', pageNumber,
-                                   debug)
+                                   'inbox', 1, debug)
         else:
             inboxJson = boxJson
         if inboxJson:
