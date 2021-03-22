@@ -197,6 +197,8 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
         return
     newDM = False
     newReply = False
+    notifyJson['dmNotifyChanged'] = False
+    notifyJson['repliesNotifyChanged'] = False
     for postJsonObject in inboxJson['orderedItems']:
         if not postJsonObject.get('id'):
             continue
