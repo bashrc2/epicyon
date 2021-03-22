@@ -210,16 +210,26 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                     if notifyJson.get('dmPostId'):
                         if notifyJson['dmPostId'] != postJsonObject['id']:
                             notifyJson['dmNotify'] = True
+                            notifyJson['dmNotifyChanged'] = True
                             newDM = True
+                        else:
+                            notifyJson['dmNotifyChanged'] = False
                     notifyJson['dmPostId'] = postJsonObject['id']
+                    if newDM:
+                        break
         else:
             if not newReply:
                 if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
                     if notifyJson.get('repliesPostId'):
                         if notifyJson['repliesPostId'] != postJsonObject['id']:
                             notifyJson['repliesNotify'] = True
+                            notifyJson['repliesNotifyChanged'] = True
                             newReply = True
+                        else:
+                            notifyJson['repliesNotifyChanged'] = False
                     notifyJson['repliesPostId'] = postJsonObject['id']
+                    if newReply:
+                        break
 
 
 def _desktopClearScreen() -> None:
@@ -1042,18 +1052,19 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
     postJsonObject = {}
     originalScreenReader = screenreader
+    soundsDir = 'theme/default/sounds/'
     # prevSay = ''
     # prevCalendar = False
     # prevFollow = False
     # prevLike = ''
     # prevShare = False
-    dmSoundFilename = 'dm.ogg'
-    replySoundFilename = 'reply.ogg'
-    # calendarSoundFilename = 'calendar.ogg'
-    # followSoundFilename = 'follow.ogg'
-    # likeSoundFilename = 'like.ogg'
-    # shareSoundFilename = 'share.ogg'
-    # player = 'ffplay'
+    dmSoundFilename = soundsDir + 'dm.ogg'
+    replySoundFilename = soundsDir + 'reply.ogg'
+    # calendarSoundFilename = soundsDir + 'calendar.ogg'
+    # followSoundFilename = soundsDir + 'follow.ogg'
+    # likeSoundFilename = soundsDir + 'like.ogg'
+    # shareSoundFilename = soundsDir + 'share.ogg'
+    player = 'ffplay'
     nameStr = None
     gender = None
     messageStr = None
@@ -1082,7 +1093,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     domainFull = getFullDomain(domain, port)
     yourActor = httpPrefix + '://' + domainFull + '/users/' + nickname
 
-    notifyJson = {}
+    notifyJson = {
+        "dmPostId": "Initial",
+        "dmNotify": False,
+        "dmNotifyChanged": False,
+        "repliesPostId": "Initial",
+        "repliesNotify": False,
+        "repliesNotifyChanged": False
+    }
     prevTimelineFirstId = ''
     while (1):
         if not pgpKeyUpload:
@@ -1117,14 +1135,17 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         if inboxJson:
             _newDesktopNotifications(yourActor, inboxJson, notifyJson)
             if notifyJson.get('dmNotify'):
-                _desktopNotification(notificationType,
-                                     "Epicyon", "New DM " + yourActor + '/dm')
-                _playNotificationSound(dmSoundFilename)
+                if notifyJson.get('dmNotifyChanged'):
+                    _desktopNotification(notificationType,
+                                         "Epicyon",
+                                         "New DM " + yourActor + '/dm')
+                    _playNotificationSound(dmSoundFilename, player)
             if notifyJson.get('repliesNotify'):
-                _desktopNotification(notificationType,
-                                     "Epicyon",
-                                     "New reply " + yourActor + '/replies')
-                _playNotificationSound(replySoundFilename)
+                if notifyJson.get('repliesNotifyChanged'):
+                    _desktopNotification(notificationType,
+                                         "Epicyon",
+                                         "New reply " + yourActor + '/replies')
+                    _playNotificationSound(replySoundFilename, player)
 
         if boxJson:
             timelineFirstId = _getFirstItemId(boxJson)
