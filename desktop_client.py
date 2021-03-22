@@ -13,6 +13,7 @@ import sys
 import select
 import webbrowser
 import urllib.parse
+from pathlib import Path
 from random import randint
 from utils import getFullDomain
 from utils import isDM
@@ -101,6 +102,124 @@ def _desktopHelp() -> None:
     print(indent + 'open [post number]                    ' +
           'Open web links within a timeline post')
     print('')
+
+
+def _createDesktopConfig(actor: str) -> None:
+    """Sets up directories for desktop client configuration
+    """
+    homeDir = str(Path.home())
+    if not os.path.isdir(homeDir + '/.config'):
+        os.mkdir(homeDir + '/.config')
+    if not os.path.isdir(homeDir + '/.config/epicyon'):
+        os.mkdir(homeDir + '/.config/epicyon')
+    nickname = getNicknameFromActor(actor)
+    domain, port = getDomainFromActor(actor)
+    handle = nickname + '@' + domain
+    if port != 443 and port != 80:
+        handle += '_' + str(port)
+    readPostsDir = homeDir + '/.config/epicyon/' + handle
+    if not os.path.isdir(readPostsDir):
+        os.mkdir(readPostsDir)
+
+
+def _markPostAsRead(actor: str, postId: str, postCategory: str) -> None:
+    """Marks the given post as read by the given actor
+    """
+    homeDir = str(Path.home())
+    _createDesktopConfig(actor)
+    nickname = getNicknameFromActor(actor)
+    domain, port = getDomainFromActor(actor)
+    handle = nickname + '@' + domain
+    if port != 443 and port != 80:
+        handle += '_' + str(port)
+    readPostsDir = homeDir + '/.config/epicyon/' + handle
+    readPostsFilename = readPostsDir + '/' + postCategory + '.txt'
+    if os.path.isfile(readPostsFilename):
+        if postId in open(readPostsFilename).read():
+            return
+        try:
+            # prepend to read posts file
+            postId += '\n'
+            with open(readPostsFilename, 'r+') as readFile:
+                content = readFile.read()
+                if postId not in content:
+                    readFile.seek(0, 0)
+                    readFile.write(postId + content)
+        except Exception as e:
+            print('WARN: Failed to mark post as read' + str(e))
+    else:
+        readFile = open(readPostsFilename, 'w+')
+        if readFile:
+            readFile.write(postId + '\n')
+            readFile.close()
+
+
+def _hasReadPost(actor: str, postId: str, postCategory: str) -> bool:
+    """Returns true if the given post has been read by the actor
+    """
+    homeDir = str(Path.home())
+    _createDesktopConfig(actor)
+    nickname = getNicknameFromActor(actor)
+    domain, port = getDomainFromActor(actor)
+    handle = nickname + '@' + domain
+    if port != 443 and port != 80:
+        handle += '_' + str(port)
+    readPostsDir = homeDir + '/.config/epicyon/' + handle
+    readPostsFilename = readPostsDir + '/' + postCategory + '.txt'
+    if os.path.isfile(readPostsFilename):
+        if postId in open(readPostsFilename).read():
+            return True
+    return False
+
+
+def _postIsToYou(actor: str, postJsonObject: {}) -> bool:
+    """Returns true if the post is to the actor
+    """
+    toYourActor = False
+    if postJsonObject.get('to'):
+        if actor in postJsonObject['to']:
+            toYourActor = True
+    if not toYourActor and postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('to'):
+                if actor in postJsonObject['object']['to']:
+                    toYourActor = True
+    return toYourActor
+
+
+def _newDesktopNotifications(actor: str, inboxJson: {},
+                             notifyJson: {}) -> None:
+    """Looks for changes in the inbox and adds notifications
+    """
+    if not inboxJson:
+        return
+    if not inboxJson.get('orderedItems'):
+        return
+    newDM = False
+    newReply = False
+    for postJsonObject in inboxJson['orderedItems']:
+        if not postJsonObject.get('id'):
+            continue
+        if not _postIsToYou(actor, postJsonObject):
+            continue
+        if 'dmNotify' not in notifyJson:
+            notifyJson['dmNotify'] = False
+        if isDM(postJsonObject):
+            if not newDM:
+                if not _hasReadPost(actor, postJsonObject['id'], 'dm'):
+                    if notifyJson.get('dmPostId'):
+                        if notifyJson['dmPostId'] != postJsonObject['id']:
+                            notifyJson['dmNotify'] = True
+                            newDM = True
+                    notifyJson['dmPostId'] = postJsonObject['id']
+        else:
+            if not newReply:
+                if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
+                    if notifyJson.get('repliesPostId'):
+                        if notifyJson['repliesPostId'] != postJsonObject['id']:
+                            notifyJson['repliesNotify'] = True
+                            newReply = True
+                    notifyJson['repliesPostId'] = postJsonObject['id']
 
 
 def _desktopClearScreen() -> None:
@@ -439,7 +558,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                       pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
                       screenreader: str, espeak,
-                      translate: {}) -> {}:
+                      translate: {}, yourActor: str) -> {}:
     """Reads a post from the given timeline
     Returns the speaker json
     """
@@ -532,6 +651,14 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak,
                 nameStr, gender)
+
+    # if the post is addressed to you then mark it as read
+    if _postIsToYou(yourActor, postJsonObject):
+        if isDM(postJsonObject['id']):
+            _markPostAsRead(yourActor, postJsonObject['id'], 'dm')
+        else:
+            _markPostAsRead(yourActor, postJsonObject['id'], 'replies')
+
     return postJsonObject
 
 
@@ -920,8 +1047,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     # prevFollow = False
     # prevLike = ''
     # prevShare = False
-    # dmSoundFilename = 'dm.ogg'
-    # replySoundFilename = 'reply.ogg'
+    dmSoundFilename = 'dm.ogg'
+    replySoundFilename = 'reply.ogg'
     # calendarSoundFilename = 'calendar.ogg'
     # followSoundFilename = 'follow.ogg'
     # likeSoundFilename = 'like.ogg'
@@ -937,11 +1064,6 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     newDMsExist = False
     pgpKeyUpload = False
 
-    # NOTE: These are dummy calls to make unit tests pass
-    # they should be removed later
-    _desktopNotification("", "test", "message")
-    _playNotificationSound("test83639")
-
     sayStr = indent + 'Loading translations file'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
@@ -956,6 +1078,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     sayStr = indent + '/q or /quit to exit'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
+
+    domainFull = getFullDomain(domain, port)
+    yourActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    notifyJson = {}
     prevTimelineFirstId = ''
     while (1):
         if not pgpKeyUpload:
@@ -977,6 +1104,27 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                              domain, port, httpPrefix,
                              currTimeline, pageNumber,
                              debug)
+
+        if currTimeline != 'inbox':
+            # monitor the inbox to generate notifications
+            inboxJson = c2sBoxJson(baseDir, session,
+                                   nickname, password,
+                                   domain, port, httpPrefix,
+                                   'inbox', pageNumber,
+                                   debug)
+        else:
+            inboxJson = boxJson
+        if inboxJson:
+            _newDesktopNotifications(yourActor, inboxJson, notifyJson)
+            if notifyJson.get('dmNotify'):
+                _desktopNotification(notificationType,
+                                     "Epicyon", "New DM " + yourActor + '/dm')
+                _playNotificationSound(dmSoundFilename)
+            if notifyJson.get('repliesNotify'):
+                _desktopNotification(notificationType,
+                                     "Epicyon",
+                                     "New reply " + yourActor + '/replies')
+                _playNotificationSound(replySoundFilename)
 
         if boxJson:
             timelineFirstId = _getFirstItemId(boxJson)
@@ -1113,7 +1261,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, baseDir, currTimeline,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
-                                          espeak, translate)
+                                          espeak, translate, yourActor)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
@@ -1601,11 +1749,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _desktopGetBoxPostObject(boxJson, currIndex)
                 if postJsonObject:
                     if postJsonObject.get('id'):
-                        domainFull = getFullDomain(domain, port)
-                        actor = httpPrefix + '://' + \
-                            domainFull + '/users/' + nickname
                         rmActor = postJsonObject['object']['attributedTo']
-                        if rmActor != actor:
+                        if rmActor != yourActor:
                             sayStr = 'You can only delete your own posts'
                             _sayCommand(sayStr, sayStr,
                                         screenreader,

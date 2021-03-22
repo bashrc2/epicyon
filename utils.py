@@ -253,6 +253,7 @@ def removeHtml(content: str) -> str:
     if '<' not in content:
         return content
     removing = False
+    content = content.replace('<a href', ' <a href')
     content = content.replace('<q>', '"').replace('</q>', '"')
     result = ''
     for ch in content:
@@ -262,6 +263,7 @@ def removeHtml(content: str) -> str:
             removing = False
         elif not removing:
             result += ch
+    result = result.replace('  ', ' ')
     return result
 
 

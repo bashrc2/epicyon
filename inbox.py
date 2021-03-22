@@ -1612,12 +1612,14 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
             return False
         if messageId not in open(postRepliesFilename).read():
             repliesFile = open(postRepliesFilename, 'a+')
-            repliesFile.write(messageId + '\n')
-            repliesFile.close()
+            if repliesFile:
+                repliesFile.write(messageId + '\n')
+                repliesFile.close()
     else:
         repliesFile = open(postRepliesFilename, 'w+')
-        repliesFile.write(messageId + '\n')
-        repliesFile.close()
+        if repliesFile:
+            repliesFile.write(messageId + '\n')
+            repliesFile.close()
     return True
 
 
