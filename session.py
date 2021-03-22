@@ -152,6 +152,12 @@ def postJson(session, postJsonObject: {}, federationList: [],
             session.post(url=inboxUrl,
                          data=json.dumps(postJsonObject),
                          headers=headers, timeout=timeoutSec)
+    except requests.Timeout as e:
+        if not quiet:
+            print('ERROR: postJson timeout ' + inboxUrl + ' ' +
+                  json.dumps(postJsonObject) + ' ' + str(headers))
+            print(e)
+        return ''
     except requests.exceptions.RequestException as e:
         if not quiet:
             print('ERROR: postJson requests failed ' + inboxUrl + ' ' +

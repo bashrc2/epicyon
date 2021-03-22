@@ -10,8 +10,6 @@ import os
 import html
 import random
 import urllib.parse
-from auth import createBasicAuthHeader
-from session import getJson
 from utils import isDM
 from utils import isReply
 from utils import camelCaseSplit
@@ -22,7 +20,6 @@ from utils import getDisplayName
 from utils import removeHtml
 from utils import loadJson
 from utils import saveJson
-from utils import getFullDomain
 from utils import isPGPEncrypted
 from content import htmlReplaceQuoteMarks
 
@@ -168,8 +165,10 @@ def speakerReplaceLinks(sayText: str, translate: {},
     Instead of reading out potentially very long and meaningless links
     """
     text = sayText
+    text = text.replace('?v=', '__v=')
     for ch in speakerRemoveChars:
         text = text.replace(ch, ' ')
+    text = text.replace('__v=', '?v=')
     replacements = {}
     wordsList = text.split(' ')
     if translate.get('Linked'):
@@ -251,38 +250,6 @@ def _removeEmojiFromText(sayText: str) -> str:
     for replaceStr, newStr in replacements.items():
         sayText = sayText.replace(replaceStr, newStr)
     return sayText.replace('  ', ' ').strip()
-
-
-def getSpeakerFromServer(baseDir: str, session,
-                         nickname: str, password: str,
-                         domain: str, port: int,
-                         httpPrefix: str,
-                         debug: bool, projectVersion: str) -> {}:
-    """Returns some json which contains the latest inbox
-    entry in a minimal format suitable for a text-to-speech reader
-    """
-    if not session:
-        print('WARN: No session for getSpeakerFromServer')
-        return 6
-
-    domainFull = getFullDomain(domain, port)
-
-    authHeader = createBasicAuthHeader(nickname, password)
-
-    headers = {
-        'host': domain,
-        'Content-type': 'application/json',
-        'Authorization': authHeader
-    }
-
-    url = \
-        httpPrefix + '://' + \
-        domainFull + '/users/' + nickname + '/speaker'
-
-    speakerJson = \
-        getJson(session, url, headers, None, debug,
-                __version__, httpPrefix, domain, 20, True)
-    return speakerJson
 
 
 def _speakerEndpointJson(displayName: str, summary: str,
@@ -403,6 +370,30 @@ def getSSMLbox(baseDir: str, path: str,
                                 speakerJson['detectedLinks'],
                                 systemLanguage,
                                 instanceTitle, gender)
+
+
+def speakableText(baseDir: str, content: str, translate: {}) -> (str, []):
+    """Convert the given text to a speakable version
+    which includes changes for prononciation
+    """
+    if isPGPEncrypted(content):
+        return content, []
+
+    # replace some emoji before removing html
+    if ' <3' in content:
+        content = content.replace(' <3', ' ' + translate['heart'])
+    content = removeHtml(htmlReplaceQuoteMarks(content))
+    detectedLinks = []
+    content = speakerReplaceLinks(content, translate, detectedLinks)
+    # replace all double spaces
+    while '  ' in content:
+        content = content.replace('  ', ' ')
+    content = content.replace(' . ', '. ').strip()
+    sayContent = _speakerPronounce(baseDir, content, translate)
+    # replace all double spaces
+    while '  ' in sayContent:
+        sayContent = sayContent.replace('  ', ' ')
+    return sayContent.replace(' . ', '. ').strip(), detectedLinks
 
 
 def _postToSpeakerJson(baseDir: str, httpPrefix: str,

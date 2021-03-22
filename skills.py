@@ -126,11 +126,11 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
                         domain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: skill webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: skill webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -145,11 +145,12 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: skill no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: skill no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -164,7 +165,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
                  headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST skill failed for c2s to ' + inboxUrl)
 #        return 5
 
     if debug:

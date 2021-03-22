@@ -13,6 +13,7 @@ import shutil
 import datetime
 import json
 import idna
+import locale
 from pprint import pprint
 from calendar import monthrange
 from followingCalendar import addPersonToCalendar
@@ -252,6 +253,7 @@ def removeHtml(content: str) -> str:
     if '<' not in content:
         return content
     removing = False
+    content = content.replace('<a href', ' <a href')
     content = content.replace('<q>', '"').replace('</q>', '"')
     result = ''
     for ch in content:
@@ -261,6 +263,7 @@ def removeHtml(content: str) -> str:
             removing = False
         elif not removing:
             result += ch
+    result = result.replace('  ', ' ').strip()
     return result
 
 
@@ -1357,7 +1360,9 @@ def _isReservedName(nickname: str) -> bool:
                      'accounts', 'channels', 'profile', 'u',
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars',
-                     'welcome', 'helpimages')
+                     'welcome', 'helpimages',
+                     'bookmark', 'bookmarks', 'tlbookmarks',
+                     'ignores')
     if nickname in reservedNames:
         return True
     return False
@@ -2150,3 +2155,30 @@ def isPGPEncrypted(content: str) -> bool:
         if '--END PGP MESSAGE--' in content:
             return True
     return False
+
+
+def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
+    """Returns the translations dictionary
+    """
+    if not os.path.isdir(baseDir + '/translations'):
+        print('ERROR: translations directory not found')
+        return
+    if not language:
+        systemLanguage = locale.getdefaultlocale()[0]
+    else:
+        systemLanguage = language
+    if not systemLanguage:
+        systemLanguage = 'en'
+    if '_' in systemLanguage:
+        systemLanguage = systemLanguage.split('_')[0]
+    while '/' in systemLanguage:
+        systemLanguage = systemLanguage.split('/')[1]
+    if '.' in systemLanguage:
+        systemLanguage = systemLanguage.split('.')[0]
+    translationsFile = baseDir + '/translations/' + \
+        systemLanguage + '.json'
+    if not os.path.isfile(translationsFile):
+        systemLanguage = 'en'
+        translationsFile = baseDir + '/translations/' + \
+            systemLanguage + '.json'
+    return loadJson(translationsFile), systemLanguage

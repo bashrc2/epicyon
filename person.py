@@ -1106,6 +1106,8 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
                  debug: bool, quiet=False) -> {}:
     """Returns the actor json
     """
+    if debug:
+        print('getActorJson for ' + handle)
     originalActor = handle
     if '/@' in handle or \
        '/users/' in handle or \
@@ -1117,8 +1119,8 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             handle = handle.replace(prefix, '')
         handle = handle.replace('/@', '/users/')
         if not hasUsersPath(handle):
-            if not quiet:
-                print('Expected actor format: ' +
+            if not quiet or debug:
+                print('getActorJson: Expected actor format: ' +
                       'https://domain/@nick or https://domain/users/nick')
             return None
         if '/users/' in handle:
@@ -1145,13 +1147,13 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         # format: @nick@domain
         if '@' not in handle:
             if not quiet:
-                print('Syntax: --actor nickname@domain')
+                print('getActorJson Syntax: --actor nickname@domain')
             return None
         if handle.startswith('@'):
             handle = handle[1:]
         if '@' not in handle:
             if not quiet:
-                print('Syntax: --actor nickname@domain')
+                print('getActorJsonSyntax: --actor nickname@domain')
             return None
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
@@ -1168,7 +1170,10 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         httpPrefix = 'gnunet'
         proxyType = 'gnunet'
     else:
-        httpPrefix = 'https'
+        if '127.0.' not in domain and '192.168.' not in domain:
+            httpPrefix = 'https'
+        else:
+            httpPrefix = 'http'
     session = createSession(proxyType)
     if nickname == 'inbox':
         nickname = domain
@@ -1179,12 +1184,12 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
                                 None, __version__, debug)
     if not wfRequest:
         if not quiet:
-            print('Unable to webfinger ' + handle)
+            print('getActorJson Unable to webfinger ' + handle)
         return None
     if not isinstance(wfRequest, dict):
         if not quiet:
-            print('Webfinger for ' + handle + ' did not return a dict. ' +
-                  str(wfRequest))
+            print('getActorJson Webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wfRequest))
         return None
 
     if not quiet:
@@ -1192,11 +1197,13 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
 
     personUrl = None
     if wfRequest.get('errors'):
-        if not quiet:
-            print('wfRequest error: ' + str(wfRequest['errors']))
+        if not quiet or debug:
+            print('getActorJson wfRequest error: ' + str(wfRequest['errors']))
         if hasUsersPath(handle):
             personUrl = originalActor
         else:
+            if debug:
+                print('No users path in ' + handle)
             return None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
@@ -1230,6 +1237,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
     if personJson:
         if not quiet:
             pprint(personJson)
+        return personJson
     else:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
@@ -1240,6 +1248,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
                     debug, __version__, httpPrefix, None)
         if not quiet:
             if personJson:
+                print('getActorJson returned actor')
                 pprint(personJson)
             else:
                 print('Failed to get ' + personUrl)

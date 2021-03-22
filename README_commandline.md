@@ -1,6 +1,6 @@
-# Commandline Admin
+# Command-line Admin
 
-This system can be administrated from the commandline.
+This system can be administrated from the command-line.
 
 ## Account Management
 
@@ -52,7 +52,7 @@ To remove an account (be careful!):
 python3 epicyon.py --rmgroup nickname@domain
 ```
 
-Setting avatar or changing background is the same as for any other account on the system. You can also moderate a group, applying filters, blocks or a perimeter, in the same way as for other acounts.
+Setting avatar or changing background is the same as for any other account on the system. You can also moderate a group, applying filters, blocks or a perimeter, in the same way as for other accounts.
 
 ## Defining a perimeter
 
@@ -76,7 +76,7 @@ The password is for the client to obtain access to the server.
 
 You may or may not need to use the *--port*, *--https* and *--tor* options, depending upon how your server was set up.
 
-Unfollowing is silimar:
+Unfollowing is similar:
 
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password [c2s password]
@@ -131,11 +131,21 @@ To view the public posts for a person:
 python3 epicyon.py --posts nickname@domain
 ```
 
-If you want to view the raw json:
+If you want to view the raw JSON:
 
 ``` bash
 python3 epicyon.py --postsraw nickname@domain
 ```
+
+## Getting the JSON for your timelines
+
+The **--posts** option applies for any ActivityPub compatible fediverse account with visible public posts. You can also use an authenticated version to obtain the paginated JSON for your inbox, outbox, direct messages, etc.
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [yourdomain] --box [inbox|outbox|dm] --page [number] --password [yourpassword]
+```
+
+You could use this to make your own c2s client, or create your own notification system.
 
 ## Listing referenced domains
 
@@ -156,7 +166,7 @@ xdot socnet.dot
 
 ## Delete posts
 
-To delete a post which you wrote you must first know its url. It is usually something like:
+To delete a post which you wrote you must first know its URL. It is usually something like:
 
 ``` text
 https://yourDomain/users/yourNickname/statuses/number
@@ -177,7 +187,7 @@ Another complication of federated deletion is that the followers collection may 
 
 ## Announcements/repeats/boosts
 
-To announce or repeat a post you will first need to know it's url. It is usually something like:
+To announce or repeat a post you will first need to know it's URL. It is usually something like:
 
 ``` text
 https://domain/users/name/statuses/number
@@ -192,7 +202,7 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 
 ## Like posts
 
-To like a post you will first need to know it's url. It is usually something like:
+To like a post you will first need to know it's URL. It is usually something like:
 
 ``` text
 https://domain/users/name/statuses/number
@@ -240,12 +250,28 @@ Whether you are using the **--federate** option to define a set of allowed insta
 python3 epicyon.py --nickname yournick --domain yourdomain --block somenick@somedomain --password [c2s password]
 ```
 
-This blocks at the earliest possble stage of receiving messages, such that nothing from the specified account will be written to your inbox.
+This blocks at the earliest possible stage of receiving messages, such that nothing from the specified account will be written to your inbox.
 
 Or to unblock:
 
 ``` bash
 python3 epicyon.py --nickname yournick --domain yourdomain --unblock somenick@somedomain --password [c2s password]
+```
+
+## Bookmarking
+
+You may want to bookmark posts for later viewing or replying. This can be done via c2s with the following:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --bookmark [post URL] --password [c2s password]
+```
+
+Note that the URL must be that of an ActivityPub post in your timeline. Any other URL will be ignored.
+
+And to undo the bookmark:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --unbookmark [post URL] --password [c2s password]
 ```
 
 ## Filtering on words or phrases
@@ -313,7 +339,7 @@ python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
                    --password [c2s password]
 ```
 
-This extends the ActivityPub client-to-server protocol to include activities called *Delegate* and *Role*. The json looks like:
+This extends the ActivityPub client-to-server protocol to include activities called *Delegate* and *Role*. The JSON looks like:
 
 ``` json
 { 'type': 'Delegate',
@@ -343,7 +369,7 @@ python3 epicyon.py --nickname [nick] --domain [mydomain] \
 
 The level value is a percentage which indicates how proficient you are with that skill.
 
-This extends the ActivityPub client-to-server protocol to include an activity called *Skill*. The json looks like:
+This extends the ActivityPub client-to-server protocol to include an activity called *Skill*. The JSON looks like:
 
 ``` json
 { 'type': 'Skill',
@@ -365,7 +391,7 @@ python3 epicyon.py --nickname [nick] --domain [mydomain] \
 
 The status value can be any string, and can become part of organization building by combining it with roles and skills.
 
-This extends the ActivityPub client-to-server protocol to include an activity called *Availability*. "Status" was avoided because of te possibility of confusion with other things. The json looks like:
+This extends the ActivityPub client-to-server protocol to include an activity called *Availability*. "Status" was avoided because of the possibility of confusion with other things. The JSON looks like:
 
 ``` json
 { 'type': 'Availability',
@@ -377,7 +403,7 @@ This extends the ActivityPub client-to-server protocol to include an activity ca
 
 ## Shares
 
-This system includes a feature for bartering or gifting (i.e. common resource pooling or exchange without money), based upon the earlier Sharings plugin made by the Las Indias group which existed within GNU Social. It's intended to operate at the municipal level, sharing physical objects with people in your local vicinity. For example, sharing gardening tools on a street or a 3D printer between makerspaces.
+This system includes a feature for bartering or gifting (i.e. common resource pooling or exchange without money), based upon the earlier Sharings plugin made by the Las Indias group which existed within GNU Social. It's intended to operate at the municipal level, sharing physical objects with people in your local vicinity. For example, sharing gardening tools on a street or a 3D printer between maker-spaces.
 
 To share an item.
 
@@ -385,7 +411,7 @@ To share an item.
 python3 epicyon.py --itemName "spanner" --nickname [yournick] --domain [yourdomain] --summary "It's a spanner" --itemType "tool" --itemCategory "mechanical" --location [yourCity] --duration "2 months" --itemImage spanner.png --password [c2s password]
 ```
 
-For the duration of the share you can use hours,days,weeks,months or years.
+For the duration of the share you can use hours, days, weeks, months, or years.
 
 To remove a shared item:
 
@@ -422,25 +448,30 @@ Or if you have picospeaker installed:
 The desktop client has a few commands, which may be more convenient than the web interface for some purposes:
 
 ``` bash
-quit                         Exit from the notification client
-mute                         Turn off the screen reader
-speak                        Turn on the screen reader
-sounds on                    Turn on notification sounds
-sounds off                   Turn off notification sounds
-rp                           Repeat the last post
-like                         Like the last post
-unlike                       Unlike the last post
-reply                        Reply to the last post
-post                         Create a new post
-post to [handle]             Create a new direct message
-announce/boost               Boost the last post
-follow [handle]              Make a follow request
-unfollow [handle]            Stop following the give handle
-show dm|sent|inbox|replies   Show a timeline
-next                         Next page in the timeline
-prev                         Previous page in the timeline
-read [post number]           Read a post from a timeline
-open [post number]           Open web links within a timeline post
+quit                                  Exit from the desktop client
+mute                                  Turn off the screen reader
+speak                                 Turn on the screen reader
+sounds on                             Turn on notification sounds
+sounds off                            Turn off notification sounds
+rp                                    Repeat the last post
+like                                  Like the last post
+unlike                                Unlike the last post
+bookmark                              Bookmark the last post
+unbookmark                            Unbookmark the last post
+mute                                  Mute the last post
+unmute                                Unmute the last post
+reply                                 Reply to the last post
+post                                  Create a new post
+post to [handle]                      Create a new direct message
+announce/boost                        Boost the last post
+follow [handle]                       Make a follow request
+unfollow [handle]                     Stop following the give handle
+show dm|sent|inbox|replies|bookmarks  Show a timeline
+next                                  Next page in the timeline
+prev                                  Previous page in the timeline
+read [post number]                    Read a post from a timeline
+open [post number]                    Open web links within a timeline post
+profile [post number]                 Show profile for the person who made the given post
 ```
 
 If you have a GPG key configured on your local system and are sending a direct message to someone who has a PGP key (the exported key, not just the key ID) set as a tag on their profile then it will try to encrypt the message automatically. So under some conditions end-to-end encryption is possible, such that the instance server only sees ciphertext. Conversely, for arriving direct messages if they are PGP encrypted then the desktop client will try to obtain the relevant public key and decrypt.

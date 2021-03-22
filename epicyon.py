@@ -22,6 +22,11 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from bookmarks import sendBookmarkViaServer
+from bookmarks import sendUndoBookmarkViaServer
+from posts import sendMuteViaServer
+from posts import sendUndoMuteViaServer
+from posts import c2sBoxJson
 from posts import downloadFollowCollection
 from posts import getPublicPostDomains
 from posts import getPublicPostDomainsBlocked
@@ -48,6 +53,7 @@ from follow import sendUnfollowRequestViaServer
 from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
+from tests import testUpdateActor
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
@@ -78,7 +84,7 @@ from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
-from notifications_client import runNotificationsClient
+from desktop_client import runDesktopClient
 
 
 def str2bool(v) -> bool:
@@ -304,7 +310,7 @@ parser.add_argument("--notifyShowNewPosts",
                     dest='notifyShowNewPosts',
                     type=str2bool, nargs='?',
                     const=True, default=False,
-                    help="Notification client shows/speaks new posts " +
+                    help="Desktop client shows/speaks new posts " +
                     "as they arrive")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
@@ -404,10 +410,23 @@ parser.add_argument("--allowdeletion", type=str2bool, nargs='?',
 parser.add_argument('--repeat', '--announce', dest='announce', type=str,
                     default=None,
                     help='Announce/repeat a url')
+parser.add_argument('--box', type=str,
+                    default=None,
+                    help='Returns the json for a given timeline, ' +
+                    'with authentication')
+parser.add_argument('--page', '--pageNumber', dest='pageNumber', type=int,
+                    default=1,
+                    help='Page number when using the --box option')
 parser.add_argument('--favorite', '--like', dest='like', type=str,
                     default=None, help='Like a url')
 parser.add_argument('--undolike', '--unlike', dest='undolike', type=str,
                     default=None, help='Undo a like of a url')
+parser.add_argument('--bookmark', '--bm', dest='bookmark', type=str,
+                    default=None,
+                    help='Bookmark the url of a post')
+parser.add_argument('--unbookmark', '--unbm', dest='unbookmark', type=str,
+                    default=None,
+                    help='Undo a bookmark given the url of a post')
 parser.add_argument('--sendto', dest='sendto', type=str,
                     default=None, help='Address to send a post to')
 parser.add_argument('--attach', dest='attach', type=str,
@@ -461,6 +480,10 @@ parser.add_argument('--block', dest='block', type=str, default=None,
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str, default=None,
                     help='Remove a block on a particular address')
+parser.add_argument('--mute', dest='mute', type=str, default=None,
+                    help='Mute a particular post URL')
+parser.add_argument('--unmute', dest='unmute', type=str, default=None,
+                    help='Unmute a particular post URL')
 parser.add_argument('--delegate', dest='delegate', type=str, default=None,
                     help='Address of an account to delegate a role to')
 parser.add_argument('--undodelegate', '--undelegate', dest='undelegate',
@@ -531,6 +554,7 @@ if args.testsnetwork:
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
+    testUpdateActor()
     print('All tests succeeded')
     sys.exit()
 
@@ -1110,6 +1134,46 @@ if args.announce:
         time.sleep(1)
     sys.exit()
 
+if args.box:
+    if not domain:
+        print('Specify a domain with the --domain option')
+        sys.exit()
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+
+    session = createSession(proxyType)
+    boxJson = c2sBoxJson(baseDir, session,
+                         args.nickname, args.password,
+                         domain, port, httpPrefix,
+                         args.box, args.pageNumber,
+                         args.debug)
+    if boxJson:
+        pprint(boxJson)
+    else:
+        print('Box not found: ' + args.box)
+    sys.exit()
+
 if args.itemName:
     if not args.password:
         args.password = getpass.getpass('Password: ')
@@ -1249,6 +1313,62 @@ if args.undolike:
                           httpPrefix, args.undolike,
                           cachedWebfingers, personCache,
                           True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.bookmark:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending bookmark of ' + args.bookmark)
+
+    sendBookmarkViaServer(baseDir, session,
+                          args.nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.bookmark,
+                          cachedWebfingers, personCache,
+                          True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.unbookmark:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo bookmark of ' + args.unbookmark)
+
+    sendUndoBookmarkViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.unbookmark,
+                              cachedWebfingers, personCache,
+                              True, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1411,7 +1531,7 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    getActorJson(args.actor, args.http, args.gnunet, False)
+    getActorJson(args.actor, args.http, args.gnunet, debug)
     sys.exit()
 
 if args.followers:
@@ -1868,15 +1988,16 @@ if args.desktop:
     # only store inbox posts if we are not running as a daemon
     storeInboxPosts = not args.noKeyPress
 
-    runNotificationsClient(baseDir, proxyType, httpPrefix,
-                           nickname, domain, port, args.password,
-                           args.screenreader, args.language,
-                           args.notificationSounds,
-                           args.notificationType,
-                           args.noKeyPress,
-                           storeInboxPosts,
-                           args.notifyShowNewPosts,
-                           args.debug)
+    runDesktopClient(baseDir, proxyType, httpPrefix,
+                     nickname, domain, port, args.password,
+                     args.screenreader, args.language,
+                     args.notificationSounds,
+                     args.notificationType,
+                     args.noKeyPress,
+                     storeInboxPosts,
+                     args.notifyShowNewPosts,
+                     args.language,
+                     args.debug)
     sys.exit()
 
 if federationList:
@@ -1916,6 +2037,60 @@ if args.block:
                        httpPrefix, args.block,
                        cachedWebfingers, personCache,
                        True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.mute:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending mute of ' + args.mute)
+
+    sendMuteViaServer(baseDir, session, nickname, args.password,
+                      domain, port,
+                      httpPrefix, args.mute,
+                      cachedWebfingers, personCache,
+                      True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.unmute:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo mute of ' + args.unmute)
+
+    sendUndoMuteViaServer(baseDir, session, nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.unmute,
+                          cachedWebfingers, personCache,
+                          True, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2121,7 +2296,7 @@ if args.testdata:
 
     testFollowersOnly = False
     testSaveToFile = True
-    testClientToServer = False
+    testC2S = False
     testCommentsEnabled = True
     testAttachImageFilename = None
     testMediaType = None
@@ -2131,7 +2306,7 @@ if args.testdata:
                      "like this is totally just a #test man",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2139,7 +2314,7 @@ if args.testdata:
                      "Zoiks!!!",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2147,7 +2322,7 @@ if args.testdata:
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2155,7 +2330,7 @@ if args.testdata:
                      "Getting kinda spooky around here",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription,
@@ -2165,7 +2340,7 @@ if args.testdata:
                      "if it wasn't for those pesky hackers",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
                      'Description of image')
@@ -2173,7 +2348,7 @@ if args.testdata:
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2181,7 +2356,7 @@ if args.testdata:
                      "another mystery solved #test",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2189,7 +2364,7 @@ if args.testdata:
                      "let's go bowling",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)

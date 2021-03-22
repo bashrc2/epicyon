@@ -10,7 +10,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
 import sys
 import json
 import time
-import locale
 import urllib.parse
 import datetime
 from socket import error as SocketError
@@ -74,8 +73,6 @@ from posts import pinPost
 from posts import jsonPinPost
 from posts import undoPinnedPost
 from posts import isModerator
-from posts import mutePost
-from posts import unmutePost
 from posts import createQuestionPost
 from posts import createPublicPost
 from posts import createBlogPost
@@ -109,6 +106,8 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from blocking import mutePost
+from blocking import unmutePost
 from blocking import setBrochMode
 from blocking import addBlock
 from blocking import removeBlock
@@ -192,6 +191,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
@@ -471,6 +471,8 @@ class PubServer(BaseHTTPRequestHandler):
             postJsonObject['replies'] = {}
         if postJsonObject.get('bookmarks'):
             postJsonObject['bookmarks'] = {}
+        if postJsonObject.get('ignores'):
+            postJsonObject['ignores'] = {}
         if not postJsonObject.get('object'):
             return
         if not isinstance(postJsonObject['object'], dict):
@@ -483,6 +485,8 @@ class PubServer(BaseHTTPRequestHandler):
             postJsonObject['object']['replies'] = {}
         if postJsonObject['object'].get('bookmarks'):
             postJsonObject['object']['bookmarks'] = {}
+        if postJsonObject['object'].get('ignores'):
+            postJsonObject['object']['ignores'] = {}
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
@@ -1260,15 +1264,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         originalMessageJson = messageJson.copy()
 
-        # For follow activities add a 'to' field, which is a copy
-        # of the object field
-        messageJson, toFieldExists = \
-            addToField('Follow', messageJson, self.server.debug)
-
-        # For like activities add a 'to' field, which is a copy of
-        # the actor within the object field
-        messageJson, toFieldExists = \
-            addToField('Like', messageJson, self.server.debug)
+        addToFieldTypes = ('Follow', 'Like', 'Add', 'Remove', 'Ignore')
+        for addToType in addToFieldTypes:
+            messageJson, toFieldExists = \
+                addToField(addToType, messageJson, self.server.debug)
 
         beginSaveTime = time.time()
         # save the json for later queue processing
@@ -7015,8 +7014,9 @@ class PubServer(BaseHTTPRequestHandler):
         actor = \
             httpPrefix + '://' + domainFull + path.split('?mute=')[0]
         nickname = getNicknameFromActor(actor)
-        mutePost(baseDir, nickname, domain,
-                 muteUrl, self.server.recentPostsCache)
+        mutePost(baseDir, nickname, domain, port,
+                 httpPrefix, muteUrl,
+                 self.server.recentPostsCache, debug)
         self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
@@ -7059,8 +7059,9 @@ class PubServer(BaseHTTPRequestHandler):
         actor = \
             httpPrefix + '://' + domainFull + path.split('?unmute=')[0]
         nickname = getNicknameFromActor(actor)
-        unmutePost(baseDir, nickname, domain,
-                   muteUrl, self.server.recentPostsCache)
+        unmutePost(baseDir, nickname, domain, port,
+                   httpPrefix, muteUrl,
+                   self.server.recentPostsCache, debug)
         self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
@@ -14443,32 +14444,11 @@ def runDaemon(brochMode: bool,
     httpd.translate = {}
     httpd.systemLanguage = 'en'
     if not unitTest:
-        if not os.path.isdir(baseDir + '/translations'):
-            print('ERROR: translations directory not found')
-            return
-        if not language:
-            systemLanguage = locale.getdefaultlocale()[0]
-        else:
-            systemLanguage = language
-        if not systemLanguage:
-            systemLanguage = 'en'
-        if '_' in systemLanguage:
-            systemLanguage = systemLanguage.split('_')[0]
-        while '/' in systemLanguage:
-            systemLanguage = systemLanguage.split('/')[1]
-        if '.' in systemLanguage:
-            systemLanguage = systemLanguage.split('.')[0]
-        translationsFile = baseDir + '/translations/' + \
-            systemLanguage + '.json'
-        if not os.path.isfile(translationsFile):
-            systemLanguage = 'en'
-            translationsFile = baseDir + '/translations/' + \
-                systemLanguage + '.json'
-        print('System language: ' + systemLanguage)
-        httpd.systemLanguage = systemLanguage
-        httpd.translate = loadJson(translationsFile)
+        httpd.translate, httpd.systemLanguage = \
+            loadTranslationsFromFile(baseDir, language)
+        print('System language: ' + httpd.systemLanguage)
         if not httpd.translate:
-            print('ERROR: no translations loaded from ' + translationsFile)
+            print('ERROR: no translations were loaded')
             sys.exit()
 
     # For moderated newswire feeds this is the amount of time allowed
@@ -14546,8 +14526,8 @@ def runDaemon(brochMode: bool,
     # max POST size of 30M
     httpd.maxPostLength = 1024 * 1024 * 30
     httpd.maxMediaSize = httpd.maxPostLength
-    # Maximum text length is 32K - enough for a blog post
-    httpd.maxMessageLength = 32000
+    # Maximum text length is 64K - enough for a blog post
+    httpd.maxMessageLength = 64000
     # Maximum overall number of posts per box
     httpd.maxPostsInBox = 32000
     httpd.domain = domain

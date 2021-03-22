@@ -28,4 +28,4 @@ Extra emoji can be added to the *emoji* directory and you should then update the
 
 ## Themes
 
-If you want to create a new theme then the functions for that are within *theme.py*. These functions take the css templates and modify them. You will need to edit *themesDropdown* within *webinterface.py* and add the appropriate translations for the theme name. Themes are selectable from the profile screen of the administrator.
+If you want to create a new theme then the functions for that are within *theme.py*. These functions take the CSS templates and modify them. You will need to edit *themesDropdown* within *webinterface.py* and add the appropriate translations for the theme name. Themes are selectable from the profile screen of the administrator.

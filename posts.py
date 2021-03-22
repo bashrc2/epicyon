@@ -40,8 +40,6 @@ from utils import validPostDate
 from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
-from utils import removeIdEnding
-from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
 from utils import urlPermitted
@@ -259,7 +257,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             personJson = getJson(session, personUrl, asHeader, None,
                                  debug, projectVersion, httpPrefix, domain)
             if not personJson:
-                print('Unable to get actor')
+                print('Unable to get actor for ' + personUrl)
                 return None, None, None, None, None, None, None
     boxJson = None
     if not personJson.get(boxName):
@@ -1827,17 +1825,6 @@ def createReportPost(baseDir: str,
         if not postJsonObject:
             continue
 
-        # update the inbox index with the report filename
-        # indexFilename = baseDir+'/accounts/'+handle+'/inbox.index'
-        # indexEntry = \
-        #     removeIdEnding(postJsonObject['id']).replace('/','#') + '.json'
-        # if indexEntry not in open(indexFilename).read():
-        #     try:
-        #         with open(indexFilename, 'a+') as fp:
-        #             fp.write(indexEntry)
-        #     except:
-        #         pass
-
         # save a notification file so that the moderator
         # knows something new has appeared
         newReportFile = baseDir + '/accounts/' + handle + '/.newReport'
@@ -2056,11 +2043,11 @@ def sendPostViaServer(projectVersion: str,
                         fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: webfinger failed for ' + handle)
+            print('DEBUG: post webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: post webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -2078,11 +2065,12 @@ def sendPostViaServer(projectVersion: str,
                                             82796)
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: post no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: post no actor was found for ' + handle)
         return 4
 
     # Get the json for the c2s post, not saving anything to file
@@ -2131,7 +2119,7 @@ def sendPostViaServer(projectVersion: str,
                       inboxUrl, headers)
         if not postResult:
             if debug:
-                print('DEBUG: Failed to upload image')
+                print('DEBUG: post failed to upload image')
 #            return 9
 
     headers = {
@@ -2142,7 +2130,7 @@ def sendPostViaServer(projectVersion: str,
     postDumps = json.dumps(postJsonObject)
     postResult = \
         postJsonString(session, postDumps, [],
-                       inboxUrl, headers, debug, 60, True)
+                       inboxUrl, headers, debug, 5, True)
     if not postResult:
         if debug:
             print('DEBUG: POST failed for c2s to ' + inboxUrl)
@@ -2364,7 +2352,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
 def addToField(activityType: str, postJsonObject: {},
                debug: bool) -> ({}, bool):
-    """The Follow activity doesn't have a 'to' field and so one
+    """The Follow/Add/Remove activity doesn't have a 'to' field and so one
     needs to be added so that activity distribution happens in a consistent way
     Returns true if a 'to' field exists or was added
     """
@@ -2383,19 +2371,34 @@ def addToField(activityType: str, postJsonObject: {},
                 if postJsonObject['type'] == activityType:
                     isSameType = True
                     if debug:
-                        print('DEBUG: "to" field assigned to Follow')
+                        print('DEBUG: "to" field assigned to ' + activityType)
                     toAddress = postJsonObject['object']
                     if '/statuses/' in toAddress:
                         toAddress = toAddress.split('/statuses/')[0]
                     postJsonObject['to'] = [toAddress]
                     toFieldAdded = True
         elif isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('type'):
+            # add a to field to bookmark add or remove
+            if postJsonObject.get('type') and \
+               postJsonObject.get('actor') and \
+               postJsonObject['object'].get('type'):
+                if postJsonObject['type'] == 'Add' or \
+                   postJsonObject['type'] == 'Remove':
+                    if postJsonObject['object']['type'] == 'Document':
+                        postJsonObject['to'] = \
+                            [postJsonObject['actor']]
+                        postJsonObject['object']['to'] = \
+                            [postJsonObject['actor']]
+                        toFieldAdded = True
+
+            if not toFieldAdded and \
+               postJsonObject['object'].get('type'):
                 if postJsonObject['object']['type'] == activityType:
                     isSameType = True
                     if isinstance(postJsonObject['object']['object'], str):
                         if debug:
-                            print('DEBUG: "to" field assigned to Follow')
+                            print('DEBUG: "to" field assigned to ' +
+                                  activityType)
                         toAddress = postJsonObject['object']['object']
                         if '/statuses/' in toAddress:
                             toAddress = toAddress.split('/statuses/')[0]
@@ -2426,8 +2429,8 @@ def sendToNamedAddresses(session, baseDir: str,
         return
     if not postJsonObject.get('object'):
         return
+    isProfileUpdate = False
     if isinstance(postJsonObject['object'], dict):
-        isProfileUpdate = False
         # for actor updates there is no 'to' within the object
         if postJsonObject['object'].get('type') and postJsonObject.get('type'):
             if (postJsonObject['type'] == 'Update' and
@@ -2510,6 +2513,16 @@ def sendToNamedAddresses(session, baseDir: str,
         toDomain, toPort = getDomainFromActor(address)
         if not toDomain:
             continue
+        # Don't send profile/actor updates to yourself
+        if isProfileUpdate:
+            domainFull = getFullDomain(domain, port)
+            toDomainFull = getFullDomain(toDomain, toPort)
+            if nickname == toNickname and \
+               domainFull == toDomainFull:
+                if debug:
+                    print('Not sending profile update to self. ' +
+                          nickname + '@' + domainFull)
+                continue
         if debug:
             domainFull = getFullDomain(domain, port)
             toDomainFull = getFullDomain(toDomain, toPort)
@@ -3245,7 +3258,7 @@ def _createBoxIndexed(recentPostsCache: {},
         # created by individualPostAsHtml
         p['hasReplies'] = hasReplies
 
-        # Don't show likes, replies, DMs or shares (announces) to
+        # Don't show likes, replies, bookmarks, DMs or shares (announces) to
         # unauthorized viewers
         if not authorized:
             if p.get('object'):
@@ -3260,6 +3273,8 @@ def _createBoxIndexed(recentPostsCache: {},
                         p['shares'] = {}
                     if p['object'].get('bookmarks'):
                         p['bookmarks'] = {}
+                    if p['object'].get('ignores'):
+                        p['ignores'] = {}
 
         boxItems['orderedItems'].append(p)
 
@@ -4039,87 +4054,6 @@ def isMuted(baseDir: str, nickname: str, domain: str, postId: str) -> bool:
     return False
 
 
-def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
-             recentPostsCache: {}) -> None:
-    """ Mutes the given post
-    """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
-        return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
-        return
-
-    # remove cached post so that the muted version gets recreated
-    # without its content text and/or image
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-
-    muteFile = open(postFilename + '.muted', 'w+')
-    if muteFile:
-        muteFile.write('\n')
-        muteFile.close()
-        print('MUTE: ' + postFilename + '.muted file added')
-
-    # if the post is in the recent posts cache then mark it as muted
-    if recentPostsCache.get('index'):
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('MUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = True
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
-                print('MUTE: ' + postId +
-                      ' marked as muted in recent posts memory cache')
-
-
-def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
-               recentPostsCache: {}) -> None:
-    """ Unmutes the given post
-    """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
-        return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
-        return
-
-    muteFilename = postFilename + '.muted'
-    if os.path.isfile(muteFilename):
-        os.remove(muteFilename)
-        print('UNMUTE: ' + muteFilename + ' file removed')
-
-    # remove cached post so that the muted version gets recreated
-    # with its content text and/or image
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-
-    # if the post is in the recent posts cache then mark it as unmuted
-    if recentPostsCache.get('index'):
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('UNMUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = False
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
-                print('UNMUTE: ' + postId +
-                      ' marked as unmuted in recent posts cache')
-
-
 def sendBlockViaServer(baseDir: str, session,
                        fromNickname: str, password: str,
                        fromDomain: str, fromPort: int,
@@ -4156,11 +4090,11 @@ def sendBlockViaServer(baseDir: str, session,
                                 fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: block webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: block Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -4175,11 +4109,11 @@ def sendBlockViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: block no ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: block no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -4192,12 +4126,168 @@ def sendBlockViaServer(baseDir: str, session,
     postResult = postJson(session, newBlockJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
-        print('WARN: Unable to post block')
+        print('WARN: block unable to post')
 
     if debug:
         print('DEBUG: c2s POST block success')
 
     return newBlockJson
+
+
+def sendMuteViaServer(baseDir: str, session,
+                      fromNickname: str, password: str,
+                      fromDomain: str, fromPort: int,
+                      httpPrefix: str, mutedUrl: str,
+                      cachedWebfingers: {}, personCache: {},
+                      debug: bool, projectVersion: str) -> {}:
+    """Creates a mute via c2s
+    """
+    if not session:
+        print('WARN: No session for sendMuteViaServer')
+        return 6
+
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+
+    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    handle = actor.replace('/users/', '/@')
+
+    newMuteJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Ignore',
+        'actor': actor,
+        'to': [actor],
+        'object': mutedUrl
+    }
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                fromDomain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: mute webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: mute Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix, fromNickname,
+                                 fromDomain, postToBox, 72652)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: mute no ' + postToBox + ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: mute no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, newMuteJson, [], inboxUrl,
+                          headers, 3, True)
+    if postResult is None:
+        print('WARN: mute unable to post')
+
+    if debug:
+        print('DEBUG: c2s POST mute success')
+
+    return newMuteJson
+
+
+def sendUndoMuteViaServer(baseDir: str, session,
+                          fromNickname: str, password: str,
+                          fromDomain: str, fromPort: int,
+                          httpPrefix: str, mutedUrl: str,
+                          cachedWebfingers: {}, personCache: {},
+                          debug: bool, projectVersion: str) -> {}:
+    """Undoes a mute via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUndoMuteViaServer')
+        return 6
+
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+
+    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    handle = actor.replace('/users/', '/@')
+
+    undoMuteJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Undo',
+        'actor': actor,
+        'to': [actor],
+        'object': {
+            'type': 'Ignore',
+            'actor': actor,
+            'to': [actor],
+            'object': mutedUrl
+        }
+    }
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                fromDomain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: undo mute webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: undo mute Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix, fromNickname,
+                                 fromDomain, postToBox, 72652)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: undo mute no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: undo mute no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, undoMuteJson, [], inboxUrl,
+                          headers, 3, True)
+    if postResult is None:
+        print('WARN: undo mute unable to post')
+
+    if debug:
+        print('DEBUG: c2s POST undo mute success')
+
+    return undoMuteJson
 
 
 def sendUndoBlockViaServer(baseDir: str, session,
@@ -4240,11 +4330,11 @@ def sendUndoBlockViaServer(baseDir: str, session,
                                 fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unblock webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: unblock webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -4258,11 +4348,12 @@ def sendUndoBlockViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: unblock no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unblock no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -4275,10 +4366,10 @@ def sendUndoBlockViaServer(baseDir: str, session,
     postResult = postJson(session, newBlockJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
-        print('WARN: Unable to post block')
+        print('WARN: unblock unable to post')
 
     if debug:
-        print('DEBUG: c2s POST block success')
+        print('DEBUG: c2s POST unblock success')
 
     return newBlockJson
 
@@ -4305,3 +4396,39 @@ def postIsMuted(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(muteFilename):
         return True
     return False
+
+
+def c2sBoxJson(baseDir: str, session,
+               nickname: str, password: str,
+               domain: str, port: int,
+               httpPrefix: str,
+               boxName: str, pageNumber: int,
+               debug: bool) -> {}:
+    """C2S Authenticated GET of posts for a timeline
+    """
+    if not session:
+        print('WARN: No session for c2sBoxJson')
+        return None
+
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader,
+        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    }
+
+    # GET json
+    url = actor + '/' + boxName + '?page=' + str(pageNumber)
+    boxJson = getJson(session, url, headers, None,
+                      debug, __version__, httpPrefix, None)
+
+    if boxJson is not None and debug:
+        print('DEBUG: GET c2sBoxJson success')
+
+    return boxJson

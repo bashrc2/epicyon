@@ -8,7 +8,7 @@ Add issues on https://gitlab.com/bashrc2/epicyon/-/issues
 
 <img src="https://epicyon.net/img/mobile.jpg" width="30%"/>
 
-Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions, news feed and perimeter defense against adversaries. It contains *no javascript* and uses HTML+CSS with a Python backend.
+Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and suitable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions, news feed and perimeter defense against adversaries. It contains *no JavaScript* and uses HTML+CSS with a Python backend.
 
 [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Code of Conduct](code-of-conduct.md)
 
@@ -238,7 +238,7 @@ Please be aware that such installations will not federate with ordinary fedivers
 
 ## Custom Fonts
 
-If you want to use a particular font then copy it into the *fonts* directory, rename it as *custom.ttf/woff/woff2/otf* and then restart the epicyon daemon.
+If you want to use a particular font then copy it into the *fonts* directory, rename it as *custom.ttf/woff/woff2/otf* and then restart the Epicyon daemon.
 
 ``` bash
 systemctl restart epicyon
