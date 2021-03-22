@@ -747,7 +747,12 @@ def _desktopShowBox(boxName: str, boxJson: {},
     else:
         boxNameStr = boxName
     titleStr = '\33[7m' + boxNameStr.upper() + '\33[0m'
-    # titleStr += ' page ' + str(pageNumber)
+
+    if newDMs:
+        notificationIcons += ' 📩'
+    if newReplies:
+        notificationIcons += ' 📨'
+
     if notificationIcons:
         while len(titleStr) < 95 - len(notificationIcons):
             titleStr += ' '
@@ -1133,15 +1138,19 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                    'inbox', 1, debug)
         else:
             inboxJson = boxJson
+        newDMsExist = False
+        newRepliesExist = False
         if inboxJson:
             _newDesktopNotifications(yourActor, inboxJson, notifyJson)
             if notifyJson.get('dmNotify'):
+                newDMsExist = True
                 if notifyJson.get('dmNotifyChanged'):
                     _desktopNotification(notificationType,
                                          "Epicyon",
                                          "New DM " + yourActor + '/dm')
                     _playNotificationSound(dmSoundFilename, player)
             if notifyJson.get('repliesNotify'):
+                newRepliesExist = True
                 if notifyJson.get('repliesNotifyChanged'):
                     _desktopNotification(notificationType,
                                          "Epicyon",
