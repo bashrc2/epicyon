@@ -2718,6 +2718,8 @@ def testFirstParagraphFromString():
         '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
         '<p>This is another paragraph</p>'
     resultStr = firstParagraphFromString(testStr)
+    if resultStr != 'This is a test':
+        print(resultStr)
     assert resultStr == 'This is a test'
 
     testStr = 'Testing without html'
