@@ -1123,7 +1123,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                              currTimeline, pageNumber,
                              debug)
 
-        if currTimeline != 'inbox':
+        if not (currTimeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
             inboxJson = c2sBoxJson(baseDir, session,
                                    nickname, password,
