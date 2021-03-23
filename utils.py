@@ -263,7 +263,9 @@ def removeHtml(content: str) -> str:
             removing = False
         elif not removing:
             result += ch
-    result = result.replace('  ', ' ').strip()
+    result = result.replace('  ', ' ')
+    result = result.replace('.', '. ')
+    result = result.replace('  ', ' ').strip()    
     return result
 
 
