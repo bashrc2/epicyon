@@ -236,7 +236,7 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                         notifyJson['dmNotify'] = True
                         notifyJson['dmNotifyChanged'] = True
                         notifyJson['dmPostId'] = postJsonObject['id']
-                        DMdone = True
+                    DMdone = True
         else:
             if not replyDone:
                 if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
@@ -250,7 +250,7 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                         notifyJson['repliesNotify'] = True
                         notifyJson['repliesNotifyChanged'] = True
                         notifyJson['repliesPostId'] = postJsonObject['id']
-                        replyDone = True
+                    replyDone = True
 
 
 def _desktopClearScreen() -> None:
@@ -625,9 +625,7 @@ def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
         return
     print('')
     ctr = 0
-    print('Test 4638653 ' + str(postJsonObject['object']['replies']['items']))
     for item in postJsonObject['object']['replies']['items']:
-        print('Test 768235 ' + str(item))
         print('  ↰ ' + str(item['url']))
         ctr += 1
         if ctr >= maxReplies:
