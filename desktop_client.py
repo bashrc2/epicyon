@@ -583,7 +583,7 @@ def _getImageDescription(postJsonObject: {}) -> str:
 def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
     """Shows the likes on a post
     """
-    if postJsonObject.get('object'):
+    if not postJsonObject.get('object'):
         return
     if not isinstance(postJsonObject['object'], dict):
         return
@@ -592,6 +592,8 @@ def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
     if not isinstance(postJsonObject['object']['likes'], dict):
         return
     if not postJsonObject['object']['likes'].get('items'):
+        return
+    if not isinstance(postJsonObject['object']['likes']['items'], list):
         return
     print('')
     ctr = 0
