@@ -1593,12 +1593,32 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if debug:
             print('DEBUG: no domain found for ' + replyTo)
         return False
+
     postFilename = locatePost(baseDir, replyToNickname,
                               replyToDomain, replyTo)
     if not postFilename:
         if debug:
             print('DEBUG: post may have expired - ' + replyTo)
         return False
+
+# TODO store replies collection
+#    replyItem = {
+#        "type": "Document",
+#        "url": replyTo
+#    }
+#    if not messageJson['object'].get('replies'):
+#        messageJson['object']['replies'] = {
+#            "items": [replyItem]
+#        }
+#    else:
+#        found = False
+#        for item in messageJson['object']['replies']['items']:
+#            if item['url'] == replyTo:
+#                found = True
+#                break
+#        if not found:
+#            messageJson['object']['replies']['items'].append(replyItem)
+#
     if not _postAllowsComments(postFilename):
         if debug:
             print('DEBUG: post does not allow comments - ' + replyTo)

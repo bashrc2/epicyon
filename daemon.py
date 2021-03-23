@@ -465,28 +465,24 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if postJsonObject.get('likes'):
             postJsonObject['likes'] = {'items': []}
-        if postJsonObject.get('shares'):
-            postJsonObject['shares'] = {}
-        if postJsonObject.get('replies'):
-            postJsonObject['replies'] = {}
-        if postJsonObject.get('bookmarks'):
-            postJsonObject['bookmarks'] = {}
-        if postJsonObject.get('ignores'):
-            postJsonObject['ignores'] = {}
+
+        removeCollections = (
+            'shares', 'replies', 'bookmarks', 'ignores'
+        )
+        for removeName in removeCollections:
+            if postJsonObject.get(removeName):
+                postJsonObject[removeName] = {}
+
         if not postJsonObject.get('object'):
             return
         if not isinstance(postJsonObject['object'], dict):
             return
         if postJsonObject['object'].get('likes'):
             postJsonObject['object']['likes'] = {'items': []}
-        if postJsonObject['object'].get('shares'):
-            postJsonObject['object']['shares'] = {}
-        if postJsonObject['object'].get('replies'):
-            postJsonObject['object']['replies'] = {}
-        if postJsonObject['object'].get('bookmarks'):
-            postJsonObject['object']['bookmarks'] = {}
-        if postJsonObject['object'].get('ignores'):
-            postJsonObject['object']['ignores'] = {}
+
+        for removeName in removeCollections:
+            if postJsonObject['object'].get(removeName):
+                postJsonObject['object'][removeName] = {}
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?

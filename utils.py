@@ -255,6 +255,7 @@ def removeHtml(content: str) -> str:
     removing = False
     content = content.replace('<a href', ' <a href')
     content = content.replace('<q>', '"').replace('</q>', '"')
+    content = content.replace('</p>', '\n\n').replace('<br>', '\n')
     result = ''
     for ch in content:
         if ch == '<':
@@ -263,6 +264,18 @@ def removeHtml(content: str) -> str:
             removing = False
         elif not removing:
             result += ch
+
+    plainText = result.replace('  ', ' ')
+
+    # insert spaces after full stops
+    strLen = len(plainText)
+    result = ''
+    for i in range(strLen):
+        result += plainText[i]
+        if plainText[i] == '.' and i < strLen - 1:
+            if plainText[i + 1] >= 'A' and plainText[i + 1] <= 'Z':
+                result += ' '
+
     result = result.replace('  ', ' ').strip()
     return result
 

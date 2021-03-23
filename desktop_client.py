@@ -31,6 +31,8 @@ from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from posts import sendBlockViaServer
+from posts import sendUndoBlockViaServer
 from posts import sendMuteViaServer
 from posts import sendUndoMuteViaServer
 from posts import sendPostViaServer
@@ -78,6 +80,10 @@ def _desktopHelp() -> None:
           'Bookmark the last post')
     print(indent + 'unbookmark                            ' +
           'Unbookmark the last post')
+    print(indent + 'block [post number|handle]            ' +
+          'Block someone via post number or handle')
+    print(indent + 'unblock [handle]                      ' +
+          'Unblock someone')
     print(indent + 'mute                                  ' +
           'Mute the last post')
     print(indent + 'unmute                                ' +
@@ -182,10 +188,16 @@ def _postIsToYou(actor: str, postJsonObject: {}) -> bool:
     if postJsonObject.get('to'):
         if actor in postJsonObject['to']:
             toYourActor = True
+    if not toYourActor and postJsonObject.get('cc'):
+        if actor in postJsonObject['cc']:
+            toYourActor = True
     if not toYourActor and postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
             if postJsonObject['object'].get('to'):
                 if actor in postJsonObject['object']['to']:
+                    toYourActor = True
+            if not toYourActor and postJsonObject['object'].get('cc'):
+                if actor in postJsonObject['object']['cc']:
                     toYourActor = True
     return toYourActor
 
@@ -194,47 +206,51 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                              notifyJson: {}) -> None:
     """Looks for changes in the inbox and adds notifications
     """
+    notifyJson['dmNotifyChanged'] = False
+    notifyJson['repliesNotifyChanged'] = False
     if not inboxJson:
         return
     if not inboxJson.get('orderedItems'):
         return
-    newDM = False
-    newReply = False
-    notifyJson['dmNotifyChanged'] = False
-    notifyJson['repliesNotifyChanged'] = False
+    DMdone = False
+    replyDone = False
     for postJsonObject in inboxJson['orderedItems']:
         if not postJsonObject.get('id'):
             continue
+        if not postJsonObject.get('type'):
+            continue
+        if postJsonObject['type'] == 'Announce':
+            continue
         if not _postIsToYou(actor, postJsonObject):
             continue
-        if 'dmNotify' not in notifyJson:
-            notifyJson['dmNotify'] = False
         if isDM(postJsonObject):
-            if not newDM:
+            if not DMdone:
                 if not _hasReadPost(actor, postJsonObject['id'], 'dm'):
-                    if notifyJson.get('dmPostId'):
+                    changed = False
+                    if not notifyJson.get('dmPostId'):
+                        changed = True
+                    else:
                         if notifyJson['dmPostId'] != postJsonObject['id']:
-                            notifyJson['dmNotify'] = True
-                            notifyJson['dmNotifyChanged'] = True
-                            newDM = True
-                        else:
-                            notifyJson['dmNotifyChanged'] = False
-                    notifyJson['dmPostId'] = postJsonObject['id']
-                    if newDM:
-                        break
+                            changed = True
+                    if changed:
+                        notifyJson['dmNotify'] = True
+                        notifyJson['dmNotifyChanged'] = True
+                        notifyJson['dmPostId'] = postJsonObject['id']
+                    DMdone = True
         else:
-            if not newReply:
+            if not replyDone:
                 if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
-                    if notifyJson.get('repliesPostId'):
+                    changed = False
+                    if not notifyJson.get('repliesPostId'):
+                        changed = True
+                    else:
                         if notifyJson['repliesPostId'] != postJsonObject['id']:
-                            notifyJson['repliesNotify'] = True
-                            notifyJson['repliesNotifyChanged'] = True
-                            newReply = True
-                        else:
-                            notifyJson['repliesNotifyChanged'] = False
-                    notifyJson['repliesPostId'] = postJsonObject['id']
-                    if newReply:
-                        break
+                            changed = True
+                    if changed:
+                        notifyJson['repliesNotify'] = True
+                        notifyJson['repliesNotifyChanged'] = True
+                        notifyJson['repliesPostId'] = postJsonObject['id']
+                    replyDone = True
 
 
 def _desktopClearScreen() -> None:
@@ -568,6 +584,54 @@ def _getImageDescription(postJsonObject: {}) -> str:
     return imageDescription
 
 
+def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
+    """Shows the likes on a post
+    """
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('likes'):
+        return
+    if not isinstance(postJsonObject['object']['likes'], dict):
+        return
+    if not postJsonObject['object']['likes'].get('items'):
+        return
+    if not isinstance(postJsonObject['object']['likes']['items'], list):
+        return
+    print('')
+    ctr = 0
+    for item in postJsonObject['object']['likes']['items']:
+        print('  ❤ ' + str(item['actor']))
+        ctr += 1
+        if ctr >= maxLikes:
+            break
+
+
+def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
+    """Shows the replies on a post
+    """
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('replies'):
+        return
+    if not isinstance(postJsonObject['object']['replies'], dict):
+        return
+    if not postJsonObject['object']['replies'].get('items'):
+        return
+    if not isinstance(postJsonObject['object']['replies']['items'], list):
+        return
+    print('')
+    ctr = 0
+    for item in postJsonObject['object']['replies']['items']:
+        print('  ↰ ' + str(item['url']))
+        ctr += 1
+        if ctr >= maxReplies:
+            break
+
+
 def _readLocalBoxPost(session, nickname: str, domain: str,
                       httpPrefix: str, baseDir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
@@ -592,6 +656,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         ' from page ' + str(pageNumber) + '.'
     sayStr2 = sayStr.replace(' dm ', ' DM ')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+    print('')
 
     if postJsonObject['type'] == 'Announce':
         actor = postJsonObject['actor']
@@ -618,6 +683,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                     sayStr = nameStr
                     _sayCommand(sayStr, sayStr, screenreader,
                                 systemLanguage, espeak)
+                    print('')
                     if screenreader:
                         time.sleep(2)
                     content = \
@@ -654,6 +720,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     # say the speaker's name
     _sayCommand(nameStr, nameStr, screenreader,
                 systemLanguage, espeak, nameStr, gender)
+    print('')
 
     if postJsonObject['object'].get('inReplyTo'):
         print('Replying to ' + postJsonObject['object']['inReplyTo'] + '\n')
@@ -665,9 +732,12 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak, nameStr, gender)
 
+    _showLikesOnPost(postJsonObject, 10)
+    _showRepliesOnPost(postJsonObject, 10)
+
     # if the post is addressed to you then mark it as read
     if _postIsToYou(yourActor, postJsonObject):
-        if isDM(postJsonObject['id']):
+        if isDM(postJsonObject):
             _markPostAsRead(yourActor, postJsonObject['id'], 'dm')
         else:
             _markPostAsRead(yourActor, postJsonObject['id'], 'replies')
@@ -680,16 +750,18 @@ def _showProfile(session, nickname: str, domain: str,
                  pageNumber: int, index: int, boxJson: {},
                  systemLanguage: str,
                  screenreader: str, espeak,
-                 translate: {}, yourActor: str) -> {}:
+                 translate: {}, yourActor: str,
+                 postJsonObject: {}) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
     if _timelineIsEmpty(boxJson):
         return {}
 
-    postJsonObject = _desktopGetBoxPostObject(boxJson, index)
     if not postJsonObject:
-        return {}
+        postJsonObject = _desktopGetBoxPostObject(boxJson, index)
+        if not postJsonObject:
+            return {}
 
     actor = None
     if postJsonObject['type'] == 'Announce':
@@ -793,7 +865,13 @@ def _padToWidth(content: str, width: int) -> str:
     return content
 
 
-def _desktopShowBox(boxName: str, boxJson: {},
+def _highlightText(text: str) -> str:
+    """Returns a highlighted version of the given text
+    """
+    return '\33[7m' + text + '\33[0m'
+
+
+def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                     screenreader: str, systemLanguage: str, espeak,
                     pageNumber=1,
                     newReplies=False,
@@ -814,7 +892,7 @@ def _desktopShowBox(boxName: str, boxJson: {},
         boxNameStr = boxName[2:]
     else:
         boxNameStr = boxName
-    titleStr = '\33[7m' + boxNameStr.upper() + '\33[0m'
+    titleStr = _highlightText(boxNameStr.upper())
 
     if newDMs:
         notificationIcons += ' 📩'
@@ -855,9 +933,11 @@ def _desktopShowBox(boxName: str, boxJson: {},
                     announcedDomain, announcedPort = \
                         getDomainFromActor(postJsonObject['object'])
                     announcedHandle = announcedNickname + '@' + announcedDomain
-                    print(indent + str(posStr) + ' | ' + name + ' | ' +
-                          published + ' | ' +
-                          _padToWidth(announcedHandle, contentWidth))
+                    lineStr = \
+                        indent + str(posStr) + ' | ' + name + ' | ' + \
+                        published + ' | ' + \
+                        _padToWidth(announcedHandle, contentWidth)
+                    print(lineStr)
                     ctr += 1
                     continue
 
@@ -887,6 +967,14 @@ def _desktopShowBox(boxName: str, boxJson: {},
                 spaceAdded = True
                 name += ' '
             name += '↲'
+            if postJsonObject['object'].get('replies'):
+                repliesList = postJsonObject['object']['replies']
+                if repliesList.get('items'):
+                    items = repliesList['items']
+                    for i in range(int(items)):
+                        name += '↰'
+                        if i > 10:
+                            break
         likesCount = noOfLikes(postJsonObject)
         if likesCount > 10:
             likesCount = 10
@@ -922,8 +1010,17 @@ def _desktopShowBox(boxName: str, boxJson: {},
             content = '🔇'
         if postJsonObject['object'].get('bookmarks'):
             content = '🔖' + content
-        print(indent + str(posStr) + ' | ' + name + ' | ' +
-              published + ' | ' + content)
+        if '\n' in content:
+            content = content.replace('\n', ' ')
+        lineStr = indent + str(posStr) + ' | ' + name + ' | ' + \
+            published + ' | ' + content
+        if boxName == 'inbox' and \
+           _postIsToYou(yourActor, postJsonObject):
+            if not _hasReadPost(yourActor, postJsonObject['id'], 'dm'):
+                if not _hasReadPost(yourActor, postJsonObject['id'],
+                                    'replies'):
+                    lineStr = _highlightText(lineStr)
+        print(lineStr)
         ctr += 1
 
     print('')
@@ -1217,20 +1314,22 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _desktopNotification(notificationType,
                                          "Epicyon",
                                          "New DM " + yourActor + '/dm')
-                    _playNotificationSound(dmSoundFilename, player)
+                    if notificationSounds:
+                        _playNotificationSound(dmSoundFilename, player)
             if notifyJson.get('repliesNotify'):
                 newRepliesExist = True
                 if notifyJson.get('repliesNotifyChanged'):
                     _desktopNotification(notificationType,
                                          "Epicyon",
                                          "New reply " + yourActor + '/replies')
-                    _playNotificationSound(replySoundFilename, player)
+                    if notificationSounds:
+                        _playNotificationSound(replySoundFilename, player)
 
         if boxJson:
             timelineFirstId = _getFirstItemId(boxJson)
             if timelineFirstId != prevTimelineFirstId:
                 _desktopClearScreen()
-                _desktopShowBox(currTimeline, boxJson,
+                _desktopShowBox(yourActor, currTimeline, boxJson,
                                 None, systemLanguage, espeak,
                                 pageNumber,
                                 newRepliesExist,
@@ -1268,7 +1367,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1283,7 +1382,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1299,7 +1398,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1316,7 +1415,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1341,7 +1440,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1351,7 +1450,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1364,12 +1463,23 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           espeak, translate, yourActor)
                 print('')
             elif commandStr.startswith('profile ') or commandStr == 'profile':
+                actorJson = None
                 if commandStr == 'profile':
-                    postIndexStr = '1'
+                    if postJsonObject:
+                        actorJson = \
+                            _showProfile(session, nickname, domain,
+                                         httpPrefix, baseDir, currTimeline,
+                                         pageNumber, postIndex, boxJson,
+                                         systemLanguage, screenreader,
+                                         espeak, translate, yourActor,
+                                         postJsonObject)
+                    else:
+                        postIndexStr = '1'
                 else:
                     postIndexStr = commandStr.split('profile ')[1]
-                if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(currTimeline, boxJson,
+
+                if not actorJson and boxJson and postIndexStr.isdigit():
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1379,7 +1489,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      httpPrefix, baseDir, currTimeline,
                                      pageNumber, postIndex, boxJson,
                                      systemLanguage, screenreader,
-                                     espeak, translate, yourActor)
+                                     espeak, translate, yourActor,
+                                     None)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
@@ -1604,6 +1715,86 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               cachedWebfingers, personCache,
                                               False, __version__)
                         refreshTimeline = True
+                print('')
+            elif (commandStr.startswith('undo block ') or
+                  commandStr.startswith('remove block ') or
+                  commandStr.startswith('rm block ') or
+                  commandStr.startswith('unblock ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id') and \
+                       postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('attributedTo'):
+                                blockActor = \
+                                    postJsonObject['object']['attributedTo']
+                                sayStr = 'Unblocking ' + \
+                                    getNicknameFromActor(blockActor)
+                                _sayCommand(sayStr, sayStr,
+                                            screenreader,
+                                            systemLanguage, espeak)
+                                sessionBlock = createSession(proxyType)
+                                sendUndoBlockViaServer(baseDir, sessionBlock,
+                                                       nickname, password,
+                                                       domain, port,
+                                                       httpPrefix,
+                                                       blockActor,
+                                                       cachedWebfingers,
+                                                       personCache,
+                                                       False, __version__)
+                refreshTimeline = True
+                print('')
+            elif commandStr.startswith('block '):
+                blockActor = None
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                    else:
+                        if '@' in postIndex:
+                            blockHandle = postIndex
+                            if blockHandle.startswith('@'):
+                                blockHandle = blockHandle[1:]
+                            if '@' in blockHandle:
+                                blockDomain = blockHandle.split('@')[1]
+                                blockNickname = blockHandle.split('@')[0]
+                                blockActor = \
+                                    httpPrefix + '://' + blockDomain + \
+                                    '/users/' + blockNickname
+                if currIndex > 0 and boxJson and not blockActor:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject and not blockActor:
+                    if postJsonObject.get('id') and \
+                       postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('attributedTo'):
+                                blockActor = \
+                                    postJsonObject['object']['attributedTo']
+                if blockActor:
+                    sayStr = 'Blocking ' + \
+                        getNicknameFromActor(blockActor)
+                    _sayCommand(sayStr, sayStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sessionBlock = createSession(proxyType)
+                    sendBlockViaServer(baseDir, sessionBlock,
+                                       nickname, password,
+                                       domain, port,
+                                       httpPrefix,
+                                       blockActor,
+                                       cachedWebfingers,
+                                       personCache,
+                                       False, __version__)
+                refreshTimeline = True
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
                 currIndex = 0
@@ -1914,7 +2105,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
             if refreshTimeline:
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
