@@ -2282,7 +2282,7 @@ def testRemoveHtml():
     testStr = 'This string has.<br>A new line.'
     assert(removeHtml(testStr) == 'This string has.\nA new line.')
     testStr = '<p>This string contains a url http://somesite.or.other</p>'
-    assert(removeHtml(testStr) == \
+    assert(removeHtml(testStr) ==
            'This string contains a url http://somesite.or.other')
 
 

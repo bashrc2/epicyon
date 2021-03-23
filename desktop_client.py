@@ -598,6 +598,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         ' from page ' + str(pageNumber) + '.'
     sayStr2 = sayStr.replace(' dm ', ' DM ')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+    print('')
 
     if postJsonObject['type'] == 'Announce':
         actor = postJsonObject['actor']
@@ -624,6 +625,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                     sayStr = nameStr
                     _sayCommand(sayStr, sayStr, screenreader,
                                 systemLanguage, espeak)
+                    print('')
                     if screenreader:
                         time.sleep(2)
                     content = \
@@ -660,6 +662,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     # say the speaker's name
     _sayCommand(nameStr, nameStr, screenreader,
                 systemLanguage, espeak, nameStr, gender)
+    print('')
 
     if postJsonObject['object'].get('inReplyTo'):
         print('Replying to ' + postJsonObject['object']['inReplyTo'] + '\n')
@@ -799,7 +802,7 @@ def _padToWidth(content: str, width: int) -> str:
     return content
 
 
-def _desktopShowBox(boxName: str, boxJson: {},
+def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                     screenreader: str, systemLanguage: str, espeak,
                     pageNumber=1,
                     newReplies=False,
@@ -861,9 +864,14 @@ def _desktopShowBox(boxName: str, boxJson: {},
                     announcedDomain, announcedPort = \
                         getDomainFromActor(postJsonObject['object'])
                     announcedHandle = announcedNickname + '@' + announcedDomain
-                    print(indent + str(posStr) + ' | ' + name + ' | ' +
-                          published + ' | ' +
-                          _padToWidth(announcedHandle, contentWidth))
+                    lineStr = \
+                        indent + str(posStr) + ' | ' + name + ' | ' + \
+                        published + ' | ' + \
+                        _padToWidth(announcedHandle, contentWidth)
+                    if boxName == 'inbox' and \
+                       _postIsToYou(yourActor, postJsonObject):
+                        lineStr = '\33[7m' + lineStr + '\33[0m'
+                    print(lineStr)
                     ctr += 1
                     continue
 
@@ -930,8 +938,12 @@ def _desktopShowBox(boxName: str, boxJson: {},
             content = '🔖' + content
         if '\n' in content:
             content = content.replace('\n', ' ')
-        print(indent + str(posStr) + ' | ' + name + ' | ' +
-              published + ' | ' + content)
+        lineStr = indent + str(posStr) + ' | ' + name + ' | ' + \
+            published + ' | ' + content
+        if boxName == 'inbox' and \
+           _postIsToYou(yourActor, postJsonObject):
+            lineStr = '\33[7m' + lineStr + '\33[0m'
+        print(lineStr)
         ctr += 1
 
     print('')
@@ -1240,7 +1252,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             timelineFirstId = _getFirstItemId(boxJson)
             if timelineFirstId != prevTimelineFirstId:
                 _desktopClearScreen()
-                _desktopShowBox(currTimeline, boxJson,
+                _desktopShowBox(yourActor, currTimeline, boxJson,
                                 None, systemLanguage, espeak,
                                 pageNumber,
                                 newRepliesExist,
@@ -1278,7 +1290,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1293,7 +1305,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1309,7 +1321,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1326,7 +1338,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1351,7 +1363,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1361,7 +1373,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1379,7 +1391,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('profile ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1924,7 +1936,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
             if refreshTimeline:
                 if boxJson:
-                    _desktopShowBox(currTimeline, boxJson,
+                    _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)

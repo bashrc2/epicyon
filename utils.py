@@ -264,7 +264,7 @@ def removeHtml(content: str) -> str:
             removing = False
         elif not removing:
             result += ch
-            
+
     plainText = result.replace('  ', ' ')
 
     # insert spaces after full stops
@@ -276,7 +276,7 @@ def removeHtml(content: str) -> str:
             if plainText[i + 1] >= 'A' and plainText[i + 1] <= 'Z':
                 result += ' '
 
-    result = result.replace('  ', ' ').strip()    
+    result = result.replace('  ', ' ').strip()
     return result
 
 
