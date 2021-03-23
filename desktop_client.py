@@ -673,7 +673,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
 
     # if the post is addressed to you then mark it as read
     if _postIsToYou(yourActor, postJsonObject):
-        if isDM(postJsonObject['id']):
+        if isDM(postJsonObject):
             _markPostAsRead(yourActor, postJsonObject['id'], 'dm')
         else:
             _markPostAsRead(yourActor, postJsonObject['id'], 'replies')
