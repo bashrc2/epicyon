@@ -721,16 +721,18 @@ def _showProfile(session, nickname: str, domain: str,
                  pageNumber: int, index: int, boxJson: {},
                  systemLanguage: str,
                  screenreader: str, espeak,
-                 translate: {}, yourActor: str) -> {}:
+                 translate: {}, yourActor: str,
+                 postJsonObject: {}) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
     if _timelineIsEmpty(boxJson):
         return {}
 
-    postJsonObject = _desktopGetBoxPostObject(boxJson, index)
     if not postJsonObject:
-        return {}
+        postJsonObject = _desktopGetBoxPostObject(boxJson, index)
+        if not postJsonObject:
+            return {}
 
     actor = None
     if postJsonObject['type'] == 'Announce':
@@ -1418,11 +1420,22 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           espeak, translate, yourActor)
                 print('')
             elif commandStr.startswith('profile ') or commandStr == 'profile':
+                actorJson = None
                 if commandStr == 'profile':
-                    postIndexStr = '1'
+                    if postJsonObject:
+                        actorJson = \
+                            _showProfile(session, nickname, domain,
+                                         httpPrefix, baseDir, currTimeline,
+                                         pageNumber, postIndex, boxJson,
+                                         systemLanguage, screenreader,
+                                         espeak, translate, yourActor,
+                                         postJsonObject)
+                    else:
+                        postIndexStr = '1'
                 else:
                     postIndexStr = commandStr.split('profile ')[1]
-                if boxJson and postIndexStr.isdigit():
+
+                if not actorJson and boxJson and postIndexStr.isdigit():
                     _desktopShowBox(yourActor, currTimeline, boxJson,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
@@ -1433,7 +1446,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      httpPrefix, baseDir, currTimeline,
                                      pageNumber, postIndex, boxJson,
                                      systemLanguage, screenreader,
-                                     espeak, translate, yourActor)
+                                     espeak, translate, yourActor,
+                                     None)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
