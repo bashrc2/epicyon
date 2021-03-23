@@ -928,6 +928,8 @@ def _desktopShowBox(boxName: str, boxJson: {},
             content = '🔇'
         if postJsonObject['object'].get('bookmarks'):
             content = '🔖' + content
+        if '\n' in content:
+            content = content.replace('\n', ' ')
         print(indent + str(posStr) + ' | ' + name + ' | ' +
               published + ' | ' + content)
         ctr += 1
