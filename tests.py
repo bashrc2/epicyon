@@ -2275,6 +2275,8 @@ def testRemoveHtml():
     assert(removeHtml(testStr) == testStr)
     testStr = 'This string <a href="1234.567">has html</a>.'
     assert(removeHtml(testStr) == 'This string has html.')
+    testStr = '<p>This string has.</p><p>Two paragraphs.</p>'
+    assert(removeHtml(testStr) == 'This string has. Two paragraphs.')
 
 
 def testDangerousCSS():
