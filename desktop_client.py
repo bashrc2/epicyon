@@ -1010,7 +1010,9 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
             published + ' | ' + content
         if boxName == 'inbox' and \
            _postIsToYou(yourActor, postJsonObject):
-            lineStr = '\33[7m' + lineStr + '\33[0m'
+            if not _hasReadPost(actor, postJsonObject['id'], 'dm'):
+                if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
+                    lineStr = '\33[7m' + lineStr + '\33[0m'
         print(lineStr)
         ctr += 1
 
