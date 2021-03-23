@@ -580,6 +580,28 @@ def _getImageDescription(postJsonObject: {}) -> str:
     return imageDescription
 
 
+def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
+    """Shows the likes on a post
+    """
+    if postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('likes'):
+        return
+    if not isinstance(postJsonObject['object']['likes'], dict):
+        return
+    if not postJsonObject['object']['likes'].get('items'):
+        return
+    print('')
+    ctr = 0
+    for item in postJsonObject['object']['likes']['items']:
+        print('  ❤ ' + str(item['actor']))
+        ctr += 1
+        if ctr >= maxLikes:
+            break
+
+
 def _readLocalBoxPost(session, nickname: str, domain: str,
                       httpPrefix: str, baseDir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
@@ -680,15 +702,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak, nameStr, gender)
 
-    if postJsonObject['object'].get('likes'):
-        if postJsonObject['object']['likes'].get('items'):
-            print('')
-            ctr = 0
-            for item in postJsonObject['object']['likes']['items']:
-                print('  ❤ ' + str(item['actor']))
-                ctr += 1
-                if ctr >= 10:
-                    break
+    _showLikesOnPost(postJsonObject, 10)
 
     # if the post is addressed to you then mark it as read
     if _postIsToYou(yourActor, postJsonObject):
