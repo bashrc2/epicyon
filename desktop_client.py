@@ -865,6 +865,12 @@ def _padToWidth(content: str, width: int) -> str:
     return content
 
 
+def _highlightText(text: str) -> str:
+    """Returns a highlighted version of the given text
+    """
+    return '\33[7m' + text + '\33[0m'
+
+
 def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                     screenreader: str, systemLanguage: str, espeak,
                     pageNumber=1,
@@ -886,7 +892,7 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
         boxNameStr = boxName[2:]
     else:
         boxNameStr = boxName
-    titleStr = '\33[7m' + boxNameStr.upper() + '\33[0m'
+    titleStr = _highlightText(boxNameStr.upper())
 
     if newDMs:
         notificationIcons += ' 📩'
@@ -1010,9 +1016,10 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
             published + ' | ' + content
         if boxName == 'inbox' and \
            _postIsToYou(yourActor, postJsonObject):
-            if not _hasReadPost(actor, postJsonObject['id'], 'dm'):
-                if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
-                    lineStr = '\33[7m' + lineStr + '\33[0m'
+            if not _hasReadPost(yourActor, postJsonObject['id'], 'dm'):
+                if not _hasReadPost(yourActor, postJsonObject['id'],
+                                    'replies'):
+                    lineStr = _highlightText(lineStr)
         print(lineStr)
         ctr += 1
 

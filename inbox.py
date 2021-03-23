@@ -1593,7 +1593,7 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if debug:
             print('DEBUG: no domain found for ' + replyTo)
         return False
-    
+
     postFilename = locatePost(baseDir, replyToNickname,
                               replyToDomain, replyTo)
     if not postFilename:
