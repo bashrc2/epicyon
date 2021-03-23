@@ -458,6 +458,8 @@ like                                  Like the last post
 unlike                                Unlike the last post
 bookmark                              Bookmark the last post
 unbookmark                            Unbookmark the last post
+block [post number|handle]            Block someone via post number or handle
+unblock [handle]                      Unblock someone
 mute                                  Mute the last post
 unmute                                Unmute the last post
 reply                                 Reply to the last post

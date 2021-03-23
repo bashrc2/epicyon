@@ -31,6 +31,8 @@ from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from posts import sendBlockViaServer
+from posts import sendUndoBlockViaServer
 from posts import sendMuteViaServer
 from posts import sendUndoMuteViaServer
 from posts import sendPostViaServer
@@ -78,6 +80,10 @@ def _desktopHelp() -> None:
           'Bookmark the last post')
     print(indent + 'unbookmark                            ' +
           'Unbookmark the last post')
+    print(indent + 'block [post number|handle]            ' +
+          'Block someone via post number or handle')
+    print(indent + 'unblock [handle]                      ' +
+          'Unblock someone')
     print(indent + 'mute                                  ' +
           'Mute the last post')
     print(indent + 'unmute                                ' +
@@ -673,6 +679,16 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     # speak the post content
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak, nameStr, gender)
+
+    if postJsonObject['object'].get('likes'):
+        if postJsonObject['object']['likes'].get('items'):
+            print('')
+            ctr = 0
+            for item in postJsonObject['object']['likes']['items']:
+                print('  ❤ ' + str(item['actor']))
+                ctr += 1
+                if ctr >= 10:
+                    break
 
     # if the post is addressed to you then mark it as read
     if _postIsToYou(yourActor, postJsonObject):
@@ -1626,6 +1642,86 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               cachedWebfingers, personCache,
                                               False, __version__)
                         refreshTimeline = True
+                print('')
+            elif (commandStr.startswith('undo block ') or
+                  commandStr.startswith('remove block ') or
+                  commandStr.startswith('rm block ') or
+                  commandStr.startswith('unblock ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id') and \
+                       postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('attributedTo'):
+                                blockActor = \
+                                    postJsonObject['object']['attributedTo']
+                                sayStr = 'Unblocking ' + \
+                                    getNicknameFromActor(blockActor)
+                                _sayCommand(sayStr, sayStr,
+                                            screenreader,
+                                            systemLanguage, espeak)
+                                sessionBlock = createSession(proxyType)
+                                sendUndoBlockViaServer(baseDir, sessionBlock,
+                                                       nickname, password,
+                                                       domain, port,
+                                                       httpPrefix,
+                                                       blockActor,
+                                                       cachedWebfingers,
+                                                       personCache,
+                                                       False, __version__)
+                refreshTimeline = True
+                print('')
+            elif commandStr.startswith('block '):
+                blockActor = None
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                    else:
+                        if '@' in postIndex:
+                            blockHandle = postIndex
+                            if blockHandle.startswith('@'):
+                                blockHandle = blockHandle[1:]
+                            if '@' in blockHandle:
+                                blockDomain = blockHandle.split('@')[1]
+                                blockNickname = blockHandle.split('@')[0]
+                                blockActor = \
+                                    httpPrefix + '://' + blockDomain + \
+                                    '/users/' + blockNickname
+                if currIndex > 0 and boxJson and not blockActor:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject and not blockActor:
+                    if postJsonObject.get('id') and \
+                       postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('attributedTo'):
+                                blockActor = \
+                                    postJsonObject['object']['attributedTo']
+                if blockActor:
+                    sayStr = 'Blocking ' + \
+                        getNicknameFromActor(blockActor)
+                    _sayCommand(sayStr, sayStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sessionBlock = createSession(proxyType)
+                    sendBlockViaServer(baseDir, sessionBlock,
+                                       nickname, password,
+                                       domain, port,
+                                       httpPrefix,
+                                       blockActor,
+                                       cachedWebfingers,
+                                       personCache,
+                                       False, __version__)
+                refreshTimeline = True
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
                 currIndex = 0
