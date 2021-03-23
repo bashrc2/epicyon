@@ -200,47 +200,47 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                              notifyJson: {}) -> None:
     """Looks for changes in the inbox and adds notifications
     """
+    notifyJson['dmNotifyChanged'] = False
+    notifyJson['repliesNotifyChanged'] = False
     if not inboxJson:
         return
     if not inboxJson.get('orderedItems'):
         return
-    newDM = False
-    newReply = False
-    notifyJson['dmNotifyChanged'] = False
-    notifyJson['repliesNotifyChanged'] = False
+    DMdone = False
+    replyDone = False
     for postJsonObject in inboxJson['orderedItems']:
         if not postJsonObject.get('id'):
             continue
         if not _postIsToYou(actor, postJsonObject):
             continue
-        if 'dmNotify' not in notifyJson:
-            notifyJson['dmNotify'] = False
         if isDM(postJsonObject):
-            if not newDM:
+            if not DMdone:
                 if not _hasReadPost(actor, postJsonObject['id'], 'dm'):
-                    if notifyJson.get('dmPostId'):
+                    changed = False
+                    if not notifyJson.get('dmPostId'):
+                        changed = True
+                    else:
                         if notifyJson['dmPostId'] != postJsonObject['id']:
-                            notifyJson['dmNotify'] = True
-                            notifyJson['dmNotifyChanged'] = True
-                            newDM = True
-                        else:
-                            notifyJson['dmNotifyChanged'] = False
-                    notifyJson['dmPostId'] = postJsonObject['id']
-                    if newDM:
-                        break
+                            changed = True
+                    if changed:
+                        notifyJson['dmNotify'] = True
+                        notifyJson['dmNotifyChanged'] = True
+                        notifyJson['dmPostId'] = postJsonObject['id']
+                        DMdone = True
         else:
-            if not newReply:
+            if not replyDone:
                 if not _hasReadPost(actor, postJsonObject['id'], 'replies'):
-                    if notifyJson.get('repliesPostId'):
+                    changed = False
+                    if not notifyJson.get('repliesPostId'):
+                        changed = True
+                    else:
                         if notifyJson['repliesPostId'] != postJsonObject['id']:
-                            notifyJson['repliesNotify'] = True
-                            notifyJson['repliesNotifyChanged'] = True
-                            newReply = True
-                        else:
-                            notifyJson['repliesNotifyChanged'] = False
-                    notifyJson['repliesPostId'] = postJsonObject['id']
-                    if newReply:
-                        break
+                            changed = True
+                    if changed:
+                        notifyJson['repliesNotify'] = True
+                        notifyJson['repliesNotifyChanged'] = True
+                        notifyJson['repliesPostId'] = postJsonObject['id']
+                        replyDone = True
 
 
 def _desktopClearScreen() -> None:
