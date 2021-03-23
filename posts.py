@@ -2885,15 +2885,15 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
     boxUrl = httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'first': boxUrl+'?page=true',
+        'first': boxUrl + '?page=true',
         'id': boxUrl,
-        'last': boxUrl+'?page=true',
+        'last': boxUrl + '?page=true',
         'totalItems': 0,
         'type': 'OrderedCollection'
     }
     boxItems = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': boxUrl+pageStr,
+        'id': boxUrl + pageStr,
         'orderedItems': [
         ],
         'partOf': boxUrl,
@@ -3266,15 +3266,13 @@ def _createBoxIndexed(recentPostsCache: {},
                     if not isPublicPost(p):
                         continue
                     if p['object'].get('likes'):
-                        p['likes'] = {'items': []}
-                    if p['object'].get('replies'):
-                        p['replies'] = {}
-                    if p['object'].get('shares'):
-                        p['shares'] = {}
-                    if p['object'].get('bookmarks'):
-                        p['bookmarks'] = {}
-                    if p['object'].get('ignores'):
-                        p['ignores'] = {}
+                        p['object']['likes'] = {'items': []}
+                    removeCollections = {
+                        'replies', 'shares', 'bookmarks', 'ignores'
+                    }
+                    for removeName in removeCollections:
+                        if p['object'].get(removeName):
+                            p['object'][removeName] = {}
 
         boxItems['orderedItems'].append(p)
 

@@ -217,6 +217,10 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
     for postJsonObject in inboxJson['orderedItems']:
         if not postJsonObject.get('id'):
             continue
+        if not postJsonObject.get('type'):
+            continue
+        if postJsonObject['type'] == 'Announce':
+            continue
         if not _postIsToYou(actor, postJsonObject):
             continue
         if isDM(postJsonObject):
@@ -604,6 +608,32 @@ def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
             break
 
 
+def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
+    """Shows the replies on a post
+    """
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('replies'):
+        return
+    if not isinstance(postJsonObject['object']['replies'], dict):
+        return
+    if not postJsonObject['object']['replies'].get('items'):
+        return
+    if not isinstance(postJsonObject['object']['replies']['items'], list):
+        return
+    print('')
+    ctr = 0
+    print('Test 4638653 ' + str(postJsonObject['object']['replies']['items']))
+    for item in postJsonObject['object']['replies']['items']:
+        print('Test 768235 ' + str(item))
+        print('  ↰ ' + str(item['url']))
+        ctr += 1
+        if ctr >= maxReplies:
+            break
+
+
 def _readLocalBoxPost(session, nickname: str, domain: str,
                       httpPrefix: str, baseDir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
@@ -705,6 +735,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                 systemLanguage, espeak, nameStr, gender)
 
     _showLikesOnPost(postJsonObject, 10)
+    _showRepliesOnPost(postJsonObject, 10)
 
     # if the post is addressed to you then mark it as read
     if _postIsToYou(yourActor, postJsonObject):
@@ -902,9 +933,6 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                         indent + str(posStr) + ' | ' + name + ' | ' + \
                         published + ' | ' + \
                         _padToWidth(announcedHandle, contentWidth)
-                    if boxName == 'inbox' and \
-                       _postIsToYou(yourActor, postJsonObject):
-                        lineStr = '\33[7m' + lineStr + '\33[0m'
                     print(lineStr)
                     ctr += 1
                     continue
@@ -935,6 +963,14 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                 spaceAdded = True
                 name += ' '
             name += '↲'
+            if postJsonObject['object'].get('replies'):
+                repliesList = postJsonObject['object']['replies']
+                if repliesList.get('items'):
+                    items = repliesList['items']
+                    for i in range(int(items)):
+                        name += '↰'
+                        if i > 10:
+                            break
         likesCount = noOfLikes(postJsonObject)
         if likesCount > 10:
             likesCount = 10
