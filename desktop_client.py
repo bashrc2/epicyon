@@ -1223,14 +1223,16 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _desktopNotification(notificationType,
                                          "Epicyon",
                                          "New DM " + yourActor + '/dm')
-                    _playNotificationSound(dmSoundFilename, player)
+                    if notificationSounds:
+                        _playNotificationSound(dmSoundFilename, player)
             if notifyJson.get('repliesNotify'):
                 newRepliesExist = True
                 if notifyJson.get('repliesNotifyChanged'):
                     _desktopNotification(notificationType,
                                          "Epicyon",
                                          "New reply " + yourActor + '/replies')
-                    _playNotificationSound(replySoundFilename, player)
+                    if notificationSounds:
+                        _playNotificationSound(replySoundFilename, player)
 
         if boxJson:
             timelineFirstId = _getFirstItemId(boxJson)
