@@ -9666,9 +9666,7 @@ class PubServer(BaseHTTPRequestHandler):
                     divertToLoginScreen = False
                 else:
                     if path.endswith('/following') or \
-                       '/following?page=' in path or \
                        path.endswith('/followers') or \
-                       '/followers?page=' in path or \
                        path.endswith('/skills') or \
                        path.endswith('/roles') or \
                        path.endswith('/shares'):
@@ -10276,6 +10274,75 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
 
+    def _getFollowingPage(self, baseDir: str, path: str,
+                          callingDomain: str,
+                          httpPrefix: str,
+                          domain: str, domainFull: str,
+                          followingItemsPerPage: int,
+                          debug: bool, listName='following') -> None:
+        """Returns json collection for following.txt
+        """
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        pageNumberStr = path.split('?page=')[1]
+        if '?' in pageNumberStr:
+            pageNumberStr = pageNumberStr.split('?')[0]
+        followingFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + listName + '.txt'
+        if not os.path.isfile(followingFilename):
+            self._404()
+            return
+        if debug:
+            print('Getting ' + listName + ' list json for ' + nickname +
+                  ' page ' + pageNumberStr)
+        followingList = []
+        with open(followingFilename, 'r') as fp:
+            followingList = fp.readlines()
+
+        objectUrl = \
+            httpPrefix + '://' + domainFull + '/users/' + nickname + \
+            '/' + listName + '?page=' + pageNumberStr
+        followingJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': objectUrl,
+            'type': 'Collection',
+            "totalItems": 0,
+            'items': []
+        }
+
+        if not pageNumberStr.isdigit():
+            pageNumber = 1
+        else:
+            pageNumber = int(pageNumberStr)
+        page = 1
+        ctr = 0
+        for handle in followingList:
+            ctr += 1
+            if ctr >= followingItemsPerPage:
+                ctr = 0
+                page += 1
+                if page > pageNumber:
+                    break
+            if page < pageNumber:
+                continue
+            if '://' in handle:
+                handleNickname = getNicknameFromActor(handle)
+                handleDomain, handlePort = getDomainFromActor(handle)
+                handle = handleNickname + '@' + handleDomain
+            followingJson['items'].append({
+                'type': 'Document',
+                'name': handle
+            })
+        followingJson['totalItems'] = len(followingJson['items'])
+        msg = json.dumps(followingJson,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json',
+                          msglen, None, callingDomain)
+        self._write(msg)
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -10572,6 +10639,28 @@ class PubServer(BaseHTTPRequestHandler):
         usersInPath = False
         if '/users/' in self.path:
             usersInPath = True
+
+        if authorized and not htmlGET and usersInPath:
+            if '/following?page=' in self.path:
+                self._getFollowingPage(self.server.baseDir,
+                                       self.path,
+                                       callingDomain,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.followingItemsPerPage,
+                                       self.server.debug, 'following')
+                return
+            elif '/followers?page=' in self.path:
+                self._getFollowingPage(self.server.baseDir,
+                                       self.path,
+                                       callingDomain,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.followingItemsPerPage,
+                                       self.server.debug, 'followers')
+                return
 
         # authorized endpoint used for TTS of posts
         # arriving in your inbox
@@ -14510,6 +14599,7 @@ def runDaemon(brochMode: bool,
     # for it to be considered dormant?
     httpd.dormantMonths = dormantMonths
 
+    httpd.followingItemsPerPage = 10
     if registration == 'open':
         httpd.registration = True
     else:
