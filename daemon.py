@@ -9284,7 +9284,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         following = \
             getFollowingFeed(baseDir, domain, port, path,
-                             httpPrefix, authorized, followsPerPage)
+                             httpPrefix, authorized, followsPerPage,
+                             'following')
         if following:
             if self._requestHTTP():
                 pageNumber = 1
@@ -10277,65 +10278,17 @@ class PubServer(BaseHTTPRequestHandler):
     def _getFollowingPage(self, baseDir: str, path: str,
                           callingDomain: str,
                           httpPrefix: str,
-                          domain: str, domainFull: str,
+                          domain: str, port: int,
                           followingItemsPerPage: int,
                           debug: bool, listName='following') -> None:
         """Returns json collection for following.txt
         """
-        nickname = path.split('/users/')[1]
-        if '/' in nickname:
-            nickname = nickname.split('/')[0]
-        pageNumberStr = path.split('?page=')[1]
-        if '?' in pageNumberStr:
-            pageNumberStr = pageNumberStr.split('?')[0]
-        followingFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + listName + '.txt'
-        if not os.path.isfile(followingFilename):
+        followingJson = \
+            getFollowingFeed(baseDir, domain, port, path, httpPrefix,
+                             True, followingItemsPerPage)
+        if not followingJson:
             self._404()
             return
-        if debug:
-            print('Getting ' + listName + ' list json for ' + nickname +
-                  ' page ' + pageNumberStr)
-        followingList = []
-        with open(followingFilename, 'r') as fp:
-            followingList = fp.readlines()
-
-        objectUrl = \
-            httpPrefix + '://' + domainFull + '/users/' + nickname + \
-            '/' + listName + '?page=' + pageNumberStr
-        followingJson = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-            'id': objectUrl,
-            'type': 'Collection',
-            "totalItems": 0,
-            'items': []
-        }
-
-        if not pageNumberStr.isdigit():
-            pageNumber = 1
-        else:
-            pageNumber = int(pageNumberStr)
-        page = 1
-        ctr = 0
-        for handle in followingList:
-            ctr += 1
-            if ctr >= followingItemsPerPage:
-                ctr = 0
-                page += 1
-                if page > pageNumber:
-                    break
-            if page < pageNumber:
-                continue
-            if '://' in handle:
-                handleNickname = getNicknameFromActor(handle)
-                handleDomain, handlePort = getDomainFromActor(handle)
-                handle = handleNickname + '@' + handleDomain
-            followingJson['items'].append({
-                'type': 'Document',
-                'name': handle
-            })
-        followingJson['totalItems'] = len(followingJson['items'])
         msg = json.dumps(followingJson,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -10647,7 +10600,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain,
                                        self.server.httpPrefix,
                                        self.server.domain,
-                                       self.server.domainFull,
+                                       self.server.port,
                                        self.server.followingItemsPerPage,
                                        self.server.debug, 'following')
                 return
@@ -10657,7 +10610,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain,
                                        self.server.httpPrefix,
                                        self.server.domain,
-                                       self.server.domainFull,
+                                       self.server.port,
                                        self.server.followingItemsPerPage,
                                        self.server.debug, 'followers')
                 return
