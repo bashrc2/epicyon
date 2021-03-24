@@ -47,6 +47,7 @@ from filters import removeFilter
 from pprint import pprint
 from daemon import runDaemon
 from follow import getFollowingViaServer
+from follow import getFollowersViaServer
 from follow import clearFollows
 from follow import followerOfPerson
 from follow import sendFollowRequestViaServer
@@ -249,11 +250,17 @@ parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
-parser.add_argument("--following", "--following",
-                    dest='following',
+parser.add_argument("--following", "--followingList",
+                    dest='followingList',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Get the following list. Use nickname and " +
+                    "domain options to specify the account")
+parser.add_argument("--followersList",
+                    dest='followersList',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Get the followers list. Use nickname and " +
                     "domain options to specify the account")
 parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     dest='commentsEnabled',
@@ -1491,7 +1498,7 @@ if args.unfollow:
     print('Ok')
     sys.exit()
 
-if args.following:
+if args.followingList:
     # following list via c2s protocol
     if not args.nickname:
         print('Please specify the nickname for the account with --nickname')
@@ -1517,6 +1524,34 @@ if args.following:
                               debug, __version__)
     if followingJson:
         pprint(followingJson)
+    sys.exit()
+
+if args.followersList:
+    # following list via c2s protocol
+    if not args.nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    followHttpPrefix = httpPrefix
+
+    followersJson = \
+        getFollowersViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.pageNumber,
+                              cachedWebfingers, personCache,
+                              debug, __version__)
+    if followersJson:
+        pprint(followersJson)
     sys.exit()
 
 nickname = 'admin'
