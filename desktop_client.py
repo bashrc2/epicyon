@@ -896,11 +896,10 @@ def _desktopShowBox(indent: str,
     else:
         boxNameStr = boxName
     titleStr = _highlightText(boxNameStr.upper())
-
-    if newDMs:
-        notificationIcons += ' 📩'
-    if newReplies:
-        notificationIcons += ' 📨'
+    # if newDMs:
+    #     notificationIcons += ' 📩'
+    # if newReplies:
+    #     notificationIcons += ' 📨'
 
     if notificationIcons:
         while len(titleStr) < 95 - len(notificationIcons):
