@@ -29,6 +29,7 @@ from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from follow import getFollowRequestsViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendBlockViaServer
@@ -1887,6 +1888,30 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   True, __version__)
                         refreshTimeline = True
                 print('')
+            elif (commandStr == 'follow requests' or
+                  commandStr.startswith('follow requests ')):
+                currPage = 1
+                if ' ' in commandStr:
+                    pageNum = commandStr.split(' ')[-1].strip()
+                    if pageNum.isdigit():
+                        currPage = int(pageNum)
+                followRequestsJson = \
+                    getFollowRequestsViaServer(baseDir, session,
+                                               nickname, password,
+                                               domain, port,
+                                               httpPrefix, currPage,
+                                               cachedWebfingers, personCache,
+                                               debug, __version__)
+                if followRequestsJson:
+                    print('')
+                    for item in followRequestsJson['orderedItems']:
+                        handleNickname = getNicknameFromActor(item)
+                        handleDomain, handlePort = getDomainFromActor(item)
+                        handleDomainFull = \
+                            getFullDomain(handleDomain, handlePort)
+                        print('  👤 ' +
+                              handleNickname + '@' + handleDomainFull)
+                    print('')
             elif (commandStr == 'follow' or
                   commandStr.startswith('follow ')):
                 if commandStr == 'follow':
