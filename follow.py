@@ -352,14 +352,14 @@ def _getNoOfFollowers(baseDir: str,
 
 
 def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
-                     httpPrefix: str, authenticated: bool,
+                     httpPrefix: str, authorized: bool,
                      followsPerPage=12,
                      followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests.
     This accesses the following.txt or followers.txt and builds a collection.
     """
-    # Show a small number of follows to non-authenticated viewers
-    if not authenticated:
+    # Show a small number of follows to non-authorized viewers
+    if not authorized:
         followsPerPage = 6
 
     if '/' + followFile not in path:
@@ -369,7 +369,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     pageNumber = None
     if '?page=' in path:
         pageNumber = path.split('?page=')[1]
-        if pageNumber == 'true' or not authenticated:
+        if pageNumber == 'true' or not authorized:
             pageNumber = 1
         else:
             try:
@@ -401,7 +401,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
             httpPrefix + '://' + domain + '/users/' + \
             nickname + '/' + followFile
         totalStr = \
-            _getNoOfFollows(baseDir, nickname, domain, authenticated)
+            _getNoOfFollows(baseDir, nickname, domain, authorized)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': firstStr,

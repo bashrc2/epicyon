@@ -10275,7 +10275,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
 
-    def _getFollowingPage(self, baseDir: str, path: str,
+    def _getFollowingJson(self, baseDir: str, path: str,
                           callingDomain: str,
                           httpPrefix: str,
                           domain: str, port: int,
@@ -10285,8 +10285,10 @@ class PubServer(BaseHTTPRequestHandler):
         """
         followingJson = \
             getFollowingFeed(baseDir, domain, port, path, httpPrefix,
-                             True, followingItemsPerPage)
+                             True, followingItemsPerPage, listName)
         if not followingJson:
+            if debug:
+                print(listName + ' json feed not found for ' + path)
             self._404()
             return
         msg = json.dumps(followingJson,
@@ -10595,7 +10597,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and not htmlGET and usersInPath:
             if '/following?page=' in self.path:
-                self._getFollowingPage(self.server.baseDir,
+                self._getFollowingJson(self.server.baseDir,
                                        self.path,
                                        callingDomain,
                                        self.server.httpPrefix,
@@ -10605,7 +10607,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug, 'following')
                 return
             elif '/followers?page=' in self.path:
-                self._getFollowingPage(self.server.baseDir,
+                self._getFollowingJson(self.server.baseDir,
                                        self.path,
                                        callingDomain,
                                        self.server.httpPrefix,
@@ -14552,7 +14554,7 @@ def runDaemon(brochMode: bool,
     # for it to be considered dormant?
     httpd.dormantMonths = dormantMonths
 
-    httpd.followingItemsPerPage = 10
+    httpd.followingItemsPerPage = 12
     if registration == 'open':
         httpd.registration = True
     else:

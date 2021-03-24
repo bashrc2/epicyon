@@ -252,7 +252,7 @@ parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
 parser.add_argument("--following", "--following",
                     dest='following',
                     type=str2bool, nargs='?',
-                    const=True, default=True,
+                    const=True, default=False,
                     help="Get the following list. Use nickname and " +
                     "domain options to specify the account")
 parser.add_argument("--repliesEnabled", "--commentsEnabled",
