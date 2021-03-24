@@ -872,7 +872,10 @@ def _highlightText(text: str) -> str:
     return '\33[7m' + text + '\33[0m'
 
 
-def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
+def _desktopShowBox(indent: str,
+                    followRequestsJson: {},
+                    yourActor: str, boxName: str, boxJson: {},
+                    translate: {},
                     screenreader: str, systemLanguage: str, espeak,
                     pageNumber=1,
                     newReplies=False,
@@ -882,7 +885,6 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
     numberWidth = 2
     nameWidth = 16
     contentWidth = 50
-    indent = '   '
 
     # title
     _desktopClearScreen()
@@ -1023,6 +1025,9 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                     lineStr = _highlightText(lineStr)
         print(lineStr)
         ctr += 1
+
+    if followRequestsJson:
+        _desktopShowFollowRequests(followRequestsJson, translate)
 
     print('')
 
@@ -1176,6 +1181,24 @@ def _desktopNewDMbase(session, toHandle: str,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
+def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
+    """Shows any follow requests
+    """
+    if not followRequestsJson['orderedItems']:
+        return
+    indent = '   '
+    print('')
+    print(indent + 'Follow requests:')
+    print('')
+    for item in followRequestsJson['orderedItems']:
+        handleNickname = getNicknameFromActor(item)
+        handleDomain, handlePort = getDomainFromActor(item)
+        handleDomainFull = \
+            getFullDomain(handleDomain, handlePort)
+        print(indent + '  👤 ' +
+              handleNickname + '@' + handleDomainFull)
+
+
 def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                      nickname: str, domain: str, port: int,
                      password: str, screenreader: str,
@@ -1297,6 +1320,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                              currTimeline, pageNumber,
                              debug)
 
+        followRequestsJson = \
+            getFollowRequestsViaServer(baseDir, session,
+                                       nickname, password,
+                                       domain, port,
+                                       httpPrefix, 1,
+                                       cachedWebfingers, personCache,
+                                       debug, __version__)
+
         if not (currTimeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
             inboxJson = c2sBoxJson(baseDir, session,
@@ -1330,7 +1361,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             timelineFirstId = _getFirstItemId(boxJson)
             if timelineFirstId != prevTimelineFirstId:
                 _desktopClearScreen()
-                _desktopShowBox(yourActor, currTimeline, boxJson,
+                _desktopShowBox(indent, followRequestsJson,
+                                yourActor, currTimeline, boxJson,
+                                translate,
                                 None, systemLanguage, espeak,
                                 pageNumber,
                                 newRepliesExist,
@@ -1368,7 +1401,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1383,7 +1418,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1399,7 +1436,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1416,7 +1455,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1441,7 +1482,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1451,7 +1494,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1480,7 +1525,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     postIndexStr = commandStr.split('profile ')[1]
 
                 if not actorJson and boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1903,15 +1950,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                cachedWebfingers, personCache,
                                                debug, __version__)
                 if followRequestsJson:
-                    print('')
-                    for item in followRequestsJson['orderedItems']:
-                        handleNickname = getNicknameFromActor(item)
-                        handleDomain, handlePort = getDomainFromActor(item)
-                        handleDomainFull = \
-                            getFullDomain(handleDomain, handlePort)
-                        print('  👤 ' +
-                              handleNickname + '@' + handleDomainFull)
-                    print('')
+                    _desktopShowFollowRequests(followRequestsJson, translate)
+                print('')
             elif (commandStr == 'follow' or
                   commandStr.startswith('follow ')):
                 if commandStr == 'follow':
@@ -2130,7 +2170,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
             if refreshTimeline:
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
