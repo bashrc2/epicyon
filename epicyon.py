@@ -46,6 +46,7 @@ from filters import addFilter
 from filters import removeFilter
 from pprint import pprint
 from daemon import runDaemon
+from follow import getFollowRequestsViaServer
 from follow import getFollowingViaServer
 from follow import getFollowersViaServer
 from follow import clearFollows
@@ -261,6 +262,12 @@ parser.add_argument("--followersList",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Get the followers list. Use nickname and " +
+                    "domain options to specify the account")
+parser.add_argument("--followRequestsList",
+                    dest='followRequestsList',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Get the follow requests list. Use nickname and " +
                     "domain options to specify the account")
 parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     dest='commentsEnabled',
@@ -1552,6 +1559,34 @@ if args.followersList:
                               debug, __version__)
     if followersJson:
         pprint(followersJson)
+    sys.exit()
+
+if args.followRequestsList:
+    # follow requests list via c2s protocol
+    if not args.nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    followHttpPrefix = httpPrefix
+
+    followRequestsJson = \
+        getFollowRequestsViaServer(baseDir, session,
+                                   args.nickname, args.password,
+                                   domain, port,
+                                   httpPrefix, args.pageNumber,
+                                   cachedWebfingers, personCache,
+                                   debug, __version__)
+    if followRequestsJson:
+        pprint(followRequestsJson)
     sys.exit()
 
 nickname = 'admin'

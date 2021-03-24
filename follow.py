@@ -1281,6 +1281,82 @@ def getFollowersViaServer(baseDir: str, session,
     return followersJson
 
 
+def getFollowRequestsViaServer(baseDir: str, session,
+                               nickname: str, password: str,
+                               domain: str, port: int,
+                               httpPrefix: str, pageNumber: int,
+                               cachedWebfingers: {}, personCache: {},
+                               debug: bool, projectVersion: str) -> {}:
+    """Gets a page from the follow requests collection as json
+    """
+    if not session:
+        print('WARN: No session for getFollowRequestsViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+
+    followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: follow requests list webfinger failed for ' +
+                  handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: follow requests list Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+                                 projectVersion, httpPrefix, nickname,
+                                 domain, postToBox, 42759)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: follow requests list no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: follow requests list no actor was found for ' +
+                  handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+
+    if pageNumber < 1:
+        pageNumber = 1
+    url = followActor + '/followrequests?page=' + str(pageNumber)
+    followersJson = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not followersJson:
+        if debug:
+            print('DEBUG: GET follow requests list failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET follow requests list request success')
+
+    return followersJson
+
+
 def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.

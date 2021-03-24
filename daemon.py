@@ -10616,6 +10616,17 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.followingItemsPerPage,
                                        self.server.debug, 'followers')
                 return
+            elif '/followrequests?page=' in self.path:
+                self._getFollowingJson(self.server.baseDir,
+                                       self.path,
+                                       callingDomain,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.port,
+                                       self.server.followingItemsPerPage,
+                                       self.server.debug,
+                                       'followrequests')
+                return
 
         # authorized endpoint used for TTS of posts
         # arriving in your inbox
