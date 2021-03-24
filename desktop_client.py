@@ -30,6 +30,8 @@ from speaker import getSpeakerRange
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from follow import getFollowRequestsViaServer
+from follow import getFollowingViaServer
+from follow import getFollowersViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendBlockViaServer
@@ -111,6 +113,10 @@ def _desktopHelp() -> None:
           'Open web links within a timeline post')
     print(indent + 'profile [post number]                 ' +
           'Show profile for the person who made the given post')
+    print(indent + 'following [page number]               ' +
+          'Show accounts that you are following')
+    print(indent + 'followers [page number]               ' +
+          'Show accounts that are following you')
     print('')
 
 
@@ -1198,6 +1204,28 @@ def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
               handleNickname + '@' + handleDomainFull)
 
 
+def _desktopShowFollowing(followingJson: {}, translate: {},
+                          pageNumber: int, indent: str,
+                          followType='following') -> None:
+    """Shows a page of accounts followed
+    """
+    if not followingJson['orderedItems']:
+        return
+    print('')
+    if followType == 'following':
+        print(indent + 'Following page ' + str(pageNumber))
+    elif followType == 'followers':
+        print(indent + 'Followers page ' + str(pageNumber))
+    print('')
+    for item in followingJson['orderedItems']:
+        handleNickname = getNicknameFromActor(item)
+        handleDomain, handlePort = getDomainFromActor(item)
+        handleDomainFull = \
+            getFullDomain(handleDomain, handlePort)
+        print(indent + '  👤 ' +
+              handleNickname + '@' + handleDomainFull)
+
+
 def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                      nickname: str, domain: str, port: int,
                      password: str, screenreader: str,
@@ -1949,7 +1977,49 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                cachedWebfingers, personCache,
                                                debug, __version__)
                 if followRequestsJson:
-                    _desktopShowFollowRequests(followRequestsJson, translate)
+                    if isinstance(followRequestsJson, dict):
+                        _desktopShowFollowRequests(followRequestsJson,
+                                                   translate)
+                print('')
+            elif (commandStr == 'following' or
+                  commandStr.startswith('following ')):
+                currPage = 1
+                if ' ' in commandStr:
+                    pageNum = commandStr.split(' ')[-1].strip()
+                    if pageNum.isdigit():
+                        currPage = int(pageNum)
+                followingJson = \
+                    getFollowingViaServer(baseDir, session,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, currPage,
+                                          cachedWebfingers, personCache,
+                                          debug, __version__)
+                if followingJson:
+                    if isinstance(followingJson, dict):
+                        _desktopShowFollowing(followingJson, translate,
+                                              currPage, indent,
+                                              'following')
+                print('')
+            elif (commandStr == 'followers' or
+                  commandStr.startswith('followers ')):
+                currPage = 1
+                if ' ' in commandStr:
+                    pageNum = commandStr.split(' ')[-1].strip()
+                    if pageNum.isdigit():
+                        currPage = int(pageNum)
+                followersJson = \
+                    getFollowersViaServer(baseDir, session,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, currPage,
+                                          cachedWebfingers, personCache,
+                                          debug, __version__)
+                if followersJson:
+                    if isinstance(followersJson, dict):
+                        _desktopShowFollowing(followersJson, translate,
+                                              currPage, indent,
+                                              'followers')
                 print('')
             elif (commandStr == 'follow' or
                   commandStr.startswith('follow ')):
