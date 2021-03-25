@@ -1213,6 +1213,10 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
                           followType='following') -> None:
     """Shows a page of accounts followed
     """
+    if not isinstance(followingJson, dict):
+        return
+    if not followingJson.get('orderedItems'):
+        return
     if not followingJson['orderedItems']:
         return
     print('')
