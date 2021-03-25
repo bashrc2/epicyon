@@ -2273,6 +2273,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
+                print(_highlightText('Press Enter to continue...'))
+                input()
             elif (commandStr == 'delete' or
                   commandStr == 'rm' or
                   commandStr.startswith('delete ') or
