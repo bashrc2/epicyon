@@ -758,9 +758,10 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     return postJsonObject
 
 
-def _showActor(baseDir: str, actorJson: {}, translate: {},
-               systemLanguage: str, screenreader: str, espeak) -> None:
-    """
+def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
+                      systemLanguage: str, screenreader: str,
+                      espeak) -> None:
+    """Shows information for the given actor
     """
     actor = actorJson['id']
     actorNickname = getNicknameFromActor(actor)
@@ -791,13 +792,13 @@ def _showActor(baseDir: str, actorJson: {}, translate: {},
         _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
 
 
-def _showProfile(session, nickname: str, domain: str,
-                 httpPrefix: str, baseDir: str, boxName: str,
-                 pageNumber: int, index: int, boxJson: {},
-                 systemLanguage: str,
-                 screenreader: str, espeak,
-                 translate: {}, yourActor: str,
-                 postJsonObject: {}) -> {}:
+def _desktopShowProfile(session, nickname: str, domain: str,
+                        httpPrefix: str, baseDir: str, boxName: str,
+                        pageNumber: int, index: int, boxJson: {},
+                        systemLanguage: str,
+                        screenreader: str, espeak,
+                        translate: {}, yourActor: str,
+                        postJsonObject: {}) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
@@ -829,8 +830,8 @@ def _showProfile(session, nickname: str, domain: str,
         isHttp = True
     actorJson = getActorJson(actor, isHttp, False, False, True)
 
-    _showActor(baseDir, actorJson, translate,
-               systemLanguage, screenreader, espeak)
+    _desktopShowActor(baseDir, actorJson, translate,
+                      systemLanguage, screenreader, espeak)
 
     return actorJson
 
@@ -1567,12 +1568,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if commandStr == 'profile':
                     if postJsonObject:
                         actorJson = \
-                            _showProfile(session, nickname, domain,
-                                         httpPrefix, baseDir, currTimeline,
-                                         pageNumber, postIndex, boxJson,
-                                         systemLanguage, screenreader,
-                                         espeak, translate, yourActor,
-                                         postJsonObject)
+                            _desktopShowProfile(session, nickname, domain,
+                                                httpPrefix, baseDir,
+                                                currTimeline,
+                                                pageNumber, postIndex,
+                                                boxJson,
+                                                systemLanguage, screenreader,
+                                                espeak, translate, yourActor,
+                                                postJsonObject)
                     else:
                         postIndexStr = '1'
                 else:
@@ -1587,12 +1590,12 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     newRepliesExist, newDMsExist)
                     postIndex = int(postIndexStr)
                     actorJson = \
-                        _showProfile(session, nickname, domain,
-                                     httpPrefix, baseDir, currTimeline,
-                                     pageNumber, postIndex, boxJson,
-                                     systemLanguage, screenreader,
-                                     espeak, translate, yourActor,
-                                     None)
+                        _desktopShowProfile(session, nickname, domain,
+                                            httpPrefix, baseDir, currTimeline,
+                                            pageNumber, postIndex, boxJson,
+                                            systemLanguage, screenreader,
+                                            espeak, translate, yourActor,
+                                            None)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
