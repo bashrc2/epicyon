@@ -29,6 +29,8 @@ from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from follow import approveFollowRequestViaServer
+from follow import denyFollowRequestViaServer
 from follow import getFollowRequestsViaServer
 from follow import getFollowingViaServer
 from follow import getFollowersViaServer
@@ -117,6 +119,10 @@ def _desktopHelp() -> None:
           'Show accounts that you are following')
     print(indent + 'followers [page number]               ' +
           'Show accounts that are following you')
+    print(indent + 'approve [handle]                      ' +
+          'Approve a follow request')
+    print(indent + 'deny [handle]                         ' +
+          'Deny a follow request')
     print('')
 
 
@@ -1544,7 +1550,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           espeak, translate, yourActor)
                     print('')
                     print(_highlightText('Press Enter to continue...'))
-                    enterKey = input()
+                    input()
                     prevTimelineFirstId = ''
                     refreshTimeline = True
                 print('')
@@ -2104,6 +2110,70 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     else:
                         sayStr = followHandle + ' is not valid'
                         _sayCommand(sayStr, sayStr,
+                                    screenreader, systemLanguage, espeak)
+                    print('')
+            elif commandStr.startswith('approve '):
+                approveHandle = commandStr.replace('approve ', '').strip()
+                if approveHandle.startswith('@'):
+                    approveHandle = approveHandle[1:]
+
+                if '@' in approveHandle or '://' in approveHandle:
+                    approveNickname = getNicknameFromActor(approveHandle)
+                    approveDomain, approvePort = \
+                        getDomainFromActor(approveHandle)
+                    if approveNickname and approveDomain:
+                        sayStr = 'Sending approve follow request for ' + \
+                            approveNickname + '@' + approveDomain
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader, systemLanguage, espeak)
+                        sessionApprove = createSession(proxyType)
+                        approveFollowRequestViaServer(baseDir, sessionApprove,
+                                                      nickname, password,
+                                                      domain, port,
+                                                      httpPrefix,
+                                                      approveHandle,
+                                                      cachedWebfingers,
+                                                      personCache,
+                                                      debug,
+                                                      __version__)
+                    else:
+                        if approveHandle:
+                            sayStr = approveHandle + ' is not valid'
+                        else:
+                            sayStr = 'Specify a handle to approve'
+                        _sayCommand(sayStr,
+                                    screenreader, systemLanguage, espeak)
+                    print('')
+            elif commandStr.startswith('deny '):
+                denyHandle = commandStr.replace('deny ', '').strip()
+                if denyHandle.startswith('@'):
+                    denyHandle = denyHandle[1:]
+
+                if '@' in denyHandle or '://' in denyHandle:
+                    denyNickname = getNicknameFromActor(denyHandle)
+                    denyDomain, denyPort = \
+                        getDomainFromActor(denyHandle)
+                    if denyNickname and denyDomain:
+                        sayStr = 'Sending deny follow request for ' + \
+                            denyNickname + '@' + denyDomain
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader, systemLanguage, espeak)
+                        sessionDeny = createSession(proxyType)
+                        denyFollowRequestViaServer(baseDir, sessionDeny,
+                                                   nickname, password,
+                                                   domain, port,
+                                                   httpPrefix,
+                                                   denyHandle,
+                                                   cachedWebfingers,
+                                                   personCache,
+                                                   debug,
+                                                   __version__)
+                    else:
+                        if denyHandle:
+                            sayStr = denyHandle + ' is not valid'
+                        else:
+                            sayStr = 'Specify a handle to deny'
+                        _sayCommand(sayStr,
                                     screenreader, systemLanguage, espeak)
                     print('')
             elif (commandStr == 'repeat' or commandStr == 'replay' or

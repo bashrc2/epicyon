@@ -1357,6 +1357,86 @@ def getFollowRequestsViaServer(baseDir: str, session,
     return followersJson
 
 
+def approveFollowRequestViaServer(baseDir: str, session,
+                                  nickname: str, password: str,
+                                  domain: str, port: int,
+                                  httpPrefix: str, approveHandle: int,
+                                  cachedWebfingers: {}, personCache: {},
+                                  debug: bool, projectVersion: str) -> str:
+    """Approves a follow request
+    This is not exactly via c2s though. It simulates pressing the Approve
+    button on the web interface
+    """
+    if not session:
+        print('WARN: No session for approveFollowRequestViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'text/html; charset=utf-8',
+        'Authorization': authHeader
+    }
+
+    url = actor + '/followapprove=' + approveHandle
+    approveHtml = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not approveHtml:
+        if debug:
+            print('DEBUG: GET approve follow request failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET approve follow request request success')
+
+    return approveHtml
+
+
+def denyFollowRequestViaServer(baseDir: str, session,
+                               nickname: str, password: str,
+                               domain: str, port: int,
+                               httpPrefix: str, denyHandle: int,
+                               cachedWebfingers: {}, personCache: {},
+                               debug: bool, projectVersion: str) -> str:
+    """Denies a follow request
+    This is not exactly via c2s though. It simulates pressing the Deny
+    button on the web interface
+    """
+    if not session:
+        print('WARN: No session for denyFollowRequestViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'text/html; charset=utf-8',
+        'Authorization': authHeader
+    }
+
+    url = actor + '/followdeny=' + denyHandle
+    denyHtml = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not denyHtml:
+        if debug:
+            print('DEBUG: GET deny follow request failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET deny follow request request success')
+
+    return denyHtml
+
+
 def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
