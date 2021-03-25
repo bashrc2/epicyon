@@ -1145,41 +1145,7 @@ def getFollowingViaServer(baseDir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-
     followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
-
-    # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: following list webfinger failed for ' + handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: following list Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, nickname,
-                                 domain, postToBox, 52025)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: following list no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: following list no actor was found for ' + handle)
-        return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1220,41 +1186,7 @@ def getFollowersViaServer(baseDir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-
     followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
-
-    # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: followers list webfinger failed for ' + handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: followers list Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, nickname,
-                                 domain, postToBox, 52025)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: followers list no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: followers list no actor was found for ' + handle)
-        return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1296,42 +1228,6 @@ def getFollowRequestsViaServer(baseDir: str, session,
     domainFull = getFullDomain(domain, port)
 
     followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
-
-    # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: follow requests list webfinger failed for ' +
-                  handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: follow requests list Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, nickname,
-                                 domain, postToBox, 42759)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: follow requests list no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: follow requests list no actor was found for ' +
-                  handle)
-        return 4
-
     authHeader = createBasicAuthHeader(nickname, password)
 
     headers = {
@@ -1355,6 +1251,86 @@ def getFollowRequestsViaServer(baseDir: str, session,
         print('DEBUG: c2s GET follow requests list request success')
 
     return followersJson
+
+
+def approveFollowRequestViaServer(baseDir: str, session,
+                                  nickname: str, password: str,
+                                  domain: str, port: int,
+                                  httpPrefix: str, approveHandle: int,
+                                  cachedWebfingers: {}, personCache: {},
+                                  debug: bool, projectVersion: str) -> str:
+    """Approves a follow request
+    This is not exactly via c2s though. It simulates pressing the Approve
+    button on the web interface
+    """
+    if not session:
+        print('WARN: No session for approveFollowRequestViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'text/html; charset=utf-8',
+        'Authorization': authHeader
+    }
+
+    url = actor + '/followapprove=' + approveHandle
+    approveHtml = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not approveHtml:
+        if debug:
+            print('DEBUG: GET approve follow request failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET approve follow request request success')
+
+    return approveHtml
+
+
+def denyFollowRequestViaServer(baseDir: str, session,
+                               nickname: str, password: str,
+                               domain: str, port: int,
+                               httpPrefix: str, denyHandle: int,
+                               cachedWebfingers: {}, personCache: {},
+                               debug: bool, projectVersion: str) -> str:
+    """Denies a follow request
+    This is not exactly via c2s though. It simulates pressing the Deny
+    button on the web interface
+    """
+    if not session:
+        print('WARN: No session for denyFollowRequestViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'text/html; charset=utf-8',
+        'Authorization': authHeader
+    }
+
+    url = actor + '/followdeny=' + denyHandle
+    denyHtml = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not denyHtml:
+        if debug:
+            print('DEBUG: GET deny follow request failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET deny follow request request success')
+
+    return denyHtml
 
 
 def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:

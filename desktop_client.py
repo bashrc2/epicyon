@@ -29,6 +29,8 @@ from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from follow import approveFollowRequestViaServer
+from follow import denyFollowRequestViaServer
 from follow import getFollowRequestsViaServer
 from follow import getFollowingViaServer
 from follow import getFollowersViaServer
@@ -57,9 +59,10 @@ from person import getActorJson
 def _desktopHelp() -> None:
     """Shows help
     """
+    _desktopClearScreen()
     indent = '   '
     print('')
-    print(indent + 'Commands:')
+    print(indent + _highlightText('Help Commands:'))
     print('')
     print(indent + 'quit                                  ' +
           'Exit from the desktop client')
@@ -111,12 +114,16 @@ def _desktopHelp() -> None:
           'Read a post from a timeline')
     print(indent + 'open [post number]                    ' +
           'Open web links within a timeline post')
-    print(indent + 'profile [post number]                 ' +
+    print(indent + 'profile [post number or handle]       ' +
           'Show profile for the person who made the given post')
     print(indent + 'following [page number]               ' +
           'Show accounts that you are following')
     print(indent + 'followers [page number]               ' +
           'Show accounts that are following you')
+    print(indent + 'approve [handle]                      ' +
+          'Approve a follow request')
+    print(indent + 'deny [handle]                         ' +
+          'Deny a follow request')
     print('')
 
 
@@ -322,11 +329,12 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
             speakerLang = 'de-DE'
         elif systemLanguage.startswith('it'):
             speakerLang = 'it-IT'
+    sayText = str(sayText).replace('"', "'")
     speakerCmd = 'picospeaker ' + \
         '-l ' + speakerLang + \
         ' -r ' + str(rate) + \
         ' -p ' + str(pitch) + ' "' + \
-        html.unescape(sayText) + '" 2> /dev/null'
+        html.unescape(str(sayText)) + '" 2> /dev/null'
     os.system(speakerCmd)
 
 
@@ -752,13 +760,48 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     return postJsonObject
 
 
-def _showProfile(session, nickname: str, domain: str,
-                 httpPrefix: str, baseDir: str, boxName: str,
-                 pageNumber: int, index: int, boxJson: {},
-                 systemLanguage: str,
-                 screenreader: str, espeak,
-                 translate: {}, yourActor: str,
-                 postJsonObject: {}) -> {}:
+def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
+                      systemLanguage: str, screenreader: str,
+                      espeak) -> None:
+    """Shows information for the given actor
+    """
+    actor = actorJson['id']
+    actorNickname = getNicknameFromActor(actor)
+    actorDomain, actorPort = getDomainFromActor(actor)
+    actorDomainFull = getFullDomain(actorDomain, actorPort)
+    handle = '@' + actorNickname + '@' + actorDomainFull
+
+    sayStr = 'Profile for ' + html.unescape(handle)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    print(actor)
+    if actorJson.get('movedTo'):
+        sayStr = 'Moved to ' + html.unescape(actorJson['movedTo'])
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    if actorJson.get('alsoKnownAs'):
+        alsoKnownAsStr = ''
+        ctr = 0
+        for altActor in actorJson['alsoKnownAs']:
+            if ctr > 0:
+                alsoKnownAsStr += ', '
+            ctr += 1
+            alsoKnownAsStr += altActor
+
+        sayStr = 'Also known as ' + html.unescape(alsoKnownAsStr)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    if actorJson.get('summary'):
+        sayStr = html.unescape(removeHtml(actorJson['summary']))
+        sayStr = sayStr.replace('"', "'")
+        sayStr2 = speakableText(baseDir, sayStr, translate)[0]
+        _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+
+
+def _desktopShowProfile(session, nickname: str, domain: str,
+                        httpPrefix: str, baseDir: str, boxName: str,
+                        pageNumber: int, index: int, boxJson: {},
+                        systemLanguage: str,
+                        screenreader: str, espeak,
+                        translate: {}, yourActor: str,
+                        postJsonObject: {}) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
@@ -790,33 +833,26 @@ def _showProfile(session, nickname: str, domain: str,
         isHttp = True
     actorJson = getActorJson(actor, isHttp, False, False, True)
 
-    actor = actorJson['id']
-    actorNickname = getNicknameFromActor(actor)
-    actorDomain, actorPort = getDomainFromActor(actor)
-    actorDomainFull = getFullDomain(actorDomain, actorPort)
-    handle = '@' + actorNickname + '@' + actorDomainFull
+    _desktopShowActor(baseDir, actorJson, translate,
+                      systemLanguage, screenreader, espeak)
 
-    sayStr = handle
-    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    print(actor)
-    if actorJson.get('movedTo'):
-        sayStr = 'Moved to ' + actorJson['movedTo']
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if actorJson.get('alsoKnownAs'):
-        alsoKnownAsStr = ''
-        ctr = 0
-        for altActor in actorJson['alsoKnownAs']:
-            if ctr > 0:
-                alsoKnownAsStr += ', '
-            ctr += 1
-            alsoKnownAsStr += altActor
+    return actorJson
 
-        sayStr = 'Also known as ' + alsoKnownAsStr
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if actorJson.get('summary'):
-        sayStr = removeHtml(actorJson['summary'])
-        sayStr2 = speakableText(baseDir, sayStr, translate)
-        _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+
+def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
+                                  httpPrefix: str, baseDir: str, boxName: str,
+                                  handle: str,
+                                  systemLanguage: str,
+                                  screenreader: str, espeak,
+                                  translate: {}, yourActor: str,
+                                  postJsonObject: {}) -> {}:
+    """Shows the profile for a handle
+    Returns the actor json
+    """
+    actorJson = getActorJson(handle, False, False, False, True)
+
+    _desktopShowActor(baseDir, actorJson, translate,
+                      systemLanguage, screenreader, espeak)
 
     return actorJson
 
@@ -1045,10 +1081,6 @@ def _desktopShowBox(indent: str,
     elif newReplies and boxName != 'tlreplies':
         sayStr += \
             'Use \33[3mshow replies\33[0m to view reply posts.'
-    else:
-        sayStr += \
-            'Use the \33[3mnext\33[0m and ' + \
-            '\33[3mprev\33[0m commands to navigate.'
     sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
     sayStr2 = sayStr2.replace('show dm', 'show DM')
     sayStr2 = sayStr2.replace('dm post', 'Direct message post')
@@ -1189,6 +1221,10 @@ def _desktopNewDMbase(session, toHandle: str,
 def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
     """Shows any follow requests
     """
+    if not isinstance(followRequestsJson, dict):
+        return
+    if not followRequestsJson.get('orderedItems'):
+        return
     if not followRequestsJson['orderedItems']:
         return
     indent = '   '
@@ -1209,6 +1245,10 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
                           followType='following') -> None:
     """Shows a page of accounts followed
     """
+    if not isinstance(followingJson, dict):
+        return
+    if not followingJson.get('orderedItems'):
+        return
     if not followingJson['orderedItems']:
         return
     print('')
@@ -1521,12 +1561,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
-                                    translate,
-                                    screenreader, systemLanguage,
-                                    espeak, pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktopClearScreen()
+                    _desktopShowBanner()
                     postIndex = int(postIndexStr)
                     postJsonObject = \
                         _readLocalBoxPost(session, nickname, domain,
@@ -1534,38 +1570,68 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
                                           espeak, translate, yourActor)
+                    print('')
+                    sayStr = 'Press Enter to continue...'
+                    sayStr2 = _highlightText(sayStr)
+                    _sayCommand(sayStr2, sayStr,
+                                screenreader, systemLanguage, espeak)
+                    input()
+                    prevTimelineFirstId = ''
+                    refreshTimeline = True
                 print('')
             elif commandStr.startswith('profile ') or commandStr == 'profile':
                 actorJson = None
                 if commandStr == 'profile':
                     if postJsonObject:
                         actorJson = \
-                            _showProfile(session, nickname, domain,
-                                         httpPrefix, baseDir, currTimeline,
-                                         pageNumber, postIndex, boxJson,
-                                         systemLanguage, screenreader,
-                                         espeak, translate, yourActor,
-                                         postJsonObject)
+                            _desktopShowProfile(session, nickname, domain,
+                                                httpPrefix, baseDir,
+                                                currTimeline,
+                                                pageNumber, postIndex,
+                                                boxJson,
+                                                systemLanguage, screenreader,
+                                                espeak, translate, yourActor,
+                                                postJsonObject)
                     else:
                         postIndexStr = '1'
                 else:
                     postIndexStr = commandStr.split('profile ')[1]
 
-                if not actorJson and boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
-                                    translate,
-                                    screenreader, systemLanguage,
-                                    espeak, pageNumber,
-                                    newRepliesExist, newDMsExist)
+                if not postIndexStr.isdigit():
+                    profileHandle = postIndexStr
+                    _desktopClearScreen()
+                    _desktopShowBanner()
+                    _desktopShowProfileFromHandle(session, nickname, domain,
+                                                  httpPrefix, baseDir,
+                                                  currTimeline, profileHandle,
+                                                  systemLanguage, screenreader,
+                                                  espeak, translate, yourActor,
+                                                  None)
+                    sayStr = 'Press Enter to continue...'
+                    sayStr2 = _highlightText(sayStr)
+                    _sayCommand(sayStr2, sayStr,
+                                screenreader, systemLanguage, espeak)
+                    input()
+                    prevTimelineFirstId = ''
+                    refreshTimeline = True
+                elif not actorJson and boxJson:
+                    _desktopClearScreen()
+                    _desktopShowBanner()
                     postIndex = int(postIndexStr)
                     actorJson = \
-                        _showProfile(session, nickname, domain,
-                                     httpPrefix, baseDir, currTimeline,
-                                     pageNumber, postIndex, boxJson,
-                                     systemLanguage, screenreader,
-                                     espeak, translate, yourActor,
-                                     None)
+                        _desktopShowProfile(session, nickname, domain,
+                                            httpPrefix, baseDir, currTimeline,
+                                            pageNumber, postIndex, boxJson,
+                                            systemLanguage, screenreader,
+                                            espeak, translate, yourActor,
+                                            None)
+                    sayStr = 'Press Enter to continue...'
+                    sayStr2 = _highlightText(sayStr)
+                    _sayCommand(sayStr2, sayStr,
+                                screenreader, systemLanguage, espeak)
+                    input()
+                    prevTimelineFirstId = ''
+                    refreshTimeline = True
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
@@ -2093,6 +2159,70 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                     print('')
+            elif commandStr.startswith('approve '):
+                approveHandle = commandStr.replace('approve ', '').strip()
+                if approveHandle.startswith('@'):
+                    approveHandle = approveHandle[1:]
+
+                if '@' in approveHandle or '://' in approveHandle:
+                    approveNickname = getNicknameFromActor(approveHandle)
+                    approveDomain, approvePort = \
+                        getDomainFromActor(approveHandle)
+                    if approveNickname and approveDomain:
+                        sayStr = 'Sending approve follow request for ' + \
+                            approveNickname + '@' + approveDomain
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader, systemLanguage, espeak)
+                        sessionApprove = createSession(proxyType)
+                        approveFollowRequestViaServer(baseDir, sessionApprove,
+                                                      nickname, password,
+                                                      domain, port,
+                                                      httpPrefix,
+                                                      approveHandle,
+                                                      cachedWebfingers,
+                                                      personCache,
+                                                      debug,
+                                                      __version__)
+                    else:
+                        if approveHandle:
+                            sayStr = approveHandle + ' is not valid'
+                        else:
+                            sayStr = 'Specify a handle to approve'
+                        _sayCommand(sayStr,
+                                    screenreader, systemLanguage, espeak)
+                    print('')
+            elif commandStr.startswith('deny '):
+                denyHandle = commandStr.replace('deny ', '').strip()
+                if denyHandle.startswith('@'):
+                    denyHandle = denyHandle[1:]
+
+                if '@' in denyHandle or '://' in denyHandle:
+                    denyNickname = getNicknameFromActor(denyHandle)
+                    denyDomain, denyPort = \
+                        getDomainFromActor(denyHandle)
+                    if denyNickname and denyDomain:
+                        sayStr = 'Sending deny follow request for ' + \
+                            denyNickname + '@' + denyDomain
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader, systemLanguage, espeak)
+                        sessionDeny = createSession(proxyType)
+                        denyFollowRequestViaServer(baseDir, sessionDeny,
+                                                   nickname, password,
+                                                   domain, port,
+                                                   httpPrefix,
+                                                   denyHandle,
+                                                   cachedWebfingers,
+                                                   personCache,
+                                                   debug,
+                                                   __version__)
+                    else:
+                        if denyHandle:
+                            sayStr = denyHandle + ' is not valid'
+                        else:
+                            sayStr = 'Specify a handle to deny'
+                        _sayCommand(sayStr,
+                                    screenreader, systemLanguage, espeak)
+                    print('')
             elif (commandStr == 'repeat' or commandStr == 'replay' or
                   commandStr == 'rp' or commandStr == 'again' or
                   commandStr == 'say again'):
@@ -2190,6 +2320,13 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
+                sayStr = 'Press Enter to continue...'
+                sayStr2 = _highlightText(sayStr)
+                _sayCommand(sayStr2, sayStr,
+                            screenreader, systemLanguage, espeak)
+                input()
+                prevTimelineFirstId = ''
+                refreshTimeline = True
             elif (commandStr == 'delete' or
                   commandStr == 'rm' or
                   commandStr.startswith('delete ') or

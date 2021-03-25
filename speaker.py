@@ -376,6 +376,7 @@ def speakableText(baseDir: str, content: str, translate: {}) -> (str, []):
     """Convert the given text to a speakable version
     which includes changes for prononciation
     """
+    content = str(content)
     if isPGPEncrypted(content):
         return content, []
 
