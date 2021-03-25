@@ -704,7 +704,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                         _textOnlyContent(postJsonObject2['object']['content'])
                     content += _getImageDescription(postJsonObject2)
                     messageStr, detectedLinks = \
-                        speakableText(baseDir, content, translate)
+                        speakableText(baseDir, content, translate)[0]
                     sayStr = content
                     _sayCommand(sayStr, messageStr, screenreader,
                                 systemLanguage, espeak)
@@ -726,7 +726,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
             return {}
 
     content = _safeMessage(content)
-    messageStr, detectedLinks = speakableText(baseDir, content, translate)
+    messageStr, detectedLinks = speakableText(baseDir, content, translate)[0]
 
     if screenreader:
         time.sleep(2)
@@ -790,7 +790,7 @@ def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
     if actorJson.get('summary'):
         sayStr = html.unescape(removeHtml(actorJson['summary']))
         sayStr = sayStr.replace('"', "'")
-        sayStr2 = speakableText(baseDir, sayStr, translate)
+        sayStr2 = speakableText(baseDir, sayStr, translate)[0]
         _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
 
 
@@ -2303,7 +2303,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if postJsonObject:
                     content = postJsonObject['object']['content']
                     messageStr, detectedLinks = \
-                        speakableText(baseDir, content, translate)
+                        speakableText(baseDir, content, translate)[0]
                     linkOpened = False
                     for url in detectedLinks:
                         if '://' in url:
