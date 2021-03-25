@@ -26,6 +26,7 @@ from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
+from session import getJson
 from session import postJson
 
 
@@ -351,14 +352,14 @@ def _getNoOfFollowers(baseDir: str,
 
 
 def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
-                     httpPrefix: str, authenticated: bool,
+                     httpPrefix: str, authorized: bool,
                      followsPerPage=12,
                      followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests.
     This accesses the following.txt or followers.txt and builds a collection.
     """
-    # Show a small number of follows to non-authenticated viewers
-    if not authenticated:
+    # Show a small number of follows to non-authorized viewers
+    if not authorized:
         followsPerPage = 6
 
     if '/' + followFile not in path:
@@ -368,7 +369,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     pageNumber = None
     if '?page=' in path:
         pageNumber = path.split('?page=')[1]
-        if pageNumber == 'true' or not authenticated:
+        if pageNumber == 'true' or not authorized:
             pageNumber = 1
         else:
             try:
@@ -400,7 +401,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
             httpPrefix + '://' + domain + '/users/' + \
             nickname + '/' + followFile
         totalStr = \
-            _getNoOfFollows(baseDir, nickname, domain, authenticated)
+            _getNoOfFollows(baseDir, nickname, domain, authorized)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': firstStr,
@@ -1129,6 +1130,231 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
         print('DEBUG: c2s POST unfollow success')
 
     return unfollowJson
+
+
+def getFollowingViaServer(baseDir: str, session,
+                          nickname: str, password: str,
+                          domain: str, port: int,
+                          httpPrefix: str, pageNumber: int,
+                          cachedWebfingers: {}, personCache: {},
+                          debug: bool, projectVersion: str) -> {}:
+    """Gets a page from the following collection as json
+    """
+    if not session:
+        print('WARN: No session for getFollowingViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+
+    followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: following list webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: following list Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+                                 projectVersion, httpPrefix, nickname,
+                                 domain, postToBox, 52025)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: following list no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: following list no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+
+    if pageNumber < 1:
+        pageNumber = 1
+    url = followActor + '/following?page=' + str(pageNumber)
+    followingJson = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix,
+                domain, 10, True)
+    if not followingJson:
+        if debug:
+            print('DEBUG: GET following list failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET following list request success')
+
+    return followingJson
+
+
+def getFollowersViaServer(baseDir: str, session,
+                          nickname: str, password: str,
+                          domain: str, port: int,
+                          httpPrefix: str, pageNumber: int,
+                          cachedWebfingers: {}, personCache: {},
+                          debug: bool, projectVersion: str) -> {}:
+    """Gets a page from the followers collection as json
+    """
+    if not session:
+        print('WARN: No session for getFollowersViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+
+    followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: followers list webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: followers list Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+                                 projectVersion, httpPrefix, nickname,
+                                 domain, postToBox, 52025)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: followers list no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: followers list no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+
+    if pageNumber < 1:
+        pageNumber = 1
+    url = followActor + '/followers?page=' + str(pageNumber)
+    followersJson = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not followersJson:
+        if debug:
+            print('DEBUG: GET followers list failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET followers list request success')
+
+    return followersJson
+
+
+def getFollowRequestsViaServer(baseDir: str, session,
+                               nickname: str, password: str,
+                               domain: str, port: int,
+                               httpPrefix: str, pageNumber: int,
+                               cachedWebfingers: {}, personCache: {},
+                               debug: bool, projectVersion: str) -> {}:
+    """Gets a page from the follow requests collection as json
+    """
+    if not session:
+        print('WARN: No session for getFollowRequestsViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+
+    followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: follow requests list webfinger failed for ' +
+                  handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: follow requests list Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+                                 projectVersion, httpPrefix, nickname,
+                                 domain, postToBox, 42759)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: follow requests list no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: follow requests list no actor was found for ' +
+                  handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+
+    if pageNumber < 1:
+        pageNumber = 1
+    url = followActor + '/followrequests?page=' + str(pageNumber)
+    followersJson = \
+        getJson(session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
+    if not followersJson:
+        if debug:
+            print('DEBUG: GET follow requests list failed for c2s to ' + url)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s GET follow requests list request success')
+
+    return followersJson
 
 
 def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:

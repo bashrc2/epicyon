@@ -29,6 +29,9 @@ from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from follow import getFollowRequestsViaServer
+from follow import getFollowingViaServer
+from follow import getFollowersViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendBlockViaServer
@@ -110,6 +113,10 @@ def _desktopHelp() -> None:
           'Open web links within a timeline post')
     print(indent + 'profile [post number]                 ' +
           'Show profile for the person who made the given post')
+    print(indent + 'following [page number]               ' +
+          'Show accounts that you are following')
+    print(indent + 'followers [page number]               ' +
+          'Show accounts that are following you')
     print('')
 
 
@@ -871,7 +878,10 @@ def _highlightText(text: str) -> str:
     return '\33[7m' + text + '\33[0m'
 
 
-def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
+def _desktopShowBox(indent: str,
+                    followRequestsJson: {},
+                    yourActor: str, boxName: str, boxJson: {},
+                    translate: {},
                     screenreader: str, systemLanguage: str, espeak,
                     pageNumber=1,
                     newReplies=False,
@@ -881,7 +891,6 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
     numberWidth = 2
     nameWidth = 16
     contentWidth = 50
-    indent = '   '
 
     # title
     _desktopClearScreen()
@@ -893,11 +902,10 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
     else:
         boxNameStr = boxName
     titleStr = _highlightText(boxNameStr.upper())
-
-    if newDMs:
-        notificationIcons += ' 📩'
-    if newReplies:
-        notificationIcons += ' 📨'
+    # if newDMs:
+    #     notificationIcons += ' 📩'
+    # if newReplies:
+    #     notificationIcons += ' 📨'
 
     if notificationIcons:
         while len(titleStr) < 95 - len(notificationIcons):
@@ -1022,6 +1030,9 @@ def _desktopShowBox(yourActor: str, boxName: str, boxJson: {},
                     lineStr = _highlightText(lineStr)
         print(lineStr)
         ctr += 1
+
+    if followRequestsJson:
+        _desktopShowFollowRequests(followRequestsJson, translate)
 
     print('')
 
@@ -1175,6 +1186,46 @@ def _desktopNewDMbase(session, toHandle: str,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
+def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
+    """Shows any follow requests
+    """
+    if not followRequestsJson['orderedItems']:
+        return
+    indent = '   '
+    print('')
+    print(indent + 'Follow requests:')
+    print('')
+    for item in followRequestsJson['orderedItems']:
+        handleNickname = getNicknameFromActor(item)
+        handleDomain, handlePort = getDomainFromActor(item)
+        handleDomainFull = \
+            getFullDomain(handleDomain, handlePort)
+        print(indent + '  👤 ' +
+              handleNickname + '@' + handleDomainFull)
+
+
+def _desktopShowFollowing(followingJson: {}, translate: {},
+                          pageNumber: int, indent: str,
+                          followType='following') -> None:
+    """Shows a page of accounts followed
+    """
+    if not followingJson['orderedItems']:
+        return
+    print('')
+    if followType == 'following':
+        print(indent + 'Following page ' + str(pageNumber))
+    elif followType == 'followers':
+        print(indent + 'Followers page ' + str(pageNumber))
+    print('')
+    for item in followingJson['orderedItems']:
+        handleNickname = getNicknameFromActor(item)
+        handleDomain, handlePort = getDomainFromActor(item)
+        handleDomainFull = \
+            getFullDomain(handleDomain, handlePort)
+        print(indent + '  👤 ' +
+              handleNickname + '@' + handleDomainFull)
+
+
 def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                      nickname: str, domain: str, port: int,
                      password: str, screenreader: str,
@@ -1296,6 +1347,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                              currTimeline, pageNumber,
                              debug)
 
+        followRequestsJson = \
+            getFollowRequestsViaServer(baseDir, session,
+                                       nickname, password,
+                                       domain, port,
+                                       httpPrefix, 1,
+                                       cachedWebfingers, personCache,
+                                       debug, __version__)
+
         if not (currTimeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
             inboxJson = c2sBoxJson(baseDir, session,
@@ -1329,7 +1388,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             timelineFirstId = _getFirstItemId(boxJson)
             if timelineFirstId != prevTimelineFirstId:
                 _desktopClearScreen()
-                _desktopShowBox(yourActor, currTimeline, boxJson,
+                _desktopShowBox(indent, followRequestsJson,
+                                yourActor, currTimeline, boxJson,
+                                translate,
                                 None, systemLanguage, espeak,
                                 pageNumber,
                                 newRepliesExist,
@@ -1367,7 +1428,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1382,7 +1445,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1398,7 +1463,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1415,7 +1482,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1440,7 +1509,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage, espeak,
                                     pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1450,7 +1521,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1479,7 +1552,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     postIndexStr = commandStr.split('profile ')[1]
 
                 if not actorJson and boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)
@@ -1887,6 +1962,65 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   True, __version__)
                         refreshTimeline = True
                 print('')
+            elif (commandStr == 'follow requests' or
+                  commandStr.startswith('follow requests ')):
+                currPage = 1
+                if ' ' in commandStr:
+                    pageNum = commandStr.split(' ')[-1].strip()
+                    if pageNum.isdigit():
+                        currPage = int(pageNum)
+                followRequestsJson = \
+                    getFollowRequestsViaServer(baseDir, session,
+                                               nickname, password,
+                                               domain, port,
+                                               httpPrefix, currPage,
+                                               cachedWebfingers, personCache,
+                                               debug, __version__)
+                if followRequestsJson:
+                    if isinstance(followRequestsJson, dict):
+                        _desktopShowFollowRequests(followRequestsJson,
+                                                   translate)
+                print('')
+            elif (commandStr == 'following' or
+                  commandStr.startswith('following ')):
+                currPage = 1
+                if ' ' in commandStr:
+                    pageNum = commandStr.split(' ')[-1].strip()
+                    if pageNum.isdigit():
+                        currPage = int(pageNum)
+                followingJson = \
+                    getFollowingViaServer(baseDir, session,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, currPage,
+                                          cachedWebfingers, personCache,
+                                          debug, __version__)
+                if followingJson:
+                    if isinstance(followingJson, dict):
+                        _desktopShowFollowing(followingJson, translate,
+                                              currPage, indent,
+                                              'following')
+                print('')
+            elif (commandStr == 'followers' or
+                  commandStr.startswith('followers ')):
+                currPage = 1
+                if ' ' in commandStr:
+                    pageNum = commandStr.split(' ')[-1].strip()
+                    if pageNum.isdigit():
+                        currPage = int(pageNum)
+                followersJson = \
+                    getFollowersViaServer(baseDir, session,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, currPage,
+                                          cachedWebfingers, personCache,
+                                          debug, __version__)
+                if followersJson:
+                    if isinstance(followersJson, dict):
+                        _desktopShowFollowing(followersJson, translate,
+                                              currPage, indent,
+                                              'followers')
+                print('')
             elif (commandStr == 'follow' or
                   commandStr.startswith('follow ')):
                 if commandStr == 'follow':
@@ -2105,7 +2239,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
             if refreshTimeline:
                 if boxJson:
-                    _desktopShowBox(yourActor, currTimeline, boxJson,
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
                                     screenreader, systemLanguage,
                                     espeak, pageNumber,
                                     newRepliesExist, newDMsExist)

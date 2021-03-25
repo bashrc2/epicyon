@@ -9284,7 +9284,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         following = \
             getFollowingFeed(baseDir, domain, port, path,
-                             httpPrefix, authorized, followsPerPage)
+                             httpPrefix, authorized, followsPerPage,
+                             'following')
         if following:
             if self._requestHTTP():
                 pageNumber = 1
@@ -9666,9 +9667,7 @@ class PubServer(BaseHTTPRequestHandler):
                     divertToLoginScreen = False
                 else:
                     if path.endswith('/following') or \
-                       '/following?page=' in path or \
                        path.endswith('/followers') or \
-                       '/followers?page=' in path or \
                        path.endswith('/skills') or \
                        path.endswith('/roles') or \
                        path.endswith('/shares'):
@@ -10276,6 +10275,29 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
 
+    def _getFollowingJson(self, baseDir: str, path: str,
+                          callingDomain: str,
+                          httpPrefix: str,
+                          domain: str, port: int,
+                          followingItemsPerPage: int,
+                          debug: bool, listName='following') -> None:
+        """Returns json collection for following.txt
+        """
+        followingJson = \
+            getFollowingFeed(baseDir, domain, port, path, httpPrefix,
+                             True, followingItemsPerPage, listName)
+        if not followingJson:
+            if debug:
+                print(listName + ' json feed not found for ' + path)
+            self._404()
+            return
+        msg = json.dumps(followingJson,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json',
+                          msglen, None, callingDomain)
+        self._write(msg)
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -10572,6 +10594,39 @@ class PubServer(BaseHTTPRequestHandler):
         usersInPath = False
         if '/users/' in self.path:
             usersInPath = True
+
+        if authorized and not htmlGET and usersInPath:
+            if '/following?page=' in self.path:
+                self._getFollowingJson(self.server.baseDir,
+                                       self.path,
+                                       callingDomain,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.port,
+                                       self.server.followingItemsPerPage,
+                                       self.server.debug, 'following')
+                return
+            elif '/followers?page=' in self.path:
+                self._getFollowingJson(self.server.baseDir,
+                                       self.path,
+                                       callingDomain,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.port,
+                                       self.server.followingItemsPerPage,
+                                       self.server.debug, 'followers')
+                return
+            elif '/followrequests?page=' in self.path:
+                self._getFollowingJson(self.server.baseDir,
+                                       self.path,
+                                       callingDomain,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.port,
+                                       self.server.followingItemsPerPage,
+                                       self.server.debug,
+                                       'followrequests')
+                return
 
         # authorized endpoint used for TTS of posts
         # arriving in your inbox
@@ -14510,6 +14565,7 @@ def runDaemon(brochMode: bool,
     # for it to be considered dormant?
     httpd.dormantMonths = dormantMonths
 
+    httpd.followingItemsPerPage = 12
     if registration == 'open':
         httpd.registration = True
     else:
