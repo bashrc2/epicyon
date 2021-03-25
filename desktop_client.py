@@ -59,9 +59,10 @@ from person import getActorJson
 def _desktopHelp() -> None:
     """Shows help
     """
+    _desktopClearScreen()
     indent = '   '
     print('')
-    print(indent + 'Commands:')
+    print(indent + _highlightText('Help Commands:'))
     print('')
     print(indent + 'quit                                  ' +
           'Exit from the desktop client')
@@ -1571,7 +1572,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           espeak, translate, yourActor)
                     print('')
                     sayStr = 'Press Enter to continue...'
-                    _sayCommand(_highlightText(sayStr), sayStr,
+                    sayStr2 = _highlightText(sayStr)
+                    _sayCommand(sayStr2, sayStr,
                                 screenreader, systemLanguage, espeak)
                     input()
                     prevTimelineFirstId = ''
@@ -1606,7 +1608,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   espeak, translate, yourActor,
                                                   None)
                     sayStr = 'Press Enter to continue...'
-                    _sayCommand(_highlightText(sayStr), sayStr,
+                    sayStr2 = _highlightText(sayStr)
+                    _sayCommand(sayStr2, sayStr,
                                 screenreader, systemLanguage, espeak)
                     input()
                     prevTimelineFirstId = ''
@@ -1623,7 +1626,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             espeak, translate, yourActor,
                                             None)
                     sayStr = 'Press Enter to continue...'
-                    _sayCommand(_highlightText(sayStr), sayStr,
+                    sayStr2 = _highlightText(sayStr)
+                    _sayCommand(sayStr2, sayStr,
                                 screenreader, systemLanguage, espeak)
                     input()
                     prevTimelineFirstId = ''
@@ -2317,9 +2321,12 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             elif commandStr.startswith('h'):
                 _desktopHelp()
                 sayStr = 'Press Enter to continue...'
-                _sayCommand(_highlightText(sayStr), sayStr,
+                sayStr2 = _highlightText(sayStr)
+                _sayCommand(sayStr2, sayStr,
                             screenreader, systemLanguage, espeak)
                 input()
+                prevTimelineFirstId = ''
+                refreshTimeline = True
             elif (commandStr == 'delete' or
                   commandStr == 'rm' or
                   commandStr.startswith('delete ') or
