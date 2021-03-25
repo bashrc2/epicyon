@@ -1613,6 +1613,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _sayCommand(_highlightText(sayStr), sayStr,
                                 screenreader, systemLanguage, espeak)
                     input()
+                    prevTimelineFirstId = ''
+                    refreshTimeline = True
                 elif not actorJson and boxJson:
                     _desktopClearScreen()
                     _desktopShowBanner()
@@ -1628,6 +1630,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _sayCommand(_highlightText(sayStr), sayStr,
                                 screenreader, systemLanguage, espeak)
                     input()
+                    prevTimelineFirstId = ''
+                    refreshTimeline = True
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
