@@ -332,7 +332,7 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
         '-l ' + speakerLang + \
         ' -r ' + str(rate) + \
         ' -p ' + str(pitch) + ' "' + \
-        html.unescape(sayText) + '" 2> /dev/null'
+        html.unescape(str(sayText)) + '" 2> /dev/null'
     os.system(speakerCmd)
 
 
@@ -769,11 +769,11 @@ def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
     actorDomainFull = getFullDomain(actorDomain, actorPort)
     handle = '@' + actorNickname + '@' + actorDomainFull
 
-    sayStr = handle
+    sayStr = html.unescape(handle)
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     print(actor)
     if actorJson.get('movedTo'):
-        sayStr = 'Moved to ' + actorJson['movedTo']
+        sayStr = 'Moved to ' + html.unescape(actorJson['movedTo'])
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if actorJson.get('alsoKnownAs'):
         alsoKnownAsStr = ''
@@ -784,10 +784,11 @@ def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
             ctr += 1
             alsoKnownAsStr += altActor
 
-        sayStr = 'Also known as ' + alsoKnownAsStr
+        sayStr = 'Also known as ' + html.unescape(alsoKnownAsStr)
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if actorJson.get('summary'):
-        sayStr = removeHtml(actorJson['summary'])
+        sayStr = html.unescape(removeHtml(actorJson['summary']))
+        sayStr = sayStr.replace('"', "'")
         sayStr2 = speakableText(baseDir, sayStr, translate)
         _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
 
