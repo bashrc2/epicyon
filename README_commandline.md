@@ -473,7 +473,7 @@ next                                  Next page in the timeline
 prev                                  Previous page in the timeline
 read [post number]                    Read a post from a timeline
 open [post number]                    Open web links within a timeline post
-profile [post number]                 Show profile for the person who made the given post
+profile [post number or handle]       Show profile for the person who made the given post
 following [page number]               Show accounts that you are following
 followers [page number]               Show accounts that are following you
 approve [handle]                      Approve a follow request

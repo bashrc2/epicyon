@@ -113,7 +113,7 @@ def _desktopHelp() -> None:
           'Read a post from a timeline')
     print(indent + 'open [post number]                    ' +
           'Open web links within a timeline post')
-    print(indent + 'profile [post number]                 ' +
+    print(indent + 'profile [post number or handle]       ' +
           'Show profile for the person who made the given post')
     print(indent + 'following [page number]               ' +
           'Show accounts that you are following')
@@ -829,6 +829,24 @@ def _desktopShowProfile(session, nickname: str, domain: str,
     if 'http://' in actor:
         isHttp = True
     actorJson = getActorJson(actor, isHttp, False, False, True)
+
+    _desktopShowActor(baseDir, actorJson, translate,
+                      systemLanguage, screenreader, espeak)
+
+    return actorJson
+
+
+def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
+                                  httpPrefix: str, baseDir: str, boxName: str,
+                                  handle: str,
+                                  systemLanguage: str,
+                                  screenreader: str, espeak,
+                                  translate: {}, yourActor: str,
+                                  postJsonObject: {}) -> {}:
+    """Shows the profile for a handle
+    Returns the actor json
+    """
+    actorJson = getActorJson(handle, False, False, False, True)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -1581,7 +1599,21 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('profile ')[1]
 
-                if not actorJson and boxJson and postIndexStr.isdigit():
+                if not postIndexStr.isdigit():
+                    profileHandle = postIndexStr
+                    _desktopShowBox(indent, followRequestsJson,
+                                    yourActor, currTimeline, boxJson,
+                                    translate,
+                                    screenreader, systemLanguage,
+                                    espeak, pageNumber,
+                                    newRepliesExist, newDMsExist)
+                    _desktopShowProfileFromHandle(session, nickname, domain,
+                                                  httpPrefix, baseDir,
+                                                  currTimeline, profileHandle,
+                                                  systemLanguage, screenreader,
+                                                  espeak, translate, yourActor,
+                                                  None)
+                elif not actorJson and boxJson:
                     _desktopShowBox(indent, followRequestsJson,
                                     yourActor, currTimeline, boxJson,
                                     translate,
