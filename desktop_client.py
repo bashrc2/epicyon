@@ -704,7 +704,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                         _textOnlyContent(postJsonObject2['object']['content'])
                     content += _getImageDescription(postJsonObject2)
                     messageStr, detectedLinks = \
-                        speakableText(baseDir, content, translate)[0]
+                        speakableText(baseDir, content, translate)
                     sayStr = content
                     _sayCommand(sayStr, messageStr, screenreader,
                                 systemLanguage, espeak)
@@ -726,7 +726,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
             return {}
 
     content = _safeMessage(content)
-    messageStr, detectedLinks = speakableText(baseDir, content, translate)[0]
+    messageStr, detectedLinks = speakableText(baseDir, content, translate)
 
     if screenreader:
         time.sleep(2)
@@ -770,7 +770,7 @@ def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
     actorDomainFull = getFullDomain(actorDomain, actorPort)
     handle = '@' + actorNickname + '@' + actorDomainFull
 
-    sayStr = html.unescape(handle)
+    sayStr = 'Profile for ' + html.unescape(handle)
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     print(actor)
     if actorJson.get('movedTo'):
@@ -1080,10 +1080,6 @@ def _desktopShowBox(indent: str,
     elif newReplies and boxName != 'tlreplies':
         sayStr += \
             'Use \33[3mshow replies\33[0m to view reply posts.'
-    else:
-        sayStr += \
-            'Use the \33[3mnext\33[0m and ' + \
-            '\33[3mprev\33[0m commands to navigate.'
     sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
     sayStr2 = sayStr2.replace('show dm', 'show DM')
     sayStr2 = sayStr2.replace('dm post', 'Direct message post')
@@ -2303,7 +2299,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if postJsonObject:
                     content = postJsonObject['object']['content']
                     messageStr, detectedLinks = \
-                        speakableText(baseDir, content, translate)[0]
+                        speakableText(baseDir, content, translate)
                     linkOpened = False
                     for url in detectedLinks:
                         if '://' in url:
