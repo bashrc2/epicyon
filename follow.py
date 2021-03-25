@@ -1145,41 +1145,7 @@ def getFollowingViaServer(baseDir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-
     followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
-
-    # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: following list webfinger failed for ' + handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: following list Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, nickname,
-                                 domain, postToBox, 52025)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: following list no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: following list no actor was found for ' + handle)
-        return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1220,41 +1186,7 @@ def getFollowersViaServer(baseDir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-
     followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
-
-    # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: followers list webfinger failed for ' + handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: followers list Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, nickname,
-                                 domain, postToBox, 52025)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: followers list no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: followers list no actor was found for ' + handle)
-        return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1296,42 +1228,6 @@ def getFollowRequestsViaServer(baseDir: str, session,
     domainFull = getFullDomain(domain, port)
 
     followActor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
-
-    # lookup the inbox for the To handle
-    wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: follow requests list webfinger failed for ' +
-                  handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: follow requests list Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, nickname,
-                                 domain, postToBox, 42759)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: follow requests list no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: follow requests list no actor was found for ' +
-                  handle)
-        return 4
-
     authHeader = createBasicAuthHeader(nickname, password)
 
     headers = {
