@@ -758,6 +758,39 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     return postJsonObject
 
 
+def _showActor(baseDir: str, actorJson: {}, translate: {},
+               systemLanguage: str, screenreader: str, espeak) -> None:
+    """
+    """
+    actor = actorJson['id']
+    actorNickname = getNicknameFromActor(actor)
+    actorDomain, actorPort = getDomainFromActor(actor)
+    actorDomainFull = getFullDomain(actorDomain, actorPort)
+    handle = '@' + actorNickname + '@' + actorDomainFull
+
+    sayStr = handle
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    print(actor)
+    if actorJson.get('movedTo'):
+        sayStr = 'Moved to ' + actorJson['movedTo']
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    if actorJson.get('alsoKnownAs'):
+        alsoKnownAsStr = ''
+        ctr = 0
+        for altActor in actorJson['alsoKnownAs']:
+            if ctr > 0:
+                alsoKnownAsStr += ', '
+            ctr += 1
+            alsoKnownAsStr += altActor
+
+        sayStr = 'Also known as ' + alsoKnownAsStr
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    if actorJson.get('summary'):
+        sayStr = removeHtml(actorJson['summary'])
+        sayStr2 = speakableText(baseDir, sayStr, translate)
+        _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+
+
 def _showProfile(session, nickname: str, domain: str,
                  httpPrefix: str, baseDir: str, boxName: str,
                  pageNumber: int, index: int, boxJson: {},
@@ -796,33 +829,8 @@ def _showProfile(session, nickname: str, domain: str,
         isHttp = True
     actorJson = getActorJson(actor, isHttp, False, False, True)
 
-    actor = actorJson['id']
-    actorNickname = getNicknameFromActor(actor)
-    actorDomain, actorPort = getDomainFromActor(actor)
-    actorDomainFull = getFullDomain(actorDomain, actorPort)
-    handle = '@' + actorNickname + '@' + actorDomainFull
-
-    sayStr = handle
-    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    print(actor)
-    if actorJson.get('movedTo'):
-        sayStr = 'Moved to ' + actorJson['movedTo']
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if actorJson.get('alsoKnownAs'):
-        alsoKnownAsStr = ''
-        ctr = 0
-        for altActor in actorJson['alsoKnownAs']:
-            if ctr > 0:
-                alsoKnownAsStr += ', '
-            ctr += 1
-            alsoKnownAsStr += altActor
-
-        sayStr = 'Also known as ' + alsoKnownAsStr
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if actorJson.get('summary'):
-        sayStr = removeHtml(actorJson['summary'])
-        sayStr2 = speakableText(baseDir, sayStr, translate)
-        _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+    _showActor(baseDir, actorJson, translate,
+               systemLanguage, screenreader, espeak)
 
     return actorJson
 
