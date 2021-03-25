@@ -328,6 +328,7 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
             speakerLang = 'de-DE'
         elif systemLanguage.startswith('it'):
             speakerLang = 'it-IT'
+    sayText = str(sayText).replace('"', "'")
     speakerCmd = 'picospeaker ' + \
         '-l ' + speakerLang + \
         ' -r ' + str(rate) + \
@@ -1563,12 +1564,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
-                                    translate,
-                                    screenreader, systemLanguage,
-                                    espeak, pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktopClearScreen()
+                    _desktopShowBanner()
                     postIndex = int(postIndexStr)
                     postJsonObject = \
                         _readLocalBoxPost(session, nickname, domain,
@@ -1577,7 +1574,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           systemLanguage, screenreader,
                                           espeak, translate, yourActor)
                     print('')
-                    print(_highlightText('Press Enter to continue...'))
+                    sayStr = 'Press Enter to continue...'
+                    _sayCommand(_highlightText(sayStr), sayStr,
+                                screenreader, systemLanguage, espeak)
                     input()
                     prevTimelineFirstId = ''
                     refreshTimeline = True
@@ -1602,25 +1601,21 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
                 if not postIndexStr.isdigit():
                     profileHandle = postIndexStr
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
-                                    translate,
-                                    screenreader, systemLanguage,
-                                    espeak, pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktopClearScreen()
+                    _desktopShowBanner()
                     _desktopShowProfileFromHandle(session, nickname, domain,
                                                   httpPrefix, baseDir,
                                                   currTimeline, profileHandle,
                                                   systemLanguage, screenreader,
                                                   espeak, translate, yourActor,
                                                   None)
+                    sayStr = 'Press Enter to continue...'
+                    _sayCommand(_highlightText(sayStr), sayStr,
+                                screenreader, systemLanguage, espeak)
+                    input()
                 elif not actorJson and boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
-                                    translate,
-                                    screenreader, systemLanguage,
-                                    espeak, pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktopClearScreen()
+                    _desktopShowBanner()
                     postIndex = int(postIndexStr)
                     actorJson = \
                         _desktopShowProfile(session, nickname, domain,
@@ -1629,6 +1624,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             systemLanguage, screenreader,
                                             espeak, translate, yourActor,
                                             None)
+                    sayStr = 'Press Enter to continue...'
+                    _sayCommand(_highlightText(sayStr), sayStr,
+                                screenreader, systemLanguage, espeak)
+                    input()
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:
@@ -2317,7 +2316,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
-                print(_highlightText('Press Enter to continue...'))
+                sayStr = 'Press Enter to continue...'
+                _sayCommand(_highlightText(sayStr), sayStr,
+                            screenreader, systemLanguage, espeak)
                 input()
             elif (commandStr == 'delete' or
                   commandStr == 'rm' or
