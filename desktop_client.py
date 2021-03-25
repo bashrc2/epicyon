@@ -1189,6 +1189,10 @@ def _desktopNewDMbase(session, toHandle: str,
 def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
     """Shows any follow requests
     """
+    if not isinstance(followRequestsJson, dict):
+        return
+    if not followRequestsJson.get('orderedItems'):
+        return
     if not followRequestsJson['orderedItems']:
         return
     indent = '   '
@@ -1534,6 +1538,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
                                           espeak, translate, yourActor)
+                    print('')
+                    print(_highlightText('Press Enter to continue...'))
+                    enterKey = input()
+                    prevTimelineFirstId = ''
+                    refreshTimeline = True
                 print('')
             elif commandStr.startswith('profile ') or commandStr == 'profile':
                 actorJson = None
