@@ -1075,12 +1075,6 @@ def _desktopShowBox(indent: str,
     # say the post number range
     sayStr = indent + boxNameStr + ' page ' + str(pageNumber) + \
         ' containing ' + str(ctr - 1) + ' posts. '
-    if newDMs and boxName != 'dm':
-        sayStr += \
-            'Use \33[3mshow dm\33[0m to view direct messages.'
-    elif newReplies and boxName != 'tlreplies':
-        sayStr += \
-            'Use \33[3mshow replies\33[0m to view reply posts.'
     sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
     sayStr2 = sayStr2.replace('show dm', 'show DM')
     sayStr2 = sayStr2.replace('dm post', 'Direct message post')
