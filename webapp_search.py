@@ -778,9 +778,9 @@ def htmlHashtagSearch(cssCache: {},
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
+                                 themeName,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
-                                 themeName,
                                  showPublicOnly,
                                  storeToCache)
         if postStr:
