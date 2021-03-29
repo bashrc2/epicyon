@@ -5971,10 +5971,11 @@ class PubServer(BaseHTTPRequestHandler):
             return
         nickname = None
         if '/users/' in path:
-            actor = \
-                httpPrefix + '://' + domainFull + path
-            nickname = \
-                getNicknameFromActor(actor)
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if '?' in nickname:
+                nickname = nickname.split('?')[0]
         hashtagStr = \
             htmlHashtagSearch(self.server.cssCache,
                               nickname, domain, port,
