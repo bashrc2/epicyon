@@ -720,10 +720,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showPublishedDateOnly,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
+                                             theme,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
-                                             theme,
                                              False, True)
                     _logTimelineTiming(enableTimingLog,
                                        timelineStartTime, boxName, '12')

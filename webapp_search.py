@@ -648,8 +648,7 @@ def htmlHashtagSearch(cssCache: {},
 
     # check that the directory for the nickname exists
     if nickname:
-        if not os.path.isdir(baseDir + '/accounts/' +
-                             nickname + '@' + domain):
+        if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
             nickname = None
 
     # read the index
@@ -779,9 +778,9 @@ def htmlHashtagSearch(cssCache: {},
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
+                                 themeName,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
-                                 themeName,
                                  showPublicOnly,
                                  storeToCache)
         if postStr:
