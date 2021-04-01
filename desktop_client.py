@@ -1437,6 +1437,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             if not desktopShown:
                 _desktopClearScreen()
                 _desktopShowBanner()
+                print('No posts\n')
 
         # wait for a while, or until a key is pressed
         if noKeyPress:
