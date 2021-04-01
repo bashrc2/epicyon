@@ -1360,6 +1360,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         "repliesNotifyChanged": False
     }
     prevTimelineFirstId = ''
+    desktopShown = False
     while (1):
         if not pgpKeyUpload:
             sayStr = indent + 'Uploading PGP public key'
@@ -1429,9 +1430,13 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 pageNumber,
                                 newRepliesExist,
                                 newDMsExist)
+                desktopShown = True
             prevTimelineFirstId = timelineFirstId
         else:
             session = createSession(proxyType)
+            if not desktopShown:
+                _desktopClearScreen()
+                _desktopShowBanner()
 
         # wait for a while, or until a key is pressed
         if noKeyPress:
