@@ -1435,6 +1435,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         else:
             session = createSession(proxyType)
             if not desktopShown:
+                if not session:
+                    print('No session\n')
+
                 _desktopClearScreen()
                 _desktopShowBanner()
                 print('No posts\n')
