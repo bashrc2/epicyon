@@ -1760,7 +1760,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    <div class="container">\n'
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
-        '      <br><label class="labels">' + \
+        '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="gitProjects" ' + \
