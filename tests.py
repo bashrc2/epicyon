@@ -271,6 +271,7 @@ def testHttpSigNew():
         'alg=hs2019; created=' + str(secondsSinceEpoch) + '; ' + \
         'sig1=(*request-target, *created, host, date, ' + \
         'digest, content-type, content-length)'
+    signatureIndexHeader = signatureIndexHeader.strip()
     if signatureIndexHeader != expectedIndexHeader:
         print('Unexpected new http header: ' + signatureIndexHeader)
         print('Should be:                  ' + expectedIndexHeader)
