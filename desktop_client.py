@@ -1442,7 +1442,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 _desktopShowBanner()
                 print('No posts\n')
                 if proxyType == 'tor':
-                    print('You may need to run the desktop client ' + \
+                    print('You may need to run the desktop client ' +
                           'with the --http option')
 
         # wait for a while, or until a key is pressed
