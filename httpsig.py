@@ -180,7 +180,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     }
     signatureHeader = '; '.join(
         [f'{k}=:{v}:' for k, v in signatureDict.items()])
-    return signatureIndexHeader, signatureHeader
+    return signatureIndexHeader.strip(), signatureHeader
 
 
 def createSignedHeader(privateKeyPem: str, nickname: str,
