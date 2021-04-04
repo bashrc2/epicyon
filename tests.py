@@ -3416,8 +3416,6 @@ def testSpeakerReplaceLinks():
         'how-to-help-running-snowflake/'
     detectedLinks = []
     result = speakerReplaceLinks(text, {'Linked': 'Web link'}, detectedLinks)
-    print(result)
-    print(str(detectedLinks))
     assert len(detectedLinks) == 1
     assert detectedLinks[0] == \
         'https://support.torproject.org/censorship/' + \
