@@ -18,7 +18,6 @@ from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import utils as hazutils
-import calendar
 import base64
 from time import gmtime, strftime
 import datetime
@@ -120,11 +119,11 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     timeFormat = "%a, %d %b %Y %H:%M:%S %Z"
     if not dateStr:
         currTime = gmtime()
-        secondsSinceEpoch = int(calendar.timegm(currTime))
         dateStr = strftime(timeFormat, currTime)
     else:
         currTime = datetime.datetime.strptime(dateStr, timeFormat)
-        secondsSinceEpoch = int(currTime.timestamp())
+    secondsSinceEpoch = \
+        int((currTime - datetime.datetime(1970, 1, 1)).total_seconds())
     keyID = httpPrefix + '://' + domain + '/users/' + nickname + '#main-key'
     if not messageBodyJsonStr:
         headers = {
