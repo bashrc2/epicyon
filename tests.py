@@ -224,7 +224,7 @@ def testHttpSigNew():
     #     "Signature": sig
     # }
     dateStr = "Tue, 07 Jun 2014 20:51:35 GMT"
-    secondsSinceEpoch = 1402170695
+    secondsSinceEpoch = 1402174295
     domain = "example.com"
     port = 443
     headers = {
@@ -242,14 +242,12 @@ def testHttpSigNew():
     debug = False
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
                              boxpath, False, None,
-                             messageBodyJsonStr, debug,
-                             True)
+                             messageBodyJsonStr, debug, True)
     # make a deliberate mistake
     headers['Signature'] = headers['Signature'].replace('V', 'B')
     assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
                                  boxpath, False, None,
-                                 messageBodyJsonStr, debug,
-                                 True)
+                                 messageBodyJsonStr, debug, True)
     # test signing
     bodyDigest = messageContentDigest(messageBodyJsonStr)
     contentLength = len(messageBodyJsonStr)
@@ -271,19 +269,18 @@ def testHttpSigNew():
         'alg=hs2019; created=' + str(secondsSinceEpoch) + '; ' + \
         'sig1=(*request-target, *created, host, date, ' + \
         'digest, content-type, content-length)'
-    signatureIndexHeader = signatureIndexHeader.strip()
     if signatureIndexHeader != expectedIndexHeader:
         print('Unexpected new http header: ' + signatureIndexHeader)
         print('Should be:                  ' + expectedIndexHeader)
     assert signatureIndexHeader == expectedIndexHeader
     assert signatureHeader == \
-        'sig1=:LQU1PcJILSp1Q30GWINusfftYYKfTtam7InSu2c+ZzfGC' + \
-        'bTSevRgifZFuG2asFi8ubG/uUVHiBwIxxIz1u/JyWC3lYIFgjQF' + \
-        'RFM6As2b/ytnMA0LQhNebvk05iUNsz5izSoNTp5h9J7+roWkl6l' + \
-        '8d5EA7vPMTQTJZnyU1cXBlvP1MtuVAKR6MbB3Aa/iZ4XOeaNK5E' + \
-        '1VuPfNFrdnizIELE3nGVoVqNNImgMY3DWhtF3vvezrcT0J2vNGZ' + \
-        'cvhBfgn/xeAsNxz67SIHMgiXvLL6TFqEI1en9dl9A3ihB6ZO6+W' + \
-        'gUoW7OobZNlPxAUkQCc2A6oVjCYOdpKdrMAXQp2TQQ==:'
+        'sig1=:euX3O1KSTYXN9/oR2qFezswWm9FbrjtRymK7xBpXNQvTs' + \
+        'XehtrNdD8nELZKzPXMvMz7PaJd6V+fjzpHoZ9upTdqqQLK2Iwml' + \
+        'p4BlHqW6Aopd7sZFCWFq7/Amm5oaizpp3e0jb5XISS5m3cRKuoi' + \
+        'LM0x+OudmAoYGi0TEEJk8bpnJAXfVCDfmOyL3XNqQeShQHeOANG' + \
+        'okiKktj8ff+KLYLaPTAJkob1k/EhoPIkbw/YzAY8IZjWQNMkf+F' + \
+        'JChApQ5HnDCQPwD5xV9eGzBpAf6D0G19xiTmQye4Hn6tAs3fy3V' + \
+        '/aYa/GhW2pSrctDnAKIi4imj9joppr3CB8gqgXZOPQ==:'
 
 
 def _testHttpsigBase(withDigest):
