@@ -273,7 +273,9 @@ def testHttpSigNew():
         'digest, content-type, content-length)'
     if signatureIndexHeader != expectedIndexHeader:
         print('Unexpected new http header: ' + signatureIndexHeader)
-        print('Should be:              ' + expectedIndexHeader)
+        print('Should be:                  ' + expectedIndexHeader)
+    if signatureIndexHeader.strip() != expectedIndexHeader:
+        print('stripped match')
     assert signatureIndexHeader == expectedIndexHeader
     assert signatureHeader == \
         'sig1=:LQU1PcJILSp1Q30GWINusfftYYKfTtam7InSu2c+ZzfGC' + \
