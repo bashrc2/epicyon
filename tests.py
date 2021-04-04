@@ -266,11 +266,15 @@ def testHttpSigNew():
                            domain, port,
                            boxpath, httpPrefix, messageBodyJsonStr,
                            'rsa-sha256')
-    assert signatureIndexHeader == \
+    expectedIndexHeader = \
         'keyId="https://example.com/users/foo#main-key"; ' + \
         'alg=hs2019; created=' + str(secondsSinceEpoch) + '; ' + \
         'sig1=(*request-target, *created, host, date, ' + \
         'digest, content-type, content-length)'
+    if signatureIndexHeader != expectedIndexHeader:
+        print('Unexpected new http header: ' + signatureIndexHeader)
+        print('Should be:              ' + expectedIndexHeader)
+    assert signatureIndexHeader == expectedIndexHeader
     assert signatureHeader == \
         'sig1=:LQU1PcJILSp1Q30GWINusfftYYKfTtam7InSu2c+ZzfGC' + \
         'bTSevRgifZFuG2asFi8ubG/uUVHiBwIxxIz1u/JyWC3lYIFgjQF' + \

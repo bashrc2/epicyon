@@ -1753,12 +1753,14 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Git Projects'] + '</label></b>\n'
+    editProfileForm += '    </div></details>\n'
+
+    editProfileForm += '<details><summary class="cw">' + \
+        translate['Git Projects'] + '</summary>\n'
+    editProfileForm += '    <div class="container">\n'
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
-        '      <br><label class="labels">' + \
+        '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="gitProjects" ' + \
