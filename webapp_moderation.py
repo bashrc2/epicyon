@@ -270,7 +270,9 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' in acct or 'news@' in acct:
+            if acct.startswith('inbox@'):
+                continue
+            elif acct.startswith('news@'):
                 continue
             accounts.append(acct)
         break

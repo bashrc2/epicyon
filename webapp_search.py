@@ -404,6 +404,8 @@ def htmlSkillsSearch(actor: str,
                 continue
             if f.startswith('inbox@'):
                 continue
+            elif f.startswith('news@'):
+                continue
             actorFilename = os.path.join(subdir, f)
             actorJson = loadJson(actorFilename)
             if actorJson:
@@ -438,6 +440,8 @@ def htmlSkillsSearch(actor: str,
                 if '@' not in f:
                     continue
                 if f.startswith('inbox@'):
+                    continue
+                elif f.startswith('news@'):
                     continue
                 actorFilename = os.path.join(subdir, f)
                 cachedActorJson = loadJson(actorFilename)
