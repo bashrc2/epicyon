@@ -26,6 +26,12 @@ No stalking, unwanted personal attention, or unwelcome revealing or speculating 
 
 In cases of sincere, good-faith curiosity about someone’s experience or identity, ask politely in a manner such that they will feel free to decline the request.
 
+## No non-consenting research
+
+People contributing to, or maintaining, this project should not be treated as research subjects in academic studies without their prior written consent. If anthropological, security, or other types of research are being conducted upon contributors then they must be made aware of this and formally agree to it taking place.
+
+Publishing software under an AGPL license does not imply consent to become a research subject.
+
 ## No hostile communication
 
 No insults, harassment (sexual or otherwise), condescension, ad hominem, threats, or other intimidation. Claims that such communications were intended as "ironic" or humerous will also be considered a code of conduct violation.
