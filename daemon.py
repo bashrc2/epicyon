@@ -14491,20 +14491,20 @@ def runDaemon(brochMode: bool,
 
     # key shortcuts SHIFT + ALT + [key]
     httpd.accessKeys = {
-        menuProfile: 'p',
-        menuInbox: 'i',
-        menuSearch: '/',
-        menuNewPost: 'n',
-        menuCalendar: 'c',
-        menuDM: 'd',
-        menuReplies: 'r',
-        menuOutbox: 's',
-        menuBookmarks: 'k',
-        menuShares: 'h',
-        menuBlogs: 'b',
-        menuNewswire: 'w',
-        menuLinks: 'l',
-        menuModeration: 'm'
+        'menuProfile': 'p',
+        'menuInbox': 'i',
+        'menuSearch': '/',
+        'menuNewPost': 'n',
+        'menuCalendar': 'c',
+        'menuDM': 'd',
+        'menuReplies': 'r',
+        'menuOutbox': 's',
+        'menuBookmarks': 'k',
+        'menuShares': 'h',
+        'menuBlogs': 'b',
+        'menuNewswire': 'w',
+        'menuLinks': 'l',
+        'menuModeration': 'm'
     }
 
     httpd.unitTest = unitTest
