@@ -489,7 +489,7 @@ def htmlProfile(rssIconAtTop: bool,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
-                debug: bool,
+                debug: bool, accessKeys: {},
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -755,16 +755,12 @@ def htmlProfile(rssIconAtTop: bool,
         menuShares: userPathStr + '/shares#timeline',
         menuLogout: '/logout'
     }
-    navAccessKeys = {
-        menuTimeline: 't',
-        menuEdit: 'e',
-        menuFollowing: 'f',
-        menuFollowers: 'g',
-        menuRoles: 'o',
-        menuSkills: 's',
-        menuShares: 'h',
-        menuLogout: 'x'
-    }
+    navAccessKeys = {}
+    for variableName, key in accessKeys.items():
+        if not locals().get(variableName):
+            continue
+        navAccessKeys[locals()[variableName]] = key
+
     profileStr = htmlKeyboardNavigation(textModeBanner,
                                         navLinks, navAccessKeys)
 

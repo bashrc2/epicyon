@@ -7365,6 +7365,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    self.server.accessKeys,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -7454,6 +7455,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
+                                                self.server.accessKeys,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -9271,6 +9273,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    self.server.accessKeys,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -9371,6 +9374,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    self.server.accessKeys,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9470,6 +9474,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    self.server.accessKeys,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9592,6 +9597,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.allowLocalNetworkAccess,
                             self.server.textModeBanner,
                             self.server.debug,
+                            self.server.accessKeys,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -14491,6 +14497,8 @@ def runDaemon(brochMode: bool,
 
     # key shortcuts SHIFT + ALT + [key]
     httpd.accessKeys = {
+        'menuTimeline': 't',
+        'menuEdit': 'e',
         'menuProfile': 'p',
         'menuInbox': 'i',
         'menuSearch': '/',
@@ -14504,7 +14512,12 @@ def runDaemon(brochMode: bool,
         'menuBlogs': 'b',
         'menuNewswire': 'w',
         'menuLinks': 'l',
-        'menuModeration': 'm'
+        'menuModeration': 'm',
+        'menuFollowing': 'f',
+        'menuFollowers': 'g',
+        'menuRoles': 'o',
+        'menuSkills': 'a',
+        'menuLogout': 'x'
     }
 
     httpd.unitTest = unitTest
