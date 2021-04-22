@@ -2207,7 +2207,7 @@ def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
 
 def dmAllowedFromDomain(baseDir: str,
                         nickname: str, domain: str,
-                        sendingActorDomain: str):
+                        sendingActorDomain: str) -> bool:
     """When a DM is received and the .followDMs flag file exists
     Then optionally some domains can be specified as allowed,
     regardless of individual follows.
