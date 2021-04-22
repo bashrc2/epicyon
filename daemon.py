@@ -14490,7 +14490,22 @@ def runDaemon(brochMode: bool,
     httpd.textModeBanner = getTextModeBanner(baseDir)
 
     # key shortcuts SHIFT + ALT + [key]
-    httpd.accessKeys = {}
+    httpd.accessKeys = {
+        menuProfile: 'p',
+        menuInbox: 'i',
+        menuSearch: '/',
+        menuNewPost: 'n',
+        menuCalendar: 'c',
+        menuDM: 'd',
+        menuReplies: 'r',
+        menuOutbox: 's',
+        menuBookmarks: 'k',
+        menuShares: 'h',
+        menuBlogs: 'b',
+        menuNewswire: 'w',
+        menuLinks: 'l',
+        menuModeration: 'm'
+    }
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
