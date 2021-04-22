@@ -72,7 +72,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName, 0,
+                                         themeName,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr

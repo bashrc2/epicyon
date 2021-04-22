@@ -119,7 +119,7 @@ def prepareHtmlPostNickname(nickname: str, postHtml: str) -> str:
 
 
 def preparePostFromHtmlCache(nickname: str, postHtml: str, boxName: str,
-                             pageNumber: int, accessKeyIndex: int) -> str:
+                             pageNumber: int) -> str:
     """Sets the page number on a cached html post
     """
     # if on the bookmarks timeline then remain there
@@ -134,19 +134,6 @@ def preparePostFromHtmlCache(nickname: str, postHtml: str, boxName: str,
     withPageNumber = postHtml.replace(';-999;', ';' + str(pageNumber) + ';')
     withPageNumber = withPageNumber.replace('?page=-999',
                                             '?page=' + str(pageNumber))
-    # replace the key shortcut
-    for keyIndex in range(10):
-        keyStr = 'accesskey="' + str(keyIndex) + '"'
-        if keyStr in withPageNumber:
-            if accessKeyIndex == 0 or accessKeyIndex > 9:
-                withPageNumber = \
-                    withPageNumber.replace(keyStr, '')
-            else:
-                withPageNumber = \
-                    withPageNumber.replace(keyStr,
-                                           'accesskey="' +
-                                           str(accessKeyIndex) + '"')
-            break
     return prepareHtmlPostNickname(nickname, withPageNumber)
 
 
@@ -192,8 +179,7 @@ def _getPostFromRecentCache(session,
                             postStartTime,
                             pageNumber: int,
                             recentPostsCache: {},
-                            maxRecentPosts: int,
-                            accessKeyIndex: int) -> str:
+                            maxRecentPosts: int) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if boxName == 'tlmedia':
@@ -231,8 +217,7 @@ def _getPostFromRecentCache(session,
         return None
 
     postHtml = \
-        preparePostFromHtmlCache(nickname, postHtml, boxName,
-                                 pageNumber, accessKeyIndex)
+        preparePostFromHtmlCache(nickname, postHtml, boxName, pageNumber)
     updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                            postJsonObject, postHtml)
     _logPostTiming(enableTimingLog, postStartTime, '3')
@@ -1155,7 +1140,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
-                         themeName: str, accessKeyIndex: int,
+                         themeName: str,
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -1214,8 +1199,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 postStartTime,
                                 pageNumber,
                                 recentPostsCache,
-                                maxRecentPosts,
-                                accessKeyIndex)
+                                maxRecentPosts)
     if postHtml:
         return postHtml
 
@@ -1668,13 +1652,8 @@ def individualPostAsHtml(allowDownloads: bool,
 
     postHtml = ''
     if boxName != 'tlmedia':
-        if accessKeyIndex > 0 and accessKeyIndex <= 9:
-            postHtml = '    <div id="' + timelinePostBookmark + \
-                '" class="' + containerClass + \
-                '" accesskey="' + str(accessKeyIndex) + '">\n'
-        else:
-            postHtml = '    <div id="' + timelinePostBookmark + \
-                '" class="' + containerClass + '">\n'
+        postHtml = '    <div id="' + timelinePostBookmark + \
+            '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
         postHtml += '      <div class="post-title">\n' + \
             '        ' + titleStr + \
@@ -1753,7 +1732,7 @@ def htmlIndividualPost(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances,
-                             allowLocalNetworkAccess, themeName, 0,
+                             allowLocalNetworkAccess, themeName,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1781,7 +1760,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName, 0,
+                                         themeName,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1812,7 +1791,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName, 0,
+                                         themeName,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1854,7 +1833,7 @@ def htmlPostReplies(cssCache: {},
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
-                                     themeName, 0,
+                                     themeName,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

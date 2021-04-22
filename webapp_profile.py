@@ -309,7 +309,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
                                  peertubeInstances, allowLocalNetworkAccess,
-                                 themeName, 0,
+                                 themeName,
                                  False, False, False, False, False)
         i += 1
         if i >= 20:
@@ -916,7 +916,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName, 0,
+                                         themeName,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr

@@ -697,8 +697,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     preparePostFromHtmlCache(nickname,
                                                              currTlStr,
                                                              boxName,
-                                                             pageNumber,
-                                                             itemCtr)
+                                                             pageNumber)
                                 _logTimelineTiming(enableTimingLog,
                                                    timelineStartTime,
                                                    boxName, '10')
@@ -727,7 +726,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showPublishedDateOnly,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
-                                             theme, itemCtr + 1,
+                                             theme,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,

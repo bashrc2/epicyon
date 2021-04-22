@@ -73,7 +73,7 @@ def htmlConfirmDelete(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances, allowLocalNetworkAccess,
-                             themeName, 0,
+                             themeName,
                              False, False, False, False, False)
     deletePostStr += '<center>'
     deletePostStr += \
