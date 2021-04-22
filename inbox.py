@@ -178,7 +178,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
-                         themeName,
+                         themeName, 0,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
