@@ -479,9 +479,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuNewswire: usersPath + '/newswiremobile',
         menuLinks: usersPath + '/linksmobile'
     }
+    navAccessKeys = {}
+    for variableName, key in accessKeys.items():
+        if not locals().get(variableName):
+            continue
+        navAccessKeys[locals()[variableName]] = key
     if moderator:
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, accessKeys,
+    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
                                     None, usersPath, translate,
                                     followApprovals)
 
