@@ -475,7 +475,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
         menuShares: usersPath + '/tlshares#timelineposts',
         menuBlogs: usersPath + '/tlblogs#timelineposts',
-        # menuEvents: usersPath + '/tlevents#timelineposts',
         menuNewswire: usersPath + '/newswiremobile',
         menuLinks: usersPath + '/linksmobile'
     }
@@ -492,7 +491,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuShares: 'h',
         menuBlogs: 'b',
         menuNewswire: 'w',
-        menuLinks: 'l'
+        menuLinks: 'l',
+        menuModeration: 'm'
     }
     if moderator:
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
