@@ -1184,6 +1184,14 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr = blockedfile.read()
 
+    dmAllowedInstancesStr = ''
+    dmAllowedInstancesFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/dmAllowedInstances.txt'
+    if os.path.isfile(dmAllowedInstancesFilename):
+        with open(dmAllowedInstancesFilename, 'r') as dmAllowedInstancesFile:
+            dmAllowedInstancesStr = dmAllowedInstancesFile.read()
+
     allowedInstancesStr = ''
     allowedInstancesFilename = \
         baseDir + '/accounts/' + \
@@ -1739,6 +1747,18 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="blocked" style="height:200px" ' + \
         'spellcheck="false">' + blockedStr + '</textarea>\n'
+
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Direct Message permitted instances'] + '</label></b>\n'
+    idx = 'Direct messages are always allowed from these instances.'
+    editProfileForm += \
+        '      <br><label class="labels">' + \
+        translate[idx] + '</label>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="dmAllowedInstances" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        dmAllowedInstancesStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \

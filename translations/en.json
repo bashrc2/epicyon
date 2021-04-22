@@ -401,5 +401,7 @@
     "counselor": "counselor",
     "Counselors": "Counselors",
     "shocked": "shocked",
-    "Encrypted": "Encrypted"
+    "Encrypted": "Encrypted",
+    "Direct Message permitted instances": "Direct Message permitted instances",
+    "Direct messages are always allowed from these instances.": "Direct messages are always allowed from these instances."
 }

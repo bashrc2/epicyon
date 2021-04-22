@@ -401,5 +401,7 @@
     "counselor": "カウンセラー",
     "Counselors": "カウンセラー",
     "shocked": "ショックを受けた",
-    "Encrypted": "暗号化"
+    "Encrypted": "暗号化",
+    "Direct Message permitted instances": "直接メッセージ許可インスタンス",
+    "Direct messages are always allowed from these instances.": "直接メッセージは常にこれらのインスタンスから許可されています。"
 }

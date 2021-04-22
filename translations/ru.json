@@ -401,5 +401,7 @@
     "counselor": "Советник",
     "Counselors": "Советники",
     "shocked": "потрясенный",
-    "Encrypted": "Зашифрованный"
+    "Encrypted": "Зашифрованный",
+    "Direct Message permitted instances": "Прямое сообщение разрешено экземпляры",
+    "Direct messages are always allowed from these instances.": "Прямые сообщения всегда допускаются из этих экземпляров."
 }

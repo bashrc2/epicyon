@@ -401,5 +401,7 @@
     "counselor": "Comhairleoir",
     "Counselors": "Comhairleoirí",
     "shocked": "ionadh",
-    "Encrypted": "Criptithe"
+    "Encrypted": "Criptithe",
+    "Direct Message permitted instances": "Ceadaíonn teachtaireacht dhíreach cásanna",
+    "Direct messages are always allowed from these instances.": "Ceadaítear teachtaireachtaí díreacha i gcónaí ó na cásanna seo."
 }

@@ -401,5 +401,7 @@
     "counselor": "Consejera",
     "Counselors": "Consejeras",
     "shocked": "conmocionada",
-    "Encrypted": "Cifrada"
+    "Encrypted": "Cifrada",
+    "Direct Message permitted instances": "Mensaje directo permitido instancias",
+    "Direct messages are always allowed from these instances.": "Los mensajes directos siempre están permitidos de estas instancias."
 }

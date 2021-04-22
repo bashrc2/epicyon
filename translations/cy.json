@@ -401,5 +401,7 @@
     "counselor": "cynghorydd",
     "Counselors": "Cynghorwyr",
     "shocked": "sioc",
-    "Encrypted": "Amgryptio"
+    "Encrypted": "Amgryptio",
+    "Direct Message permitted instances": "Achosion a ganiateir negeseuon uniongyrchol",
+    "Direct messages are always allowed from these instances.": "Caniateir negeseuon uniongyrchol bob amser o'r achosion hyn."
 }

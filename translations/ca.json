@@ -401,5 +401,7 @@
     "counselor": "conseller",
     "Counselors": "Consellers",
     "shocked": "sorprès",
-    "Encrypted": "Xifrat"
+    "Encrypted": "Xifrat",
+    "Direct Message permitted instances": "Instàncies permeses del missatge directe",
+    "Direct messages are always allowed from these instances.": "Els missatges directes sempre estan permesos d'aquests casos."
 }

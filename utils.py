@@ -2214,11 +2214,11 @@ def dmAllowedFromDomain(baseDir: str,
     i.e. Mostly you only want DMs from followers, but there are
     a few particular instances that you trust
     """
-    dmAllowedDomainsFilename = \
+    dmAllowedInstancesFilename = \
         baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/dmAllowedDomains.txt'
-    if not os.path.isfile(dmAllowedDomainsFilename):
+        nickname + '@' + domain + '/dmAllowedInstances.txt'
+    if not os.path.isfile(dmAllowedInstancesFilename):
         return False
-    if sendingActorDomain + '\n' in open(dmAllowedDomainsFilename).read():
+    if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():
         return True
     return False

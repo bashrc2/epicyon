@@ -401,5 +401,7 @@
     "counselor": "Pêşnîyarvan",
     "Counselors": "Selêwirmendan",
     "shocked": "şok kirin",
-    "Encrypted": "Encîfre kirin"
+    "Encrypted": "Encîfre kirin",
+    "Direct Message permitted instances": "Peyama rasterast destûrê",
+    "Direct messages are always allowed from these instances.": "Peyamên rasterast her gav ji van deman têne destûr kirin."
 }

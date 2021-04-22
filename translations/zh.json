@@ -401,5 +401,7 @@
     "counselor": "顾问",
     "Counselors": "辅导员",
     "shocked": "震惊的",
-    "Encrypted": "加密的"
+    "Encrypted": "加密的",
+    "Direct Message permitted instances": "直接留言允许实例",
+    "Direct messages are always allowed from these instances.": "这些实例始终允许直接消息。"
 }

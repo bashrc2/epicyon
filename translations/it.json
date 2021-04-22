@@ -401,5 +401,7 @@
     "counselor": "Consulente",
     "Counselors": "Consiglieri",
     "shocked": "scioccata",
-    "Encrypted": "Crittografato"
+    "Encrypted": "Crittografato",
+    "Direct Message permitted instances": "Messaggio diretto istanze consentite",
+    "Direct messages are always allowed from these instances.": "I messaggi diretti sono sempre ammessi da questi casi."
 }

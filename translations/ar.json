@@ -401,5 +401,7 @@
     "counselor": "مستشار",
     "Counselors": "المستشارين",
     "shocked": "صدمت",
-    "Encrypted": "مشفر"
+    "Encrypted": "مشفر",
+    "Direct Message permitted instances": "الرسالة المباشرة المسموح بها",
+    "Direct messages are always allowed from these instances.": "الرسائل المباشرة مسموح بها دائما من هذه المثيلات."
 }

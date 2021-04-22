@@ -401,5 +401,7 @@
     "counselor": "काउंसलर",
     "Counselors": "सलाहकार",
     "shocked": "हैरान",
-    "Encrypted": "को गोपित"
+    "Encrypted": "को गोपित",
+    "Direct Message permitted instances": "प्रत्यक्ष संदेश अनुमत उदाहरण",
+    "Direct messages are always allowed from these instances.": "इन उदाहरणों से प्रत्यक्ष संदेश हमेशा अनुमति देते हैं।"
 }

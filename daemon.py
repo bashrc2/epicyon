@@ -5019,11 +5019,24 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(blockedFilename):
                             os.remove(blockedFilename)
 
+                    # Save DM allowed instances list.
+                    # The allow list for incoming DMs,
+                    # if the .followDMs flag file exists
+                    dmAllowedInstancesFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + '/dmAllowedinstances.txt'
+                    if fields.get('dmAllowedInstances'):
+                        with open(dmAllowedInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['dmAllowedInstances'])
+                    else:
+                        if os.path.isfile(dmAllowedInstancesFilename):
+                            os.remove(dmAllowedInstancesFilename)
+
                     # save allowed instances list
+                    # This is the account level allow list
                     allowedInstancesFilename = \
                         baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
-                        '/allowedinstances.txt'
+                        nickname + '@' + domain + '/allowedinstances.txt'
                     if fields.get('allowedInstances'):
                         with open(allowedInstancesFilename, 'w+') as aFile:
                             aFile.write(fields['allowedInstances'])
