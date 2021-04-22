@@ -85,7 +85,8 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
             key = accessKeys[variableName]
         keyStr += \
             '<td><input type="text" value="' + key + '" style="width:1ch">'
-        keyStr = '</td></tr>'
+        keyStr += '</td></tr>'
+        accessKeysForm += keyStr
 
     accessKeysForm += '      </tbody>\n'
     accessKeysForm += '    </table>\n'
