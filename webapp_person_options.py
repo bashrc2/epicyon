@@ -119,7 +119,7 @@ def htmlPersonOptions(defaultTimeline: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    optionsStr += htmlKeyboardNavigation(textModeBanner, {})
+    optionsStr += htmlKeyboardNavigation(textModeBanner, {}, {})
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'

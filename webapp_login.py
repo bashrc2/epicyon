@@ -84,7 +84,7 @@ def htmlLogin(cssCache: {}, translate: {},
         copyfile(baseDir + '/img/login.png', loginImageFilename)
 
     textModeLogo = getTextModeLogo(baseDir)
-    textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {})
+    textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {}, {})
 
     if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):

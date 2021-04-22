@@ -456,7 +456,11 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
         htmlHideFromScreenReader('←') + ' ' + translate['Previous month']
     navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber)
+    # TODO
+    navAccessKeys = {
+    }
     screenReaderCal = \
-        htmlKeyboardNavigation(textModeBanner, navLinks, monthName)
+        htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+                               monthName)
 
     return headerStr + screenReaderCal + calendarStr + htmlFooter()

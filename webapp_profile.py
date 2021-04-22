@@ -755,7 +755,19 @@ def htmlProfile(rssIconAtTop: bool,
         menuShares: userPathStr + '/shares#timeline',
         menuLogout: '/logout'
     }
-    profileStr = htmlKeyboardNavigation(textModeBanner, navLinks)
+    navAccessKeys = {
+        menuTimeline: 't',
+        menuEdit: 'e',
+        menuFollowing: 'f',
+        menuFollowers: 'g',
+        menuRoles: 'o',
+        menuSkills: 's',
+        menuShares: 'h',
+        menuLogout: 'x'
+    }
+    profileStr = htmlKeyboardNavigation(textModeBanner,
+                                        navLinks, navAccessKeys,
+                                        navAccessKeys)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -1471,7 +1483,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         menuProfile: userPathStr,
         menuTimeline: userTimalineStr
     }
-    editProfileForm += htmlKeyboardNavigation(textModeBanner, navLinks)
+    navAccessKeys = {
+        menuProfile: 'p',
+        menuTimeline: 't'
+    }
+    editProfileForm += htmlKeyboardNavigation(textModeBanner,
+                                              navLinks, navAccessKeys)
 
     # top banner
     editProfileForm += \

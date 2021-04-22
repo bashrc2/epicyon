@@ -479,10 +479,26 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuNewswire: usersPath + '/newswiremobile',
         menuLinks: usersPath + '/linksmobile'
     }
+    navAccessKeys = {
+        menuProfile: 'p',
+        menuInbox: 'i',
+        menuSearch: '/',
+        menuNewPost: 'n',
+        menuCalendar: 'c',
+        menuDM: 'm',
+        menuReplies: 'r',
+        menuOutbox: 'o',
+        menuBookmarks: 'k',
+        menuShares: 's',
+        menuBlogs: 'b',
+        menuNewswire: 'w',
+        menuLinks: 'l'
+    }
     if moderator:
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, None,
-                                    usersPath, translate, followApprovals)
+    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+                                    None, usersPath, translate,
+                                    followApprovals)
 
     # banner and row of buttons
     tlStr += \

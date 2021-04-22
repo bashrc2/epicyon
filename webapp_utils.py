@@ -1114,7 +1114,7 @@ def htmlHideFromScreenReader(htmlStr: str) -> str:
     return '<span aria-hidden="true">' + htmlStr + '</span>'
 
 
-def htmlKeyboardNavigation(banner: str, links: {},
+def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
                            subHeading=None,
                            usersPath=None, translate=None,
                            followApprovals=False) -> str:
@@ -1138,8 +1138,12 @@ def htmlKeyboardNavigation(banner: str, links: {},
 
     # show the list of links
     for title, url in links.items():
+        accessKeyStr = ''
+        if accessKeys.get(title):
+            accessKeyStr = 'accesskey="' + accessKeys[title] + '"'
+
         htmlStr += '<li><label class="transparent">' + \
-            '<a href="' + str(url) + '">' + \
+            '<a href="' + str(url) + '" ' + accessKeyStr + '>' + \
             str(title) + '</a></label></li>\n'
     htmlStr += '</ul></div>\n'
     return htmlStr

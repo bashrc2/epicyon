@@ -342,7 +342,7 @@ def htmlSearch(cssCache: {}, translate: {},
     searchBannerFile, searchBannerFilename = \
         getSearchBannerFile(baseDir, searchNickname, domain, theme)
 
-    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {})
+    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {}, {})
     if textModeBannerStr is None:
         textModeBannerStr = ''
 
