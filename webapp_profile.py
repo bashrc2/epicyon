@@ -766,8 +766,7 @@ def htmlProfile(rssIconAtTop: bool,
         menuLogout: 'x'
     }
     profileStr = htmlKeyboardNavigation(textModeBanner,
-                                        navLinks, navAccessKeys,
-                                        navAccessKeys)
+                                        navLinks, navAccessKeys)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
