@@ -65,9 +65,9 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
 
     accessKeysForm += \
         '    <center>\n' + \
-        '      <a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
-        '<button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n' + \
+        '    <button type="submit" class="button" ' + \
+        'name="submitAccessKeysCancel">' + \
+        translate['Go Back'] + '</button>\n' + \
         '    <button type="submit" class="button" name="submitAccessKeys">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
