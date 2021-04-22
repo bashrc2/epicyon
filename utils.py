@@ -2203,3 +2203,22 @@ def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
         translationsFile = baseDir + '/translations/' + \
             systemLanguage + '.json'
     return loadJson(translationsFile), systemLanguage
+
+
+def dmAllowedFromDomain(baseDir: str,
+                        nickname: str, domain: str,
+                        sendingActorDomain: str):
+    """When a DM is received and the .followDMs flag file exists
+    Then optionally some domains can be specified as allowed,
+    regardless of individual follows.
+    i.e. Mostly you only want DMs from followers, but there are
+    a few particular instances that you trust
+    """
+    dmAllowedDomainsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/dmAllowedDomains.txt'
+    if not os.path.isfile(dmAllowedDomainsFilename):
+        return False
+    if sendingActorDomain + '\n' in open(dmAllowedDomainsFilename).read():
+        return True
+    return False
