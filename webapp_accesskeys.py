@@ -36,7 +36,8 @@ def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {}) -> None:
 def htmlAccessKeys(cssCache: {}, baseDir: str,
                    nickname: str, domain: str,
                    translate: {}, accessKeys: {},
-                   defaultAccessKeys: {}) -> str:
+                   defaultAccessKeys: {},
+                   defaultTimeline: str) -> str:
     """Show and edit key shortcuts
     """
     accessKeysFilename = \
@@ -63,9 +64,12 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
         '/users/' + nickname + '/changeAccessKeys">\n'
 
     accessKeysForm += \
-        '    <center>' + \
-        '<button type="submit" class="button" name="submitAccessKeys">' + \
-        translate['Submit'] + '</button></center>\n'
+        '    <center>\n' + \
+        '      <a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<button class="cancelbtn">' + \
+        translate['Go Back'] + '</button></a>\n' + \
+        '    <button type="submit" class="button" name="submitAccessKeys">' + \
+        translate['Submit'] + '</button>\n    </center>\n'
 
     accessKeysForm += '    <table class="accesskeys">\n'
     accessKeysForm += '      <colgroup>\n'
