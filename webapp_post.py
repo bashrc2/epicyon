@@ -138,14 +138,10 @@ def preparePostFromHtmlCache(nickname: str, postHtml: str, boxName: str,
     for keyIndex in range(10):
         keyStr = 'accesskey="' + str(keyIndex) + '"'
         if keyStr in withPageNumber:
-            if accessKeyIndex == 0 or accessKeyIndex > 9:
-                withPageNumber = \
-                    withPageNumber.replace(keyStr, '')
-            else:
-                withPageNumber = \
-                    withPageNumber.replace(keyStr,
-                                           'accesskey="' +
-                                           str(accessKeyIndex) + '"')
+            withPageNumber = \
+                withPageNumber.replace(keyStr,
+                                       'accesskey="' +
+                                       str(accessKeyIndex) + '"')
             break
     return prepareHtmlPostNickname(nickname, withPageNumber)
 
