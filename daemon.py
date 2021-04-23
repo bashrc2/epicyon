@@ -11781,6 +11781,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 iconsAsButtons = self.server.iconsAsButtons
@@ -11795,7 +11798,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.rssIconAtTop,
                                       iconsAsButtons,
                                       defaultTimeline,
-                                      self.server.themeName).encode('utf-8')
+                                      self.server.themeName,
+                                      accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)

@@ -68,7 +68,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
-                         frontPage: bool, theme: str) -> str:
+                         frontPage: bool, theme: str,
+                         accessKeys: {}) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -256,7 +257,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += separatorStr
     htmlStr += \
         '<p class="login-text"><a href="/users/' + \
-        nickname + '/accesskeys">' + \
+        nickname + '/accesskeys" accesskeys="' + \
+        accessKeys['menuKeys'] + '">' + \
         translate['Key Shortcuts'] + '</a></p>'
     htmlStr += \
         '<p class="login-text"><a href="/about">' + \
@@ -278,7 +280,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     rssIconAtTop: bool,
                     iconsAsButtons: bool,
                     defaultTimeline: str,
-                    theme: str) -> str:
+                    theme: str, accessKeys: {}) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -321,7 +323,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False,
-                                 theme)
+                                 theme, accessKeys)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'

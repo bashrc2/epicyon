@@ -516,7 +516,7 @@ def htmlProfile(rssIconAtTop: bool,
                                YTReplacementDomain,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
-                               allowLocalNetworkAccess,
+                               allowLocalNetworkAccess, accessKeys,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])

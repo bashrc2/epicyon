@@ -96,6 +96,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     newswire: {}, theme: str,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
+                    accessKeys: {},
                     extraJson=None,
                     pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the news instance front screen
@@ -138,7 +139,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False, None, rssIconAtTop, True,
-                             True, theme)
+                             True, theme, accessKeys)
     profileHeaderStr += '      </td>\n'
     profileHeaderStr += '      <td valign="top" class="col-center">\n'
 

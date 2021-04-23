@@ -535,7 +535,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
-                             True, False, theme)
+                             True, False, theme, accessKeys)
     tlStr += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
