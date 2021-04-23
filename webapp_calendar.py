@@ -243,7 +243,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
 def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
                  baseDir: str, path: str,
                  httpPrefix: str, domainFull: str,
-                 textModeBanner: str) -> str:
+                 textModeBanner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
     domain = domainFull
@@ -348,17 +348,20 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
-        '?month=' + str(prevMonthNumber) + '">'
+        '?month=' + str(prevMonthNumber) + '" ' + \
+        'accesskey="' + accessKeys['Page up'] + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendarStr += '  <a href="' + calActor + '/inbox" title="'
-    calendarStr += translate['Switch to timeline view'] + '">'
+    calendarStr += translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
-        '?month=' + str(nextMonthNumber) + '">'
+        '?month=' + str(nextMonthNumber) + '" ' + \
+        'accesskey="' + accessKeys['Page down'] + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \

@@ -11959,6 +11959,14 @@ class PubServer(BaseHTTPRequestHandler):
         # Show the calendar for a user
         if htmlGET and usersInPath:
             if '/calendar' in self.path:
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
                 # show the calendar screen
                 msg = htmlCalendar(self.server.personCache,
                                    self.server.cssCache,
@@ -11966,7 +11974,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
                                    self.server.domainFull,
-                                   self.server.textModeBanner).encode('utf-8')
+                                   self.server.textModeBanner,
+                                   accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
