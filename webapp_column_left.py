@@ -114,7 +114,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += \
             '      <a href="' + \
             '/users/' + nickname + '/editlinks" ' + \
-            'accesskey="' + accessKey['menuEdit'] + '">' + \
+            'accesskey="' + accessKeys['menuEdit'] + '">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
