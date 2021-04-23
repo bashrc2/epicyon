@@ -11778,6 +11778,9 @@ class PubServer(BaseHTTPRequestHandler):
                 rssIconAtTop = self.server.rssIconAtTop
                 iconsAsButtons = self.server.iconsAsButtons
                 defaultTimeline = self.server.defaultTimeline
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
                 msg = htmlNewswireMobile(self.server.cssCache,
                                          self.server.baseDir,
                                          nickname,
@@ -11793,7 +11796,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          rssIconAtTop,
                                          iconsAsButtons,
                                          defaultTimeline,
-                                         self.server.themeName).encode('utf-8')
+                                         self.server.themeName,
+                                         accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain)

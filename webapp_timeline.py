@@ -780,7 +780,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
                                            authorized, True, theme,
-                                           defaultTimeline)
+                                           defaultTimeline, accessKeys)
     tlStr += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">' + \
         rightColumnStr + '  </td>\n'
