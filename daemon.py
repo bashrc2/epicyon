@@ -1835,7 +1835,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         accessKeysParams = \
             urllib.parse.unquote_plus(accessKeysParams)
-
+        print('accessKeysParams: ' + str(accessKeysParams))
         # key shortcuts screen, back button
         # See htmlAccessKeys
         if '&submitAccessKeysCancel=' in accessKeysParams or \
@@ -1855,11 +1855,12 @@ class PubServer(BaseHTTPRequestHandler):
                 accessKeys[variableName] = accessKeysTemplate[variableName]
 
             variableName2 = variableName.replace(' ', '_')
-            if variableName2 in accessKeysParams:
+            if variableName2 + '=' in accessKeysParams:
                 newKey = accessKeysParams.split(variableName2 + '=')[1]
                 if '&' in newKey:
                     newKey = newKey.split('&')[0]
                 if newKey:
+                    print('accessKeysParams newKey: ' + str(newKey))
                     if len(newKey) > 1:
                         newKey = newKey[0]
                     if newKey != accessKeys[variableName]:
