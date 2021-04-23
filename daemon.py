@@ -14280,9 +14280,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
-                accessKeys = self.server.accessKeys
-                if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                if not self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.accessKeys
+                    self.server.keyShortcuts[nickname] = accessKeys.copy()
+                accessKeys = self.server.keyShortcuts[nickname]
+
                 self._keyShortcuts(self.path,
                                    callingDomain, cookie,
                                    self.server.baseDir,
