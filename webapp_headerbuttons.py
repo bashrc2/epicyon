@@ -105,7 +105,9 @@ def headerButtonsTimeline(defaultTimeline: str,
         if not minimal and not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \
-                '/tlmedia" tabindex="-1"><button class="' + \
+                '/tlmedia" tabindex="-1" ' + \
+                'accesskey="' + accessKeys['menuMedia'] + '">' + \
+                '<button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
     else:
