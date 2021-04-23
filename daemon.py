@@ -14671,8 +14671,8 @@ def runDaemon(brochMode: bool,
 
     # key shortcuts SHIFT + ALT + [key]
     httpd.accessKeys = {
-        'Page up': '.',
-        'Page down': ',',
+        'Page up': ',',
+        'Page down': '.',
         'submitButton': 'y',
         'followButton': 'f',
         'blockButton': 'b',
