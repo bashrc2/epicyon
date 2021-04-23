@@ -171,7 +171,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 titleStr = translate['Publish a news article']
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/newblog?nodropdown">' + \
+                '/users/' + nickname + '/newblog?nodropdown" ' + \
+                'accesskey="' + accessKeys['menuNewPost'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 titleStr + '" title="' + \
