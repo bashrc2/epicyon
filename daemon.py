@@ -14845,7 +14845,9 @@ def runDaemon(brochMode: bool,
         'menuRoles': 'o',
         'menuSkills': 'a',
         'menuLogout': 'x',
-        'menuKeys': 'k'
+        'menuKeys': 'k',
+        'Public': 'p',
+        'Reminder': 'r'
     }
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts)

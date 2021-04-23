@@ -72,7 +72,8 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
                          dropdownReminderSuffix: str,
                          dropdownEventSuffix: str,
                          dropdownReportSuffix: str,
-                         noDropDown: bool) -> str:
+                         noDropDown: bool,
+                         accessKeys: {}) -> str:
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<nav><div class="newPostDropdown">\n'
@@ -93,21 +94,24 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     if showPublicOnDropdown:
         dropDownContent += \
             '<li><a href="' + pathBase + dropdownNewPostSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
+            '" accesskey="' + accessKeys['Public'] + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
         if defaultTimeline == 'tlfeatures':
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
+                '<img loading="lazy" alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Article'] + '</b><br>' + \
                 translate['Create an article'] + '</a></li>\n'
         else:
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
+                '<img loading="lazy" alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
                 translate['Publicly visible post'] + '</a></li>\n'
@@ -119,20 +123,23 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             translate['Not on public timeline'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownFollowersSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['menuFollowers'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_followers.png"/><b>' + \
         translate['Followers'] + '</b><br>' + \
         translate['Only to followers'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownDMSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['menuDM'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_dm.png"/><b>' + \
         translate['DM'] + '</b><br>' + \
         translate['Only to mentioned people'] + '</a></li>\n'
 
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReminderSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['Reminder'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
@@ -144,7 +151,8 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     #    translate['Create an event'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['reportButton'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_report.png"/><b>' + \
         translate['Report'] + '</b><br>' + \
         translate['Send to moderators'] + '</a></li>\n'
@@ -152,7 +160,8 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     if not replyStr:
         dropDownContent += \
             '<li><a href="' + pathBase + \
-            '/newshare"><img loading="lazy" alt="" title="" src="/' + \
+            '/newshare" accesskey="' + accessKeys['menuShares'] + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_share.png"/><b>' + \
             translate['Shares'] + '</b><br>' + \
             translate['Describe a shared item'] + '</a></li>\n'
@@ -653,7 +662,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                  dropdownReminderSuffix,
                                  dropdownEventSuffix,
                                  dropdownReportSuffix,
-                                 noDropDown)
+                                 noDropDown, accessKeys)
     else:
         if not shareDescription:
             # reporting a post to moderator
