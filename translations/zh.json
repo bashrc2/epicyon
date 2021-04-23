@@ -426,5 +426,6 @@
     "menuRoles": "角色",
     "menuSkills": "技能",
     "menuLogout": "登出",
-    "menuKeys": "关键捷径"
+    "menuKeys": "关键捷径",
+    "submitButton": "提交按钮"
 }

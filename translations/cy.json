@@ -426,5 +426,6 @@
     "menuRoles": "Rolau",
     "menuSkills": "Medrau",
     "menuLogout": "Allgofnodi",
-    "menuKeys": "Llwybrau byr allweddol"
+    "menuKeys": "Llwybrau byr allweddol",
+    "submitButton": "Cyflwyno botwm"
 }

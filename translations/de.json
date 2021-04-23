@@ -426,5 +426,6 @@
     "menuRoles": "Rollen",
     "menuSkills": "Kompetenzen",
     "menuLogout": "Ausloggen",
-    "menuKeys": "Schlüsselverknüpfungen"
+    "menuKeys": "Schlüsselverknüpfungen",
+    "submitButton": "Button einreichen"
 }

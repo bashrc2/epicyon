@@ -426,5 +426,6 @@
     "menuRoles": "役割",
     "menuSkills": "スキル",
     "menuLogout": "ログアウト",
-    "menuKeys": "キーショートカット"
+    "menuKeys": "キーショートカット",
+    "submitButton": "送信ボタン"
 }

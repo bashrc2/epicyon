@@ -426,5 +426,6 @@
     "menuRoles": "भूमिकाएँ",
     "menuSkills": "कौशल",
     "menuLogout": "लॉग आउट",
-    "menuKeys": "कुंजी शॉर्टकट"
+    "menuKeys": "कुंजी शॉर्टकट",
+    "submitButton": "जमा करने वाला बटन"
 }

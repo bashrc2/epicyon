@@ -426,5 +426,6 @@
     "menuRoles": "Papéis",
     "menuSkills": "Habilidades",
     "menuLogout": "Sair",
-    "menuKeys": "Atalhos-chave"
+    "menuKeys": "Atalhos-chave",
+    "submitButton": "Botão de envio"
 }

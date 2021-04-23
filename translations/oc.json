@@ -422,5 +422,6 @@
     "menuRoles": "Roles",
     "menuSkills": "Skills",
     "menuLogout": "Logout",
-    "menuKeys": "Key Shortcuts"
+    "menuKeys": "Key Shortcuts",
+    "submitButton": "Submit button"
 }

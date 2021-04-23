@@ -319,7 +319,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 def htmlSearch(cssCache: {}, translate: {},
                baseDir: str, path: str, domain: str,
                defaultTimeline: str, theme: str,
-               textModeBanner: str) -> str:
+               textModeBanner: str, accessKeys: {}) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -347,12 +347,14 @@ def htmlSearch(cssCache: {}, translate: {},
         textModeBannerStr = ''
 
     if os.path.isfile(searchBannerFilename):
+        timelineKey = accessKeys['menuTimeline']
         usersPath = '/users/' + searchNickname
         followStr += \
             '<header>\n' + textModeBannerStr + \
             '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
-            translate['Switch to timeline view'] + '">\n'
+            translate['Switch to timeline view'] + '" ' + \
+            'accesskey="' + timelineKey + '">\n'
         followStr += '<img loading="lazy" class="timeline-banner" src="' + \
             usersPath + '/' + searchBannerFile + '" alt="" /></a>\n' + \
             '</header>\n'
@@ -370,8 +372,10 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
+    submitKey = accessKeys['submitButton']
     followStr += '    <button type="submit" class="button" ' + \
-        'name="submitSearch">' + translate['Submit'] + '</button>\n'
+        'name="submitSearch" accesskey="' + submitKey + '">' + \
+        translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
     followStr += '  <p class="hashtagswarm">' + \
         htmlHashTagSwarm(baseDir, actor, translate) + '</p>\n'

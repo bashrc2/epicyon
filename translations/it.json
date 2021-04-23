@@ -426,5 +426,6 @@
     "menuRoles": "Ruoli",
     "menuSkills": "Competenze",
     "menuLogout": "Disconnettersi",
-    "menuKeys": "Scorciatoie chiave"
+    "menuKeys": "Scorciatoie chiave",
+    "submitButton": "Invia il pulsante"
 }

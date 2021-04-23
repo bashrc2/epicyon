@@ -426,5 +426,6 @@
     "menuRoles": "Rols",
     "menuSkills": "Habilitats",
     "menuLogout": "Tancar sessió",
-    "menuKeys": "Dreceres clau"
+    "menuKeys": "Dreceres clau",
+    "submitButton": "Envia el botó"
 }

@@ -63,12 +63,15 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
     accessKeysForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeAccessKeys">\n'
 
+    timelineKey = accessKeys['menuTimeline']
+    submitKey = accessKeys['submitButton']
     accessKeysForm += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
-        'name="submitAccessKeysCancel">' + \
+        'name="submitAccessKeysCancel" accesskey="' + timelineKey + '">' + \
         translate['Go Back'] + '</button>\n' + \
-        '    <button type="submit" class="button" name="submitAccessKeys">' + \
+        '    <button type="submit" class="button" ' + \
+        'name="submitAccessKeys" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
     accessKeysForm += '    <table class="accesskeys">\n'

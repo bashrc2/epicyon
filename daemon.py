@@ -11758,6 +11758,15 @@ class PubServer(BaseHTTPRequestHandler):
                '/search?' in self.path:
                 if '?' in self.path:
                     self.path = self.path.split('?')[0]
+
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
                 # show the search screen
                 msg = htmlSearch(self.server.cssCache,
                                  self.server.translate,
@@ -11765,7 +11774,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.defaultTimeline,
                                  self.server.themeName,
-                                 self.server.textModeBanner).encode('utf-8')
+                                 self.server.textModeBanner,
+                                 accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
@@ -14647,6 +14657,7 @@ def runDaemon(brochMode: bool,
 
     # key shortcuts SHIFT + ALT + [key]
     httpd.accessKeys = {
+        'submitButton': 'y',
         'menuTimeline': 't',
         'menuEdit': 'e',
         'menuProfile': 'p',

@@ -426,5 +426,6 @@
     "menuRoles": "Roles",
     "menuSkills": "Habilidades",
     "menuLogout": "Cerrar sesión",
-    "menuKeys": "Atajos clave"
+    "menuKeys": "Atajos clave",
+    "submitButton": "Botón de enviar"
 }

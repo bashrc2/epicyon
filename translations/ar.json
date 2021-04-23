@@ -426,5 +426,6 @@
     "menuRoles": "أدوار",
     "menuSkills": "مهارات",
     "menuLogout": "تسجيل خروج",
-    "menuKeys": "الاختصارات الرئيسية"
+    "menuKeys": "الاختصارات الرئيسية",
+    "submitButton": "زر الإرسال"
 }

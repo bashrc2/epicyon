@@ -426,5 +426,6 @@
     "menuRoles": "Les rôles",
     "menuSkills": "Compétences",
     "menuLogout": "Se déconnecter",
-    "menuKeys": "Raccourcis clés"
+    "menuKeys": "Raccourcis clés",
+    "submitButton": "Bouton de soumission"
 }

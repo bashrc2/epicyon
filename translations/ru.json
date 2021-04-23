@@ -426,5 +426,6 @@
     "menuRoles": "Роли",
     "menuSkills": "Навыки и умения",
     "menuLogout": "Выйти",
-    "menuKeys": "Клавичные ярлыки"
+    "menuKeys": "Клавичные ярлыки",
+    "submitButton": "Отправить кнопку"
 }
