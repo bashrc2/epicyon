@@ -1807,11 +1807,13 @@ class PubServer(BaseHTTPRequestHandler):
                       baseDir: str, httpPrefix: str, nickname: str,
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
-                      debug: bool, accessKeys: {}) -> None:
+                      debug: bool, accessKeys: {},
+                      defaultTimeline: str) -> None:
         """Receive POST from webapp_accesskeys
         """
-        usersPath = path.split('/changeAccessKeys')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        usersPath = '/users/' + nickname
+        originPathStr = \
+            httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
         length = int(self.headers['Content-length'])
 
         try:
@@ -1835,15 +1837,17 @@ class PubServer(BaseHTTPRequestHandler):
             return
         accessKeysParams = \
             urllib.parse.unquote_plus(accessKeysParams)
-        print('accessKeysParams: ' + str(accessKeysParams))
+
         # key shortcuts screen, back button
         # See htmlAccessKeys
-        if '&submitAccessKeysCancel=' in accessKeysParams or \
-           '&submitAccessKeys=' not in accessKeysParams:
+        if 'submitAccessKeysCancel=' in accessKeysParams or \
+           'submitAccessKeys=' not in accessKeysParams:
             if callingDomain.endswith('.onion') and onionDomain:
-                originPathStr = 'http://' + onionDomain + usersPath
+                originPathStr = \
+                    'http://' + onionDomain + usersPath + '/' + defaultTimeline
             elif callingDomain.endswith('.i2p') and i2pDomain:
-                originPathStr = 'http://' + i2pDomain + usersPath
+                originPathStr = \
+                    'http://' + i2pDomain + usersPath + '/' + defaultTimeline
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -1860,7 +1864,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in newKey:
                     newKey = newKey.split('&')[0]
                 if newKey:
-                    print('accessKeysParams newKey: ' + str(newKey))
                     if len(newKey) > 1:
                         newKey = newKey[0]
                     if newKey != accessKeys[variableName]:
@@ -1877,9 +1880,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # redirect back from key shortcuts screen
         if callingDomain.endswith('.onion') and onionDomain:
-            originPathStr = 'http://' + onionDomain + usersPath
+            originPathStr = \
+                'http://' + onionDomain + usersPath + '/' + defaultTimeline
         elif callingDomain.endswith('.i2p') and i2pDomain:
-            originPathStr = 'http://' + i2pDomain + usersPath
+            originPathStr = \
+                'http://' + i2pDomain + usersPath + '/' + defaultTimeline
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
         return
@@ -14297,7 +14302,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug,
-                                   accessKeys)
+                                   accessKeys,
+                                   self.server.defaultTimeline)
                 return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
