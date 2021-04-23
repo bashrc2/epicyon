@@ -1802,6 +1802,87 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = False
         return
 
+    def _keyShortcuts(self, path: str,
+                      callingDomain: str, cookie: str,
+                      baseDir: str, httpPrefix: str, nickname: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      debug: bool, accessKeys: {}) -> None:
+        """Receive POST from webapp_accesskeys
+        """
+        usersPath = path.split('/changeAccessKeys')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        length = int(self.headers['Content-length'])
+
+        try:
+            accessKeysParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST accessKeysParams ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST accessKeysParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST accessKeysParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        accessKeysParams = \
+            urllib.parse.unquote_plus(accessKeysParams)
+
+        # key shortcuts screen, back button
+        # See htmlAccessKeys
+        if '&submitAccessKeysCancel=' in accessKeysParams or \
+           '&submitAccessKeys=' not in accessKeysParams:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                originPathStr = 'http://' + i2pDomain + usersPath
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        saveKeys = False
+        accessKeysTemplate = self.server.accessKeys
+        for variableName, key in accessKeysTemplate.items():
+            if not accessKeys.get(variableName):
+                accessKeys[variableName] = accessKeysTemplate[variableName]
+
+            variableName2 = variableName.replace(' ', '_')
+            if variableName2 in accessKeysParams:
+                newKey = accessKeysParams.split(variableName2 + '=')[1]
+                if '&' in newKey:
+                    newKey = newKey.split('&')[0]
+                if newKey:
+                    if len(newKey) > 1:
+                        newKey = newKey[0]
+                    if newKey != accessKeys[variableName]:
+                        accessKeys[variableName] = newKey
+                        saveKeys = True
+
+        if saveKeys:
+            accessKeysFilename = \
+                baseDir + '/accounts/' + nickname + '@' + domain + \
+                '/accessKeys.json'
+            saveJson(accessKeys, accessKeysFilename)
+            if not self.server.keyShortcuts.get(nickname):
+                self.server.keyShortcuts[nickname] = accessKeys.copy()
+
+        # redirect back from key shortcuts screen
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
     def _personOptions(self, path: str,
                        callingDomain: str, cookie: str,
                        baseDir: str, httpPrefix: str,
@@ -14190,6 +14271,30 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onionDomain,
                                     self.server.i2pDomain,
                                     self.server.debug)
+                return
+
+            # Change the key shortcuts
+            if usersInPath and \
+               self.path.endswith('/changeAccessKeys'):
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+                self._keyShortcuts(self.path,
+                                   callingDomain, cookie,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   nickname,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug,
+                                   accessKeys)
                 return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)

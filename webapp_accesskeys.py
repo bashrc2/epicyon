@@ -90,8 +90,12 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
             translate[variableName] + '</label></td>'
         if accessKeys.get(variableName):
             key = accessKeys[variableName]
+        if len(key) > 1:
+            key = key[0]
         keyStr += \
-            '<td><input type="text" value="' + key + '">'
+            '<td><input type="text" ' + \
+            'name="' + variableName.replace(' ', '_') + '" ' + \
+            'value="' + key + '">'
         keyStr += '</td></tr>\n'
         accessKeysForm += keyStr
 
