@@ -257,7 +257,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += separatorStr
     htmlStr += \
         '<p class="login-text"><a href="/users/' + \
-        nickname + '/accesskeys" accesskeys="' + \
+        nickname + '/accesskeys" accesskey="' + \
         accessKeys['menuKeys'] + '">' + \
         translate['Key Shortcuts'] + '</a></p>'
     htmlStr += \
