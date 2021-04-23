@@ -661,7 +661,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
             '?page=' + str(pageNumber - 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '" accesskey="' + accessKeys['Page up'] + '">' + \
+            '<img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
@@ -754,7 +755,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '      <center>\n' + \
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '" accesskey="' + accessKeys['Page down'] + '">' + \
+            '<img loading="lazy" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
