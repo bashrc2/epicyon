@@ -177,7 +177,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 nickname: str, domain: str,
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
-                theme: str, noDropDown: bool) -> str:
+                theme: str, noDropDown: bool,
+                accessKeys: {}) -> str:
     """New post screen
     """
     replyStr = ''
@@ -579,7 +580,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n' + \
         '</header>\n'
@@ -693,7 +695,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm += \
         '      <td><input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '"></td>\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '"></td>\n'
 
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'

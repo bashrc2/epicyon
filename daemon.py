@@ -2257,6 +2257,15 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Sending DM to ' + optionsActor)
             reportPath = path.replace('/personoptions', '') + '/newdm'
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2270,7 +2279,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True).encode('utf-8')
+                              True, accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2357,6 +2366,15 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Reporting ' + optionsActor)
             reportPath = \
                 path.replace('/personoptions', '') + '/newreport'
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2369,7 +2387,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True).encode('utf-8')
+                              True, accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -10345,6 +10363,11 @@ class PubServer(BaseHTTPRequestHandler):
                     break
         if isNewPostEndpoint:
             nickname = getNicknameFromActor(path)
+
+            accessKeys = self.server.accessKeys
+            if self.server.keyShortcuts.get(nickname):
+                accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
                               translate,
@@ -10359,7 +10382,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              noDropDown).encode('utf-8')
+                              noDropDown, accessKeys).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
