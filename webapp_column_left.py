@@ -113,7 +113,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         # show the edit icon
         htmlStr += \
             '      <a href="' + \
-            '/users/' + nickname + '/editlinks">' + \
+            '/users/' + nickname + '/editlinks" ' + \
+            'accesskey="' + accessKey['menuEdit'] + '">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
@@ -306,7 +307,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
