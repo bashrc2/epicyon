@@ -43,7 +43,8 @@ def headerButtonsTimeline(defaultTimeline: str,
                           calendarPath: str,
                           calendarImage: str,
                           followApprovals: str,
-                          iconsAsButtons: bool) -> str:
+                          iconsAsButtons: bool,
+                          accessKeys: {}) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
@@ -53,7 +54,9 @@ def headerButtonsTimeline(defaultTimeline: str,
     if defaultTimeline == 'tlmedia':
         tlStr += \
             '<a href="' + usersPath + \
-            '/tlmedia" tabindex="-1"><button class="' + \
+            '/tlmedia" tabindex="-1" ' + \
+            'accesskey="' + accessKeys['menuMedia'] + '"' + \
+            '><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>'
     elif defaultTimeline == 'tlblogs':

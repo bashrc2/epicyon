@@ -269,7 +269,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     # show follow approvals icon
                     followApprovals = \
                         '<a href="' + usersPath + \
-                        '/followers#buttonheader">' + \
+                        '/followers#buttonheader" ' + \
+                        'accesskey="' + accessKeys['followButton'] + '">' + \
                         '<img loading="lazy" ' + \
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
@@ -515,7 +516,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
-                                  iconsAsButtons)
+                                  iconsAsButtons, accessKeys)
 
     # start the timeline
     tlStr += '<table class="timeline">\n'
@@ -555,7 +556,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
-                                  iconsAsButtons)
+                                  iconsAsButtons, accessKeys)
 
     tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
