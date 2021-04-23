@@ -10469,6 +10469,14 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the newswire from the right column
         """
         if '/users/' in path and path.endswith('/editnewswire'):
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+
+            accessKeys = self.server.accessKeys
+            if self.server.keyShortcuts.get(nickname):
+                accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlEditNewswire(self.server.cssCache,
                                    translate,
                                    baseDir,
@@ -10476,7 +10484,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    port,
                                    httpPrefix,
                                    self.server.defaultTimeline,
-                                   self.server.themeName).encode('utf-8')
+                                   self.server.themeName,
+                                   accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,

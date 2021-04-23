@@ -516,7 +516,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
 def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int, httpPrefix: str,
-                     defaultTimeline: str, theme: str) -> str:
+                     defaultTimeline: str, theme: str,
+                     accessKeys: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -549,7 +550,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<header>' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" ' + \
         'alt="" /></a>\n</header>'
@@ -565,7 +567,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <div class="containerSubmitNewPost">\n'
     editNewswireForm += \
         '      <input type="submit" name="submitNewswire" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '">\n'
     editNewswireForm += \
         '    </div>\n'
 
