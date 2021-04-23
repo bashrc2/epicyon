@@ -255,6 +255,10 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if firstSeparatorAdded:
         htmlStr += separatorStr
     htmlStr += \
+        '<p class="login-text"><a href="/users/' + \
+        nickname + '/accesskeys">' + \
+        translate['Key Shortcuts'] + '</a></p>'
+    htmlStr += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
     htmlStr += \
