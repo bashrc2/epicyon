@@ -64,6 +64,9 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
 
     accessKeysForm += \
         '    <h1>' + translate['Key Shortcuts'] + '</h1>\n'
+    accessKeysForm += \
+        '<p>' + translate['These access keys may be used'] + \
+        '<label class="labels"></label></p>'
 
     accessKeysForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeAccessKeys">\n'

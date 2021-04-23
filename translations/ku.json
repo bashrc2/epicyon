@@ -436,5 +436,6 @@
     "reportButton": "Bişkoja Report",
     "viewButton": "Bişkoja View",
     "enterPetname": "Porê binivîse",
-    "enterNotes": "Nîşan binivîse"
+    "enterNotes": "Nîşan binivîse",
+    "These access keys may be used": "Dibe ku ev keysên gihîştinê bikar bînin, bi gelemperî bi alt + shift + key an alt + key"
 }

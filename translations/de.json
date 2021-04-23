@@ -436,5 +436,6 @@
     "reportButton": "Berichtsknopf",
     "viewButton": "Schaltfläche anzeigen",
     "enterPetname": "Petname eingeben",
-    "enterNotes": "Notizen eingeben"
+    "enterNotes": "Notizen eingeben",
+    "These access keys may be used": "Diese Zugriffstasten können verwendet werden, typischerweise mit ALT + SHIFT + -Taste oder ALT + -Taste"
 }

@@ -436,5 +436,6 @@
     "reportButton": "Botó d'informe",
     "viewButton": "Botó Veure",
     "enterPetname": "Introduïu PETNAME",
-    "enterNotes": "Introduïu notes"
+    "enterNotes": "Introduïu notes",
+    "These access keys may be used": "Es poden utilitzar aquestes tecles d'accés, típicament amb Alt + Maj + tecla o Alt + clau"
 }

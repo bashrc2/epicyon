@@ -436,5 +436,6 @@
     "reportButton": "Pulsante report.",
     "viewButton": "Visualizza il pulsante",
     "enterPetname": "Inserisci PetName",
-    "enterNotes": "Inserisci le note"
+    "enterNotes": "Inserisci le note",
+    "These access keys may be used": "Questi tasti di accesso possono essere utilizzati, in genere con tasto ALT + MAIUSC + o ALT + Key"
 }

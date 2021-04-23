@@ -436,5 +436,6 @@
     "reportButton": "रिपोर्ट बटन",
     "viewButton": "देखें बटन",
     "enterPetname": "PETNAME दर्ज करें",
-    "enterNotes": "नोट्स दर्ज करें"
+    "enterNotes": "नोट्स दर्ज करें",
+    "These access keys may be used": "इन एक्सेस कुंजियों का उपयोग किया जा सकता है, आमतौर पर Alt + Shift + कुंजी या Alt + कुंजी के साथ"
 }

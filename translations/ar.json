@@ -436,5 +436,6 @@
     "reportButton": "زر تقرير",
     "viewButton": "عرض زر",
     "enterPetname": "أدخل PETNAME",
-    "enterNotes": "أدخل الملاحظات"
+    "enterNotes": "أدخل الملاحظات",
+    "These access keys may be used": "قد يتم استخدام مفاتيح الوصول هذه، عادة مع مفتاح ALT + SHIFT + مفتاح ALT +"
 }

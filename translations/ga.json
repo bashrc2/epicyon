@@ -436,5 +436,6 @@
     "reportButton": "Cnaipe Tuairisce",
     "viewButton": "Féach an cnaipe",
     "enterPetname": "Cuir isteach PetName",
-    "enterNotes": "Cuir nótaí isteach"
+    "enterNotes": "Cuir nótaí isteach",
+    "These access keys may be used": "Is féidir na heochracha rochtana seo a úsáid, de ghnáth le Alt + Shift + Eochair nó Alt + Eochair"
 }

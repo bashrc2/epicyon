@@ -436,5 +436,6 @@
     "reportButton": "Кнопка отчета",
     "viewButton": "Кнопка просмотра",
     "enterPetname": "Введите petname",
-    "enterNotes": "Введите ноты"
+    "enterNotes": "Введите ноты",
+    "These access keys may be used": "Эти ключевые ключи доступа могут быть использованы, обычно с ALT + Shift + Key или Alt + Key"
 }

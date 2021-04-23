@@ -436,5 +436,6 @@
     "reportButton": "レポートボタン",
     "viewButton": "ボタンを見る",
     "enterPetname": "PetNameを入力してください",
-    "enterNotes": "ノートを入力してください"
+    "enterNotes": "ノートを入力してください",
+    "These access keys may be used": "これらのアクセスキーは、通常はAlt + Shift +キーまたはAlt +キーを使用して使用できます。"
 }

@@ -436,5 +436,6 @@
     "reportButton": "报告按钮",
     "viewButton": "查看按钮",
     "enterPetname": "进入宠物名",
-    "enterNotes": "输入笔记"
+    "enterNotes": "输入笔记",
+    "These access keys may be used": "可以使用这些访问密钥，通常使用Alt + Shift +键或ALT +键"
 }
