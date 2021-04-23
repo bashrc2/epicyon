@@ -14850,7 +14850,7 @@ def runDaemon(brochMode: bool,
         'Reminder': 'r'
     }
     httpd.keyShortcuts = {}
-    loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts)
+    loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess

@@ -13,7 +13,8 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
-def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {}) -> None:
+def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {},
+                              accessKeysTemplate: {}) -> None:
     """Loads key shortcuts for each account
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
@@ -29,7 +30,11 @@ def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {}) -> None:
             nickname = acct.split('@')[0]
             accessKeys = loadJson(accessKeysFilename)
             if accessKeys:
-                keyShortcuts[nickname] = accessKeys
+                keyShortcuts[nickname] = accessKeysTemplate.copy()
+                for variableName, key in accessKeysTemplate.items():
+                    if accessKeys.get(variableName):
+                        keyShortcuts[nickname][variableName] = \
+                            accessKeys[variableName]
         break
 
 
