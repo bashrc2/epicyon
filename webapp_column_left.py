@@ -342,7 +342,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
 def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                   domain: str, port: int, httpPrefix: str,
-                  defaultTimeline: str, theme: str) -> str:
+                  defaultTimeline: str, theme: str,
+                  accessKeys: {}) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
@@ -375,7 +376,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     editLinksForm += '<img loading="lazy" class="timeline-banner" ' + \
         'alt = "" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
@@ -392,7 +394,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <h1>' + translate['Edit Links'] + '</h1>'
     editLinksForm += \
         '      <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '">\n'
     editLinksForm += \
         '    </div>\n'
 
