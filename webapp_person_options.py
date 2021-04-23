@@ -54,7 +54,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       alsoKnownAs: [],
                       textModeBanner: str,
                       newsInstance: bool,
-                      authorized: bool) -> str:
+                      authorized: bool,
+                      accessKeys: {}) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -234,7 +235,8 @@ def htmlPersonOptions(defaultTimeline: str,
                 optionsStr += \
                     '    ' + translate['Petname'] + ': \n' + \
                     '    <input type="text" name="optionpetname" value="' + \
-                    petname + '">\n' \
+                    petname + '" ' + \
+                    'accesskey="' + accessKeys['enterPetname'] + '">\n' \
                     '    <button type="submit" class="buttonsmall" ' + \
                     'name="submitPetname">' + \
                     translate['Submit'] + '</button><br>\n'
@@ -324,40 +326,51 @@ def htmlPersonOptions(defaultTimeline: str,
     if authorized and originPathStr == '/users/' + nickname:
         optionsStr += \
             '    <a href="' + backPath + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
-            '</button></a>\n'
+            'class="buttonIcon" name="submitBack" ' + \
+            'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+            translate['Go Back'] + '</button></a>\n'
     else:
         optionsStr += \
             '    <a href="' + originPathStr + '"><button type="button" ' + \
-            'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
+            'class="buttonIcon" name="submitBack" accesskey="' + \
+            accessKeys['menuTimeline'] + '">' + translate['Go Back'] + \
             '</button></a>\n'
     if authorized:
         optionsStr += \
-            '    <button type="submit" class="button" name="submitView">' + \
+            '    <button type="submit" class="button" ' + \
+            'name="submitView" accesskey="' + \
+            accessKeys['viewButton'] + '">' + \
             translate['View'] + '</button>\n'
     optionsStr += donateStr
     if authorized:
         optionsStr += \
             '    <button type="submit" class="button" name="submit' + \
-            followStr + '">' + translate[followStr] + '</button>\n'
+            followStr + '" accesskey="' + accessKeys['followButton'] + '">' + \
+            translate[followStr] + '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" name="submit' + \
-            blockStr + '">' + translate[blockStr] + '</button>\n'
+            blockStr + '" accesskey="' + accessKeys['blockButton'] + '">' + \
+            translate[blockStr] + '</button>\n'
         optionsStr += \
-            '    <button type="submit" class="button" name="submitDM">' + \
+            '    <button type="submit" class="button" name="submitDM" ' + \
+            'accesskey="' + accessKeys['menuDM'] + '">' + \
             translate['DM'] + '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" name="submit' + \
-            snoozeButtonStr + '">' + translate[snoozeButtonStr] + \
+            snoozeButtonStr + '" accesskey="' + \
+            accessKeys['snoozeButton'] + '">' + translate[snoozeButtonStr] + \
             '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" ' + \
-            'name="submitReport">' + translate['Report'] + '</button>\n'
+            'name="submitReport" accesskey="' + \
+            accessKeys['reportButton'] + '">' + \
+            translate['Report'] + '</button>\n'
 
         if isModerator(baseDir, nickname):
             optionsStr += \
                 '    <button type="submit" class="button" ' + \
-                'name="submitPersonInfo">' + \
+                'name="submitPersonInfo" accesskey="' + \
+                accessKeys['infoButton'] + '">' + \
                 translate['Info'] + '</button>\n'
 
         personNotes = ''
@@ -376,7 +389,8 @@ def htmlPersonOptions(defaultTimeline: str,
             translate['Submit'] + '</button><br>\n'
         optionsStr += \
             '    <textarea id="message" ' + \
-            'name="optionnotes" style="height:400px" spellcheck="true">' + \
+            'name="optionnotes" style="height:400px" spellcheck="true" ' + \
+            'accesskey="' + accessKeys['enterNotes'] + '">' + \
             personNotes + '</textarea>\n'
 
     optionsStr += '  </form>\n'

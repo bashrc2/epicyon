@@ -427,5 +427,14 @@
     "menuSkills": "Medrau",
     "menuLogout": "Allgofnodi",
     "menuKeys": "Llwybrau byr allweddol",
-    "submitButton": "Cyflwyno botwm"
+    "submitButton": "Cyflwyno botwm",
+    "menuMedia": "Chyfryngau",
+    "followButton": "Dilynwch / Peidiwch â Dilynwch y botwm",
+    "blockButton": "Botwm bloc",
+    "infoButton": "Botwm info",
+    "snoozeButton": "Botwm Snooze",
+    "reportButton": "Botwm adroddiadau",
+    "viewButton": "Gweld y botwm",
+    "enterPetname": "Rhowch enw PETName",
+    "enterNotes": "Rhowch nodiadau"
 }

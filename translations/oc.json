@@ -423,5 +423,14 @@
     "menuSkills": "Skills",
     "menuLogout": "Logout",
     "menuKeys": "Key Shortcuts",
-    "submitButton": "Submit button"
+    "submitButton": "Submit button",
+    "menuMedia": "Media",
+    "followButton": "Follow/unfollow button",
+    "blockButton": "Block button",
+    "infoButton": "Info button",
+    "snoozeButton": "Snooze button",
+    "reportButton": "Report button",
+    "viewButton": "View button",
+    "enterPetname": "Enter petname",
+    "enterNotes": "Enter notes"
 }

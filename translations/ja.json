@@ -427,5 +427,14 @@
     "menuSkills": "スキル",
     "menuLogout": "ログアウト",
     "menuKeys": "キーショートカット",
-    "submitButton": "送信ボタン"
+    "submitButton": "送信ボタン",
+    "menuMedia": "メディア",
+    "followButton": "フォロー/フォローダウンボタン",
+    "blockButton": "ブロックボタン",
+    "infoButton": "情報ボタン",
+    "snoozeButton": "スヌーズボタン",
+    "reportButton": "レポートボタン",
+    "viewButton": "ボタンを見る",
+    "enterPetname": "PetNameを入力してください",
+    "enterNotes": "ノートを入力してください"
 }

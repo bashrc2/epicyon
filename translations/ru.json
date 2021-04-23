@@ -427,5 +427,14 @@
     "menuSkills": "Навыки и умения",
     "menuLogout": "Выйти",
     "menuKeys": "Клавичные ярлыки",
-    "submitButton": "Отправить кнопку"
+    "submitButton": "Отправить кнопку",
+    "menuMedia": "СМИ",
+    "followButton": "Следуйте / отписаться кнопка",
+    "blockButton": "Кнопка блокировки",
+    "infoButton": "Информация Кнопка",
+    "snoozeButton": "Кнопка сножения",
+    "reportButton": "Кнопка отчета",
+    "viewButton": "Кнопка просмотра",
+    "enterPetname": "Введите petname",
+    "enterNotes": "Введите ноты"
 }

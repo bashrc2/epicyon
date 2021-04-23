@@ -427,5 +427,14 @@
     "menuSkills": "Habilidades",
     "menuLogout": "Sair",
     "menuKeys": "Atalhos-chave",
-    "submitButton": "Botão de envio"
+    "submitButton": "Botão de envio",
+    "menuMedia": "meios de comunicação",
+    "followButton": "Siga / Deixar botão",
+    "blockButton": "Botão de bloco",
+    "infoButton": "Botão de informação",
+    "snoozeButton": "Botão Snooze",
+    "reportButton": "Botão de relatório",
+    "viewButton": "Botão de visualização",
+    "enterPetname": "Digite Petname",
+    "enterNotes": "Digite notas"
 }

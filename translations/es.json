@@ -427,5 +427,14 @@
     "menuSkills": "Habilidades",
     "menuLogout": "Cerrar sesión",
     "menuKeys": "Atajos clave",
-    "submitButton": "Botón de enviar"
+    "submitButton": "Botón de enviar",
+    "menuMedia": "Medios de comunicación",
+    "followButton": "Botón de seguimiento / dejo",
+    "blockButton": "Botón de bloqueo",
+    "infoButton": "Botón de información",
+    "snoozeButton": "El botón de dormitar",
+    "reportButton": "Botón de informe",
+    "viewButton": "Botón de vista",
+    "enterPetname": "Entrar en nombre de pettname",
+    "enterNotes": "Ingresar notas"
 }

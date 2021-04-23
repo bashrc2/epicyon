@@ -427,5 +427,14 @@
     "menuSkills": "Habilitats",
     "menuLogout": "Tancar sessió",
     "menuKeys": "Dreceres clau",
-    "submitButton": "Envia el botó"
+    "submitButton": "Envia el botó",
+    "menuMedia": "Medis de comunicació",
+    "followButton": "Seguiu / no seguit",
+    "blockButton": "Botó de bloc",
+    "infoButton": "Botó d'informació",
+    "snoozeButton": "Botó de snooze",
+    "reportButton": "Botó d'informe",
+    "viewButton": "Botó Veure",
+    "enterPetname": "Introduïu PETNAME",
+    "enterNotes": "Introduïu notes"
 }

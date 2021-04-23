@@ -427,5 +427,14 @@
     "menuSkills": "Competenze",
     "menuLogout": "Disconnettersi",
     "menuKeys": "Scorciatoie chiave",
-    "submitButton": "Invia il pulsante"
+    "submitButton": "Invia il pulsante",
+    "menuMedia": "Media",
+    "followButton": "Segui il pulsante Segui / Unfollow",
+    "blockButton": "Blocco pulsante",
+    "infoButton": "Pulsante info",
+    "snoozeButton": "Pulsante snooze.",
+    "reportButton": "Pulsante report.",
+    "viewButton": "Visualizza il pulsante",
+    "enterPetname": "Inserisci PetName",
+    "enterNotes": "Inserisci le note"
 }

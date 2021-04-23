@@ -427,5 +427,14 @@
     "menuSkills": "कौशल",
     "menuLogout": "लॉग आउट",
     "menuKeys": "कुंजी शॉर्टकट",
-    "submitButton": "जमा करने वाला बटन"
+    "submitButton": "जमा करने वाला बटन",
+    "menuMedia": "मीडिया",
+    "followButton": "फॉलो / अनफ़ॉलो बटन",
+    "blockButton": "ब्लॉक बटन",
+    "infoButton": "जानकारी बटन",
+    "snoozeButton": "अलार्म को थोड़ी देर बंद करने वाला बटन",
+    "reportButton": "रिपोर्ट बटन",
+    "viewButton": "देखें बटन",
+    "enterPetname": "PETNAME दर्ज करें",
+    "enterNotes": "नोट्स दर्ज करें"
 }

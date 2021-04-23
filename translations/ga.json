@@ -427,5 +427,14 @@
     "menuSkills": "Scileanna",
     "menuLogout": "Logáil Amach",
     "menuKeys": "Príomh-aicearraí",
-    "submitButton": "Cuir an cnaipe isteach"
+    "submitButton": "Cuir an cnaipe isteach",
+    "menuMedia": "Na meáin",
+    "followButton": "Lean / Cnaipe Unurollow",
+    "blockButton": "Cnaipe bloc",
+    "infoButton": "Cnaipe Info",
+    "snoozeButton": "Cnaipe snooze",
+    "reportButton": "Cnaipe Tuairisce",
+    "viewButton": "Féach an cnaipe",
+    "enterPetname": "Cuir isteach PetName",
+    "enterNotes": "Cuir nótaí isteach"
 }

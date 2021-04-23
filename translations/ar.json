@@ -427,5 +427,14 @@
     "menuSkills": "مهارات",
     "menuLogout": "تسجيل خروج",
     "menuKeys": "الاختصارات الرئيسية",
-    "submitButton": "زر الإرسال"
+    "submitButton": "زر الإرسال",
+    "menuMedia": "وسائط",
+    "followButton": "زر متابعة / متابعة",
+    "blockButton": "زر كتلة",
+    "infoButton": "زر المعلومات",
+    "snoozeButton": "زر الغفوة",
+    "reportButton": "زر تقرير",
+    "viewButton": "عرض زر",
+    "enterPetname": "أدخل PETNAME",
+    "enterNotes": "أدخل الملاحظات"
 }

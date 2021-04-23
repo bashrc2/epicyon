@@ -427,5 +427,14 @@
     "menuSkills": "Compétences",
     "menuLogout": "Se déconnecter",
     "menuKeys": "Raccourcis clés",
-    "submitButton": "Bouton de soumission"
+    "submitButton": "Bouton de soumission",
+    "menuMedia": "Médias",
+    "followButton": "Suivez / Bouton Suivi",
+    "blockButton": "Bouton de bloc",
+    "infoButton": "Bouton info",
+    "snoozeButton": "Le bouton de la sieste",
+    "reportButton": "Bouton de rapport",
+    "viewButton": "Bouton d'affichage",
+    "enterPetname": "Entrez PETNAME",
+    "enterNotes": "Faire entrer des notes"
 }

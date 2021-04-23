@@ -427,5 +427,14 @@
     "menuSkills": "Şarezayên",
     "menuLogout": "Derkeve",
     "menuKeys": "Kurteyên Key",
-    "submitButton": "Bişkojka bişînin"
+    "submitButton": "Bişkojka bişînin",
+    "menuMedia": "Medya",
+    "followButton": "Bişkojka bişopînin / Nexşe",
+    "blockButton": "Bişkojka Block",
+    "infoButton": "Bişkoja INFO",
+    "snoozeButton": "Bişkojka Snooze",
+    "reportButton": "Bişkoja Report",
+    "viewButton": "Bişkoja View",
+    "enterPetname": "Porê binivîse",
+    "enterNotes": "Nîşan binivîse"
 }

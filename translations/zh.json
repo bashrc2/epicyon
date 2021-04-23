@@ -427,5 +427,14 @@
     "menuSkills": "技能",
     "menuLogout": "登出",
     "menuKeys": "关键捷径",
-    "submitButton": "提交按钮"
+    "submitButton": "提交按钮",
+    "menuMedia": "媒体",
+    "followButton": "关注/取消关注按钮",
+    "blockButton": "块按钮",
+    "infoButton": "信息按钮",
+    "snoozeButton": "贪睡按钮",
+    "reportButton": "报告按钮",
+    "viewButton": "查看按钮",
+    "enterPetname": "进入宠物名",
+    "enterNotes": "输入笔记"
 }

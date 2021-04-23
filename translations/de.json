@@ -427,5 +427,14 @@
     "menuSkills": "Kompetenzen",
     "menuLogout": "Ausloggen",
     "menuKeys": "Schlüsselverknüpfungen",
-    "submitButton": "Button einreichen"
+    "submitButton": "Button einreichen",
+    "menuMedia": "Medien",
+    "followButton": "Folgen / folgen Sie nicht der Taste",
+    "blockButton": "Blockknopf",
+    "infoButton": "Info-Taste",
+    "snoozeButton": "Schlummertaste",
+    "reportButton": "Berichtsknopf",
+    "viewButton": "Schaltfläche anzeigen",
+    "enterPetname": "Petname eingeben",
+    "enterNotes": "Notizen eingeben"
 }

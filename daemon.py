@@ -2845,6 +2845,11 @@ class PubServer(BaseHTTPRequestHandler):
                     showPublishedDateOnly = self.server.showPublishedDateOnly
                     allowLocalNetworkAccess = \
                         self.server.allowLocalNetworkAccess
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = self.server.keyShortcuts[nickname]
+
                     profileStr = \
                         htmlProfileAfterSearch(self.server.cssCache,
                                                self.server.recentPostsCache,
@@ -2867,7 +2872,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.defaultTimeline,
                                                self.server.peertubeInstances,
                                                allowLocalNetworkAccess,
-                                               self.server.themeName)
+                                               self.server.themeName,
+                                               accessKeys)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -5718,6 +5724,13 @@ class PubServer(BaseHTTPRequestHandler):
                                      optionsActor, optionsProfileUrl,
                                      self.server.personCache, 5)
 
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
                                     self.server.translate,
@@ -5740,7 +5753,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     movedTo, alsoKnownAs,
                                     self.server.textModeBanner,
                                     self.server.newsInstance,
-                                    authorized).encode('utf-8')
+                                    authorized,
+                                    accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -14658,6 +14672,14 @@ def runDaemon(brochMode: bool,
     # key shortcuts SHIFT + ALT + [key]
     httpd.accessKeys = {
         'submitButton': 'y',
+        'followButton': 'f',
+        'blockButton': 'b',
+        'infoButton': 'i',
+        'snoozeButton': 's',
+        'reportButton': 'r',
+        'viewButton': 'v',
+        'enterPetname': 'p',
+        'enterNotes': 'n',
         'menuTimeline': 't',
         'menuEdit': 'e',
         'menuProfile': 'p',
@@ -14673,7 +14695,8 @@ def runDaemon(brochMode: bool,
         'menuBlogs': 'b',
         'menuNewswire': 'w',
         'menuLinks': 'l',
-        'menuModeration': 'm',
+        'menuMedia': 'm',
+        'menuModeration': 'o',
         'menuFollowing': 'f',
         'menuFollowers': 'g',
         'menuRoles': 'o',
