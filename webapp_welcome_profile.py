@@ -107,6 +107,8 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
 
     bioStr = \
         actorJson['summary'].replace('<p>', '').replace('</p>', '')
+    if not bioStr:
+        bioStr = translate['Your bio']
     profileForm += '  <label class="labels">' + \
         translate['Your bio'] + '</label><br>\n'
     profileForm += '  <textarea id="message" name="bio" ' + \

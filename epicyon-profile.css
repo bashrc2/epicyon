@@ -197,6 +197,17 @@ figure {
     height: auto;
 }
 
+.accesskeys {
+    border: 0;
+    width: 100%;
+}
+.accesskeys-left {
+    width: 90%;
+}
+.accesskeys-right {
+    width: 10%;
+}
+
 .cw {
     font-style: var(--cw-style);
     font-weight: var(--cw-weight);

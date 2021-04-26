@@ -619,7 +619,9 @@ def _noOfBlogAccounts(baseDir: str) -> int:
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' in acct:
+            if acct.startswith('inbox@'):
+                continue
+            elif acct.startswith('news@'):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -636,7 +638,9 @@ def _singleBlogAccountNickname(baseDir: str) -> str:
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' in acct:
+            if acct.startswith('inbox@'):
+                continue
+            elif acct.startswith('news@'):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -676,7 +680,9 @@ def htmlBlogView(authorized: bool,
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' in acct:
+            if acct.startswith('inbox@'):
+                continue
+            elif acct.startswith('news@'):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'

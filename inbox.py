@@ -11,6 +11,7 @@ import os
 import datetime
 import time
 from linked_data_sig import verifyJsonSignature
+from utils import dmAllowedFromDomain
 from utils import isRecentPost
 from utils import getConfigParam
 from utils import hasUsersPath
@@ -2466,28 +2467,32 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             if not isFollowingActor(baseDir,
                                                     nickname, domain,
                                                     sendH):
-                                # send back a bounce DM
-                                if postJsonObject.get('id') and \
-                                   postJsonObject.get('object'):
-                                    # don't send bounces back to
-                                    # replies to bounce messages
-                                    obj = postJsonObject['object']
-                                    if isinstance(obj, dict):
-                                        if not obj.get('inReplyTo'):
-                                            senderPostId = \
-                                                postJsonObject['id']
-                                            _bounceDM(senderPostId,
-                                                      session, httpPrefix,
-                                                      baseDir,
-                                                      nickname, domain,
-                                                      port, sendH,
-                                                      federationList,
-                                                      sendThreads, postLog,
-                                                      cachedWebfingers,
-                                                      personCache,
-                                                      translate, debug,
-                                                      lastBounceMessage)
-                                return False
+                                # DMs may always be allowed from some domains
+                                if not dmAllowedFromDomain(baseDir,
+                                                           nickname, domain,
+                                                           sendingActorDomain):
+                                    # send back a bounce DM
+                                    if postJsonObject.get('id') and \
+                                       postJsonObject.get('object'):
+                                        # don't send bounces back to
+                                        # replies to bounce messages
+                                        obj = postJsonObject['object']
+                                        if isinstance(obj, dict):
+                                            if not obj.get('inReplyTo'):
+                                                senderPostId = \
+                                                    postJsonObject['id']
+                                                _bounceDM(senderPostId,
+                                                          session, httpPrefix,
+                                                          baseDir,
+                                                          nickname, domain,
+                                                          port, sendH,
+                                                          federationList,
+                                                          sendThreads, postLog,
+                                                          cachedWebfingers,
+                                                          personCache,
+                                                          translate, debug,
+                                                          lastBounceMessage)
+                                    return False
 
                     # dm index will be updated
                     updateIndexList.append('dm')

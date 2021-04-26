@@ -67,7 +67,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            defaultTimeline: str,
                            peertubeInstances: [],
                            allowLocalNetworkAccess: bool,
-                           themeName: str) -> str:
+                           themeName: str,
+                           accessKeys: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if hasUsersPath(profileHandle) or '/@' in profileHandle:
@@ -255,7 +256,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl,
                                      movedTo, profileJson['id'],
-                                     alsoKnownAs)
+                                     alsoKnownAs, accessKeys)
 
     domainFull = getFullDomain(domain, port)
 
@@ -276,10 +277,12 @@ def htmlProfileAfterSearch(cssCache: {},
             '      <input type="hidden" name="actor" value="' + \
             personUrl + '">\n'
         profileStr += \
-            '      <button type="submit" class="button" name="submitYes">' + \
+            '      <button type="submit" class="button" name="submitYes" ' + \
+            'accesskey="' + accessKeys['followButton'] + '">' + \
             translate['Follow'] + '</button>\n'
         profileStr += \
-            '      <button type="submit" class="button" name="submitView">' + \
+            '      <button type="submit" class="button" name="submitView" ' + \
+            'accesskey="' + accessKeys['viewButton'] + '">' + \
             translate['View'] + '</button>\n'
         profileStr += '    </center>\n'
         profileStr += '  </form>\n'
@@ -331,14 +334,16 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
                       loginButton: str, avatarUrl: str,
                       theme: str, movedTo: str,
                       alsoKnownAs: [],
-                      pinnedContent) -> str:
+                      pinnedContent: str,
+                      accessKeys: {}) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
     htmlStr = '\n\n    <figure class="profileHeader">\n'
     htmlStr += '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
@@ -411,14 +416,16 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  profileDescriptionShort: str,
                                  avatarUrl: str, imageUrl: str,
                                  movedTo: str, actor: str,
-                                 alsoKnownAs: []) -> str:
+                                 alsoKnownAs: [],
+                                 accessKeys: {}) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
     htmlStr = '\n\n    <figure class="profileHeader">\n'
     htmlStr += '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="' + imageUrl + '" /></a>\n'
@@ -489,7 +496,7 @@ def htmlProfile(rssIconAtTop: bool,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
-                debug: bool,
+                debug: bool, accessKeys: {},
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -509,7 +516,7 @@ def htmlProfile(rssIconAtTop: bool,
                                YTReplacementDomain,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
-                               allowLocalNetworkAccess,
+                               allowLocalNetworkAccess, accessKeys,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])
@@ -723,7 +730,7 @@ def htmlProfile(rssIconAtTop: bool,
                           profileDescriptionShort,
                           loginButton, avatarUrl, theme,
                           movedTo, alsoKnownAs,
-                          pinnedContent)
+                          pinnedContent, accessKeys)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname
@@ -755,7 +762,14 @@ def htmlProfile(rssIconAtTop: bool,
         menuShares: userPathStr + '/shares#timeline',
         menuLogout: '/logout'
     }
-    profileStr = htmlKeyboardNavigation(textModeBanner, navLinks)
+    navAccessKeys = {}
+    for variableName, key in accessKeys.items():
+        if not locals().get(variableName):
+            continue
+        navAccessKeys[locals()[variableName]] = key
+
+    profileStr = htmlKeyboardNavigation(textModeBanner,
+                                        navLinks, navAccessKeys)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -1184,6 +1198,14 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr = blockedfile.read()
 
+    dmAllowedInstancesStr = ''
+    dmAllowedInstancesFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/dmAllowedInstances.txt'
+    if os.path.isfile(dmAllowedInstancesFilename):
+        with open(dmAllowedInstancesFilename, 'r') as dmAllowedInstancesFile:
+            dmAllowedInstancesStr = dmAllowedInstancesFile.read()
+
     allowedInstancesStr = ''
     allowedInstancesFilename = \
         baseDir + '/accounts/' + \
@@ -1463,7 +1485,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         menuProfile: userPathStr,
         menuTimeline: userTimalineStr
     }
-    editProfileForm += htmlKeyboardNavigation(textModeBanner, navLinks)
+    navAccessKeys = {
+        menuProfile: 'p',
+        menuTimeline: 't'
+    }
+    editProfileForm += htmlKeyboardNavigation(textModeBanner,
+                                              navLinks, navAccessKeys)
 
     # top banner
     editProfileForm += \
@@ -1739,6 +1766,18 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="blocked" style="height:200px" ' + \
         'spellcheck="false">' + blockedStr + '</textarea>\n'
+
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Direct Message permitted instances'] + '</label></b>\n'
+    idx = 'Direct messages are always allowed from these instances.'
+    editProfileForm += \
+        '      <br><label class="labels">' + \
+        translate[idx] + '</label>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="dmAllowedInstances" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        dmAllowedInstancesStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \

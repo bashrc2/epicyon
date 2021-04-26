@@ -51,7 +51,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           authorized: bool,
                           showHeaderImage: bool,
                           theme: str,
-                          defaultTimeline: str) -> str:
+                          defaultTimeline: str,
+                          accessKeys: {}) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -69,7 +70,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         publishButtonStr = \
             '        <a href="' + \
             '/users/' + nickname + '/newblog?nodropdown" ' + \
-            'title="' + titleStr + '">' + \
+            'title="' + titleStr + '" ' + \
+            'accesskey="' + accessKeys['menuNewPost'] + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
     else:
@@ -124,7 +126,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             # show the edit icon highlighted
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/editnewswire">' + \
+                '/users/' + nickname + '/editnewswire" ' + \
+                'accesskey="' + accessKeys['menuEdit'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -134,7 +137,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             # show the edit icon
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/editnewswire">' + \
+                '/users/' + nickname + '/editnewswire" ' + \
+                'accesskey="' + accessKeys['menuEdit'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -167,7 +171,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 titleStr = translate['Publish a news article']
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/newblog?nodropdown">' + \
+                '/users/' + nickname + '/newblog?nodropdown" ' + \
+                'accesskey="' + accessKeys['menuNewPost'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 titleStr + '" title="' + \
@@ -444,7 +449,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        rssIconAtTop: bool,
                        iconsAsButtons: bool,
                        defaultTimeline: str,
-                       theme: str) -> str:
+                       theme: str,
+                       accessKeys: {}) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -473,7 +479,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
@@ -493,7 +500,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                                   False, timelinePath, showPublishButton,
                                   showPublishAsIcon, rssIconAtTop, False,
                                   authorized, False, theme,
-                                  defaultTimeline)
+                                  defaultTimeline, accessKeys)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'
@@ -509,7 +516,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
 def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int, httpPrefix: str,
-                     defaultTimeline: str, theme: str) -> str:
+                     defaultTimeline: str, theme: str,
+                     accessKeys: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -542,7 +550,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<header>' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" ' + \
         'alt="" /></a>\n</header>'
@@ -558,7 +567,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <div class="containerSubmitNewPost">\n'
     editNewswireForm += \
         '      <input type="submit" name="submitNewswire" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '">\n'
     editNewswireForm += \
         '    </div>\n'
 

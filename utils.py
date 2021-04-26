@@ -388,7 +388,9 @@ def getFollowersOfPerson(baseDir: str,
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
             filename = os.path.join(subdir, account) + '/' + followFile
-            if account == handle or account.startswith('inbox@'):
+            if account == handle or \
+               account.startswith('inbox@') or \
+               account.startswith('news@'):
                 continue
             if not os.path.isfile(filename):
                 continue
@@ -1057,7 +1059,7 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' in acct:
+            if acct.startswith('inbox@'):
                 continue
             cacheDir = os.path.join(baseDir + '/accounts', acct)
             postFilename = cacheDir + filename
@@ -1405,8 +1407,11 @@ def noOfAccounts(baseDir: str) -> bool:
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
             if '@' in account:
-                if not account.startswith('inbox@'):
-                    accountCtr += 1
+                if account.startswith('inbox@'):
+                    continue
+                elif account.startswith('news@'):
+                    continue
+                accountCtr += 1
         break
     return accountCtr
 
@@ -1420,7 +1425,8 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
             if '@' in account:
-                if not account.startswith('inbox@'):
+                if not account.startswith('inbox@') and \
+                   not account.startswith('news@'):
                     lastUsedFilename = \
                         baseDir + '/accounts/' + account + '/.lastUsed'
                     if os.path.isfile(lastUsedFilename):
@@ -2197,3 +2203,22 @@ def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
         translationsFile = baseDir + '/translations/' + \
             systemLanguage + '.json'
     return loadJson(translationsFile), systemLanguage
+
+
+def dmAllowedFromDomain(baseDir: str,
+                        nickname: str, domain: str,
+                        sendingActorDomain: str) -> bool:
+    """When a DM is received and the .followDMs flag file exists
+    Then optionally some domains can be specified as allowed,
+    regardless of individual follows.
+    i.e. Mostly you only want DMs from followers, but there are
+    a few particular instances that you trust
+    """
+    dmAllowedInstancesFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/dmAllowedInstances.txt'
+    if not os.path.isfile(dmAllowedInstancesFilename):
+        return False
+    if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():
+        return True
+    return False

@@ -68,7 +68,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
-                         frontPage: bool, theme: str) -> str:
+                         frontPage: bool, theme: str,
+                         accessKeys: {}) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -112,7 +113,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         # show the edit icon
         htmlStr += \
             '      <a href="' + \
-            '/users/' + nickname + '/editlinks">' + \
+            '/users/' + nickname + '/editlinks" ' + \
+            'accesskey="' + accessKeys['menuEdit'] + '">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
@@ -255,6 +257,11 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if firstSeparatorAdded:
         htmlStr += separatorStr
     htmlStr += \
+        '<p class="login-text"><a href="/users/' + \
+        nickname + '/accesskeys" accesskey="' + \
+        accessKeys['menuKeys'] + '">' + \
+        translate['Key Shortcuts'] + '</a></p>'
+    htmlStr += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
     htmlStr += \
@@ -274,7 +281,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     rssIconAtTop: bool,
                     iconsAsButtons: bool,
                     defaultTimeline: str,
-                    theme: str) -> str:
+                    theme: str, accessKeys: {}) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -300,7 +307,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
@@ -317,7 +325,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False,
-                                 theme)
+                                 theme, accessKeys)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'
@@ -334,7 +342,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
 def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                   domain: str, port: int, httpPrefix: str,
-                  defaultTimeline: str, theme: str) -> str:
+                  defaultTimeline: str, theme: str,
+                  accessKeys: {}) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
@@ -367,7 +376,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     editLinksForm += '<img loading="lazy" class="timeline-banner" ' + \
         'alt = "" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
@@ -384,7 +394,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <h1>' + translate['Edit Links'] + '</h1>'
     editLinksForm += \
         '      <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '">\n'
     editLinksForm += \
         '    </div>\n'
 

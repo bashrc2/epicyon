@@ -134,6 +134,8 @@ from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
+from webapp_accesskeys import htmlAccessKeys
+from webapp_accesskeys import loadAccessKeysForAccounts
 from webapp_confirm import htmlConfirmDelete
 from webapp_confirm import htmlConfirmRemoveSharedItem
 from webapp_confirm import htmlConfirmUnblock
@@ -1800,6 +1802,93 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = False
         return
 
+    def _keyShortcuts(self, path: str,
+                      callingDomain: str, cookie: str,
+                      baseDir: str, httpPrefix: str, nickname: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      debug: bool, accessKeys: {},
+                      defaultTimeline: str) -> None:
+        """Receive POST from webapp_accesskeys
+        """
+        usersPath = '/users/' + nickname
+        originPathStr = \
+            httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
+        length = int(self.headers['Content-length'])
+
+        try:
+            accessKeysParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST accessKeysParams ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST accessKeysParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST accessKeysParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        accessKeysParams = \
+            urllib.parse.unquote_plus(accessKeysParams)
+
+        # key shortcuts screen, back button
+        # See htmlAccessKeys
+        if 'submitAccessKeysCancel=' in accessKeysParams or \
+           'submitAccessKeys=' not in accessKeysParams:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = \
+                    'http://' + onionDomain + usersPath + '/' + defaultTimeline
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                originPathStr = \
+                    'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        saveKeys = False
+        accessKeysTemplate = self.server.accessKeys
+        for variableName, key in accessKeysTemplate.items():
+            if not accessKeys.get(variableName):
+                accessKeys[variableName] = accessKeysTemplate[variableName]
+
+            variableName2 = variableName.replace(' ', '_')
+            if variableName2 + '=' in accessKeysParams:
+                newKey = accessKeysParams.split(variableName2 + '=')[1]
+                if '&' in newKey:
+                    newKey = newKey.split('&')[0]
+                if newKey:
+                    if len(newKey) > 1:
+                        newKey = newKey[0]
+                    if newKey != accessKeys[variableName]:
+                        accessKeys[variableName] = newKey
+                        saveKeys = True
+
+        if saveKeys:
+            accessKeysFilename = \
+                baseDir + '/accounts/' + nickname + '@' + domain + \
+                '/accessKeys.json'
+            saveJson(accessKeys, accessKeysFilename)
+            if not self.server.keyShortcuts.get(nickname):
+                self.server.keyShortcuts[nickname] = accessKeys.copy()
+
+        # redirect back from key shortcuts screen
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = \
+                'http://' + onionDomain + usersPath + '/' + defaultTimeline
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStr = \
+                'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
     def _personOptions(self, path: str,
                        callingDomain: str, cookie: str,
                        baseDir: str, httpPrefix: str,
@@ -2168,6 +2257,15 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Sending DM to ' + optionsActor)
             reportPath = path.replace('/personoptions', '') + '/newdm'
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2181,7 +2279,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True).encode('utf-8')
+                              True, accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2268,6 +2366,15 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Reporting ' + optionsActor)
             reportPath = \
                 path.replace('/personoptions', '') + '/newreport'
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2280,7 +2387,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True).encode('utf-8')
+                              True, accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2843,6 +2950,11 @@ class PubServer(BaseHTTPRequestHandler):
                     showPublishedDateOnly = self.server.showPublishedDateOnly
                     allowLocalNetworkAccess = \
                         self.server.allowLocalNetworkAccess
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = self.server.keyShortcuts[nickname]
+
                     profileStr = \
                         htmlProfileAfterSearch(self.server.cssCache,
                                                self.server.recentPostsCache,
@@ -2865,7 +2977,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.defaultTimeline,
                                                self.server.peertubeInstances,
                                                allowLocalNetworkAccess,
-                                               self.server.themeName)
+                                               self.server.themeName,
+                                               accessKeys)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -5019,11 +5132,24 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(blockedFilename):
                             os.remove(blockedFilename)
 
+                    # Save DM allowed instances list.
+                    # The allow list for incoming DMs,
+                    # if the .followDMs flag file exists
+                    dmAllowedInstancesFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + '/dmAllowedinstances.txt'
+                    if fields.get('dmAllowedInstances'):
+                        with open(dmAllowedInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['dmAllowedInstances'])
+                    else:
+                        if os.path.isfile(dmAllowedInstancesFilename):
+                            os.remove(dmAllowedInstancesFilename)
+
                     # save allowed instances list
+                    # This is the account level allow list
                     allowedInstancesFilename = \
                         baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
-                        '/allowedinstances.txt'
+                        nickname + '@' + domain + '/allowedinstances.txt'
                     if fields.get('allowedInstances'):
                         with open(allowedInstancesFilename, 'w+') as aFile:
                             aFile.write(fields['allowedInstances'])
@@ -5703,6 +5829,13 @@ class PubServer(BaseHTTPRequestHandler):
                                      optionsActor, optionsProfileUrl,
                                      self.server.personCache, 5)
 
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
                                     self.server.translate,
@@ -5725,7 +5858,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     movedTo, alsoKnownAs,
                                     self.server.textModeBanner,
                                     self.server.newsInstance,
-                                    authorized).encode('utf-8')
+                                    authorized,
+                                    accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -7329,6 +7463,11 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.YTReplacementDomain
                     iconsAsButtons = \
                         self.server.iconsAsButtons
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7352,6 +7491,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    accessKeys,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -7418,6 +7558,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.iconsAsButtons
                                 allowLocalNetworkAccess = \
                                     self.server.allowLocalNetworkAccess
+                                accessKeys = self.server.accessKeys
+                                if self.server.keyShortcuts.get(nickname):
+                                    accessKeys = \
+                                        self.server.keyShortcuts[nickname]
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7441,6 +7585,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
+                                                accessKeys,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -7808,6 +7953,12 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         minimalNick = self._isMinimal(nickname)
+
+                        accessKeys = self.server.accessKeys
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                         msg = htmlInbox(self.server.cssCache,
                                         defaultTimeline,
                                         recentPostsCache,
@@ -7839,7 +7990,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.themeName,
                                         self.server.peertubeInstances,
                                         self.server.allowLocalNetworkAccess,
-                                        self.server.textModeBanner)
+                                        self.server.textModeBanner,
+                                        accessKeys)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -7937,6 +8089,12 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         minimalNick = self._isMinimal(nickname)
+
+                        accessKeys = self.server.accessKeys
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -7968,7 +8126,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
                                          self.server.allowLocalNetworkAccess,
-                                         self.server.textModeBanner)
+                                         self.server.textModeBanner,
+                                         accessKeys)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8059,6 +8218,12 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = self._isMinimal(nickname)
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -8090,7 +8255,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
                                          self.server.allowLocalNetworkAccess,
-                                         self.server.textModeBanner)
+                                         self.server.textModeBanner,
+                                         accessKeys)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8181,6 +8347,12 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = self._isMinimal(nickname)
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlInboxMedia(self.server.cssCache,
                                        self.server.defaultTimeline,
@@ -8213,7 +8385,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.themeName,
                                        self.server.peertubeInstances,
                                        self.server.allowLocalNetworkAccess,
-                                       self.server.textModeBanner)
+                                       self.server.textModeBanner,
+                                       accessKeys)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8304,6 +8477,12 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = self._isMinimal(nickname)
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlInboxBlogs(self.server.cssCache,
                                        self.server.defaultTimeline,
@@ -8336,7 +8515,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.themeName,
                                        self.server.peertubeInstances,
                                        self.server.allowLocalNetworkAccess,
-                                       self.server.textModeBanner)
+                                       self.server.textModeBanner,
+                                       accessKeys)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8435,6 +8615,12 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = self._isMinimal(nickname)
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlInboxNews(self.server.cssCache,
                                       self.server.defaultTimeline,
@@ -8468,7 +8654,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.themeName,
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
-                                      self.server.textModeBanner)
+                                      self.server.textModeBanner,
+                                      accessKeys)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8564,6 +8751,12 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = self._isMinimal(nickname)
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -8596,7 +8789,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.themeName,
                                           self.server.peertubeInstances,
                                           self.server.allowLocalNetworkAccess,
-                                          self.server.textModeBanner)
+                                          self.server.textModeBanner,
+                                          accessKeys)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8656,6 +8850,12 @@ class PubServer(BaseHTTPRequestHandler):
                             pageNumber = int(pageNumber)
                         else:
                             pageNumber = 1
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlShares(self.server.cssCache,
                                    self.server.defaultTimeline,
@@ -8685,7 +8885,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
                                    self.server.allowLocalNetworkAccess,
-                                   self.server.textModeBanner)
+                                   self.server.textModeBanner,
+                                   accessKeys)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8759,6 +8960,12 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         minimalNick = self._isMinimal(nickname)
+
+                        accessKeys = self.server.accessKeys
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -8791,7 +8998,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.themeName,
                                           self.server.peertubeInstances,
                                           self.server.allowLocalNetworkAccess,
-                                          self.server.textModeBanner)
+                                          self.server.textModeBanner,
+                                          accessKeys)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8885,6 +9093,12 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         minimalNick = self._isMinimal(nickname)
+
+                        accessKeys = self.server.accessKeys
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                         msg = \
                             htmlEvents(self.server.cssCache,
                                        self.server.defaultTimeline,
@@ -8917,7 +9131,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.themeName,
                                        self.server.peertubeInstances,
                                        self.server.allowLocalNetworkAccess,
-                                       self.server.textModeBanner)
+                                       self.server.textModeBanner,
+                                       accessKeys)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -9003,6 +9218,12 @@ class PubServer(BaseHTTPRequestHandler):
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
                 minimalNick = self._isMinimal(nickname)
+
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = \
+                        self.server.keyShortcuts[nickname]
+
                 msg = \
                     htmlOutbox(self.server.cssCache,
                                self.server.defaultTimeline,
@@ -9035,7 +9256,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.themeName,
                                self.server.peertubeInstances,
                                self.server.allowLocalNetworkAccess,
-                               self.server.textModeBanner)
+                               self.server.textModeBanner,
+                               accessKeys)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -9112,6 +9334,12 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         moderationActionStr = ''
+
+                        accessKeys = self.server.accessKeys
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
@@ -9143,7 +9371,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.themeName,
                                            self.server.peertubeInstances,
                                            self.server.allowLocalNetworkAccess,
-                                           self.server.textModeBanner)
+                                           self.server.textModeBanner,
+                                           accessKeys)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -9222,6 +9451,16 @@ class PubServer(BaseHTTPRequestHandler):
                             self._404()
                             self.server.GETbusy = False
                             return True
+
+                    accessKeys = self.server.accessKeys
+                    if '/users/' in path:
+                        nickname = path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9246,6 +9485,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    accessKeys,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -9322,6 +9562,15 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
 
+                    accessKeys = self.server.accessKeys
+                    if '/users/' in path:
+                        nickname = path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9346,6 +9595,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    accessKeys,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9420,6 +9670,16 @@ class PubServer(BaseHTTPRequestHandler):
                             self._404()
                             self.server.GETbusy = False
                             return True
+
+                    accessKeys = self.server.accessKeys
+                    if '/users/' in path:
+                        nickname = path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.keyShortcuts.get(nickname):
+                            accessKeys = \
+                                self.server.keyShortcuts[nickname]
+
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9445,6 +9705,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
+                                    accessKeys,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9542,6 +9803,16 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return True
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = \
+                        self.server.keyShortcuts[nickname]
+
             msg = \
                 htmlProfile(self.server.rssIconAtTop,
                             self.server.cssCache,
@@ -9567,6 +9838,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.allowLocalNetworkAccess,
                             self.server.textModeBanner,
                             self.server.debug,
+                            accessKeys,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -10091,6 +10363,11 @@ class PubServer(BaseHTTPRequestHandler):
                     break
         if isNewPostEndpoint:
             nickname = getNicknameFromActor(path)
+
+            accessKeys = self.server.accessKeys
+            if self.server.keyShortcuts.get(nickname):
+                accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
                               translate,
@@ -10105,7 +10382,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              noDropDown).encode('utf-8')
+                              noDropDown, accessKeys).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -10158,6 +10435,14 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the links from the left column
         """
         if '/users/' in path and path.endswith('/editlinks'):
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+
+            accessKeys = self.server.accessKeys
+            if self.server.keyShortcuts.get(nickname):
+                accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlEditLinks(self.server.cssCache,
                                 translate,
                                 baseDir,
@@ -10165,7 +10450,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 port,
                                 httpPrefix,
                                 self.server.defaultTimeline,
-                                theme).encode('utf-8')
+                                theme, accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -10184,6 +10469,14 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the newswire from the right column
         """
         if '/users/' in path and path.endswith('/editnewswire'):
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+
+            accessKeys = self.server.accessKeys
+            if self.server.keyShortcuts.get(nickname):
+                accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlEditNewswire(self.server.cssCache,
                                    translate,
                                    baseDir,
@@ -10191,7 +10484,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    port,
                                    httpPrefix,
                                    self.server.defaultTimeline,
-                                   self.server.themeName).encode('utf-8')
+                                   self.server.themeName,
+                                   accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -10984,6 +11278,34 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show about screen')
             return
 
+        if htmlGET and usersInPath and authorized and \
+           self.path.endswith('/accesskeys'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+
+            accessKeys = self.server.accessKeys
+            if self.server.keyShortcuts.get(nickname):
+                accessKeys = \
+                    self.server.keyShortcuts[nickname]
+
+            msg = \
+                htmlAccessKeys(self.server.cssCache,
+                               self.server.baseDir,
+                               nickname, self.server.domain,
+                               self.server.translate,
+                               accessKeys,
+                               self.server.accessKeys,
+                               self.server.defaultTimeline)
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._login_headers('text/html', msglen, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'following accounts done',
+                                      'show accesskeys screen')
+            return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'following accounts done',
                                   'show about screen done')
@@ -11465,6 +11787,9 @@ class PubServer(BaseHTTPRequestHandler):
                 rssIconAtTop = self.server.rssIconAtTop
                 iconsAsButtons = self.server.iconsAsButtons
                 defaultTimeline = self.server.defaultTimeline
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
                 msg = htmlNewswireMobile(self.server.cssCache,
                                          self.server.baseDir,
                                          nickname,
@@ -11480,7 +11805,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          rssIconAtTop,
                                          iconsAsButtons,
                                          defaultTimeline,
-                                         self.server.themeName).encode('utf-8')
+                                         self.server.themeName,
+                                         accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain)
@@ -11499,6 +11825,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 iconsAsButtons = self.server.iconsAsButtons
@@ -11513,7 +11842,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.rssIconAtTop,
                                       iconsAsButtons,
                                       defaultTimeline,
-                                      self.server.themeName).encode('utf-8')
+                                      self.server.themeName,
+                                      accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
@@ -11577,6 +11907,15 @@ class PubServer(BaseHTTPRequestHandler):
                '/search?' in self.path:
                 if '?' in self.path:
                     self.path = self.path.split('?')[0]
+
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
                 # show the search screen
                 msg = htmlSearch(self.server.cssCache,
                                  self.server.translate,
@@ -11584,7 +11923,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.defaultTimeline,
                                  self.server.themeName,
-                                 self.server.textModeBanner).encode('utf-8')
+                                 self.server.textModeBanner,
+                                 accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
@@ -11619,6 +11959,14 @@ class PubServer(BaseHTTPRequestHandler):
         # Show the calendar for a user
         if htmlGET and usersInPath:
             if '/calendar' in self.path:
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                accessKeys = self.server.accessKeys
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
                 # show the calendar screen
                 msg = htmlCalendar(self.server.personCache,
                                    self.server.cssCache,
@@ -11626,7 +11974,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
                                    self.server.domainFull,
-                                   self.server.textModeBanner).encode('utf-8')
+                                   self.server.textModeBanner,
+                                   accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
@@ -13987,6 +14336,33 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug)
                 return
 
+            # Change the key shortcuts
+            if usersInPath and \
+               self.path.endswith('/changeAccessKeys'):
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                if not self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.accessKeys
+                    self.server.keyShortcuts[nickname] = accessKeys.copy()
+                accessKeys = self.server.keyShortcuts[nickname]
+
+                self._keyShortcuts(self.path,
+                                   callingDomain, cookie,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   nickname,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug,
+                                   accessKeys,
+                                   self.server.defaultTimeline)
+                return
+
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
 
         # receive different types of post created by htmlNewPost
@@ -14463,6 +14839,48 @@ def runDaemon(brochMode: bool,
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx
     httpd.textModeBanner = getTextModeBanner(baseDir)
+
+    # key shortcuts SHIFT + ALT + [key]
+    httpd.accessKeys = {
+        'Page up': ',',
+        'Page down': '.',
+        'submitButton': 'y',
+        'followButton': 'f',
+        'blockButton': 'b',
+        'infoButton': 'i',
+        'snoozeButton': 's',
+        'reportButton': '[',
+        'viewButton': 'v',
+        'enterPetname': 'p',
+        'enterNotes': 'n',
+        'menuTimeline': 't',
+        'menuEdit': 'e',
+        'menuProfile': 'p',
+        'menuInbox': 'i',
+        'menuSearch': '/',
+        'menuNewPost': 'n',
+        'menuCalendar': 'c',
+        'menuDM': 'd',
+        'menuReplies': 'r',
+        'menuOutbox': 's',
+        'menuBookmarks': 'q',
+        'menuShares': 'h',
+        'menuBlogs': 'b',
+        'menuNewswire': 'w',
+        'menuLinks': 'l',
+        'menuMedia': 'm',
+        'menuModeration': 'o',
+        'menuFollowing': 'f',
+        'menuFollowers': 'g',
+        'menuRoles': 'o',
+        'menuSkills': 'a',
+        'menuLogout': 'x',
+        'menuKeys': 'k',
+        'Public': 'p',
+        'Reminder': 'r'
+    }
+    httpd.keyShortcuts = {}
+    loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess

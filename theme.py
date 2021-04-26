@@ -551,7 +551,9 @@ def _setThemeImages(baseDir: str, name: str) -> None:
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' in acct:
+            if acct.startswith('inbox@'):
+                continue
+            elif acct.startswith('news@'):
                 continue
             accountDir = \
                 os.path.join(baseDir + '/accounts', acct)
