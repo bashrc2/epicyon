@@ -749,7 +749,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
               str(itemCtr) + ' ' + str(timelineJson['orderedItems']))
 
     # page down arrow
-    if itemCtr > 2:
+    if itemCtr > 0:
         tlStr += textModeSeparator
         tlStr += \
             '      <center>\n' + \
