@@ -3071,6 +3071,57 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
     return True
 
 
+def _passedNewswireVoting(newswireVotesThreshold: int,
+                          baseDir: str, domain: str,
+                          postFilename: str,
+                          positiveVoting: bool,
+                          votingTimeMins: int) -> bool:
+    """Returns true if the post has passed through newswire voting
+    """
+    # apply votes within this timeline
+    if newswireVotesThreshold <= 0:
+        return True
+    # note that the presence of an arrival file also indicates
+    # that this post is moderated
+    arrivalDate = \
+        locateNewsArrival(baseDir, domain, postFilename)
+    if not arrivalDate:
+        return True
+    # how long has elapsed since this post arrived?
+    currDate = datetime.datetime.utcnow()
+    timeDiffMins = \
+        int((currDate - arrivalDate).total_seconds() / 60)
+    # has the voting time elapsed?
+    if timeDiffMins < votingTimeMins:
+        # voting is still happening, so don't add this
+        # post to the timeline
+        return False
+    # if there a votes file for this post?
+    votesFilename = \
+        locateNewsVotes(baseDir, domain, postFilename)
+    if not votesFilename:
+        return True
+    # load the votes file and count the votes
+    votesJson = loadJson(votesFilename, 0, 2)
+    if not votesJson:
+        return True
+    if not positiveVoting:
+        if votesOnNewswireItem(votesJson) >= \
+           newswireVotesThreshold:
+            # Too many veto votes.
+            # Continue without incrementing
+            # the posts counter
+            return False
+    else:
+        if votesOnNewswireItem < \
+           newswireVotesThreshold:
+            # Not enough votes.
+            # Continue without incrementing
+            # the posts counter
+            return False
+    return True
+
+
 def _createBoxIndexed(recentPostsCache: {},
                       session, baseDir: str, boxname: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
@@ -3149,43 +3200,13 @@ def _createBoxIndexed(recentPostsCache: {},
                 if not postFilename:
                     break
 
-                # apply votes within this timeline
-                if newswireVotesThreshold > 0:
-                    # note that the presence of an arrival file also indicates
-                    # that this post is moderated
-                    arrivalDate = \
-                        locateNewsArrival(baseDir, domain, postFilename)
-                    if arrivalDate:
-                        # how long has elapsed since this post arrived?
-                        currDate = datetime.datetime.utcnow()
-                        timeDiffMins = \
-                            int((currDate - arrivalDate).total_seconds() / 60)
-                        # has the voting time elapsed?
-                        if timeDiffMins < votingTimeMins:
-                            # voting is still happening, so don't add this
-                            # post to the timeline
-                            continue
-                        # if there a votes file for this post?
-                        votesFilename = \
-                            locateNewsVotes(baseDir, domain, postFilename)
-                        if votesFilename:
-                            # load the votes file and count the votes
-                            votesJson = loadJson(votesFilename, 0, 2)
-                            if votesJson:
-                                if not positiveVoting:
-                                    if votesOnNewswireItem(votesJson) >= \
-                                       newswireVotesThreshold:
-                                        # Too many veto votes.
-                                        # Continue without incrementing
-                                        # the posts counter
-                                        continue
-                                else:
-                                    if votesOnNewswireItem < \
-                                       newswireVotesThreshold:
-                                        # Not enough votes.
-                                        # Continue without incrementing
-                                        # the posts counter
-                                        continue
+                # Has this post passed through the newswire voting stage?
+                if not _passedNewswireVoting(newswireVotesThreshold,
+                                             baseDir, domain,
+                                             postFilename,
+                                             positiveVoting,
+                                             votingTimeMins):
+                    continue
 
                 # Skip through any posts previous to the current page
                 if totalPostsCount < int((pageNumber - 1) * itemsPerPage):
