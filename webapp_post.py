@@ -1262,11 +1262,6 @@ def individualPostAsHtml(allowDownloads: bool,
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
 
-    # don't create new html within the bookmarks timeline
-    # it should already have been created for the inbox
-    if boxName == 'tlbookmarks' or boxName == 'bookmarks':
-        return ''
-
     timelinePostBookmark = removeIdEnding(postJsonObject['id'])
     timelinePostBookmark = timelinePostBookmark.replace('://', '-')
     timelinePostBookmark = timelinePostBookmark.replace('/', '-')
