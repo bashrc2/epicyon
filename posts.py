@@ -3193,6 +3193,10 @@ def _createBoxIndexed(recentPostsCache: {},
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
                         totalPostsCount += 1
+                    else:
+                        print('WARN: Unable to add post ' + postUrl +
+                              ' nickname ' + nickname +
+                              ' timeline ' + boxname)
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3204,6 +3208,10 @@ def _createBoxIndexed(recentPostsCache: {},
                                                   postsInBox, boxActor):
                                 postsAddedToTimeline += 1
                                 totalPostsCount += 1
+                            else:
+                                print('WARN: Unable to add features post ' +
+                                      postUrl + ' nickname ' + nickname +
+                                      ' timeline ' + boxname)
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)
