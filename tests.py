@@ -21,6 +21,7 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from posts import removePostInteractions
 from posts import getMentionedPeople
 from posts import validContentWarning
 from posts import deleteAllPosts
@@ -3591,9 +3592,42 @@ def testUpdateActor():
         shutil.rmtree(baseDir + '/.tests')
 
 
+def testRemovePostInteractions() -> None:
+    print('testRemovePostInteractions')
+    postJsonObject = {
+        "type": "Create",
+        "object": {
+            "to": ["#Public"],
+            "likes": {
+                "items": ["a", "b", "c"]
+            },
+            "replies": {
+                "replyStuff": ["a", "b", "c"]
+            },
+            "shares": {
+                "sharesStuff": ["a", "b", "c"]
+            },
+            "bookmarks": {
+                "bookmarksStuff": ["a", "b", "c"]
+            },
+            "ignores": {
+                "ignoresStuff": ["a", "b", "c"]
+            }
+        }
+    }
+    removePostInteractions(postJsonObject, True)
+    assert postJsonObject['object']['likes']['items'] == []
+    assert postJsonObject['object']['replies'] == {}
+    assert postJsonObject['object']['shares'] == {}
+    assert postJsonObject['object']['bookmarks'] == {}
+    assert postJsonObject['object']['ignores'] == {}
+    assert not removePostInteractions(postJsonObject, False)
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testRemovePostInteractions()
     testExtractPGPPublicKey()
     testEmojiImages()
     testCamelCaseSplit()

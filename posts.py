@@ -3036,31 +3036,38 @@ def _addPostToTimeline(filePath: str, boxname: str,
     return False
 
 
-def _removePostAttributes(postJsonObject: {}, authorized: bool) -> bool:
+def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
     """ Don't show likes, replies, bookmarks, DMs or shares (announces) to
     unauthorized viewers. This makes the timeline less useful to
     marketers and other surveillance-oriented organizations.
     Returns False if this is a private post
     """
-    if authorized:
-        return True
-    if not postJsonObject.get('object'):
-        return True
-    if not isinstance(postJsonObject['object'], dict):
-        return True
-    # If it's not a public post then just don't show it
-    if not isPublicPost(postJsonObject):
-        return False
+    hasObject = False
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            hasObject = True
+    if hasObject:
+        postObj = postJsonObject['object']
+        if not force:
+            # If not authorized and it's a private post
+            # then just don't show it within timelines
+            if not isPublicPost(postObj):
+                return False
+    else:
+        postObj = postJsonObject
+
     # clear the likes
-    if postJsonObject['object'].get('likes'):
-        postJsonObject['object']['likes'] = {'items': []}
+    if postObj.get('likes'):
+        postObj['likes'] = {
+            'items': []
+        }
     # remove other collections
     removeCollections = (
         'replies', 'shares', 'bookmarks', 'ignores'
     )
     for removeName in removeCollections:
-        if postJsonObject['object'].get(removeName):
-            postJsonObject['object'][removeName] = {}
+        if postObj.get(removeName):
+            postObj[removeName] = {}
     return True
 
 
@@ -3294,8 +3301,9 @@ def _createBoxIndexed(recentPostsCache: {},
         # created by individualPostAsHtml
         p['hasReplies'] = hasReplies
 
-        if not _removePostAttributes(p, authorized):
-            continue
+        if not authorized:
+            if not removePostInteractions(p, False):
+                continue
 
         boxItems['orderedItems'].append(p)
 
