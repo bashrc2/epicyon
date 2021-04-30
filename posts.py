@@ -3036,6 +3036,34 @@ def _addPostToTimeline(filePath: str, boxname: str,
     return False
 
 
+def _removePostAttributes(postJsonObject: {}, authorized: bool) -> bool:
+    """ Don't show likes, replies, bookmarks, DMs or shares (announces) to
+    unauthorized viewers. This makes the timeline less useful to
+    marketers and other surveillance-oriented organizations.
+    Returns False if this is a private post
+    """
+    if authorized:
+        return True
+    if not postJsonObject.get('object'):
+        return True
+    if not isinstance(postJsonObject['object'], dict):
+        return True
+    # If it's not a public post then just don't show it
+    if not isPublicPost(postJsonObject):
+        return False
+    # clear the likes
+    if postJsonObject['object'].get('likes'):
+        postJsonObject['object']['likes'] = {'items': []}
+    # remove other collections
+    removeCollections = (
+        'replies', 'shares', 'bookmarks', 'ignores'
+    )
+    for removeName in removeCollections:
+        if postJsonObject['object'].get(removeName):
+            postJsonObject['object'][removeName] = {}
+    return True
+
+
 def _createBoxIndexed(recentPostsCache: {},
                       session, baseDir: str, boxname: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
@@ -3266,21 +3294,8 @@ def _createBoxIndexed(recentPostsCache: {},
         # created by individualPostAsHtml
         p['hasReplies'] = hasReplies
 
-        # Don't show likes, replies, bookmarks, DMs or shares (announces) to
-        # unauthorized viewers
-        if not authorized:
-            if p.get('object'):
-                if isinstance(p['object'], dict):
-                    if not isPublicPost(p):
-                        continue
-                    if p['object'].get('likes'):
-                        p['object']['likes'] = {'items': []}
-                    removeCollections = {
-                        'replies', 'shares', 'bookmarks', 'ignores'
-                    }
-                    for removeName in removeCollections:
-                        if p['object'].get(removeName):
-                            p['object'][removeName] = {}
+        if not _removePostAttributes(p, authorized):
+            continue
 
         boxItems['orderedItems'].append(p)
 
