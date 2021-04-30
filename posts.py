@@ -3036,6 +3036,92 @@ def _addPostToTimeline(filePath: str, boxname: str,
     return False
 
 
+def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
+    """ Don't show likes, replies, bookmarks, DMs or shares (announces) to
+    unauthorized viewers. This makes the timeline less useful to
+    marketers and other surveillance-oriented organizations.
+    Returns False if this is a private post
+    """
+    hasObject = False
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            hasObject = True
+    if hasObject:
+        postObj = postJsonObject['object']
+        if not force:
+            # If not authorized and it's a private post
+            # then just don't show it within timelines
+            if not isPublicPost(postObj):
+                return False
+    else:
+        postObj = postJsonObject
+
+    # clear the likes
+    if postObj.get('likes'):
+        postObj['likes'] = {
+            'items': []
+        }
+    # remove other collections
+    removeCollections = (
+        'replies', 'shares', 'bookmarks', 'ignores'
+    )
+    for removeName in removeCollections:
+        if postObj.get(removeName):
+            postObj[removeName] = {}
+    return True
+
+
+def _passedNewswireVoting(newswireVotesThreshold: int,
+                          baseDir: str, domain: str,
+                          postFilename: str,
+                          positiveVoting: bool,
+                          votingTimeMins: int) -> bool:
+    """Returns true if the post has passed through newswire voting
+    """
+    # apply votes within this timeline
+    if newswireVotesThreshold <= 0:
+        return True
+    # note that the presence of an arrival file also indicates
+    # that this post is moderated
+    arrivalDate = \
+        locateNewsArrival(baseDir, domain, postFilename)
+    if not arrivalDate:
+        return True
+    # how long has elapsed since this post arrived?
+    currDate = datetime.datetime.utcnow()
+    timeDiffMins = \
+        int((currDate - arrivalDate).total_seconds() / 60)
+    # has the voting time elapsed?
+    if timeDiffMins < votingTimeMins:
+        # voting is still happening, so don't add this
+        # post to the timeline
+        return False
+    # if there a votes file for this post?
+    votesFilename = \
+        locateNewsVotes(baseDir, domain, postFilename)
+    if not votesFilename:
+        return True
+    # load the votes file and count the votes
+    votesJson = loadJson(votesFilename, 0, 2)
+    if not votesJson:
+        return True
+    if not positiveVoting:
+        if votesOnNewswireItem(votesJson) >= \
+           newswireVotesThreshold:
+            # Too many veto votes.
+            # Continue without incrementing
+            # the posts counter
+            return False
+    else:
+        if votesOnNewswireItem < \
+           newswireVotesThreshold:
+            # Not enough votes.
+            # Continue without incrementing
+            # the posts counter
+            return False
+    return True
+
+
 def _createBoxIndexed(recentPostsCache: {},
                       session, baseDir: str, boxname: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
@@ -3103,7 +3189,7 @@ def _createBoxIndexed(recentPostsCache: {},
     indexFilename = \
         baseDir + '/accounts/' + timelineNickname + '@' + domain + \
         '/' + indexBoxName + '.index'
-    postsCtr = 0
+    totalPostsCount = 0
     postsAddedToTimeline = 0
     if os.path.isfile(indexFilename):
         with open(indexFilename, 'r') as indexFile:
@@ -3114,47 +3200,17 @@ def _createBoxIndexed(recentPostsCache: {},
                 if not postFilename:
                     break
 
-                # apply votes within this timeline
-                if newswireVotesThreshold > 0:
-                    # note that the presence of an arrival file also indicates
-                    # that this post is moderated
-                    arrivalDate = \
-                        locateNewsArrival(baseDir, domain, postFilename)
-                    if arrivalDate:
-                        # how long has elapsed since this post arrived?
-                        currDate = datetime.datetime.utcnow()
-                        timeDiffMins = \
-                            int((currDate - arrivalDate).total_seconds() / 60)
-                        # has the voting time elapsed?
-                        if timeDiffMins < votingTimeMins:
-                            # voting is still happening, so don't add this
-                            # post to the timeline
-                            continue
-                        # if there a votes file for this post?
-                        votesFilename = \
-                            locateNewsVotes(baseDir, domain, postFilename)
-                        if votesFilename:
-                            # load the votes file and count the votes
-                            votesJson = loadJson(votesFilename, 0, 2)
-                            if votesJson:
-                                if not positiveVoting:
-                                    if votesOnNewswireItem(votesJson) >= \
-                                       newswireVotesThreshold:
-                                        # Too many veto votes.
-                                        # Continue without incrementing
-                                        # the posts counter
-                                        continue
-                                else:
-                                    if votesOnNewswireItem < \
-                                       newswireVotesThreshold:
-                                        # Not enough votes.
-                                        # Continue without incrementing
-                                        # the posts counter
-                                        continue
+                # Has this post passed through the newswire voting stage?
+                if not _passedNewswireVoting(newswireVotesThreshold,
+                                             baseDir, domain,
+                                             postFilename,
+                                             positiveVoting,
+                                             votingTimeMins):
+                    continue
 
                 # Skip through any posts previous to the current page
-                if postsCtr < int((pageNumber - 1) * itemsPerPage):
-                    postsCtr += 1
+                if totalPostsCount < int((pageNumber - 1) * itemsPerPage):
+                    totalPostsCount += 1
                     continue
 
                 # if this is a full path then remove the directories
@@ -3176,7 +3232,7 @@ def _createBoxIndexed(recentPostsCache: {},
                             if _addPostStringToTimeline(url,
                                                         boxname, postsInBox,
                                                         boxActor):
-                                postsCtr += 1
+                                totalPostsCount += 1
                                 postsAddedToTimeline += 1
                                 continue
 
@@ -3192,7 +3248,11 @@ def _createBoxIndexed(recentPostsCache: {},
                     if _addPostToTimeline(fullPostFilename, boxname,
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
-                        postsCtr += 1
+                        totalPostsCount += 1
+                    else:
+                        print('WARN: Unable to add post ' + postUrl +
+                              ' nickname ' + nickname +
+                              ' timeline ' + boxname)
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3203,7 +3263,11 @@ def _createBoxIndexed(recentPostsCache: {},
                             if _addPostToTimeline(fullPostFilename, boxname,
                                                   postsInBox, boxActor):
                                 postsAddedToTimeline += 1
-                                postsCtr += 1
+                                totalPostsCount += 1
+                            else:
+                                print('WARN: Unable to add features post ' +
+                                      postUrl + ' nickname ' + nickname +
+                                      ' timeline ' + boxname)
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)
@@ -3211,13 +3275,13 @@ def _createBoxIndexed(recentPostsCache: {},
                         print('WARN: Unable to locate post ' + postUrl +
                               ' nickname ' + nickname)
 
-    if postsCtr < 3:
+    if totalPostsCount < 3:
         print('Posts added to json timeline ' + boxname + ': ' +
               str(postsAddedToTimeline))
 
     # Generate first and last entries within header
-    if postsCtr > 0:
-        lastPage = int(postsCtr / itemsPerPage)
+    if totalPostsCount > 0:
+        lastPage = int(totalPostsCount / itemsPerPage)
         if lastPage < 1:
             lastPage = 1
         boxHeader['last'] = \
@@ -3258,21 +3322,9 @@ def _createBoxIndexed(recentPostsCache: {},
         # created by individualPostAsHtml
         p['hasReplies'] = hasReplies
 
-        # Don't show likes, replies, bookmarks, DMs or shares (announces) to
-        # unauthorized viewers
         if not authorized:
-            if p.get('object'):
-                if isinstance(p['object'], dict):
-                    if not isPublicPost(p):
-                        continue
-                    if p['object'].get('likes'):
-                        p['object']['likes'] = {'items': []}
-                    removeCollections = {
-                        'replies', 'shares', 'bookmarks', 'ignores'
-                    }
-                    for removeName in removeCollections:
-                        if p['object'].get(removeName):
-                            p['object'][removeName] = {}
+            if not removePostInteractions(p, False):
+                continue
 
         boxItems['orderedItems'].append(p)
 

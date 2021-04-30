@@ -67,6 +67,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import removePostInteractions
 from posts import outboxMessageCreateWrap
 from posts import getPinnedPostAsJson
 from posts import pinPost
@@ -459,32 +460,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to post vote to outbox')
         else:
             print('ERROR: unable to create vote')
-
-    def _removePostInteractions(self, postJsonObject: {}) -> None:
-        """Removes potentially sensitive interactions from a post
-        This is the type of thing which would be of interest to marketers
-        or of saleable value to them. eg. Knowing who likes who or what.
-        """
-        if postJsonObject.get('likes'):
-            postJsonObject['likes'] = {'items': []}
-
-        removeCollections = (
-            'shares', 'replies', 'bookmarks', 'ignores'
-        )
-        for removeName in removeCollections:
-            if postJsonObject.get(removeName):
-                postJsonObject[removeName] = {}
-
-        if not postJsonObject.get('object'):
-            return
-        if not isinstance(postJsonObject['object'], dict):
-            return
-        if postJsonObject['object'].get('likes'):
-            postJsonObject['object']['likes'] = {'items': []}
-
-        for removeName in removeCollections:
-            if postJsonObject['object'].get(removeName):
-                postJsonObject['object'][removeName] = {}
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
@@ -7676,7 +7651,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._404()
                                     self.server.GETbusy = False
                                     return True
-                                self._removePostInteractions(pjo)
+                                removePostInteractions(pjo, True)
                             if self._requestHTTP():
                                 recentPostsCache = \
                                     self.server.recentPostsCache
@@ -7803,7 +7778,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._404()
                         self.server.GETbusy = False
                         return True
-                    self._removePostInteractions(pjo)
+                    removePostInteractions(pjo, True)
 
                 if self._requestHTTP():
                     recentPostsCache = \
