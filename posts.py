@@ -3103,7 +3103,7 @@ def _createBoxIndexed(recentPostsCache: {},
     indexFilename = \
         baseDir + '/accounts/' + timelineNickname + '@' + domain + \
         '/' + indexBoxName + '.index'
-    postsCtr = 0
+    totalPostsCount = 0
     postsAddedToTimeline = 0
     if os.path.isfile(indexFilename):
         with open(indexFilename, 'r') as indexFile:
@@ -3153,8 +3153,8 @@ def _createBoxIndexed(recentPostsCache: {},
                                         continue
 
                 # Skip through any posts previous to the current page
-                if postsCtr < int((pageNumber - 1) * itemsPerPage):
-                    postsCtr += 1
+                if totalPostsCount < int((pageNumber - 1) * itemsPerPage):
+                    totalPostsCount += 1
                     continue
 
                 # if this is a full path then remove the directories
@@ -3176,7 +3176,7 @@ def _createBoxIndexed(recentPostsCache: {},
                             if _addPostStringToTimeline(url,
                                                         boxname, postsInBox,
                                                         boxActor):
-                                postsCtr += 1
+                                totalPostsCount += 1
                                 postsAddedToTimeline += 1
                                 continue
 
@@ -3192,7 +3192,7 @@ def _createBoxIndexed(recentPostsCache: {},
                     if _addPostToTimeline(fullPostFilename, boxname,
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
-                        postsCtr += 1
+                        totalPostsCount += 1
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3203,7 +3203,7 @@ def _createBoxIndexed(recentPostsCache: {},
                             if _addPostToTimeline(fullPostFilename, boxname,
                                                   postsInBox, boxActor):
                                 postsAddedToTimeline += 1
-                                postsCtr += 1
+                                totalPostsCount += 1
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)
@@ -3211,13 +3211,13 @@ def _createBoxIndexed(recentPostsCache: {},
                         print('WARN: Unable to locate post ' + postUrl +
                               ' nickname ' + nickname)
 
-    if postsCtr < 3:
+    if totalPostsCount < 3:
         print('Posts added to json timeline ' + boxname + ': ' +
               str(postsAddedToTimeline))
 
     # Generate first and last entries within header
-    if postsCtr > 0:
-        lastPage = int(postsCtr / itemsPerPage)
+    if totalPostsCount > 0:
+        lastPage = int(totalPostsCount / itemsPerPage)
         if lastPage < 1:
             lastPage = 1
         boxHeader['last'] = \
