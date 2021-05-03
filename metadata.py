@@ -12,12 +12,27 @@ from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
 
-def metaDataNodeInfo(baseDir: str, registration: bool, version: str) -> {}:
+def metaDataNodeInfo(baseDir: str, registration: bool, version: str,
+                     showAccounts: bool) -> {}:
     """ /nodeinfo/2.0 endpoint
+    Also see https://socialhub.activitypub.rocks/t/
+    fep-f1d5-nodeinfo-in-fediverse-software/1190/4
+
+    Note that there are security considerations with this. If an adversary
+    sees a lot of accounts and "local" posts then the instance may be
+    considered a higher priority target.
+    Also exposure of the version number and number of accounts could be
+    sensitive
     """
-    activeAccounts = noOfAccounts(baseDir)
-    activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
-    activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
+    if showAccounts:
+        activeAccounts = noOfAccounts(baseDir)
+        activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
+        activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
+    else:
+        activeAccounts = 1
+        activeAccountsMonthly = 1
+        activeAccountsHalfYear = 1
+
     nodeinfo = {
         'openRegistrations': registration,
         'protocols': ['activitypub'],

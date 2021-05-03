@@ -322,6 +322,16 @@ parser.add_argument("--brochMode",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
+parser.add_argument("--nodeinfoaccounts",
+                    dest='showNodeInfoAccounts',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Show numbers of accounts within nodeinfo metadata")
+parser.add_argument("--nodeinfoversion",
+                    dest='showNodeInfoVersion',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Show version number within nodeinfo metadata")
 parser.add_argument("--noKeyPress",
                     dest='noKeyPress',
                     type=str2bool, nargs='?',
@@ -2600,6 +2610,16 @@ brochMode = \
 if brochMode is not None:
     args.brochMode = bool(brochMode)
 
+showNodeInfoAccounts = \
+    getConfigParam(baseDir, 'showNodeInfoAccounts')
+if showNodeInfoAccounts is not None:
+    args.showNodeInfoAccounts = bool(showNodeInfoAccounts)
+
+showNodeInfoVersion = \
+    getConfigParam(baseDir, 'showNodeInfoVersion')
+if showNodeInfoVersion is not None:
+    args.showNodeInfoVersion = bool(showNodeInfoVersion)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2614,7 +2634,9 @@ if setTheme(baseDir, themeName, domain,
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.brochMode,
+    runDaemon(args.showNodeInfoAccounts,
+              args.showNodeInfoVersion,
+              args.brochMode,
               args.verifyAllSignatures,
               args.sendThreadsTimeoutMins,
               args.dormantMonths,

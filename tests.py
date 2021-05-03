@@ -504,8 +504,12 @@ def createServerAlice(path: str, domain: str, port: int,
     maxFollowers = 10
     verifyAllSignatures = True
     brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
     print('Server running: Alice')
-    runDaemon(brochMode,
+    runDaemon(showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -601,8 +605,12 @@ def createServerBob(path: str, domain: str, port: int,
     maxFollowers = 10
     verifyAllSignatures = True
     brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
     print('Server running: Bob')
-    runDaemon(brochMode,
+    runDaemon(showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -652,8 +660,12 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxFollowers = 10
     verifyAllSignatures = True
     brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
     print('Server running: Eve')
-    runDaemon(brochMode,
+    runDaemon(showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,

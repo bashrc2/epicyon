@@ -971,9 +971,15 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
+
+        nodeInfoVersion = self.server.projectVersion
+        if not self.server.showNodeInfoVersion:
+            nodeInfoVersion = '0.0.0'
+
         info = metaDataNodeInfo(self.server.baseDir,
                                 self.server.registration,
-                                self.server.projectVersion)
+                                nodeInfoVersion,
+                                self.server.showNodeInfoAccounts)
         if info:
             msg = json.dumps(info).encode('utf-8')
             msglen = len(msg)
@@ -14743,7 +14749,9 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(brochMode: bool,
+def runDaemon(showNodeInfoAccounts: bool,
+              showNodeInfoVersion: bool,
+              brochMode: bool,
               verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
@@ -14811,6 +14819,9 @@ def runDaemon(brochMode: bool,
         print('ERROR: HTTP server failed to start. ' + str(e))
         print('serverAddress: ' + str(serverAddress))
         return False
+
+    httpd.showNodeInfoAccounts = showNodeInfoAccounts
+    httpd.showNodeInfoVersion = showNodeInfoVersion
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx
     httpd.textModeBanner = getTextModeBanner(baseDir)
