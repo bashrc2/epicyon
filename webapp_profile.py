@@ -1350,6 +1350,33 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             instanceStr += \
                 '  <br><label class="labels">' + \
                 translate['Security'] + '</label><br>\n'
+
+            nodeInfoStr = \
+                translate['Show numbers of accounts within instance metadata']
+            if getConfigParam(baseDir, "showNodeInfoAccounts"):
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="showNodeInfoAccounts" checked> ' + \
+                    nodeInfoStr + '<br>\n'
+            else:
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="showNodeInfoAccounts"> ' + \
+                    nodeInfoStr + '<br>\n'
+
+            nodeInfoStr = \
+                translate['Show version number within instance metadata']
+            if getConfigParam(baseDir, "showNodeInfoVersion"):
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="showNodeInfoVersion" checked> ' + \
+                    nodeInfoStr + '<br>\n'
+            else:
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="showNodeInfoVersion"> ' + \
+                    nodeInfoStr + '<br>\n'
+
             if getConfigParam(baseDir, "verifyAllSignatures"):
                 instanceStr += \
                     '      <input type="checkbox" class="profilecheckbox" ' + \
@@ -1360,6 +1387,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     '      <input type="checkbox" class="profilecheckbox" ' + \
                     'name="verifyallsignatures"> ' + \
                     translate['Verify all signatures'] + '<br>\n'
+
             instanceStr += translate['Enabling broch mode'] + '<br>\n'
             if getConfigParam(baseDir, "brochMode"):
                 instanceStr += \

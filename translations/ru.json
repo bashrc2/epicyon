@@ -437,5 +437,7 @@
     "viewButton": "Кнопка просмотра",
     "enterPetname": "Введите petname",
     "enterNotes": "Введите ноты",
-    "These access keys may be used": "Эти ключевые ключи доступа могут быть использованы, обычно с ALT + Shift + Key или Alt + Key"
+    "These access keys may be used": "Эти ключевые ключи доступа могут быть использованы, обычно с ALT + Shift + Key или Alt + Key",
+    "Show numbers of accounts within instance metadata": "Показать количество учетных записей в метаданных экземпляра",
+    "Show version number within instance metadata": "Показать номер версии в метаданных экземпляра"
 }

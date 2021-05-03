@@ -4703,6 +4703,24 @@ class PubServer(BaseHTTPRequestHandler):
                         # on all incoming posts
                         if path.startswith('/users/' +
                                            adminNickname + '/'):
+                            showNodeInfoAccounts = False
+                            if fields.get('showNodeInfoAccounts'):
+                                if fields['showNodeInfoAccounts'] == 'on':
+                                    showNodeInfoAccounts = True
+                            self.server.showNodeInfoAccounts = \
+                                showNodeInfoAccounts
+                            setConfigParam(baseDir, "showNodeInfoAccounts",
+                                           showNodeInfoAccounts)
+
+                            showNodeInfoVersion = False
+                            if fields.get('showNodeInfoVersion'):
+                                if fields['showNodeInfoVersion'] == 'on':
+                                    showNodeInfoVersion = True
+                            self.server.showNodeInfoVersion = \
+                                showNodeInfoVersion
+                            setConfigParam(baseDir, "showNodeInfoVersion",
+                                           showNodeInfoVersion)
+
                             verifyAllSignatures = False
                             if fields.get('verifyallsignatures'):
                                 if fields['verifyallsignatures'] == 'on':

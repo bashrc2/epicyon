@@ -437,5 +437,7 @@
     "viewButton": "Bouton d'affichage",
     "enterPetname": "Entrez PETNAME",
     "enterNotes": "Faire entrer des notes",
-    "These access keys may be used": "Ces touches d'accès peuvent être utilisées typiquement avec une touche Alt + Maj + ou Alt +"
+    "These access keys may be used": "Ces touches d'accès peuvent être utilisées typiquement avec une touche Alt + Maj + ou Alt +",
+    "Show numbers of accounts within instance metadata": "Afficher le nombre de comptes dans les métadonnées de l'instance",
+    "Show version number within instance metadata": "Afficher le numéro de version dans les métadonnées de l'instance"
 }

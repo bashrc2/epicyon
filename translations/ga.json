@@ -437,5 +437,7 @@
     "viewButton": "Féach an cnaipe",
     "enterPetname": "Cuir isteach PetName",
     "enterNotes": "Cuir nótaí isteach",
-    "These access keys may be used": "Is féidir na heochracha rochtana seo a úsáid, de ghnáth le Alt + Shift + Eochair nó Alt + Eochair"
+    "These access keys may be used": "Is féidir na heochracha rochtana seo a úsáid, de ghnáth le Alt + Shift + Eochair nó Alt + Eochair",
+    "Show numbers of accounts within instance metadata": "Taispeáin líon na gcuntas laistigh de mheiteashonraí",
+    "Show version number within instance metadata": "Taispeáin uimhir an leagain laistigh de mheiteashonraí"
 }

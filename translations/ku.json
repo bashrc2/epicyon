@@ -437,5 +437,7 @@
     "viewButton": "Bişkoja View",
     "enterPetname": "Porê binivîse",
     "enterNotes": "Nîşan binivîse",
-    "These access keys may be used": "Dibe ku ev keysên gihîştinê bikar bînin, bi gelemperî bi alt + shift + key an alt + key"
+    "These access keys may be used": "Dibe ku ev keysên gihîştinê bikar bînin, bi gelemperî bi alt + shift + key an alt + key",
+    "Show numbers of accounts within instance metadata": "Di nav metadata mînakê de hejmarên hesaban nîşan bidin",
+    "Show version number within instance metadata": "Di nav metadata mînakê de nimreya guhertoyê nîşan bide"
 }
