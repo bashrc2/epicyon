@@ -561,7 +561,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     historySearchTitle = '🔍 ' + translate['Your Posts']
-    if boxName == 'tlbookmarks':
+    if boxName == 'bookmarks':
         historySearchTitle = '🔍 ' + translate['Bookmarks']
 
     historySearchForm += \
