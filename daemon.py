@@ -2852,7 +2852,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif searchStr.startswith('!'):
                 # your post history search
                 nickname = getNicknameFromActor(actorStr)
-                searchStr = searchStr.replace('!', '').strip()
+                searchStr = searchStr.replace('!', '', 1).strip()
                 historyStr = \
                     htmlHistorySearch(self.server.cssCache,
                                       self.server.translate,
@@ -2874,9 +2874,43 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
-                                      self.server.themeName)
+                                      self.server.themeName, 'outbox')
                 if historyStr:
                     msg = historyStr.encode('utf-8')
+                    msglen = len(msg)
+                    self._login_headers('text/html',
+                                        msglen, callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif searchStr.startswith('-'):
+                # bookmark search
+                nickname = getNicknameFromActor(actorStr)
+                searchStr = searchStr.replace('-', '', 1).strip()
+                bookmarksStr = \
+                    htmlHistorySearch(self.server.cssCache,
+                                      self.server.translate,
+                                      baseDir,
+                                      httpPrefix,
+                                      nickname,
+                                      domain,
+                                      searchStr,
+                                      maxPostsInFeed,
+                                      pageNumber,
+                                      self.server.projectVersion,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.session,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      port,
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly,
+                                      self.server.peertubeInstances,
+                                      self.server.allowLocalNetworkAccess,
+                                      self.server.themeName, 'bookmarks')
+                if bookmarksStr:
+                    msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, callingDomain)
