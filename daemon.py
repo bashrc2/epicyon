@@ -110,6 +110,7 @@ from media import attachMedia
 from blocking import mutePost
 from blocking import unmutePost
 from blocking import setBrochMode
+from blocking import brochModeIsActive
 from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
@@ -972,14 +973,25 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
 
+        # If we are in broch mode then don't show potentially
+        # sensitive metadata.
+        # For example, if this or allied instances are being attacked
+        # then numbers of accounts may be changing as people
+        # migrate, and that information may be useful to an adversary
+        brochMode = brochModeIsActive(self.server.baseDir)
+
         nodeInfoVersion = self.server.projectVersion
-        if not self.server.showNodeInfoVersion:
+        if not self.server.showNodeInfoVersion or brochMode:
             nodeInfoVersion = '0.0.0'
+
+        showNodeInfoAccounts = self.server.showNodeInfoAccounts
+        if brochMode:
+            showNodeInfoAccounts = False
 
         info = metaDataNodeInfo(self.server.baseDir,
                                 self.server.registration,
                                 nodeInfoVersion,
-                                self.server.showNodeInfoAccounts)
+                                showNodeInfoAccounts)
         if info:
             msg = json.dumps(info).encode('utf-8')
             msglen = len(msg)

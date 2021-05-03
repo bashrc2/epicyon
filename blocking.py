@@ -627,6 +627,13 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
         print('DEBUG: post undo mute via c2s - ' + postFilename)
 
 
+def brochModeIsActive(baseDir: str) -> bool:
+    """Returns true if broch mode is active
+    """
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+    return os.path.isfile(allowFilename)
+
+
 def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     """Broch mode can be used to lock down the instance during
     a period of time when it is temporarily under attack.
