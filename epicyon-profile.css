@@ -341,7 +341,7 @@ a:focus {
 }
 
 .profileHeader .title {
-    border-radius: 50%;
+    border-radius: 10%;
     position: absolute;
     bottom: 100%;
     left: 25px;
