@@ -437,5 +437,7 @@
     "viewButton": "Botón de vista",
     "enterPetname": "Entrar en nombre de pettname",
     "enterNotes": "Ingresar notas",
-    "These access keys may be used": "Se pueden usar estas teclas de acceso, típicamente con teclas ALT + MAYÚS + teclas o ALT +"
+    "These access keys may be used": "Se pueden usar estas teclas de acceso, típicamente con teclas ALT + MAYÚS + teclas o ALT +",
+    "Show numbers of accounts within instance metadata": "Muestra el número de cuentas dentro de los metadatos de la instancia.",
+    "Show version number within instance metadata": "Mostrar el número de versión dentro de los metadatos de la instancia"
 }

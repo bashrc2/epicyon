@@ -437,5 +437,7 @@
     "viewButton": "ボタンを見る",
     "enterPetname": "PetNameを入力してください",
     "enterNotes": "ノートを入力してください",
-    "These access keys may be used": "これらのアクセスキーは、通常はAlt + Shift +キーまたはAlt +キーを使用して使用できます。"
+    "These access keys may be used": "これらのアクセスキーは、通常はAlt + Shift +キーまたはAlt +キーを使用して使用できます。",
+    "Show numbers of accounts within instance metadata": "インスタンスメタデータ内のアカウント数を表示する",
+    "Show version number within instance metadata": "インスタンスメタデータ内にバージョン番号を表示する"
 }

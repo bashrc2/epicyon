@@ -2973,8 +2973,42 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                         if hasValidContext(originalJson):
                             hasJsonSignature = True
                         else:
-                            print('unrecognised @context: ' +
-                                  str(originalJson['@context']))
+                            unknownContextsFile = \
+                                baseDir + '/accounts/unknownContexts.txt'
+                            unknownContext = str(originalJson['@context'])
+
+                            print('unrecognized @context: ' +
+                                  unknownContext)
+
+                            alreadyUnknown = False
+                            if os.path.isfile(unknownContextsFile):
+                                if unknownContext in \
+                                   open(unknownContextsFile).read():
+                                    alreadyUnknown = True
+
+                            if not alreadyUnknown:
+                                unknownFile = open(unknownContextsFile, "a+")
+                                if unknownFile:
+                                    unknownFile.write(unknownContext + '\n')
+                                    unknownFile.close()
+                    else:
+                        print('Unrecognized jsonld signature type: ' +
+                              jwebsigType)
+
+                        unknownSignaturesFile = \
+                            baseDir + '/accounts/unknownJsonSignatures.txt'
+
+                        alreadyUnknown = False
+                        if os.path.isfile(unknownSignaturesFile):
+                            if jwebsigType in \
+                               open(unknownSignaturesFile).read():
+                                alreadyUnknown = True
+
+                        if not alreadyUnknown:
+                            unknownFile = open(unknownSignaturesFile, "a+")
+                            if unknownFile:
+                                unknownFile.write(jwebsigType + '\n')
+                                unknownFile.close()
 
         # strict enforcement of json signatures
         if not hasJsonSignature:

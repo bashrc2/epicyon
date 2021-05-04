@@ -1678,6 +1678,59 @@ def isNewsPost(postJsonObject: {}) -> bool:
     return postJsonObject.get('news')
 
 
+def _searchVirtualBoxPosts(baseDir: str, nickname: str, domain: str,
+                           searchStr: str, maxResults: int,
+                           boxName: str) -> []:
+    """Searches through a virtual box, which is typically an index on the inbox
+    """
+    indexFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/' + \
+        boxName + '.index'
+    if boxName == 'bookmarks':
+        boxName = 'inbox'
+    path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
+    if not os.path.isdir(path):
+        return []
+
+    searchStr = searchStr.lower().strip()
+
+    if '+' in searchStr:
+        searchWords = searchStr.split('+')
+        for index in range(len(searchWords)):
+            searchWords[index] = searchWords[index].strip()
+        print('SEARCH: ' + str(searchWords))
+    else:
+        searchWords = [searchStr]
+
+    res = []
+    with open(indexFilename, 'r') as indexFile:
+        postFilename = 'start'
+        while postFilename:
+            postFilename = indexFile.readline()
+            if not postFilename:
+                break
+            if '.json' not in postFilename:
+                break
+            postFilename = path + '/' + postFilename.strip()
+            if not os.path.isfile(postFilename):
+                continue
+            with open(postFilename, 'r') as postFile:
+                data = postFile.read().lower()
+
+                notFound = False
+                for keyword in searchWords:
+                    if keyword not in data:
+                        notFound = True
+                        break
+                if notFound:
+                    continue
+
+                res.append(postFilename)
+                if len(res) >= maxResults:
+                    return res
+    return res
+
+
 def searchBoxPosts(baseDir: str, nickname: str, domain: str,
                    searchStr: str, maxResults: int,
                    boxName='outbox') -> []:
@@ -1686,6 +1739,9 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     """
     path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
     if not os.path.isdir(path):
+        if os.path.isfile(path + '.index'):
+            return _searchVirtualBoxPosts(baseDir, nickname, domain,
+                                          searchStr, maxResults, boxName)
         return []
     searchStr = searchStr.lower().strip()
 

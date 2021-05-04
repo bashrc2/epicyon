@@ -437,5 +437,7 @@
     "viewButton": "查看按钮",
     "enterPetname": "进入宠物名",
     "enterNotes": "输入笔记",
-    "These access keys may be used": "可以使用这些访问密钥，通常使用Alt + Shift +键或ALT +键"
+    "These access keys may be used": "可以使用这些访问密钥，通常使用Alt + Shift +键或ALT +键",
+    "Show numbers of accounts within instance metadata": "显示实例元数据中的帐户数",
+    "Show version number within instance metadata": "在实例元数据中显示版本号"
 }

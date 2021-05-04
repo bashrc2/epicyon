@@ -536,7 +536,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str) -> str:
+                      themeName: str, boxName: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith('!'):
@@ -546,7 +546,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
 
     boxFilenames = \
         searchBoxPosts(baseDir, nickname, domain,
-                       historysearch, postsPerPage)
+                       historysearch, postsPerPage, boxName)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -560,10 +560,13 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     # add the page title
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    historySearchTitle = '🔍 ' + translate['Your Posts']
+    if boxName == 'bookmarks':
+        historySearchTitle = '🔍 ' + translate['Bookmarks']
+
     historySearchForm += \
         '<center><h1><a href="' + actor + '/search">' + \
-        translate['Your Posts'] + \
-        '</a></h1></center>'
+        historySearchTitle + '</a></h1></center>'
 
     if len(boxFilenames) == 0:
         historySearchForm += \

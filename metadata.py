@@ -12,18 +12,40 @@ from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
 
-def metaDataNodeInfo(baseDir: str, registration: bool, version: str) -> {}:
+def metaDataNodeInfo(baseDir: str,
+                     aboutUrl: str,
+                     termsOfServiceUrl: str,
+                     registration: bool, version: str,
+                     showAccounts: bool) -> {}:
     """ /nodeinfo/2.0 endpoint
+    Also see https://socialhub.activitypub.rocks/t/
+    fep-f1d5-nodeinfo-in-fediverse-software/1190/4
+
+    Note that there are security considerations with this. If an adversary
+    sees a lot of accounts and "local" posts then the instance may be
+    considered a higher priority target.
+    Also exposure of the version number and number of accounts could be
+    sensitive
     """
-    activeAccounts = noOfAccounts(baseDir)
-    activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
-    activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
+    if showAccounts:
+        activeAccounts = noOfAccounts(baseDir)
+        activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
+        activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
+    else:
+        activeAccounts = 1
+        activeAccountsMonthly = 1
+        activeAccountsHalfYear = 1
+
     nodeinfo = {
         'openRegistrations': registration,
         'protocols': ['activitypub'],
         'software': {
             'name': 'epicyon',
             'version': version
+        },
+        'documents': {
+            'about': aboutUrl,
+            'terms': termsOfServiceUrl
         },
         'usage': {
             'localPosts': 1,
@@ -83,13 +105,13 @@ def metaDataInstance(instanceTitle: str,
             'id': '1',
             'last_status_at': '2019-07-01T10:30:00Z',
             'locked': adminActor['manuallyApprovesFollowers'],
-            'note': '<p>Admin of '+domain+'</p>',
+            'note': '<p>Admin of ' + domain + '</p>',
             'statuses_count': 1,
             'url': url,
             'username': adminActor['preferredUsername']
         },
         'description': instanceDescription,
-        'email': 'admin@'+domain,
+        'email': 'admin@' + domain,
         'languages': [systemLanguage],
         'registrations': registration,
         'short_description': instanceDescriptionShort,
@@ -98,7 +120,7 @@ def metaDataInstance(instanceTitle: str,
             'status_count': 1,
             'user_count': noOfAccounts(baseDir)
         },
-        'thumbnail': httpPrefix+'://'+domainFull+'/login.png',
+        'thumbnail': httpPrefix + '://' + domainFull + '/login.png',
         'title': instanceTitle,
         'uri': domainFull,
         'urls': {},

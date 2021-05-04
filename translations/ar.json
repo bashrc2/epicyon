@@ -437,5 +437,7 @@
     "viewButton": "عرض زر",
     "enterPetname": "أدخل PETNAME",
     "enterNotes": "أدخل الملاحظات",
-    "These access keys may be used": "قد يتم استخدام مفاتيح الوصول هذه، عادة مع مفتاح ALT + SHIFT + مفتاح ALT +"
+    "These access keys may be used": "قد يتم استخدام مفاتيح الوصول هذه، عادة مع مفتاح ALT + SHIFT + مفتاح ALT +",
+    "Show numbers of accounts within instance metadata": "إظهار عدد الحسابات داخل البيانات الوصفية للمثيلات",
+    "Show version number within instance metadata": "إظهار رقم الإصدار داخل البيانات الوصفية للمثيل"
 }

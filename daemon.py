@@ -110,6 +110,7 @@ from media import attachMedia
 from blocking import mutePost
 from blocking import unmutePost
 from blocking import setBrochMode
+from blocking import brochModeIsActive
 from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
@@ -310,6 +311,20 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
+
+    def _getInstalceUrl(self, callingDomain: str) -> str:
+        """Returns the URL for this instance
+        """
+        if callingDomain.endswith('.onion') and \
+           self.server.onionDomain:
+            instanceUrl = 'http://' + self.server.onionDomain
+        elif (callingDomain.endswith('.i2p') and
+              self.server.i2pDomain):
+            instanceUrl = 'http://' + self.server.i2pDomain
+        else:
+            instanceUrl = \
+                self.server.httpPrefix + '://' + self.server.domainFull
+        return instanceUrl
 
     def _getheaderSignatureInput(self):
         """There are different versions of http signatures with
@@ -821,7 +836,12 @@ class PubServer(BaseHTTPRequestHandler):
                     authorized: bool,
                     httpPrefix: str,
                     baseDir: str, nickname: str, domain: str,
-                    domainFull: str) -> bool:
+                    domainFull: str,
+                    onionDomain: str, i2pDomain: str,
+                    translate: {},
+                    registration: bool,
+                    systemLanguage: str,
+                    projectVersion: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -899,30 +919,37 @@ class PubServer(BaseHTTPRequestHandler):
             sendJson = []
             sendJsonStr = 'masto API timelines sent'
 
-        adminNickname = getConfigParam(self.server.baseDir, 'admin')
+        adminNickname = getConfigParam(baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
             instanceDescriptionShort = \
-                getConfigParam(self.server.baseDir,
+                getConfigParam(baseDir,
                                'instanceDescriptionShort')
             if not instanceDescriptionShort:
                 instanceDescriptionShort = \
-                    self.server.translate['Yet another Epicyon Instance']
-            instanceDescription = getConfigParam(self.server.baseDir,
+                    translate['Yet another Epicyon Instance']
+            instanceDescription = getConfigParam(baseDir,
                                                  'instanceDescription')
-            instanceTitle = getConfigParam(self.server.baseDir,
-                                           'instanceTitle')
+            instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+
+            if callingDomain.endswith('.onion') and onionDomain:
+                domainFull = onionDomain
+                httpPrefix = 'http'
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                domainFull = i2pDomain
+                httpPrefix = 'http'
+
             sendJson = \
                 metaDataInstance(instanceTitle,
                                  instanceDescriptionShort,
                                  instanceDescription,
-                                 self.server.httpPrefix,
-                                 self.server.baseDir,
+                                 httpPrefix,
+                                 baseDir,
                                  adminNickname,
-                                 self.server.domain,
-                                 self.server.domainFull,
-                                 self.server.registration,
-                                 self.server.systemLanguage,
-                                 self.server.projectVersion)
+                                 domain,
+                                 domainFull,
+                                 registration,
+                                 systemLanguage,
+                                 projectVersion)
             sendJsonStr = 'masto API instance metadata sent'
         elif path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
@@ -930,7 +957,7 @@ class PubServer(BaseHTTPRequestHandler):
             # On a large instance you are somewhat lost in the crowd, but on
             # small instances a full list of peers would convey a lot of
             # information about the interests of a small number of accounts
-            sendJson = ['mastodon.social', self.server.domainFull]
+            sendJson = ['mastodon.social', domainFull]
             sendJsonStr = 'masto API peers metadata sent'
         elif path.startswith('/api/v1/instance/activity'):
             sendJson = []
@@ -961,19 +988,47 @@ class PubServer(BaseHTTPRequestHandler):
     def _mastoApi(self, path: str, callingDomain: str,
                   authorized: bool, httpPrefix: str,
                   baseDir: str, nickname: str, domain: str,
-                  domainFull: str) -> bool:
+                  domainFull: str,
+                  onionDomain: str, i2pDomain: str,
+                  translate: {},
+                  registration: bool,
+                  systemLanguage: str,
+                  projectVersion: str) -> bool:
         return self._mastoApiV1(path, callingDomain, authorized,
                                 httpPrefix, baseDir, nickname, domain,
-                                domainFull)
+                                domainFull, onionDomain, i2pDomain,
+                                translate, registration, systemLanguage,
+                                projectVersion)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
+
+        # If we are in broch mode then don't show potentially
+        # sensitive metadata.
+        # For example, if this or allied instances are being attacked
+        # then numbers of accounts may be changing as people
+        # migrate, and that information may be useful to an adversary
+        brochMode = brochModeIsActive(self.server.baseDir)
+
+        nodeInfoVersion = self.server.projectVersion
+        if not self.server.showNodeInfoVersion or brochMode:
+            nodeInfoVersion = '0.0.0'
+
+        showNodeInfoAccounts = self.server.showNodeInfoAccounts
+        if brochMode:
+            showNodeInfoAccounts = False
+
+        instanceUrl = self._getInstalceUrl(callingDomain)
+        aboutUrl = instanceUrl + '/about'
+        termsOfServiceUrl = instanceUrl + '/terms'
         info = metaDataNodeInfo(self.server.baseDir,
+                                aboutUrl, termsOfServiceUrl,
                                 self.server.registration,
-                                self.server.projectVersion)
+                                nodeInfoVersion,
+                                showNodeInfoAccounts)
         if info:
             msg = json.dumps(info).encode('utf-8')
             msglen = len(msg)
@@ -1571,17 +1626,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if not isModerator(self.server.baseDir, nickname):
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorStr = 'http://' + onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorStr = 'http://' + i2pDomain + usersPath
-                self._redirect_headers(actorStr + '/moderation',
-                                       cookie, callingDomain)
+            self._redirect_headers(actorStr + '/moderation',
+                                   cookie, callingDomain)
             self.server.POSTbusy = False
             return
 
-        actorStr = httpPrefix + '://' + domainFull + usersPath
         length = int(self.headers['Content-length'])
 
         try:
@@ -1768,10 +1819,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                debug,
                                                self.server.recentPostsCache)
 
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorStr = 'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            actorStr = 'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/moderation',
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -2740,7 +2787,7 @@ class PubServer(BaseHTTPRequestHandler):
             path = path.split('?page=')[0]
 
         usersPath = path.replace('/searchhandle', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         length = int(self.headers['Content-length'])
         try:
             searchParams = self.rfile.read(length).decode('utf-8')
@@ -2762,10 +2809,6 @@ class PubServer(BaseHTTPRequestHandler):
             return
         if 'submitBack=' in searchParams:
             # go back on search screen
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorStr = 'http://' + onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorStr = 'http://' + i2pDomain + usersPath
             self._redirect_headers(actorStr + '/' +
                                    self.server.defaultTimeline,
                                    cookie, callingDomain)
@@ -2834,7 +2877,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif searchStr.startswith('!'):
                 # your post history search
                 nickname = getNicknameFromActor(actorStr)
-                searchStr = searchStr.replace('!', '').strip()
+                searchStr = searchStr.replace('!', '', 1).strip()
                 historyStr = \
                     htmlHistorySearch(self.server.cssCache,
                                       self.server.translate,
@@ -2856,9 +2899,43 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
-                                      self.server.themeName)
+                                      self.server.themeName, 'outbox')
                 if historyStr:
                     msg = historyStr.encode('utf-8')
+                    msglen = len(msg)
+                    self._login_headers('text/html',
+                                        msglen, callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif searchStr.startswith('-'):
+                # bookmark search
+                nickname = getNicknameFromActor(actorStr)
+                searchStr = searchStr.replace('-', '', 1).strip()
+                bookmarksStr = \
+                    htmlHistorySearch(self.server.cssCache,
+                                      self.server.translate,
+                                      baseDir,
+                                      httpPrefix,
+                                      nickname,
+                                      domain,
+                                      searchStr,
+                                      maxPostsInFeed,
+                                      pageNumber,
+                                      self.server.projectVersion,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.session,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      port,
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly,
+                                      self.server.peertubeInstances,
+                                      self.server.allowLocalNetworkAccess,
+                                      self.server.themeName, 'bookmarks')
+                if bookmarksStr:
+                    msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, callingDomain)
@@ -2871,10 +2948,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.endswith(':') or \
                    searchStr.endswith(';') or \
                    searchStr.endswith('.'):
-                    if callingDomain.endswith('.onion') and onionDomain:
-                        actorStr = 'http://' + onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        actorStr = 'http://' + i2pDomain + usersPath
+                    actorStr = self._getInstalceUrl(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -2963,10 +3037,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
                 else:
-                    if callingDomain.endswith('.onion') and onionDomain:
-                        actorStr = 'http://' + onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        actorStr = 'http://' + i2pDomain + usersPath
+                    actorStr = self._getInstalceUrl(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3011,10 +3082,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorStr = 'http://' + onionDomain + usersPath
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorStr = 'http://' + i2pDomain + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         self._redirect_headers(actorStr + '/' +
                                self.server.defaultTimeline,
                                cookie, callingDomain)
@@ -3348,7 +3416,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/linksdata', '')
         usersPath = usersPath.replace('/editlinks', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3360,14 +3428,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 editor = isEditor(baseDir, nickname)
             if not nickname or not editor:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3380,14 +3440,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum links data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3461,14 +3513,6 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(TOSFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3501,7 +3545,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         usersPath = usersPath.split('/tags/')[0]
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         tagScreenStr = actorStr + '/tags/' + hashtag
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -3514,14 +3558,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 editor = isEditor(baseDir, nickname)
             if not hashtag or not editor:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3534,14 +3570,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum links data length exceeded ' + str(length))
                 self._redirect_headers(tagScreenStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3584,14 +3612,6 @@ class PubServer(BaseHTTPRequestHandler):
                     os.remove(categoryFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(tagScreenStr,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3606,7 +3626,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newswiredata', '')
         usersPath = usersPath.replace('/editnewswire', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3618,14 +3638,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 moderator = isModerator(baseDir, nickname)
             if not nickname or not moderator:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3638,14 +3650,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum newswire data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3723,14 +3727,6 @@ class PubServer(BaseHTTPRequestHandler):
                     os.remove(newswireTrustedFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3746,7 +3742,7 @@ class PubServer(BaseHTTPRequestHandler):
         update button on the citations screen
         """
         usersPath = path.replace('/citationsdata', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         nickname = getNicknameFromActor(actorStr)
 
         citationsFilename = \
@@ -3766,14 +3762,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum citations data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3826,14 +3814,6 @@ class PubServer(BaseHTTPRequestHandler):
                     citationsFile.close()
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/newblog',
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3848,7 +3828,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3860,14 +3840,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 editorRole = isEditor(baseDir, nickname)
             if not nickname or not editorRole:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3885,14 +3857,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum news data length exceeded ' + str(length))
                 if self.server.newsInstance:
                     self._redirect_headers(actorStr + '/tlfeatures',
@@ -3979,14 +3943,6 @@ class PubServer(BaseHTTPRequestHandler):
                     saveJson(postJsonObject, postFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         if self.server.newsInstance:
             self._redirect_headers(actorStr + '/tlfeatures',
                                    cookie, callingDomain)
@@ -4007,7 +3963,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/profiledata', '')
         usersPath = usersPath.replace('/editprofile', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4016,14 +3972,6 @@ class PubServer(BaseHTTPRequestHandler):
             # get the nickname
             nickname = getNicknameFromActor(actorStr)
             if not nickname:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('WARN: nickname not found in ' + actorStr)
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -4033,14 +3981,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum profile data length exceeded ' +
                       str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
@@ -4685,6 +4625,24 @@ class PubServer(BaseHTTPRequestHandler):
                         # on all incoming posts
                         if path.startswith('/users/' +
                                            adminNickname + '/'):
+                            showNodeInfoAccounts = False
+                            if fields.get('showNodeInfoAccounts'):
+                                if fields['showNodeInfoAccounts'] == 'on':
+                                    showNodeInfoAccounts = True
+                            self.server.showNodeInfoAccounts = \
+                                showNodeInfoAccounts
+                            setConfigParam(baseDir, "showNodeInfoAccounts",
+                                           showNodeInfoAccounts)
+
+                            showNodeInfoVersion = False
+                            if fields.get('showNodeInfoVersion'):
+                                if fields['showNodeInfoVersion'] == 'on':
+                                    showNodeInfoVersion = True
+                            self.server.showNodeInfoVersion = \
+                                showNodeInfoVersion
+                            setConfigParam(baseDir, "showNodeInfoVersion",
+                                           showNodeInfoVersion)
+
                             verifyAllSignatures = False
                             if fields.get('verifyallsignatures'):
                                 if fields['verifyallsignatures'] == 'on':
@@ -5239,14 +5197,6 @@ class PubServer(BaseHTTPRequestHandler):
                             return
 
         # redirect back to the profile screen
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + redirectPath,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -6219,12 +6169,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = \
-                httpPrefix + '://' + domainFull + actor
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorAbsolute = 'http://' + onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorAbsolute = 'http://' + i2pDomain + actor
+            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -6267,11 +6212,7 @@ class PubServer(BaseHTTPRequestHandler):
                 del self.server.iconsCache['repeat.png']
             self._postToOutboxThread(announceJson)
         self.server.GETbusy = False
-        actorAbsolute = httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
@@ -6318,11 +6259,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = httpPrefix + '://' + domainFull + actor
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorAbsolute = 'http://' + onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorAbsolute = 'http://' + i2pDomain + actor
+            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
                 str(pageNumber)
@@ -6361,11 +6298,7 @@ class PubServer(BaseHTTPRequestHandler):
             del self.server.iconsCache['repeat_inactive.png']
         self._postToOutboxThread(newUndoAnnounce)
         self.server.GETbusy = False
-        actorAbsolute = httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
@@ -6623,12 +6556,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = \
-                httpPrefix + '://' + domainFull + actor
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorAbsolute = 'http://' + onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorAbsolute = 'http://' + i2pDomain + actor
+            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -6678,12 +6606,7 @@ class PubServer(BaseHTTPRequestHandler):
         # send out the like to followers
         self._postToOutbox(likeJson, self.server.projectVersion)
         self.server.GETbusy = False
-        actorAbsolute = \
-            httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -6730,12 +6653,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = \
-                httpPrefix + '://' + domainFull + actor
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorAbsolute = 'http://' + onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and onionDomain):
-                actorAbsolute = 'http://' + i2pDomain + actor
+            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -6785,11 +6703,7 @@ class PubServer(BaseHTTPRequestHandler):
         # send out the undo like to followers
         self._postToOutbox(undoLikeJson, self.server.projectVersion)
         self.server.GETbusy = False
-        actorAbsolute = httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -6837,12 +6751,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = \
-                httpPrefix + '://' + domainFull + actor
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorAbsolute = 'http://' + onionDomain + actor
-            elif callingDomain.endswith('.i2p') and i2pDomain:
-                actorAbsolute = 'http://' + i2pDomain + actor
+            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -6881,12 +6790,7 @@ class PubServer(BaseHTTPRequestHandler):
             del self.server.iconsCache['bookmark.png']
         # self._postToOutbox(bookmarkJson, self.server.projectVersion)
         self.server.GETbusy = False
-        actorAbsolute = \
-            httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -6933,12 +6837,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = \
-                httpPrefix + '://' + domainFull + actor
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorAbsolute = 'http://' + onionDomain + actor
-            elif callingDomain.endswith('.i2p') and i2pDomain:
-                actorAbsolute = 'http://' + i2pDomain + actor
+            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -6977,12 +6876,7 @@ class PubServer(BaseHTTPRequestHandler):
             del self.server.iconsCache['bookmark_inactive.png']
         # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
         self.server.GETbusy = False
-        actorAbsolute = \
-            httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -7587,11 +7481,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return True
         actor = path.replace('/skills', '')
-        actorAbsolute = httpPrefix + '://' + domainFull + actor
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorAbsolute = 'http://' + onionDomain + actor
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorAbsolute = 'http://' + i2pDomain + actor
+        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         self._redirect_headers(actorAbsolute, cookie, callingDomain)
         self.server.GETbusy = False
         return True
@@ -10718,7 +10608,13 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.baseDir,
                           self.authorizedNickname,
                           self.server.domain,
-                          self.server.domainFull):
+                          self.server.domainFull,
+                          self.server.onionDomain,
+                          self.server.i2pDomain,
+                          self.server.translate,
+                          self.server.registration,
+                          self.server.systemLanguage,
+                          self.server.projectVersion):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -14743,7 +14639,9 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(brochMode: bool,
+def runDaemon(showNodeInfoAccounts: bool,
+              showNodeInfoVersion: bool,
+              brochMode: bool,
               verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
@@ -14811,6 +14709,9 @@ def runDaemon(brochMode: bool,
         print('ERROR: HTTP server failed to start. ' + str(e))
         print('serverAddress: ' + str(serverAddress))
         return False
+
+    httpd.showNodeInfoAccounts = showNodeInfoAccounts
+    httpd.showNodeInfoVersion = showNodeInfoVersion
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx
     httpd.textModeBanner = getTextModeBanner(baseDir)
