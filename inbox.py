@@ -2973,7 +2973,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                         if hasValidContext(originalJson):
                             hasJsonSignature = True
                         else:
-                            print('unrecognised @context: ' +
+                            print('unrecognized @context: ' +
                                   str(originalJson['@context']))
 
         # strict enforcement of json signatures
