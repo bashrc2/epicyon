@@ -2973,8 +2973,24 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                         if hasValidContext(originalJson):
                             hasJsonSignature = True
                         else:
+                            unknownContextsFile = \
+                                baseDir + '/accounts/unknownContexts.txt'
+                            unknownContext = str(originalJson['@context'])
+
                             print('unrecognized @context: ' +
-                                  str(originalJson['@context']))
+                                  unknownContext)
+
+                            alreadyUnknown = False
+                            if os.path.isfile(unknownContextsFile):
+                                if unknownContext in \
+                                   open(unknownContextsFile).read():
+                                    alreadyUnknown = True
+
+                            if not alreadyUnknown:
+                                unknownFile = open(unknownContextsFile, "a+")
+                                if unknownFile:
+                                    unknownFile.write(unknownContext + '\n')
+                                    unknownFile.close()
 
         # strict enforcement of json signatures
         if not hasJsonSignature:
