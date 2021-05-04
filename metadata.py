@@ -12,7 +12,10 @@ from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
 
-def metaDataNodeInfo(baseDir: str, registration: bool, version: str,
+def metaDataNodeInfo(baseDir: str,
+                     aboutUrl: str,
+                     termsOfServiceUrl: str,
+                     registration: bool, version: str,
                      showAccounts: bool) -> {}:
     """ /nodeinfo/2.0 endpoint
     Also see https://socialhub.activitypub.rocks/t/
@@ -39,6 +42,10 @@ def metaDataNodeInfo(baseDir: str, registration: bool, version: str,
         'software': {
             'name': 'epicyon',
             'version': version
+        },
+        'documents': {
+            'about': aboutUrl,
+            'terms': termsOfServiceUrl
         },
         'usage': {
             'localPosts': 1,

@@ -988,7 +988,20 @@ class PubServer(BaseHTTPRequestHandler):
         if brochMode:
             showNodeInfoAccounts = False
 
+        if callingDomain.endswith('.onion') and \
+           self.server.onionDomain:
+            instanceUrl = 'http://' + self.server.onionDomain
+        elif (callingDomain.endswith('.i2p') and
+              self.server.i2pDomain):
+            instanceUrl = 'http://' + self.server.i2pDomain
+        else:
+            instanceUrl = \
+                self.server.httpPrefix + '://' + self.server.domainFull
+
+        aboutUrl = instanceUrl + '/about'
+        termsOfServiceUrl = instanceUrl + '/terms'
         info = metaDataNodeInfo(self.server.baseDir,
+                                aboutUrl, termsOfServiceUrl,
                                 self.server.registration,
                                 nodeInfoVersion,
                                 showNodeInfoAccounts)
