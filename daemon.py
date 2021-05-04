@@ -822,7 +822,12 @@ class PubServer(BaseHTTPRequestHandler):
                     authorized: bool,
                     httpPrefix: str,
                     baseDir: str, nickname: str, domain: str,
-                    domainFull: str) -> bool:
+                    domainFull: str,
+                    onionDomain: str, i2pDomain: str,
+                    translate: {},
+                    registration: bool,
+                    systemLanguage: str,
+                    projectVersion: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -900,30 +905,37 @@ class PubServer(BaseHTTPRequestHandler):
             sendJson = []
             sendJsonStr = 'masto API timelines sent'
 
-        adminNickname = getConfigParam(self.server.baseDir, 'admin')
+        adminNickname = getConfigParam(baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
             instanceDescriptionShort = \
-                getConfigParam(self.server.baseDir,
+                getConfigParam(baseDir,
                                'instanceDescriptionShort')
             if not instanceDescriptionShort:
                 instanceDescriptionShort = \
-                    self.server.translate['Yet another Epicyon Instance']
-            instanceDescription = getConfigParam(self.server.baseDir,
+                    translate['Yet another Epicyon Instance']
+            instanceDescription = getConfigParam(baseDir,
                                                  'instanceDescription')
-            instanceTitle = getConfigParam(self.server.baseDir,
-                                           'instanceTitle')
+            instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+
+            if callingDomain.endswith('.onion') and onionDomain:
+                domainFull = onionDomain
+                httpPrefix = 'http'
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                domainFull = i2pDomain
+                httpPrefix = 'http'
+
             sendJson = \
                 metaDataInstance(instanceTitle,
                                  instanceDescriptionShort,
                                  instanceDescription,
-                                 self.server.httpPrefix,
-                                 self.server.baseDir,
+                                 httpPrefix,
+                                 baseDir,
                                  adminNickname,
-                                 self.server.domain,
-                                 self.server.domainFull,
-                                 self.server.registration,
-                                 self.server.systemLanguage,
-                                 self.server.projectVersion)
+                                 domain,
+                                 domainFull,
+                                 registration,
+                                 systemLanguage,
+                                 projectVersion)
             sendJsonStr = 'masto API instance metadata sent'
         elif path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
@@ -931,7 +943,7 @@ class PubServer(BaseHTTPRequestHandler):
             # On a large instance you are somewhat lost in the crowd, but on
             # small instances a full list of peers would convey a lot of
             # information about the interests of a small number of accounts
-            sendJson = ['mastodon.social', self.server.domainFull]
+            sendJson = ['mastodon.social', domainFull]
             sendJsonStr = 'masto API peers metadata sent'
         elif path.startswith('/api/v1/instance/activity'):
             sendJson = []
@@ -962,10 +974,17 @@ class PubServer(BaseHTTPRequestHandler):
     def _mastoApi(self, path: str, callingDomain: str,
                   authorized: bool, httpPrefix: str,
                   baseDir: str, nickname: str, domain: str,
-                  domainFull: str) -> bool:
+                  domainFull: str,
+                  onionDomain: str, i2pDomain: str,
+                  translate: {},
+                  registration: bool,
+                  systemLanguage: str,
+                  projectVersion: str) -> bool:
         return self._mastoApiV1(path, callingDomain, authorized,
                                 httpPrefix, baseDir, nickname, domain,
-                                domainFull)
+                                domainFull, onionDomain, i2pDomain,
+                                translate, registration, systemLanguage,
+                                projectVersion)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -10801,7 +10820,13 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.baseDir,
                           self.authorizedNickname,
                           self.server.domain,
-                          self.server.domainFull):
+                          self.server.domainFull,
+                          self.server.onionDomain,
+                          self.server.i2pDomain,
+                          self.server.translate,
+                          self.server.registration,
+                          self.server.systemLanguage,
+                          self.server.projectVersion):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
