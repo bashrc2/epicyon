@@ -1626,14 +1626,10 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if not isModerator(self.server.baseDir, nickname):
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorStr = 'http://' + onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorStr = 'http://' + i2pDomain + usersPath
-                self._redirect_headers(actorStr + '/moderation',
-                                       cookie, callingDomain)
+            self._redirect_headers(actorStr + '/moderation',
+                                   cookie, callingDomain)
             self.server.POSTbusy = False
             return
 
@@ -1823,10 +1819,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                debug,
                                                self.server.recentPostsCache)
 
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorStr = 'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            actorStr = 'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/moderation',
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -2795,7 +2787,7 @@ class PubServer(BaseHTTPRequestHandler):
             path = path.split('?page=')[0]
 
         usersPath = path.replace('/searchhandle', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         length = int(self.headers['Content-length'])
         try:
             searchParams = self.rfile.read(length).decode('utf-8')
@@ -2817,10 +2809,6 @@ class PubServer(BaseHTTPRequestHandler):
             return
         if 'submitBack=' in searchParams:
             # go back on search screen
-            if callingDomain.endswith('.onion') and onionDomain:
-                actorStr = 'http://' + onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actorStr = 'http://' + i2pDomain + usersPath
             self._redirect_headers(actorStr + '/' +
                                    self.server.defaultTimeline,
                                    cookie, callingDomain)
@@ -2960,10 +2948,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.endswith(':') or \
                    searchStr.endswith(';') or \
                    searchStr.endswith('.'):
-                    if callingDomain.endswith('.onion') and onionDomain:
-                        actorStr = 'http://' + onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        actorStr = 'http://' + i2pDomain + usersPath
+                    actorStr = self._getInstalceUrl(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3052,10 +3037,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
                 else:
-                    if callingDomain.endswith('.onion') and onionDomain:
-                        actorStr = 'http://' + onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        actorStr = 'http://' + i2pDomain + usersPath
+                    actorStr = self._getInstalceUrl(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3100,10 +3082,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-        if callingDomain.endswith('.onion') and onionDomain:
-            actorStr = 'http://' + onionDomain + usersPath
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            actorStr = 'http://' + i2pDomain + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         self._redirect_headers(actorStr + '/' +
                                self.server.defaultTimeline,
                                cookie, callingDomain)
@@ -3437,7 +3416,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/linksdata', '')
         usersPath = usersPath.replace('/editlinks', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3449,14 +3428,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 editor = isEditor(baseDir, nickname)
             if not nickname or not editor:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3469,14 +3440,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum links data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3550,14 +3513,6 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(TOSFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3590,7 +3545,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         usersPath = usersPath.split('/tags/')[0]
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         tagScreenStr = actorStr + '/tags/' + hashtag
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -3603,14 +3558,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 editor = isEditor(baseDir, nickname)
             if not hashtag or not editor:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3623,14 +3570,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum links data length exceeded ' + str(length))
                 self._redirect_headers(tagScreenStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3673,14 +3612,6 @@ class PubServer(BaseHTTPRequestHandler):
                     os.remove(categoryFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(tagScreenStr,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3695,7 +3626,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newswiredata', '')
         usersPath = usersPath.replace('/editnewswire', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3707,14 +3638,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 moderator = isModerator(baseDir, nickname)
             if not nickname or not moderator:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3727,14 +3650,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum newswire data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3812,14 +3727,6 @@ class PubServer(BaseHTTPRequestHandler):
                     os.remove(newswireTrustedFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3835,7 +3742,7 @@ class PubServer(BaseHTTPRequestHandler):
         update button on the citations screen
         """
         usersPath = path.replace('/citationsdata', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         nickname = getNicknameFromActor(actorStr)
 
         citationsFilename = \
@@ -3855,14 +3762,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum citations data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -3915,14 +3814,6 @@ class PubServer(BaseHTTPRequestHandler):
                     citationsFile.close()
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/newblog',
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3937,7 +3828,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3949,14 +3840,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 editorRole = isEditor(baseDir, nickname)
             if not nickname or not editorRole:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
                 else:
@@ -3974,14 +3857,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum news data length exceeded ' + str(length))
                 if self.server.newsInstance:
                     self._redirect_headers(actorStr + '/tlfeatures',
@@ -4068,14 +3943,6 @@ class PubServer(BaseHTTPRequestHandler):
                     saveJson(postJsonObject, postFilename)
 
         # redirect back to the default timeline
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         if self.server.newsInstance:
             self._redirect_headers(actorStr + '/tlfeatures',
                                    cookie, callingDomain)
@@ -4096,7 +3963,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/profiledata', '')
         usersPath = usersPath.replace('/editprofile', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        actorStr = self._getInstalceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4105,14 +3972,6 @@ class PubServer(BaseHTTPRequestHandler):
             # get the nickname
             nickname = getNicknameFromActor(actorStr)
             if not nickname:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('WARN: nickname not found in ' + actorStr)
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -4122,14 +3981,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
-                if callingDomain.endswith('.onion') and \
-                   onionDomain:
-                    actorStr = \
-                        'http://' + onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      i2pDomain):
-                    actorStr = \
-                        'http://' + i2pDomain + usersPath
                 print('Maximum profile data length exceeded ' +
                       str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
@@ -5346,14 +5197,6 @@ class PubServer(BaseHTTPRequestHandler):
                             return
 
         # redirect back to the profile screen
-        if callingDomain.endswith('.onion') and \
-           onionDomain:
-            actorStr = \
-                'http://' + onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and
-              i2pDomain):
-            actorStr = \
-                'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + redirectPath,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -6368,7 +6211,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get('repeat.png'):
                 del self.server.iconsCache['repeat.png']
             self._postToOutboxThread(announceJson)
-        self.server.GETbusy = False        
+        self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
