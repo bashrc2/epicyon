@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 :root {
+    --avatar-rounding: 10%;
     --options-bg-color: #282c37;
     --options-link-bg-color: transparent;
     --options-fg-color: #dddddd;
@@ -144,6 +145,7 @@ a:focus {
 }
 
 .options img {
+    border-radius: var(--avatar-rounding);
     background-color: var(--options-bg-color);
     width: 15%;
 }
