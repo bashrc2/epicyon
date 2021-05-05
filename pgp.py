@@ -362,7 +362,7 @@ def hasLocalPGPkey() -> bool:
     homeDir = str(Path.home())
     gpgDir = homeDir + '/.gnupg'
     if os.path.isdir(gpgDir):
-        keyId = _pgpLocalPublicKeyId()
+        keyId = pgpLocalPublicKey()
         if keyId:
             return True
     return False
@@ -428,7 +428,7 @@ def pgpLocalPublicKey() -> str:
     """
     keyId = _pgpLocalPublicKeyId()
     if not keyId:
-        return None
+        keyId = ''
     cmdStr = "gpg --armor --export " + keyId
     proc = subprocess.Popen([cmdStr],
                             stdout=subprocess.PIPE, shell=True)
