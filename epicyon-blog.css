@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 :root {
+    --avatar-rounding: 10%;
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
     --title-color: #999;
@@ -795,6 +796,7 @@ div.gallery img {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
     }
     .cwButton {
         border-radius: var(--button-corner-radius);
@@ -1150,6 +1152,7 @@ div.gallery img {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
     }
     .cwButton {
         border-radius: var(--button-corner-radius);

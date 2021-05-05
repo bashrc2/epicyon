@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 :root {
+    --avatar-rounding: 10%;
     --timeline-icon-width: 50px;
     --timeline-icon-width-mobile: 100px;
     --header-bg-color: #282c37;
@@ -341,7 +342,7 @@ a:focus {
 }
 
 .profileHeader .title {
-    border-radius: 10%;
+    border-radius: var(--avatar-rounding);
     position: absolute;
     bottom: 100%;
     left: 25px;
@@ -1332,6 +1333,7 @@ div.container {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
     }
     .buttonevent {
         border-radius: var(--button-event-corner-radius);
@@ -1975,6 +1977,7 @@ div.container {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
     }
     .buttonevent {
         border-radius: var(--button-event-corner-radius);
