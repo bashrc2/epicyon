@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 :root {
+    --avatar-rounding: 10%;
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
     --dropdown-fg-color: #dddddd;
@@ -1052,6 +1053,7 @@ aside .toggle-inside li {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
     }
     .buttonevent {
         border-radius: var(--button-corner-radius);
@@ -1522,6 +1524,7 @@ aside .toggle-inside li {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
     }
     .buttonevent {
         border-radius: var(--button-corner-radius);

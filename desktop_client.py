@@ -45,6 +45,7 @@ from posts import c2sBoxJson
 from posts import downloadAnnounce
 from announce import sendAnnounceViaServer
 from announce import sendUndoAnnounceViaServer
+from pgp import pgpLocalPublicKey
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
@@ -124,6 +125,8 @@ def _desktopHelp() -> None:
           'Approve a follow request')
     print(indent + 'deny [handle]                         ' +
           'Deny a follow request')
+    print(indent + 'pgp                                   ' +
+          'Show your PGP public key')
     print('')
 
 
@@ -1363,17 +1366,20 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     desktopShown = False
     while (1):
         if not pgpKeyUpload:
-            sayStr = indent + 'Uploading PGP public key'
-            _sayCommand(sayStr, sayStr, screenreader,
-                        systemLanguage, espeak)
-            pgpPublicKeyUpload(baseDir, session,
-                               nickname, password,
-                               domain, port, httpPrefix,
-                               cachedWebfingers, personCache,
-                               debug, False)
-            sayStr = indent + 'PGP public key uploaded'
-            _sayCommand(sayStr, sayStr, screenreader,
-                        systemLanguage, espeak)
+            if not hasLocalPGPkey():
+                print('No PGP public key was found')
+            else:
+                sayStr = indent + 'Uploading PGP public key'
+                _sayCommand(sayStr, sayStr, screenreader,
+                            systemLanguage, espeak)
+                pgpPublicKeyUpload(baseDir, session,
+                                   nickname, password,
+                                   domain, port, httpPrefix,
+                                   cachedWebfingers, personCache,
+                                   debug, False)
+                sayStr = indent + 'PGP public key uploaded'
+                _sayCommand(sayStr, sayStr, screenreader,
+                            systemLanguage, espeak)
             pgpKeyUpload = True
 
         boxJson = c2sBoxJson(baseDir, session,
@@ -2323,6 +2329,12 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         sayStr = 'There are no web links to open.'
                         _sayCommand(sayStr, sayStr, originalScreenReader,
                                     systemLanguage, espeak)
+                print('')
+            elif commandStr.startswith('pgp') or commandStr.startswith('gpg'):
+                if not hasLocalPGPkey():
+                    print('No PGP public key was found')
+                else:
+                    print(pgpLocalPublicKey())
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()

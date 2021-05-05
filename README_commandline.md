@@ -478,6 +478,7 @@ following [page number]               Show accounts that you are following
 followers [page number]               Show accounts that are following you
 approve [handle]                      Approve a follow request
 deny [handle]                         Deny a follow request
+pgp                                   Show your PGP public key
 ```
 
 If you have a GPG key configured on your local system and are sending a direct message to someone who has a PGP key (the exported key, not just the key ID) set as a tag on their profile then it will try to encrypt the message automatically. So under some conditions end-to-end encryption is possible, such that the instance server only sees ciphertext. Conversely, for arriving direct messages if they are PGP encrypted then the desktop client will try to obtain the relevant public key and decrypt.
