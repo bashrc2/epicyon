@@ -1366,17 +1366,20 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     desktopShown = False
     while (1):
         if not pgpKeyUpload:
-            sayStr = indent + 'Uploading PGP public key'
-            _sayCommand(sayStr, sayStr, screenreader,
-                        systemLanguage, espeak)
-            pgpPublicKeyUpload(baseDir, session,
-                               nickname, password,
-                               domain, port, httpPrefix,
-                               cachedWebfingers, personCache,
-                               debug, False)
-            sayStr = indent + 'PGP public key uploaded'
-            _sayCommand(sayStr, sayStr, screenreader,
-                        systemLanguage, espeak)
+            if not hasLocalPGPkey():
+                print('No PGP public key was found')
+            else:
+                sayStr = indent + 'Uploading PGP public key'
+                _sayCommand(sayStr, sayStr, screenreader,
+                            systemLanguage, espeak)
+                pgpPublicKeyUpload(baseDir, session,
+                                   nickname, password,
+                                   domain, port, httpPrefix,
+                                   cachedWebfingers, personCache,
+                                   debug, False)
+                sayStr = indent + 'PGP public key uploaded'
+                _sayCommand(sayStr, sayStr, screenreader,
+                            systemLanguage, espeak)
             pgpKeyUpload = True
 
         boxJson = c2sBoxJson(baseDir, session,
