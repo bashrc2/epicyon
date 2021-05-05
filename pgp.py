@@ -423,7 +423,7 @@ def _pgpLocalPublicKeyId() -> str:
     return result.decode('utf-8').replace('"', '').strip()
 
 
-def _pgpLocalPublicKey() -> str:
+def pgpLocalPublicKey() -> str:
     """Gets the local pgp public key
     """
     keyId = _pgpLocalPublicKeyId()
@@ -457,7 +457,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
     if not test:
         if debug:
             print('Getting PGP public key')
-        PGPpubKey = _pgpLocalPublicKey()
+        PGPpubKey = pgpLocalPublicKey()
         if not PGPpubKey:
             return None
         PGPpubKeyId = _pgpLocalPublicKeyId()

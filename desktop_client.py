@@ -45,6 +45,7 @@ from posts import c2sBoxJson
 from posts import downloadAnnounce
 from announce import sendAnnounceViaServer
 from announce import sendUndoAnnounceViaServer
+from pgp import pgpLocalPublicKey
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
@@ -124,6 +125,8 @@ def _desktopHelp() -> None:
           'Approve a follow request')
     print(indent + 'deny [handle]                         ' +
           'Deny a follow request')
+    print(indent + 'pgp                                   ' +
+          'Show your PGP public key')
     print('')
 
 
@@ -2323,6 +2326,12 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         sayStr = 'There are no web links to open.'
                         _sayCommand(sayStr, sayStr, originalScreenReader,
                                     systemLanguage, espeak)
+                print('')
+            elif commandStr.startswith('pgp') or commandStr.startswith('gpg'):
+                if not hasLocalPGPkey():
+                    print('No PGP public key was found')
+                else:
+                    print(pgpLocalPublicKey())
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
