@@ -21,6 +21,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
 from utils import isDM
 from utils import rejectPostId
@@ -1302,21 +1303,26 @@ def individualPostAsHtml(allowDownloads: bool,
             return ''
         postJsonObject = postJsonAnnounce
 
-        if isRecentPost(postJsonObject):
-            announceFilename = \
-                locatePost(baseDir, nickname, domain,
-                           postJsonObject['id'])
-            if announceFilename and postJsonObject.get('actor'):
-                if not os.path.isfile(announceFilename + '.tts'):
-                    updateSpeaker(baseDir, httpPrefix,
-                                  nickname, domain, domainFull,
-                                  postJsonObject, personCache,
-                                  translate, postJsonObject['actor'],
-                                  themeName)
-                    ttsFile = open(announceFilename + '.tts', "w+")
-                    if ttsFile:
-                        ttsFile.write('\n')
-                        ttsFile.close()
+        announceFilename = \
+            locatePost(baseDir, nickname, domain,
+                       postJsonObject['id'])
+        if announceFilename:
+            updateAnnounceCollection(recentPostsCache,
+                                     baseDir, announceFilename,
+                                     postActor, domainFull, False)
+
+            if isRecentPost(postJsonObject):
+                if postJsonObject.get('actor'):
+                    if not os.path.isfile(announceFilename + '.tts'):
+                        updateSpeaker(baseDir, httpPrefix,
+                                      nickname, domain, domainFull,
+                                      postJsonObject, personCache,
+                                      translate, postJsonObject['actor'],
+                                      themeName)
+                        ttsFile = open(announceFilename + '.tts', "w+")
+                        if ttsFile:
+                            ttsFile.write('\n')
+                            ttsFile.close()
 
         isAnnounced = True
 
