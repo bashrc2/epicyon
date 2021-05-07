@@ -408,6 +408,7 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
         if announcedByPerson(postJsonObject, nickname, domainFull):
             announceIcon = 'repeat.png'
             announceEmoji = '🔁 '
+            announceLink = 'unrepeat'
             if not isPublicRepeat:
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
