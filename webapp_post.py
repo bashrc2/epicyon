@@ -396,36 +396,42 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
     """Returns html for announce icon/button
     """
     announceStr = ''
-    if not isModerationPost and showRepeatIcon:
-        # don't allow announce/repeat of your own posts
-        announceIcon = 'repeat_inactive.png'
-        announceLink = 'repeat'
-        announceEmoji = ''
+
+    if not showRepeatIcon:
+        return announceStr
+
+    if isModerationPost:
+        return announceStr
+
+    # don't allow announce/repeat of your own posts
+    announceIcon = 'repeat_inactive.png'
+    announceLink = 'repeat'
+    announceEmoji = ''
+    if not isPublicRepeat:
+        announceLink = 'repeatprivate'
+    announceTitle = translate['Repeat this post']
+
+    if announcedByPerson(postJsonObject, nickname, domainFull):
+        announceIcon = 'repeat.png'
+        announceEmoji = '🔁 '
+        announceLink = 'unrepeat'
         if not isPublicRepeat:
-            announceLink = 'repeatprivate'
-        announceTitle = translate['Repeat this post']
+            announceLink = 'unrepeatprivate'
+        announceTitle = translate['Undo the repeat']
 
-        if announcedByPerson(postJsonObject, nickname, domainFull):
-            announceIcon = 'repeat.png'
-            announceEmoji = '🔁 '
-            announceLink = 'unrepeat'
-            if not isPublicRepeat:
-                announceLink = 'unrepeatprivate'
-            announceTitle = translate['Undo the repeat']
+    announceStr = \
+        '        <a class="imageAnchor" href="/users/' + \
+        nickname + '?' + announceLink + \
+        '=' + postJsonObject['object']['id'] + pageNumberParam + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostBookmark + \
+        '?tl=' + boxName + '" title="' + announceTitle + '">\n'
 
-        announceStr = \
-            '        <a class="imageAnchor" href="/users/' + \
-            nickname + '?' + announceLink + \
-            '=' + postJsonObject['object']['id'] + pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + announceTitle + '">\n'
-
-        announceStr += \
-            '          ' + \
-            '<img loading="lazy" title="' + translate['Repeat this post'] + \
-            '" alt="' + announceEmoji + translate['Repeat this post'] + \
-            ' |" src="/icons/' + announceIcon + '"/></a>\n'
+    announceStr += \
+        '          ' + \
+        '<img loading="lazy" title="' + translate['Repeat this post'] + \
+        '" alt="' + announceEmoji + translate['Repeat this post'] + \
+        ' |" src="/icons/' + announceIcon + '"/></a>\n'
     return announceStr
 
 
