@@ -1985,63 +1985,64 @@ def updateAnnounceCollection(recentPostsCache: {},
     It's shares of posts, not shares of physical objects.
     """
     postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this announce so that the announce
-        # icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
-                                                   postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        removePostFromCache(postJsonObject, recentPostsCache)
+    if not postJsonObject:
+        return
+    # remove any cached version of this announce so that the announce
+    # icon is changed
+    nickname = getNicknameFromActor(actor)
+    cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
+                                               postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+    removePostFromCache(postJsonObject, recentPostsCache)
 
-        if not postJsonObject.get('object'):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post ' + postFilename + ' has no object')
-            return
-        if not isinstance(postJsonObject['object'], dict):
-            return
-        postUrl = removeIdEnding(postJsonObject['id']) + '/shares'
-        if not postJsonObject['object'].get('shares'):
-            if debug:
-                print('DEBUG: Adding initial shares (announcements) to ' +
-                      postUrl)
-            announcementsJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': postUrl,
-                'type': 'Collection',
-                "totalItems": 1,
-                'items': [{
-                    'type': 'Announce',
-                    'actor': actor
-                }]
-            }
-            postJsonObject['object']['shares'] = announcementsJson
-        else:
-            if postJsonObject['object']['shares'].get('items'):
-                sharesItems = postJsonObject['object']['shares']['items']
-                for announceItem in sharesItems:
-                    if announceItem.get('actor'):
-                        if announceItem['actor'] == actor:
-                            return
-                newAnnounce = {
-                    'type': 'Announce',
-                    'actor': actor
-                }
-                postJsonObject['object']['shares']['items'].append(newAnnounce)
-                itlen = len(postJsonObject['object']['shares']['items'])
-                postJsonObject['object']['shares']['totalItems'] = itlen
-            else:
-                if debug:
-                    print('DEBUG: shares (announcements) section of post ' +
-                          'has no items list')
-
+    if not postJsonObject.get('object'):
         if debug:
-            print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
-        saveJson(postJsonObject, postFilename)
+            print('DEBUG: post ' + postFilename + ' has no object')
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    postUrl = removeIdEnding(postJsonObject['id']) + '/shares'
+    if not postJsonObject['object'].get('shares'):
+        if debug:
+            print('DEBUG: Adding initial shares (announcements) to ' +
+                  postUrl)
+        announcementsJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': postUrl,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
+                'type': 'Announce',
+                'actor': actor
+            }]
+        }
+        postJsonObject['object']['shares'] = announcementsJson
+    else:
+        if postJsonObject['object']['shares'].get('items'):
+            sharesItems = postJsonObject['object']['shares']['items']
+            for announceItem in sharesItems:
+                if announceItem.get('actor'):
+                    if announceItem['actor'] == actor:
+                        return
+            newAnnounce = {
+                'type': 'Announce',
+                'actor': actor
+            }
+            postJsonObject['object']['shares']['items'].append(newAnnounce)
+            itlen = len(postJsonObject['object']['shares']['items'])
+            postJsonObject['object']['shares']['totalItems'] = itlen
+        else:
+            if debug:
+                print('DEBUG: shares (announcements) section of post ' +
+                      'has no items list')
+
+    if debug:
+        print('DEBUG: saving post with shares (announcements) added')
+        pprint(postJsonObject)
+    saveJson(postJsonObject, postFilename)
 
 
 def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
