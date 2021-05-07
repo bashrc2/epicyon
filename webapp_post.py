@@ -386,6 +386,7 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
 
 
 def _getAnnounceIconHtml(isAnnounced: bool,
+                         postActor: str,
                          nickname: str, domainFull: str,
                          postJsonObject: {},
                          isPublicRepeat: bool,
@@ -414,7 +415,7 @@ def _getAnnounceIconHtml(isAnnounced: bool,
     announceTitle = translate['Repeat this post']
 
     if announcedByPerson(isAnnounced,
-                         postJsonObject, nickname, domainFull):
+                         postActor, nickname, domainFull):
         announceIcon = 'repeat.png'
         announceEmoji = '🔁 '
         announceLink = 'unrepeat'
@@ -1411,6 +1412,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     announceStr = \
         _getAnnounceIconHtml(isAnnounced,
+                             postActor,
                              nickname, domainFull,
                              postJsonObject,
                              isPublicRepeat,

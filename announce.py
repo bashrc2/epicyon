@@ -73,14 +73,14 @@ def outboxAnnounce(recentPostsCache: {},
     return False
 
 
-def announcedByPerson(isAnnounced: bool, postJsonObject: {},
+def announcedByPerson(isAnnounced: bool, postActor: str,
                       nickname: str, domainFull: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
-    if not postJsonObject.get('actor'):
+    if not postActor:
         return False
     if isAnnounced and \
-       postJsonObject['actor'].endswith(domainFull + '/users/' + nickname):
+       postActor.endswith(domainFull + '/users/' + nickname):
         return True
     return False
 
