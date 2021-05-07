@@ -21,6 +21,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
 from utils import isDM
 from utils import rejectPostId
@@ -384,7 +385,9 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     return editStr
 
 
-def _getAnnounceIconHtml(nickname: str, domainFull: str,
+def _getAnnounceIconHtml(isAnnounced: bool,
+                         postActor: str,
+                         nickname: str, domainFull: str,
                          postJsonObject: {},
                          isPublicRepeat: bool,
                          isModerationPost: bool,
@@ -396,35 +399,43 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
     """Returns html for announce icon/button
     """
     announceStr = ''
-    if not isModerationPost and showRepeatIcon:
-        # don't allow announce/repeat of your own posts
-        announceIcon = 'repeat_inactive.png'
-        announceLink = 'repeat'
-        announceEmoji = ''
+
+    if not showRepeatIcon:
+        return announceStr
+
+    if isModerationPost:
+        return announceStr
+
+    # don't allow announce/repeat of your own posts
+    announceIcon = 'repeat_inactive.png'
+    announceLink = 'repeat'
+    announceEmoji = ''
+    if not isPublicRepeat:
+        announceLink = 'repeatprivate'
+    announceTitle = translate['Repeat this post']
+
+    if announcedByPerson(isAnnounced,
+                         postActor, nickname, domainFull):
+        announceIcon = 'repeat.png'
+        announceEmoji = '🔁 '
+        announceLink = 'unrepeat'
         if not isPublicRepeat:
-            announceLink = 'repeatprivate'
-        announceTitle = translate['Repeat this post']
+            announceLink = 'unrepeatprivate'
+        announceTitle = translate['Undo the repeat']
 
-        if announcedByPerson(postJsonObject, nickname, domainFull):
-            announceIcon = 'repeat.png'
-            announceEmoji = '🔁 '
-            if not isPublicRepeat:
-                announceLink = 'unrepeatprivate'
-            announceTitle = translate['Undo the repeat']
+    announceStr = \
+        '        <a class="imageAnchor" href="/users/' + \
+        nickname + '?' + announceLink + \
+        '=' + postJsonObject['object']['id'] + pageNumberParam + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostBookmark + \
+        '?tl=' + boxName + '" title="' + announceTitle + '">\n'
 
-        announceStr = \
-            '        <a class="imageAnchor" href="/users/' + \
-            nickname + '?' + announceLink + \
-            '=' + postJsonObject['object']['id'] + pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + announceTitle + '">\n'
-
-        announceStr += \
-            '          ' + \
-            '<img loading="lazy" title="' + translate['Repeat this post'] + \
-            '" alt="' + announceEmoji + translate['Repeat this post'] + \
-            ' |" src="/icons/' + announceIcon + '"/></a>\n'
+    announceStr += \
+        '          ' + \
+        '<img loading="lazy" title="' + announceTitle + \
+        '" alt="' + announceEmoji + announceTitle + \
+        ' |" src="/icons/' + announceIcon + '"/></a>\n'
     return announceStr
 
 
@@ -1295,21 +1306,27 @@ def individualPostAsHtml(allowDownloads: bool,
             return ''
         postJsonObject = postJsonAnnounce
 
-        if isRecentPost(postJsonObject):
-            announceFilename = \
-                locatePost(baseDir, nickname, domain,
-                           postJsonObject['id'])
-            if announceFilename and postJsonObject.get('actor'):
-                if not os.path.isfile(announceFilename + '.tts'):
-                    updateSpeaker(baseDir, httpPrefix,
-                                  nickname, domain, domainFull,
-                                  postJsonObject, personCache,
-                                  translate, postJsonObject['actor'],
-                                  themeName)
-                    ttsFile = open(announceFilename + '.tts', "w+")
-                    if ttsFile:
-                        ttsFile.write('\n')
-                        ttsFile.close()
+        announceFilename = \
+            locatePost(baseDir, nickname, domain,
+                       postJsonObject['id'])
+        if announceFilename:
+            updateAnnounceCollection(recentPostsCache,
+                                     baseDir, announceFilename,
+                                     postActor, domainFull, False)
+
+            # create a file for use by text-to-speech
+            if isRecentPost(postJsonObject):
+                if postJsonObject.get('actor'):
+                    if not os.path.isfile(announceFilename + '.tts'):
+                        updateSpeaker(baseDir, httpPrefix,
+                                      nickname, domain, domainFull,
+                                      postJsonObject, personCache,
+                                      translate, postJsonObject['actor'],
+                                      themeName)
+                        ttsFile = open(announceFilename + '.tts', "w+")
+                        if ttsFile:
+                            ttsFile.write('\n')
+                            ttsFile.close()
 
         isAnnounced = True
 
@@ -1394,7 +1411,9 @@ def individualPostAsHtml(allowDownloads: bool,
                                translate, isEvent)
 
     announceStr = \
-        _getAnnounceIconHtml(nickname, domainFull,
+        _getAnnounceIconHtml(isAnnounced,
+                             postActor,
+                             nickname, domainFull,
                              postJsonObject,
                              isPublicRepeat,
                              isModerationPost,
