@@ -432,8 +432,8 @@ def _getAnnounceIconHtml(isAnnounced: bool,
 
     announceStr += \
         '          ' + \
-        '<img loading="lazy" title="' + translate['Repeat this post'] + \
-        '" alt="' + announceEmoji + translate['Repeat this post'] + \
+        '<img loading="lazy" title="' + announceTitle + \
+        '" alt="' + announceEmoji + announceTitle + \
         ' |" src="/icons/' + announceIcon + '"/></a>\n'
     return announceStr
 
