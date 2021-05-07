@@ -40,7 +40,7 @@ def outboxAnnounce(recentPostsCache: {},
             return False
         nickname = getNicknameFromActor(messageJson['actor'])
         if not nickname:
-            print('WARN: no nickname found in '+messageJson['actor'])
+            print('WARN: no nickname found in ' + messageJson['actor'])
             return False
         domain, port = getDomainFromActor(messageJson['actor'])
         postFilename = locatePost(baseDir, nickname, domain,
@@ -49,7 +49,7 @@ def outboxAnnounce(recentPostsCache: {},
             updateAnnounceCollection(recentPostsCache, baseDir, postFilename,
                                      messageJson['actor'], domain, debug)
             return True
-    if messageJson['type'] == 'Undo':
+    elif messageJson['type'] == 'Undo':
         if not isinstance(messageJson['object'], dict):
             return False
         if not messageJson['object'].get('type'):
@@ -132,7 +132,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
         '/statuses/' + statusNumber
     newAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'atomUri': atomUriStr,
         'cc': [],
         'id': newAnnounceId + '/activity',
