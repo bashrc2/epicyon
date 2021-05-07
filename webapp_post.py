@@ -385,7 +385,8 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     return editStr
 
 
-def _getAnnounceIconHtml(nickname: str, domainFull: str,
+def _getAnnounceIconHtml(isAnnounced: bool,
+                         nickname: str, domainFull: str,
                          postJsonObject: {},
                          isPublicRepeat: bool,
                          isModerationPost: bool,
@@ -412,7 +413,8 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
         announceLink = 'repeatprivate'
     announceTitle = translate['Repeat this post']
 
-    if announcedByPerson(postJsonObject, nickname, domainFull):
+    if announcedByPerson(isAnnounced,
+                         postJsonObject, nickname, domainFull):
         announceIcon = 'repeat.png'
         announceEmoji = '🔁 '
         announceLink = 'unrepeat'
@@ -1311,6 +1313,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                      baseDir, announceFilename,
                                      postActor, domainFull, False)
 
+            # create a file for use by text-to-speech
             if isRecentPost(postJsonObject):
                 if postJsonObject.get('actor'):
                     if not os.path.isfile(announceFilename + '.tts'):
@@ -1407,7 +1410,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                translate, isEvent)
 
     announceStr = \
-        _getAnnounceIconHtml(nickname, domainFull,
+        _getAnnounceIconHtml(isAnnounced,
+                             nickname, domainFull,
                              postJsonObject,
                              isPublicRepeat,
                              isModerationPost,

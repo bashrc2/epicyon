@@ -73,34 +73,15 @@ def outboxAnnounce(recentPostsCache: {},
     return False
 
 
-def announcedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
+def announcedByPerson(isAnnounced: bool, postJsonObject: {},
+                      nickname: str, domainFull: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
-    if not postJsonObject.get('type'):
+    if not postJsonObject.get('actor'):
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if isinstance(postJsonObject['object'], str):
-        if postJsonObject['type'] == 'Announce' and \
-           postJsonObject.get('actor'):
-            actorMatch = domain + '/users/' + nickname
-            if postJsonObject['actor'].endswith(actorMatch):
-                return True
-    elif not isinstance(postJsonObject['object'], dict):
-        return False
-    # not to be confused with shared items
-    if not postJsonObject['object'].get('shares'):
-        return False
-    if not isinstance(postJsonObject['object']['shares'], dict):
-        return False
-    if not postJsonObject['object']['shares'].get('items'):
-        return False
-    if not isinstance(postJsonObject['object']['shares']['items'], list):
-        return False
-    actorMatch = domain + '/users/' + nickname
-    for item in postJsonObject['object']['shares']['items']:
-        if item['actor'].endswith(actorMatch):
-            return True
+    if isAnnounced and \
+       postJsonObject['actor'].endswith(domainFull + '/users/' + nickname):
+        return True
     return False
 
 
