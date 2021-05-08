@@ -439,5 +439,6 @@
     "enterNotes": "Enter notes",
     "These access keys may be used": "These access keys may be used, typically with ALT + SHIFT + key or ALT + key",
     "Show numbers of accounts within instance metadata": "Show numbers of accounts within instance metadata",
-    "Show version number within instance metadata": "Show version number within instance metadata"
+    "Show version number within instance metadata": "Show version number within instance metadata",
+    "Joined": "Joined"
 }

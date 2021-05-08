@@ -246,6 +246,11 @@ def htmlProfileAfterSearch(cssCache: {},
     if profileJson.get('alsoKnownAs'):
         alsoKnownAs = profileJson['alsoKnownAs']
 
+    joinedDate = None
+    if profileJson.get('published'):
+        if 'T' in profileJson['published']:
+            joinedDate = profileJson['published']
+
     profileStr = \
         _getProfileHeaderAfterSearch(baseDir,
                                      nickname, defaultTimeline,
@@ -256,7 +261,8 @@ def htmlProfileAfterSearch(cssCache: {},
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl,
                                      movedTo, profileJson['id'],
-                                     alsoKnownAs, accessKeys)
+                                     alsoKnownAs, accessKeys,
+                                     joinedDate)
 
     domainFull = getFullDomain(domain, port)
 
@@ -335,7 +341,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
                       theme: str, movedTo: str,
                       alsoKnownAs: [],
                       pinnedContent: str,
-                      accessKeys: {}) -> str:
+                      accessKeys: {},
+                      joinedDate: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -357,6 +364,10 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
+    if joinedDate:
+        htmlStr += \
+            '    <p><b>' + translate['Joined'] + ' ' + \
+            joinedDate.split('T')[0] + '</b><br>\n'
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
         newDomain, newPort = getDomainFromActor(movedTo)
@@ -417,7 +428,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  avatarUrl: str, imageUrl: str,
                                  movedTo: str, actor: str,
                                  alsoKnownAs: [],
-                                 accessKeys: {}) -> str:
+                                 accessKeys: {},
+                                 joinedDate: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -440,6 +452,9 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
+    if joinedDate:
+        htmlStr += '        <p><b>' + translate['Joined'] + ' ' + \
+            joinedDate.split('T')[0] + '</b></p>\n'
     if followsYou:
         htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
     if movedTo:
@@ -711,6 +726,11 @@ def htmlProfile(rssIconAtTop: bool,
     if profileJson.get('alsoKnownAs'):
         alsoKnownAs = profileJson['alsoKnownAs']
 
+    joinedDate = None
+    if profileJson.get('published'):
+        if 'T' in profileJson['published']:
+            joinedDate = profileJson['published']
+
     avatarUrl = profileJson['icon']['url']
 
     # get pinned post content
@@ -730,7 +750,8 @@ def htmlProfile(rssIconAtTop: bool,
                           profileDescriptionShort,
                           loginButton, avatarUrl, theme,
                           movedTo, alsoKnownAs,
-                          pinnedContent, accessKeys)
+                          pinnedContent, accessKeys,
+                          joinedDate)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname

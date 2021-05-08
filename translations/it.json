@@ -439,5 +439,6 @@
     "enterNotes": "Inserisci le note",
     "These access keys may be used": "Questi tasti di accesso possono essere utilizzati, in genere con tasto ALT + MAIUSC + o ALT + Key",
     "Show numbers of accounts within instance metadata": "Mostra il numero di account all'interno dei metadati dell'istanza",
-    "Show version number within instance metadata": "Mostra il numero di versione nei metadati dell'istanza"
+    "Show version number within instance metadata": "Mostra il numero di versione nei metadati dell'istanza",
+    "Joined": "Unito"
 }

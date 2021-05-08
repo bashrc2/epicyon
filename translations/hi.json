@@ -439,5 +439,6 @@
     "enterNotes": "नोट्स दर्ज करें",
     "These access keys may be used": "इन एक्सेस कुंजियों का उपयोग किया जा सकता है, आमतौर पर Alt + Shift + कुंजी या Alt + कुंजी के साथ",
     "Show numbers of accounts within instance metadata": "उदाहरण मेटाडेटा के भीतर खातों की संख्या दिखाएं",
-    "Show version number within instance metadata": "उदाहरण मेटाडेटा के भीतर संस्करण संख्या दिखाएं"
+    "Show version number within instance metadata": "उदाहरण मेटाडेटा के भीतर संस्करण संख्या दिखाएं",
+    "Joined": "दिनांक"
 }
