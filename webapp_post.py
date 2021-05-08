@@ -426,7 +426,7 @@ def _getAnnounceIconHtml(isAnnounced: bool,
         announceTitle = translate['Undo the repeat']
         if announceJsonObject:
             unannounceLinkStr = '?unannounce=' + \
-                announceJsonObject['id']
+                removeIdEnding(announceJsonObject['id'])
 
     announceLinkStr = '?' + \
         announceLink + '=' + postJsonObject['object']['id'] + pageNumberParam
