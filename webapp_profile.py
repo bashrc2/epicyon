@@ -366,8 +366,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
     if joinedDate:
         htmlStr += \
-            '    <p><b>' + translate['Joined'] + ' ' + \
-            joinedDate.split('T')[0] + '</b><br>\n'
+            '    <p>' + translate['Joined'] + ' ' + \
+            joinedDate.split('T')[0] + '<br>\n'
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
         newDomain, newPort = getDomainFromActor(movedTo)
@@ -453,8 +453,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     htmlStr += \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
     if joinedDate:
-        htmlStr += '        <p><b>' + translate['Joined'] + ' ' + \
-            joinedDate.split('T')[0] + '</b></p>\n'
+        htmlStr += '        <p>' + translate['Joined'] + ' ' + \
+            joinedDate.split('T')[0] + '</p>\n'
     if followsYou:
         htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
     if movedTo:
