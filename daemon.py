@@ -6309,7 +6309,7 @@ class PubServer(BaseHTTPRequestHandler):
             postFilename = None
             nickname = getNicknameFromActor(announceUrl)
             if nickname:
-                if announceUrl.endswith(domainFull + '/users/' + nickname):
+                if domainFull + '/users/' + nickname + '/' in announceUrl:
                     postFilename = \
                         locatePost(baseDir, nickname, domain, announceUrl)
             if postFilename:
