@@ -6228,13 +6228,17 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime, GETtimings: {},
-                            repeatPrivate: bool, debug: bool):
+                            repeatPrivate: bool, debug: bool,
+                            recentPostsCache: {}):
         """Undo announce/repeat button was pressed
         """
         pageNumber = 1
+
+        # the post which was referenced by the announce post
         repeatUrl = path.split('?unrepeat=')[1]
         if '?' in repeatUrl:
             repeatUrl = repeatUrl.split('?')[0]
+
         timelineBookmark = ''
         if '?bm=' in path:
             timelineBookmark = path.split('?bm=')[1]
@@ -6283,11 +6287,11 @@ class PubServer(BaseHTTPRequestHandler):
             "@context": "https://www.w3.org/ns/activitystreams",
             'actor': undoAnnounceActor,
             'type': 'Undo',
-            'cc': [undoAnnounceActor+'/followers'],
+            'cc': [undoAnnounceActor + '/followers'],
             'to': [unRepeatToStr],
             'object': {
                 'actor': undoAnnounceActor,
-                'cc': [undoAnnounceActor+'/followers'],
+                'cc': [undoAnnounceActor + '/followers'],
                 'object': repeatUrl,
                 'to': [unRepeatToStr],
                 'type': 'Announce'
@@ -6296,6 +6300,23 @@ class PubServer(BaseHTTPRequestHandler):
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('repeat_inactive.png'):
             del self.server.iconsCache['repeat_inactive.png']
+
+        # delete  the announce post
+        if '?unannounce=' in path:
+            announceUrl = path.split('?unannounce=')[1]
+            if '?' in announceUrl:
+                announceUrl = announceUrl.split('?')[0]
+            postFilename = None
+            nickname = getNicknameFromActor(announceUrl)
+            if nickname:
+                if domainFull + '/users/' + nickname + '/' in announceUrl:
+                    postFilename = \
+                        locatePost(baseDir, nickname, domain, announceUrl)
+            if postFilename:
+                deletePost(baseDir, httpPrefix,
+                           nickname, domain, postFilename,
+                           debug, recentPostsCache)
+
         self._postToOutboxThread(newUndoAnnounce)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
@@ -11942,7 +11963,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.i2pDomain,
                                      GETstartTime, GETtimings,
                                      repeatPrivate,
-                                     self.server.debug)
+                                     self.server.debug,
+                                     self.server.recentPostsCache)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,

@@ -33,6 +33,7 @@ from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
 from announce import outboxAnnounce
+from announce import outboxUndoAnnounce
 from follow import outboxUndoFollow
 from roles import outboxDelegate
 from skills import outboxSkills
@@ -483,6 +484,12 @@ def postMessageToOutbox(session, translate: {},
                    baseDir, httpPrefix,
                    postToNickname, domain, port,
                    messageJson, debug)
+    if debug:
+        print('DEBUG: handle any undo announce requests')
+    outboxUndoAnnounce(recentPostsCache,
+                       baseDir, httpPrefix,
+                       postToNickname, domain, port,
+                       messageJson, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
