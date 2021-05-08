@@ -439,5 +439,6 @@
     "enterNotes": "Rhowch nodiadau",
     "These access keys may be used": "Gellir defnyddio'r allweddi mynediad hyn, fel arfer gyda ALT + Shift + Allwedd Allwedd neu ALT +",
     "Show numbers of accounts within instance metadata": "Dangos nifer y cyfrifon o fewn metadata",
-    "Show version number within instance metadata": "Dangos rhif y fersiwn o fewn metadata"
+    "Show version number within instance metadata": "Dangos rhif y fersiwn o fewn metadata",
+    "Joined": "Dyddiad ymuno"
 }

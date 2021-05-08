@@ -439,5 +439,6 @@
     "enterNotes": "ノートを入力してください",
     "These access keys may be used": "これらのアクセスキーは、通常はAlt + Shift +キーまたはAlt +キーを使用して使用できます。",
     "Show numbers of accounts within instance metadata": "インスタンスメタデータ内のアカウント数を表示する",
-    "Show version number within instance metadata": "インスタンスメタデータ内にバージョン番号を表示する"
+    "Show version number within instance metadata": "インスタンスメタデータ内にバージョン番号を表示する",
+    "Joined": "参加日"
 }
