@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import removeIdEnding
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import getStatusNumber
@@ -334,3 +335,53 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
         print('DEBUG: c2s POST undo announce success')
 
     return unAnnounceJson
+
+
+def outboxUndoAnnounce(recentPostsCache: {},
+                       baseDir: str, httpPrefix: str,
+                       nickname: str, domain: str, port: int,
+                       messageJson: {}, debug: bool) -> None:
+    """ When an undo announce is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson['type'] == 'Undo':
+        return
+    if not messageJson.get('object'):
+        return
+    if not isinstance(messageJson['object'], dict):
+        if debug:
+            print('DEBUG: undo like object is not dict')
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: undo like - no type')
+        return
+    if not messageJson['object']['type'] == 'Announce':
+        if debug:
+            print('DEBUG: not a undo announce')
+        return
+    if not messageJson['object'].get('object'):
+        if debug:
+            print('DEBUG: no object in undo announce')
+        return
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: undo announce object is not string')
+        return
+    if debug:
+        print('DEBUG: c2s undo announce request arrived in outbox')
+
+    messageId = removeIdEnding(messageJson['object']['object'])
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s undo announce post not found in inbox or outbox')
+            print(messageId)
+        return True
+    undoAnnounceCollectionEntry(recentPostsCache, baseDir, postFilename,
+                                messageJson['actor'], domain, debug)
+    if debug:
+        print('DEBUG: post undo announce via c2s - ' + postFilename)

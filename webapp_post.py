@@ -388,6 +388,7 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
 def _getAnnounceIconHtml(isAnnounced: bool,
                          postActor: str,
                          nickname: str, domainFull: str,
+                         announceJsonObject: {},
                          postJsonObject: {},
                          isPublicRepeat: bool,
                          isModerationPost: bool,
@@ -413,6 +414,7 @@ def _getAnnounceIconHtml(isAnnounced: bool,
     if not isPublicRepeat:
         announceLink = 'repeatprivate'
     announceTitle = translate['Repeat this post']
+    unannounceLinkStr = ''
 
     if announcedByPerson(isAnnounced,
                          postActor, nickname, domainFull):
@@ -422,11 +424,15 @@ def _getAnnounceIconHtml(isAnnounced: bool,
         if not isPublicRepeat:
             announceLink = 'unrepeatprivate'
         announceTitle = translate['Undo the repeat']
+        if announceJsonObject:
+            unannounceLinkStr = '?unannounce=' + \
+                announceJsonObject['object']['id']
 
+    announceLinkStr = '?' + \
+        announceLink + '=' + postJsonObject['object']['id'] + pageNumberParam
     announceStr = \
         '        <a class="imageAnchor" href="/users/' + \
-        nickname + '?' + announceLink + \
-        '=' + postJsonObject['object']['id'] + pageNumberParam + \
+        nickname + announceLinkStr + unannounceLinkStr + \
         '?actor=' + postJsonObject['actor'] + \
         '?bm=' + timelinePostBookmark + \
         '?tl=' + boxName + '" title="' + announceTitle + '">\n'
@@ -1291,7 +1297,9 @@ def individualPostAsHtml(allowDownloads: bool,
     titleStr = ''
     galleryStr = ''
     isAnnounced = False
+    announceJsonObject = None
     if postJsonObject['type'] == 'Announce':
+        announceJsonObject = postJsonObject.copy()
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
@@ -1414,6 +1422,7 @@ def individualPostAsHtml(allowDownloads: bool,
         _getAnnounceIconHtml(isAnnounced,
                              postActor,
                              nickname, domainFull,
+                             announceJsonObject,
                              postJsonObject,
                              isPublicRepeat,
                              isModerationPost,
