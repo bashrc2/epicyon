@@ -35,6 +35,7 @@ from auth import storeBasicCredentials
 from auth import removePassword
 from roles import setRole
 from media import removeMetaData
+from utils import getStatusNumber
 from utils import getFullDomain
 from utils import validNickname
 from utils import loadJson
@@ -272,12 +273,14 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         personId + '/avatar' + \
         str(randint(10000000000000, 99999999999999)) + '.png'  # nosec
 
+    statusNumber, published = getStatusNumber()
     newPerson = {
         '@context': [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
             getDefaultPersonContext()
         ],
+        'published': published,
         'alsoKnownAs': [],
         'attachment': [],
         'devices': personId + '/collections/devices',
@@ -563,11 +566,17 @@ def personUpgradeActor(baseDir: str, personJson: {},
     if not personJson:
         personJson = loadJson(filename)
 
-    if updateActor:
-        # add a speaker endpoint
-        if not personJson.get('tts'):
-            personJson['tts'] = personJson['id'] + '/speaker'
+    # add a speaker endpoint
+    if not personJson.get('tts'):
+        personJson['tts'] = personJson['id'] + '/speaker'
+        updateActor = True
 
+    if not personJson.get('published'):
+        statusNumber, published = getStatusNumber()
+        personJson['published'] = published
+        updateActor = True
+
+    if updateActor:
         saveJson(personJson, filename)
 
         # also update the actor within the cache
