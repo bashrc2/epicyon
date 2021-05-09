@@ -69,6 +69,12 @@ def _spoofMetaData(imageFilename: str, outputFilename: str,
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
         os.system('exiftool -TagsFromFile ' +
                   spoofFilename + ' ' + outputFilename)  # nosec
+        currTimeAdjusted = \
+            datetime.datetime.utcnow() - \
+            datetime.timedelta(minutes=randint(2, 120))
+        published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
+        os.system('exiftool -time:all="' + published +
+                  '" ' + outputFilename)  # nosec
     else:
         print('ERROR: exiftool is not installed')
         return
