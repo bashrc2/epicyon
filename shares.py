@@ -18,7 +18,7 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
-from media import removeMetaData
+from media import processMetaData
 
 
 def getValidSharedItemID(displayName: str) -> str:
@@ -129,7 +129,8 @@ def addShare(baseDir: str,
             formats = getImageExtensions()
             for ext in formats:
                 if imageFilename.endswith('.' + ext):
-                    removeMetaData(imageFilename, itemIDfile + '.' + ext)
+                    processMetaData(baseDir, nickname, domain,
+                                    imageFilename, itemIDfile + '.' + ext)
                     if moveImage:
                         os.remove(imageFilename)
                     imageUrl = \

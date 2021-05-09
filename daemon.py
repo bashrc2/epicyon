@@ -239,7 +239,7 @@ from content import addHtmlTags
 from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
 from content import extractTextFieldsInPOST
-from media import removeMetaData
+from media import processMetaData
 from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
@@ -4075,7 +4075,8 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(postImageFilename + '.etag')
                     except BaseException:
                         pass
-                removeMetaData(filename, postImageFilename)
+                processMetaData(baseDir, nickname, domain,
+                                filename, postImageFilename)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image or font saved to ' + postImageFilename)
@@ -13053,7 +13054,9 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.gif'):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
-                    removeMetaData(filename, postImageFilename)
+                    processMetaData(self.server.baseDir,
+                                    nickname, self.server.domain,
+                                    filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -13307,6 +13310,7 @@ class PubServer(BaseHTTPRequestHandler):
                             postJsonObject['object'] = \
                                 attachMedia(self.server.baseDir,
                                             self.server.httpPrefix,
+                                            nickname,
                                             self.server.domain,
                                             self.server.port,
                                             postJsonObject['object'],

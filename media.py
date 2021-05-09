@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import datetime
+from random import randint
 from hashlib import sha1
 from auth import createPassword
 from utils import getFullDomain
@@ -37,7 +38,7 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
                                                     replacementDomain)
 
 
-def removeMetaData(imageFilename: str, outputFilename: str) -> None:
+def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
     """
@@ -51,6 +52,68 @@ def removeMetaData(imageFilename: str, outputFilename: str) -> None:
     elif os.path.isfile('/usr/bin/mogrify'):
         print('Removing metadata from ' + outputFilename + ' using mogrify')
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
+
+
+def _spoofMetaData(imageFilename: str, outputFilename: str,
+                   spoofFilename: str) -> None:
+    """Use reference images to spoof the metadata
+    """
+    copyfile(imageFilename, outputFilename)
+    if not os.path.isfile(outputFilename):
+        print('ERROR: unable to spoof metadata from ' + imageFilename)
+        return
+    if not os.path.isfile(spoofFilename):
+        print('ERROR: No spoof reference image ' + spoofFilename)
+        return
+    if os.path.isfile('/usr/bin/exiftool'):
+        print('Spoofing metadata in ' + outputFilename + ' using exiftool')
+        os.system('exiftool -TagsFromFile ' +
+                  spoofFilename + ' ' + outputFilename)  # nosec
+    else:
+        print('ERROR: exiftool is not installed')
+        return
+
+
+def processMetaData(baseDir: str, nickname: str, domain: str,
+                    imageFilename: str, outputFilename: str) -> None:
+    """Handles image metadata. This tries to spoof the metadata
+    if possible, but otherwise just removes it
+    """
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    spoofImagesDir = accountDir + '/ref/images'
+    if os.path.isdir(spoofImagesDir):
+        imageTypes = getImageExtensions()
+        # get the format of the target image
+        ext = None
+        for mType in imageTypes:
+            if outputFilename.endswith('.' + mType):
+                ext = mType
+                break
+        if ext:
+            spoofList = []
+            for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+                for f in files:
+                    filename = os.path.join(spoofImagesDir, f)
+                    # what is the format of this file?
+                    currExt = None
+                    for mType in imageTypes:
+                        if filename.endswith('.' + mType):
+                            currExt = mType
+                        break
+                    # if this the same format as the target?
+                    if currExt:
+                        if currExt == ext:
+                            spoofList.append(filename)
+                break
+            if spoofList:
+                # choose a reference at random
+                index = randint(0, len(spoofList))
+                spoofFilename = spoofList[index]
+                _spoofMetaData(imageFilename, outputFilename,
+                               spoofFilename)
+                return
+    # if we can't spoof then just remove metadata
+    _removeMetaData(imageFilename, outputFilename)
 
 
 def _isMedia(imageFilename: str) -> bool:
@@ -131,7 +194,8 @@ def _updateEtag(mediaFilename: str) -> None:
         pass
 
 
-def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
+def attachMedia(baseDir: str, httpPrefix: str,
+                nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str) -> {}:
     """Attaches media to a json object post
@@ -179,7 +243,8 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
 
     if baseDir:
         if mediaType.startswith('image/'):
-            removeMetaData(imageFilename, mediaFilename)
+            processMetaData(baseDir, nickname, domain,
+                            imageFilename, mediaFilename)
         else:
             copyfile(imageFilename, mediaFilename)
         _updateEtag(mediaFilename)

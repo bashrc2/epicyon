@@ -1059,6 +1059,10 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
+        newPostUrl = \
+            httpPrefix + '://' + domain + '/@' + nickname + '/'+statusNumber
+        newPostAttributedTo = \
+            httpPrefix + '://' + domain + '/users/' + nickname
         newPost = {
             '@context': postContext,
             'id': newPostId + '/activity',
@@ -1073,8 +1077,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 'summary': summary,
                 'inReplyTo': inReplyTo,
                 'published': published,
-                'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
-                'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
+                'url': newPostUrl,
+                'attributedTo': newPostAttributedTo,
                 'to': toRecipients,
                 'cc': toCC,
                 'sensitive': sensitive,
@@ -1101,7 +1105,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         }
         if attachImageFilename:
             newPost['object'] = \
-                attachMedia(baseDir, httpPrefix, domain, port,
+                attachMedia(baseDir, httpPrefix, nickname, domain, port,
                             newPost['object'], attachImageFilename,
                             mediaType, imageDescription)
         _appendEventFields(newPost['object'], eventUUID, eventStatus,
@@ -1115,6 +1119,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
+        newPostUrl = \
+            httpPrefix + '://' + domain + '/@' + nickname+'/' + statusNumber
         newPost = {
             "@context": postContext,
             'id': newPostId,
@@ -1122,8 +1128,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             'summary': summary,
             'inReplyTo': inReplyTo,
             'published': published,
-            'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
-            'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
+            'url': newPostUrl,
+            'attributedTo': httpPrefix + '://' + domain + '/users/' + nickname,
             'to': toRecipients,
             'cc': toCC,
             'sensitive': sensitive,
@@ -1149,7 +1155,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         }
         if attachImageFilename:
             newPost = \
-                attachMedia(baseDir, httpPrefix, domain, port,
+                attachMedia(baseDir, httpPrefix, nickname, domain, port,
                             newPost, attachImageFilename,
                             mediaType, imageDescription)
         _appendEventFields(newPost, eventUUID, eventStatus,

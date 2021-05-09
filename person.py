@@ -34,7 +34,7 @@ from posts import createModeration
 from auth import storeBasicCredentials
 from auth import removePassword
 from roles import setRole
-from media import removeMetaData
+from media import processMetaData
 from utils import getStatusNumber
 from utils import getFullDomain
 from utils import validNickname
@@ -135,7 +135,8 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
             '/usr/bin/convert ' + imageFilename + ' -size ' + \
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
-        removeMetaData(profileFilename, profileFilename)
+        processMetaData(baseDir, nickname, domain,
+                        profileFilename, profileFilename)
         return True
     return False
 
