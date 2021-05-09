@@ -440,5 +440,6 @@
     "These access keys may be used": "Diese Zugriffstasten können verwendet werden, typischerweise mit ALT + SHIFT + -Taste oder ALT + -Taste",
     "Show numbers of accounts within instance metadata": "Anzahl der Konten in Instanzmetadaten anzeigen",
     "Show version number within instance metadata": "Versionsnummer in Instanzmetadaten anzeigen",
-    "Joined": "Verbundenes Datum"
+    "Joined": "Verbundenes Datum",
+    "City for spoofed GPS image metadata": "Stadt für gefälschte GPS-Bildmetadaten"
 }

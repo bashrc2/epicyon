@@ -436,5 +436,6 @@
     "These access keys may be used": "These access keys may be used, typically with ALT + SHIFT + key or ALT + key",
     "Show numbers of accounts within instance metadata": "Show numbers of accounts within instance metadata",
     "Show version number within instance metadata": "Show version number within instance metadata",
-    "Joined": "Joined"
+    "Joined": "Joined",
+    "City for spoofed GPS image metadata": "City for spoofed GPS image metadata"
 }

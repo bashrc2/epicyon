@@ -440,5 +440,6 @@
     "These access keys may be used": "Questi tasti di accesso possono essere utilizzati, in genere con tasto ALT + MAIUSC + o ALT + Key",
     "Show numbers of accounts within instance metadata": "Mostra il numero di account all'interno dei metadati dell'istanza",
     "Show version number within instance metadata": "Mostra il numero di versione nei metadati dell'istanza",
-    "Joined": "Unito"
+    "Joined": "Unito",
+    "City for spoofed GPS image metadata": "Città per metadati di immagini GPS falsificate"
 }

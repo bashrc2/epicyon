@@ -312,6 +312,18 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _getSpoofedCity(self, baseDir: str, nickname: str, domain: str) -> str:
+        """Returns the name of the city to use as a GPS spoofing location for
+        image metadata
+        """
+        city = self.server.city
+        cityFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/city.txt'
+        if os.path.isfile(cityFilename):
+            with open(cityFilename, 'r') as fp:
+                city = fp.read().replace('\n', '')
+        return city
+
     def _getInstalceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
         """
@@ -420,6 +432,9 @@ class PubServer(BaseHTTPRequestHandler):
         eventDate = None
         eventTime = None
         location = None
+        city = self._getSpoofedCity(self.server.baseDir,
+                                    nickname, self.server.domain)
+
         messageJson = \
             createPublicPost(self.server.baseDir,
                              nickname,
@@ -428,7 +443,7 @@ class PubServer(BaseHTTPRequestHandler):
                              answer, False, False, False,
                              commentsEnabled,
                              attachImageFilename, mediaType,
-                             imageDescription, self.server.city,
+                             imageDescription, city,
                              inReplyTo,
                              inReplyToAtomUri,
                              subject,
@@ -1144,9 +1159,13 @@ class PubServer(BaseHTTPRequestHandler):
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
+        city = self.server.city
+
         if postToNickname:
             print('Posting to nickname ' + postToNickname)
             self.postToNickname = postToNickname
+            city = self._getSpoofedCity(self.server.baseDir,
+                                        postToNickname, self.server.domain)
 
         return postMessageToOutbox(self.server.session,
                                    self.server.translate,
@@ -1171,7 +1190,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.YTReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.allowLocalNetworkAccess,
-                                   self.server.city)
+                                   city)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -4076,8 +4095,11 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(postImageFilename + '.etag')
                     except BaseException:
                         pass
+
+                city = self._getSpoofedCity(baseDir, nickname, domain)
+
                 processMetaData(baseDir, nickname,
-                                filename, postImageFilename, self.server.city)
+                                filename, postImageFilename, city)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image or font saved to ' + postImageFilename)
@@ -4228,6 +4250,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                           nickname,
                                                           pwd)
 
+                    # change city
+                    if fields.get('cityDropdown'):
+                        cityFilename = baseDir + '/accounts/' + \
+                            nickname + '@' + domain + '/city.txt'
+                        with open(cityFilename, 'w+') as fp:
+                            fp.write(fields['cityDropdown'])
+
                     # change displayed name
                     if fields.get('displayNickname'):
                         if fields['displayNickname'] != actorJson['name']:
@@ -4246,118 +4275,175 @@ class PubServer(BaseHTTPRequestHandler):
                         if checkNameAndBio:
                             redirectPath = 'previewAvatar'
 
-                    # change media instance status
-                    if fields.get('mediaInstance'):
-                        self.server.mediaInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['mediaInstance'] == 'on':
-                            self.server.mediaInstance = True
-                            self.server.blogsInstance = False
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'tlmedia'
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.mediaInstance:
+                    if nickname == adminNickname:
+                        # change media instance status
+                        if fields.get('mediaInstance'):
                             self.server.mediaInstance = False
                             self.server.defaultTimeline = 'inbox'
+                            if fields['mediaInstance'] == 'on':
+                                self.server.mediaInstance = True
+                                self.server.blogsInstance = False
+                                self.server.newsInstance = False
+                                self.server.defaultTimeline = 'tlmedia'
                             setConfigParam(baseDir,
                                            "mediaInstance",
                                            self.server.mediaInstance)
-
-                    # is this a news theme?
-                    if isNewsThemeName(self.server.baseDir,
-                                       self.server.themeName):
-                        fields['newsInstance'] = 'on'
-
-                    # change news instance status
-                    if fields.get('newsInstance'):
-                        self.server.newsInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['newsInstance'] == 'on':
-                            self.server.newsInstance = True
-                            self.server.blogsInstance = False
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'tlfeatures'
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.newsInstance:
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "newsInstance",
-                                           self.server.mediaInstance)
-
-                    # change blog instance status
-                    if fields.get('blogsInstance'):
-                        self.server.blogsInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['blogsInstance'] == 'on':
-                            self.server.blogsInstance = True
-                            self.server.mediaInstance = False
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'tlblogs'
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.blogsInstance:
-                            self.server.blogsInstance = False
-                            self.server.defaultTimeline = 'inbox'
                             setConfigParam(baseDir,
                                            "blogsInstance",
                                            self.server.blogsInstance)
+                            setConfigParam(baseDir,
+                                           "newsInstance",
+                                           self.server.newsInstance)
+                        else:
+                            if self.server.mediaInstance:
+                                self.server.mediaInstance = False
+                                self.server.defaultTimeline = 'inbox'
+                                setConfigParam(baseDir,
+                                               "mediaInstance",
+                                               self.server.mediaInstance)
 
-                    # change theme
-                    if fields.get('themeDropdown'):
-                        self.server.themeName = fields['themeDropdown']
-                        setTheme(baseDir, self.server.themeName, domain,
-                                 allowLocalNetworkAccess, systemLanguage)
-                        self.server.textModeBanner = \
-                            getTextModeBanner(self.server.baseDir)
-                        self.server.iconsCache = {}
-                        self.server.fontsCache = {}
-                        self.server.showPublishAsIcon = \
-                            getConfigParam(self.server.baseDir,
-                                           'showPublishAsIcon')
-                        self.server.fullWidthTimelineButtonHeader = \
-                            getConfigParam(self.server.baseDir,
-                                           'fullWidthTimelineButtonHeader')
-                        self.server.iconsAsButtons = \
-                            getConfigParam(self.server.baseDir,
-                                           'iconsAsButtons')
-                        self.server.rssIconAtTop = \
-                            getConfigParam(self.server.baseDir,
-                                           'rssIconAtTop')
-                        self.server.publishButtonAtTop = \
-                            getConfigParam(self.server.baseDir,
-                                           'publishButtonAtTop')
-                        setNewsAvatar(baseDir,
-                                      fields['themeDropdown'],
-                                      httpPrefix,
-                                      domain,
-                                      domainFull)
+                        # is this a news theme?
+                        if isNewsThemeName(self.server.baseDir,
+                                           self.server.themeName):
+                            fields['newsInstance'] = 'on'
+
+                        # change news instance status
+                        if fields.get('newsInstance'):
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            if fields['newsInstance'] == 'on':
+                                self.server.newsInstance = True
+                                self.server.blogsInstance = False
+                                self.server.mediaInstance = False
+                                self.server.defaultTimeline = 'tlfeatures'
+                            setConfigParam(baseDir,
+                                           "mediaInstance",
+                                           self.server.mediaInstance)
+                            setConfigParam(baseDir,
+                                           "blogsInstance",
+                                           self.server.blogsInstance)
+                            setConfigParam(baseDir,
+                                           "newsInstance",
+                                           self.server.newsInstance)
+                        else:
+                            if self.server.newsInstance:
+                                self.server.newsInstance = False
+                                self.server.defaultTimeline = 'inbox'
+                                setConfigParam(baseDir,
+                                               "newsInstance",
+                                               self.server.mediaInstance)
+
+                        # change blog instance status
+                        if fields.get('blogsInstance'):
+                            self.server.blogsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            if fields['blogsInstance'] == 'on':
+                                self.server.blogsInstance = True
+                                self.server.mediaInstance = False
+                                self.server.newsInstance = False
+                                self.server.defaultTimeline = 'tlblogs'
+                            setConfigParam(baseDir,
+                                           "blogsInstance",
+                                           self.server.blogsInstance)
+                            setConfigParam(baseDir,
+                                           "mediaInstance",
+                                           self.server.mediaInstance)
+                            setConfigParam(baseDir,
+                                           "newsInstance",
+                                           self.server.newsInstance)
+                        else:
+                            if self.server.blogsInstance:
+                                self.server.blogsInstance = False
+                                self.server.defaultTimeline = 'inbox'
+                                setConfigParam(baseDir,
+                                               "blogsInstance",
+                                               self.server.blogsInstance)
+
+                        # change theme
+                        if fields.get('themeDropdown'):
+                            self.server.themeName = fields['themeDropdown']
+                            setTheme(baseDir, self.server.themeName, domain,
+                                     allowLocalNetworkAccess, systemLanguage)
+                            self.server.textModeBanner = \
+                                getTextModeBanner(self.server.baseDir)
+                            self.server.iconsCache = {}
+                            self.server.fontsCache = {}
+                            self.server.showPublishAsIcon = \
+                                getConfigParam(self.server.baseDir,
+                                               'showPublishAsIcon')
+                            self.server.fullWidthTimelineButtonHeader = \
+                                getConfigParam(self.server.baseDir,
+                                               'fullWidthTimelineButtonHeader')
+                            self.server.iconsAsButtons = \
+                                getConfigParam(self.server.baseDir,
+                                               'iconsAsButtons')
+                            self.server.rssIconAtTop = \
+                                getConfigParam(self.server.baseDir,
+                                               'rssIconAtTop')
+                            self.server.publishButtonAtTop = \
+                                getConfigParam(self.server.baseDir,
+                                               'publishButtonAtTop')
+                            setNewsAvatar(baseDir,
+                                          fields['themeDropdown'],
+                                          httpPrefix,
+                                          domain,
+                                          domainFull)
+
+                        # change instance title
+                        if fields.get('instanceTitle'):
+                            currInstanceTitle = \
+                                getConfigParam(baseDir, 'instanceTitle')
+                            if fields['instanceTitle'] != currInstanceTitle:
+                                setConfigParam(baseDir, 'instanceTitle',
+                                               fields['instanceTitle'])
+
+                        # change YouTube alternate domain
+                        if fields.get('ytdomain'):
+                            currYTDomain = self.server.YTReplacementDomain
+                            if fields['ytdomain'] != currYTDomain:
+                                newYTDomain = fields['ytdomain']
+                                if '://' in newYTDomain:
+                                    newYTDomain = newYTDomain.split('://')[1]
+                                if '/' in newYTDomain:
+                                    newYTDomain = newYTDomain.split('/')[0]
+                                if '.' in newYTDomain:
+                                    setConfigParam(baseDir,
+                                                   'youtubedomain',
+                                                   newYTDomain)
+                                    self.server.YTReplacementDomain = \
+                                        newYTDomain
+                        else:
+                            setConfigParam(baseDir,
+                                           'youtubedomain', '')
+                            self.server.YTReplacementDomain = None
+
+                        # change instance description
+                        currInstanceDescriptionShort = \
+                            getConfigParam(baseDir,
+                                           'instanceDescriptionShort')
+                        if fields.get('instanceDescriptionShort'):
+                            if fields['instanceDescriptionShort'] != \
+                               currInstanceDescriptionShort:
+                                iDesc = fields['instanceDescriptionShort']
+                                setConfigParam(baseDir,
+                                               'instanceDescriptionShort',
+                                               iDesc)
+                        else:
+                            if currInstanceDescriptionShort:
+                                setConfigParam(baseDir,
+                                               'instanceDescriptionShort', '')
+                        currInstanceDescription = \
+                            getConfigParam(baseDir, 'instanceDescription')
+                        if fields.get('instanceDescription'):
+                            if fields['instanceDescription'] != \
+                               currInstanceDescription:
+                                setConfigParam(baseDir,
+                                               'instanceDescription',
+                                               fields['instanceDescription'])
+                        else:
+                            if currInstanceDescription:
+                                setConfigParam(baseDir,
+                                               'instanceDescription', '')
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actorJson)
@@ -4537,62 +4623,6 @@ class PubServer(BaseHTTPRequestHandler):
                         if alsoKnownAs:
                             del actorJson['alsoKnownAs']
                             actorChanged = True
-
-                    # change instance title
-                    if fields.get('instanceTitle'):
-                        currInstanceTitle = \
-                            getConfigParam(baseDir, 'instanceTitle')
-                        if fields['instanceTitle'] != currInstanceTitle:
-                            setConfigParam(baseDir, 'instanceTitle',
-                                           fields['instanceTitle'])
-
-                    # change YouTube alternate domain
-                    if fields.get('ytdomain'):
-                        currYTDomain = self.server.YTReplacementDomain
-                        if fields['ytdomain'] != currYTDomain:
-                            newYTDomain = fields['ytdomain']
-                            if '://' in newYTDomain:
-                                newYTDomain = newYTDomain.split('://')[1]
-                            if '/' in newYTDomain:
-                                newYTDomain = newYTDomain.split('/')[0]
-                            if '.' in newYTDomain:
-                                setConfigParam(baseDir,
-                                               'youtubedomain',
-                                               newYTDomain)
-                                self.server.YTReplacementDomain = \
-                                    newYTDomain
-                    else:
-                        setConfigParam(baseDir,
-                                       'youtubedomain', '')
-                        self.server.YTReplacementDomain = None
-
-                    # change instance description
-                    currInstanceDescriptionShort = \
-                        getConfigParam(baseDir,
-                                       'instanceDescriptionShort')
-                    if fields.get('instanceDescriptionShort'):
-                        if fields['instanceDescriptionShort'] != \
-                           currInstanceDescriptionShort:
-                            iDesc = fields['instanceDescriptionShort']
-                            setConfigParam(baseDir,
-                                           'instanceDescriptionShort',
-                                           iDesc)
-                    else:
-                        if currInstanceDescriptionShort:
-                            setConfigParam(baseDir,
-                                           'instanceDescriptionShort', '')
-                    currInstanceDescription = \
-                        getConfigParam(baseDir, 'instanceDescription')
-                    if fields.get('instanceDescription'):
-                        if fields['instanceDescription'] != \
-                           currInstanceDescription:
-                            setConfigParam(baseDir,
-                                           'instanceDescription',
-                                           fields['instanceDescription'])
-                    else:
-                        if currInstanceDescription:
-                            setConfigParam(baseDir,
-                                           'instanceDescription', '')
 
                     # change user bio
                     if fields.get('bio'):
@@ -10295,6 +10325,11 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' in path and path.endswith('/editprofile'):
             peertubeInstances = self.server.peertubeInstances
+            nickname = getNicknameFromActor(path)
+            if nickname:
+                city = self._getSpoofedCity(baseDir, nickname, domain)
+            else:
+                city = self.server.city
             msg = htmlEditProfile(self.server.cssCache,
                                   translate,
                                   baseDir,
@@ -10304,7 +10339,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.defaultTimeline,
                                   self.server.themeName,
                                   peertubeInstances,
-                                  self.server.textModeBanner).encode('utf-8')
+                                  self.server.textModeBanner,
+                                  city).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13055,9 +13091,11 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.gif'):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
+                    city = self._getSpoofedCity(self.server.baseDir,
+                                                nickname, self.server.domain)
                     processMetaData(self.server.baseDir,
                                     nickname, filename, postImageFilename,
-                                    self.server.city)
+                                    city)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -13162,6 +13200,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname, self.server.domain)
                         return 1
 
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname, self.server.domain)
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
@@ -13172,7 +13212,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
-                                     self.server.city,
+                                     city,
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
@@ -13309,6 +13349,9 @@ class PubServer(BaseHTTPRequestHandler):
                             imgDescription = fields['imageDescription']
 
                         if filename:
+                            city = self._getSpoofedCity(self.server.baseDir,
+                                                        nickname,
+                                                        self.server.domain)
                             postJsonObject['object'] = \
                                 attachMedia(self.server.baseDir,
                                             self.server.httpPrefix,
@@ -13319,7 +13362,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             filename,
                                             attachmentMediaType,
                                             imgDescription,
-                                            self.server.city)
+                                            city)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain)
@@ -13341,6 +13384,9 @@ class PubServer(BaseHTTPRequestHandler):
                           str(fields['postUrl']))
                 return -1
             elif postType == 'newunlisted':
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 messageJson = \
                     createUnlistedPost(self.server.baseDir,
                                        nickname,
@@ -13350,7 +13396,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, False, False, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
-                                       self.server.city,
+                                       city,
                                        fields['replyTo'],
                                        fields['replyTo'],
                                        fields['subject'],
@@ -13372,6 +13418,9 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newfollowers':
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 messageJson = \
                     createFollowersOnlyPost(self.server.baseDir,
                                             nickname,
@@ -13383,7 +13432,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
-                                            self.server.city,
+                                            city,
                                             fields['replyTo'],
                                             fields['replyTo'],
                                             fields['subject'],
@@ -13425,6 +13474,9 @@ class PubServer(BaseHTTPRequestHandler):
                     maximumAttendeeCapacity = \
                         int(fields['maximumAttendeeCapacity'])
 
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 messageJson = \
                     createEventPost(self.server.baseDir,
                                     nickname,
@@ -13436,7 +13488,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     False, False, commentsEnabled,
                                     filename, attachmentMediaType,
                                     fields['imageDescription'],
-                                    self.server.city,
+                                    city,
                                     fields['subject'],
                                     fields['schedulePost'],
                                     fields['eventDate'],
@@ -13462,6 +13514,9 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson = None
                 print('A DM was posted')
                 if '@' in mentionsStr:
+                    city = self._getSpoofedCity(self.server.baseDir,
+                                                nickname,
+                                                self.server.domain)
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
@@ -13474,7 +13529,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
-                                                self.server.city,
+                                                city,
                                                 fields['replyTo'],
                                                 fields['replyTo'],
                                                 fields['subject'],
@@ -13503,6 +13558,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('A reminder was posted for ' + handle)
                 if '@' + handle not in mentionsStr:
                     mentionsStr = '@' + handle + ' ' + mentionsStr
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
@@ -13513,7 +13571,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             True, False, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
-                                            self.server.city,
+                                            city,
                                             None, None,
                                             fields['subject'],
                                             True, fields['schedulePost'],
@@ -13537,6 +13595,9 @@ class PubServer(BaseHTTPRequestHandler):
                 # and not accounts being reported we disable any
                 # included fediverse addresses by replacing '@' with '-at-'
                 fields['message'] = fields['message'].replace('@', '-at-')
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 messageJson = \
                     createReportPost(self.server.baseDir,
                                      nickname,
@@ -13546,7 +13607,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      True, False, False, True,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
-                                     self.server.city,
+                                     city,
                                      self.server.debug, fields['subject'])
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
@@ -13566,6 +13627,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                str(questionCtr)])
                 if not qOptions:
                     return -1
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
                                        nickname,
@@ -13577,7 +13641,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
-                                       self.server.city,
+                                       city,
                                        fields['subject'],
                                        int(fields['duration']))
                 if messageJson:
@@ -13602,6 +13666,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if durationStr:
                     if ' ' not in durationStr:
                         durationStr = durationStr + ' days'
+                city = self._getSpoofedCity(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain)
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
@@ -13614,7 +13681,7 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['location'],
                          durationStr,
                          self.server.debug,
-                         self.server.city)
+                         city)
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)
@@ -14837,10 +14904,6 @@ def runDaemon(city: str,
 
     # spoofed city for gps location misdirection
     httpd.city = city
-    cityFilename = baseDir + '/accounts/city.txt'
-    if os.path.isfile(cityFilename):
-        with open(cityFilename, 'r') as fp:
-            httpd.city = fp.read().replace('\n', '')
 
     # For moderated newswire feeds this is the amount of time allowed
     # for voting after the post arrives
