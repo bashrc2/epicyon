@@ -428,7 +428,7 @@ class PubServer(BaseHTTPRequestHandler):
                              answer, False, False, False,
                              commentsEnabled,
                              attachImageFilename, mediaType,
-                             imageDescription,
+                             imageDescription, self.server.city,
                              inReplyTo,
                              inReplyToAtomUri,
                              subject,
@@ -1170,7 +1170,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug,
                                    self.server.YTReplacementDomain,
                                    self.server.showPublishedDateOnly,
-                                   self.server.allowLocalNetworkAccess)
+                                   self.server.allowLocalNetworkAccess,
+                                   self.server.city)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -4075,8 +4076,8 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(postImageFilename + '.etag')
                     except BaseException:
                         pass
-                processMetaData(baseDir, nickname, domain,
-                                filename, postImageFilename)
+                processMetaData(baseDir, nickname,
+                                filename, postImageFilename, self.server.city)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image or font saved to ' + postImageFilename)
@@ -13055,8 +13056,8 @@ class PubServer(BaseHTTPRequestHandler):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
                     processMetaData(self.server.baseDir,
-                                    nickname, self.server.domain,
-                                    filename, postImageFilename)
+                                    nickname, filename, postImageFilename,
+                                    self.server.city)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -13171,6 +13172,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
+                                     self.server.city,
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
@@ -13316,7 +13318,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             postJsonObject['object'],
                                             filename,
                                             attachmentMediaType,
-                                            imgDescription)
+                                            imgDescription,
+                                            self.server.city)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain)
@@ -13347,6 +13350,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, False, False, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
+                                       self.server.city,
                                        fields['replyTo'],
                                        fields['replyTo'],
                                        fields['subject'],
@@ -13379,6 +13383,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
+                                            self.server.city,
                                             fields['replyTo'],
                                             fields['replyTo'],
                                             fields['subject'],
@@ -13431,6 +13436,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     False, False, commentsEnabled,
                                     filename, attachmentMediaType,
                                     fields['imageDescription'],
+                                    self.server.city,
                                     fields['subject'],
                                     fields['schedulePost'],
                                     fields['eventDate'],
@@ -13468,6 +13474,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
+                                                self.server.city,
                                                 fields['replyTo'],
                                                 fields['replyTo'],
                                                 fields['subject'],
@@ -13506,6 +13513,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             True, False, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
+                                            self.server.city,
                                             None, None,
                                             fields['subject'],
                                             True, fields['schedulePost'],
@@ -13538,6 +13546,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      True, False, False, True,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
+                                     self.server.city,
                                      self.server.debug, fields['subject'])
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
@@ -13568,6 +13577,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
+                                       self.server.city,
                                        fields['subject'],
                                        int(fields['duration']))
                 if messageJson:
@@ -13603,7 +13613,8 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['category'],
                          fields['location'],
                          durationStr,
-                         self.server.debug)
+                         self.server.debug,
+                         self.server.city)
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)
@@ -14665,7 +14676,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(showNodeInfoAccounts: bool,
+def runDaemon(city: str,
+              showNodeInfoAccounts: bool,
               showNodeInfoVersion: bool,
               brochMode: bool,
               verifyAllSignatures: bool,
@@ -14822,6 +14834,13 @@ def runDaemon(showNodeInfoAccounts: bool,
         if not httpd.translate:
             print('ERROR: no translations were loaded')
             sys.exit()
+
+    # spoofed city for gps location misdirection
+    httpd.city = city
+    cityFilename = baseDir + '/accounts/city.txt'
+    if os.path.isfile(cityFilename):
+        with open(cityFilename, 'r') as fp:
+            httpd.city = fp.read().replace('\n', '')
 
     # For moderated newswire feeds this is the amount of time allowed
     # for voting after the post arrives

@@ -54,75 +54,104 @@ def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
-def _spoofMetaData(nickname: str,
-                   imageFilename: str, outputFilename: str,
-                   spoofFilename: str) -> None:
+def spoofGeolocation(baseDir: str,
+                     city: str, currTime,
+                     citiesList: []) -> (float, float, str, str):
+    """Given a city and the current time spoofs the location
+    for an image
+    returns latitude, longitude, N/S, E/W
+    """
+    locationsFilename = baseDir + '/custom_locations.txt'
+    if not os.path.isfile(locationsFilename):
+        locationsFilename = baseDir + '/locations.txt'
+    variance = 0.2
+    default_latitude = 51.5069
+    default_longitude = -0.1114
+    default_latdirection = 'N'
+    default_longdirection = 'E'
+
+    if citiesList:
+        cities = citiesList
+    else:
+        if not os.path.isfile(locationsFilename):
+            return (default_latitude, default_longitude,
+                    default_latdirection, default_longdirection)
+        cities = []
+        with open(locationsFilename, "r") as f:
+            cities = f.readlines()
+
+    city = city.lower()
+    for cityName in cities:
+        if city in cityName.lower():
+            latitude = cityName.split(':')[1]
+            longitude = cityName.split(':')[2]
+            latdirection = 'N'
+            longdirection = 'E'
+            if 'S' in latitude:
+                latdirection = 'S'
+                latitude = latitude.replace('S', '')
+            if 'W' in longitude:
+                longdirection = 'W'
+                longitude = longitude.replace('W', '')
+            # add some randomness
+            fraction = randint(0, 100000) / 100000
+            fraction = fraction * fraction
+            latitude = float(latitude) + \
+                (fraction * variance) - (variance / 2.0)
+            latitude = int(latitude * 10000) / 10000.0
+            fraction = randint(0, 100000) / 100000
+            fraction = fraction * fraction
+            longitude = float(longitude) + \
+                (fraction * variance) - (variance / 2.0)
+            longitude = int(longitude * 10000) / 10000.0
+            return latitude, longitude, latdirection, longdirection
+
+    return (default_latitude, default_longitude,
+            default_latdirection, default_longdirection)
+
+
+def _spoofMetaData(baseDir: str, nickname: str,
+                   outputFilename: str, spoofCity: str) -> None:
     """Use reference images to spoof the metadata
     """
-    copyfile(imageFilename, outputFilename)
     if not os.path.isfile(outputFilename):
-        print('ERROR: unable to spoof metadata from ' + imageFilename)
-        return
-    if not os.path.isfile(spoofFilename):
-        print('ERROR: No spoof reference image ' + spoofFilename)
+        print('ERROR: unable to spoof metadata within ' + outputFilename)
         return
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
-        os.system('exiftool -TagsFromFile ' +
-                  spoofFilename + ' ' + outputFilename)  # nosec
         currTimeAdjusted = \
             datetime.datetime.utcnow() - \
             datetime.timedelta(minutes=randint(2, 120))
         published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
+        (latitude, longitude, latitudeRef, longitudeRef) = \
+            spoofGeolocation(baseDir, spoofCity, currTimeAdjusted, None)
         os.system('exiftool -artist="' + nickname + '" ' +
-                  '-time:all="' + published + '" ' +
+                  '-DateTimeOriginal="' + published + '" ' +
+                  '-FileModifyDate="' + published + '" ' +
+                  '-CreateDate="' + published + '" ' +
+                  '-GPSLongitudeRef=' + longitudeRef + ' ' +
+                  '-GPSAltitude=0 ' +
+                  '-GPSLongitude=' + str(longitude) + ' ' +
+                  '-GPSLatitudeRef=' + latitudeRef + ' ' +
+                  '-GPSLatitude=' + str(latitude) + ' ' +
+                  '-Comment="" ' +
                   outputFilename)  # nosec
     else:
         print('ERROR: exiftool is not installed')
         return
 
 
-def processMetaData(baseDir: str, nickname: str, domain: str,
-                    imageFilename: str, outputFilename: str) -> None:
+def processMetaData(baseDir: str, nickname: str,
+                    imageFilename: str, outputFilename: str,
+                    city: str) -> None:
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
-    spoofImagesDir = accountDir + '/ref/images'
-    if os.path.isdir(spoofImagesDir):
-        imageTypes = getImageExtensions()
-        # get the format of the target image
-        ext = None
-        for mType in imageTypes:
-            if outputFilename.endswith('.' + mType):
-                ext = mType
-                break
-        if ext:
-            spoofList = []
-            for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-                for f in files:
-                    filename = os.path.join(spoofImagesDir, f)
-                    # what is the format of this file?
-                    currExt = None
-                    for mType in imageTypes:
-                        if filename.endswith('.' + mType):
-                            currExt = mType
-                        break
-                    # if this the same format as the target?
-                    if currExt:
-                        if currExt == ext:
-                            spoofList.append(filename)
-                break
-            if spoofList:
-                # choose a reference at random
-                index = randint(0, len(spoofList))
-                spoofFilename = spoofList[index]
-                _spoofMetaData(nickname,
-                               imageFilename, outputFilename,
-                               spoofFilename)
-                return
-    # if we can't spoof then just remove metadata
+    # first remove the metadata
     _removeMetaData(imageFilename, outputFilename)
+
+    # now add some spoofed data to misdirect surveillance capitalists
+    _spoofMetaData(baseDir, nickname, outputFilename, city)
 
 
 def _isMedia(imageFilename: str) -> bool:
@@ -206,7 +235,8 @@ def _updateEtag(mediaFilename: str) -> None:
 def attachMedia(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
-                mediaType: str, description: str) -> {}:
+                mediaType: str, description: str,
+                city: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -252,8 +282,8 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     if baseDir:
         if mediaType.startswith('image/'):
-            processMetaData(baseDir, nickname, domain,
-                            imageFilename, mediaFilename)
+            processMetaData(baseDir, nickname,
+                            imageFilename, mediaFilename, city)
         else:
             copyfile(imageFilename, mediaFilename)
         _updateEtag(mediaFilename)

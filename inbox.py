@@ -2183,6 +2183,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     attachImageFilename = None
     mediaType = None
     imageDescription = ''
+    city = 'London'
     inReplyTo = removeIdEnding(senderPostId)
     inReplyToAtomUri = None
     schedulePost = False
@@ -2195,7 +2196,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                                 saveToFile, clientToServer,
                                 commentsEnabled,
                                 attachImageFilename, mediaType,
-                                imageDescription,
+                                imageDescription, city,
                                 inReplyTo, inReplyToAtomUri,
                                 subject, debug, schedulePost,
                                 eventDate, eventTime, location)

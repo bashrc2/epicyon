@@ -464,6 +464,9 @@ parser.add_argument('--attach', dest='attach', type=str,
                     default=None, help='File to attach to a post')
 parser.add_argument('--imagedescription', dest='imageDescription', type=str,
                     default=None, help='Description of an attached image')
+parser.add_argument('--city', dest='city', type=str,
+                    default='London',
+                    help='Spoofed city for image metadata misdirection')
 parser.add_argument('--warning', '--warn', '--cwsubject', '--subject',
                     dest='subject', type=str, default=None,
                     help='Subject of content warning')
@@ -1110,6 +1113,7 @@ if args.message:
     followersOnly = args.followersonly
     clientToServer = args.client
     attachedImageDescription = args.imageDescription
+    city = 'London'
     sendThreads = []
     postLog = []
     personCache = {}
@@ -1130,7 +1134,7 @@ if args.message:
                       toNickname, toDomain, toPort, ccUrl,
                       httpPrefix, sendMessage, followersOnly,
                       args.commentsEnabled, attach, mediaType,
-                      attachedImageDescription,
+                      attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
                       args.debug, replyTo, replyTo, subject)
     for i in range(10):
@@ -1959,8 +1963,9 @@ if args.avatar:
     if not args.nickname:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
+    city = 'London'
     if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
-                       port, args.avatar, 'avatar', '128x128'):
+                       port, args.avatar, 'avatar', '128x128', city):
         print('Avatar added for ' + args.nickname)
     else:
         print('Avatar was not added for ' + args.nickname)
@@ -1973,8 +1978,10 @@ if args.backgroundImage:
     if not args.nickname:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
+    city = 'London'
     if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
-                       port, args.backgroundImage, 'background', '256x256'):
+                       port, args.backgroundImage, 'background',
+                       '256x256', city):
         print('Background image added for ' + args.nickname)
     else:
         print('Background image was not added for ' + args.nickname)
@@ -2347,6 +2354,7 @@ if args.unfilterStr:
     sys.exit()
 
 if args.testdata:
+    city = 'London'
     nickname = 'testuser567'
     password = 'boringpassword'
     print('Generating some test data for user: ' + nickname)
@@ -2394,7 +2402,7 @@ if args.testdata:
              "mechanical",
              "City",
              "2 months",
-             debug)
+             debug, city)
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              "witch hat",
@@ -2404,7 +2412,7 @@ if args.testdata:
              "clothing",
              "City",
              "3 months",
-             debug)
+             debug, city)
 
     deleteAllPosts(baseDir, nickname, domain, 'inbox')
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
@@ -2416,6 +2424,7 @@ if args.testdata:
     testAttachImageFilename = None
     testMediaType = None
     testImageDescription = None
+    testCity = 'London'
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",
@@ -2424,7 +2433,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2432,7 +2441,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2440,7 +2449,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2448,7 +2457,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
+                     testMediaType, testImageDescription, testCity,
                      'someone')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
@@ -2458,7 +2467,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
-                     'Description of image')
+                     'Description of image', testCity)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2466,7 +2475,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2474,7 +2483,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2482,7 +2491,7 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity)
 
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
@@ -2620,6 +2629,11 @@ showNodeInfoVersion = \
 if showNodeInfoVersion is not None:
     args.showNodeInfoVersion = bool(showNodeInfoVersion)
 
+city = \
+    getConfigParam(baseDir, 'city')
+if city is not None:
+    args.city = city
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2634,7 +2648,8 @@ if setTheme(baseDir, themeName, domain,
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.showNodeInfoAccounts,
+    runDaemon(args.city,
+              args.showNodeInfoAccounts,
               args.showNodeInfoVersion,
               args.brochMode,
               args.verifyAllSignatures,
