@@ -1787,6 +1787,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     cities = []
     with open(locationsFilename, "r") as f:
         cities = f.readlines()
+        cities.sort()
     editProfileForm += '  <select id="cityDropdown" ' + \
         'name="cityDropdown" class="theme">\n'
     city = city.lower()
