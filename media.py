@@ -65,10 +65,10 @@ def spoofGeolocation(baseDir: str,
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
     variance = 0.2
-    default_latitude = 51.5069
-    default_longitude = -0.1114
+    default_latitude = 51.8744
+    default_longitude = 0.368333
     default_latdirection = 'N'
-    default_longdirection = 'E'
+    default_longdirection = 'W'
 
     if citiesList:
         cities = citiesList

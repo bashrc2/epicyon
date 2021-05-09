@@ -531,7 +531,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         attachImageFilename = None
         mediaType = None
         imageDescription = None
-        city = 'London'
+        city = 'London, England'
         blog = createNewsPost(baseDir,
                               domain, port, httpPrefix,
                               rssDescription,

@@ -458,7 +458,7 @@ def _desktopReplyToPost(session, postId: str,
     isArticle = False
     subject = None
     commentsEnabled = True
-    city = 'London'
+    city = 'London, England'
     sayStr = 'Sending reply'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
@@ -515,7 +515,7 @@ def _desktopNewPost(session,
     attach = None
     mediaType = None
     attachedImageDescription = None
-    city = 'London'
+    city = 'London, England'
     isArticle = False
     subject = None
     commentsEnabled = True
@@ -1160,7 +1160,7 @@ def _desktopNewDMbase(session, toHandle: str,
     attach = None
     mediaType = None
     attachedImageDescription = None
-    city = 'London'
+    city = 'London, England'
     isArticle = False
     subject = None
     commentsEnabled = True

@@ -465,7 +465,7 @@ def createServerAlice(path: str, domain: str, port: int,
         testAttachImageFilename = None
         testMediaType = None
         testImageDescription = None
-        testCity = 'London'
+        testCity = 'London, England'
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
@@ -509,7 +509,7 @@ def createServerAlice(path: str, domain: str, port: int,
     brochMode = False
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
-    city = 'London'
+    city = 'London, England'
     print('Server running: Alice')
     runDaemon(city,
               showNodeInfoAccounts,
@@ -569,7 +569,7 @@ def createServerBob(path: str, domain: str, port: int,
         testAttachImageFilename = None
         testImageDescription = None
         testMediaType = None
-        testCity = 'London'
+        testCity = 'London, England'
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -613,7 +613,7 @@ def createServerBob(path: str, domain: str, port: int,
     brochMode = False
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
-    city = 'London'
+    city = 'London, England'
     print('Server running: Bob')
     runDaemon(city,
               showNodeInfoAccounts,
@@ -670,7 +670,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     brochMode = False
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
-    city = 'London'
+    city = 'London, England'
     print('Server running: Eve')
     runDaemon(city,
               showNodeInfoAccounts,
@@ -778,7 +778,7 @@ def testPostMessageBetweenServers():
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     isArticle = False
-    city = 'London'
+    city = 'London, England'
     # nothing in Alice's outbox
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
     assert len([name for name in os.listdir(outboxPath)
@@ -1096,7 +1096,7 @@ def testFollowBetweenServers():
     aliceCachedWebfingers = {}
     alicePostLog = []
     isArticle = False
-    city = 'London'
+    city = 'London, England'
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
@@ -1402,7 +1402,7 @@ def testCreatePerson():
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "G'day world!", False, True, clientToServer,
                      True, None, None, None, None,
-                     'Not suitable for Vogons', 'London')
+                     'Not suitable for Vogons', 'London, England')
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -1605,7 +1605,7 @@ def testClientToServer():
     attachedImageFilename = baseDir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
-    city = 'London'
+    city = 'London, England'
     isArticle = False
     cachedWebfingers = {}
     personCache = {}
@@ -2843,7 +2843,7 @@ def testReplyToPublicPost() -> None:
     attachImageFilename = None
     mediaType = None
     imageDescription = 'Some description'
-    city = 'London'
+    city = 'London, England'
     reply = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
@@ -3273,7 +3273,7 @@ def testLinksWithinPost() -> None:
     commentsEnabled = True
     mediaType = None
     imageDescription = None
-    city = 'London'
+    city = 'London, England'
 
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
@@ -3681,6 +3681,13 @@ def testSpoofGeolocation() -> None:
     assert coords[0] <= 33.9425 + 0.1
     assert coords[1] >= 118.408 - 0.1
     assert coords[1] <= 118.408 + 0.1
+    assert coords[2] == 'N'
+    assert coords[3] == 'W'
+    coords = spoofGeolocation('', 'unknown', currTime, citiesList)
+    assert coords[0] >= 51.8744 - 0.1
+    assert coords[0] <= 51.8744 + 0.1
+    assert coords[1] >= 0.368333 - 0.1
+    assert coords[1] <= 0.368333 + 0.1
     assert coords[2] == 'N'
     assert coords[3] == 'W'
 

@@ -465,7 +465,7 @@ parser.add_argument('--attach', dest='attach', type=str,
 parser.add_argument('--imagedescription', dest='imageDescription', type=str,
                     default=None, help='Description of an attached image')
 parser.add_argument('--city', dest='city', type=str,
-                    default='London',
+                    default='London, England',
                     help='Spoofed city for image metadata misdirection')
 parser.add_argument('--warning', '--warn', '--cwsubject', '--subject',
                     dest='subject', type=str, default=None,
@@ -1113,7 +1113,7 @@ if args.message:
     followersOnly = args.followersonly
     clientToServer = args.client
     attachedImageDescription = args.imageDescription
-    city = 'London'
+    city = 'London, England'
     sendThreads = []
     postLog = []
     personCache = {}
@@ -1963,7 +1963,7 @@ if args.avatar:
     if not args.nickname:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
-    city = 'London'
+    city = 'London, England'
     if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
                        port, args.avatar, 'avatar', '128x128', city):
         print('Avatar added for ' + args.nickname)
@@ -1978,7 +1978,7 @@ if args.backgroundImage:
     if not args.nickname:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
-    city = 'London'
+    city = 'London, England'
     if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
                        port, args.backgroundImage, 'background',
                        '256x256', city):
@@ -2354,7 +2354,7 @@ if args.unfilterStr:
     sys.exit()
 
 if args.testdata:
-    city = 'London'
+    city = 'London, England'
     nickname = 'testuser567'
     password = 'boringpassword'
     print('Generating some test data for user: ' + nickname)
@@ -2424,7 +2424,7 @@ if args.testdata:
     testAttachImageFilename = None
     testMediaType = None
     testImageDescription = None
-    testCity = 'London'
+    testCity = 'London, England'
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",

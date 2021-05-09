@@ -2183,7 +2183,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     attachImageFilename = None
     mediaType = None
     imageDescription = ''
-    city = 'London'
+    city = 'London, England'
     inReplyTo = removeIdEnding(senderPostId)
     inReplyToAtomUri = None
     schedulePost = False
