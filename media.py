@@ -54,7 +54,8 @@ def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
-def _spoofMetaData(imageFilename: str, outputFilename: str,
+def _spoofMetaData(nickname: str,
+                   imageFilename: str, outputFilename: str,
                    spoofFilename: str) -> None:
     """Use reference images to spoof the metadata
     """
@@ -73,8 +74,9 @@ def _spoofMetaData(imageFilename: str, outputFilename: str,
             datetime.datetime.utcnow() - \
             datetime.timedelta(minutes=randint(2, 120))
         published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
-        os.system('exiftool -time:all="' + published +
-                  '" ' + outputFilename)  # nosec
+        os.system('exiftool -artist="' + nickname + '" ' +
+                  '-time:all="' + published + '" ' +
+                  outputFilename)  # nosec
     else:
         print('ERROR: exiftool is not installed')
         return
@@ -115,7 +117,8 @@ def processMetaData(baseDir: str, nickname: str, domain: str,
                 # choose a reference at random
                 index = randint(0, len(spoofList))
                 spoofFilename = spoofList[index]
-                _spoofMetaData(imageFilename, outputFilename,
+                _spoofMetaData(nickname,
+                               imageFilename, outputFilename,
                                spoofFilename)
                 return
     # if we can't spoof then just remove metadata
