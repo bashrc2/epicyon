@@ -12,10 +12,16 @@ import random
 import math
 from random import randint
 
+PERSON_SLEEP = 0
+PERSON_WORK = 1
+PERSON_PLAY = 2
+PERSON_SHOP = 3
+PERSON_EVENING = 4
+PERSON_PARTY = 5
+
 
 def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
-    """The data decoy
-    This simulates expected average patterns of movement in a city.
+    """This simulates expected average patterns of movement in a city.
     Jane or Joe average lives and works in the city, commuting in
     and out of the central district for work. They have a unique
     life pattern, which machine learning can latch onto.
@@ -25,31 +31,25 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
     """
     randgen = random.Random(decoySeed)
     variance = 3
-    busyStates = ("work", "shop", "play", "party")
-    dataDecoyState = "sleep"
-    dataDecoyIndex = 0
+    busyStates = (PERSON_WORK, PERSON_SHOP, PERSON_PLAY, PERSON_PARTY)
+    dataDecoyState = PERSON_SLEEP
     weekday = currTimeOfDay.weekday()
     minHour = 7 + randint(0, variance)
     maxHour = 17 + randint(0, variance)
     if currTimeOfDay.hour > minHour:
         if currTimeOfDay.hour <= maxHour:
             if weekday < 5:
-                dataDecoyState = "work"
-                dataDecoyIndex = 1
+                dataDecoyState = PERSON_WORK
             elif weekday == 5:
-                dataDecoyState = "shop"
-                dataDecoyIndex = 2
+                dataDecoyState = PERSON_SHOP
             else:
-                dataDecoyState = "play"
-                dataDecoyIndex = 3
+                dataDecoyState = PERSON_PLAY
         else:
             if weekday < 5:
-                dataDecoyState = "evening"
-                dataDecoyIndex = 4
+                dataDecoyState = PERSON_EVENING
             else:
-                dataDecoyState = "party"
-                dataDecoyIndex = 5
-    randgen2 = random.Random(decoySeed + dataDecoyIndex)
+                dataDecoyState = PERSON_PARTY
+    randgen2 = random.Random(decoySeed + dataDecoyState)
     angleRadians = \
         (randgen2.randint(0, 100000) / 100000) * 2 * math.pi
     # some people are quite random, others have more predictable habits
