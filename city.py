@@ -12,6 +12,7 @@ import random
 import math
 from random import randint
 
+# states which the simulated city dweller can be in
 PERSON_SLEEP = 0
 PERSON_WORK = 1
 PERSON_PLAY = 2
@@ -25,7 +26,7 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
     Jane or Joe average lives and works in the city, commuting in
     and out of the central district for work. They have a unique
     life pattern, which machine learning can latch onto.
-    This returns a polar coordinate:
+    This returns a polar coordinate for the simulated city dweller:
     Distance from the city centre is in the range 0.0 - 1.0
     Angle is in radians
     """
