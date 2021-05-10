@@ -543,6 +543,8 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
         return None
 
     # get from locally stored image
+    if not personJson.get('id'):
+        return None
     actorStr = personJson['id'].replace('/', '-')
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
 
