@@ -192,7 +192,7 @@ def spoofGeolocation(baseDir: str,
 
 def _spoofMetaData(baseDir: str, nickname: str, domain: str,
                    outputFilename: str, spoofCity: str) -> None:
-    """Use reference images to spoof the metadata
+    """Spoof image metadata using a decoy model for a given city
     """
     if not os.path.isfile(outputFilename):
         print('ERROR: unable to spoof metadata within ' + outputFilename)
