@@ -11,6 +11,7 @@ import os
 import shutil
 import json
 import datetime
+from random import randint
 from time import gmtime, strftime
 from pprint import pprint
 from httpsig import signPostHeaders
@@ -3673,10 +3674,11 @@ def testSpoofGeolocation() -> None:
     citiesList = [
         'NEW YORK, USA:40.6397:W73.7789',
         'LOS ANGELES, USA:33.9425:W118.408',
-        'HOUSTON, USA:29.9803:W95.3397'
+        'HOUSTON, USA:29.9803:W95.3397',
+        'MANCHESTER, ENGLAND:53.4794892:W2.2451148'
     ]
     currTime = datetime.datetime.utcnow()
-    decoySeed = 7634682
+    decoySeed = 7634681
     cityRadius = 0.1
     coords = spoofGeolocation('', 'los angeles', currTime,
                               decoySeed, citiesList)
@@ -3694,6 +3696,33 @@ def testSpoofGeolocation() -> None:
     assert coords[1] <= 0.368333 + cityRadius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
+    kmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    kmlStr += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+    kmlStr += '<Document>\n'
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        currTime = datetime.datetime.strptime("2021-05-" + str(dayNumber) +
+                                              " " + hourStr + ":14",
+                                              "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'manchester, england', currTime,
+                                  decoySeed, citiesList)
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(-coords[1]) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+    kmlStr += '</Document>\n'
+    kmlStr += '</kml>'
+    kmlFile = open('unittest_decoy.kml', 'w+')
+    if kmlFile:
+        kmlFile.write(kmlStr)
+        kmlFile.close()
 
 
 def runAllTests():

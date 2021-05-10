@@ -96,7 +96,7 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
         (randgen.randint(0, 100000 - 5 + dataDecoyIndex) / 100000) * \
         2 * math.pi
     # some people are quite random, others have more predictable habits
-    decoyRandomness = randgen.randint(10, 20)
+    decoyRandomness = randgen.randint(1, 3)
     # occasionally throw in a wildcard to keep the machine learning guessing
     if randint(0, 100) < decoyRandomness:
         distanceFromCityCenter = (randint(0, 100000) / 100000)
@@ -127,7 +127,7 @@ def spoofGeolocation(baseDir: str,
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
     cityRadius = 0.1
-    variance = 0.01
+    variance = 0.001
     default_latitude = 51.8744
     default_longitude = 0.368333
     default_latdirection = 'N'
