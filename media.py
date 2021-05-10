@@ -92,9 +92,9 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
             else:
                 dataDecoyState = "party"
                 dataDecoyIndex = 5
+    randgen2 = random.Random(decoySeed + dataDecoyIndex)
     angleRadians = \
-        (randgen.randint(0, 100000 - 5 + dataDecoyIndex) / 100000) * \
-        2 * math.pi
+        (randgen2.randint(0, 100000) / 100000) * 2 * math.pi
     # some people are quite random, others have more predictable habits
     decoyRandomness = randgen.randint(1, 3)
     # occasionally throw in a wildcard to keep the machine learning guessing
