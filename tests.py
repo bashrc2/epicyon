@@ -77,7 +77,7 @@ from like import likePost
 from like import sendLikeViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
-from media import spoofGeolocation
+from city import spoofGeolocation
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
