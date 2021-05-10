@@ -89,7 +89,9 @@ def _getCityPulse(currTimeOfDay, doppelgangerSeed: int) -> float:
             else:
                 dataDoppelgangerState = "party"
                 dataDoppelgangerIndex = 5
-    random.seed(doppelgangerSeed)
+    angleRadians = \
+        (randgen.randint(0, 100000 - 5 + dataDoppelgangerIndex) / 100000) * \
+        2 * math.pi
     # what consitutes the central district is fuzzy
     centralDistrictFuzz = (randgen.randint(0, 100000) / 100000) * 0.1
     busyRadius = 0.3 + centralDistrictFuzz
@@ -101,9 +103,6 @@ def _getCityPulse(currTimeOfDay, doppelgangerSeed: int) -> float:
         # otherwise we're in the burbs
         distanceFromCityCenter = busyRadius + \
             ((1.0 - busyRadius) * (randgen.randint(0, 100000) / 100000))
-    angleRadians = \
-        (randgen.randint(0, 100000 - 5 + dataDoppelgangerIndex) / 100000) * \
-        2 * math.pi
     return distanceFromCityCenter, angleRadians
 
 
@@ -156,10 +155,8 @@ def spoofGeolocation(baseDir: str,
             currTimeAdjusted = currTime - \
                 datetime.timedelta(hours=approxTimeZone)
             # patterns of activity change in the city over time
-            newSeed = randint(10000000, 10000000000000)
             (distanceFromCityCenter, angleRadians) = \
                 _getCityPulse(currTimeAdjusted, doppelgangerSeed)
-            random.seed(newSeed)
             # Get the position within the city, with some randomness added
             fraction = randint(0, 100000) / 100000
             latitude += \
