@@ -163,17 +163,16 @@ def spoofGeolocation(baseDir: str,
             # add a small amount of variance around the location
             fraction = randint(0, 100000) / 100000
             latitude += (fraction * fraction * variance) - (variance / 2.0)
-            # gps locations aren't transcendental, so round to a fixed
-            # number of decimal places
-            latitude = int(latitude * 10000) / 10000.0
 
             longitude += \
                 distanceFromCityCenter * cityRadius * math.sin(angleRadians)
             # add a small amount of variance around the location
             fraction = randint(0, 100000) / 100000
             longitude += (fraction * fraction * variance) - (variance / 2.0)
+
             # gps locations aren't transcendental, so round to a fixed
             # number of decimal places
+            latitude = int(latitude * 10000) / 10000.0
             longitude = int(longitude * 10000) / 10000.0
             return latitude, longitude, latdirection, longdirection
 
