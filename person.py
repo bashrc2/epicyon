@@ -34,7 +34,7 @@ from posts import createModeration
 from auth import storeBasicCredentials
 from auth import removePassword
 from roles import setRole
-from media import removeMetaData
+from media import processMetaData
 from utils import getStatusNumber
 from utils import getFullDomain
 from utils import validNickname
@@ -74,7 +74,7 @@ def generateRSAKey() -> (str, str):
 
 def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
                     port: int, imageFilename: str, imageType: str,
-                    resolution: str) -> bool:
+                    resolution: str, city: str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
@@ -135,7 +135,8 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
             '/usr/bin/convert ' + imageFilename + ' -size ' + \
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
-        removeMetaData(profileFilename, profileFilename)
+        processMetaData(baseDir, nickname, domain,
+                        profileFilename, profileFilename, city)
         return True
     return False
 

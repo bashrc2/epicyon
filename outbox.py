@@ -176,7 +176,8 @@ def postMessageToOutbox(session, translate: {},
                         proxyType: str, version: str, debug: bool,
                         YTReplacementDomain: str,
                         showPublishedDateOnly: bool,
-                        allowLocalNetworkAccess: bool) -> bool:
+                        allowLocalNetworkAccess: bool,
+                        city: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -545,7 +546,7 @@ def postMessageToOutbox(session, translate: {},
         print('DEBUG: handle share uploads')
     outboxShareUpload(baseDir, httpPrefix,
                       postToNickname, domain,
-                      port, messageJson, debug)
+                      port, messageJson, debug, city)
 
     if debug:
         print('DEBUG: handle undo share uploads')

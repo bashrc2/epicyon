@@ -10,6 +10,8 @@ import time
 import os
 import shutil
 import json
+import datetime
+from random import randint
 from time import gmtime, strftime
 from pprint import pprint
 from httpsig import signPostHeaders
@@ -75,6 +77,7 @@ from like import likePost
 from like import sendLikeViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
+from media import spoofGeolocation
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -463,6 +466,7 @@ def createServerAlice(path: str, domain: str, port: int,
         testAttachImageFilename = None
         testMediaType = None
         testImageDescription = None
+        testCity = 'London, England'
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
@@ -471,7 +475,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -480,7 +484,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -490,7 +494,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -506,8 +510,10 @@ def createServerAlice(path: str, domain: str, port: int,
     brochMode = False
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
+    city = 'London, England'
     print('Server running: Alice')
-    runDaemon(showNodeInfoAccounts,
+    runDaemon(city,
+              showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
               verifyAllSignatures,
@@ -564,6 +570,7 @@ def createServerBob(path: str, domain: str, port: int,
         testAttachImageFilename = None
         testImageDescription = None
         testMediaType = None
+        testCity = 'London, England'
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -572,7 +579,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -582,7 +589,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -591,7 +598,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -607,8 +614,10 @@ def createServerBob(path: str, domain: str, port: int,
     brochMode = False
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
+    city = 'London, England'
     print('Server running: Bob')
-    runDaemon(showNodeInfoAccounts,
+    runDaemon(city,
+              showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
               verifyAllSignatures,
@@ -662,8 +671,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     brochMode = False
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
+    city = 'London, England'
     print('Server running: Eve')
-    runDaemon(showNodeInfoAccounts,
+    runDaemon(city,
+              showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
               verifyAllSignatures,
@@ -768,6 +779,7 @@ def testPostMessageBetweenServers():
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     isArticle = False
+    city = 'London, England'
     # nothing in Alice's outbox
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
     assert len([name for name in os.listdir(outboxPath)
@@ -782,7 +794,7 @@ def testPostMessageBetweenServers():
                  followersOnly,
                  saveToFile, clientToServer, True,
                  attachedImageFilename, mediaType,
-                 attachedImageDescription, federationList,
+                 attachedImageDescription, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -1085,13 +1097,14 @@ def testFollowBetweenServers():
     aliceCachedWebfingers = {}
     alicePostLog = []
     isArticle = False
+    city = 'London, England'
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
                  clientToServer, True,
-                 None, None, None, federationList,
+                 None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -1390,7 +1403,7 @@ def testCreatePerson():
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "G'day world!", False, True, clientToServer,
                      True, None, None, None, None,
-                     'Not suitable for Vogons')
+                     'Not suitable for Vogons', 'London, England')
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -1593,6 +1606,7 @@ def testClientToServer():
     attachedImageFilename = baseDir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
+    city = 'London, England'
     isArticle = False
     cachedWebfingers = {}
     personCache = {}
@@ -1611,7 +1625,7 @@ def testClientToServer():
                           httpPrefix, 'Sent from my ActivityPub client',
                           followersOnly, True,
                           attachedImageFilename, mediaType,
-                          attachedImageDescription,
+                          attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
                           True, None, None, None)
     print('sendResult: ' + str(sendResult))
@@ -2822,11 +2836,21 @@ def testReplyToPublicPost() -> None:
     port = 443
     httpPrefix = 'https'
     postId = httpPrefix + '://rat.site/users/ninjarodent/statuses/63746173435'
+    content = "@ninjarodent@rat.site This is a test."
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = True
+    attachImageFilename = None
+    mediaType = None
+    imageDescription = 'Some description'
+    city = 'London, England'
     reply = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                         "@ninjarodent@rat.site This is a test.",
-                         False, False, False, True,
-                         None, None, False, postId)
+                         content, followersOnly, saveToFile,
+                         clientToServer, commentsEnabled,
+                         attachImageFilename, mediaType,
+                         imageDescription, city, postId)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -3244,11 +3268,20 @@ def testLinksWithinPost() -> None:
     httpPrefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = True
+    mediaType = None
+    imageDescription = None
+    city = 'London, England'
+
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                         content,
-                         False, False, False, True,
-                         None, None, False, None)
+                         content, followersOnly, saveToFile,
+                         clientToServer, commentsEnabled,
+                         mediaType, imageDescription, city,
+                         False, None)
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
         '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
@@ -3636,9 +3669,66 @@ def testRemovePostInteractions() -> None:
     assert not removePostInteractions(postJsonObject, False)
 
 
+def testSpoofGeolocation() -> None:
+    print('testSpoofGeolocation')
+    citiesList = [
+        'NEW YORK, USA:40.6397:W73.7789',
+        'LOS ANGELES, USA:33.9425:W118.408',
+        'HOUSTON, USA:29.9803:W95.3397',
+        'MANCHESTER, ENGLAND:53.4794892:W2.2451148'
+    ]
+    currTime = datetime.datetime.utcnow()
+    decoySeed = 7634681
+    cityRadius = 0.1
+    coords = spoofGeolocation('', 'los angeles', currTime,
+                              decoySeed, citiesList)
+    assert coords[0] >= 33.9425 - cityRadius
+    assert coords[0] <= 33.9425 + cityRadius
+    assert coords[1] >= 118.408 - cityRadius
+    assert coords[1] <= 118.408 + cityRadius
+    assert coords[2] == 'N'
+    assert coords[3] == 'W'
+    coords = spoofGeolocation('', 'unknown', currTime,
+                              decoySeed, citiesList)
+    assert coords[0] >= 51.8744 - cityRadius
+    assert coords[0] <= 51.8744 + cityRadius
+    assert coords[1] >= 0.368333 - cityRadius
+    assert coords[1] <= 0.368333 + cityRadius
+    assert coords[2] == 'N'
+    assert coords[3] == 'W'
+    kmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    kmlStr += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+    kmlStr += '<Document>\n'
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        currTime = datetime.datetime.strptime("2021-05-" + str(dayNumber) +
+                                              " " + hourStr + ":14",
+                                              "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'manchester, england', currTime,
+                                  decoySeed, citiesList)
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(-coords[1]) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+    kmlStr += '</Document>\n'
+    kmlStr += '</kml>'
+    kmlFile = open('unittest_decoy.kml', 'w+')
+    if kmlFile:
+        kmlFile.write(kmlStr)
+        kmlFile.close()
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testSpoofGeolocation()
     testRemovePostInteractions()
     testExtractPGPPublicKey()
     testEmojiImages()

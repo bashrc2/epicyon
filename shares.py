@@ -18,7 +18,7 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
-from media import removeMetaData
+from media import processMetaData
 
 
 def getValidSharedItemID(displayName: str) -> str:
@@ -73,7 +73,7 @@ def addShare(baseDir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
              itemType: str, itemCategory: str, location: str,
-             duration: str, debug: bool) -> None:
+             duration: str, debug: bool, city: str) -> None:
     """Adds a new share
     """
     sharesFilename = baseDir + '/accounts/' + \
@@ -129,7 +129,9 @@ def addShare(baseDir: str,
             formats = getImageExtensions()
             for ext in formats:
                 if imageFilename.endswith('.' + ext):
-                    removeMetaData(imageFilename, itemIDfile + '.' + ext)
+                    processMetaData(baseDir, nickname, domain,
+                                    imageFilename, itemIDfile + '.' + ext,
+                                    city)
                     if moveImage:
                         os.remove(imageFilename)
                     imageUrl = \
@@ -512,7 +514,7 @@ def sendUndoShareViaServer(baseDir: str, session,
 
 def outboxShareUpload(baseDir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
-                      messageJson: {}, debug: bool) -> None:
+                      messageJson: {}, debug: bool, city: str) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -564,7 +566,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],
              messageJson['object']['duration'],
-             debug)
+             debug, city)
     if debug:
         print('DEBUG: shared item received via c2s')
 

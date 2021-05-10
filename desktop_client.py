@@ -458,6 +458,7 @@ def _desktopReplyToPost(session, postId: str,
     isArticle = False
     subject = None
     commentsEnabled = True
+    city = 'London, England'
     sayStr = 'Sending reply'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
@@ -466,7 +467,7 @@ def _desktopReplyToPost(session, postId: str,
                          toNickname, toDomain, toPort, ccUrl,
                          httpPrefix, replyMessage, followersOnly,
                          commentsEnabled, attach, mediaType,
-                         attachedImageDescription,
+                         attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          debug, postId, postId, subject) == 0:
         sayStr = 'Reply sent'
@@ -514,6 +515,7 @@ def _desktopNewPost(session,
     attach = None
     mediaType = None
     attachedImageDescription = None
+    city = 'London, England'
     isArticle = False
     subject = None
     commentsEnabled = True
@@ -526,7 +528,7 @@ def _desktopNewPost(session,
                          None, '#Public', port, ccUrl,
                          httpPrefix, newMessage, followersOnly,
                          commentsEnabled, attach, mediaType,
-                         attachedImageDescription,
+                         attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          debug, None, None, subject) == 0:
         sayStr = 'Post sent'
@@ -1158,6 +1160,7 @@ def _desktopNewDMbase(session, toHandle: str,
     attach = None
     mediaType = None
     attachedImageDescription = None
+    city = 'London, England'
     isArticle = False
     subject = None
     commentsEnabled = True
@@ -1206,7 +1209,7 @@ def _desktopNewDMbase(session, toHandle: str,
                          toNickname, toDomain, toPort, ccUrl,
                          httpPrefix, newMessage, followersOnly,
                          commentsEnabled, attach, mediaType,
-                         attachedImageDescription,
+                         attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          debug, None, None, subject) == 0:
         sayStr = 'Direct message sent'

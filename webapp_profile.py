@@ -1068,7 +1068,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
-                    textModeBanner: str) -> str:
+                    textModeBanner: str, city: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -1770,6 +1770,41 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '<details><summary class="cw">' + \
         translate['Filtering and Blocking'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
+
+    editProfileForm += \
+        '<label class="labels">' + \
+        translate['City for spoofed GPS image metadata'] + \
+        '</label><br>\n'
+
+    cityFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/city.txt'
+    if os.path.isfile(cityFilename):
+        with open(cityFilename, 'r') as fp:
+            city = fp.read().replace('\n', '')
+    locationsFilename = baseDir + '/custom_locations.txt'
+    if not os.path.isfile(locationsFilename):
+        locationsFilename = baseDir + '/locations.txt'
+    cities = []
+    with open(locationsFilename, "r") as f:
+        cities = f.readlines()
+        cities.sort()
+    editProfileForm += '  <select id="cityDropdown" ' + \
+        'name="cityDropdown" class="theme">\n'
+    city = city.lower()
+    for cityName in cities:
+        if ':' not in cityName:
+            continue
+        citySelected = ''
+        cityName = cityName.split(':')[0]
+        cityName = cityName.lower()
+        if city in cityName:
+            citySelected = ' selected'
+        editProfileForm += \
+            '    <option value="' + cityName + \
+            '"' + citySelected.title() + '>' + \
+            cityName + '</option>\n'
+    editProfileForm += '  </select><br>\n'
+
     editProfileForm += \
         '      <b><label class="labels">' + \
         translate['Filtered words'] + '</label></b>\n'
