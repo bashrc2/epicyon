@@ -129,7 +129,7 @@ def addShare(baseDir: str,
             formats = getImageExtensions()
             for ext in formats:
                 if imageFilename.endswith('.' + ext):
-                    processMetaData(baseDir, nickname,
+                    processMetaData(baseDir, nickname, domain,
                                     imageFilename, itemIDfile + '.' + ext,
                                     city)
                     if moveImage:

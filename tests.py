@@ -3676,18 +3676,22 @@ def testSpoofGeolocation() -> None:
         'HOUSTON, USA:29.9803:W95.3397'
     ]
     currTime = datetime.datetime.utcnow()
-    coords = spoofGeolocation('', 'los angeles', currTime, citiesList)
-    assert coords[0] >= 33.9425 - 0.1
-    assert coords[0] <= 33.9425 + 0.1
-    assert coords[1] >= 118.408 - 0.1
-    assert coords[1] <= 118.408 + 0.1
+    doppelgangerSeed = 7634682
+    cityRadius = 0.1
+    coords = spoofGeolocation('', 'los angeles', currTime,
+                              doppelgangerSeed, citiesList)
+    assert coords[0] >= 33.9425 - cityRadius
+    assert coords[0] <= 33.9425 + cityRadius
+    assert coords[1] >= 118.408 - cityRadius
+    assert coords[1] <= 118.408 + cityRadius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
-    coords = spoofGeolocation('', 'unknown', currTime, citiesList)
-    assert coords[0] >= 51.8744 - 0.1
-    assert coords[0] <= 51.8744 + 0.1
-    assert coords[1] >= 0.368333 - 0.1
-    assert coords[1] <= 0.368333 + 0.1
+    coords = spoofGeolocation('', 'unknown', currTime,
+                              doppelgangerSeed, citiesList)
+    assert coords[0] >= 51.8744 - cityRadius
+    assert coords[0] <= 51.8744 + cityRadius
+    assert coords[1] >= 0.368333 - cityRadius
+    assert coords[1] <= 0.368333 + cityRadius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
 

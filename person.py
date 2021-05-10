@@ -135,7 +135,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
             '/usr/bin/convert ' + imageFilename + ' -size ' + \
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
-        processMetaData(baseDir, nickname,
+        processMetaData(baseDir, nickname, domain,
                         profileFilename, profileFilename, city)
         return True
     return False

@@ -4098,7 +4098,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 city = self._getSpoofedCity(baseDir, nickname, domain)
 
-                processMetaData(baseDir, nickname,
+                processMetaData(baseDir, nickname, domain,
                                 filename, postImageFilename, city)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
@@ -13094,8 +13094,8 @@ class PubServer(BaseHTTPRequestHandler):
                     city = self._getSpoofedCity(self.server.baseDir,
                                                 nickname, self.server.domain)
                     processMetaData(self.server.baseDir,
-                                    nickname, filename, postImageFilename,
-                                    city)
+                                    nickname, self.server.domain,
+                                    filename, postImageFilename, city)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:

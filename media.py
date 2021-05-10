@@ -8,6 +8,8 @@ __status__ = "Production"
 
 import os
 import datetime
+import random
+import math
 from random import randint
 from hashlib import sha1
 from auth import createPassword
@@ -54,8 +56,59 @@ def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
+def _getCityPulse(currTimeOfDay, doppelgangerSeed: int) -> float:
+    """The data doppelganger
+    This simulates expected average patterns of movement in a city.
+    Jane or Joe average lives and works in the city, commuting in
+    and out of the central district for work. They have a unique
+    life pattern, which machine learning can latch onto.
+    """
+    randgen = random.Random(doppelgangerSeed)
+    variance = 3
+    busyStates = ("work", "shop", "play", "party")
+    dataDoppelgangerState = "sleep"
+    dataDoppelgangerIndex = 0
+    weekday = currTimeOfDay.weekday()
+    minHour = 7 + randint(0, variance)
+    maxHour = 17 + randint(0, variance)
+    if currTimeOfDay.hour > minHour:
+        if currTimeOfDay.hour <= maxHour:
+            if weekday < 5:
+                dataDoppelgangerState = "work"
+                dataDoppelgangerIndex = 1
+            elif weekday == 5:
+                dataDoppelgangerState = "shop"
+                dataDoppelgangerIndex = 2
+            else:
+                dataDoppelgangerState = "play"
+                dataDoppelgangerIndex = 3
+        else:
+            if weekday < 5:
+                dataDoppelgangerState = "evening"
+                dataDoppelgangerIndex = 4
+            else:
+                dataDoppelgangerState = "party"
+                dataDoppelgangerIndex = 5
+    random.seed(doppelgangerSeed)
+    # what consitutes the central district is fuzzy
+    centralDistrictFuzz = (randgen.randint(0, 100000) / 100000) * 0.1
+    busyRadius = 0.3 + centralDistrictFuzz
+    if dataDoppelgangerState in busyStates:
+        # if we are busy then we're somewhere in the city center
+        distanceFromCityCenter = \
+            (randgen.randint(0, 100000) / 100000) * busyRadius
+    else:
+        # otherwise we're in the burbs
+        distanceFromCityCenter = busyRadius + \
+            ((1.0 - busyRadius) * (randgen.randint(0, 100000) / 100000))
+    angleRadians = \
+        (randgen.randint(0, 100000 - 5 + dataDoppelgangerIndex) / 100000) * \
+        2 * math.pi
+    return distanceFromCityCenter, angleRadians
+
+
 def spoofGeolocation(baseDir: str,
-                     city: str, currTime,
+                     city: str, currTime, doppelgangerSeed: int,
                      citiesList: []) -> (float, float, str, str):
     """Given a city and the current time spoofs the location
     for an image
@@ -64,7 +117,8 @@ def spoofGeolocation(baseDir: str,
     locationsFilename = baseDir + '/custom_locations.txt'
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
-    variance = 0.2
+    cityRadius = 0.1
+    variance = 0.01
     default_latitude = 51.8744
     default_longitude = 0.368333
     default_latdirection = 'N'
@@ -93,16 +147,30 @@ def spoofGeolocation(baseDir: str,
             if 'W' in longitude:
                 longdirection = 'W'
                 longitude = longitude.replace('W', '')
-            # add some randomness
+            latitude = float(latitude)
+            longitude = float(longitude)
+            # get the time of day at the city
+            approxTimeZone = int(longitude / 15.0)
+            if longdirection == 'E':
+                approxTimeZone = -approxTimeZone
+            currTimeAdjusted = currTime - \
+                datetime.timedelta(hours=approxTimeZone)
+            # patterns of activity change in the city over time
+            newSeed = randint(10000000, 10000000000000)
+            (distanceFromCityCenter, angleRadians) = \
+                _getCityPulse(currTimeAdjusted, doppelgangerSeed)
+            random.seed(newSeed)
+            # Get the position within the city, with some randomness added
             fraction = randint(0, 100000) / 100000
-            fraction = fraction * fraction
-            latitude = float(latitude) + \
-                (fraction * variance) - (variance / 2.0)
+            latitude += \
+                distanceFromCityCenter * cityRadius * math.cos(angleRadians)
+            latitude += (fraction * fraction * variance) - (variance / 2.0)
             latitude = int(latitude * 10000) / 10000.0
+
             fraction = randint(0, 100000) / 100000
-            fraction = fraction * fraction
-            longitude = float(longitude) + \
-                (fraction * variance) - (variance / 2.0)
+            longitude += \
+                distanceFromCityCenter * cityRadius * math.sin(angleRadians)
+            longitude += (fraction * fraction * variance) - (variance / 2.0)
             longitude = int(longitude * 10000) / 10000.0
             return latitude, longitude, latdirection, longdirection
 
@@ -110,13 +178,24 @@ def spoofGeolocation(baseDir: str,
             default_latdirection, default_longdirection)
 
 
-def _spoofMetaData(baseDir: str, nickname: str,
+def _spoofMetaData(baseDir: str, nickname: str, domain: str,
                    outputFilename: str, spoofCity: str) -> None:
     """Use reference images to spoof the metadata
     """
     if not os.path.isfile(outputFilename):
         print('ERROR: unable to spoof metadata within ' + outputFilename)
         return
+
+    # get the random seed used to generate a unique pattern for this account
+    doppelgangerSeedFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/doppelgangerseed'
+    doppelgangerSeed = 63725
+    if os.path.isfile(doppelgangerSeedFilename):
+        with open(doppelgangerSeedFilename, 'r') as fp:
+            doppelgangerSeed = int(fp.read())
+    else:
+        doppelgangerSeed = randint(10000, 10000000000000)
+
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
         currTimeAdjusted = \
@@ -124,7 +203,8 @@ def _spoofMetaData(baseDir: str, nickname: str,
             datetime.timedelta(minutes=randint(2, 120))
         published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
         (latitude, longitude, latitudeRef, longitudeRef) = \
-            spoofGeolocation(baseDir, spoofCity, currTimeAdjusted, None)
+            spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
+                             doppelgangerSeed, None)
         os.system('exiftool -artist="' + nickname + '" ' +
                   '-DateTimeOriginal="' + published + '" ' +
                   '-FileModifyDate="' + published + '" ' +
@@ -141,7 +221,7 @@ def _spoofMetaData(baseDir: str, nickname: str,
         return
 
 
-def processMetaData(baseDir: str, nickname: str,
+def processMetaData(baseDir: str, nickname: str, domain: str,
                     imageFilename: str, outputFilename: str,
                     city: str) -> None:
     """Handles image metadata. This tries to spoof the metadata
@@ -151,7 +231,7 @@ def processMetaData(baseDir: str, nickname: str,
     _removeMetaData(imageFilename, outputFilename)
 
     # now add some spoofed data to misdirect surveillance capitalists
-    _spoofMetaData(baseDir, nickname, outputFilename, city)
+    _spoofMetaData(baseDir, nickname, domain, outputFilename, city)
 
 
 def _isMedia(imageFilename: str) -> bool:
@@ -282,7 +362,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     if baseDir:
         if mediaType.startswith('image/'):
-            processMetaData(baseDir, nickname,
+            processMetaData(baseDir, nickname, domain,
                             imageFilename, mediaFilename, city)
         else:
             copyfile(imageFilename, mediaFilename)
