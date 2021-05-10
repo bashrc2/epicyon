@@ -85,7 +85,7 @@ def spoofGeolocation(baseDir: str,
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
     cityRadius = 0.1
-    variance = 0.001
+    varianceAtLocation = 0.0004
     default_latitude = 51.8744
     default_longitude = 0.368333
     default_latdirection = 'N'
@@ -128,15 +128,15 @@ def spoofGeolocation(baseDir: str,
             # Get the position within the city, with some randomness added
             latitude += \
                 distanceFromCityCenter * cityRadius * math.cos(angleRadians)
-            # add a small amount of variance around the location
-            fraction = randint(0, 100000) / 100000
-            latitude += (fraction * fraction * variance) - (variance / 2.0)
-
             longitude += \
                 distanceFromCityCenter * cityRadius * math.sin(angleRadians)
             # add a small amount of variance around the location
             fraction = randint(0, 100000) / 100000
-            longitude += (fraction * fraction * variance) - (variance / 2.0)
+            distanceFromLocation = fraction * fraction * varianceAtLocation
+            fraction = randint(0, 100000) / 100000
+            angleFromLocation = fraction * 2 * math.pi
+            latitude += distanceFromLocation * math.cos(angleFromLocation)
+            longitude += distanceFromLocation * math.sin(angleFromLocation)
 
             # gps locations aren't transcendental, so round to a fixed
             # number of decimal places
