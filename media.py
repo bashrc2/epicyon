@@ -206,7 +206,12 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         with open(decoySeedFilename, 'r') as fp:
             decoySeed = int(fp.read())
     else:
-        decoySeed = randint(10000, 10000000000000)
+        decoySeed = randint(10000, 10000000000000000)
+        try:
+            with open(decoySeedFilename, 'w+') as fp:
+                fp.write(str(decoySeed))
+        except BaseException:
+            pass
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
