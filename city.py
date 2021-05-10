@@ -140,8 +140,8 @@ def spoofGeolocation(baseDir: str,
 
             # gps locations aren't transcendental, so round to a fixed
             # number of decimal places
-            latitude = int(latitude * 10000) / 10000.0
-            longitude = int(longitude * 10000) / 10000.0
+            latitude = int(latitude * 100000) / 100000.0
+            longitude = int(longitude * 100000) / 100000.0
             return latitude, longitude, latdirection, longdirection
 
     return (default_latitude, default_longitude,
