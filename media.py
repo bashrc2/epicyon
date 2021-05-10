@@ -56,58 +56,68 @@ def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
-def _getCityPulse(currTimeOfDay, doppelgangerSeed: int) -> float:
-    """The data doppelganger
+def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
+    """The data decoy
     This simulates expected average patterns of movement in a city.
     Jane or Joe average lives and works in the city, commuting in
     and out of the central district for work. They have a unique
     life pattern, which machine learning can latch onto.
+    This returns a polar coordinate:
+    Distance from the city centre is in the range 0.0 - 1.0
+    Angle is in radians
     """
-    randgen = random.Random(doppelgangerSeed)
+    randgen = random.Random(decoySeed)
     variance = 3
     busyStates = ("work", "shop", "play", "party")
-    dataDoppelgangerState = "sleep"
-    dataDoppelgangerIndex = 0
+    dataDecoyState = "sleep"
+    dataDecoyIndex = 0
     weekday = currTimeOfDay.weekday()
     minHour = 7 + randint(0, variance)
     maxHour = 17 + randint(0, variance)
     if currTimeOfDay.hour > minHour:
         if currTimeOfDay.hour <= maxHour:
             if weekday < 5:
-                dataDoppelgangerState = "work"
-                dataDoppelgangerIndex = 1
+                dataDecoyState = "work"
+                dataDecoyIndex = 1
             elif weekday == 5:
-                dataDoppelgangerState = "shop"
-                dataDoppelgangerIndex = 2
+                dataDecoyState = "shop"
+                dataDecoyIndex = 2
             else:
-                dataDoppelgangerState = "play"
-                dataDoppelgangerIndex = 3
+                dataDecoyState = "play"
+                dataDecoyIndex = 3
         else:
             if weekday < 5:
-                dataDoppelgangerState = "evening"
-                dataDoppelgangerIndex = 4
+                dataDecoyState = "evening"
+                dataDecoyIndex = 4
             else:
-                dataDoppelgangerState = "party"
-                dataDoppelgangerIndex = 5
+                dataDecoyState = "party"
+                dataDecoyIndex = 5
     angleRadians = \
-        (randgen.randint(0, 100000 - 5 + dataDoppelgangerIndex) / 100000) * \
+        (randgen.randint(0, 100000 - 5 + dataDecoyIndex) / 100000) * \
         2 * math.pi
-    # what consitutes the central district is fuzzy
-    centralDistrictFuzz = (randgen.randint(0, 100000) / 100000) * 0.1
-    busyRadius = 0.3 + centralDistrictFuzz
-    if dataDoppelgangerState in busyStates:
-        # if we are busy then we're somewhere in the city center
-        distanceFromCityCenter = \
-            (randgen.randint(0, 100000) / 100000) * busyRadius
+    # some people are quite random, others have more predictable habits
+    decoyRandomness = randgen.randint(10, 20)
+    # occasionally throw in a wildcard to keep the machine learning guessing
+    if randint(0, 100) < decoyRandomness:
+        distanceFromCityCenter = (randint(0, 100000) / 100000)
+        angleRadians = (randint(0, 100000) / 100000) * 2 * math.pi
     else:
-        # otherwise we're in the burbs
-        distanceFromCityCenter = busyRadius + \
-            ((1.0 - busyRadius) * (randgen.randint(0, 100000) / 100000))
+        # what consitutes the central district is fuzzy
+        centralDistrictFuzz = (randgen.randint(0, 100000) / 100000) * 0.1
+        busyRadius = 0.3 + centralDistrictFuzz
+        if dataDecoyState in busyStates:
+            # if we are busy then we're somewhere in the city center
+            distanceFromCityCenter = \
+                (randgen.randint(0, 100000) / 100000) * busyRadius
+        else:
+            # otherwise we're in the burbs
+            distanceFromCityCenter = busyRadius + \
+                ((1.0 - busyRadius) * (randgen.randint(0, 100000) / 100000))
     return distanceFromCityCenter, angleRadians
 
 
 def spoofGeolocation(baseDir: str,
-                     city: str, currTime, doppelgangerSeed: int,
+                     city: str, currTime, decoySeed: int,
                      citiesList: []) -> (float, float, str, str):
     """Given a city and the current time spoofs the location
     for an image
@@ -156,7 +166,7 @@ def spoofGeolocation(baseDir: str,
                 datetime.timedelta(hours=approxTimeZone)
             # patterns of activity change in the city over time
             (distanceFromCityCenter, angleRadians) = \
-                _getCityPulse(currTimeAdjusted, doppelgangerSeed)
+                _getCityPulse(currTimeAdjusted, decoySeed)
             # Get the position within the city, with some randomness added
             latitude += \
                 distanceFromCityCenter * cityRadius * math.cos(angleRadians)
@@ -189,14 +199,14 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         return
 
     # get the random seed used to generate a unique pattern for this account
-    doppelgangerSeedFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/doppelgangerseed'
-    doppelgangerSeed = 63725
-    if os.path.isfile(doppelgangerSeedFilename):
-        with open(doppelgangerSeedFilename, 'r') as fp:
-            doppelgangerSeed = int(fp.read())
+    decoySeedFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/decoyseed'
+    decoySeed = 63725
+    if os.path.isfile(decoySeedFilename):
+        with open(decoySeedFilename, 'r') as fp:
+            decoySeed = int(fp.read())
     else:
-        doppelgangerSeed = randint(10000, 10000000000000)
+        decoySeed = randint(10000, 10000000000000)
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
@@ -206,7 +216,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
         (latitude, longitude, latitudeRef, longitudeRef) = \
             spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
-                             doppelgangerSeed, None)
+                             decoySeed, None)
         os.system('exiftool -artist="' + nickname + '" ' +
                   '-DateTimeOriginal="' + published + '" ' +
                   '-FileModifyDate="' + published + '" ' +
