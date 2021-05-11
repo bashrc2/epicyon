@@ -57,7 +57,15 @@ def _getDecoyCamera(decoySeed: int) -> (str, str, int):
         ["Samsung", "Galaxy S20 FE"],
         ["Samsung", "Galaxy Z Fold 2"],
         ["Samsung", "Galaxy A52 5G"],
-        ["Samsung", "Galaxy A71 5G"]
+        ["Samsung", "Galaxy A71 5G"],
+        ["Google", "Pixel 5"],
+        ["Google", "Pixel 4a"],
+        ["Google", "Pixel 4 XL"],
+        ["Google", "Pixel 3 XL"],
+        ["Google", "Pixel 4"],
+        ["Google", "Pixel 4a 5G"],
+        ["Google", "Pixel 3"],
+        ["Google", "Pixel 3a"]
     ]
     randgen = random.Random(decoySeed)
     index = randgen.randint(0, len(cameras) - 1)
