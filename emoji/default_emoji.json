@@ -765,5 +765,6 @@
     "tor": "tor",
     "pine64": "pine64",
     "void": "void",
-    "openbsd": "openbsd"
+    "openbsd": "openbsd",
+    "freebsd": "freebsd"
 }
