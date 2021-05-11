@@ -763,5 +763,8 @@
     "veryhappyemote": "veryHappyEmote",
     "worriedemote": "worriedEmote",
     "tor": "tor",
-    "pine64": "pine64"
+    "pine64": "pine64",
+    "void": "void",
+    "openbsd": "openbsd",
+    "freebsd": "freebsd"
 }

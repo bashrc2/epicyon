@@ -3688,6 +3688,9 @@ def testSpoofGeolocation() -> None:
     assert coords[1] <= 118.408 + cityRadius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
+    assert len(coords[4]) > 4
+    assert len(coords[5]) > 4
+    assert coords[6] > 0
     coords = spoofGeolocation('', 'unknown', currTime,
                               decoySeed, citiesList)
     assert coords[0] >= 51.8744 - cityRadius
@@ -3696,6 +3699,9 @@ def testSpoofGeolocation() -> None:
     assert coords[1] <= 0.368333 + cityRadius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
+    assert len(coords[4]) == 0
+    assert len(coords[5]) == 0
+    assert coords[6] == 0
     kmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n'
     kmlStr += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
     kmlStr += '<Document>\n'

@@ -84,10 +84,14 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
             datetime.datetime.utcnow() - \
             datetime.timedelta(minutes=randint(2, 120))
         published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
-        (latitude, longitude, latitudeRef, longitudeRef) = \
+        (latitude, longitude, latitudeRef, longitudeRef,
+         camMake, camModel, camSerialNumber) = \
             spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
                              decoySeed, None)
         os.system('exiftool -artist="' + nickname + '" ' +
+                  '-Make="' + camMake + '" ' +
+                  '-Model="' + camModel + '" ' +
+                  '-Comment="' + str(camSerialNumber) + '" ' +
                   '-DateTimeOriginal="' + published + '" ' +
                   '-FileModifyDate="' + published + '" ' +
                   '-CreateDate="' + published + '" ' +

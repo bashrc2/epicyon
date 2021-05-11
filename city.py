@@ -21,6 +21,58 @@ PERSON_EVENING = 4
 PERSON_PARTY = 5
 
 
+def _getDecoyCamera(decoySeed: int) -> (str, str, int):
+    """Returns a decoy camera make and model which took the photo
+    """
+    cameras = [
+        ["Apple", "iPhone SE"],
+        ["Apple", "iPhone XR"],
+        ["Apple", "iPhone 6"],
+        ["Apple", "iPhone 7"],
+        ["Apple", "iPhone 8"],
+        ["Apple", "iPhone 11"],
+        ["Apple", "iPhone 11 Pro"],
+        ["Apple", "iPhone 12"],
+        ["Apple", "iPhone 12 Mini"],
+        ["Apple", "iPhone 12 Pro Max"],
+        ["Samsung", "Galaxy Note 20 Ultra"],
+        ["Samsung", "Galaxy S20 Plus"],
+        ["Samsung", "Galaxy S20 FE 5G"],
+        ["Samsung", "Galaxy Z FOLD 2"],
+        ["Samsung", "Galaxy S10 Plus"],
+        ["Samsung", "Galaxy S10e"],
+        ["Samsung", "Galaxy Z Flip"],
+        ["Samsung", "Galaxy A51"],
+        ["Samsung", "Galaxy S10"],
+        ["Samsung", "Galaxy S10 Plus"],
+        ["Samsung", "Galaxy S10e"],
+        ["Samsung", "Galaxy S10 5G"],
+        ["Samsung", "Galaxy A60"],
+        ["Samsung", "Note 10"],
+        ["Samsung", "Note 10 Plus"],
+        ["Samsung", "Galaxy S21 Ultra"],
+        ["Samsung", "Galaxy Note 20 Ultra"],
+        ["Samsung", "Galaxy S21"],
+        ["Samsung", "Galaxy S21 Plus"],
+        ["Samsung", "Galaxy S20 FE"],
+        ["Samsung", "Galaxy Z Fold 2"],
+        ["Samsung", "Galaxy A52 5G"],
+        ["Samsung", "Galaxy A71 5G"],
+        ["Google", "Pixel 5"],
+        ["Google", "Pixel 4a"],
+        ["Google", "Pixel 4 XL"],
+        ["Google", "Pixel 3 XL"],
+        ["Google", "Pixel 4"],
+        ["Google", "Pixel 4a 5G"],
+        ["Google", "Pixel 3"],
+        ["Google", "Pixel 3a"]
+    ]
+    randgen = random.Random(decoySeed)
+    index = randgen.randint(0, len(cameras) - 1)
+    serialNumber = randgen.randint(100000000000, 999999999999999999999999)
+    return cameras[index][0], cameras[index][1], serialNumber
+
+
 def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
     """This simulates expected average patterns of movement in a city.
     Jane or Joe average lives and works in the city, commuting in
@@ -76,10 +128,12 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
 
 def spoofGeolocation(baseDir: str,
                      city: str, currTime, decoySeed: int,
-                     citiesList: []) -> (float, float, str, str):
+                     citiesList: []) -> (float, float, str, str,
+                                         str, str, int):
     """Given a city and the current time spoofs the location
     for an image
-    returns latitude, longitude, N/S, E/W
+    returns latitude, longitude, N/S, E/W,
+    camera make, camera model, camera serial number
     """
     locationsFilename = baseDir + '/custom_locations.txt'
     if not os.path.isfile(locationsFilename):
@@ -122,6 +176,8 @@ def spoofGeolocation(baseDir: str,
                 approxTimeZone = -approxTimeZone
             currTimeAdjusted = currTime - \
                 datetime.timedelta(hours=approxTimeZone)
+            camMake, camModel, camSerialNumber = \
+                _getDecoyCamera(decoySeed)
             # patterns of activity change in the city over time
             (distanceFromCityCenter, angleRadians) = \
                 _getCityPulse(currTimeAdjusted, decoySeed)
@@ -142,7 +198,9 @@ def spoofGeolocation(baseDir: str,
             # number of decimal places
             latitude = int(latitude * 100000) / 100000.0
             longitude = int(longitude * 100000) / 100000.0
-            return latitude, longitude, latdirection, longdirection
+            return (latitude, longitude, latdirection, longdirection,
+                    camMake, camModel, camSerialNumber)
 
     return (default_latitude, default_longitude,
-            default_latdirection, default_longdirection)
+            default_latdirection, default_longdirection,
+            "", "", 0)
