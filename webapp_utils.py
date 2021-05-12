@@ -736,13 +736,13 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
-        '      "@context" : "http://schema.org",' + \
-        '      "@type" : "Person",' + \
-        '      "name": "' + actorJson['name'] + '",' + \
-        '      "image": "' + actorJson['icon']['url'] + '",' + \
-        '      "description": "' + actorJson['summary'] + '",' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "Person",\n' + \
+        '      "name": "' + actorJson['name'] + '",\n' + \
+        '      "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '      "description": "' + actorJson['summary'] + '",\n' + \
         skillsMarkup + \
-        '      "url": "' + actorJson['id'] + '"' + \
+        '      "url": "' + actorJson['id'] + '"\n' + \
         '    }\n' + \
         '    </script>\n'
     htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
