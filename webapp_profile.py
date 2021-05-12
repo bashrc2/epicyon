@@ -45,6 +45,7 @@ from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithPersonMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
 from webapp_utils import getBannerFile
@@ -342,7 +343,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
                       alsoKnownAs: [],
                       pinnedContent: str,
                       accessKeys: {},
-                      joinedDate: str) -> str:
+                      joinedDate: str,
+                      occupationName: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -361,7 +363,14 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         translate['Switch to timeline view'] + '">\n' + \
         '          <img loading="lazy" src="' + avatarUrl + '" ' + \
         'alt=""  class="title"></a>\n'
-    htmlStr += '        <h1>' + displayName + '</h1>\n'
+
+    occupationStr = ''
+    if occupationName:
+        occupationStr += \
+            '        <b>' + occupationName + '</b><br>\n'
+
+    htmlStr += '        <h1>' + displayName + '</h1>\n' + occupationStr
+
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
     if joinedDate:
@@ -730,6 +739,9 @@ def htmlProfile(rssIconAtTop: bool,
     if profileJson.get('published'):
         if 'T' in profileJson['published']:
             joinedDate = profileJson['published']
+    occupationName = None
+    if profileJson.get('occupationName'):
+        occupationName = profileJson['occupationName']
 
     avatarUrl = profileJson['icon']['url']
 
@@ -751,7 +763,7 @@ def htmlProfile(rssIconAtTop: bool,
                           loginButton, avatarUrl, theme,
                           movedTo, alsoKnownAs,
                           pinnedContent, accessKeys,
-                          joinedDate)
+                          joinedDate, occupationName)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname
@@ -888,7 +900,7 @@ def htmlProfile(rssIconAtTop: bool,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        htmlHeaderWithPersonMarkup(cssFilename, instanceTitle, profileJson) + \
         profileStr + htmlFooter()
     return profileStr
 
@@ -1587,6 +1599,16 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="file" id="avatar" name="avatar"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
+
+    occupationName = ''
+    if actorJson.get('occupationName'):
+        occupationName = actorJson['occupationName']
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Occupation'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" ' + \
+        'name="occupationName" value="' + occupationName + '">\n'
 
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):

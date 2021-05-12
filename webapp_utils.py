@@ -710,6 +710,51 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
     return htmlStr
 
 
+def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
+                               actorJson: {}, lang='en') -> str:
+    """html header which includes person markup
+    https://schema.org/Person
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, lang)
+    if not actorJson:
+        return htmlStr
+
+    skillsMarkup = ''
+    if actorJson.get('skills'):
+        skillsStr = ''
+        for skillName, skillValue in actorJson['skills'].items():
+            if skillsStr:
+                skillsStr += ', ' + skillName
+            else:
+                skillsStr += skillName
+        if skillsStr:
+            occupationStr = ''
+            if actorJson.get('occupationName'):
+                occupationName = actorJson['occupationName']
+                occupationStr = '        "name": "' + occupationName + '",\n'
+            skillsMarkup = \
+                '      "hasOccupation": {\n' + \
+                '        "@type": "Occupation",\n' + \
+                occupationStr + \
+                '        "skills": "' + skillsStr + '"\n' + \
+                '      "},\n'
+
+    personMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "Person",\n' + \
+        '      "name": "' + actorJson['name'] + '",\n' + \
+        '      "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '      "description": "' + actorJson['summary'] + '",\n' + \
+        skillsMarkup + \
+        '      "url": "' + actorJson['id'] + '"\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
+    return htmlStr
+
+
 def htmlFooter() -> str:
     htmlStr = '  </body>\n'
     htmlStr += '</html>\n'

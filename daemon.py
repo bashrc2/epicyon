@@ -4592,6 +4592,23 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
+                    occupationName = ""
+                    if actorJson.get('occupationName'):
+                        occupationName = actorJson['occupationName']
+                    if fields.get('occupationName'):
+                        fields['occupationName'] = \
+                            removeHtml(fields['occupationName'])
+                        if occupationName != \
+                           fields['occupationName']:
+                            actorJson['occupationName'] = \
+                                fields['occupationName']
+                            actorChanged = True
+                    else:
+                        if occupationName:
+                            actorJson['occupationName'] = ''
+                            actorChanged = True
+
+                    # Other accounts (alsoKnownAs)
                     alsoKnownAs = []
                     if actorJson.get('alsoKnownAs'):
                         alsoKnownAs = actorJson['alsoKnownAs']

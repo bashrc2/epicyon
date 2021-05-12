@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "إظهار عدد الحسابات داخل البيانات الوصفية للمثيلات",
     "Show version number within instance metadata": "إظهار رقم الإصدار داخل البيانات الوصفية للمثيل",
     "Joined": "تاريخ الانضمام",
-    "City for spoofed GPS image metadata": "مدينة للبيانات الوصفية لصور GPS المخادعة"
+    "City for spoofed GPS image metadata": "مدينة للبيانات الوصفية لصور GPS المخادعة",
+    "Occupation": "الاحتلال"
 }

@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "显示实例元数据中的帐户数",
     "Show version number within instance metadata": "在实例元数据中显示版本号",
     "Joined": "加入日期",
-    "City for spoofed GPS image metadata": "欺骗性GPS影像元数据的城市"
+    "City for spoofed GPS image metadata": "欺骗性GPS影像元数据的城市",
+    "Occupation": "职业"
 }
