@@ -710,6 +710,45 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
     return htmlStr
 
 
+def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
+                               actorJson: {}, lang='en') -> str:
+    """html header which includes person markup
+    https://schema.org/Person
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, lang)
+    if not actorJson:
+        return htmlStr
+
+    skillsMarkup = ''
+    if actorJson.get('skills'):
+        skillsStr = ''
+        for skillName, skillValue in actorJson['skills'].items():
+            if skillsStr:
+                skillsStr += ', ' + skillName
+            else:
+                skillsStr += skillName
+        if skillsStr:
+            skillsMarkup = \
+                '      "hasOccupation": {\n' + \
+                '        "skills": "' + skillsStr + '"\n' + \
+                '      "},\n'
+
+    personMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",' + \
+        '      "@type" : "Person",' + \
+        '      "name": "' + actorJson['name'] + '",' + \
+        '      "image": "' + actorJson['icon']['url'] + '",' + \
+        '      "description": "' + actorJson['summary'] + '",' + \
+        skillsMarkup + \
+        '      "url": "' + actorJson['id'] + '"' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
+    return htmlStr
+
+
 def htmlFooter() -> str:
     htmlStr = '  </body>\n'
     htmlStr += '</html>\n'

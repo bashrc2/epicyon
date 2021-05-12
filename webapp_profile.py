@@ -45,6 +45,7 @@ from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithPersonMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
 from webapp_utils import getBannerFile
@@ -888,7 +889,7 @@ def htmlProfile(rssIconAtTop: bool,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        htmlHeaderWithPersonMarkup(cssFilename, instanceTitle, profileJson) + \
         profileStr + htmlFooter()
     return profileStr
 
