@@ -1589,6 +1589,16 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="file" id="avatar" name="avatar"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
+    occupationName = ''
+    if actorJson.get('occupationName'):
+        occupationName = actorJson['occupationName']
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Occupation'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" ' + \
+        'name="occupationName" value="' + occupationName + '">\n'
+
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):
         alsoKnownAs = actorJson['alsoKnownAs']

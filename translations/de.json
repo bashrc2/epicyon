@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "Anzahl der Konten in Instanzmetadaten anzeigen",
     "Show version number within instance metadata": "Versionsnummer in Instanzmetadaten anzeigen",
     "Joined": "Verbundenes Datum",
-    "City for spoofed GPS image metadata": "Stadt für gefälschte GPS-Bildmetadaten"
+    "City for spoofed GPS image metadata": "Stadt für gefälschte GPS-Bildmetadaten",
+    "Occupation": "Besetzung"
 }

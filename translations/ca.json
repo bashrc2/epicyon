@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "Mostra el nombre de comptes a les metadades de la instància",
     "Show version number within instance metadata": "Mostra el número de versió a les metadades de la instància",
     "Joined": "Data d'unió",
-    "City for spoofed GPS image metadata": "Ciutat per a metadades d'imatges GPS falsificades"
+    "City for spoofed GPS image metadata": "Ciutat per a metadades d'imatges GPS falsificades",
+    "Occupation": "Ocupació"
 }

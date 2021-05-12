@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "Mostra il numero di account all'interno dei metadati dell'istanza",
     "Show version number within instance metadata": "Mostra il numero di versione nei metadati dell'istanza",
     "Joined": "Unito",
-    "City for spoofed GPS image metadata": "Città per metadati di immagini GPS falsificate"
+    "City for spoofed GPS image metadata": "Città per metadati di immagini GPS falsificate",
+    "Occupation": "Occupazione"
 }

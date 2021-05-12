@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "Muestra el número de cuentas dentro de los metadatos de la instancia.",
     "Show version number within instance metadata": "Mostrar el número de versión dentro de los metadatos de la instancia",
     "Joined": "Fecha unida",
-    "City for spoofed GPS image metadata": "Ciudad para metadatos de imagen GPS falsificados"
+    "City for spoofed GPS image metadata": "Ciudad para metadatos de imagen GPS falsificados",
+    "Occupation": "Ocupación"
 }

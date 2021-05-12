@@ -441,5 +441,6 @@
     "Show numbers of accounts within instance metadata": "Dangos nifer y cyfrifon o fewn metadata",
     "Show version number within instance metadata": "Dangos rhif y fersiwn o fewn metadata",
     "Joined": "Dyddiad ymuno",
-    "City for spoofed GPS image metadata": "Dinas ar gyfer metadata delwedd GPS spoofed"
+    "City for spoofed GPS image metadata": "Dinas ar gyfer metadata delwedd GPS spoofed",
+    "Occupation": "Ngalwedigaeth"
 }
