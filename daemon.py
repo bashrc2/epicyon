@@ -4596,7 +4596,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if actorJson.get('occupationName'):
                         occupationName = actorJson['occupationName']
                     if fields.get('occupationName'):
-                        if actorJson['occupationName'] != \
+                        if occupationName != \
                            fields['occupationName']:
                             actorJson['occupationName'] = \
                                 fields['occupationName']
