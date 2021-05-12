@@ -4596,8 +4596,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if actorJson.get('occupationName'):
                         occupationName = actorJson['occupationName']
                     if fields.get('occupationName'):
-                        if actorJson['occupationName'] != fields['occupationName']:
-                            actorJson['occupationName'] = fields['occupationName']
+                        if actorJson['occupationName'] != \
+                           fields['occupationName']:
+                            actorJson['occupationName'] = \
+                                fields['occupationName']
                             actorChanged = True
                     else:
                         if occupationName:

@@ -343,7 +343,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
                       alsoKnownAs: [],
                       pinnedContent: str,
                       accessKeys: {},
-                      joinedDate: str) -> str:
+                      joinedDate: str,
+                      occupationName: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -362,7 +363,14 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         translate['Switch to timeline view'] + '">\n' + \
         '          <img loading="lazy" src="' + avatarUrl + '" ' + \
         'alt=""  class="title"></a>\n'
-    htmlStr += '        <h1>' + displayName + '</h1>\n'
+
+    occupationStr = ''
+    if occupationName:
+        occupationStr += \
+            '        <b>' + occupationName + '</b><br>\n'
+
+    htmlStr += '        <h1>' + displayName + '</h1>\n' + occupationStr
+
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
     if joinedDate:
@@ -731,6 +739,9 @@ def htmlProfile(rssIconAtTop: bool,
     if profileJson.get('published'):
         if 'T' in profileJson['published']:
             joinedDate = profileJson['published']
+    occupationName = None
+    if profileJson.get('occupationName'):
+        occupationName = profileJson['occupationName']
 
     avatarUrl = profileJson['icon']['url']
 
@@ -752,7 +763,7 @@ def htmlProfile(rssIconAtTop: bool,
                           loginButton, avatarUrl, theme,
                           movedTo, alsoKnownAs,
                           pinnedContent, accessKeys,
-                          joinedDate)
+                          joinedDate, occupationName)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname
