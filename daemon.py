@@ -4217,7 +4217,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if actorSkillValue(actorJson, skillName) != \
                                int(skillValue):
                                 actorChanged = True
-                        setActorSkillLevel(actorJson, skillName, int(skillValue))
+                        setActorSkillLevel(actorJson,
+                                           skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
                         setHashtagCategory(baseDir, skillName,
                                            skillsStr.lower())

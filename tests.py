@@ -67,6 +67,8 @@ from person import setDisplayNickname
 from person import setBio
 # from person import generateRSAKey
 from skills import setSkillLevel
+from skills import setSkillsFromDict
+from skills import getSkillsFromString
 from roles import setRole
 from roles import outboxDelegate
 from auth import constantTimeStringCheck
@@ -3731,9 +3733,32 @@ def testSpoofGeolocation() -> None:
         kmlFile.close()
 
 
+def testSkills() -> None:
+    print('testSkills')
+    actorJson = {
+        'hasOccupation': {
+            '@type': 'Occupation',
+            'name': "",
+            'skills': ""
+        }
+    }
+    skillsDict = {
+        'bakery': 40,
+        'gardening': 70
+    }
+    setSkillsFromDict(actorJson, skillsDict)
+    assert actorJson['hasOccupation']['skills']
+    skillsDict = getSkillsFromString(actorJson['hasOccupation']['skills'])
+    assert skillsDict.get('bakery')
+    assert skillsDict.get('gardening')
+    assert skillsDict['bakery'] == 40
+    assert skillsDict['gardening'] == 70
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testSkills()
     testSpoofGeolocation()
     testRemovePostInteractions()
     testExtractPGPPublicKey()
