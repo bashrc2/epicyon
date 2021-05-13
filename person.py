@@ -141,26 +141,6 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     return False
 
 
-def setOrganizationScheme(baseDir: str, nickname: str, domain: str,
-                          schema: str) -> bool:
-    """Set the organization schema within which a person exists
-    This will define how roles, skills and availability are assembled
-    into organizations
-    """
-    # avoid giant strings
-    if len(schema) > 256:
-        return False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
-    if not os.path.isfile(actorFilename):
-        return False
-
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        actorJson['orgSchema'] = schema
-        saveJson(actorJson, actorFilename)
-    return True
-
-
 def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
@@ -296,7 +276,6 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'following': personId + '/following',
         'tts': personId + '/speaker',
         'shares': personId + '/shares',
-        'orgSchema': None,
         'hasOccupation': {
             '@type': 'Occupation',
             'name': "",
@@ -593,7 +572,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
             '@type': 'Occupation',
             'name': occupationName,
             'skills': "",
-        },
+        }
         updateActor = True
 
     if updateActor:
