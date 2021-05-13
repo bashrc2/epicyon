@@ -4593,19 +4593,20 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # Other accounts (alsoKnownAs)
                     occupationName = ""
-                    if actorJson.get('occupationName'):
-                        occupationName = actorJson['occupationName']
+                    if actorJson.get('hasOccupation'):
+                        if actorJson['hasOccupation'].get('name'):
+                            occupationName = actorJson['hasOccupation']['name']
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
                             removeHtml(fields['occupationName'])
                         if occupationName != \
                            fields['occupationName']:
-                            actorJson['occupationName'] = \
+                            actorJson['hasOccupation']['name'] = \
                                 fields['occupationName']
                             actorChanged = True
                     else:
                         if occupationName:
-                            actorJson['occupationName'] = ''
+                            actorJson['hasOccupation']['name'] = ''
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)

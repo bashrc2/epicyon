@@ -219,7 +219,8 @@ def getDefaultPersonContext() -> str:
         'schema': 'http://schema.org#',
         'suspended': 'toot:suspended',
         'toot': 'http://joinmastodon.org/ns#',
-        'value': 'schema:value'
+        'value': 'schema:value',
+        'Occupation': 'schema:Occupation'
     }
 
 
@@ -296,7 +297,11 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'tts': personId + '/speaker',
         'shares': personId + '/shares',
         'orgSchema': None,
-        'occupation': "",
+        'hasOccupation': {
+            '@type': 'Occupation',
+            'name': "",
+            'skills': "",
+        },
         'skills': {},
         'roles': {},
         'availability': None,
@@ -578,7 +583,26 @@ def personUpgradeActor(baseDir: str, personJson: {},
         personJson['published'] = published
         updateActor = True
 
+    occupationName = ''
+    if personJson.get('occupation'):
+        occupationName = personJson['occupation']
+        del personJson['occupation']
+
+    if not personJson.get('hasOccupation'):
+        personJson['hasOccupation'] = {
+            '@type': 'Occupation',
+            'name': occupationName,
+            'skills': "",
+        },
+        updateActor = True
+
     if updateActor:
+        personJson['@context'] = [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1',
+            getDefaultPersonContext()
+        ],
+
         saveJson(personJson, filename)
 
         # also update the actor within the cache
