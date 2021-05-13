@@ -69,8 +69,9 @@ from person import setBio
 from skills import setSkillLevel
 from skills import setSkillsFromDict
 from skills import getSkillsFromString
+from roles import setRolesFromList
+from roles import getRolesFromString
 from roles import setRole
-from roles import outboxDelegate
 from auth import constantTimeStringCheck
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
@@ -454,7 +455,7 @@ def createServerAlice(path: str, domain: str, port: int,
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     assert setSkillLevel(path, nickname, domain, 'hacking', 90)
-    assert setRole(path, nickname, domain, 'someproject', 'guru')
+    assert setRole(path, nickname, domain, 'guru')
     if hasFollows:
         followPerson(path, nickname, domain, 'bob', bobAddress,
                      federationList, False)
@@ -558,8 +559,6 @@ def createServerBob(path: str, domain: str, port: int,
                      False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
-    assert setRole(path, nickname, domain, 'bandname', 'bass player')
-    assert setRole(path, nickname, domain, 'bandname', 'publicist')
     if hasFollows:
         followPerson(path, nickname, domain,
                      'alice', aliceAddress, federationList, False)
@@ -1406,80 +1405,6 @@ def testCreatePerson():
                      "G'day world!", False, True, clientToServer,
                      True, None, None, None, None,
                      'Not suitable for Vogons', 'London, England')
-
-    os.chdir(currDir)
-    shutil.rmtree(baseDir)
-
-
-def testDelegateRoles():
-    print('testDelegateRoles')
-    currDir = os.getcwd()
-    nickname = 'test382'
-    nicknameDelegated = 'test383'
-    domain = 'badgerdomain.com'
-    password = 'mypass'
-    port = 80
-    httpPrefix = 'https'
-    baseDir = currDir + '/.tests_delegaterole'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
-
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(baseDir, nickname, domain, port,
-                     httpPrefix, True, False, password)
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(baseDir, nicknameDelegated, domain, port,
-                     httpPrefix, True, False, 'insecure')
-
-    httpPrefix = 'http'
-    project = 'artechoke'
-    role = 'delegator'
-    actorDelegated = \
-        httpPrefix + '://' + domain + '/users/' + nicknameDelegated
-    newRoleJson = {
-        'type': 'Delegate',
-        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
-        'object': {
-            'type': 'Role',
-            'actor': actorDelegated,
-            'object': project + ';' + role,
-            'to': [],
-            'cc': []
-        },
-        'to': [],
-        'cc': []
-    }
-
-    assert outboxDelegate(baseDir, nickname, newRoleJson, False)
-    # second time delegation has already happened so should return false
-    assert outboxDelegate(baseDir, nickname, newRoleJson, False) is False
-
-    assert '"delegator"' in open(baseDir + '/accounts/' + nickname +
-                                 '@' + domain + '.json').read()
-    assert '"delegator"' in open(baseDir + '/accounts/' + nicknameDelegated +
-                                 '@' + domain + '.json').read()
-
-    newRoleJson = {
-        'type': 'Delegate',
-        'actor': httpPrefix + '://' + domain + '/users/' + nicknameDelegated,
-        'object': {
-            'type': 'Role',
-            'actor': httpPrefix + '://' + domain + '/users/' + nickname,
-            'object': 'otherproject;otherrole',
-            'to': [],
-            'cc': []
-        },
-        'to': [],
-        'cc': []
-    }
-
-    # non-delegators cannot assign roles
-    assert outboxDelegate(baseDir, nicknameDelegated,
-                          newRoleJson, False) is False
-    assert '"otherrole"' not in open(baseDir + '/accounts/' +
-                                     nickname + '@' + domain + '.json').read()
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -3755,9 +3680,31 @@ def testSkills() -> None:
     assert skillsDict['gardening'] == 70
 
 
+def testRoles() -> None:
+    print('testRoles')
+    actorJson = {
+        'affiliation': {
+            "@type": "OrganizationRole",
+            "roleName": "",
+            "affiliation": {
+                "@type": "WebSite",
+                "url": "https://testinstance.org"
+            },
+            "startDate": "date goes here"
+        }
+    }
+    testRolesList = ["admin", "moderator"]
+    setRolesFromList(actorJson, testRolesList)
+    assert actorJson['affiliation']['roleName']
+    rolesList = getRolesFromString(actorJson['affiliation']['roleName'])
+    assert 'admin' in rolesList
+    assert 'moderator' in rolesList
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testRoles()
     testSkills()
     testSpoofGeolocation()
     testRemovePostInteractions()
@@ -3812,5 +3759,4 @@ def runAllTests():
     testNoOfFollowersOnDomain()
     testFollows()
     testGroupFollowers()
-    testDelegateRoles()
     print('Tests succeeded\n')

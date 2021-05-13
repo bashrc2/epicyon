@@ -128,7 +128,7 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
 
 def spoofGeolocation(baseDir: str,
                      city: str, currTime, decoySeed: int,
-                     citiesList: []) -> (float, float, str, str,
+                     citiesList: []) -> (float, float, str, str, \
                                          str, str, int):
     """Given a city and the current time spoofs the location
     for an image
@@ -150,7 +150,8 @@ def spoofGeolocation(baseDir: str,
     else:
         if not os.path.isfile(locationsFilename):
             return (default_latitude, default_longitude,
-                    default_latdirection, default_longdirection)
+                    default_latdirection, default_longdirection,
+                    "", "", 0)
         cities = []
         with open(locationsFilename, "r") as f:
             cities = f.readlines()

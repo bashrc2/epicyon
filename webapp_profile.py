@@ -1027,20 +1027,18 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
 
 
 def _htmlProfileRoles(translate: {}, nickname: str, domain: str,
-                      rolesJson: {}) -> str:
+                      rolesList: []) -> str:
     """Shows roles on the profile screen
     """
     profileStr = ''
-    for project, rolesList in rolesJson.items():
-        profileStr += \
-            '<div class="roles">\n<h2>' + project + \
-            '</h2>\n<div class="roles-inner">\n'
-        for role in rolesList:
-            if translate.get(role):
-                profileStr += '<h3>' + translate[role] + '</h3>\n'
-            else:
-                profileStr += '<h3>' + role + '</h3>\n'
-        profileStr += '</div></div>\n'
+    profileStr += \
+        '<div class="roles">\n<div class="roles-inner">\n'
+    for role in rolesList:
+        if translate.get(role):
+            profileStr += '<h3>' + translate[role] + '</h3>\n'
+        else:
+            profileStr += '<h3>' + role + '</h3>\n'
+    profileStr += '</div></div>\n'
     if len(profileStr) == 0:
         profileStr += \
             '<p>@' + nickname + '@' + domain + ' has no roles assigned</p>\n'

@@ -124,6 +124,7 @@ from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
 from roles import setRole
+from roles import getRolesFromString
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
@@ -4732,7 +4733,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(modDir):
                                             setRole(baseDir,
                                                     modNick, domain,
-                                                    'instance', 'moderator')
+                                                    'moderator')
                                 else:
                                     # nicknames on separate lines
                                     modFile = open(moderatorsFile, "w+")
@@ -4757,7 +4758,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(modDir):
                                             setRole(baseDir,
                                                     modNick, domain,
-                                                    'instance',
                                                     'moderator')
 
                         # change site editors list
@@ -4789,7 +4789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance', 'editor')
+                                                    'editor')
                                 else:
                                     # nicknames on separate lines
                                     edFile = open(editorsFile, "w+")
@@ -4814,7 +4814,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance',
                                                     'editor')
 
                         # change site counselors list
@@ -4846,7 +4845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance', 'counselor')
+                                                    'counselor')
                                 else:
                                     # nicknames on separate lines
                                     edFile = open(counselorsFile, "w+")
@@ -4871,7 +4870,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance',
                                                     'counselor')
 
                     # remove scheduled posts
@@ -7376,7 +7374,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not actorJson:
             return False
 
-        if actorJson.get('roles'):
+        if actorJson.get('affiliation'):
             if self._requestHTTP():
                 getPerson = \
                     personLookup(domain, path.replace('/roles', ''),
@@ -7397,6 +7395,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
+                    rolesList = []
+                    if actorJson.get('affiliation'):
+                        actorRolesStr = actorJson['affiliation']['roleName']
+                        rolesList = getRolesFromString(actorRolesStr)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7420,8 +7422,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys,
-                                    actorJson['roles'],
+                                    accessKeys, rolesList,
                                     None, None)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -7433,7 +7434,12 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show roles')
             else:
                 if self._fetchAuthenticated():
-                    msg = json.dumps(actorJson['roles'],
+                    rolesList = []
+                    if actorJson.get('affiliation'):
+                        actorRolesStr = actorJson['affiliation']['roleName']
+                        rolesList = getRolesFromString(actorRolesStr)
+
+                    msg = json.dumps(rolesList,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)

@@ -200,7 +200,9 @@ def getDefaultPersonContext() -> str:
         'suspended': 'toot:suspended',
         'toot': 'http://joinmastodon.org/ns#',
         'value': 'schema:value',
-        'Occupation': 'schema:Occupation'
+        'Occupation': 'schema:Occupation',
+        'OrganizationRole': 'schema:OrganizationRole',
+        'WebSite': 'schema:Project'
     }
 
 
@@ -281,7 +283,15 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             'name': "",
             'skills': ""
         },
-        'roles': {},
+        "affiliation": {
+            "@type": "OrganizationRole",
+            "roleName": "",
+            "affiliation": {
+                "@type": "WebSite",
+                "url": httpPrefix + '://' + domain
+            },
+            "startDate": published
+        },
         'availability': None,
         'icon': {
             'mediaType': 'image/png',
@@ -319,7 +329,8 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         if newPerson.get('skills'):
             del newPerson['skills']
         del newPerson['shares']
-        del newPerson['roles']
+        if newPerson.get('roles'):
+            del newPerson['roles']
         del newPerson['tag']
         del newPerson['availability']
         del newPerson['followers']
@@ -463,10 +474,9 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
             setConfigParam(baseDir, 'admin', nickname)
-            setRole(baseDir, nickname, domain, 'instance', 'admin')
-            setRole(baseDir, nickname, domain, 'instance', 'moderator')
-            setRole(baseDir, nickname, domain, 'instance', 'editor')
-            setRole(baseDir, nickname, domain, 'instance', 'delegator')
+            setRole(baseDir, nickname, domain, 'admin')
+            setRole(baseDir, nickname, domain, 'moderator')
+            setRole(baseDir, nickname, domain, 'editor')
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
@@ -580,6 +590,22 @@ def personUpgradeActor(baseDir: str, personJson: {},
 
     if personJson.get('skills'):
         del personJson['skills']
+        updateActor = True
+
+    if not personJson.get('affiliation'):
+        personJson['affiliation'] = {
+            "@type": "OrganizationRole",
+            "roleName": "",
+            "affiliation": {
+                "@type": "WebSite",
+                "url": personJson['id'].split('/users/')[0]
+            },
+            "startDate": published
+        }
+        updateActor = True
+
+    if personJson.get('roles'):
+        del personJson['roles']
         updateActor = True
 
     if updateActor:
