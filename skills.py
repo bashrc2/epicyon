@@ -71,7 +71,7 @@ def noOfActorSkills(actorJson: {}) -> int:
     if actorJson.get('hasOccupation'):
         skillsList = actorJson['hasOccupation']['skills'].split(',')
         if skillsList:
-            return int(skillsList)
+            return len(skillsList)
     return 0
 
 
