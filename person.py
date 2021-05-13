@@ -580,6 +580,8 @@ def personUpgradeActor(baseDir: str, personJson: {},
         occupationName = personJson['occupation']
         del personJson['occupation']
 
+    # if the older skills format is being used then switch
+    # to the new one
     if not personJson.get('hasOccupation'):
         personJson['hasOccupation'] = {
             '@type': 'Occupation',
@@ -588,15 +590,18 @@ def personUpgradeActor(baseDir: str, personJson: {},
         }
         updateActor = True
 
+    # remove the old skills format
     if personJson.get('skills'):
         del personJson['skills']
         updateActor = True
 
+    # if the older roles format is being used then switch
+    # to the new one
     if not personJson.get('affiliation'):
         rolesStr = ''
         adminName = getConfigParam(baseDir, 'admin')
         if personJson['id'].endswith('/users/' + adminName):
-            rolesStr = 'admin'
+            rolesStr = 'admin, moderator, editor'
         statusNumber, published = getStatusNumber()
         personJson['affiliation'] = {
             "@type": "OrganizationRole",
@@ -609,6 +614,16 @@ def personUpgradeActor(baseDir: str, personJson: {},
         }
         updateActor = True
 
+    # if no roles are defined then ensure that the admin
+    # roles are configured
+    if not personJson['affiliation']['roleName']:
+        adminName = getConfigParam(baseDir, 'admin')
+        if personJson['id'].endswith('/users/' + adminName):
+            personJson['affiliation']['roleName'] = \
+                'admin, moderator, editor'
+        updateActor = True
+
+    # remove the old roles format
     if personJson.get('roles'):
         del personJson['roles']
         updateActor = True
