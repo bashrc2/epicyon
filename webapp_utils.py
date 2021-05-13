@@ -720,18 +720,11 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         return htmlStr
 
     skillsMarkup = ''
-    if actorJson.get('skills'):
-        skillsStr = ''
-        for skillName, skillValue in actorJson['skills'].items():
-            if skillsStr:
-                skillsStr += ', ' + skillName
-            else:
-                skillsStr += skillName
-        if skillsStr:
-            occupationStr = ''
-            if actorJson.get('occupationName'):
-                occupationName = actorJson['occupationName']
-                occupationStr = '        "name": "' + occupationName + '",\n'
+    if actorJson.get('hasOccupation'):
+        skillsStr = actorJson['hasOccupation']['skills']
+        if actorJson['hasOccupation'].get('name'):
+            occupationName = actorJson['hasOccupation']['name']
+            occupationStr = '        "name": "' + occupationName + '",\n'
             skillsMarkup = \
                 '      "hasOccupation": {\n' + \
                 '        "@type": "Occupation",\n' + \

@@ -20,6 +20,8 @@ from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
+from skills import noOfActorSkills
+from skills import getSkillsFromString
 from categories import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
@@ -414,11 +416,13 @@ def htmlSkillsSearch(actor: str,
             actorJson = loadJson(actorFilename)
             if actorJson:
                 if actorJson.get('id') and \
-                   actorJson.get('skills') and \
+                   noOfActorSkills(actorJson) > 0 and \
                    actorJson.get('name') and \
                    actorJson.get('icon'):
                     actor = actorJson['id']
-                    for skillName, skillLevel in actorJson['skills'].items():
+                    actorSkillsStr = actorJson['hasOccupation']['skills']
+                    skills = getSkillsFromString(actorSkillsStr)
+                    for skillName, skillLevel in skills.items():
                         skillName = skillName.lower()
                         if not (skillName in skillsearch or
                                 skillsearch in skillName):
@@ -453,12 +457,14 @@ def htmlSkillsSearch(actor: str,
                     if cachedActorJson.get('actor'):
                         actorJson = cachedActorJson['actor']
                         if actorJson.get('id') and \
-                           actorJson.get('skills') and \
+                           noOfActorSkills(actorJson) > 0 and \
                            actorJson.get('name') and \
                            actorJson.get('icon'):
                             actor = actorJson['id']
-                            for skillName, skillLevel in \
-                                    actorJson['skills'].items():
+                            actorSkillsStr = \
+                                actorJson['hasOccupation']['skills']
+                            skills = getSkillsFromString(actorSkillsStr)
+                            for skillName, skillLevel in skills.items():
                                 skillName = skillName.lower()
                                 if not (skillName in skillsearch or
                                         skillsearch in skillName):

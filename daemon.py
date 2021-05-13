@@ -98,6 +98,11 @@ from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowAccount
 from follow import createInitialLastSeen
+from skills import getSkillsFromString
+from skills import noOfActorSkills
+from skills import actorHasSkill
+from skills import actorSkillValue
+from skills import setActorSkillLevel
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -4191,7 +4196,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # set skill levels
                     skillCtr = 1
-                    newSkills = {}
+                    actorSkillsCtr = noOfActorSkills(actorJson)
                     while skillCtr < 10:
                         skillName = \
                             fields.get('skillName' + str(skillCtr))
@@ -4206,21 +4211,20 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skillValue:
                             skillCtr += 1
                             continue
-                        if not actorJson['skills'].get(skillName):
+                        if not actorHasSkill(actorJson, skillName):
                             actorChanged = True
                         else:
-                            if actorJson['skills'][skillName] != \
+                            if actorSkillValue(actorJson, skillName) != \
                                int(skillValue):
                                 actorChanged = True
-                        newSkills[skillName] = int(skillValue)
+                        setActorSkillLevel(actorJson, skillName, skillValue)
                         skillsStr = self.server.translate['Skills']
                         setHashtagCategory(baseDir, skillName,
                                            skillsStr.lower())
                         skillCtr += 1
-                    if len(actorJson['skills'].items()) != \
-                       len(newSkills.items()):
+                    if noOfActorSkills(actorJson) != \
+                       actorSkillsCtr:
                         actorChanged = True
-                    actorJson['skills'] = newSkills
 
                     # change password
                     if fields.get('password'):
@@ -7461,7 +7465,7 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(actorFilename):
                 actorJson = loadJson(actorFilename)
                 if actorJson:
-                    if actorJson.get('skills'):
+                    if noOfActorSkills(actorJson) > 0:
                         if self._requestHTTP():
                             getPerson = \
                                 personLookup(domain,
@@ -7486,6 +7490,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 if self.server.keyShortcuts.get(nickname):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
+                                actorSkillsStr = \
+                                    actorJson['hasOccupation']['skills']
+                                skills = getSkillsFromString(actorSkillsStr)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7509,8 +7516,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
-                                                accessKeys,
-                                                actorJson['skills'],
+                                                accessKeys, skills,
                                                 None, None)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
@@ -7523,7 +7529,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show skills')
                         else:
                             if self._fetchAuthenticated():
-                                msg = json.dumps(actorJson['skills'],
+                                actorSkillsStr = \
+                                    actorJson['hasOccupation']['skills']
+                                skills = getSkillsFromString(actorSkillsStr)
+                                msg = json.dumps(skills,
                                                  ensure_ascii=False)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)

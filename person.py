@@ -279,9 +279,8 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'hasOccupation': {
             '@type': 'Occupation',
             'name': "",
-            'skills': "",
+            'skills': ""
         },
-        'skills': {},
         'roles': {},
         'availability': None,
         'icon': {
@@ -317,7 +316,8 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         del newPerson['outbox']
         del newPerson['icon']
         del newPerson['image']
-        del newPerson['skills']
+        if newPerson.get('skills'):
+            del newPerson['skills']
         del newPerson['shares']
         del newPerson['roles']
         del newPerson['tag']
@@ -574,8 +574,12 @@ def personUpgradeActor(baseDir: str, personJson: {},
         personJson['hasOccupation'] = {
             '@type': 'Occupation',
             'name': occupationName,
-            'skills': "",
+            'skills': ""
         }
+        updateActor = True
+
+    if personJson.get('skills'):
+        del personJson['skills']
         updateActor = True
 
     if updateActor:
