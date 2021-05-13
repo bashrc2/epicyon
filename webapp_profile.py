@@ -740,8 +740,9 @@ def htmlProfile(rssIconAtTop: bool,
         if 'T' in profileJson['published']:
             joinedDate = profileJson['published']
     occupationName = None
-    if profileJson.get('occupationName'):
-        occupationName = profileJson['occupationName']
+    if profileJson.get('hasOccupation'):
+        if profileJson['hasOccupation'].get('name'):
+            occupationName = profileJson['hasOccupation']['name']
 
     avatarUrl = profileJson['icon']['url']
 
@@ -1601,8 +1602,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
     occupationName = ''
-    if actorJson.get('occupationName'):
-        occupationName = actorJson['occupationName']
+    if actorJson.get('hasOccupation'):
+        if actorJson['hasOccupation'].get('name'):
+            occupationName = actorJson['hasOccupation']['name']
 
     editProfileForm += '<label class="labels">' + \
         translate['Occupation'] + ':</label><br>\n'
