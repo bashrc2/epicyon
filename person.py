@@ -593,6 +593,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
         updateActor = True
 
     if not personJson.get('affiliation'):
+        statusNumber, published = getStatusNumber()
         personJson['affiliation'] = {
             "@type": "OrganizationRole",
             "roleName": "",
