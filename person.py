@@ -563,6 +563,9 @@ def personUpgradeActor(baseDir: str, personJson: {},
         updateActor = True
 
     occupationName = ''
+    if personJson.get('occupationName'):
+        occupationName = personJson['occupationName']
+        del personJson['occupationName']
     if personJson.get('occupation'):
         occupationName = personJson['occupation']
         del personJson['occupation']
