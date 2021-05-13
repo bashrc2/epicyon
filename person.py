@@ -593,10 +593,14 @@ def personUpgradeActor(baseDir: str, personJson: {},
         updateActor = True
 
     if not personJson.get('affiliation'):
+        rolesStr = ''
+        adminName = getConfigParam(baseDir, 'admin')
+        if personJson['id'].endswith('/users/' + adminName):
+            rolesStr = 'admin'
         statusNumber, published = getStatusNumber()
         personJson['affiliation'] = {
             "@type": "OrganizationRole",
-            "roleName": "",
+            "roleName": rolesStr,
             "affiliation": {
                 "@type": "WebSite",
                 "url": personJson['id'].split('/users/')[0]

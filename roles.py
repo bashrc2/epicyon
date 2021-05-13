@@ -7,13 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
-from posts import getPersonBox
-from session import postJson
-from utils import getFullDomain
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
 
