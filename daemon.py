@@ -98,6 +98,11 @@ from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowAccount
 from follow import createInitialLastSeen
+from skills import getSkillsFromString
+from skills import noOfActorSkills
+from skills import actorHasSkill
+from skills import actorSkillValue
+from skills import setActorSkillLevel
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -119,6 +124,7 @@ from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
 from roles import setRole
+from roles import getRolesFromString
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
@@ -4154,22 +4160,6 @@ class PubServer(BaseHTTPRequestHandler):
                         # which isn't implemented in Epicyon
                         actorJson['discoverable'] = True
                         actorChanged = True
-                    if not actorJson['@context'][2].get('orgSchema'):
-                        actorJson['@context'][2]['orgSchema'] = \
-                            'toot:orgSchema'
-                        actorChanged = True
-                    if not actorJson['@context'][2].get('skills'):
-                        actorJson['@context'][2]['skills'] = 'toot:skills'
-                        actorChanged = True
-                    if not actorJson['@context'][2].get('shares'):
-                        actorJson['@context'][2]['shares'] = 'toot:shares'
-                        actorChanged = True
-                    if not actorJson['@context'][2].get('roles'):
-                        actorJson['@context'][2]['roles'] = 'toot:roles'
-                        actorChanged = True
-                    if not actorJson['@context'][2].get('availability'):
-                        actorJson['@context'][2]['availaibility'] = \
-                            'toot:availability'
                     if actorJson.get('capabilityAcquisitionEndpoint'):
                         del actorJson['capabilityAcquisitionEndpoint']
                         actorChanged = True
@@ -4207,7 +4197,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # set skill levels
                     skillCtr = 1
-                    newSkills = {}
+                    actorSkillsCtr = noOfActorSkills(actorJson)
                     while skillCtr < 10:
                         skillName = \
                             fields.get('skillName' + str(skillCtr))
@@ -4222,21 +4212,21 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skillValue:
                             skillCtr += 1
                             continue
-                        if not actorJson['skills'].get(skillName):
+                        if not actorHasSkill(actorJson, skillName):
                             actorChanged = True
                         else:
-                            if actorJson['skills'][skillName] != \
+                            if actorSkillValue(actorJson, skillName) != \
                                int(skillValue):
                                 actorChanged = True
-                        newSkills[skillName] = int(skillValue)
+                        setActorSkillLevel(actorJson,
+                                           skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
                         setHashtagCategory(baseDir, skillName,
                                            skillsStr.lower())
                         skillCtr += 1
-                    if len(actorJson['skills'].items()) != \
-                       len(newSkills.items()):
+                    if noOfActorSkills(actorJson) != \
+                       actorSkillsCtr:
                         actorChanged = True
-                    actorJson['skills'] = newSkills
 
                     # change password
                     if fields.get('password'):
@@ -4593,19 +4583,20 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # Other accounts (alsoKnownAs)
                     occupationName = ""
-                    if actorJson.get('occupationName'):
-                        occupationName = actorJson['occupationName']
+                    if actorJson.get('hasOccupation'):
+                        if actorJson['hasOccupation'].get('name'):
+                            occupationName = actorJson['hasOccupation']['name']
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
                             removeHtml(fields['occupationName'])
                         if occupationName != \
                            fields['occupationName']:
-                            actorJson['occupationName'] = \
+                            actorJson['hasOccupation']['name'] = \
                                 fields['occupationName']
                             actorChanged = True
                     else:
                         if occupationName:
-                            actorJson['occupationName'] = ''
+                            actorJson['hasOccupation']['name'] = ''
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
@@ -4742,7 +4733,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(modDir):
                                             setRole(baseDir,
                                                     modNick, domain,
-                                                    'instance', 'moderator')
+                                                    'moderator')
                                 else:
                                     # nicknames on separate lines
                                     modFile = open(moderatorsFile, "w+")
@@ -4767,7 +4758,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(modDir):
                                             setRole(baseDir,
                                                     modNick, domain,
-                                                    'instance',
                                                     'moderator')
 
                         # change site editors list
@@ -4799,7 +4789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance', 'editor')
+                                                    'editor')
                                 else:
                                     # nicknames on separate lines
                                     edFile = open(editorsFile, "w+")
@@ -4824,7 +4814,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance',
                                                     'editor')
 
                         # change site counselors list
@@ -4856,7 +4845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance', 'counselor')
+                                                    'counselor')
                                 else:
                                     # nicknames on separate lines
                                     edFile = open(counselorsFile, "w+")
@@ -4881,7 +4870,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         if os.path.isdir(edDir):
                                             setRole(baseDir,
                                                     edNick, domain,
-                                                    'instance',
                                                     'counselor')
 
                     # remove scheduled posts
@@ -7386,7 +7374,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not actorJson:
             return False
 
-        if actorJson.get('roles'):
+        if actorJson.get('affiliation'):
             if self._requestHTTP():
                 getPerson = \
                     personLookup(domain, path.replace('/roles', ''),
@@ -7407,6 +7395,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
+                    rolesList = []
+                    if actorJson.get('affiliation'):
+                        actorRolesStr = actorJson['affiliation']['roleName']
+                        rolesList = getRolesFromString(actorRolesStr)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7430,8 +7422,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys,
-                                    actorJson['roles'],
+                                    accessKeys, rolesList,
                                     None, None)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -7443,7 +7434,12 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show roles')
             else:
                 if self._fetchAuthenticated():
-                    msg = json.dumps(actorJson['roles'],
+                    rolesList = []
+                    if actorJson.get('affiliation'):
+                        actorRolesStr = actorJson['affiliation']['roleName']
+                        rolesList = getRolesFromString(actorRolesStr)
+
+                    msg = json.dumps(rolesList,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -7476,7 +7472,7 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(actorFilename):
                 actorJson = loadJson(actorFilename)
                 if actorJson:
-                    if actorJson.get('skills'):
+                    if noOfActorSkills(actorJson) > 0:
                         if self._requestHTTP():
                             getPerson = \
                                 personLookup(domain,
@@ -7501,6 +7497,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 if self.server.keyShortcuts.get(nickname):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
+                                actorSkillsStr = \
+                                    actorJson['hasOccupation']['skills']
+                                skills = getSkillsFromString(actorSkillsStr)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7524,8 +7523,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
-                                                accessKeys,
-                                                actorJson['skills'],
+                                                accessKeys, skills,
                                                 None, None)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
@@ -7538,7 +7536,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show skills')
                         else:
                             if self._fetchAuthenticated():
-                                msg = json.dumps(actorJson['skills'],
+                                actorSkillsStr = \
+                                    actorJson['hasOccupation']['skills']
+                                skills = getSkillsFromString(actorSkillsStr)
+                                msg = json.dumps(skills,
                                                  ensure_ascii=False)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
@@ -10571,7 +10572,11 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlLogin(self.server.cssCache,
                               self.server.translate,
-                              self.server.baseDir, False).encode('utf-8')
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domainFull,
+                              self.server.systemLanguage,
+                              False).encode('utf-8')
                 msglen = len(msg)
                 self._logout_headers('text/html', msglen, callingDomain)
                 self._write(msg)
@@ -11201,13 +11206,15 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.onionDomain,
-                              None, self.server.translate)
+                              None, self.server.translate,
+                              self.server.systemLanguage)
             elif callingDomain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.i2pDomain,
-                              None, self.server.translate)
+                              None, self.server.translate,
+                              self.server.systemLanguage)
             else:
                 msg = \
                     htmlAbout(self.server.cssCache,
@@ -11215,7 +11222,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.httpPrefix,
                               self.server.domainFull,
                               self.server.onionDomain,
-                              self.server.translate)
+                              self.server.translate,
+                              self.server.systemLanguage)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
@@ -11676,7 +11684,10 @@ class PubServer(BaseHTTPRequestHandler):
             # request basic auth
             msg = htmlLogin(self.server.cssCache,
                             self.server.translate,
-                            self.server.baseDir).encode('utf-8')
+                            self.server.baseDir,
+                            self.server.httpPrefix,
+                            self.server.domainFull,
+                            self.server.systemLanguage).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
             self._write(msg)

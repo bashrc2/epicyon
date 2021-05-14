@@ -15,7 +15,95 @@ from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
-from utils import saveJson
+
+
+def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> str:
+    """Converts a dict containing skills to a string
+    Returns the string version of the dictionary
+    """
+    skillsStr = ''
+    for name, value in skillsDict.items():
+        if skillsStr:
+            skillsStr += ', '
+        skillsStr += name + ':' + str(value)
+    actorJson['hasOccupation']['skills'] = skillsStr
+    return skillsStr
+
+
+def getSkillsFromString(skillsStr: str) -> {}:
+    """Returns a dict of skills from a string
+    """
+    skillsList = skillsStr.split(',')
+    skillsDict = {}
+    for skill in skillsList:
+        if ':' not in skill:
+            continue
+        name = skill.split(':')[0].strip().lower()
+        valueStr = skill.split(':')[1]
+        if not valueStr.isdigit():
+            continue
+        skillsDict[name] = int(valueStr)
+    return skillsDict
+
+
+def actorHasSkill(actorJson: {}, skillName: str) -> bool:
+    """Returns true if the actor has the given skill
+    """
+    skillsDict = \
+        getSkillsFromString(actorJson['hasOccupation']['skills'])
+    if not skillsDict:
+        return False
+    return skillsDict.get(skillName.lower())
+
+
+def actorSkillValue(actorJson: {}, skillName: str) -> int:
+    """Returns The skill level from an actor
+    """
+    skillsDict = \
+        getSkillsFromString(actorJson['hasOccupation']['skills'])
+    if not skillsDict:
+        return 0
+    skillName = skillName.lower()
+    if skillsDict.get(skillName):
+        return skillsDict[skillName]
+    return 0
+
+
+def noOfActorSkills(actorJson: {}) -> int:
+    """Returns the number of skills that an actor has
+    """
+    if actorJson.get('hasOccupation'):
+        skillsList = actorJson['hasOccupation']['skills'].split(',')
+        if skillsList:
+            return len(skillsList)
+    return 0
+
+
+def setActorSkillLevel(actorJson: {},
+                       skill: str, skillLevelPercent: int) -> bool:
+    """Set a skill level for a person
+    Setting skill level to zero removes it
+    """
+    if skillLevelPercent < 0 or skillLevelPercent > 100:
+        return False
+
+    if not actorJson:
+        return True
+    if not actorJson.get('hasOccupation'):
+        actorJson['hasOccupation'] = {
+            '@type': 'Occupation',
+            'name': '',
+            'skills': ''
+        }
+    skillsDict = \
+        getSkillsFromString(actorJson['hasOccupation']['skills'])
+    if skillLevelPercent > 0:
+        skillsDict[skill] = skillLevelPercent
+    else:
+        if skillsDict.get(skill):
+            del skillsDict[skill]
+    setSkillsFromDict(actorJson, skillsDict)
+    return True
 
 
 def setSkillLevel(baseDir: str, nickname: str, domain: str,
@@ -30,15 +118,8 @@ def setSkillLevel(baseDir: str, nickname: str, domain: str,
         return False
 
     actorJson = loadJson(actorFilename)
-    if actorJson:
-        if not actorJson.get('skills'):
-            actorJson['skills'] = {}
-        if skillLevelPercent > 0:
-            actorJson['skills'][skill] = skillLevelPercent
-        else:
-            del actorJson['skills'][skill]
-        saveJson(actorJson, actorFilename)
-    return True
+    return setActorSkillLevel(actorJson,
+                              skill, skillLevelPercent)
 
 
 def getSkills(baseDir: str, nickname: str, domain: str) -> []:
@@ -50,9 +131,9 @@ def getSkills(baseDir: str, nickname: str, domain: str) -> []:
 
     actorJson = loadJson(actorFilename)
     if actorJson:
-        if not actorJson.get('skills'):
+        if not actorJson.get('hasOccupation'):
             return None
-        return actorJson['skills']
+        return getSkillsFromString(actorJson['hasOccupation']['skills'])
     return None
 
 
@@ -112,7 +193,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     newSkillJson = {
         'type': 'Skill',
         'actor': actor,
-        'object': '"'+skillStr+'"',
+        'object': '"' + skillStr + '"',
         'to': [toUrl],
         'cc': [ccUrl]
     }

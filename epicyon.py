@@ -74,7 +74,6 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
-from roles import sendRoleViaServer
 from skills import sendSkillViaServer
 from availability import setAvailability
 from availability import sendAvailabilityViaServer
@@ -495,9 +494,6 @@ parser.add_argument('--maxEmoji', '--maxemoji', dest='maxEmoji',
                     help='Maximum number of emoji within a post')
 parser.add_argument('--role', dest='role', type=str, default=None,
                     help='Set a role for a person')
-parser.add_argument('--organization', '--project', dest='project',
-                    type=str, default=None,
-                    help='Set a project for a person')
 parser.add_argument('--skill', dest='skill', type=str, default=None,
                     help='Set a skill for a person')
 parser.add_argument('--level', dest='skillLevelPercent', type=int,
@@ -518,11 +514,6 @@ parser.add_argument('--mute', dest='mute', type=str, default=None,
                     help='Mute a particular post URL')
 parser.add_argument('--unmute', dest='unmute', type=str, default=None,
                     help='Unmute a particular post URL')
-parser.add_argument('--delegate', dest='delegate', type=str, default=None,
-                    help='Address of an account to delegate a role to')
-parser.add_argument('--undodelegate', '--undelegate', dest='undelegate',
-                    type=str, default=None,
-                    help='Removes a delegated role for the given address')
 parser.add_argument('--filter', dest='filterStr', type=str, default=None,
                     help='Adds a word or phrase which if present will ' +
                     'cause a message to be ignored')
@@ -1987,24 +1978,6 @@ if args.backgroundImage:
         print('Background image was not added for ' + args.nickname)
     sys.exit()
 
-if args.project:
-    if not args.delegate and not args.undelegate:
-        if not nickname:
-            print('No nickname given')
-            sys.exit()
-
-        if args.role.lower() == 'none' or \
-           args.role.lower() == 'remove' or \
-           args.role.lower() == 'delete':
-            args.role = None
-        if args.role:
-            if setRole(baseDir, nickname, domain, args.project, args.role):
-                print('Role within ' + args.project + ' set to ' + args.role)
-        else:
-            if setRole(baseDir, nickname, domain, args.project, None):
-                print('Left ' + args.project)
-        sys.exit()
-
 if args.skill:
     if not nickname:
         print('Specify a nickname with the --nickname option')
@@ -2218,86 +2191,6 @@ if args.unmute:
         time.sleep(1)
     sys.exit()
 
-if args.delegate:
-    if not nickname:
-        print('Specify a nickname with the --nickname option')
-        sys.exit()
-
-    if not args.password:
-        args.password = getpass.getpass('Password: ')
-        if not args.password:
-            print('Specify a password with the --password option')
-            sys.exit()
-    args.password = args.password.replace('\n', '')
-
-    if not args.project:
-        print('Specify a project with the --project option')
-        sys.exit()
-
-    if not args.role:
-        print('Specify a role with the --role option')
-        sys.exit()
-
-    if '@' in args.delegate:
-        delegatedNickname = args.delegate.split('@')[0]
-        args.delegate = blockedActor
-
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    print('Sending delegation for ' + args.delegate +
-          ' with role ' + args.role + ' in project ' + args.project)
-
-    sendRoleViaServer(baseDir, session,
-                      nickname, args.password,
-                      domain, port,
-                      httpPrefix, args.delegate,
-                      args.project, args.role,
-                      cachedWebfingers, personCache,
-                      True, __version__)
-    for i in range(10):
-        # TODO detect send success/fail
-        time.sleep(1)
-    sys.exit()
-
-if args.undelegate:
-    if not nickname:
-        print('Specify a nickname with the --nickname option')
-        sys.exit()
-
-    if not args.password:
-        args.password = getpass.getpass('Password: ')
-        if not args.password:
-            print('Specify a password with the --password option')
-            sys.exit()
-    args.password = args.password.replace('\n', '')
-
-    if not args.project:
-        print('Specify a project with the --project option')
-        sys.exit()
-
-    if '@' in args.undelegate:
-        delegatedNickname = args.undelegate.split('@')[0]
-        args.undelegate = blockedActor
-
-    session = createSession(proxyType)
-    personCache = {}
-    cachedWebfingers = {}
-    print('Sending delegation removal for ' + args.undelegate +
-          ' from role ' + args.role + ' in project ' + args.project)
-
-    sendRoleViaServer(baseDir, session,
-                      nickname, args.password,
-                      domain, port,
-                      httpPrefix, args.delegate,
-                      args.project, None,
-                      cachedWebfingers, personCache,
-                      True, __version__)
-    for i in range(10):
-        # TODO detect send success/fail
-        time.sleep(1)
-    sys.exit()
-
 if args.unblock:
     if not nickname:
         print('Specify a nickname with the --nickname option')
@@ -2388,9 +2281,7 @@ if args.testdata:
                  True, False, 'likewhateveryouwantscoob')
     setSkillLevel(baseDir, nickname, domain, 'testing', 60)
     setSkillLevel(baseDir, nickname, domain, 'typing', 50)
-    setRole(baseDir, nickname, domain, 'instance', 'admin')
-    setRole(baseDir, nickname, domain, 'epicyon', 'hacker')
-    setRole(baseDir, nickname, domain, 'someproject', 'assistant')
+    setRole(baseDir, nickname, domain, 'admin')
     setAvailability(baseDir, nickname, domain, 'busy')
 
     addShare(baseDir,

@@ -7,13 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
-from posts import getPersonBox
-from session import postJson
-from utils import getFullDomain
-from utils import getNicknameFromActor
-from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
 
@@ -37,10 +30,13 @@ def _clearRoleStatus(baseDir: str, role: str) -> None:
         actorJson = loadJson(filename)
         if not actorJson:
             continue
-        if actorJson['roles'].get('instance'):
-            if role in actorJson['roles']['instance']:
-                actorJson['roles']['instance'].remove(role)
-                saveJson(actorJson, filename)
+        if not actorJson.get('affiliation'):
+            continue
+        rolesList = \
+            getRolesFromString(actorJson['affiliation']['roleName'])
+        if role in rolesList:
+            rolesList.remove(role)
+            saveJson(actorJson, filename)
 
 
 def clearEditorStatus(baseDir: str) -> None:
@@ -112,13 +108,35 @@ def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
                 f.write(roleNickname + '\n')
 
 
+def setRolesFromList(actorJson: {}, rolesList: []) -> None:
+    """Sets roles from a list
+    """
+    rolesStr = ''
+    for roleName in rolesList:
+        if rolesStr:
+            rolesStr += ', '
+        rolesStr += roleName.lower()
+    if actorJson.get('affiliation'):
+        actorJson['affiliation']['roleName'] = rolesStr
+
+
+def getRolesFromString(rolesStr: str) -> []:
+    """Returns a list of roles from a string
+    """
+    rolesList = rolesStr.split(',')
+    rolesResult = []
+    for roleName in rolesList:
+        rolesResult.append(roleName.strip().lower())
+    return rolesResult
+
+
 def setRole(baseDir: str, nickname: str, domain: str,
-            project: str, role: str) -> bool:
-    """Set a person's role within a project
+            role: str) -> bool:
+    """Set a person's role
     Setting the role to an empty string or None will remove it
     """
     # avoid giant strings
-    if len(role) > 128 or len(project) > 128:
+    if len(role) > 128:
         return False
     actorFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '.json'
@@ -133,230 +151,28 @@ def setRole(baseDir: str, nickname: str, domain: str,
 
     actorJson = loadJson(actorFilename)
     if actorJson:
+        if not actorJson.get('affiliation'):
+            return False
+        rolesList = \
+            getRolesFromString(actorJson['affiliation']['roleName'])
+        actorChanged = False
         if role:
             # add the role
-            if project == 'instance':
-                if roleFiles.get(role):
-                    _addRole(baseDir, nickname, domain, roleFiles[role])
-            if actorJson['roles'].get(project):
-                if role not in actorJson['roles'][project]:
-                    actorJson['roles'][project].append(role)
-            else:
-                actorJson['roles'][project] = [role]
+            if roleFiles.get(role):
+                _addRole(baseDir, nickname, domain, roleFiles[role])
+            if role not in rolesList:
+                rolesList.append(role)
+                rolesList.sort()
+                setRolesFromList(actorJson, rolesList)
+                actorChanged = True
         else:
             # remove the role
-            if project == 'instance':
-                if roleFiles.get(role):
-                    _removeRole(baseDir, nickname, roleFiles[role])
-            if actorJson['roles'].get(project):
-                actorJson['roles'][project].remove(role)
-                # if the project contains no roles then remove it
-                if len(actorJson['roles'][project]) == 0:
-                    del actorJson['roles'][project]
-        saveJson(actorJson, actorFilename)
+            if roleFiles.get(role):
+                _removeRole(baseDir, nickname, roleFiles[role])
+            if role in rolesList:
+                rolesList.remove(role)
+                setRolesFromList(actorJson, rolesList)
+                actorChanged = True
+        if actorChanged:
+            saveJson(actorJson, actorFilename)
     return True
-
-
-def _getRoles(baseDir: str, nickname: str, domain: str,
-              project: str) -> []:
-    """Returns the roles for a given person on a given project
-    """
-    actorFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '.json'
-    if not os.path.isfile(actorFilename):
-        return False
-
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        if not actorJson.get('roles'):
-            return None
-        if not actorJson['roles'].get(project):
-            return None
-        return actorJson['roles'][project]
-    return None
-
-
-def outboxDelegate(baseDir: str, authenticatedNickname: str,
-                   messageJson: {}, debug: bool) -> bool:
-    """Handles receiving a delegation request
-    """
-    if not messageJson.get('type'):
-        return False
-    if not messageJson['type'] == 'Delegate':
-        return False
-    if not messageJson.get('object'):
-        return False
-    if not isinstance(messageJson['object'], dict):
-        return False
-    if not messageJson['object'].get('type'):
-        return False
-    if not messageJson['object']['type'] == 'Role':
-        return False
-    if not messageJson['object'].get('object'):
-        return False
-    if not messageJson['object'].get('actor'):
-        return False
-    if not isinstance(messageJson['object']['object'], str):
-        return False
-    if ';' not in messageJson['object']['object']:
-        print('WARN: No ; separator between project and role')
-        return False
-
-    delegatorNickname = getNicknameFromActor(messageJson['actor'])
-    if delegatorNickname != authenticatedNickname:
-        return
-    domain, port = getDomainFromActor(messageJson['actor'])
-    project = messageJson['object']['object'].split(';')[0].strip()
-
-    # instance delegators can delagate to other projects
-    # than their own
-    canDelegate = False
-    delegatorRoles = _getRoles(baseDir, delegatorNickname,
-                               domain, 'instance')
-    if delegatorRoles:
-        if 'delegator' in delegatorRoles:
-            canDelegate = True
-
-    if not canDelegate:
-        canDelegate = True
-        # non-instance delegators can only delegate within their project
-        delegatorRoles = _getRoles(baseDir, delegatorNickname,
-                                   domain, project)
-        if delegatorRoles:
-            if 'delegator' not in delegatorRoles:
-                return False
-        else:
-            return False
-
-    if not canDelegate:
-        return False
-    nickname = getNicknameFromActor(messageJson['object']['actor'])
-    if not nickname:
-        print('WARN: unable to find nickname in ' +
-              messageJson['object']['actor'])
-        return False
-    role = \
-        messageJson['object']['object'].split(';')[1].strip().lower()
-
-    if not role:
-        setRole(baseDir, nickname, domain, project, None)
-        return True
-
-    # what roles is this person already assigned to?
-    existingRoles = _getRoles(baseDir, nickname, domain, project)
-    if existingRoles:
-        if role in existingRoles:
-            if debug:
-                print(nickname + '@' + domain +
-                      ' is already assigned to the role ' +
-                      role + ' within the project ' + project)
-            return False
-    setRole(baseDir, nickname, domain, project, role)
-    if debug:
-        print(nickname + '@' + domain +
-              ' assigned to the role ' + role +
-              ' within the project ' + project)
-    return True
-
-
-def sendRoleViaServer(baseDir: str, session,
-                      delegatorNickname: str, password: str,
-                      delegatorDomain: str, delegatorPort: int,
-                      httpPrefix: str, nickname: str,
-                      project: str, role: str,
-                      cachedWebfingers: {}, personCache: {},
-                      debug: bool, projectVersion: str) -> {}:
-    """A delegator creates a role for a person via c2s
-    Setting role to an empty string or None removes the role
-    """
-    if not session:
-        print('WARN: No session for sendRoleViaServer')
-        return 6
-
-    delegatorDomainFull = getFullDomain(delegatorDomain, delegatorPort)
-
-    toUrl = \
-        httpPrefix + '://' + delegatorDomainFull + '/users/' + nickname
-    ccUrl = \
-        httpPrefix + '://' + delegatorDomainFull + '/users/' + \
-        delegatorNickname + '/followers'
-
-    if role:
-        roleStr = project.lower() + ';' + role.lower()
-    else:
-        roleStr = project.lower() + ';'
-    actor = \
-        httpPrefix + '://' + delegatorDomainFull + \
-        '/users/' + delegatorNickname
-    delegateActor = \
-        httpPrefix + '://' + delegatorDomainFull + '/users/' + nickname
-    newRoleJson = {
-        'type': 'Delegate',
-        'actor': actor,
-        'object': {
-            'type': 'Role',
-            'actor': delegateActor,
-            'object': roleStr,
-            'to': [toUrl],
-            'cc': [ccUrl]
-        },
-        'to': [toUrl],
-        'cc': [ccUrl]
-    }
-
-    handle = \
-        httpPrefix + '://' + delegatorDomainFull + '/@' + delegatorNickname
-
-    # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
-                                cachedWebfingers,
-                                delegatorDomain, projectVersion, debug)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: role webfinger failed for ' + handle)
-        return 1
-    if not isinstance(wfRequest, dict):
-        print('WARN: role webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
-        return 1
-
-    postToBox = 'outbox'
-
-    # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session,
-                                            wfRequest, personCache,
-                                            projectVersion, httpPrefix,
-                                            delegatorNickname,
-                                            delegatorDomain, postToBox,
-                                            765672)
-
-    if not inboxUrl:
-        if debug:
-            print('DEBUG: role no ' + postToBox +
-                  ' was found for ' + handle)
-        return 3
-    if not fromPersonId:
-        if debug:
-            print('DEBUG: role no actor was found for ' + handle)
-        return 4
-
-    authHeader = createBasicAuthHeader(delegatorNickname, password)
-
-    headers = {
-        'host': delegatorDomain,
-        'Content-type': 'application/json',
-        'Authorization': authHeader
-    }
-    postResult = \
-        postJson(session, newRoleJson, [], inboxUrl, headers, 30, True)
-    if not postResult:
-        if debug:
-            print('DEBUG: POST role failed for c2s to ' + inboxUrl)
-#        return 5
-
-    if debug:
-        print('DEBUG: c2s POST role success')
-
-    return newRoleJson

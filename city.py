@@ -150,7 +150,8 @@ def spoofGeolocation(baseDir: str,
     else:
         if not os.path.isfile(locationsFilename):
             return (default_latitude, default_longitude,
-                    default_latdirection, default_longdirection)
+                    default_latdirection, default_longdirection,
+                    "", "", 0)
         cities = []
         with open(locationsFilename, "r") as f:
             cities = f.readlines()

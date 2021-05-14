@@ -11,7 +11,7 @@ import time
 from shutil import copyfile
 from utils import getConfigParam
 from utils import noOfAccounts
-from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import htmlKeyboardNavigation
 from theme import getTextModeLogo
@@ -51,7 +51,10 @@ def htmlGetLoginCredentials(loginParams: str,
 
 
 def htmlLogin(cssCache: {}, translate: {},
-              baseDir: str, autocomplete=True) -> str:
+              baseDir: str,
+              httpPrefix: str, domain: str,
+              systemLanguage: str,
+              autocomplete=True) -> str:
     """Shows the login screen
     """
     accounts = noOfAccounts(baseDir)
@@ -145,7 +148,10 @@ def htmlLogin(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    loginForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    loginForm = \
+        htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
+                                    httpPrefix, domain,
+                                    systemLanguage)
     loginForm += '<br>\n'
     loginForm += '<form method="POST" action="/login">\n'
     loginForm += '  <div class="imgcontainer">\n'

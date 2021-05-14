@@ -141,26 +141,6 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     return False
 
 
-def setOrganizationScheme(baseDir: str, nickname: str, domain: str,
-                          schema: str) -> bool:
-    """Set the organization schema within which a person exists
-    This will define how roles, skills and availability are assembled
-    into organizations
-    """
-    # avoid giant strings
-    if len(schema) > 256:
-        return False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
-    if not os.path.isfile(actorFilename):
-        return False
-
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        actorJson['orgSchema'] = schema
-        saveJson(actorJson, actorFilename)
-    return True
-
-
 def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
@@ -219,7 +199,10 @@ def getDefaultPersonContext() -> str:
         'schema': 'http://schema.org#',
         'suspended': 'toot:suspended',
         'toot': 'http://joinmastodon.org/ns#',
-        'value': 'schema:value'
+        'value': 'schema:value',
+        'Occupation': 'schema:Occupation',
+        'OrganizationRole': 'schema:OrganizationRole',
+        'WebSite': 'schema:Project'
     }
 
 
@@ -295,10 +278,20 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'following': personId + '/following',
         'tts': personId + '/speaker',
         'shares': personId + '/shares',
-        'orgSchema': None,
-        'occupation': "",
-        'skills': {},
-        'roles': {},
+        'hasOccupation': {
+            '@type': 'Occupation',
+            'name': "",
+            'skills': ""
+        },
+        "affiliation": {
+            "@type": "OrganizationRole",
+            "roleName": "",
+            "affiliation": {
+                "@type": "WebSite",
+                "url": httpPrefix + '://' + domain
+            },
+            "startDate": published
+        },
         'availability': None,
         'icon': {
             'mediaType': 'image/png',
@@ -333,9 +326,11 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         del newPerson['outbox']
         del newPerson['icon']
         del newPerson['image']
-        del newPerson['skills']
+        if newPerson.get('skills'):
+            del newPerson['skills']
         del newPerson['shares']
-        del newPerson['roles']
+        if newPerson.get('roles'):
+            del newPerson['roles']
         del newPerson['tag']
         del newPerson['availability']
         del newPerson['followers']
@@ -479,10 +474,9 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
             setConfigParam(baseDir, 'admin', nickname)
-            setRole(baseDir, nickname, domain, 'instance', 'admin')
-            setRole(baseDir, nickname, domain, 'instance', 'moderator')
-            setRole(baseDir, nickname, domain, 'instance', 'editor')
-            setRole(baseDir, nickname, domain, 'instance', 'delegator')
+            setRole(baseDir, nickname, domain, 'admin')
+            setRole(baseDir, nickname, domain, 'moderator')
+            setRole(baseDir, nickname, domain, 'editor')
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
@@ -578,7 +572,69 @@ def personUpgradeActor(baseDir: str, personJson: {},
         personJson['published'] = published
         updateActor = True
 
+    occupationName = ''
+    if personJson.get('occupationName'):
+        occupationName = personJson['occupationName']
+        del personJson['occupationName']
+    if personJson.get('occupation'):
+        occupationName = personJson['occupation']
+        del personJson['occupation']
+
+    # if the older skills format is being used then switch
+    # to the new one
+    if not personJson.get('hasOccupation'):
+        personJson['hasOccupation'] = {
+            '@type': 'Occupation',
+            'name': occupationName,
+            'skills': ""
+        }
+        updateActor = True
+
+    # remove the old skills format
+    if personJson.get('skills'):
+        del personJson['skills']
+        updateActor = True
+
+    # if the older roles format is being used then switch
+    # to the new one
+    if not personJson.get('affiliation'):
+        rolesStr = ''
+        adminName = getConfigParam(baseDir, 'admin')
+        if personJson['id'].endswith('/users/' + adminName):
+            rolesStr = 'admin, moderator, editor'
+        statusNumber, published = getStatusNumber()
+        personJson['affiliation'] = {
+            "@type": "OrganizationRole",
+            "roleName": rolesStr,
+            "affiliation": {
+                "@type": "WebSite",
+                "url": personJson['id'].split('/users/')[0]
+            },
+            "startDate": published
+        }
+        updateActor = True
+
+    # if no roles are defined then ensure that the admin
+    # roles are configured
+    if not personJson['affiliation']['roleName']:
+        adminName = getConfigParam(baseDir, 'admin')
+        if personJson['id'].endswith('/users/' + adminName):
+            personJson['affiliation']['roleName'] = \
+                'admin, moderator, editor'
+        updateActor = True
+
+    # remove the old roles format
+    if personJson.get('roles'):
+        del personJson['roles']
+        updateActor = True
+
     if updateActor:
+        personJson['@context'] = [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1',
+            getDefaultPersonContext()
+        ],
+
         saveJson(personJson, filename)
 
         # also update the actor within the cache

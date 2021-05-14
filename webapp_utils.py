@@ -720,18 +720,11 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         return htmlStr
 
     skillsMarkup = ''
-    if actorJson.get('skills'):
-        skillsStr = ''
-        for skillName, skillValue in actorJson['skills'].items():
-            if skillsStr:
-                skillsStr += ', ' + skillName
-            else:
-                skillsStr += skillName
-        if skillsStr:
-            occupationStr = ''
-            if actorJson.get('occupationName'):
-                occupationName = actorJson['occupationName']
-                occupationStr = '        "name": "' + occupationName + '",\n'
+    if actorJson.get('hasOccupation'):
+        skillsStr = actorJson['hasOccupation']['skills']
+        if actorJson['hasOccupation'].get('name'):
+            occupationName = actorJson['hasOccupation']['name']
+            occupationStr = '        "name": "' + occupationName + '",\n'
             skillsMarkup = \
                 '      "hasOccupation": {\n' + \
                 '        "@type": "Occupation",\n' + \
@@ -752,6 +745,45 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '    }\n' + \
         '    </script>\n'
     htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
+    return htmlStr
+
+
+def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
+                                httpPrefix: str, domain: str,
+                                systemLanguage: str) -> str:
+    """html header which includes website markup
+    https://schema.org/WebSite
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                          systemLanguage)
+
+    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.en.html'
+    websiteMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "WebSite",\n' + \
+        '      "name": "' + instanceTitle + '",\n' + \
+        '      "url": "' + httpPrefix + '://' + domain + '",\n' + \
+        '      "license": "' + licenseUrl + '",\n' + \
+        '      "inLanguage": "' + systemLanguage + '",\n' + \
+        '      "isAccessibleForFree": true,\n' + \
+        '      "genre": "https://en.wikipedia.org/wiki/Fediverse",\n' + \
+        '      "accessMode": ["textual", "visual"],\n' + \
+        '      "accessModeSufficient": ["textual"],\n' + \
+        '      "accessibilityAPI" : ["ARIA"],\n' + \
+        '      "accessibilityControl" : [\n' + \
+        '        "fullKeyboardControl",\n' + \
+        '        "fullTouchControl",\n' + \
+        '        "fullMouseControl"\n' + \
+        '      ],\n' + \
+        '      "encodingFormat" : [\n' + \
+        '        "text/html", "image/png", "image/webp",\n' + \
+        '        "image/jpeg", "image/gif", "text/css"\n' + \
+        '      ]\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
     return htmlStr
 
 

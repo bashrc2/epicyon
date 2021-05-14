@@ -35,7 +35,6 @@ from inbox import inboxUpdateIndex
 from announce import outboxAnnounce
 from announce import outboxUndoAnnounce
 from follow import outboxUndoFollow
-from roles import outboxDelegate
 from skills import outboxSkills
 from availability import outboxAvailability
 from like import outboxLike
@@ -313,7 +312,7 @@ def postMessageToOutbox(session, translate: {},
 
     permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
                             'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Delegate', 'Skill', 'Add', 'Remove', 'Event',
+                            'Skill', 'Add', 'Remove', 'Event',
                             'Ignore')
     if messageJson['type'] not in permittedOutboxTypes:
         if debug:
@@ -460,10 +459,6 @@ def postMessageToOutbox(session, translate: {},
     if debug:
         print('DEBUG: handle any unfollow requests')
     outboxUndoFollow(baseDir, messageJson, debug)
-
-    if debug:
-        print('DEBUG: handle delegation requests')
-    outboxDelegate(baseDir, postToNickname, messageJson, debug)
 
     if debug:
         print('DEBUG: handle skills changes requests')
