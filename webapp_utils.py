@@ -764,6 +764,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "WebSite",\n' + \
         '      "name": "' + instanceTitle + '",\n' + \
+        '      "url": "' + httpPrefix + '://' + domain + '",\n' + \
         '      "license": "' + licenseUrl + '",\n' + \
         '      "inLanguage": "' + systemLanguage + '",\n' + \
         '      "isAccessibleForFree": true,\n' + \
