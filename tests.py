@@ -3685,7 +3685,7 @@ def testRoles() -> None:
     actorJson = {
         'affiliation': {
             "@type": "OrganizationRole",
-            "roleName": "",
+            "roleName": [],
             "affiliation": {
                 "@type": "WebSite",
                 "url": "https://testinstance.org"

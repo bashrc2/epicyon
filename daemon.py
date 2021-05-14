@@ -124,7 +124,6 @@ from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
 from roles import setRole
-from roles import getRolesFromString
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
@@ -7397,8 +7396,9 @@ class PubServer(BaseHTTPRequestHandler):
 
                     rolesList = []
                     if actorJson.get('affiliation'):
-                        actorRolesStr = actorJson['affiliation']['roleName']
-                        rolesList = getRolesFromString(actorRolesStr)
+                        if isinstance(actorJson['affiliation']['roleName'],
+                                      list):
+                            rolesList = actorJson['affiliation']['roleName']
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7436,8 +7436,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._fetchAuthenticated():
                     rolesList = []
                     if actorJson.get('affiliation'):
-                        actorRolesStr = actorJson['affiliation']['roleName']
-                        rolesList = getRolesFromString(actorRolesStr)
+                        if isinstance(actorJson['affiliation']['roleName'],
+                                      list):
+                            rolesList = actorJson['affiliation']['roleName']
 
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)

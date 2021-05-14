@@ -111,19 +111,17 @@ def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
 def setRolesFromList(actorJson: {}, rolesList: []) -> None:
     """Sets roles from a list
     """
-    rolesStr = ''
-    for roleName in rolesList:
-        if rolesStr:
-            rolesStr += ', '
-        rolesStr += roleName.lower()
     if actorJson.get('affiliation'):
-        actorJson['affiliation']['roleName'] = rolesStr
+        actorJson['affiliation']['roleName'] = rolesList.copy()
 
 
 def getRolesFromString(rolesStr: str) -> []:
     """Returns a list of roles from a string
     """
-    rolesList = rolesStr.split(',')
+    if isinstance(rolesStr, list):
+        rolesList = rolesStr
+    else:
+        rolesList = rolesStr.split(',')
     rolesResult = []
     for roleName in rolesList:
         rolesResult.append(roleName.strip().lower())
