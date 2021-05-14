@@ -10572,7 +10572,11 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlLogin(self.server.cssCache,
                               self.server.translate,
-                              self.server.baseDir, False).encode('utf-8')
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domainFull,
+                              self.server.systemLanguage,
+                              False).encode('utf-8')
                 msglen = len(msg)
                 self._logout_headers('text/html', msglen, callingDomain)
                 self._write(msg)
@@ -11677,7 +11681,10 @@ class PubServer(BaseHTTPRequestHandler):
             # request basic auth
             msg = htmlLogin(self.server.cssCache,
                             self.server.translate,
-                            self.server.baseDir).encode('utf-8')
+                            self.server.baseDir,
+                            self.server.httpPrefix,
+                            self.server.domainFull,
+                            self.server.systemLanguage).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
             self._write(msg)

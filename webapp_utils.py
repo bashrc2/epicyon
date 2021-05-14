@@ -748,6 +748,44 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     return htmlStr
 
 
+def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
+                                httpPrefix: str, domain: str,
+                                systemLanguage: str) -> str:
+    """html header which includes website markup
+    https://schema.org/WebSite
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                          systemLanguage)
+
+    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.en.html'
+    websiteMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "WebSite",\n' + \
+        '      "name": "' + instanceTitle + '",\n' + \
+        '      "license": "' + licenseUrl + '",\n' + \
+        '      "inLanguage": "' + systemLanguage + '",\n' + \
+        '      "isAccessibleForFree": true,\n' + \
+        '      "genre": "https://en.wikipedia.org/wiki/Fediverse",\n' + \
+        '      "accessMode": ["textual", "visual"],\n' + \
+        '      "accessModeSufficient": ["textual"],\n' + \
+        '      "accessibilityAPI" : [ "ARIA" ],\n' + \
+        '      "accessibilityControl" : [\n' + \
+        '        "fullKeyboardControl",\n' + \
+        '        "fullTouchControl",\n' + \
+        '        "fullMouseControl"\n' + \
+        '      ],\n' + \
+        '      "encodingFormat" : [\n' + \
+        '        "text/html", "image/png", "image/webp",\n' + \
+        '        "image/jpeg", "image/gif", "text/css"\n' + \
+        '      ],\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
+    return htmlStr
+
+
 def htmlFooter() -> str:
     htmlStr = '  </body>\n'
     htmlStr += '</html>\n'
