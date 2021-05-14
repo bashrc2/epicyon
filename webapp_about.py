@@ -9,13 +9,14 @@ __status__ = "Production"
 import os
 from shutil import copyfile
 from utils import getConfigParam
-from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import markdownToHtml
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
-              domainFull: str, onionDomain: str, translate: {}) -> str:
+              domainFull: str, onionDomain: str, translate: {},
+              systemLanguage: str) -> str:
     """Show the about screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -40,7 +41,10 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    aboutForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    aboutForm = \
+        htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
+                                    httpPrefix, domainFull,
+                                    systemLanguage)
     aboutForm += '<div class="container">' + aboutText + '</div>'
     if onionDomain:
         aboutForm += \

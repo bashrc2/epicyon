@@ -11206,13 +11206,15 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.onionDomain,
-                              None, self.server.translate)
+                              None, self.server.translate,
+                              self.server.systemLanguage)
             elif callingDomain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.i2pDomain,
-                              None, self.server.translate)
+                              None, self.server.translate,
+                              self.server.systemLanguage)
             else:
                 msg = \
                     htmlAbout(self.server.cssCache,
@@ -11220,7 +11222,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.httpPrefix,
                               self.server.domainFull,
                               self.server.onionDomain,
-                              self.server.translate)
+                              self.server.translate,
+                              self.server.systemLanguage)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
