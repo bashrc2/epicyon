@@ -779,7 +779,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "encodingFormat" : [\n' + \
         '        "text/html", "image/png", "image/webp",\n' + \
         '        "image/jpeg", "image/gif", "text/css"\n' + \
-        '      ],\n' + \
+        '      ]\n' + \
         '    }\n' + \
         '    </script>\n'
     htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
