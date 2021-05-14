@@ -70,7 +70,7 @@ from skills import setSkillLevel
 from skills import setSkillsFromDict
 from skills import getSkillsFromList
 from roles import setRolesFromList
-from roles import getRolesFromString
+from roles import getRolesFromList
 from roles import setRole
 from auth import constantTimeStringCheck
 from auth import createBasicAuthHeader
@@ -3696,7 +3696,7 @@ def testRoles() -> None:
     testRolesList = ["admin", "moderator"]
     setRolesFromList(actorJson, testRolesList)
     assert actorJson['affiliation']['roleName']
-    rolesList = getRolesFromString(actorJson['affiliation']['roleName'])
+    rolesList = getRolesFromList(actorJson['affiliation']['roleName'])
     assert 'admin' in rolesList
     assert 'moderator' in rolesList
 
