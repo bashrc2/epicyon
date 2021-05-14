@@ -770,7 +770,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "genre": "https://en.wikipedia.org/wiki/Fediverse",\n' + \
         '      "accessMode": ["textual", "visual"],\n' + \
         '      "accessModeSufficient": ["textual"],\n' + \
-        '      "accessibilityAPI" : [ "ARIA" ],\n' + \
+        '      "accessibilityAPI" : ["ARIA"],\n' + \
         '      "accessibilityControl" : [\n' + \
         '        "fullKeyboardControl",\n' + \
         '        "fullTouchControl",\n' + \
