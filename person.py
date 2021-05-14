@@ -281,7 +281,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'hasOccupation': {
             '@type': 'Occupation',
             'name': "",
-            'skills': ""
+            'skills': []
         },
         "affiliation": {
             "@type": "OrganizationRole",
@@ -586,7 +586,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
         personJson['hasOccupation'] = {
             '@type': 'Occupation',
             'name': occupationName,
-            'skills': ""
+            'skills': []
         }
         updateActor = True
 

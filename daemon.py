@@ -7497,9 +7497,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 if self.server.keyShortcuts.get(nickname):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
-                                actorSkillsStr = \
+                                actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
-                                skills = getSkillsFromString(actorSkillsStr)
+                                skills = getSkillsFromString(actorSkillsList)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7536,9 +7536,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show skills')
                         else:
                             if self._fetchAuthenticated():
-                                actorSkillsStr = \
+                                actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
-                                skills = getSkillsFromString(actorSkillsStr)
+                                skills = getSkillsFromString(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
                                 msg = msg.encode('utf-8')

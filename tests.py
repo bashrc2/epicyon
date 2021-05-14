@@ -3664,7 +3664,7 @@ def testSkills() -> None:
         'hasOccupation': {
             '@type': 'Occupation',
             'name': "",
-            'skills': ""
+            'skills': []
         }
     }
     skillsDict = {

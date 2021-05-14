@@ -17,23 +17,24 @@ from utils import getDomainFromActor
 from utils import loadJson
 
 
-def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> str:
+def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> []:
     """Converts a dict containing skills to a string
     Returns the string version of the dictionary
     """
-    skillsStr = ''
+    skillsList = []
     for name, value in skillsDict.items():
-        if skillsStr:
-            skillsStr += ', '
-        skillsStr += name + ':' + str(value)
-    actorJson['hasOccupation']['skills'] = skillsStr
-    return skillsStr
+        skillsList.append(name + ':' + str(value))
+    actorJson['hasOccupation']['skills'] = skillsList
+    return skillsList
 
 
 def getSkillsFromString(skillsStr: str) -> {}:
     """Returns a dict of skills from a string
     """
-    skillsList = skillsStr.split(',')
+    if isinstance(skillsStr, list):
+        skillsList = skillsStr
+    else:
+        skillsList = skillsStr.split(',')
     skillsDict = {}
     for skill in skillsList:
         if ':' not in skill:
@@ -73,7 +74,11 @@ def noOfActorSkills(actorJson: {}) -> int:
     """Returns the number of skills that an actor has
     """
     if actorJson.get('hasOccupation'):
-        skillsList = actorJson['hasOccupation']['skills'].split(',')
+        skillsStr = actorJson['hasOccupation']['skills']
+        if isinstance(skillsStr, list):
+            skillsList = skillsStr
+        else:
+            skillsList = skillsStr.split(',')
         if skillsList:
             return len(skillsList)
     return 0

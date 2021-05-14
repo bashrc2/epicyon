@@ -420,8 +420,8 @@ def htmlSkillsSearch(actor: str,
                    actorJson.get('name') and \
                    actorJson.get('icon'):
                     actor = actorJson['id']
-                    actorSkillsStr = actorJson['hasOccupation']['skills']
-                    skills = getSkillsFromString(actorSkillsStr)
+                    actorSkillsList = actorJson['hasOccupation']['skills']
+                    skills = getSkillsFromString(actorSkillsList)
                     for skillName, skillLevel in skills.items():
                         skillName = skillName.lower()
                         if not (skillName in skillsearch or
@@ -461,9 +461,9 @@ def htmlSkillsSearch(actor: str,
                            actorJson.get('name') and \
                            actorJson.get('icon'):
                             actor = actorJson['id']
-                            actorSkillsStr = \
+                            actorSkillsList = \
                                 actorJson['hasOccupation']['skills']
-                            skills = getSkillsFromString(actorSkillsStr)
+                            skills = getSkillsFromString(actorSkillsList)
                             for skillName, skillLevel in skills.items():
                                 skillName = skillName.lower()
                                 if not (skillName in skillsearch or
