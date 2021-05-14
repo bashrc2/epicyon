@@ -68,7 +68,7 @@ from person import setBio
 # from person import generateRSAKey
 from skills import setSkillLevel
 from skills import setSkillsFromDict
-from skills import getSkillsFromString
+from skills import getSkillsFromList
 from roles import setRolesFromList
 from roles import getRolesFromString
 from roles import setRole
@@ -3673,7 +3673,7 @@ def testSkills() -> None:
     }
     setSkillsFromDict(actorJson, skillsDict)
     assert actorJson['hasOccupation']['skills']
-    skillsDict = getSkillsFromString(actorJson['hasOccupation']['skills'])
+    skillsDict = getSkillsFromList(actorJson['hasOccupation']['skills'])
     assert skillsDict.get('bakery')
     assert skillsDict.get('gardening')
     assert skillsDict['bakery'] == 40

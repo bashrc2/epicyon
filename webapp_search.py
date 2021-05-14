@@ -21,7 +21,7 @@ from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
 from skills import noOfActorSkills
-from skills import getSkillsFromString
+from skills import getSkillsFromList
 from categories import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
@@ -421,7 +421,7 @@ def htmlSkillsSearch(actor: str,
                    actorJson.get('icon'):
                     actor = actorJson['id']
                     actorSkillsList = actorJson['hasOccupation']['skills']
-                    skills = getSkillsFromString(actorSkillsList)
+                    skills = getSkillsFromList(actorSkillsList)
                     for skillName, skillLevel in skills.items():
                         skillName = skillName.lower()
                         if not (skillName in skillsearch or
@@ -463,7 +463,7 @@ def htmlSkillsSearch(actor: str,
                             actor = actorJson['id']
                             actorSkillsList = \
                                 actorJson['hasOccupation']['skills']
-                            skills = getSkillsFromString(actorSkillsList)
+                            skills = getSkillsFromList(actorSkillsList)
                             for skillName, skillLevel in skills.items():
                                 skillName = skillName.lower()
                                 if not (skillName in skillsearch or

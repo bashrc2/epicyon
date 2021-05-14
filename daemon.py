@@ -98,7 +98,7 @@ from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowAccount
 from follow import createInitialLastSeen
-from skills import getSkillsFromString
+from skills import getSkillsFromList
 from skills import noOfActorSkills
 from skills import actorHasSkill
 from skills import actorSkillValue
@@ -7500,7 +7500,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.keyShortcuts[nickname]
                                 actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
-                                skills = getSkillsFromString(actorSkillsList)
+                                skills = getSkillsFromList(actorSkillsList)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7539,7 +7539,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if self._fetchAuthenticated():
                                 actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
-                                skills = getSkillsFromString(actorSkillsList)
+                                skills = getSkillsFromList(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
                                 msg = msg.encode('utf-8')
