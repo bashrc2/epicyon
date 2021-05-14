@@ -590,6 +590,11 @@ def personUpgradeActor(baseDir: str, personJson: {},
         }
         updateActor = True
 
+    if isinstance(personJson['hasOccupation']['skills'], str):
+        skillsList = personJson['hasOccupation']['skills'].split(', ')
+        personJson['hasOccupation']['skills'] = skillsList
+        updateActor = True
+
     # remove the old skills format
     if personJson.get('skills'):
         del personJson['skills']
@@ -612,6 +617,11 @@ def personUpgradeActor(baseDir: str, personJson: {},
             },
             "startDate": published
         }
+        updateActor = True
+
+    if isinstance(personJson['affiliation']['roleName'], str):
+        rolesList = personJson['affiliation']['roleName'].split(', ')
+        personJson['affiliation']['roleName'] = rolesList
         updateActor = True
 
     # if no roles are defined then ensure that the admin
