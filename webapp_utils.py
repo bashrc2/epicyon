@@ -758,6 +758,10 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
                                           systemLanguage)
 
     licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.en.html'
+
+    # social networking category
+    genreUrl = 'http://vocab.getty.edu/aat/300312270'
+
     websiteMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -768,7 +772,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "license": "' + licenseUrl + '",\n' + \
         '      "inLanguage": "' + systemLanguage + '",\n' + \
         '      "isAccessibleForFree": true,\n' + \
-        '      "genre": "https://en.wikipedia.org/wiki/Fediverse",\n' + \
+        '      "genre": "' + genreUrl + '",\n' + \
         '      "accessMode": ["textual", "visual"],\n' + \
         '      "accessModeSufficient": ["textual"],\n' + \
         '      "accessibilityAPI" : ["ARIA"],\n' + \
