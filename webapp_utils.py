@@ -757,7 +757,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
                                           systemLanguage)
 
-    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.en.html'
+    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
     # social networking category
     genreUrl = 'http://vocab.getty.edu/aat/300312270'
