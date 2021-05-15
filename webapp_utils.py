@@ -721,7 +721,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
-        skillsStr = actorJson['hasOccupation']['skills']
+        skillsList = actorJson['hasOccupation']['skills']
         if actorJson['hasOccupation'].get('name'):
             occupationName = actorJson['hasOccupation']['name']
             occupationStr = '        "name": "' + occupationName + '",\n'
@@ -729,7 +729,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 '      "hasOccupation": {\n' + \
                 '        "@type": "Occupation",\n' + \
                 occupationStr + \
-                '        "skills": "' + skillsStr + '"\n' + \
+                '        "skills": ' + str(skillsList) + '\n' + \
                 '      "},\n'
 
     personMarkup = \
@@ -758,6 +758,10 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
                                           systemLanguage)
 
     licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.en.html'
+
+    # social networking category
+    genreUrl = 'http://vocab.getty.edu/aat/300312270'
+
     websiteMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -768,7 +772,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "license": "' + licenseUrl + '",\n' + \
         '      "inLanguage": "' + systemLanguage + '",\n' + \
         '      "isAccessibleForFree": true,\n' + \
-        '      "genre": "https://en.wikipedia.org/wiki/Fediverse",\n' + \
+        '      "genre": "' + genreUrl + '",\n' + \
         '      "accessMode": ["textual", "visual"],\n' + \
         '      "accessModeSufficient": ["textual"],\n' + \
         '      "accessibilityAPI" : ["ARIA"],\n' + \

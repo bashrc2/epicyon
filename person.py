@@ -281,11 +281,11 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'hasOccupation': {
             '@type': 'Occupation',
             'name': "",
-            'skills': ""
+            'skills': []
         },
         "affiliation": {
             "@type": "OrganizationRole",
-            "roleName": "",
+            "roleName": [],
             "affiliation": {
                 "@type": "WebSite",
                 "url": httpPrefix + '://' + domain
@@ -586,8 +586,13 @@ def personUpgradeActor(baseDir: str, personJson: {},
         personJson['hasOccupation'] = {
             '@type': 'Occupation',
             'name': occupationName,
-            'skills': ""
+            'skills': []
         }
+        updateActor = True
+
+    if isinstance(personJson['hasOccupation']['skills'], str):
+        skillsList = personJson['hasOccupation']['skills'].split(', ')
+        personJson['hasOccupation']['skills'] = skillsList
         updateActor = True
 
     # remove the old skills format
@@ -598,14 +603,14 @@ def personUpgradeActor(baseDir: str, personJson: {},
     # if the older roles format is being used then switch
     # to the new one
     if not personJson.get('affiliation'):
-        rolesStr = ''
+        rolesList = []
         adminName = getConfigParam(baseDir, 'admin')
         if personJson['id'].endswith('/users/' + adminName):
-            rolesStr = 'admin, moderator, editor'
+            rolesList = ["admin", "moderator", "editor"]
         statusNumber, published = getStatusNumber()
         personJson['affiliation'] = {
             "@type": "OrganizationRole",
-            "roleName": rolesStr,
+            "roleName": rolesList,
             "affiliation": {
                 "@type": "WebSite",
                 "url": personJson['id'].split('/users/')[0]
@@ -614,13 +619,18 @@ def personUpgradeActor(baseDir: str, personJson: {},
         }
         updateActor = True
 
+    if isinstance(personJson['affiliation']['roleName'], str):
+        rolesList = personJson['affiliation']['roleName'].split(', ')
+        personJson['affiliation']['roleName'] = rolesList
+        updateActor = True
+
     # if no roles are defined then ensure that the admin
     # roles are configured
     if not personJson['affiliation']['roleName']:
         adminName = getConfigParam(baseDir, 'admin')
         if personJson['id'].endswith('/users/' + adminName):
             personJson['affiliation']['roleName'] = \
-                'admin, moderator, editor'
+                ["admin", "moderator", "editor"]
         updateActor = True
 
     # remove the old roles format

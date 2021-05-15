@@ -33,7 +33,7 @@ def _clearRoleStatus(baseDir: str, role: str) -> None:
         if not actorJson.get('affiliation'):
             continue
         rolesList = \
-            getRolesFromString(actorJson['affiliation']['roleName'])
+            getRolesFromList(actorJson['affiliation']['roleName'])
         if role in rolesList:
             rolesList.remove(role)
             saveJson(actorJson, filename)
@@ -111,21 +111,19 @@ def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
 def setRolesFromList(actorJson: {}, rolesList: []) -> None:
     """Sets roles from a list
     """
-    rolesStr = ''
-    for roleName in rolesList:
-        if rolesStr:
-            rolesStr += ', '
-        rolesStr += roleName.lower()
     if actorJson.get('affiliation'):
-        actorJson['affiliation']['roleName'] = rolesStr
+        actorJson['affiliation']['roleName'] = rolesList.copy()
 
 
-def getRolesFromString(rolesStr: str) -> []:
-    """Returns a list of roles from a string
+def getRolesFromList(rolesList: []) -> []:
+    """Returns a list of roles from a list
     """
-    rolesList = rolesStr.split(',')
+    if isinstance(rolesList, list):
+        rolesList2 = rolesList
+    else:
+        rolesList2 = rolesList.split(',')
     rolesResult = []
-    for roleName in rolesList:
+    for roleName in rolesList2:
         rolesResult.append(roleName.strip().lower())
     return rolesResult
 
@@ -154,7 +152,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
         if not actorJson.get('affiliation'):
             return False
         rolesList = \
-            getRolesFromString(actorJson['affiliation']['roleName'])
+            getRolesFromList(actorJson['affiliation']['roleName'])
         actorChanged = False
         if role:
             # add the role

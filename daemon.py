@@ -98,7 +98,7 @@ from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowAccount
 from follow import createInitialLastSeen
-from skills import getSkillsFromString
+from skills import getSkillsFromList
 from skills import noOfActorSkills
 from skills import actorHasSkill
 from skills import actorSkillValue
@@ -124,7 +124,6 @@ from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
 from roles import setRole
-from roles import getRolesFromString
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
@@ -7397,8 +7396,9 @@ class PubServer(BaseHTTPRequestHandler):
 
                     rolesList = []
                     if actorJson.get('affiliation'):
-                        actorRolesStr = actorJson['affiliation']['roleName']
-                        rolesList = getRolesFromString(actorRolesStr)
+                        if isinstance(actorJson['affiliation']['roleName'],
+                                      list):
+                            rolesList = actorJson['affiliation']['roleName']
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7436,8 +7436,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._fetchAuthenticated():
                     rolesList = []
                     if actorJson.get('affiliation'):
-                        actorRolesStr = actorJson['affiliation']['roleName']
-                        rolesList = getRolesFromString(actorRolesStr)
+                        if isinstance(actorJson['affiliation']['roleName'],
+                                      list):
+                            rolesList = actorJson['affiliation']['roleName']
 
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
@@ -7497,9 +7498,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 if self.server.keyShortcuts.get(nickname):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
-                                actorSkillsStr = \
+                                actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
-                                skills = getSkillsFromString(actorSkillsStr)
+                                skills = getSkillsFromList(actorSkillsList)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7536,9 +7537,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show skills')
                         else:
                             if self._fetchAuthenticated():
-                                actorSkillsStr = \
+                                actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
-                                skills = getSkillsFromString(actorSkillsStr)
+                                skills = getSkillsFromList(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
                                 msg = msg.encode('utf-8')
