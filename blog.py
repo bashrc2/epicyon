@@ -381,8 +381,6 @@ def _getSnippetFromBlogContent(postJsonObject: {}) -> str:
     """Returns a snippet of text from the blog post as a preview
     """
     content = postJsonObject['object']['content']
-    if len(content) < 256:
-        return removeHtml(content)
     if '<p>' in content:
         content = content.split('<p>', 1)[1]
         if '</p>' in content:
