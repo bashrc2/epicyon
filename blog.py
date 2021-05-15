@@ -388,6 +388,8 @@ def _getSnippetFromBlogContent(postJsonObject: {}) -> str:
         if '</p>' in content:
             content = content.split('</p>', 1)[0]
     content = removeHtml(content)
+    if '\n' in content:
+        content = content.split('\n')[0]
     if len(content) >= 256:
         content = content[:252] + '...'
     return content
