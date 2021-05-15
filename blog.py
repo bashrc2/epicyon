@@ -11,9 +11,11 @@ from datetime import datetime
 
 from content import replaceEmojiFromTags
 from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithBlogMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_media import addEmbeddedElements
+from utils import removeHtml
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import getMediaFormats
@@ -375,11 +377,28 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
     return blogStr
 
 
+def _getSnippetFromBlogContent(postJsonObject: {}) -> str:
+    """Returns a snippet of text from the blog post as a preview
+    """
+    content = postJsonObject['object']['content']
+    if len(content) < 256:
+        return removeHtml(content)
+    if '<p>' in content:
+        content = content.split('<p>', 1)[1]
+        if '</p>' in content:
+            content = content.split('</p>', 1)[0]
+    content = removeHtml(content)
+    if len(content) >= 256:
+        content = content[:252] + '...'
+    return content
+
+
 def htmlBlogPost(authorized: bool,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
                  postJsonObject: {},
-                 peertubeInstances: []) -> str:
+                 peertubeInstances: [],
+                 systemLanguage: str) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -389,7 +408,13 @@ def htmlBlogPost(authorized: bool,
         cssFilename = baseDir + '/blog.css'
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    published = postJsonObject['object']['published']
+    title = postJsonObject['object']['summary']
+    snippet = _getSnippetFromBlogContent(postJsonObject)
+    blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
+                                       httpPrefix, domainFull, nickname,
+                                       systemLanguage, published,
+                                       title, snippet)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogStr += _htmlBlogPostContent(authorized, baseDir,

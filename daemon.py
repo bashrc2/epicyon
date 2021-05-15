@@ -11094,7 +11094,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname, self.server.domain,
                                        self.server.domainFull,
                                        postJsonObject,
-                                       self.server.peertubeInstances)
+                                       self.server.peertubeInstances,
+                                       self.server.systemLanguage)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)

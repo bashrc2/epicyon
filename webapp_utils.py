@@ -791,6 +791,42 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     return htmlStr
 
 
+def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
+                             httpPrefix: str, domain: str, nickname: str,
+                             systemLanguage: str, published: str,
+                             title: str, snippet: str) -> str:
+    """html header which includes blog post markup
+    https://schema.org/BlogPosting
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                          systemLanguage)
+
+    authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    blogMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "BlogPosting",\n' + \
+        '      "headline": "' + title + '",\n' + \
+        '      "datePublished": "' + published + '",\n' + \
+        '      "dateModified": "' + published + '",\n' + \
+        '      "author": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nickname + '",\n' + \
+        '        "url": "' + authorUrl + '"\n' + \
+        '      },\n' + \
+        '      "publisher": {\n' + \
+        '        "@type": "WebSite",\n' + \
+        '        "name": "' + instanceTitle + '",\n' + \
+        '        "url": "' + httpPrefix + '://' + domain + '/about.html"\n' + \
+        '      },\n' + \
+        '      "description": "' + snippet + '"\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + blogMarkup)
+    return htmlStr
+
+
 def htmlFooter() -> str:
     htmlStr = '  </body>\n'
     htmlStr += '</html>\n'
