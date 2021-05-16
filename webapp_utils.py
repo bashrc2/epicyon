@@ -819,6 +819,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                                           systemLanguage)
 
     authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    aboutUrl = httpPrefix + '://' + domain + '/about.html'
     blogMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -830,12 +831,12 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "author": {\n' + \
         '        "@type": "Person",\n' + \
         '        "name": "' + nickname + '",\n' + \
-        '        "url": "' + authorUrl + '"\n' + \
+        '        "sameAs": "' + authorUrl + '"\n' + \
         '      },\n' + \
         '      "publisher": {\n' + \
         '        "@type": "WebSite",\n' + \
         '        "name": "' + instanceTitle + '",\n' + \
-        '        "url": "' + httpPrefix + '://' + domain + '/about.html"\n' + \
+        '        "sameAs": "' + aboutUrl + '"\n' + \
         '      },\n' + \
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \

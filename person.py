@@ -200,6 +200,8 @@ def getDefaultPersonContext() -> str:
         'suspended': 'toot:suspended',
         'toot': 'http://joinmastodon.org/ns#',
         'value': 'schema:value',
+        'hasOccupation': 'schema:hasOccupation',
+        'affiliation': 'schema:affiliation',
         'Occupation': 'schema:Occupation',
         'OrganizationRole': 'schema:OrganizationRole',
         'WebSite': 'schema:Project'
