@@ -731,6 +731,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                         skillsMarkup += ',\n'
                     sk = skillDict['hasOccupation']
                     roleName = sk['name']
+                    if not roleName:
+                        roleName = 'member'
                     category = \
                         sk['occupationalCategory']['codeValue']
                     categoryUrl = \
@@ -773,7 +775,10 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "@type": "Occupation",\n'
                     skillsMarkup += '          "name": "' + ocName + '",\n'
                     skillsMarkup += \
-                        '          "skills": ' + skillsListStr + '\n'
+                        '          "skills": ' + skillsListStr + ',\n'
+                    skillsMarkup += '          "estimatedSalary": 0,\n'
+                    skillsMarkup += \
+                        '          "occupationLocation": "fediverse",\n'
                     skillsMarkup += '        }'
                 firstEntry = False
             skillsMarkup += '\n      ],\n'
