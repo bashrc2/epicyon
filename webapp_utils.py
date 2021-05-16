@@ -756,8 +756,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 elif skillDict['@type'] == 'Occupation':
                     if not firstEntry:
                         skillsMarkup += ',\n'
-                    ocName = sk['name']
-                    skillsList = sk['skills']
+                    ocName = skillDict['name']
+                    skillsList = skillDict['skills']
                     skillsListStr = '['
                     for skillStr in skillsList:
                         if skillsListStr != '[':
