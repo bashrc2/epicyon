@@ -779,7 +779,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "estimatedSalary": {\n'
                     skillsMarkup += \
                         '            "@type": "MonetaryAmountDistribution",\n'
-                    skillsMarkup += '            "duration": "1Y",\n'
+                    skillsMarkup += '            "duration": "P1Y",\n'
                     skillsMarkup += '            "currency": "USD",\n'
                     skillsMarkup += '            "percentile10": 0,\n'
                     skillsMarkup += '            "percentile25": 0,\n'
