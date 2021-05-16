@@ -778,7 +778,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                         '          "skills": ' + skillsListStr + ',\n'
                     skillsMarkup += '          "estimatedSalary": 0,\n'
                     skillsMarkup += \
-                        '          "occupationLocation": "fediverse",\n'
+                        '          "occupationLocation": "fediverse"\n'
                     skillsMarkup += '        }'
                 firstEntry = False
             skillsMarkup += '\n      ],\n'
