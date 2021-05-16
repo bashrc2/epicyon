@@ -723,7 +723,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
         if isinstance(actorJson['hasOccupation'], list):
-            skillsMarkup = '      "hasOccupation": ['
+            skillsMarkup = '      "hasOccupation": [\n'
             firstEntry = True
             for skillDict in actorJson['hasOccupation']:
                 if skillDict['@type'] == 'Role':
