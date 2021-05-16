@@ -728,11 +728,17 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             occupationStr += '        "name": "' + occupationName + '",\n'
         skillsList = actorJson['hasOccupation']['skills']
         if skillsList:
+            skillsListStr = '['
+            for skillStr in skillsList:
+                if skillsListStr != '[':
+                    skillsListStr += ', '
+                skillsListStr += '"' + skillStr + '"'
+            skillsListStr += ']'
             skillsMarkup = \
                 '      "hasOccupation": {\n' + \
                 '        "@type": "Occupation",\n' + \
                 occupationStr + \
-                '        "skills": ' + str(skillsList) + '\n' + \
+                '        "skills": ' + skillsListStr + '\n' + \
                 '      "},\n'
     cityMarkup = ''
     if city:
