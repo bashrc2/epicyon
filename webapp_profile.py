@@ -520,7 +520,7 @@ def htmlProfile(rssIconAtTop: bool,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
-                debug: bool, accessKeys: {},
+                debug: bool, accessKeys: {}, city: str,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -901,7 +901,8 @@ def htmlProfile(rssIconAtTop: bool,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithPersonMarkup(cssFilename, instanceTitle, profileJson) + \
+        htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
+                                   profileJson, city) + \
         profileStr + htmlFooter()
     return profileStr
 

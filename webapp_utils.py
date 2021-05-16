@@ -711,7 +711,8 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
 
 
 def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
-                               actorJson: {}, lang='en') -> str:
+                               actorJson: {}, city: str,
+                               lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
     """
@@ -731,7 +732,23 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 occupationStr + \
                 '        "skills": ' + str(skillsList) + '\n' + \
                 '      "},\n'
-
+    cityMarkup = ''
+    if city:
+        city = city.lower().title()
+        addComma = ''
+        countryMarkup = ''
+        if ',' in city:
+            country = city.split(',', 1)[1].strip().title()
+            city = city.split(',', 1)[0]
+            countryMarkup = \
+                '        "addressCountry": "' + country + '"\n'
+            addComma = ','
+        cityMarkup = \
+            '      "address": {\n' + \
+            '        "@type": "PostalAddress",\n' + \
+            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            countryMarkup + \
+            '      },\n'
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -740,7 +757,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "name": "' + actorJson['name'] + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + actorJson['summary'] + '",\n' + \
-        skillsMarkup + \
+        cityMarkup + skillsMarkup + \
         '      "url": "' + actorJson['id'] + '"\n' + \
         '    }\n' + \
         '    </script>\n'
@@ -757,7 +774,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
                                           systemLanguage)
 
-    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.en.html'
+    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
     # social networking category
     genreUrl = 'http://vocab.getty.edu/aat/300312270'
@@ -788,6 +805,42 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '    }\n' + \
         '    </script>\n'
     htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
+    return htmlStr
+
+
+def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
+                             httpPrefix: str, domain: str, nickname: str,
+                             systemLanguage: str, published: str,
+                             title: str, snippet: str) -> str:
+    """html header which includes blog post markup
+    https://schema.org/BlogPosting
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                          systemLanguage)
+
+    authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    blogMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "BlogPosting",\n' + \
+        '      "headline": "' + title + '",\n' + \
+        '      "datePublished": "' + published + '",\n' + \
+        '      "dateModified": "' + published + '",\n' + \
+        '      "author": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nickname + '",\n' + \
+        '        "url": "' + authorUrl + '"\n' + \
+        '      },\n' + \
+        '      "publisher": {\n' + \
+        '        "@type": "WebSite",\n' + \
+        '        "name": "' + instanceTitle + '",\n' + \
+        '        "url": "' + httpPrefix + '://' + domain + '/about.html"\n' + \
+        '      },\n' + \
+        '      "description": "' + snippet + '"\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + blogMarkup)
     return htmlStr
 
 
