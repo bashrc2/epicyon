@@ -739,7 +739,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "@type": "Role",\n'
                     skillsMarkup += '          "hasOccupation": {\n'
                     skillsMarkup += '            "@type": "Occupation",\n'
-                    skillsMarkup += '            "name": ' + roleName + ',\n'
+                    skillsMarkup += '            "name": "' + roleName + '",\n'
                     skillsMarkup += '            "occupationalCategory": {\n'
                     skillsMarkup += '              "@type": "CategoryCode",\n'
                     skillsMarkup += '              "inCodeSet": {\n'
