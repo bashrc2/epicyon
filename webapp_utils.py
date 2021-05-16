@@ -764,11 +764,12 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                             skillsListStr += ', '
                         skillsListStr += '"' + skillStr + '"'
                     skillsListStr += ']'
-                    skillsMarkup += '  {\n'
-                    skillsMarkup += '    "@type": "Occupation",\n'
-                    skillsMarkup += '    "name": "' + ocName + '",\n'
-                    skillsMarkup += '    "skills": ' + skillsListStr + '\n'
-                    skillsMarkup += '  }'
+                    skillsMarkup += '        {\n'
+                    skillsMarkup += '          "@type": "Occupation",\n'
+                    skillsMarkup += '          "name": "' + ocName + '",\n'
+                    skillsMarkup += \
+                        '          "skills": ' + skillsListStr + '\n'
+                    skillsMarkup += '        }'
                 firstEntry = False
             skillsMarkup += '\n      ],'
 
