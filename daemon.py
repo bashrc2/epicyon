@@ -201,6 +201,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getOccupationSkills
 from utils import getOccupationName
 from utils import setOccupationName
 from utils import loadTranslationsFromFile
@@ -7491,7 +7492,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
                                 actorSkillsList = \
-                                    actorJson['hasOccupation']['skills']
+                                    getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
                                 city = self._getSpoofedCity(baseDir,
                                                             nickname, domain)
@@ -7532,7 +7533,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if self._fetchAuthenticated():
                                 actorSkillsList = \
-                                    actorJson['hasOccupation']['skills']
+                                    getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
