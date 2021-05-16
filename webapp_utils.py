@@ -722,24 +722,56 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
-        occupationStr = ''
-        if actorJson['hasOccupation'].get('name'):
-            occupationName = actorJson['hasOccupation']['name']
-            occupationStr += '        "name": "' + occupationName + '",\n'
-        skillsList = actorJson['hasOccupation']['skills']
-        if skillsList:
-            skillsListStr = '['
-            for skillStr in skillsList:
-                if skillsListStr != '[':
-                    skillsListStr += ', '
-                skillsListStr += '"' + skillStr + '"'
-            skillsListStr += ']'
-            skillsMarkup = \
-                '      "hasOccupation": {\n' + \
-                '        "@type": "Occupation",\n' + \
-                occupationStr + \
-                '        "skills": ' + skillsListStr + '\n' + \
-                '      "},\n'
+        if isinstance(actorJson['hasOccupation'], list):
+            skillsMarkup = '      "hasOccupation": ['
+            firstEntry = True
+            for skillDict in actorJson['hasOccupation']:
+                if skillDict['@type'] == 'Role':
+                    if not firstEntry:
+                        skillsMarkup += ',\n'
+                    sk = skillDict['hasOccupation']
+                    roleName = sk['name']
+                    category = \
+                        sk['occupationalCategory']['codeValue']
+                    categoryUrl = \
+                        'https://www.onetonline.org/link/summary/"' + category
+                    skillsMarkup += '{\n'
+                    skillsMarkup += '  "@type": "Role",\n'
+                    skillsMarkup += '  "hasOccupation": {\n'
+                    skillsMarkup += '    "@type": "Occupation",\n'
+                    skillsMarkup += '    "name": ' + roleName + ',\n'
+                    skillsMarkup += '    "occupationalCategory": {\n'
+                    skillsMarkup += '      "@type": "CategoryCode",\n'
+                    skillsMarkup += '      "inCodeSet": {\n'
+                    skillsMarkup += '        "@type": "CategoryCodeSet",\n'
+                    skillsMarkup += '        "name": "O*Net-SOC",\n'
+                    skillsMarkup += '        "dateModified": "2019",\n'
+                    skillsMarkup += \
+                        '        "url": "https://www.onetonline.org/"\n'
+                    skillsMarkup += '      },\n'
+                    skillsMarkup += '      "codeValue": "' + category + '",\n'
+                    skillsMarkup += '      "url": "' + categoryUrl + '"\n'
+                    skillsMarkup += '    }\n'
+                    skillsMarkup += '  }'
+                elif skillDict['@type'] == 'Occupation':
+                    if not firstEntry:
+                        skillsMarkup += ',\n'
+                    ocName = sk['name']
+                    skillsList = sk['skills']
+                    skillsListStr = '['
+                    for skillStr in skillsList:
+                        if skillsListStr != '[':
+                            skillsListStr += ', '
+                        skillsListStr += '"' + skillStr + '"'
+                    skillsListStr += ']'
+                    skillsMarkup += '  {\n'
+                    skillsMarkup += '    "@type": "Occupation",\n'
+                    skillsMarkup += '    "name": "' + ocName + '",\n'
+                    skillsMarkup += '    "skills": ' + skillsListStr + '\n'
+                    skillsMarkup += '  }'
+                firstEntry = False
+            skillsMarkup += '\n      ],'
+
     cityMarkup = ''
     if city:
         city = city.lower().title()
