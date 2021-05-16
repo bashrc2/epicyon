@@ -578,9 +578,11 @@ def personUpgradeActor(baseDir: str, personJson: {},
     if personJson.get('occupationName'):
         occupationName = personJson['occupationName']
         del personJson['occupationName']
+        updateActor = True
     if personJson.get('occupation'):
         occupationName = personJson['occupation']
         del personJson['occupation']
+        updateActor = True
 
     # if the older skills format is being used then switch
     # to the new one
