@@ -757,14 +757,16 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             '        "addressLocality": "' + city + '"' + addComma + '\n' + \
             countryMarkup + \
             '      },\n'
+    description = removeHtml(actorJson['summary'])
+    nameStr = removeHtml(actorJson['name'])
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "Person",\n' + \
-        '      "name": "' + actorJson['name'] + '",\n' + \
+        '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
-        '      "description": "' + actorJson['summary'] + '",\n' + \
+        '      "description": "' + description + '",\n' + \
         cityMarkup + skillsMarkup + \
         '      "url": "' + actorJson['id'] + '"\n' + \
         '    }\n' + \
