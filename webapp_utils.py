@@ -722,16 +722,66 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
-        skillsList = actorJson['hasOccupation']['skills']
-        if actorJson['hasOccupation'].get('name'):
-            occupationName = actorJson['hasOccupation']['name']
-            occupationStr = '        "name": "' + occupationName + '",\n'
-            skillsMarkup = \
-                '      "hasOccupation": {\n' + \
-                '        "@type": "Occupation",\n' + \
-                occupationStr + \
-                '        "skills": ' + str(skillsList) + '\n' + \
-                '      "},\n'
+        if isinstance(actorJson['hasOccupation'], list):
+            skillsMarkup = '      "hasOccupation": [\n'
+            firstEntry = True
+            for skillDict in actorJson['hasOccupation']:
+                if skillDict['@type'] == 'Role':
+                    if not firstEntry:
+                        skillsMarkup += ',\n'
+                    sk = skillDict['hasOccupation']
+                    roleName = sk['name']
+                    if not roleName:
+                        roleName = 'member'
+                    category = \
+                        sk['occupationalCategory']['codeValue']
+                    categoryUrl = \
+                        'https://www.onetonline.org/link/summary/' + category
+                    skillsMarkup += '        {\n'
+                    skillsMarkup += '          "@type": "Role",\n'
+                    skillsMarkup += '          "hasOccupation": {\n'
+                    skillsMarkup += '            "@type": "Occupation",\n'
+                    skillsMarkup += '            "name": "' + roleName + '",\n'
+                    skillsMarkup += '            "occupationalCategory": {\n'
+                    skillsMarkup += '              "@type": "CategoryCode",\n'
+                    skillsMarkup += '              "inCodeSet": {\n'
+                    skillsMarkup += \
+                        '                "@type": "CategoryCodeSet",\n'
+                    skillsMarkup += '                "name": "O*Net-SOC",\n'
+                    skillsMarkup += '                "dateModified": "2019",\n'
+                    skillsMarkup += \
+                        '                ' + \
+                        '"url": "https://www.onetonline.org/"\n'
+                    skillsMarkup += '              },\n'
+                    skillsMarkup += \
+                        '              "codeValue": "' + category + '",\n'
+                    skillsMarkup += \
+                        '              "url": "' + categoryUrl + '"\n'
+                    skillsMarkup += '            }\n'
+                    skillsMarkup += '          }\n'
+                    skillsMarkup += '        }'
+                elif skillDict['@type'] == 'Occupation':
+                    if not firstEntry:
+                        skillsMarkup += ',\n'
+                    ocName = skillDict['name']
+                    if not ocName:
+                        ocName = 'member'
+                    skillsList = skillDict['skills']
+                    skillsListStr = '['
+                    for skillStr in skillsList:
+                        if skillsListStr != '[':
+                            skillsListStr += ', '
+                        skillsListStr += '"' + skillStr + '"'
+                    skillsListStr += ']'
+                    skillsMarkup += '        {\n'
+                    skillsMarkup += '          "@type": "Occupation",\n'
+                    skillsMarkup += '          "name": "' + ocName + '",\n'
+                    skillsMarkup += \
+                        '          "skills": ' + skillsListStr + '\n'
+                    skillsMarkup += '        }'
+                firstEntry = False
+            skillsMarkup += '\n      ],\n'
+
     cityMarkup = ''
     if city:
         city = city.lower().title()
@@ -749,14 +799,16 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             '        "addressLocality": "' + city + '"' + addComma + '\n' + \
             countryMarkup + \
             '      },\n'
+    description = removeHtml(actorJson['summary'])
+    nameStr = removeHtml(actorJson['name'])
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "Person",\n' + \
-        '      "name": "' + actorJson['name'] + '",\n' + \
+        '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
-        '      "description": "' + actorJson['summary'] + '",\n' + \
+        '      "description": "' + description + '",\n' + \
         cityMarkup + skillsMarkup + \
         '      "url": "' + actorJson['id'] + '"\n' + \
         '    }\n' + \
@@ -819,6 +871,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                                           systemLanguage)
 
     authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    aboutUrl = httpPrefix + '://' + domain + '/about.html'
     blogMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -830,12 +883,12 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "author": {\n' + \
         '        "@type": "Person",\n' + \
         '        "name": "' + nickname + '",\n' + \
-        '        "url": "' + authorUrl + '"\n' + \
+        '        "sameAs": "' + authorUrl + '"\n' + \
         '      },\n' + \
         '      "publisher": {\n' + \
         '        "@type": "WebSite",\n' + \
         '        "name": "' + instanceTitle + '",\n' + \
-        '        "url": "' + httpPrefix + '://' + domain + '/about.html"\n' + \
+        '        "sameAs": "' + aboutUrl + '"\n' + \
         '      },\n' + \
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \

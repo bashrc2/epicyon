@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import getOccupationName
 from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -741,8 +742,7 @@ def htmlProfile(rssIconAtTop: bool,
             joinedDate = profileJson['published']
     occupationName = None
     if profileJson.get('hasOccupation'):
-        if profileJson['hasOccupation'].get('name'):
-            occupationName = profileJson['hasOccupation']['name']
+        occupationName = getOccupationName(profileJson)
 
     avatarUrl = profileJson['icon']['url']
 
@@ -1602,8 +1602,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     occupationName = ''
     if actorJson.get('hasOccupation'):
-        if actorJson['hasOccupation'].get('name'):
-            occupationName = actorJson['hasOccupation']['name']
+        occupationName = getOccupationName(actorJson)
 
     editProfileForm += '<label class="labels">' + \
         translate['Occupation'] + ':</label><br>\n'

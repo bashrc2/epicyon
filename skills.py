@@ -15,16 +15,18 @@ from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
+from utils import getOccupationSkills
+from utils import setOccupationSkillsList
 
 
 def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> []:
-    """Converts a dict containing skills to a string
+    """Converts a dict containing skills to a list
     Returns the string version of the dictionary
     """
     skillsList = []
     for name, value in skillsDict.items():
         skillsList.append(name + ':' + str(value))
-    actorJson['hasOccupation']['skills'] = skillsList
+    setOccupationSkillsList(actorJson, skillsList)
     return skillsList
 
 
@@ -47,21 +49,11 @@ def getSkillsFromList(skillsList: []) -> {}:
     return skillsDict
 
 
-def actorHasSkill(actorJson: {}, skillName: str) -> bool:
-    """Returns true if the actor has the given skill
-    """
-    skillsDict = \
-        getSkillsFromList(actorJson['hasOccupation']['skills'])
-    if not skillsDict:
-        return False
-    return skillsDict.get(skillName.lower())
-
-
 def actorSkillValue(actorJson: {}, skillName: str) -> int:
     """Returns The skill level from an actor
     """
-    skillsDict = \
-        getSkillsFromList(actorJson['hasOccupation']['skills'])
+    ocSkillsList = getOccupationSkills(actorJson)
+    skillsDict = getSkillsFromList(ocSkillsList)
     if not skillsDict:
         return 0
     skillName = skillName.lower()
@@ -74,13 +66,8 @@ def noOfActorSkills(actorJson: {}) -> int:
     """Returns the number of skills that an actor has
     """
     if actorJson.get('hasOccupation'):
-        skillsStr = actorJson['hasOccupation']['skills']
-        if isinstance(skillsStr, list):
-            skillsList = skillsStr
-        else:
-            skillsList = skillsStr.split(',')
-        if skillsList:
-            return len(skillsList)
+        skillsList = getOccupationSkills(actorJson)
+        return len(skillsList)
     return 0
 
 
@@ -95,13 +82,15 @@ def setActorSkillLevel(actorJson: {},
     if not actorJson:
         return True
     if not actorJson.get('hasOccupation'):
-        actorJson['hasOccupation'] = {
-            '@type': 'Occupation',
-            'name': '',
-            'skills': ''
-        }
-    skillsDict = \
-        getSkillsFromList(actorJson['hasOccupation']['skills'])
+        actorJson['hasOccupation'] = [
+            {
+                '@type': 'Occupation',
+                'name': '',
+                'skills': []
+            }
+        ]
+    ocSkillsList = getOccupationSkills(actorJson)
+    skillsDict = getSkillsFromList(ocSkillsList)
     if skillLevelPercent > 0:
         skillsDict[skill] = skillLevelPercent
     else:
@@ -138,7 +127,8 @@ def getSkills(baseDir: str, nickname: str, domain: str) -> []:
     if actorJson:
         if not actorJson.get('hasOccupation'):
             return None
-        return getSkillsFromList(actorJson['hasOccupation']['skills'])
+        ocSkillsList = getOccupationSkills(actorJson)
+        return getSkillsFromList(ocSkillsList)
     return None
 
 
@@ -258,3 +248,13 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
         print('DEBUG: c2s POST skill success')
 
     return newSkillJson
+
+
+def actorHasSkill(actorJson: {}, skillName: str) -> bool:
+    """Returns true if the given actor has the given skill
+    """
+    ocSkillsList = getOccupationSkills(actorJson)
+    for skillStr in ocSkillsList:
+        if skillName + ':' in skillStr:
+            return True
+    return False
