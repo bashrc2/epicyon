@@ -743,14 +743,18 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '            "occupationalCategory": {\n'
                     skillsMarkup += '              "@type": "CategoryCode",\n'
                     skillsMarkup += '              "inCodeSet": {\n'
-                    skillsMarkup += '                "@type": "CategoryCodeSet",\n'
+                    skillsMarkup += \
+                        '                "@type": "CategoryCodeSet",\n'
                     skillsMarkup += '                "name": "O*Net-SOC",\n'
                     skillsMarkup += '                "dateModified": "2019",\n'
                     skillsMarkup += \
-                        '                "url": "https://www.onetonline.org/"\n'
+                        '                ' + \
+                        '"url": "https://www.onetonline.org/"\n'
                     skillsMarkup += '              },\n'
-                    skillsMarkup += '              "codeValue": "' + category + '",\n'
-                    skillsMarkup += '              "url": "' + categoryUrl + '"\n'
+                    skillsMarkup += \
+                        '              "codeValue": "' + category + '",\n'
+                    skillsMarkup += \
+                        '              "url": "' + categoryUrl + '"\n'
                     skillsMarkup += '            }\n'
                     skillsMarkup += '          }\n'
                     skillsMarkup += '        }'
@@ -772,7 +776,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                         '          "skills": ' + skillsListStr + '\n'
                     skillsMarkup += '        }'
                 firstEntry = False
-            skillsMarkup += '\n      ],'
+            skillsMarkup += '\n      ],\n'
 
     cityMarkup = ''
     if city:
