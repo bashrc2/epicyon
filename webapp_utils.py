@@ -793,7 +793,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += \
                         '            "@type": "Country",\n'
                     skillsMarkup += \
-                        '            "name": "fediverse",\n'
+                        '            "name": "fediverse"\n'
                     skillsMarkup += \
                         '          }\n'
                     skillsMarkup += '        }'
