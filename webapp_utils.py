@@ -748,7 +748,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             '        "@type": "PostalAddress",\n' + \
             '        "addressLocality": "' + city + '"' + addComma + '\n' + \
             countryMarkup + \
-            '      },'
+            '      },\n'
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
