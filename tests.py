@@ -67,11 +67,12 @@ from person import setDisplayNickname
 from person import setBio
 # from person import generateRSAKey
 from skills import setSkillLevel
+from skills import actorSkillValue
 from skills import setSkillsFromDict
-from skills import getSkillsFromList
+from skills import actorHasSkill
 from roles import setRolesFromList
-from roles import getRolesFromList
 from roles import setRole
+from roles import actorHasRole
 from auth import constantTimeStringCheck
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
@@ -3661,44 +3662,42 @@ def testSpoofGeolocation() -> None:
 def testSkills() -> None:
     print('testSkills')
     actorJson = {
-        'hasOccupation': {
-            '@type': 'Occupation',
-            'name': "",
-            'skills': []
-        }
+        'hasOccupation': [
+            {
+                '@type': 'Occupation',
+                'name': "Sysop",
+                'skills': []
+            }
+        ]
     }
     skillsDict = {
         'bakery': 40,
         'gardening': 70
     }
     setSkillsFromDict(actorJson, skillsDict)
-    assert actorJson['hasOccupation']['skills']
-    skillsDict = getSkillsFromList(actorJson['hasOccupation']['skills'])
-    assert skillsDict.get('bakery')
-    assert skillsDict.get('gardening')
-    assert skillsDict['bakery'] == 40
-    assert skillsDict['gardening'] == 70
+    assert actorHasSkill(actorJson, 'bakery')
+    assert actorHasSkill(actorJson, 'gardening')
+    assert actorSkillValue(actorJson, 'bakery') == 40
+    assert actorSkillValue(actorJson, 'gardening') == 70
 
 
 def testRoles() -> None:
     print('testRoles')
     actorJson = {
-        'affiliation': {
-            "@type": "OrganizationRole",
-            "roleName": [],
-            "affiliation": {
-                "@type": "WebSite",
-                "url": "https://testinstance.org"
-            },
-            "startDate": "date goes here"
-        }
+        'hasOccupation': [
+            {
+                '@type': 'Occupation',
+                'name': "Sysop",
+                'skills': []
+            }
+        ]
     }
     testRolesList = ["admin", "moderator"]
     setRolesFromList(actorJson, testRolesList)
-    assert actorJson['affiliation']['roleName']
-    rolesList = getRolesFromList(actorJson['affiliation']['roleName'])
-    assert 'admin' in rolesList
-    assert 'moderator' in rolesList
+    assert actorHasRole(actorJson, "admin")
+    assert actorHasRole(actorJson, "moderator")
+    assert not actorHasRole(actorJson, "editor")
+    assert not actorHasRole(actorJson, "counselor")
 
 
 def runAllTests():

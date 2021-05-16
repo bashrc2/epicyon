@@ -34,6 +34,8 @@ from posts import createModeration
 from auth import storeBasicCredentials
 from auth import removePassword
 from roles import setRole
+from roles import setRolesFromList
+from roles import getActorRolesList
 from media import processMetaData
 from utils import getStatusNumber
 from utils import getFullDomain
@@ -201,10 +203,12 @@ def getDefaultPersonContext() -> str:
         'toot': 'http://joinmastodon.org/ns#',
         'value': 'schema:value',
         'hasOccupation': 'schema:hasOccupation',
-        'affiliation': 'schema:affiliation',
         'Occupation': 'schema:Occupation',
-        'OrganizationRole': 'schema:OrganizationRole',
-        'WebSite': 'schema:Project'
+        'occupationalCategory': 'schema:occupationalCategory',
+        'Role': 'schema:Role',
+        'WebSite': 'schema:Project',
+        'CategoryCode': 'schema:CategoryCode',
+        'CategoryCodeSet': 'schema:CategoryCodeSet'
     }
 
 
@@ -280,20 +284,13 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'following': personId + '/following',
         'tts': personId + '/speaker',
         'shares': personId + '/shares',
-        'hasOccupation': {
-            '@type': 'Occupation',
-            'name': "",
-            'skills': []
-        },
-        "affiliation": {
-            "@type": "OrganizationRole",
-            "roleName": [],
-            "affiliation": {
-                "@type": "WebSite",
-                "url": httpPrefix + '://' + domain
-            },
-            "startDate": published
-        },
+        'hasOccupation': [
+            {
+                '@type': 'Occupation',
+                'name': "",
+                'skills': []
+            }
+        ],
         'availability': None,
         'icon': {
             'mediaType': 'image/png',
@@ -587,16 +584,13 @@ def personUpgradeActor(baseDir: str, personJson: {},
     # if the older skills format is being used then switch
     # to the new one
     if not personJson.get('hasOccupation'):
-        personJson['hasOccupation'] = {
-            '@type': 'Occupation',
-            'name': occupationName,
-            'skills': []
-        }
-        updateActor = True
-
-    if isinstance(personJson['hasOccupation']['skills'], str):
-        skillsList = personJson['hasOccupation']['skills'].split(', ')
-        personJson['hasOccupation']['skills'] = skillsList
+        personJson['hasOccupation'] = [
+            {
+                '@type': 'Occupation',
+                'name': occupationName,
+                'skills': []
+            }
+        ]
         updateActor = True
 
     # remove the old skills format
@@ -606,36 +600,29 @@ def personUpgradeActor(baseDir: str, personJson: {},
 
     # if the older roles format is being used then switch
     # to the new one
-    if not personJson.get('affiliation'):
-        rolesList = []
-        adminName = getConfigParam(baseDir, 'admin')
-        if personJson['id'].endswith('/users/' + adminName):
-            rolesList = ["admin", "moderator", "editor"]
-        statusNumber, published = getStatusNumber()
-        personJson['affiliation'] = {
-            "@type": "OrganizationRole",
-            "roleName": rolesList,
-            "affiliation": {
-                "@type": "WebSite",
-                "url": personJson['id'].split('/users/')[0]
-            },
-            "startDate": published
-        }
+    if personJson.get('affiliation'):
+        del personJson['affiliation']
         updateActor = True
 
-    if isinstance(personJson['affiliation']['roleName'], str):
-        rolesList = personJson['affiliation']['roleName'].split(', ')
-        personJson['affiliation']['roleName'] = rolesList
+    if not isinstance(personJson['hasOccupation'], list):
+        personJson['hasOccupation'] = [
+            {
+                '@type': 'Occupation',
+                'name': occupationName,
+                'skills': []
+            }
+        ]
         updateActor = True
 
     # if no roles are defined then ensure that the admin
     # roles are configured
-    if not personJson['affiliation']['roleName']:
+    rolesList = getActorRolesList(personJson)
+    if not rolesList:
         adminName = getConfigParam(baseDir, 'admin')
         if personJson['id'].endswith('/users/' + adminName):
-            personJson['affiliation']['roleName'] = \
-                ["admin", "moderator", "editor"]
-        updateActor = True
+            rolesList = ["admin", "moderator", "editor"]
+            setRolesFromList(personJson, rolesList)
+            updateActor = True
 
     # remove the old roles format
     if personJson.get('roles'):

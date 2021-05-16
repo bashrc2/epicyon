@@ -123,6 +123,7 @@ from blocking import removeGlobalBlock
 from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
+from roles import getActorRolesList
 from roles import setRole
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
@@ -200,6 +201,8 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getOccupationName
+from utils import setOccupationName
 from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
 from utils import decodedHost
@@ -4581,21 +4584,18 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
-                    occupationName = ""
-                    if actorJson.get('hasOccupation'):
-                        if actorJson['hasOccupation'].get('name'):
-                            occupationName = actorJson['hasOccupation']['name']
+                    occupationName = getOccupationName(actorJson)
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
                             removeHtml(fields['occupationName'])
                         if occupationName != \
                            fields['occupationName']:
-                            actorJson['hasOccupation']['name'] = \
-                                fields['occupationName']
+                            setOccupationName(actorJson,
+                                              fields['occupationName'])
                             actorChanged = True
                     else:
                         if occupationName:
-                            actorJson['hasOccupation']['name'] = ''
+                            setOccupationName(actorJson, '')
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
@@ -7373,7 +7373,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not actorJson:
             return False
 
-        if actorJson.get('affiliation'):
+        if actorJson.get('hasOccupation'):
             if self._requestHTTP():
                 getPerson = \
                     personLookup(domain, path.replace('/roles', ''),
@@ -7394,11 +7394,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
-                    rolesList = []
-                    if actorJson.get('affiliation'):
-                        if isinstance(actorJson['affiliation']['roleName'],
-                                      list):
-                            rolesList = actorJson['affiliation']['roleName']
+                    rolesList = getActorRolesList(actorJson)
                     city = self._getSpoofedCity(baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
@@ -7435,12 +7431,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show roles')
             else:
                 if self._fetchAuthenticated():
-                    rolesList = []
-                    if actorJson.get('affiliation'):
-                        if isinstance(actorJson['affiliation']['roleName'],
-                                      list):
-                            rolesList = actorJson['affiliation']['roleName']
-
+                    rolesList = getActorRolesList(actorJson)
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')

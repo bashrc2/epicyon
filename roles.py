@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from utils import loadJson
 from utils import saveJson
+from utils import getStatusNumber
 
 
 def _clearRoleStatus(baseDir: str, role: str) -> None:
@@ -30,12 +31,10 @@ def _clearRoleStatus(baseDir: str, role: str) -> None:
         actorJson = loadJson(filename)
         if not actorJson:
             continue
-        if not actorJson.get('affiliation'):
-            continue
-        rolesList = \
-            getRolesFromList(actorJson['affiliation']['roleName'])
+        rolesList = getActorRolesList(actorJson)
         if role in rolesList:
             rolesList.remove(role)
+            setRolesFromList(actorJson, rolesList)
             saveJson(actorJson, filename)
 
 
@@ -65,7 +64,8 @@ def clearModeratorStatus(baseDir: str) -> None:
 
 def _addRole(baseDir: str, nickname: str, domain: str,
              roleFilename: str) -> None:
-    """Adds a role nickname to the file
+    """Adds a role nickname to the file.
+    This is a file containing the nicknames of accounts having this role
     """
     if ':' in domain:
         domain = domain.split(':')[0]
@@ -94,7 +94,8 @@ def _addRole(baseDir: str, nickname: str, domain: str,
 
 
 def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
-    """Removes a role nickname from the file
+    """Removes a role nickname from the file.
+    This is a file containing the nicknames of accounts having this role
     """
     roleFile = baseDir + '/accounts/' + roleFilename
     if not os.path.isfile(roleFile):
@@ -108,24 +109,99 @@ def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
                 f.write(roleNickname + '\n')
 
 
+def _setActorRole(actorJson: {}, roleName: str) -> bool:
+    """Sets a role for an actor
+    """
+    if not actorJson.get('hasOccupation'):
+        return False
+    if not isinstance(actorJson['hasOccupation'], list):
+        return False
+
+    category = None
+    if 'admin' in roleName:
+        category = '15-1299.01'
+    elif 'moderator' in roleName:
+        category = '11-9199.02'
+    elif 'editor' in roleName:
+        category = '27-3041.00'
+    elif 'counselor' in roleName:
+        category = '23-1022.00'
+    if not category:
+        return False
+
+    for index in range(len(actorJson['hasOccupation'])):
+        occupationItem = actorJson['hasOccupation'][index]
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if occupationItem['@type'] != 'Role':
+            continue
+        if occupationItem['hasOccupation']['name'] == roleName:
+            return True
+    statusNumber, published = getStatusNumber()
+    newRole = {
+        "@type": "Role",
+        "hasOccupation": {
+            "@type": "Occupation",
+            "name": roleName,
+            "occupationalCategory": {
+                "@type": "CategoryCode",
+                "inCodeSet": {
+                    "@type": "CategoryCodeSet",
+                    "name": "O*Net-SOC",
+                    "dateModified": "2019",
+                    "url": "https://www.onetonline.org/"
+                },
+                "codeValue": category,
+                "url": "https://www.onetonline.org/link/summary/" + category
+            }
+        },
+        "startDate": published
+    }
+    actorJson['hasOccupation'].append(newRole)
+    return True
+
+
 def setRolesFromList(actorJson: {}, rolesList: []) -> None:
     """Sets roles from a list
     """
-    if actorJson.get('affiliation'):
-        actorJson['affiliation']['roleName'] = rolesList.copy()
+    # clear Roles from the occupation list
+    emptyRolesList = []
+    for occupationItem in actorJson['hasOccupation']:
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if occupationItem['@type'] == 'Role':
+            continue
+        emptyRolesList.append(occupationItem)
+    actorJson['hasOccupation'] = emptyRolesList
+
+    # create the new list
+    for roleName in rolesList:
+        _setActorRole(actorJson, roleName)
 
 
-def getRolesFromList(rolesList: []) -> []:
-    """Returns a list of roles from a list
+def getActorRolesList(actorJson: {}) -> []:
+    """Gets a list of role names from an actor
     """
-    if isinstance(rolesList, list):
-        rolesList2 = rolesList
-    else:
-        rolesList2 = rolesList.split(',')
-    rolesResult = []
-    for roleName in rolesList2:
-        rolesResult.append(roleName.strip().lower())
-    return rolesResult
+    if not actorJson.get('hasOccupation'):
+        return []
+    if not isinstance(actorJson['hasOccupation'], list):
+        return []
+    rolesList = []
+    for occupationItem in actorJson['hasOccupation']:
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if occupationItem['@type'] != 'Role':
+            continue
+        roleName = occupationItem['hasOccupation']['name']
+        if roleName not in rolesList:
+            rolesList.append(roleName)
+    return rolesList
 
 
 def setRole(baseDir: str, nickname: str, domain: str,
@@ -149,10 +225,9 @@ def setRole(baseDir: str, nickname: str, domain: str,
 
     actorJson = loadJson(actorFilename)
     if actorJson:
-        if not actorJson.get('affiliation'):
+        if not actorJson.get('hasOccupation'):
             return False
-        rolesList = \
-            getRolesFromList(actorJson['affiliation']['roleName'])
+        rolesList = getActorRolesList(actorJson)
         actorChanged = False
         if role:
             # add the role
@@ -174,3 +249,10 @@ def setRole(baseDir: str, nickname: str, domain: str,
         if actorChanged:
             saveJson(actorJson, actorFilename)
     return True
+
+
+def actorHasRole(actorJson: {}, roleName: str) -> bool:
+    """Returns true if the given actor has the given role
+    """
+    rolesList = getActorRolesList(actorJson)
+    return roleName in rolesList

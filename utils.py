@@ -2279,3 +2279,89 @@ def dmAllowedFromDomain(baseDir: str,
     if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():
         return True
     return False
+
+
+def getOccupationSkills(actorJson: {}) -> []:
+    """Returns the list of skills for an actor
+    """
+    if 'hasOccupation' not in actorJson:
+        return []
+    if not isinstance(actorJson['hasOccupation'], list):
+        return []
+    for occupationItem in actorJson['hasOccupation']:
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if not occupationItem['@type'] == 'Occupation':
+            continue
+        if not occupationItem.get('skills'):
+            continue
+        if isinstance(occupationItem['skills'], list):
+            return occupationItem['skills']
+        elif isinstance(occupationItem['skills'], str):
+            return [occupationItem['skills']]
+        break
+    return []
+
+
+def getOccupationName(actorJson: {}) -> str:
+    """Returns the occupation name an actor
+    """
+    if not actorJson.get('hasOccupation'):
+        return ""
+    if not isinstance(actorJson['hasOccupation'], list):
+        return ""
+    for occupationItem in actorJson['hasOccupation']:
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if occupationItem['@type'] != 'Occupation':
+            continue
+        if not occupationItem.get('name'):
+            continue
+        if isinstance(occupationItem['name'], str):
+            return occupationItem['name']
+        break
+    return ""
+
+
+def setOccupationName(actorJson: {}, name: str) -> bool:
+    """Sets the occupation name of an actor
+    """
+    if not actorJson.get('hasOccupation'):
+        return False
+    if not isinstance(actorJson['hasOccupation'], list):
+        return False
+    for index in range(len(actorJson['hasOccupation'])):
+        occupationItem = actorJson['hasOccupation'][index]
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if occupationItem['@type'] != 'Occupation':
+            continue
+        occupationItem['name'] = name
+        return True
+    return False
+
+
+def setOccupationSkillsList(actorJson: {}, skillsList: []) -> bool:
+    """Sets the occupation skills for an actor
+    """
+    if 'hasOccupation' not in actorJson:
+        return False
+    if not isinstance(actorJson['hasOccupation'], list):
+        return False
+    for index in range(len(actorJson['hasOccupation'])):
+        occupationItem = actorJson['hasOccupation'][index]
+        if not isinstance(occupationItem, dict):
+            continue
+        if not occupationItem.get('@type'):
+            continue
+        if occupationItem['@type'] != 'Occupation':
+            continue
+        occupationItem['skills'] = skillsList
+        return True
+    return False
