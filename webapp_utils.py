@@ -711,7 +711,8 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
 
 
 def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
-                               actorJson: {}, lang='en') -> str:
+                               actorJson: {}, city: str,
+                               lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
     """
@@ -731,7 +732,23 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 occupationStr + \
                 '        "skills": ' + str(skillsList) + '\n' + \
                 '      "},\n'
-
+    cityMarkup = ''
+    if city:
+        city = city.lower().title()
+        addComma = ''
+        countryMarkup = ''
+        if ',' in city:
+            country = city.split(',', 1)[1].strip().title()
+            city = city.split(',', 1)[0]
+            countryMarkup = \
+                '        "addressCountry": "' + country + '"'
+            addComma = ','
+        cityMarkup = \
+            '      "address": {\n' + \
+            '        "@type": "PostalAddress",\n' + \
+            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            countryMarkup + \
+            '      },'
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -740,7 +757,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "name": "' + actorJson['name'] + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + actorJson['summary'] + '",\n' + \
-        skillsMarkup + \
+        cityMarkup + skillsMarkup + \
         '      "url": "' + actorJson['id'] + '"\n' + \
         '    }\n' + \
         '    </script>\n'

@@ -7399,6 +7399,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if isinstance(actorJson['affiliation']['roleName'],
                                       list):
                             rolesList = actorJson['affiliation']['roleName']
+                    city = self._getSpoofedCity(baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7422,7 +7423,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys, rolesList,
+                                    accessKeys, city, rolesList,
                                     None, None)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -7501,6 +7502,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorSkillsList = \
                                     actorJson['hasOccupation']['skills']
                                 skills = getSkillsFromList(actorSkillsList)
+                                city = self._getSpoofedCity(baseDir,
+                                                            nickname, domain)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7524,7 +7527,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
-                                                accessKeys, skills,
+                                                accessKeys, city, skills,
                                                 None, None)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
@@ -9398,6 +9401,7 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                    city = self._getSpoofedCity(baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9422,7 +9426,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys,
+                                    accessKeys, city,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -9500,6 +9504,7 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
 
                     accessKeys = self.server.accessKeys
+                    city = None
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
@@ -9508,6 +9513,7 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        city = self._getSpoofedCity(baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9532,7 +9538,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys,
+                                    accessKeys, city,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9609,6 +9615,7 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
 
                     accessKeys = self.server.accessKeys
+                    city = None
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
@@ -9617,6 +9624,7 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        city = self._getSpoofedCity(baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9642,7 +9650,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys,
+                                    accessKeys, city,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9742,6 +9750,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
 
             accessKeys = self.server.accessKeys
+            city = None
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
@@ -9750,6 +9759,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = \
                         self.server.keyShortcuts[nickname]
 
+                city = self._getSpoofedCity(baseDir, nickname, domain)
             msg = \
                 htmlProfile(self.server.rssIconAtTop,
                             self.server.cssCache,
@@ -9775,7 +9785,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.allowLocalNetworkAccess,
                             self.server.textModeBanner,
                             self.server.debug,
-                            accessKeys,
+                            accessKeys, city,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
