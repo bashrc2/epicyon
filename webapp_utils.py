@@ -764,6 +764,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     if not firstEntry:
                         skillsMarkup += ',\n'
                     ocName = skillDict['name']
+                    if not ocName:
+                        ocName = 'member'
                     skillsList = skillDict['skills']
                     skillsListStr = '['
                     for skillStr in skillsList:
