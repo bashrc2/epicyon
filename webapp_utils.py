@@ -734,7 +734,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     category = \
                         sk['occupationalCategory']['codeValue']
                     categoryUrl = \
-                        'https://www.onetonline.org/link/summary/"' + category
+                        'https://www.onetonline.org/link/summary/' + category
                     skillsMarkup += '        {\n'
                     skillsMarkup += '          "@type": "Role",\n'
                     skillsMarkup += '          "hasOccupation": {\n'
