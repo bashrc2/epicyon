@@ -776,7 +776,17 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "name": "' + ocName + '",\n'
                     skillsMarkup += \
                         '          "skills": ' + skillsListStr + ',\n'
-                    skillsMarkup += '          "estimatedSalary": 0,\n'
+                    skillsMarkup += '          "estimatedSalary": {\n'
+                    skillsMarkup += \
+                        '            "@type": "MonetaryAmountDistribution",\n'
+                    skillsMarkup += '            "duration": "1Y",\n'
+                    skillsMarkup += '            "currency": "USD",\n'
+                    skillsMarkup += '            "percentile10": 0,\n'
+                    skillsMarkup += '            "percentile25": 0,\n'
+                    skillsMarkup += '            "median": 0,\n'
+                    skillsMarkup += '            "percentile75": 0,\n'
+                    skillsMarkup += '            "percentile90": 0\n'
+                    skillsMarkup += '          },\n'
                     skillsMarkup += \
                         '          "occupationLocation": "fediverse"\n'
                     skillsMarkup += '        }'
