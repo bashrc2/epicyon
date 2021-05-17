@@ -1347,7 +1347,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             translate['Export Theme'] + '</label><br>\n'
         graphicsStr += \
             '      <button type="submit" class="button" ' + \
-            'name="exportTheme">➡</button>\n'
+            'name="exportTheme">➤</button>\n'
 
         graphicsStr += '    </div></details>\n'
 
