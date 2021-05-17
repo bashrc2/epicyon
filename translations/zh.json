@@ -444,5 +444,7 @@
     "City for spoofed GPS image metadata": "欺骗性GPS影像元数据的城市",
     "Occupation": "职业",
     "Artists": "艺人",
-    "Graphic Design": "平面设计"
+    "Graphic Design": "平面设计",
+    "Import Theme": "进口主题",
+    "Export Theme": "出口主题"
 }

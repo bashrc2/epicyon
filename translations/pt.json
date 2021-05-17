@@ -444,5 +444,7 @@
     "City for spoofed GPS image metadata": "Cidade para metadados de imagem GPS falsificados",
     "Occupation": "Ocupação",
     "Artists": "Artistas",
-    "Graphic Design": "Design gráfico"
+    "Graphic Design": "Design gráfico",
+    "Import Theme": "Importar tema",
+    "Export Theme": "Exportar tema"
 }
