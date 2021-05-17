@@ -288,6 +288,10 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             {
                 '@type': 'Occupation',
                 'name': "",
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": httpPrefix + '://' + domain
+                },
                 'skills': []
             }
         ],
@@ -584,10 +588,15 @@ def personUpgradeActor(baseDir: str, personJson: {},
     # if the older skills format is being used then switch
     # to the new one
     if not personJson.get('hasOccupation'):
+        personDomain = personJson['id'].split('/users/')[0]
         personJson['hasOccupation'] = [
             {
                 '@type': 'Occupation',
                 'name': occupationName,
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": personDomain
+                },
                 'skills': []
             }
         ]
@@ -605,10 +614,15 @@ def personUpgradeActor(baseDir: str, personJson: {},
         updateActor = True
 
     if not isinstance(personJson['hasOccupation'], list):
+        personDomain = personJson['id'].split('/users/')[0]
         personJson['hasOccupation'] = [
             {
                 '@type': 'Occupation',
                 'name': occupationName,
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": personDomain
+                },
                 'skills': []
             }
         ]

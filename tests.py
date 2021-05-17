@@ -3666,6 +3666,10 @@ def testSkills() -> None:
             {
                 '@type': 'Occupation',
                 'name': "Sysop",
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": "https://jazzy.hedgehog"
+                },
                 'skills': []
             }
         ]
@@ -3688,6 +3692,10 @@ def testRoles() -> None:
             {
                 '@type': 'Occupation',
                 'name': "Sysop",
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": "https://mostly.giraffe"
+                },
                 'skills': []
             }
         ]

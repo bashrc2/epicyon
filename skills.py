@@ -82,10 +82,15 @@ def setActorSkillLevel(actorJson: {},
     if not actorJson:
         return True
     if not actorJson.get('hasOccupation'):
+        actorDomain = actorJson['id'].split('/users/')[0]
         actorJson['hasOccupation'] = [
             {
                 '@type': 'Occupation',
                 'name': '',
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": actorDomain
+                },
                 'skills': []
             }
         ]
