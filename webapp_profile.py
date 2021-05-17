@@ -1498,7 +1498,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 'placeholder="" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 counselors + '</textarea>'
-            roleAssignStr += '    </div></details>\n'
 
             # artists
             artists = ''
