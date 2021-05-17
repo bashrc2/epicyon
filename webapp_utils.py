@@ -743,12 +743,12 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "hasOccupation": {\n'
                     skillsMarkup += '            "@type": "Occupation",\n'
                     skillsMarkup += '            "name": "' + roleName + '",\n'
-                    skillsMarkup += '            "occupationLocation": {\n'
+                    skillsMarkup += '            "occupationLocation": [{\n'
                     skillsMarkup += \
                         '              "@type": "VirtualLocation",\n'
                     skillsMarkup += \
                         '              "url": "' + actorDomain + '"\n'
-                    skillsMarkup += '            },\n'
+                    skillsMarkup += '            }],\n'
                     skillsMarkup += '            "occupationalCategory": {\n'
                     skillsMarkup += '              "@type": "CategoryCode",\n'
                     skillsMarkup += '              "inCodeSet": {\n'
@@ -783,11 +783,11 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '        {\n'
                     skillsMarkup += '          "@type": "Occupation",\n'
                     skillsMarkup += '          "name": "' + ocName + '",\n'
-                    skillsMarkup += '          "occupationLocation": {\n'
+                    skillsMarkup += '          "occupationLocation": [{\n'
                     skillsMarkup += '            "@type": "VirtualLocation",\n'
                     skillsMarkup += \
                         '            "url": "' + actorDomain + '"\n'
-                    skillsMarkup += '          },\n'
+                    skillsMarkup += '          }],\n'
                     skillsMarkup += \
                         '          "skills": ' + skillsListStr + '\n'
                     skillsMarkup += '        }'
