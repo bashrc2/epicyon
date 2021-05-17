@@ -725,6 +725,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         if isinstance(actorJson['hasOccupation'], list):
             skillsMarkup = '      "hasOccupation": [\n'
             firstEntry = True
+            actorDomain = actorJson['id'].split('/users/')[0]
             for skillDict in actorJson['hasOccupation']:
                 if skillDict['@type'] == 'Role':
                     if not firstEntry:
@@ -742,6 +743,12 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "hasOccupation": {\n'
                     skillsMarkup += '            "@type": "Occupation",\n'
                     skillsMarkup += '            "name": "' + roleName + '",\n'
+                    skillsMarkup += '            "location": {\n'
+                    skillsMarkup += \
+                        '              "@type": "VirtualLocation",\n'
+                    skillsMarkup += \
+                        '              "url": "' + actorDomain + '"\n'
+                    skillsMarkup += '            },\n'
                     skillsMarkup += '            "occupationalCategory": {\n'
                     skillsMarkup += '              "@type": "CategoryCode",\n'
                     skillsMarkup += '              "inCodeSet": {\n'
@@ -776,6 +783,11 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '        {\n'
                     skillsMarkup += '          "@type": "Occupation",\n'
                     skillsMarkup += '          "name": "' + ocName + '",\n'
+                    skillsMarkup += '          "location": {\n'
+                    skillsMarkup += '            "@type": "VirtualLocation",\n'
+                    skillsMarkup += \
+                        '            "url": "' + actorDomain + '"\n'
+                    skillsMarkup += '          },\n'
                     skillsMarkup += \
                         '          "skills": ' + skillsListStr + '\n'
                     skillsMarkup += '        }'
