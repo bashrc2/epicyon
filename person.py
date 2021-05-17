@@ -619,14 +619,27 @@ def personUpgradeActor(baseDir: str, personJson: {},
             {
                 '@type': 'Occupation',
                 'name': occupationName,
-                "location": {
-                    "@type": "VirtualLocation",
-                    "url": personDomain
+                'location': {
+                    '@type': 'VirtualLocation',
+                    'url': personDomain
                 },
                 'skills': []
             }
         ]
         updateActor = True
+    else:
+        # add location if it is missing
+        for index in range(len(personJson['hasOccupation'])):
+            ocItem = personJson['hasOccupation'][index]
+            if ocItem.get('hasOccupation'):
+                ocItem = ocItem['hasOccupation']
+            if not ocItem.get('location'):
+                personDomain = personJson['id'].split('/users/')[0]
+                ocItem['location'] = {
+                    "@type": "VirtualLocation",
+                    "url": personDomain
+                }
+                updateActor = True
 
     # if no roles are defined then ensure that the admin
     # roles are configured

@@ -140,11 +140,16 @@ def _setActorRole(actorJson: {}, roleName: str) -> bool:
         if occupationItem['hasOccupation']['name'] == roleName:
             return True
     statusNumber, published = getStatusNumber()
+    actorDomain = actorJson['id'].split('/users/')[0]
     newRole = {
         "@type": "Role",
         "hasOccupation": {
             "@type": "Occupation",
             "name": roleName,
+            'location': {
+                '@type': 'VirtualLocation',
+                'url': actorDomain
+            },
             "occupationalCategory": {
                 "@type": "CategoryCode",
                 "inCodeSet": {
