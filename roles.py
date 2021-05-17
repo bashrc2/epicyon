@@ -145,6 +145,7 @@ def _setActorRole(actorJson: {}, roleName: str) -> bool:
         "hasOccupation": {
             "@type": "Occupation",
             "name": roleName,
+            "description": "Fediverse instance role",
             "occupationLocation": {
                 "@type": "City",
                 "url": "Fediverse"
