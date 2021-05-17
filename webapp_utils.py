@@ -720,6 +720,24 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     if not actorJson:
         return htmlStr
 
+    cityMarkup = ''
+    if city:
+        city = city.lower().title()
+        addComma = ''
+        countryMarkup = ''
+        if ',' in city:
+            country = city.split(',', 1)[1].strip().title()
+            city = city.split(',', 1)[0]
+            countryMarkup = \
+                '        "addressCountry": "' + country + '"\n'
+            addComma = ','
+        cityMarkup = \
+            '      "address": {\n' + \
+            '        "@type": "PostalAddress",\n' + \
+            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            countryMarkup + \
+            '      },\n'
+
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
         if isinstance(actorJson['hasOccupation'], list):
@@ -793,23 +811,6 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 firstEntry = False
             skillsMarkup += '\n      ],\n'
 
-    cityMarkup = ''
-    if city:
-        city = city.lower().title()
-        addComma = ''
-        countryMarkup = ''
-        if ',' in city:
-            country = city.split(',', 1)[1].strip().title()
-            city = city.split(',', 1)[0]
-            countryMarkup = \
-                '        "addressCountry": "' + country + '"\n'
-            addComma = ','
-        cityMarkup = \
-            '      "address": {\n' + \
-            '        "@type": "PostalAddress",\n' + \
-            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
-            countryMarkup + \
-            '      },\n'
     description = removeHtml(actorJson['summary'])
     nameStr = removeHtml(actorJson['name'])
     personMarkup = \
