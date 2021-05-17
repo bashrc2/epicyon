@@ -640,6 +640,13 @@ def personUpgradeActor(baseDir: str, personJson: {},
                     "name": "Fediverse"
                 }
                 updateActor = True
+            else:
+                if ocItem['occupationLocation']['@type'] != 'City':
+                    ocItem['occupationLocation'] = {
+                        "@type": "City",
+                        "name": "Fediverse"
+                    }
+                    updateActor = True
 
     # if no roles are defined then ensure that the admin
     # roles are configured
