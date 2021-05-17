@@ -3666,6 +3666,10 @@ def testSkills() -> None:
             {
                 '@type': 'Occupation',
                 'name': "Sysop",
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
+                },
                 'skills': []
             }
         ]
@@ -3688,6 +3692,10 @@ def testRoles() -> None:
             {
                 '@type': 'Occupation',
                 'name': "Sysop",
+                'occupationLocation': {
+                    '@type': 'City',
+                    'name': 'Fediverse'
+                },
                 'skills': []
             }
         ]

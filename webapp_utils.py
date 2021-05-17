@@ -720,6 +720,24 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     if not actorJson:
         return htmlStr
 
+    cityMarkup = ''
+    if city:
+        city = city.lower().title()
+        addComma = ''
+        countryMarkup = ''
+        if ',' in city:
+            country = city.split(',', 1)[1].strip().title()
+            city = city.split(',', 1)[0]
+            countryMarkup = \
+                '        "addressCountry": "' + country + '"\n'
+            addComma = ','
+        cityMarkup = \
+            '      "address": {\n' + \
+            '        "@type": "PostalAddress",\n' + \
+            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            countryMarkup + \
+            '      },\n'
+
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
         if isinstance(actorJson['hasOccupation'], list):
@@ -742,6 +760,14 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "hasOccupation": {\n'
                     skillsMarkup += '            "@type": "Occupation",\n'
                     skillsMarkup += '            "name": "' + roleName + '",\n'
+                    skillsMarkup += '            "description": ' + \
+                        '"Fediverse instance role",\n'
+                    skillsMarkup += '            "occupationLocation": {\n'
+                    skillsMarkup += \
+                        '              "@type": "City",\n'
+                    skillsMarkup += \
+                        '              "name": "' + city + '"\n'
+                    skillsMarkup += '            },\n'
                     skillsMarkup += '            "occupationalCategory": {\n'
                     skillsMarkup += '              "@type": "CategoryCode",\n'
                     skillsMarkup += '              "inCodeSet": {\n'
@@ -776,29 +802,19 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '        {\n'
                     skillsMarkup += '          "@type": "Occupation",\n'
                     skillsMarkup += '          "name": "' + ocName + '",\n'
+                    skillsMarkup += '          "description": ' + \
+                        '"Fediverse instance occupation",\n'
+                    skillsMarkup += '          "occupationLocation": {\n'
+                    skillsMarkup += '            "@type": "City",\n'
+                    skillsMarkup += \
+                        '            "name": "' + city + '"\n'
+                    skillsMarkup += '          },\n'
                     skillsMarkup += \
                         '          "skills": ' + skillsListStr + '\n'
                     skillsMarkup += '        }'
                 firstEntry = False
             skillsMarkup += '\n      ],\n'
 
-    cityMarkup = ''
-    if city:
-        city = city.lower().title()
-        addComma = ''
-        countryMarkup = ''
-        if ',' in city:
-            country = city.split(',', 1)[1].strip().title()
-            city = city.split(',', 1)[0]
-            countryMarkup = \
-                '        "addressCountry": "' + country + '"\n'
-            addComma = ','
-        cityMarkup = \
-            '      "address": {\n' + \
-            '        "@type": "PostalAddress",\n' + \
-            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
-            countryMarkup + \
-            '      },\n'
     description = removeHtml(actorJson['summary'])
     nameStr = removeHtml(actorJson['name'])
     personMarkup = \
@@ -872,6 +888,11 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
 
     authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
+
+    # license for content on the site may be different from
+    # the software license
+    contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
+
     blogMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -890,6 +911,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '        "name": "' + instanceTitle + '",\n' + \
         '        "sameAs": "' + aboutUrl + '"\n' + \
         '      },\n' + \
+        '      "license": "' + contentLicenseUrl + '",\n' + \
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'

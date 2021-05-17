@@ -86,6 +86,10 @@ def setActorSkillLevel(actorJson: {},
             {
                 '@type': 'Occupation',
                 'name': '',
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
+                },
                 'skills': []
             }
         ]

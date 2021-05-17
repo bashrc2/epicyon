@@ -288,6 +288,10 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             {
                 '@type': 'Occupation',
                 'name': "",
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
+                },
                 'skills': []
             }
         ],
@@ -588,6 +592,10 @@ def personUpgradeActor(baseDir: str, personJson: {},
             {
                 '@type': 'Occupation',
                 'name': occupationName,
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
+                },
                 'skills': []
             }
         ]
@@ -609,10 +617,36 @@ def personUpgradeActor(baseDir: str, personJson: {},
             {
                 '@type': 'Occupation',
                 'name': occupationName,
+                'occupationLocation': {
+                    '@type': 'City',
+                    'name': 'Fediverse'
+                },
                 'skills': []
             }
         ]
         updateActor = True
+    else:
+        # add location if it is missing
+        for index in range(len(personJson['hasOccupation'])):
+            ocItem = personJson['hasOccupation'][index]
+            if ocItem.get('hasOccupation'):
+                ocItem = ocItem['hasOccupation']
+            if ocItem.get('location'):
+                del ocItem['location']
+                updateActor = True
+            if not ocItem.get('occupationLocation'):
+                ocItem['occupationLocation'] = {
+                    "@type": "City",
+                    "name": "Fediverse"
+                }
+                updateActor = True
+            else:
+                if ocItem['occupationLocation']['@type'] != 'City':
+                    ocItem['occupationLocation'] = {
+                        "@type": "City",
+                        "name": "Fediverse"
+                    }
+                    updateActor = True
 
     # if no roles are defined then ensure that the admin
     # roles are configured
