@@ -888,6 +888,11 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
 
     authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
+
+    # license for content on the site may be different from
+    # the software license
+    contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
+
     blogMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -906,6 +911,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '        "name": "' + instanceTitle + '",\n' + \
         '        "sameAs": "' + aboutUrl + '"\n' + \
         '      },\n' + \
+        '      "license": "' + contentLicenseUrl + '",\n' + \
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'
