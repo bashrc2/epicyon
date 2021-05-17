@@ -1500,6 +1500,21 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 counselors + '</textarea>'
             roleAssignStr += '    </div></details>\n'
 
+            # artists
+            artists = ''
+            artistsFile = baseDir + '/accounts/artists.txt'
+            if os.path.isfile(artistsFile):
+                with open(artistsFile, "r") as f:
+                    artists = f.read()
+            roleAssignStr += '  <b><label class="labels">' + \
+                translate['Artists'] + '</label></b><br>\n'
+            roleAssignStr += \
+                '  <textarea id="message" name="artists" ' + \
+                'placeholder="" ' + \
+                'style="height:200px" spellcheck="false">' + \
+                artists + '</textarea>'
+            roleAssignStr += '    </div></details>\n'
+
             # Video section
             peertubeStr = '    <details><summary class="cw">' + \
                 translate['Video Settings'] + '</summary>\n'

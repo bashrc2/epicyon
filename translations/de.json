@@ -442,5 +442,6 @@
     "Show version number within instance metadata": "Versionsnummer in Instanzmetadaten anzeigen",
     "Joined": "Verbundenes Datum",
     "City for spoofed GPS image metadata": "Stadt für gefälschte GPS-Bildmetadaten",
-    "Occupation": "Besetzung"
+    "Occupation": "Besetzung",
+    "Artists": "Künstler"
 }

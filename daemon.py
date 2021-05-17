@@ -128,6 +128,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
+from roles import clearArtistStatus
 from blog import htmlBlogPageRSS2
 from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
@@ -4871,6 +4872,62 @@ class PubServer(BaseHTTPRequestHandler):
                                             setRole(baseDir,
                                                     edNick, domain,
                                                     'counselor')
+
+                        # change site artists list
+                        if fields.get('artists'):
+                            if path.startswith('/users/' +
+                                               adminNickname + '/'):
+                                artistsFile = \
+                                    baseDir + \
+                                    '/accounts/artists.txt'
+                                clearArtistStatus(baseDir)
+                                if ',' in fields['artists']:
+                                    # if the list was given as comma separated
+                                    edFile = open(artistsFile, "w+")
+                                    eds = fields['artists'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['artists'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'artist')
+                                else:
+                                    # nicknames on separate lines
+                                    edFile = open(artistsFile, "w+")
+                                    eds = fields['artists'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['artists'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + \
+                                            edNick + '@' + \
+                                            domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'artist')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):

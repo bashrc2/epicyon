@@ -442,5 +442,6 @@
     "Show version number within instance metadata": "Show version number within instance metadata",
     "Joined": "Joined",
     "City for spoofed GPS image metadata": "City for spoofed GPS image metadata",
-    "Occupation": "Occupation"
+    "Occupation": "Occupation",
+    "Artists": "Artists"
 }

@@ -3706,6 +3706,7 @@ def testRoles() -> None:
     assert actorHasRole(actorJson, "moderator")
     assert not actorHasRole(actorJson, "editor")
     assert not actorHasRole(actorJson, "counselor")
+    assert not actorHasRole(actorJson, "artist")
 
 
 def runAllTests():
