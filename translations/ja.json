@@ -444,5 +444,7 @@
     "City for spoofed GPS image metadata": "なりすましGPS画像メタデータの都市",
     "Occupation": "職業",
     "Artists": "アーティスト",
-    "Graphic Design": "グラフィックデザイン"
+    "Graphic Design": "グラフィックデザイン",
+    "Import Theme": "輸入テーマ",
+    "Export Theme": "テーマをエクスポートします"
 }

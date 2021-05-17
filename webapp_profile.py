@@ -1085,6 +1085,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
+    themeFormats = '.zip, .gz'
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)
@@ -1334,6 +1335,18 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                    '<option value="' + themeName +
                                    '" selected>')
         graphicsStr += themesDropdown
+
+        graphicsStr += \
+            '      <label class="labels">' + \
+            translate['Import Theme'] + '</label>\n'
+        graphicsStr += '      <input type="file" id="importTheme" '
+        graphicsStr += 'name="importTheme" '
+        graphicsStr += 'accept="' + themeFormats + '">\n'
+        graphicsStr += \
+            '      <button type="submit" class="button" ' + \
+            'name="exportTheme">' + \
+            translate['Export Theme'] + '</button>\n'
+
         graphicsStr += '    </div></details>\n'
 
     if adminNickname:
