@@ -725,7 +725,6 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         if isinstance(actorJson['hasOccupation'], list):
             skillsMarkup = '      "hasOccupation": [\n'
             firstEntry = True
-            actorDomain = actorJson['id'].split('/users/')[0]
             for skillDict in actorJson['hasOccupation']:
                 if skillDict['@type'] == 'Role':
                     if not firstEntry:
@@ -745,9 +744,9 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '            "name": "' + roleName + '",\n'
                     skillsMarkup += '            "occupationLocation": {\n'
                     skillsMarkup += \
-                        '              "@type": "VirtualLocation",\n'
+                        '              "@type": "City",\n'
                     skillsMarkup += \
-                        '              "url": "' + actorDomain + '"\n'
+                        '              "name": "' + city + '"\n'
                     skillsMarkup += '            },\n'
                     skillsMarkup += '            "occupationalCategory": {\n'
                     skillsMarkup += '              "@type": "CategoryCode",\n'
@@ -784,9 +783,9 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "@type": "Occupation",\n'
                     skillsMarkup += '          "name": "' + ocName + '",\n'
                     skillsMarkup += '          "occupationLocation": {\n'
-                    skillsMarkup += '            "@type": "VirtualLocation",\n'
+                    skillsMarkup += '            "@type": "City",\n'
                     skillsMarkup += \
-                        '            "url": "' + actorDomain + '"\n'
+                        '            "name": "' + city + '"\n'
                     skillsMarkup += '          },\n'
                     skillsMarkup += \
                         '          "skills": ' + skillsListStr + '\n'

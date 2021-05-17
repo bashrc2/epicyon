@@ -288,9 +288,9 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             {
                 '@type': 'Occupation',
                 'name': "",
-                "location": {
-                    "@type": "VirtualLocation",
-                    "url": httpPrefix + '://' + domain
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
                 },
                 'skills': []
             }
@@ -588,14 +588,13 @@ def personUpgradeActor(baseDir: str, personJson: {},
     # if the older skills format is being used then switch
     # to the new one
     if not personJson.get('hasOccupation'):
-        personDomain = personJson['id'].split('/users/')[0]
         personJson['hasOccupation'] = [
             {
                 '@type': 'Occupation',
                 'name': occupationName,
-                "location": {
-                    "@type": "VirtualLocation",
-                    "url": personDomain
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
                 },
                 'skills': []
             }
@@ -614,14 +613,13 @@ def personUpgradeActor(baseDir: str, personJson: {},
         updateActor = True
 
     if not isinstance(personJson['hasOccupation'], list):
-        personDomain = personJson['id'].split('/users/')[0]
         personJson['hasOccupation'] = [
             {
                 '@type': 'Occupation',
                 'name': occupationName,
                 'occupationLocation': {
-                    '@type': 'VirtualLocation',
-                    'url': personDomain
+                    '@type': 'City',
+                    'name': 'Fediverse'
                 },
                 'skills': []
             }
@@ -637,10 +635,9 @@ def personUpgradeActor(baseDir: str, personJson: {},
                 del ocItem['location']
                 updateActor = True
             if not ocItem.get('occupationLocation'):
-                personDomain = personJson['id'].split('/users/')[0]
                 ocItem['occupationLocation'] = {
-                    "@type": "VirtualLocation",
-                    "url": personDomain
+                    "@type": "City",
+                    "name": "Fediverse"
                 }
                 updateActor = True
 
