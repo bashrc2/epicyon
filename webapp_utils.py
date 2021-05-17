@@ -762,6 +762,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '            "name": "' + roleName + '",\n'
                     skillsMarkup += '            "description": ' + \
                         '"Fediverse instance role",\n'
+                    skillsMarkup += '            "mainEntityOfPage": "' + \
+                        actorJson['id'] + '",\n'
                     skillsMarkup += '            "occupationLocation": {\n'
                     skillsMarkup += \
                         '              "@type": "City",\n'
@@ -804,6 +806,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     skillsMarkup += '          "name": "' + ocName + '",\n'
                     skillsMarkup += '          "description": ' + \
                         '"Fediverse instance occupation",\n'
+                    skillsMarkup += '          "mainEntityOfPage": "' + \
+                        actorJson['id'] + '",\n'
                     skillsMarkup += '          "occupationLocation": {\n'
                     skillsMarkup += '            "@type": "City",\n'
                     skillsMarkup += \
