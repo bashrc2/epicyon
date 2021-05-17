@@ -1344,11 +1344,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         graphicsStr += 'accept="' + themeFormats + '">\n'
         graphicsStr += \
             '      <label class="labels">' + \
-            translate['Export Theme'] + '</label>\n'
+            translate['Export Theme'] + '</label><br>\n'
         graphicsStr += \
             '      <button type="submit" class="button" ' + \
-            'name="exportTheme">' + \
-            translate['Submit'] + '</button>\n'
+            'name="exportTheme">➡</button>\n'
 
         graphicsStr += '    </div></details>\n'
 
