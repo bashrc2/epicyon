@@ -214,6 +214,7 @@ from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeHtml
 from utils import isEditor
+from utils import isArtist
 from utils import getImageExtensions
 from utils import mediaFileMimeType
 from utils import getCSS
@@ -4269,6 +4270,38 @@ class PubServer(BaseHTTPRequestHandler):
                         if checkNameAndBio:
                             redirectPath = 'previewAvatar'
 
+                    if nickname == adminNickname or \
+                       isArtist(baseDir, nickname):
+                        # change theme
+                        if fields.get('themeDropdown'):
+                            self.server.themeName = fields['themeDropdown']
+                            setTheme(baseDir, self.server.themeName, domain,
+                                     allowLocalNetworkAccess, systemLanguage)
+                            self.server.textModeBanner = \
+                                getTextModeBanner(self.server.baseDir)
+                            self.server.iconsCache = {}
+                            self.server.fontsCache = {}
+                            self.server.showPublishAsIcon = \
+                                getConfigParam(self.server.baseDir,
+                                               'showPublishAsIcon')
+                            self.server.fullWidthTimelineButtonHeader = \
+                                getConfigParam(self.server.baseDir,
+                                               'fullWidthTimelineButtonHeader')
+                            self.server.iconsAsButtons = \
+                                getConfigParam(self.server.baseDir,
+                                               'iconsAsButtons')
+                            self.server.rssIconAtTop = \
+                                getConfigParam(self.server.baseDir,
+                                               'rssIconAtTop')
+                            self.server.publishButtonAtTop = \
+                                getConfigParam(self.server.baseDir,
+                                               'publishButtonAtTop')
+                            setNewsAvatar(baseDir,
+                                          fields['themeDropdown'],
+                                          httpPrefix,
+                                          domain,
+                                          domainFull)
+
                     if nickname == adminNickname:
                         # change media instance status
                         if fields.get('mediaInstance'):
@@ -4352,36 +4385,6 @@ class PubServer(BaseHTTPRequestHandler):
                                 setConfigParam(baseDir,
                                                "blogsInstance",
                                                self.server.blogsInstance)
-
-                        # change theme
-                        if fields.get('themeDropdown'):
-                            self.server.themeName = fields['themeDropdown']
-                            setTheme(baseDir, self.server.themeName, domain,
-                                     allowLocalNetworkAccess, systemLanguage)
-                            self.server.textModeBanner = \
-                                getTextModeBanner(self.server.baseDir)
-                            self.server.iconsCache = {}
-                            self.server.fontsCache = {}
-                            self.server.showPublishAsIcon = \
-                                getConfigParam(self.server.baseDir,
-                                               'showPublishAsIcon')
-                            self.server.fullWidthTimelineButtonHeader = \
-                                getConfigParam(self.server.baseDir,
-                                               'fullWidthTimelineButtonHeader')
-                            self.server.iconsAsButtons = \
-                                getConfigParam(self.server.baseDir,
-                                               'iconsAsButtons')
-                            self.server.rssIconAtTop = \
-                                getConfigParam(self.server.baseDir,
-                                               'rssIconAtTop')
-                            self.server.publishButtonAtTop = \
-                                getConfigParam(self.server.baseDir,
-                                               'publishButtonAtTop')
-                            setNewsAvatar(baseDir,
-                                          fields['themeDropdown'],
-                                          httpPrefix,
-                                          domain,
-                                          domainFull)
 
                         # change instance title
                         if fields.get('instanceTitle'):
@@ -4953,7 +4956,10 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # remove a custom font
                     if fields.get('removeCustomFont'):
-                        if fields['removeCustomFont'] == 'on':
+                        if (fields['removeCustomFont'] == 'on' and
+                            (isArtist(baseDir, nickname) or
+                             path.startswith('/users/' +
+                                             adminNickname + '/'))):
                             fontExt = ('woff', 'woff2', 'otf', 'ttf')
                             for ext in fontExt:
                                 if os.path.isfile(baseDir +
@@ -4969,28 +4975,30 @@ class PubServer(BaseHTTPRequestHandler):
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 self.server.themeName = currTheme
+                                allowLocalNetworkAccess = \
+                                    self.server.allowLocalNetworkAccess
                                 setTheme(baseDir, currTheme, domain,
-                                         self.server.allowLocalNetworkAccess,
+                                         allowLocalNetworkAccess,
                                          systemLanguage)
                                 self.server.textModeBanner = \
-                                    getTextModeBanner(self.server.baseDir)
+                                    getTextModeBanner(baseDir)
                                 self.server.iconsCache = {}
                                 self.server.fontsCache = {}
                                 self.server.showPublishAsIcon = \
-                                    getConfigParam(self.server.baseDir,
+                                    getConfigParam(baseDir,
                                                    'showPublishAsIcon')
                                 self.server.fullWidthTimelineButtonHeader = \
-                                    getConfigParam(self.server.baseDir,
+                                    getConfigParam(baseDir,
                                                    'fullWidthTimeline' +
                                                    'ButtonHeader')
                                 self.server.iconsAsButtons = \
-                                    getConfigParam(self.server.baseDir,
+                                    getConfigParam(baseDir,
                                                    'iconsAsButtons')
                                 self.server.rssIconAtTop = \
-                                    getConfigParam(self.server.baseDir,
+                                    getConfigParam(baseDir,
                                                    'rssIconAtTop')
                                 self.server.publishButtonAtTop = \
-                                    getConfigParam(self.server.baseDir,
+                                    getConfigParam(baseDir,
                                                    'publishButtonAtTop')
 
                     # only receive DMs from accounts you follow
@@ -5090,14 +5098,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorChanged = True
 
                     # grayscale theme
-                    grayscale = False
-                    if fields.get('grayscale'):
-                        if fields['grayscale'] == 'on':
-                            grayscale = True
-                    if grayscale:
-                        enableGrayscale(baseDir)
-                    else:
-                        disableGrayscale(baseDir)
+                    if path.startswith('/users/' +
+                                       adminNickname + '/') or \
+                       isArtist(baseDir, nickname):
+                        grayscale = False
+                        if fields.get('grayscale'):
+                            if fields['grayscale'] == 'on':
+                                grayscale = True
+                        if grayscale:
+                            enableGrayscale(baseDir)
+                        else:
+                            disableGrayscale(baseDir)
 
                     # save filtered words list
                     filterFilename = \

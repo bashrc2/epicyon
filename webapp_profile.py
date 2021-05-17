@@ -12,6 +12,7 @@ from utils import getOccupationName
 from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
+from utils import isArtist
 from utils import isDormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -1292,6 +1293,49 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     peertubeStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
+
+    if isArtist(baseDir, nickname) or \
+       path.startswith('/users/' + str(adminNickname) + '/'):
+        graphicsStr = '<details><summary class="cw">' + \
+            translate['Graphic Design'] + '</summary>\n'
+        graphicsStr += '<div class="container">'
+
+        # Themes section
+        themes = getThemesList(baseDir)
+        themesDropdown += '  <br><label class="labels">' + \
+            translate['Theme'] + '</label><br>\n'
+        grayscaleFilename = \
+            baseDir + '/accounts/.grayscale'
+        grayscale = ''
+        if os.path.isfile(grayscaleFilename):
+            grayscale = 'checked'
+        themesDropdown += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="grayscale" ' + grayscale + \
+            '> ' + translate['Grayscale'] + '<br>'
+        themesDropdown += '  <select id="themeDropdown" ' + \
+            'name="themeDropdown" class="theme">'
+        for themeName in themes:
+            themesDropdown += '    <option value="' + \
+                themeName.lower() + '">' + \
+                translate[themeName] + '</option>'
+        themesDropdown += '  </select><br>'
+        if os.path.isfile(baseDir + '/fonts/custom.woff') or \
+           os.path.isfile(baseDir + '/fonts/custom.woff2') or \
+           os.path.isfile(baseDir + '/fonts/custom.otf') or \
+           os.path.isfile(baseDir + '/fonts/custom.ttf'):
+            themesDropdown += \
+                '      <input type="checkbox" class="profilecheckbox" ' + \
+                'name="removeCustomFont"> ' + \
+                translate['Remove the custom font'] + '<br>'
+        themeName = getConfigParam(baseDir, 'theme')
+        themesDropdown = \
+            themesDropdown.replace('<option value="' + themeName + '">',
+                                   '<option value="' + themeName +
+                                   '" selected>')
+        graphicsStr += themesDropdown
+        graphicsStr += '    </div></details>\n'
+
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
             # Instance details section
@@ -1346,40 +1390,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '  <input type="file" id="instanceLogo" name="instanceLogo"'
             instanceStr += '      accept="' + imageFormats + '"><br>\n'
 
-            # Themes section
-            themes = getThemesList(baseDir)
-            themesDropdown += '  <br><label class="labels">' + \
-                translate['Theme'] + '</label><br>\n'
-            grayscaleFilename = \
-                baseDir + '/accounts/.grayscale'
-            grayscale = ''
-            if os.path.isfile(grayscaleFilename):
-                grayscale = 'checked'
-            themesDropdown += \
-                '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="grayscale" ' + grayscale + \
-                '> ' + translate['Grayscale'] + '<br>'
-            themesDropdown += '  <select id="themeDropdown" ' + \
-                'name="themeDropdown" class="theme">'
-            for themeName in themes:
-                themesDropdown += '    <option value="' + \
-                    themeName.lower() + '">' + \
-                    translate[themeName] + '</option>'
-            themesDropdown += '  </select><br>'
-            if os.path.isfile(baseDir + '/fonts/custom.woff') or \
-               os.path.isfile(baseDir + '/fonts/custom.woff2') or \
-               os.path.isfile(baseDir + '/fonts/custom.otf') or \
-               os.path.isfile(baseDir + '/fonts/custom.ttf'):
-                themesDropdown += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="removeCustomFont"> ' + \
-                    translate['Remove the custom font'] + '<br>'
-            themeName = getConfigParam(baseDir, 'theme')
-            themesDropdown = \
-                themesDropdown.replace('<option value="' + themeName + '">',
-                                       '<option value="' + themeName +
-                                       '" selected>')
-            instanceStr += themesDropdown
             instanceStr += \
                 '  <br><label class="labels">' + \
                 translate['Security'] + '</label><br>\n'
@@ -1942,7 +1952,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += skillsStr
-    editProfileForm += roleAssignStr + peertubeStr + instanceStr
+    editProfileForm += roleAssignStr + peertubeStr + graphicsStr + instanceStr
 
     # danger zone section
     editProfileForm += '    <details><summary class="cw">' + \
