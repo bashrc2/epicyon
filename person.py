@@ -619,7 +619,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
             {
                 '@type': 'Occupation',
                 'name': occupationName,
-                'location': {
+                'occupationLocation': {
                     '@type': 'VirtualLocation',
                     'url': personDomain
                 },
@@ -633,9 +633,12 @@ def personUpgradeActor(baseDir: str, personJson: {},
             ocItem = personJson['hasOccupation'][index]
             if ocItem.get('hasOccupation'):
                 ocItem = ocItem['hasOccupation']
-            if not ocItem.get('location'):
+            if ocItem.get('location'):
+                del ocItem['location']
+                updateActor = True
+            if not ocItem.get('occupationLocation'):
                 personDomain = personJson['id'].split('/users/')[0]
-                ocItem['location'] = {
+                ocItem['occupationLocation'] = {
                     "@type": "VirtualLocation",
                     "url": personDomain
                 }

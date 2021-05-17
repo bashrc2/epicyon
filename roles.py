@@ -146,9 +146,9 @@ def _setActorRole(actorJson: {}, roleName: str) -> bool:
         "hasOccupation": {
             "@type": "Occupation",
             "name": roleName,
-            'location': {
-                '@type': 'VirtualLocation',
-                'url': actorDomain
+            "occupationLocation": {
+                "@type": "VirtualLocation",
+                "url": actorDomain
             },
             "occupationalCategory": {
                 "@type": "CategoryCode",
