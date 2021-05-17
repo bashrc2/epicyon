@@ -442,5 +442,7 @@
     "Show version number within instance metadata": "Afficher le numéro de version dans les métadonnées de l'instance",
     "Joined": "Joint",
     "City for spoofed GPS image metadata": "Ville pour les métadonnées d'image GPS falsifiées",
-    "Occupation": "Occupation"
+    "Occupation": "Occupation",
+    "Artists": "Artistes",
+    "Graphic Design": "Conception graphique"
 }

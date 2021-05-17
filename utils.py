@@ -194,6 +194,34 @@ def isEditor(baseDir: str, nickname: str) -> bool:
     return False
 
 
+def isArtist(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is an artist
+    """
+    artistsFile = baseDir + '/accounts/artists.txt'
+
+    if not os.path.isfile(artistsFile):
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
+            return True
+        return False
+
+    with open(artistsFile, "r") as f:
+        lines = f.readlines()
+        if len(lines) == 0:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
+                return True
+        for artist in lines:
+            artist = artist.strip('\n').strip('\r')
+            if artist == nickname:
+                return True
+    return False
+
+
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """

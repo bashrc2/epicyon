@@ -54,6 +54,14 @@ def clearCounselorStatus(baseDir: str) -> None:
     _clearRoleStatus(baseDir, 'editor')
 
 
+def clearArtistStatus(baseDir: str) -> None:
+    """Removes artist status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when artists are appointed or removed
+    """
+    _clearRoleStatus(baseDir, 'artist')
+
+
 def clearModeratorStatus(baseDir: str) -> None:
     """Removes moderator status from all accounts
     This could be slow if there are many users, but only happens
@@ -126,6 +134,8 @@ def _setActorRole(actorJson: {}, roleName: str) -> bool:
         category = '27-3041.00'
     elif 'counselor' in roleName:
         category = '23-1022.00'
+    elif 'artist' in roleName:
+        category = '27-1024.00'
     if not category:
         return False
 
@@ -225,7 +235,8 @@ def setRole(baseDir: str, nickname: str, domain: str,
     roleFiles = {
         "moderator": "moderators.txt",
         "editor": "editors.txt",
-        "counselor": "counselors.txt"
+        "counselor": "counselors.txt",
+        "artist": "artists.txt"
     }
 
     actorJson = loadJson(actorFilename)

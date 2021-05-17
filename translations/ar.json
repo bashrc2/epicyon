@@ -442,5 +442,7 @@
     "Show version number within instance metadata": "إظهار رقم الإصدار داخل البيانات الوصفية للمثيل",
     "Joined": "تاريخ الانضمام",
     "City for spoofed GPS image metadata": "مدينة للبيانات الوصفية لصور GPS المخادعة",
-    "Occupation": "الاحتلال"
+    "Occupation": "الاحتلال",
+    "Artists": "الفنانين",
+    "Graphic Design": "التصميم الجرافيكي"
 }

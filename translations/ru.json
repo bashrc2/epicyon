@@ -442,5 +442,7 @@
     "Show version number within instance metadata": "Показать номер версии в метаданных экземпляра",
     "Joined": "Присоединенная дата",
     "City for spoofed GPS image metadata": "Город для поддельных метаданных изображения GPS",
-    "Occupation": "Занятие"
+    "Occupation": "Занятие",
+    "Artists": "Художники",
+    "Graphic Design": "Графический дизайн"
 }
