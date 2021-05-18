@@ -3604,7 +3604,8 @@ def testSpoofGeolocation() -> None:
         'LOS ANGELES, USA:34.0536909:W118.242766:1214',
         'HOUSTON, USA:29.6072:W95.1586:1553',
         'MANCHESTER, ENGLAND:53.4794892:W2.2451148:630',
-        'BERLIN, GERMANY:52.5170365:13.3888599:891'
+        'BERLIN, GERMANY:52.5170365:13.3888599:891',
+        'ANKARA, TURKEY:39.93:32.85:24521'
     ]
     currTime = datetime.datetime.utcnow()
     decoySeed = 7634681
