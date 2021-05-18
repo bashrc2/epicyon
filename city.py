@@ -138,7 +138,7 @@ def spoofGeolocation(baseDir: str,
     locationsFilename = baseDir + '/custom_locations.txt'
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
-    cityRadius = 0.1
+    manCityRadius = 0.1
     varianceAtLocation = 0.0004
     default_latitude = 51.8744
     default_longitude = 0.368333
@@ -159,8 +159,12 @@ def spoofGeolocation(baseDir: str,
     city = city.lower()
     for cityName in cities:
         if city in cityName.lower():
-            latitude = cityName.split(':')[1]
-            longitude = cityName.split(':')[2]
+            cityFields = cityName.split(':')
+            latitude = cityFields[1]
+            longitude = cityFields[2]
+            areaKm2 = 0
+            if len(cityFields) > 3:
+                areaKm2 = int(cityFields[3])
             latdirection = 'N'
             longdirection = 'E'
             if 'S' in latitude:
@@ -182,6 +186,14 @@ def spoofGeolocation(baseDir: str,
             # patterns of activity change in the city over time
             (distanceFromCityCenter, angleRadians) = \
                 _getCityPulse(currTimeAdjusted, decoySeed)
+            # The city radius value is in longitude and the reference
+            # is Manchester. Adjust for the radius of the chosen city.
+            if areaKm2 > 1:
+                manRadius = math.sqrt(630 / math.pi)
+                radius = math.sqrt(areaKm2 / math.pi)
+                cityRadius = manCityRadius * manRadius / radius
+            else:
+                cityRadius = manCityRadius
             # Get the position within the city, with some randomness added
             latitude += \
                 distanceFromCityCenter * cityRadius * math.cos(angleRadians)

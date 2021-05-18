@@ -3600,20 +3600,21 @@ def testRemovePostInteractions() -> None:
 def testSpoofGeolocation() -> None:
     print('testSpoofGeolocation')
     citiesList = [
-        'NEW YORK, USA:40.6397:W73.7789',
-        'LOS ANGELES, USA:33.9425:W118.408',
-        'HOUSTON, USA:29.9803:W95.3397',
-        'MANCHESTER, ENGLAND:53.4794892:W2.2451148'
+        'NEW YORK, USA:40.7127281:W74.0060152:784',
+        'LOS ANGELES, USA:34.0536909:W118.242766:1214',
+        'HOUSTON, USA:29.6072:W95.1586:1553',
+        'MANCHESTER, ENGLAND:53.4794892:W2.2451148:630',
+        'BERLIN, GERMANY:52.5170365:13.3888599:891'
     ]
     currTime = datetime.datetime.utcnow()
     decoySeed = 7634681
     cityRadius = 0.1
     coords = spoofGeolocation('', 'los angeles', currTime,
                               decoySeed, citiesList)
-    assert coords[0] >= 33.9425 - cityRadius
-    assert coords[0] <= 33.9425 + cityRadius
-    assert coords[1] >= 118.408 - cityRadius
-    assert coords[1] <= 118.408 + cityRadius
+    assert coords[0] >= 34.0536909 - cityRadius
+    assert coords[0] <= 34.0536909 + cityRadius
+    assert coords[1] >= 118.242766 - cityRadius
+    assert coords[1] <= 118.242766 + cityRadius
     assert coords[2] == 'N'
     assert coords[3] == 'W'
     assert len(coords[4]) > 4
@@ -3642,12 +3643,17 @@ def testSpoofGeolocation() -> None:
         currTime = datetime.datetime.strptime("2021-05-" + str(dayNumber) +
                                               " " + hourStr + ":14",
                                               "%Y-%m-%d %H:%M")
-        coords = spoofGeolocation('', 'manchester, england', currTime,
+        coords = spoofGeolocation('', 'new york, usa', currTime,
                                   decoySeed, citiesList)
+        #coords = spoofGeolocation('', 'berlin, germany', currTime,
+        #                          decoySeed, citiesList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
         kmlStr += '<Placemark id="' + str(i) + '">\n'
         kmlStr += '  <name>' + str(i) + '</name>\n'
         kmlStr += '  <Point>\n'
-        kmlStr += '    <coordinates>' + str(-coords[1]) + ',' + \
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
             str(coords[0]) + ',0</coordinates>\n'
         kmlStr += '  </Point>\n'
         kmlStr += '</Placemark>\n'
