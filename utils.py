@@ -1886,8 +1886,8 @@ def undoLikesCollectionEntry(recentPostsCache: {},
 
 def updateLikesCollection(recentPostsCache: {},
                           baseDir: str, postFilename: str,
-                          objectUrl: str,
-                          actor: str, domain: str, debug: bool) -> None:
+                          objectUrl: str, actor: str,
+                          nickname: str, domain: str, debug: bool) -> None:
     """Updates the likes collection within a post
     """
     postJsonObject = loadJson(postFilename)
@@ -1896,7 +1896,6 @@ def updateLikesCollection(recentPostsCache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     removePostFromCache(postJsonObject, recentPostsCache)
-    nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(baseDir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:

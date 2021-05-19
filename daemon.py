@@ -6721,7 +6721,8 @@ class PubServer(BaseHTTPRequestHandler):
             updateLikesCollection(self.server.recentPostsCache,
                                   baseDir,
                                   likedPostFilename, likeUrl,
-                                  likeActor, domain,
+                                  likeActor,
+                                  self.postToNickname, domain,
                                   debug)
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like.png'):

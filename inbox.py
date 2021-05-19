@@ -1010,7 +1010,8 @@ def _receiveLike(recentPostsCache: {},
         _likeNotify(baseDir, domain, onionDomain, handle,
                     messageJson['actor'], postLikedId)
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                          postLikedId, messageJson['actor'], domain, debug)
+                          postLikedId, messageJson['actor'],
+                          handleName, domain, debug)
     return True
 
 
