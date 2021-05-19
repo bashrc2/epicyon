@@ -2268,6 +2268,11 @@ def testDangerousMarkup():
         '.innerHTML = "evil";</script></p>'
     assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
+    content = '<p>This is a valid-looking message. But wait... ' + \
+        '&lt;script&gt;document.getElementById("concentrated")' + \
+        '.innerHTML = "evil";&lt;/script&gt;</p>'
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+
     content = '<p>This html contains more than you expected... ' + \
         '<script language="javascript">document.getElementById("abc")' + \
         '.innerHTML = "def";</script></p>'
@@ -3646,8 +3651,6 @@ def testSpoofGeolocation() -> None:
                                               "%Y-%m-%d %H:%M")
         coords = spoofGeolocation('', 'new york, usa', currTime,
                                   decoySeed, citiesList)
-        #coords = spoofGeolocation('', 'berlin, germany', currTime,
-        #                          decoySeed, citiesList)
         longitude = coords[1]
         if coords[3] == 'W':
             longitude = -coords[1]

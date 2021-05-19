@@ -663,32 +663,36 @@ def getLocalNetworkAddresses() -> []:
 def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
-    if '<' not in content:
-        return False
-    if '>' not in content:
-        return False
-    contentSections = content.split('<')
-    invalidPartials = ()
-    if not allowLocalNetworkAccess:
-        invalidPartials = getLocalNetworkAddresses()
-    invalidStrings = ('script', 'canvas', 'style', 'abbr',
-                      'frame', 'iframe', 'html', 'body',
-                      'hr', 'allow-popups', 'allow-scripts')
-    for markup in contentSections:
-        if '>' not in markup:
+    separators = (['<', '>'], ['&lt;', '&gt;'])
+    for separatorStyle in separators:
+        startChar = separatorStyle[0]
+        endChar = separatorStyle[1]
+        if startChar not in content:
             continue
-        markup = markup.split('>')[0].strip()
-        for partialMatch in invalidPartials:
-            if partialMatch in markup:
-                return True
-        if ' ' not in markup:
-            for badStr in invalidStrings:
-                if badStr in markup:
+        if endChar not in content:
+            continue
+        contentSections = content.split(startChar)
+        invalidPartials = ()
+        if not allowLocalNetworkAccess:
+            invalidPartials = getLocalNetworkAddresses()
+        invalidStrings = ('script', 'canvas', 'style', 'abbr',
+                          'frame', 'iframe', 'html', 'body',
+                          'hr', 'allow-popups', 'allow-scripts')
+        for markup in contentSections:
+            if endChar not in markup:
+                continue
+            markup = markup.split(endChar)[0].strip()
+            for partialMatch in invalidPartials:
+                if partialMatch in markup:
                     return True
-        else:
-            for badStr in invalidStrings:
-                if badStr + ' ' in markup:
-                    return True
+            if ' ' not in markup:
+                for badStr in invalidStrings:
+                    if badStr in markup:
+                        return True
+            else:
+                for badStr in invalidStrings:
+                    if badStr + ' ' in markup:
+                        return True
     return False
 
 
