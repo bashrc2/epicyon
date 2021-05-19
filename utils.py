@@ -675,7 +675,8 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
         invalidPartials = ()
         if not allowLocalNetworkAccess:
             invalidPartials = getLocalNetworkAddresses()
-        invalidStrings = ('script', 'canvas', 'style', 'abbr',
+        invalidStrings = ('script', 'noscript',
+                          'canvas', 'style', 'abbr',
                           'frame', 'iframe', 'html', 'body',
                           'hr', 'allow-popups', 'allow-scripts')
         for markup in contentSections:
