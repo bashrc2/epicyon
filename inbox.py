@@ -991,12 +991,12 @@ def _receiveLike(recentPostsCache: {},
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    postFilename = locatePost(baseDir, handleName, handleDom,
-                              messageJson['object'])
+    postLikedId = messageJson['object']
+    postFilename = locatePost(baseDir, handleName, handleDom, postLikedId)
     if not postFilename:
         if debug:
             print('DEBUG: post not found in inbox or outbox')
-            print(messageJson['object'])
+            print(postLikedId)
         return True
     if debug:
         print('DEBUG: liked post found in inbox')
@@ -1005,13 +1005,12 @@ def _receiveLike(recentPostsCache: {},
     handleDom = handle.split('@')[1]
     if not _alreadyLiked(baseDir,
                          handleName, handleDom,
-                         messageJson['object'],
+                         postLikedId,
                          messageJson['actor']):
         _likeNotify(baseDir, domain, onionDomain, handle,
-                    messageJson['actor'], messageJson['object'])
+                    messageJson['actor'], postLikedId)
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                          messageJson['object'],
-                          messageJson['actor'], domain, debug)
+                          postLikedId, messageJson['actor'], domain, debug)
     return True
 
 
