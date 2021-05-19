@@ -103,7 +103,8 @@ def _like(recentPostsCache: {},
 
         updateLikesCollection(recentPostsCache,
                               baseDir, postFilename, objectUrl,
-                              newLikeJson['actor'], domain, debug)
+                              newLikeJson['actor'],
+                              nickname, domain, debug)
 
         sendSignedJson(newLikeJson, session, baseDir,
                        nickname, domain, port,
@@ -334,7 +335,8 @@ def outboxLike(recentPostsCache: {},
         return True
     updateLikesCollection(recentPostsCache,
                           baseDir, postFilename, messageId,
-                          messageJson['actor'], domain, debug)
+                          messageJson['actor'],
+                          nickname, domain, debug)
     if debug:
         print('DEBUG: post liked via c2s - ' + postFilename)
 

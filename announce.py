@@ -48,7 +48,8 @@ def outboxAnnounce(recentPostsCache: {},
                                   messageJson['object'])
         if postFilename:
             updateAnnounceCollection(recentPostsCache, baseDir, postFilename,
-                                     messageJson['actor'], domain, debug)
+                                     messageJson['actor'],
+                                     nickname, domain, debug)
             return True
     elif messageJson['type'] == 'Undo':
         if not isinstance(messageJson['object'], dict):

@@ -1886,8 +1886,8 @@ def undoLikesCollectionEntry(recentPostsCache: {},
 
 def updateLikesCollection(recentPostsCache: {},
                           baseDir: str, postFilename: str,
-                          objectUrl: str,
-                          actor: str, domain: str, debug: bool) -> None:
+                          objectUrl: str, actor: str,
+                          nickname: str, domain: str, debug: bool) -> None:
     """Updates the likes collection within a post
     """
     postJsonObject = loadJson(postFilename)
@@ -1895,13 +1895,12 @@ def updateLikesCollection(recentPostsCache: {},
         return
     # remove any cached version of this post so that the
     # like icon is changed
-    nickname = getNicknameFromActor(actor)
+    removePostFromCache(postJsonObject, recentPostsCache)
     cachedPostFilename = getCachedPostFilename(baseDir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
-    removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('object'):
         if debug:
@@ -2011,7 +2010,8 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
 
 def updateAnnounceCollection(recentPostsCache: {},
                              baseDir: str, postFilename: str,
-                             actor: str, domain: str, debug: bool) -> None:
+                             actor: str,
+                             nickname: str, domain: str, debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the
     same as shared items within shares.py
@@ -2022,7 +2022,6 @@ def updateAnnounceCollection(recentPostsCache: {},
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
                                                postJsonObject)
     if cachedPostFilename:
