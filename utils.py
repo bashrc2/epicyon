@@ -2010,7 +2010,8 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
 
 def updateAnnounceCollection(recentPostsCache: {},
                              baseDir: str, postFilename: str,
-                             actor: str, domain: str, debug: bool) -> None:
+                             actor: str,
+                             nickname: str, domain: str, debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the
     same as shared items within shares.py
@@ -2021,7 +2022,6 @@ def updateAnnounceCollection(recentPostsCache: {},
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
                                                postJsonObject)
     if cachedPostFilename:

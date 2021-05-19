@@ -1320,7 +1320,7 @@ def individualPostAsHtml(allowDownloads: bool,
         if announceFilename:
             updateAnnounceCollection(recentPostsCache,
                                      baseDir, announceFilename,
-                                     postActor, domainFull, False)
+                                     postActor, nickname, domainFull, False)
 
             # create a file for use by text-to-speech
             if isRecentPost(postJsonObject):

@@ -1398,7 +1398,7 @@ def _receiveAnnounce(recentPostsCache: {},
             print(messageJson['object'])
         return True
     updateAnnounceCollection(recentPostsCache, baseDir, postFilename,
-                             messageJson['actor'], domain, debug)
+                             messageJson['actor'], nickname, domain, debug)
     if debug:
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
