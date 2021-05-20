@@ -774,19 +774,18 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         else:
             print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as e:
-        print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
-              'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams) + '\n')
-        print(e)
+        print('WARN: getRSS failed\nurl: ' + str(url) + ', ' +
+              'headers: ' + str(sessionHeaders) + ', ' +
+              'params: ' + str(sessionParams) + ', ' + str(e))
     except ValueError as e:
-        print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
-              'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams) + '\n')
-        print(e)
+        print('WARN: getRSS failed\nurl: ' + str(url) + ', ' +
+              'headers: ' + str(sessionHeaders) + ', ' +
+              'params: ' + str(sessionParams) + ', ' + str(e))
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during getRSS')
-        print(e)
+            print('WARN: connection was reset during getRSS ' + str(e))
+        else:
+            print('WARN: getRSS, ' + str(e))
     return None
 
 
