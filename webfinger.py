@@ -78,7 +78,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
                     debug, projectVersion,
                     httpPrefix, fromDomain)
     except Exception as e:
-        print(e)
+        print('ERROR: webfingerHandle ' + str(e))
         return None
 
     if result:

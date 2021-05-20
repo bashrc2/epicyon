@@ -493,9 +493,8 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                         print('avatar image downloaded for ' + actor)
                     return avatarImageFilename.replace(baseDir + '/cache', '')
         except Exception as e:
-            if debug:
-                print('Failed to download avatar image: ' + str(avatarUrl))
-            print(e)
+            print('WARN: Failed to download avatar image: ' +
+                  str(avatarUrl) + ' ' + str(e))
         prof = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
             sessionHeaders = {
@@ -949,7 +948,8 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
                 postHtml = file.read()
                 break
         except Exception as e:
-            print(e)
+            print('ERROR: loadIndividualPostAsHtmlFromCache ' +
+                  str(tries) + ' ' + str(e))
             # no sleep
             tries += 1
     if postHtml:

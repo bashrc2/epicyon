@@ -674,7 +674,7 @@ def deleteAllPosts(baseDir: str,
             elif os.path.isdir(filePath):
                 shutil.rmtree(filePath)
         except Exception as e:
-            print(e)
+            print('ERROR: deleteAllPosts ' + str(e))
 
 
 def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
