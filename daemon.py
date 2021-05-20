@@ -14769,7 +14769,7 @@ class EpicyonServer(ThreadingHTTPServer):
         # surpress connection reset errors
         cls, e = sys.exc_info()[:2]
         if cls is ConnectionResetError:
-            print('ERROR: ' + str(cls) + ", " + str(e))
+            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             pass
         else:
             return HTTPServer.handle_error(self, request, client_address)
