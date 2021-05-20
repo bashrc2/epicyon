@@ -12067,7 +12067,7 @@ class PubServer(BaseHTTPRequestHandler):
             repeatPrivate = True
             self.path = self.path.replace('?repeatprivate=', '?repeat=')
         # announce/repeat button was pressed
-        if htmlGET and '?repeat=' in self.path:
+        if authorized and htmlGET and '?repeat=' in self.path:
             self._announceButton(callingDomain, self.path,
                                  self.server.baseDir,
                                  cookie, self.server.proxyType,
@@ -12086,11 +12086,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   'emoji search shown done',
                                   'show announce done')
 
-        if htmlGET and '?unrepeatprivate=' in self.path:
+        if authorized and htmlGET and '?unrepeatprivate=' in self.path:
             self.path = self.path.replace('?unrepeatprivate=', '?unrepeat=')
 
         # undo an announce/repeat from the web interface
-        if htmlGET and '?unrepeat=' in self.path:
+        if authorized and htmlGET and '?unrepeat=' in self.path:
             self._undoAnnounceButton(callingDomain, self.path,
                                      self.server.baseDir,
                                      cookie, self.server.proxyType,
@@ -12189,7 +12189,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'follow deny done')
 
         # like from the web interface icon
-        if htmlGET and '?like=' in self.path:
+        if authorized and htmlGET and '?like=' in self.path:
             self._likeButton(callingDomain, self.path,
                              self.server.baseDir,
                              self.server.httpPrefix,
@@ -12208,7 +12208,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'like shown done')
 
         # undo a like from the web interface icon
-        if htmlGET and '?unlike=' in self.path:
+        if authorized and htmlGET and '?unlike=' in self.path:
             self._undoLikeButton(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
@@ -12226,7 +12226,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'unlike shown done')
 
         # bookmark from the web interface icon
-        if htmlGET and '?bookmark=' in self.path:
+        if authorized and htmlGET and '?bookmark=' in self.path:
             self._bookmarkButton(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
@@ -12245,7 +12245,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'bookmark shown done')
 
         # undo a bookmark from the web interface icon
-        if htmlGET and '?unbookmark=' in self.path:
+        if authorized and htmlGET and '?unbookmark=' in self.path:
             self._undoBookmarkButton(callingDomain, self.path,
                                      self.server.baseDir,
                                      self.server.httpPrefix,
@@ -12264,7 +12264,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'unbookmark shown done')
 
         # delete button is pressed on a post
-        if htmlGET and '?delete=' in self.path:
+        if authorized and htmlGET and '?delete=' in self.path:
             self._deleteButton(callingDomain, self.path,
                                self.server.baseDir,
                                self.server.httpPrefix,
@@ -12283,7 +12283,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'delete shown done')
 
         # The mute button is pressed
-        if htmlGET and '?mute=' in self.path:
+        if authorized and htmlGET and '?mute=' in self.path:
             self._muteButton(callingDomain, self.path,
                              self.server.baseDir,
                              self.server.httpPrefix,
@@ -12302,7 +12302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'post muted done')
 
         # unmute a post from the web interface icon
-        if htmlGET and '?unmute=' in self.path:
+        if authorized and htmlGET and '?unmute=' in self.path:
             self._undoMuteButton(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
