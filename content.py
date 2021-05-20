@@ -1049,5 +1049,5 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool,
                 if line > 2:
                     postValue += '\n'
                 postValue += postLines[line]
-        fields[postKey] = urllib.parse.unquote_plus(postValue)
+        fields[postKey] = urllib.parse.unquote(postValue)
     return fields
