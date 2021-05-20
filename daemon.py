@@ -7023,7 +7023,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Delete button is pressed on a post
         """
         if not cookie:
-            print('ERROR: no cookie given when deleting')
+            print('ERROR: no cookie given when deleting ' + path)
             self._400()
             self.server.GETbusy = False
             return
