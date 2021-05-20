@@ -3962,7 +3962,7 @@ class PubServer(BaseHTTPRequestHandler):
                             saveJson(self.server.newswire,
                                      newswireStateFilename)
                         except Exception as e:
-                            print('ERROR saving newswire state, ' + str(e))
+                            print('ERROR: saving newswire state, ' + str(e))
 
                     # remove any previous cached news posts
                     newsId = \
@@ -6520,7 +6520,7 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         saveJson(newswire, newswireStateFilename)
                     except Exception as e:
-                        print('ERROR saving newswire state, ' + str(e))
+                        print('ERROR: saving newswire state, ' + str(e))
                     if filename:
                         saveJson(newswireItem[votesIndex],
                                  filename + '.votes')
@@ -6575,7 +6575,7 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         saveJson(newswire, newswireStateFilename)
                     except Exception as e:
-                        print('ERROR saving newswire state, ' + str(e))
+                        print('ERROR: saving newswire state, ' + str(e))
                     if filename:
                         saveJson(newswireItem[votesIndex],
                                  filename + '.votes')
