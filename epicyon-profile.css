@@ -88,6 +88,7 @@
     --quote-right-margin: 0.1em;
     --quote-font-weight: normal;
     --quote-font-size: 120%;
+    --quote-font-size-mobile: 120%;
     --line-spacing: 180%;
     --line-spacing-newswire: 120%;
     --newswire-item-moderated-color: white;
@@ -1691,6 +1692,9 @@ div.container {
         font-family: var(--header-font);
         font-size: var(--font-size-mobile);
         color: var(--title-color);
+    }
+    blockquote {
+	font-size: var(--quote-font-size-mobile);
     }
     .accountsTable {
         width: 100%;
