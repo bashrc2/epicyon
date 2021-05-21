@@ -241,7 +241,7 @@ a:focus {
     input[type=text] {
         width: var(--follow-text-entry-width);
         clear: both;
-        font-size: 40px;
+        font-size: var(--font-size);
         text-align: center;
         max-width: 50%;
         min-width: var(--petname-width-chars);
@@ -257,7 +257,7 @@ a:focus {
         color: var(--button-text);
         text-align: center;
         padding: 10px;
-        font-size: 40px;
+        font-size: var(--font-size);
         width: 10ch;
         max-width: 200px;
         min-width: 100px;
@@ -272,7 +272,7 @@ a:focus {
         color: var(--button-text);
         text-align: center;
         padding: 6px 80px;
-        font-size: 40px;
+        font-size: var(--font-size);
         max-width: 200px;
         min-width: 100px;
         cursor: pointer;
@@ -285,7 +285,7 @@ a:focus {
         color: var(--button-small-text);
         text-align: center;
         padding: 10px;
-        font-size: 40px;
+        font-size: var(--font-size);
         width: 7ch;
         max-width: 200px;
         min-width: 100px;
