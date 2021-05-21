@@ -73,7 +73,7 @@
     "timeline-border-radius": "4px",
     "header-font": "'Bedstead'",
     "*font-family": "'Bedstead'",
-    "*src": "url('./fonts/Minitel.ttf') format('truetype')",
+    "*src": "url('./fonts/MarginaliaRegular.woff2') format('woff2')",
     "color: #FFFFFE;": "color: green;",
     "calendar-bg-color": "black",
     "lines-color": "green",
