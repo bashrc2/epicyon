@@ -140,7 +140,9 @@ def metadataCustomEmoji(baseDir: str,
     emojisUrl = httpPrefix + '://' + domainFull + '/emoji'
     for subdir, dirs, files in os.walk(baseDir + '/emoji'):
         for f in files:
-            if f.startswith('1F') or f.startswith('00') or f.startswith('E0'):
+            if len(f) < 3:
+                continue
+            if f[0].isdigit() or f[1].isdigit():
                 continue
             if not f.endswith('.png'):
                 continue
