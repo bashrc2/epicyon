@@ -5509,7 +5509,7 @@ class PubServer(BaseHTTPRequestHandler):
                 exportType = 'application/zip'
                 self._set_headers_etag(filename, exportType,
                                        exportBinary, None,
-                                       server.domainFull)
+                                       domainFull)
                 self._write(exportBinary)
         self._404()
 
