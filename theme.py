@@ -19,7 +19,7 @@ def exportTheme(baseDir: str, theme: str) -> bool:
     """Exports a theme as a zip file
     """
     themeDir = baseDir + '/theme/' + theme
-    if not os.path.isdir(themeDir):
+    if not os.path.isfile(themeDir + '/theme.json'):
         return False
     if not os.path.isdir(baseDir + '/exports'):
         os.mkdir(baseDir + '/exports')
