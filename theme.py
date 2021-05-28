@@ -11,7 +11,26 @@ from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
 from shutil import copyfile
+from shutil import make_archive
 from content import dangerousCSS
+
+
+def exportTheme(baseDir: str, theme: str) -> bool:
+    """Exports a theme as a zip file
+    """
+    themeDir = baseDir + '/theme/' + theme
+    if not os.path.isdir(themeDir):
+        return False
+    if not os.path.isdir(baseDir + '/exports'):
+        os.mkdir(baseDir + '/exports')
+    exportFilename = baseDir + '/exports/' + theme + '.zip'
+    if os.path.isfile(exportFilename):
+        os.remove(exportFilename)
+    try:
+        make_archive(exportFilename, 'zip', themeDir)
+    except BaseException:
+        pass
+    return os.path.isfile(exportFilename)
 
 
 def _getThemeFiles() -> []:
