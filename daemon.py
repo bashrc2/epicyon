@@ -4147,7 +4147,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(themeDownloadPath,
                                        cookie, callingDomain)
                 self.server.POSTbusy = False
-                return                
+                return
 
             # extract all of the text fields into a dict
             fields = \
@@ -5495,6 +5495,23 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json', msglen,
                           None, callingDomain)
         self._write(msg)
+
+    def _getExportedTheme(self, callingDomain: str, path: str,
+                          baseDir: str, domainFull: str,
+                          debug: bool) -> None:
+        """Returns an exported theme zip file
+        """
+        filename = path.split('/exports/', 1)[1]
+        filename = baseDir + '/exports/' + filename
+        if os.path.isfile(filename):
+            with open(filename, 'rb') as fp:
+                exportBinary = fp.read()
+                exportType = 'application/zip'
+                self._set_headers_etag(filename, exportType,
+                                       exportBinary, None,
+                                       server.domainFull)
+                self._write(exportBinary)
+        self._404()
 
     def _getFonts(self, callingDomain: str, path: str,
                   baseDir: str, debug: bool,
@@ -10827,6 +10844,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self._getStyleSheet(callingDomain, self.path,
                                    GETstartTime, GETtimings):
                 return
+
+        if authorized and '/exports/' in self.path:
+            self._getExportedTheme(callingDomain, self.path,
+                                   self.server.baseDir,
+                                   self.server.domainFull,
+                                   self.server.debug)
+            return
 
         # get fonts
         if '/fonts/' in self.path:
