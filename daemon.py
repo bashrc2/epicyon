@@ -4136,6 +4136,17 @@ class PubServer(BaseHTTPRequestHandler):
                 welcomeScreenIsComplete(self.server.baseDir, nickname,
                                         self.server.domain)
                 onFinalWelcomeScreen = True
+            elif 'name="submitExportTheme"' in postBytesStr:
+                print('submitExportTheme')
+                themeDownloadPath = actorStr
+                if exportTheme(self.server.baseDir,
+                               self.server.themeName):
+                    themeDownloadPath += \
+                        '/exports/' + self.server.themeName + '.zip'
+                self._redirect_headers(themeDownloadPath,
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return                
 
             # extract all of the text fields into a dict
             fields = \
@@ -4147,18 +4158,6 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('WARN: profile update, no text ' +
                           'fields could be extracted from POST')
-
-            if fields.get('submitExportTheme'):
-                print('submitExportTheme')
-                themeDownloadPath = actorStr
-                if exportTheme(self.server.baseDir,
-                               self.server.themeName):
-                    themeDownloadPath += \
-                        '/exports/' + self.server.themeName + '.zip'
-                self._redirect_headers(themeDownloadPath,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
 
             # load the json for the actor for this user
             actorFilename = \
