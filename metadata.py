@@ -128,3 +128,30 @@ def metaDataInstance(instanceTitle: str,
     }
 
     return instance
+
+
+def metadataCustomEmoji(baseDir: str,
+                        httpPrefix: str, domainFull: str) -> {}:
+    """Returns the custom emoji
+    Endpoint /api/v1/custom_emojis
+    See https://docs.joinmastodon.org/methods/instance/custom_emojis
+    """
+    result = []
+    emojisUrl = httpPrefix + '://' + domainFull + '/emoji'
+    for subdir, dirs, files in os.walk(baseDir + '/emoji'):
+        for f in files:
+            if len(f) < 3:
+                continue
+            if f[0].isdigit() or f[1].isdigit():
+                continue
+            if not f.endswith('.png'):
+                continue
+            url = os.path.join(emojisUrl, f)
+            result.append({
+                "shortcode": f.replace('.png', ''),
+                "url": url,
+                "static_url": url,
+                "visible_in_picker": True
+            })
+        break
+    return result

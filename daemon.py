@@ -29,6 +29,7 @@ from mastoapiv1 import getMastApiV1Id
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from metadata import metaDataInstance
 from metadata import metaDataNodeInfo
+from metadata import metadataCustomEmoji
 from pgp import getEmailAddress
 from pgp import setEmailAddress
 from pgp import getPGPpubKey
@@ -867,7 +868,8 @@ class PubServer(BaseHTTPRequestHandler):
                     translate: {},
                     registration: bool,
                     systemLanguage: str,
-                    projectVersion: str) -> bool:
+                    projectVersion: str,
+                    customEmoji: []) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -944,6 +946,9 @@ class PubServer(BaseHTTPRequestHandler):
         elif path.startswith('/api/v1/timelines'):
             sendJson = []
             sendJsonStr = 'masto API timelines sent'
+        elif path.startswith('/api/v1/custom_emojis'):
+            sendJson = customEmoji
+            sendJsonStr = 'masto API custom emojis sent'
 
         adminNickname = getConfigParam(baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
@@ -1019,12 +1024,13 @@ class PubServer(BaseHTTPRequestHandler):
                   translate: {},
                   registration: bool,
                   systemLanguage: str,
-                  projectVersion: str) -> bool:
+                  projectVersion: str,
+                  customEmoji: []) -> bool:
         return self._mastoApiV1(path, callingDomain, authorized,
                                 httpPrefix, baseDir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
-                                projectVersion)
+                                projectVersion, customEmoji)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -10757,7 +10763,8 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.translate,
                           self.server.registration,
                           self.server.systemLanguage,
-                          self.server.projectVersion):
+                          self.server.projectVersion,
+                          self.server.customEmoji):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -15112,6 +15119,10 @@ def runDaemon(city: str,
 
     # cache to store css files
     httpd.cssCache = {}
+
+    # get the list of custom emoji, for use by the mastodon api
+    httpd.customEmoji = \
+        metadataCustomEmoji(baseDir, httpPrefix, httpd.domainFull)
 
     # whether to enable broch mode, which locks down the instance
     setBrochMode(baseDir, httpd.domainFull, brochMode)
