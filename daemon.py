@@ -4143,6 +4143,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.themeName):
                     themeDownloadPath += \
                         '/exports/' + self.server.themeName + '.zip'
+                print('submitExportTheme path=' + themeDownloadPath)
                 self._redirect_headers(themeDownloadPath,
                                        cookie, callingDomain)
                 self.server.POSTbusy = False

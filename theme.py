@@ -27,7 +27,7 @@ def exportTheme(baseDir: str, theme: str) -> bool:
     if os.path.isfile(exportFilename):
         os.remove(exportFilename)
     try:
-        make_archive(exportFilename, 'zip', themeDir)
+        make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
     except BaseException:
         pass
     return os.path.isfile(exportFilename)
