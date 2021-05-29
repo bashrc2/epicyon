@@ -256,6 +256,7 @@ from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import importTheme
 from theme import exportTheme
 from theme import isNewsThemeName
 from theme import getTextModeBanner
@@ -4042,7 +4043,8 @@ class PubServer(BaseHTTPRequestHandler):
             profileMediaTypes = ('avatar', 'image',
                                  'banner', 'search_banner',
                                  'instanceLogo',
-                                 'left_col_image', 'right_col_image')
+                                 'left_col_image', 'right_col_image',
+                                 'submitImportTheme')
             profileMediaTypesUploaded = {}
             for mType in profileMediaTypes:
                 # some images can only be changed by the admin
@@ -4054,18 +4056,18 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if debug:
                     print('DEBUG: profile update extracting ' + mType +
-                          ' image or font from POST')
+                          ' image, zip or font from POST')
                 mediaBytes, postBytes = \
                     extractMediaInFormPOST(postBytes, boundary, mType)
                 if mediaBytes:
                     if debug:
                         print('DEBUG: profile update ' + mType +
-                              ' image or font was found. ' +
+                              ' image, zip or font was found. ' +
                               str(len(mediaBytes)) + ' bytes')
                 else:
                     if debug:
                         print('DEBUG: profile update, no ' + mType +
-                              ' image or font was found in POST')
+                              ' image, zip or font was found in POST')
                     continue
 
                 # Note: a .temp extension is used here so that at no
@@ -4074,6 +4076,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if mType == 'instanceLogo':
                     filenameBase = \
                         baseDir + '/accounts/login.temp'
+                elif mType == 'submitImportTheme':
+                    if not os.path.isdir(baseDir + '/imports'):
+                        os.mkdir(baseDir + '/imports')
+                    filenameBase = \
+                        baseDir + '/imports/newtheme.zip'
+                    if os.path.isfile(filenameBase):
+                        os.remove(filenameBase)
                 else:
                     filenameBase = \
                         baseDir + '/accounts/' + \
@@ -4085,10 +4094,19 @@ class PubServer(BaseHTTPRequestHandler):
                                         filenameBase)
                 if filename:
                     print('Profile update POST ' + mType +
-                          ' media or font filename is ' + filename)
+                          ' media, zip or font filename is ' + filename)
                 else:
                     print('Profile update, no ' + mType +
-                          ' media or font filename in POST')
+                          ' media, zip or font filename in POST')
+                    continue
+
+                if mType == 'submitImportTheme':
+                    if nickname == adminNickname or \
+                       isArtist(baseDir, nickname):
+                        if importTheme(baseDir, filename):
+                            print(nickname + ' uploaded a theme')
+                    else:
+                        print('Only admin or artist can import a theme')
                     continue
 
                 postImageFilename = filename.replace('.temp', '')
@@ -4108,7 +4126,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 filename, postImageFilename, city)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
-                          ' image or font saved to ' + postImageFilename)
+                          ' image, zip or font saved to ' +
+                          postImageFilename)
                     if mType != 'instanceLogo':
                         lastPartOfImageFilename = \
                             postImageFilename.split('/')[-1]

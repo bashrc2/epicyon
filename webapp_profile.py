@@ -1317,9 +1317,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         themesDropdown += '  <select id="themeDropdown" ' + \
             'name="themeDropdown" class="theme">'
         for themeName in themes:
+            translatedThemeName = themeName
+            if translate.get(themeName):
+                translatedThemeName = translate[themeName]
             themesDropdown += '    <option value="' + \
                 themeName.lower() + '">' + \
-                translate[themeName] + '</option>'
+                translatedThemeName + '</option>'
         themesDropdown += '  </select><br>'
         if os.path.isfile(baseDir + '/fonts/custom.woff') or \
            os.path.isfile(baseDir + '/fonts/custom.woff2') or \
@@ -1340,7 +1343,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             '      <label class="labels">' + \
             translate['Import Theme'] + '</label>\n'
         graphicsStr += '      <input type="file" id="importTheme" '
-        graphicsStr += 'name="importTheme" '
+        graphicsStr += 'name="submitImportTheme" '
         graphicsStr += 'accept="' + themeFormats + '">\n'
         graphicsStr += \
             '      <label class="labels">' + \

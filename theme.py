@@ -10,9 +10,54 @@ import os
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
+from utils import copytree
 from shutil import copyfile
 from shutil import make_archive
+from shutil import unpack_archive
 from content import dangerousCSS
+
+
+def importTheme(baseDir: str, filename: str) -> bool:
+    """Imports a theme
+    """
+    if not os.path.isfile(filename):
+        return False
+    tempThemeDir = baseDir + '/imports/files'
+    if not os.path.isdir(tempThemeDir):
+        os.mkdir(tempThemeDir)
+    unpack_archive(filename, tempThemeDir, 'zip')
+    essentialThemeFiles = ('name.txt', 'theme.json')
+    for themeFile in essentialThemeFiles:
+        if not os.path.isfile(tempThemeDir + '/' + themeFile):
+            print('WARN: ' + themeFile +
+                  ' missing from imported theme')
+            return False
+    newThemeName = None
+    with open(tempThemeDir + '/name.txt', 'r') as fp:
+        newThemeName = fp.read().replace('\n', '').replace('\r', '')
+        if len(newThemeName) > 20:
+            print('WARN: Imported theme name is too long')
+            return False
+        if len(newThemeName) < 2:
+            print('WARN: Imported theme name is too short')
+            return False
+        newThemeName = newThemeName.lower()
+        forbiddenChars = (
+            ' ', ';', '/', '\\', '?', '!', '#', '@',
+            ':', '%', '&', '"', '+', '<', '>', '$'
+        )
+        for ch in forbiddenChars:
+            if ch in newThemeName:
+                print('WARN: theme name contains forbidden character')
+                return False
+    if not newThemeName:
+        return False
+    themeDir = baseDir + '/theme/' + newThemeName
+    if not os.path.isdir(themeDir):
+        os.mkdir(themeDir)
+    copytree(tempThemeDir, themeDir)
+    os.remove(tempThemeDir)
+    return os.path.isfile(themeDir + '/theme.json')
 
 
 def exportTheme(baseDir: str, theme: str) -> bool:
