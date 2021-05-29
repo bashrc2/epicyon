@@ -948,7 +948,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'mp4': 'video/mp4',
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
-        'ogg': 'audio/ogg'
+        'ogg': 'audio/ogg',
+        'zip': 'application/zip'
     }
     detectedExtension = None
     for extension, contentType in extensionList.items():
@@ -960,7 +961,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 extension = 'jpg'
             elif extension == 'mpeg':
                 extension = 'mp3'
-            filename = filenameBase + '.' + extension
+            if filenameBase:
+                filename = filenameBase + '.' + extension
             attachmentMediaType = \
                 searchStr.decode().split('/')[0].replace('Content-Type: ', '')
             detectedExtension = extension
@@ -979,16 +981,17 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 break
 
     # remove any existing image files with a different format
-    extensionTypes = getImageExtensions()
-    for ex in extensionTypes:
-        if ex == detectedExtension:
-            continue
-        possibleOtherFormat = \
-            filename.replace('.temp', '').replace('.' +
-                                                  detectedExtension, '.' +
-                                                  ex)
-        if os.path.isfile(possibleOtherFormat):
-            os.remove(possibleOtherFormat)
+    if detectedExtension != 'zip':
+        extensionTypes = getImageExtensions()
+        for ex in extensionTypes:
+            if ex == detectedExtension:
+                continue
+            possibleOtherFormat = \
+                filename.replace('.temp', '').replace('.' +
+                                                      detectedExtension, '.' +
+                                                      ex)
+            if os.path.isfile(possibleOtherFormat):
+                os.remove(possibleOtherFormat)
 
     fd = open(filename, 'wb')
     if not fd:
