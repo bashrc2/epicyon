@@ -2324,6 +2324,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
+            customSubmitText = \
+                getConfigParam(baseDir,
+                               'customSubmitText')
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2337,7 +2341,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True, accessKeys).encode('utf-8')
+                              True, accessKeys,
+                              customSubmitText).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2433,6 +2438,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
+            customSubmitText = \
+                getConfigParam(baseDir,
+                               'customSubmitText')
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2445,7 +2454,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True, accessKeys).encode('utf-8')
+                              True, accessKeys,
+                              customSubmitText).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -4439,6 +4449,22 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir,
                                            'youtubedomain', '')
                             self.server.YTReplacementDomain = None
+
+                        # change custom post submit button text
+                        currCustomSubmitText = \
+                            getConfigParam(baseDir,
+                                           'customSubmitText')
+                        if fields.get('customSubmitText'):
+                            if fields['customSubmitText'] != \
+                               currCustomSubmitText:
+                                customText = fields['customSubmitText']
+                                setConfigParam(baseDir,
+                                               'customSubmitText',
+                                               customText)
+                        else:
+                            if currCustomSubmitText:
+                                setConfigParam(baseDir,
+                                               'customSubmitText', '')
 
                         # change instance description
                         currInstanceDescriptionShort = \
@@ -10421,6 +10447,10 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
 
+            customSubmitText = \
+                getConfigParam(baseDir,
+                               'customSubmitText')
+
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
                               translate,
@@ -10435,7 +10465,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              noDropDown, accessKeys).encode('utf-8')
+                              noDropDown, accessKeys,
+                              customSubmitText).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()

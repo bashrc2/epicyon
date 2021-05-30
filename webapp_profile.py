@@ -1359,6 +1359,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             # Instance details section
             instanceDescription = \
                 getConfigParam(baseDir, 'instanceDescription')
+            customSubmitText = \
+                getConfigParam(baseDir, 'customSubmitText')
             instanceDescriptionShort = \
                 getConfigParam(baseDir, 'instanceDescriptionShort')
             instanceTitle = \
@@ -1401,6 +1403,20 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 instanceStr += \
                     '  <textarea id="message" name="instanceDescription" ' + \
                     'style="height:200px" spellcheck="true"></textarea>'
+
+            instanceStr += \
+                '  <label class="labels">' + \
+                translate['Custom post submit button text'] + '</label>'
+            if customSubmitText:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="customSubmitText" value="' + \
+                    customSubmitText + '"><br>'
+            else:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="customSubmitText" value=""><br>'
+
             instanceStr += \
                 '  <label class="labels">' + \
                 translate['Instance Logo'] + '</label>'

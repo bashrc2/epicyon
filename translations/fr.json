@@ -446,5 +446,6 @@
     "Artists": "Artistes",
     "Graphic Design": "Conception graphique",
     "Import Theme": "Import thème",
-    "Export Theme": "Thème d'exportation"
+    "Export Theme": "Thème d'exportation",
+    "Custom post submit button text": "Texte de bouton d'envoi postal personnalisé"
 }
