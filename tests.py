@@ -101,6 +101,7 @@ from content import removeLongWords
 from content import replaceContentDuplicates
 from content import removeTextFormatting
 from content import removeHtmlTag
+from theme import updateDefaultThemesList
 from theme import setCSSparam
 from linked_data_sig import generateJsonSignature
 from linked_data_sig import verifyJsonSignature
@@ -3721,6 +3722,7 @@ def testRoles() -> None:
 
 def runAllTests():
     print('Running tests...')
+    updateDefaultThemesList(os.getcwd())
     testFunctions()
     testRoles()
     testSkills()

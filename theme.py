@@ -14,6 +14,7 @@ from utils import copytree
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
+from shutil import rmtree
 from content import dangerousCSS
 
 
@@ -23,8 +24,9 @@ def importTheme(baseDir: str, filename: str) -> bool:
     if not os.path.isfile(filename):
         return False
     tempThemeDir = baseDir + '/imports/files'
-    if not os.path.isdir(tempThemeDir):
-        os.mkdir(tempThemeDir)
+    if os.path.isdir(tempThemeDir):
+        rmtree(tempThemeDir)
+    os.mkdir(tempThemeDir)
     unpack_archive(filename, tempThemeDir, 'zip')
     essentialThemeFiles = ('name.txt', 'theme.json')
     for themeFile in essentialThemeFiles:
@@ -52,11 +54,19 @@ def importTheme(baseDir: str, filename: str) -> bool:
                 return False
     if not newThemeName:
         return False
+
+    # if the theme name in the default themes list?
+    defaultThemesFilename = baseDir + '/defaultthemes.txt'
+    if os.path.isfile(defaultThemesFilename):
+        if newThemeName.title() + '\n' in open(defaultThemesFilename).read():
+            newThemeName = newThemeName + '2'
+
     themeDir = baseDir + '/theme/' + newThemeName
     if not os.path.isdir(themeDir):
         os.mkdir(themeDir)
     copytree(tempThemeDir, themeDir)
-    os.remove(tempThemeDir)
+    if os.path.isdir(tempThemeDir):
+        rmtree(tempThemeDir)
     return os.path.isfile(themeDir + '/theme.json')
 
 
@@ -791,3 +801,16 @@ def setTheme(baseDir: str, name: str, domain: str,
     _setThemeInConfig(baseDir, name)
     _setClearCacheFlag(baseDir)
     return result
+
+
+def updateDefaultThemesList(baseDir: str) -> None:
+    """Recreates the list of default themes
+    """
+    themeNames = getThemesList(baseDir)
+    defaultThemesFilename = baseDir + '/defaultthemes.txt'
+    defaultThemesFile = open(defaultThemesFilename, "w+")
+    if not defaultThemesFile:
+        return
+    for name in themeNames:
+        defaultThemesFile.write(name + '\n')
+    defaultThemesFile.close()
