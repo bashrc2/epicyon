@@ -1983,6 +1983,15 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'name="deactivateThisAccount"> ' + \
         translate['Deactivate this account'] + '<br>\n'
     editProfileForm += '    </div></details>\n'
+
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += \
+        '      <center>\n' + \
+        '        <input type="submit" name="submitProfile" value="' + \
+        translate['Submit'] + '">\n' + \
+        '      </center>\n'
+    editProfileForm += '    </div>\n'
+
     editProfileForm += '  </div>\n'
     editProfileForm += '</form>\n'
     editProfileForm += htmlFooter()
