@@ -1081,7 +1081,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
-                    textModeBanner: str, city: str) -> str:
+                    textModeBanner: str, city: str,
+                    accessKeys: {}) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -1611,8 +1612,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <center>\n' + \
-        '        <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">\n' + \
+        '        <input type="submit" name="submitProfile" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '" ' + \
+        'value="' + translate['Submit'] + '">\n' + \
         '      </center>\n'
     editProfileForm += '    </div>\n'
 

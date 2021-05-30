@@ -10465,6 +10465,12 @@ class PubServer(BaseHTTPRequestHandler):
                 city = self._getSpoofedCity(baseDir, nickname, domain)
             else:
                 city = self.server.city
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlEditProfile(self.server.cssCache,
                                   translate,
                                   baseDir,
@@ -10475,7 +10481,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.themeName,
                                   peertubeInstances,
                                   self.server.textModeBanner,
-                                  city).encode('utf-8')
+                                  city, accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
