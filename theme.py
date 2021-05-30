@@ -14,6 +14,7 @@ from utils import copytree
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
+from shutil import rmtree
 from content import dangerousCSS
 
 
@@ -64,7 +65,7 @@ def importTheme(baseDir: str, filename: str) -> bool:
         os.mkdir(themeDir)
     copytree(tempThemeDir, themeDir)
     if os.path.isdir(tempThemeDir):
-        os.remove(tempThemeDir)
+        rmtree(tempThemeDir)
     return os.path.isfile(themeDir + '/theme.json')
 
 
