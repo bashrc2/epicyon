@@ -2324,6 +2324,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
+            customSubmitText = getConfigParam(baseDir, 'customSubmitText')
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2337,7 +2339,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True, accessKeys).encode('utf-8')
+                              True, accessKeys,
+                              customSubmitText).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2433,6 +2436,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
+            customSubmitText = getConfigParam(baseDir, 'customSubmitText')
+
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2445,7 +2450,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              True, accessKeys).encode('utf-8')
+                              True, accessKeys,
+                              customSubmitText).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -4439,6 +4445,21 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir,
                                            'youtubedomain', '')
                             self.server.YTReplacementDomain = None
+
+                        # change custom post submit button text
+                        currCustomSubmitText = \
+                            getConfigParam(baseDir, 'customSubmitText')
+                        if fields.get('customSubmitText'):
+                            if fields['customSubmitText'] != \
+                               currCustomSubmitText:
+                                customText = fields['customSubmitText']
+                                setConfigParam(baseDir,
+                                               'customSubmitText',
+                                               customText)
+                        else:
+                            if currCustomSubmitText:
+                                setConfigParam(baseDir,
+                                               'customSubmitText', '')
 
                         # change instance description
                         currInstanceDescriptionShort = \
@@ -10421,6 +10442,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
 
+            customSubmitText = getConfigParam(baseDir, 'customSubmitText')
+
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
                               translate,
@@ -10435,7 +10458,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.newswire,
                               self.server.themeName,
-                              noDropDown, accessKeys).encode('utf-8')
+                              noDropDown, accessKeys,
+                              customSubmitText).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -10465,6 +10489,12 @@ class PubServer(BaseHTTPRequestHandler):
                 city = self._getSpoofedCity(baseDir, nickname, domain)
             else:
                 city = self.server.city
+
+            accessKeys = self.server.accessKeys
+            if '/users/' in path:
+                if self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.keyShortcuts[nickname]
+
             msg = htmlEditProfile(self.server.cssCache,
                                   translate,
                                   baseDir,
@@ -10475,7 +10505,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.themeName,
                                   peertubeInstances,
                                   self.server.textModeBanner,
-                                  city).encode('utf-8')
+                                  city, accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13288,9 +13318,13 @@ class PubServer(BaseHTTPRequestHandler):
                    not fields.get('pinToProfile'):
                     print('WARN: no message, image description or pin')
                     return -1
+                submitText = self.server.translate['Submit']
+                customSubmitText = \
+                    getConfigParam(self.server.baseDir, 'customSubmitText')
+                if customSubmitText:
+                    submitText = customSubmitText
                 if fields.get('submitPost'):
-                    if fields['submitPost'] != \
-                       self.server.translate['Submit']:
+                    if fields['submitPost'] != submitText:
                         print('WARN: no submit field ' + fields['submitPost'])
                         return -1
                 else:

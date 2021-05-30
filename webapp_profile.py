@@ -353,8 +353,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     htmlStr = '\n\n    <figure class="profileHeader">\n'
     htmlStr += '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
+        translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
@@ -1081,7 +1080,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
-                    textModeBanner: str, city: str) -> str:
+                    textModeBanner: str, city: str,
+                    accessKeys: {}) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -1359,6 +1359,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             # Instance details section
             instanceDescription = \
                 getConfigParam(baseDir, 'instanceDescription')
+            customSubmitText = \
+                getConfigParam(baseDir, 'customSubmitText')
             instanceDescriptionShort = \
                 getConfigParam(baseDir, 'instanceDescriptionShort')
             instanceTitle = \
@@ -1401,6 +1403,20 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 instanceStr += \
                     '  <textarea id="message" name="instanceDescription" ' + \
                     'style="height:200px" spellcheck="true"></textarea>'
+
+            instanceStr += \
+                '  <label class="labels">' + \
+                translate['Custom post submit button text'] + '</label>'
+            if customSubmitText:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="customSubmitText" value="' + \
+                    customSubmitText + '"><br>'
+            else:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="customSubmitText" value=""><br>'
+
             instanceStr += \
                 '  <label class="labels">' + \
                 translate['Instance Logo'] + '</label>'
@@ -1611,8 +1627,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <center>\n' + \
-        '        <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">\n' + \
+        '        <input type="submit" name="submitProfile" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '" ' + \
+        'value="' + translate['Submit'] + '">\n' + \
         '      </center>\n'
     editProfileForm += '    </div>\n'
 
@@ -1983,6 +2000,15 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'name="deactivateThisAccount"> ' + \
         translate['Deactivate this account'] + '<br>\n'
     editProfileForm += '    </div></details>\n'
+
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += \
+        '      <center>\n' + \
+        '        <input type="submit" name="submitProfile" value="' + \
+        translate['Submit'] + '">\n' + \
+        '      </center>\n'
+    editProfileForm += '    </div>\n'
+
     editProfileForm += '  </div>\n'
     editProfileForm += '</form>\n'
     editProfileForm += htmlFooter()

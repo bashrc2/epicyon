@@ -187,7 +187,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
                 theme: str, noDropDown: bool,
-                accessKeys: {}) -> str:
+                accessKeys: {}, customSubmitText: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -702,9 +702,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             '      <td><input type="submit" name="submitCitations" value="' + \
             translate['Citations'] + '"></td>\n'
 
+    submitText = translate['Submit']
+    if customSubmitText:
+        submitText = customSubmitText
     newPostForm += \
         '      <td><input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '" ' + \
+        submitText + '" ' + \
         'accesskey="' + accessKeys['submitButton'] + '"></td>\n'
 
     newPostForm += '      </tr>\n'
@@ -772,6 +775,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += extraFields + citationsStr + dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
+
+    newPostForm += '    <div class="container">\n'
+    newPostForm += \
+        '      <input type="submit" name="submitPost" value="' + \
+        submitText + '">\n'
+    newPostForm += '    </div>\n'
+
     newPostForm += '  </div>\n'
     newPostForm += '</form>\n'
 

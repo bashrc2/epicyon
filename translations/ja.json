@@ -446,5 +446,6 @@
     "Artists": "アーティスト",
     "Graphic Design": "グラフィックデザイン",
     "Import Theme": "輸入テーマ",
-    "Export Theme": "テーマをエクスポートします"
+    "Export Theme": "テーマをエクスポートします",
+    "Custom post submit button text": "カスタムポスト送信ボタンテキスト"
 }
