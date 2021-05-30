@@ -2324,9 +2324,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
-            customSubmitText = \
-                getConfigParam(baseDir,
-                               'customSubmitText')
+            customSubmitText = getConfigParam(baseDir, 'customSubmitText')
 
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
@@ -2438,9 +2436,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
-            customSubmitText = \
-                getConfigParam(baseDir,
-                               'customSubmitText')
+            customSubmitText = getConfigParam(baseDir, 'customSubmitText')
 
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
@@ -4452,8 +4448,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # change custom post submit button text
                         currCustomSubmitText = \
-                            getConfigParam(baseDir,
-                                           'customSubmitText')
+                            getConfigParam(baseDir, 'customSubmitText')
                         if fields.get('customSubmitText'):
                             if fields['customSubmitText'] != \
                                currCustomSubmitText:
@@ -10447,9 +10442,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
 
-            customSubmitText = \
-                getConfigParam(baseDir,
-                               'customSubmitText')
+            customSubmitText = getConfigParam(baseDir, 'customSubmitText')
 
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
@@ -13325,9 +13318,13 @@ class PubServer(BaseHTTPRequestHandler):
                    not fields.get('pinToProfile'):
                     print('WARN: no message, image description or pin')
                     return -1
+                submitText = self.server.translate['Submit']
+                customSubmitText = \
+                    getConfigParam(self.server.baseDir, 'customSubmitText')
+                if customSubmitText:
+                    submitText = customSubmitText
                 if fields.get('submitPost'):
-                    if fields['submitPost'] != \
-                       self.server.translate['Submit']:
+                    if fields['submitPost'] != submitText:
                         print('WARN: no submit field ' + fields['submitPost'])
                         return -1
                 else:
