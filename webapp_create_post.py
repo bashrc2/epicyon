@@ -773,7 +773,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
 
-    newPostForm += '    <div class="containerNewPost">\n'
+    newPostForm += '    <div class="container">\n'
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
