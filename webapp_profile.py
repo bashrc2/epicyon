@@ -353,8 +353,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     htmlStr = '\n\n    <figure class="profileHeader">\n'
     htmlStr += '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
+        translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
