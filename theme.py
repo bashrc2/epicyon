@@ -24,8 +24,9 @@ def importTheme(baseDir: str, filename: str) -> bool:
     if not os.path.isfile(filename):
         return False
     tempThemeDir = baseDir + '/imports/files'
-    if not os.path.isdir(tempThemeDir):
-        os.mkdir(tempThemeDir)
+    if os.path.isdir(tempThemeDir):
+        rmtree(tempThemeDir)
+    os.mkdir(tempThemeDir)
     unpack_archive(filename, tempThemeDir, 'zip')
     essentialThemeFiles = ('name.txt', 'theme.json')
     for themeFile in essentialThemeFiles:
