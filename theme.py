@@ -63,7 +63,8 @@ def importTheme(baseDir: str, filename: str) -> bool:
     if not os.path.isdir(themeDir):
         os.mkdir(themeDir)
     copytree(tempThemeDir, themeDir)
-    os.remove(tempThemeDir)
+    if os.path.isdir(tempThemeDir):
+        os.remove(tempThemeDir)
     return os.path.isfile(themeDir + '/theme.json')
 
 
