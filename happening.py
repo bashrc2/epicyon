@@ -9,13 +9,12 @@ __status__ = "Production"
 import os
 from uuid import UUID
 from datetime import datetime
+from datetime import timedelta
 
 from utils import isPublicPost
 from utils import loadJson
 from utils import saveJson
 from utils import locatePost
-from utils import daysInMonth
-from utils import mergeDicts
 
 
 def _validUuid(testUuid: str, version=4):
@@ -315,9 +314,9 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     Note: currently not used but could be with a weekly calendar screen
     """
     now = datetime.now()
+    endOfWeek = now + timedelta(7)
     year = now.year
     monthNumber = now.month
-    dayNumber = now.day
 
     calendarFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + \
@@ -342,7 +341,6 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
                 continue
 
             postEvent = []
-            dayOfMonth = None
             weekDayIndex = None
             for tag in postJsonObject['object']['tag']:
                 if not _isHappeningEvent(tag):
@@ -355,21 +353,17 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
                     eventTime = \
                         datetime.strptime(tag['startTime'],
                                           "%Y-%m-%dT%H:%M:%S%z")
-                    if (int(eventTime.strftime("%Y")) == year and
-                        int(eventTime.strftime("%m")) == monthNumber and
-                        (int(eventTime.strftime("%d")) >= dayNumber and
-                         int(eventTime.strftime("%d")) <= dayNumber + 6)):
-                        dayOfMonth = str(int(eventTime.strftime("%d")))
-                        weekDayIndex = dayOfMonth - dayNumber
+                    if eventTime >= now and eventTime <= endOfWeek:
+                        weekDayIndex = (eventTime - now).days()
                         postEvent.append(tag)
                 else:
                     # tag is a place
                     postEvent.append(tag)
             if postEvent and weekDayIndex:
                 calendarPostIds.append(postId)
-                if not events.get(dayOfMonth):
+                if not events.get(weekDayIndex):
                     events[weekDayIndex] = []
-                events[dayOfMonth].append(postEvent)
+                events[weekDayIndex].append(postEvent)
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
@@ -377,23 +371,6 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
         for postId in calendarPostIds:
             calendarFile.write(postId + '\n')
         calendarFile.close()
-
-    lastDayOfMonth = daysInMonth(year, monthNumber)
-    if dayNumber+6 > lastDayOfMonth:
-        monthNumber += 1
-        if monthNumber > 12:
-            monthNumber = 1
-            year += 1
-        for d in range(1, dayNumber + 6 - lastDayOfMonth):
-            dailyEvents = \
-                getTodaysEvents(baseDir, nickname, domain,
-                                year, monthNumber, d)
-            if dailyEvents:
-                if dailyEvents.get(d):
-                    newEvents = {}
-                    newEvents[d + (7 - (dayNumber + 6 - lastDayOfMonth))] = \
-                        dailyEvents[d]
-                    events = mergeDicts(events, newEvents)
 
     return events
 
