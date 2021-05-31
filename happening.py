@@ -259,13 +259,12 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     return events
 
 
-def todaysEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
-    """Are there calendar events today?
+def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
+    """Are there calendar events for the given date?
     """
-    now = datetime.now()
-    year = now.year
-    monthNumber = now.month
-    dayNumber = now.day
+    year = currDate.year
+    monthNumber = currDate.month
+    dayNumber = currDate.day
 
     calendarFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + \
@@ -305,54 +304,6 @@ def todaysEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
                     continue
                 eventsExist = True
                 break
-
-    return eventsExist
-
-
-def thisWeeksEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
-    """Are there calendar events this week?
-    """
-    now = datetime.now()
-    year = now.year
-    monthNumber = now.month
-    dayNumber = now.day
-
-    calendarFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
-    if not os.path.isfile(calendarFilename):
-        return False
-
-    eventsExist = False
-    with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
-            if not postFilename:
-                continue
-
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
-                continue
-
-            for tag in postJsonObject['object']['tag']:
-                if not _isHappeningEvent(tag):
-                    continue
-                # this tag is an event or a place
-                if tag['type'] != 'Event':
-                    continue
-                # tag is an event
-                if not tag.get('startTime'):
-                    continue
-                eventTime = \
-                    datetime.strptime(tag['startTime'],
-                                      "%Y-%m-%dT%H:%M:%S%z")
-                if (int(eventTime.strftime("%Y")) == year and
-                    int(eventTime.strftime("%m")) == monthNumber and
-                    (int(eventTime.strftime("%d")) > dayNumber and
-                     int(eventTime.strftime("%d")) <= dayNumber + 6)):
-                    eventsExist = True
-                    break
 
     return eventsExist
 
