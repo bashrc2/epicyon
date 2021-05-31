@@ -608,6 +608,7 @@ class PubServer(BaseHTTPRequestHandler):
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Cache-Control', 'public')
         # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -622,6 +623,7 @@ class PubServer(BaseHTTPRequestHandler):
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Cache-Control', 'public')
         # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -639,6 +641,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Cache-Control', 'public')
         # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -660,6 +663,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('Cache-Control', 'public')
         # self.send_header('Referrer-Policy', 'origin')
         self.send_header('Accept-Ranges', 'none')
 
@@ -747,6 +751,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Cache-Control', 'public')
         # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -769,6 +774,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', msgLenStr)
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Cache-Control', 'public')
         # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
         if not self._write(msg):
