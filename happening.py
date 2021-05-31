@@ -297,11 +297,14 @@ def todaysEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
                 eventTime = \
                     datetime.strptime(tag['startTime'],
                                       "%Y-%m-%dT%H:%M:%S%z")
-                if int(eventTime.strftime("%Y")) == year and \
-                   int(eventTime.strftime("%m")) == monthNumber and \
-                   int(eventTime.strftime("%d")) == dayNumber:
-                    eventsExist = True
-                    break
+                if int(eventTime.strftime("%d")) != dayNumber:
+                    continue
+                if int(eventTime.strftime("%m")) != monthNumber:
+                    continue
+                if int(eventTime.strftime("%Y")) != year:
+                    continue
+                eventsExist = True
+                break
 
     return eventsExist
 
