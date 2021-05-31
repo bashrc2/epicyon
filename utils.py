@@ -1634,22 +1634,6 @@ def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
     return None
 
 
-def daysInMonth(year: int, monthNumber: int) -> int:
-    """Returns the number of days in the month
-    """
-    if monthNumber < 1 or monthNumber > 12:
-        return None
-    daysRange = monthrange(year, monthNumber)
-    return daysRange[1]
-
-
-def mergeDicts(dict1: {}, dict2: {}) -> {}:
-    """Merges two dictionaries
-    """
-    res = {**dict1, **dict2}
-    return res
-
-
 def isEventPost(messageJson: {}) -> bool:
     """Is the given post a mobilizon-type event activity?
     See https://framagit.org/framasoft/mobilizon/-/blob/
