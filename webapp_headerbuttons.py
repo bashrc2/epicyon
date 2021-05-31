@@ -10,8 +10,8 @@ __status__ = "Production"
 import os
 import time
 from datetime import datetime
-from happening import todaysEventsCheck
-from happening import thisWeeksEventsCheck
+from datetime import timedelta
+from happening import dayEventsCheck
 from webapp_utils import htmlHighlightLabel
 
 
@@ -152,9 +152,10 @@ def headerButtonsTimeline(defaultTimeline: str,
     # show todays events buttons on the first inbox page
     happeningStr = ''
     if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
+        now = datetime.now()
+        tomorrow = datetime.now() + timedelta(1)
+        twodays = datetime.now() + timedelta(2)
+        if dayEventsCheck(baseDir, nickname, domain, now):
             # happening today button
             if not iconsAsButtons:
                 happeningStr += \
@@ -171,35 +172,35 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '<button class="button">' + \
                     translate['Happening Today'] + '</button></a>'
 
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
+        elif dayEventsCheck(baseDir, nickname, domain, tomorrow):
+            # happening tomorrow button
+            if not iconsAsButtons:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
+                    '?day=' + str(tomorrow.day) + '" tabindex="-1">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening Tomorrow'] + '</button></a>'
+            else:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
+                    '?day=' + str(tomorrow.day) + '" tabindex="-1">' + \
+                    '<button class="button">' + \
+                    translate['Happening Tomorrow'] + '</button></a>'
+        elif dayEventsCheck(baseDir, nickname, domain, twodays):
+            if not iconsAsButtons:
+                happeningStr += \
+                    '<a href="' + usersPath + \
+                    '/calendar" tabindex="-1">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>'
+            else:
+                happeningStr += \
+                    '<a href="' + usersPath + \
+                    '/calendar" tabindex="-1">' + \
+                    '<button class="button">' + \
+                    translate['Happening This Week'] + '</button></a>'
 
     if not featuresHeader:
         # button for the outbox
