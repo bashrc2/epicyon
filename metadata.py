@@ -71,8 +71,10 @@ def _getStatusCount(baseDir: str) -> int:
                 continue
             if 'inbox@' in acct or 'news@' in acct:
                 continue
-            for f in os.path.join(accountsDir, acct + '/outbox'):                
-                statusCtr += 1
+            acctDir = os.path.join(accountsDir, acct + '/outbox')
+            for subdir2, dirs2, files2 in os.walk(acctDir):
+                statusCtr += len(files)
+                break
         break
     return statusCtr
 
