@@ -122,7 +122,6 @@ def metaDataInstance(instanceTitle: str,
             'last_status_at': '2019-07-01T10:30:00Z',
             'locked': adminActor['manuallyApprovesFollowers'],
             'note': '<p>Admin of ' + domain + '</p>',
-            'statuses_count': 1,
             'url': url,
             'username': adminActor['preferredUsername']
         },
