@@ -1323,12 +1323,10 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
     if '/channel/' in personUrl or '/accounts/' in personUrl:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
@@ -1341,7 +1339,6 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             pprint(personJson)
         return personJson
     else:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
             'Accept': 'application/jrd+json; profile="' + profileStr + '"'
         }
