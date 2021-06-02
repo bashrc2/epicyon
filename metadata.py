@@ -60,6 +60,22 @@ def metaDataNodeInfo(baseDir: str,
     return nodeinfo
 
 
+def _getStatusCount(baseDir: str) -> int:
+    """Get the total number of posts
+    """
+    statusCtr = 0
+    accountsDir = baseDir + '/accounts'
+    for subdir, dirs, files in os.walk(accountsDir):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct or 'news@' in acct:
+                continue
+            statusCtr += len(os.path.join(accountsDir, acct))
+        break
+    return statusCtr
+
+
 def metaDataInstance(instanceTitle: str,
                      instanceDescriptionShort: str,
                      instanceDescription: str,
@@ -117,7 +133,7 @@ def metaDataInstance(instanceTitle: str,
         'short_description': instanceDescriptionShort,
         'stats': {
             'domain_count': 2,
-            'status_count': 1,
+            'status_count': _getStatusCount(baseDir),
             'user_count': noOfAccounts(baseDir)
         },
         'thumbnail': httpPrefix + '://' + domainFull + '/login.png',
