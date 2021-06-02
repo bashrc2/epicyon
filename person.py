@@ -1309,9 +1309,9 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             return None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
+    headersList = (
+        "activity+json", "ld+json", "jrd+json"
+    )
     if not personUrl:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
@@ -1323,32 +1323,24 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
+        headersList = (
+            "ld+json", "jrd+json", "activity+json"
+        )
     if '/channel/' in personUrl or '/accounts/' in personUrl:
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
+        headersList = (
+            "ld+json", "jrd+json", "activity+json"
+        )
 
-    personJson = \
-        getJson(session, personUrl, asHeader, None,
-                debug, __version__, httpPrefix, None, 20, quiet)
-    if personJson:
-        if not quiet:
-            pprint(personJson)
-        return personJson
-    else:
+    for headerType in headersList:
+        headerMimeType = 'application/' + headerType
         asHeader = {
-            'Accept': 'application/jrd+json; profile="' + profileStr + '"'
+            'Accept': headerMimeType + '; profile="' + profileStr + '"'
         }
         personJson = \
             getJson(session, personUrl, asHeader, None,
-                    debug, __version__, httpPrefix, None)
-        if not quiet:
-            if personJson:
-                print('getActorJson returned actor')
+                    debug, __version__, httpPrefix, None, 20, quiet)
+        if personJson:
+            if not quiet:
                 pprint(personJson)
-            else:
-                print('Failed to get ' + personUrl)
-        return personJson
+            return personJson
+    return None

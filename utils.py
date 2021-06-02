@@ -15,7 +15,6 @@ import json
 import idna
 import locale
 from pprint import pprint
-from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
