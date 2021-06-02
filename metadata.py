@@ -119,7 +119,6 @@ def metaDataInstance(instanceTitle: str,
             'username': adminActor['preferredUsername']
         },
         'description': instanceDescription,
-        'email': 'admin@' + domain,
         'languages': [systemLanguage],
         'registrations': registration,
         'short_description': instanceDescriptionShort,
