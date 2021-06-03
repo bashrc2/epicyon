@@ -10,7 +10,6 @@ import os
 from pprint import pprint
 from utils import getOccupationName
 from utils import getLockedAccount
-from utils import hasUsersPath
 from utils import getFullDomain
 from utils import isArtist
 from utils import isDormant
@@ -24,10 +23,9 @@ from utils import getImageFormats
 from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson
+from person import getActorJson
 from webfinger import webfingerHandle
-from session import getJson
 from posts import parseUserFeed
-from posts import getUserUrl
 from posts import getPersonBox
 from donate import getDonationUrl
 from xmpp import getXmppAddress
@@ -74,46 +72,20 @@ def htmlProfileAfterSearch(cssCache: {},
                            accessKeys: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
-    if hasUsersPath(profileHandle) or '/@' in profileHandle:
-        searchNickname = getNicknameFromActor(profileHandle)
-        searchDomain, searchPort = getDomainFromActor(profileHandle)
-    else:
-        if '@' not in profileHandle:
-            if debug:
-                print('DEBUG: no @ in ' + profileHandle)
-            return None
-        if profileHandle.startswith('@'):
-            profileHandle = profileHandle[1:]
-        if '@' not in profileHandle:
-            if debug:
-                print('DEBUG: no @ in ' + profileHandle)
-            return None
-        searchNickname = profileHandle.split('@')[0]
-        searchDomain = profileHandle.split('@')[1]
-        searchPort = None
-        if ':' in searchDomain:
-            searchPortStr = searchDomain.split(':')[1]
-            if searchPortStr.isdigit():
-                searchPort = int(searchPortStr)
-            searchDomain = searchDomain.split(':')[0]
-    if searchPort:
-        if debug:
-            print('DEBUG: Search for handle ' +
-                  str(searchNickname) + '@' + str(searchDomain) + ':' +
-                  str(searchPort))
-    else:
-        if debug:
-            print('DEBUG: Search for handle ' +
-                  str(searchNickname) + '@' + str(searchDomain))
-    if not searchNickname:
-        if debug:
-            print('DEBUG: No nickname found in ' + profileHandle)
-        return None
-    if not searchDomain:
-        if debug:
-            print('DEBUG: No domain found in ' + profileHandle)
+    http = False
+    gnunet = False
+    if httpPrefix == 'http':
+        http = True
+    elif httpPrefix == 'gnunet':
+        gnunet = True
+    profileJson, asHeader = \
+        getActorJson(profileHandle, http, gnunet, debug, False)
+    if not profileJson:
         return None
 
+    personUrl = profileJson['id']
+    searchDomain, searchPort = getDomainFromActor(personUrl)
+    searchNickname = getNicknameFromActor(personUrl)
     searchDomainFull = getFullDomain(searchDomain, searchPort)
 
     profileStr = ''
@@ -121,57 +93,6 @@ def htmlProfileAfterSearch(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    wf = \
-        webfingerHandle(session,
-                        searchNickname + '@' + searchDomainFull,
-                        httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
-    if not wf:
-        if debug:
-            print('DEBUG: Unable to webfinger ' +
-                  searchNickname + '@' + searchDomainFull)
-            print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
-            print('DEBUG: httpPrefix ' + httpPrefix)
-            print('DEBUG: domain ' + domain)
-        return None
-    if not isinstance(wf, dict):
-        if debug:
-            print('WARN: Webfinger search for ' +
-                  searchNickname + '@' + searchDomainFull +
-                  ' did not return a dict. ' +
-                  str(wf))
-        return None
-
-    personUrl = None
-    if wf.get('errors'):
-        personUrl = httpPrefix + '://' + \
-            searchDomainFull + '/users/' + searchNickname
-
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
-    if not personUrl:
-        personUrl = getUserUrl(wf, 0, debug)
-    if not personUrl:
-        # try single user instance
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-        personUrl = httpPrefix + '://' + searchDomainFull
-    profileJson = \
-        getJson(session, personUrl, asHeader, None, debug,
-                projectVersion, httpPrefix, domain)
-    if not profileJson:
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-        profileJson = \
-            getJson(session, personUrl, asHeader, None, debug,
-                    projectVersion, httpPrefix, domain)
-    if not profileJson:
-        print('DEBUG: No actor returned from ' + personUrl)
-        return None
     avatarUrl = ''
     if profileJson.get('icon'):
         if profileJson['icon'].get('url'):

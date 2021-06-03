@@ -1205,7 +1205,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
 
 
 def getActorJson(handle: str, http: bool, gnunet: bool,
-                 debug: bool, quiet=False) -> {}:
+                 debug: bool, quiet=False) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1221,7 +1221,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             if not quiet or debug:
                 print('getActorJson: Expected actor format: ' +
                       'https://domain/@nick or https://domain/users/nick')
-            return None
+            return None, None
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
@@ -1251,22 +1251,22 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             if '/' in domain:
                 domain = domain.split('/')[0]
             if '://' + domain + '/' not in originalHandle:
-                return None
+                return None, None
             nickname = originalHandle.split('://' + domain + '/')[1]
             if '/' in nickname or '.' in nickname:
-                return None
+                return None, None
     else:
         # format: @nick@domain
         if '@' not in handle:
             if not quiet:
                 print('getActorJson Syntax: --actor nickname@domain')
-            return None
+            return None, None
         if handle.startswith('@'):
             handle = handle[1:]
         if '@' not in handle:
             if not quiet:
                 print('getActorJsonSyntax: --actor nickname@domain')
-            return None
+            return None, None
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
@@ -1297,12 +1297,12 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
     if not wfRequest:
         if not quiet:
             print('getActorJson Unable to webfinger ' + handle)
-        return None
+        return None, None
     if not isinstance(wfRequest, dict):
         if not quiet:
             print('getActorJson Webfinger for ' + handle +
                   ' did not return a dict. ' + str(wfRequest))
-        return None
+        return None, None
 
     if not quiet:
         pprint(wfRequest)
@@ -1316,7 +1316,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         else:
             if debug:
                 print('No users path in ' + handle)
-            return None
+            return None, None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
     headersList = (
@@ -1353,5 +1353,5 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         if personJson:
             if not quiet:
                 pprint(personJson)
-            return personJson
-    return None
+            return personJson, asHeader
+    return None, None
