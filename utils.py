@@ -97,6 +97,16 @@ def hasUsersPath(pathStr: str) -> bool:
     for usersStr in usersList:
         if '/' + usersStr + '/' in pathStr:
             return True
+    if '://' in pathStr:
+        domain = pathStr.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if '://' + domain + '/' not in pathStr:
+            return False
+        nickname = pathStr.split('://' + domain + '/')[1]
+        if '/' in nickname or '.' in nickname:
+            return False
+        return True
     return False
 
 

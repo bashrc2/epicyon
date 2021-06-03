@@ -1216,15 +1216,16 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
        handle.startswith('http') or \
        handle.startswith('dat'):
         # format: https://domain/@nick
-        prefixes = getProtocolPrefixes()
-        for prefix in prefixes:
-            handle = handle.replace(prefix, '')
-        handle = handle.replace('/@', '/users/')
-        if not hasUsersPath(handle):
+        originalHandle = handle
+        if not hasUsersPath(originalHandle):
             if not quiet or debug:
                 print('getActorJson: Expected actor format: ' +
                       'https://domain/@nick or https://domain/users/nick')
             return None
+        prefixes = getProtocolPrefixes()
+        for prefix in prefixes:
+            handle = handle.replace(prefix, '')
+        handle = handle.replace('/@', '/users/')
         if '/users/' in handle:
             nickname = handle.split('/users/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
@@ -1245,6 +1246,15 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             nickname = handle.split('/u/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = handle.split('/u/')[0]
+        elif '://' in originalHandle:
+            domain = originalHandle.split('://')[1]
+            if '/' in domain:
+                domain = domain.split('/')[0]
+            if '://' + domain + '/' not in originalHandle:
+                return None
+            nickname = originalHandle.split('://' + domain + '/')[1]
+            if '/' in nickname or '.' in nickname:
+                return None
     else:
         # format: @nick@domain
         if '@' not in handle:
