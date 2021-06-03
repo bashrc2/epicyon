@@ -1332,7 +1332,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         personUrl = personUrl.replace('/u/', '/actor/')
     if not personUrl:
         # try single user instance
-        personUrl = httpPrefix + '://' + domain
+        personUrl = httpPrefix + '://' + domain + '/' + nickname
         headersList = (
             "ld+json", "jrd+json", "activity+json"
         )
@@ -1340,7 +1340,8 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         headersList = (
             "ld+json", "jrd+json", "activity+json"
         )
-
+    if debug:
+        print('personUrl: ' + personUrl)
     for headerType in headersList:
         headerMimeType = 'application/' + headerType
         asHeader = {

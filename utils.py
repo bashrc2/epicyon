@@ -851,6 +851,16 @@ def getNicknameFromActor(actor: str) -> str:
         elif '@' in actor:
             nickStr = actor.split('@')[0]
             return nickStr
+        elif '://' in actor:
+            domain = actor.split('://')[1]
+            if '/' in domain:
+                domain = domain.split('/')[0]
+            if '://' + domain + '/' not in actor:
+                return None
+            nickStr = actor.split('://' + domain + '/')[1]
+            if '/' in nickStr or '.' in nickStr:
+                return None
+            return nickStr
         return None
     nickStr = actor.split('/users/')[1].replace('@', '')
     if '/' not in nickStr:
