@@ -3924,6 +3924,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         return None
     if not isinstance(postJsonObject['object'], str):
         return None
+    # ignore self-boosts
+    if postJsonObject['actor'] in postJsonObject['object']:
+        return None
 
     # get the announced post
     announceCacheDir = baseDir + '/cache/announce/' + nickname
