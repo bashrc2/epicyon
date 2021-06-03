@@ -32,12 +32,16 @@ def outboxAnnounce(recentPostsCache: {},
     """
     if not messageJson.get('actor'):
         return False
+    if not isinstance(messageJson['actor'], str):
+        return False
     if not messageJson.get('type'):
         return False
     if not messageJson.get('object'):
         return False
     if messageJson['type'] == 'Announce':
         if not isinstance(messageJson['object'], str):
+            return False
+        if messageJson['actor'] in messageJson['object']:
             return False
         nickname = getNicknameFromActor(messageJson['actor'])
         if not nickname:

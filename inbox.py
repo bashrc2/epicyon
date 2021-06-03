@@ -1359,6 +1359,10 @@ def _receiveAnnounce(recentPostsCache: {},
                   '"users" or "profile" missing from actor in ' +
                   messageJson['type'])
         return False
+    if messageJson['actor'] in messageJson['object']:
+        if debug:
+            print('DEBUG: self-boost rejected')
+        return False
     if not hasUsersPath(messageJson['object']):
         if debug:
             print('DEBUG: ' +
