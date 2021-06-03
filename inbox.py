@@ -80,6 +80,7 @@ from delete import removeOldHashtags
 from categories import guessHashtagCategory
 from context import hasValidContext
 from speaker import updateSpeaker
+from announce import isSelfAnnounce
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1359,7 +1360,7 @@ def _receiveAnnounce(recentPostsCache: {},
                   '"users" or "profile" missing from actor in ' +
                   messageJson['type'])
         return False
-    if messageJson['actor'] in messageJson['object']:
+    if isSelfAnnounce(messageJson):
         if debug:
             print('DEBUG: self-boost rejected')
         return False
