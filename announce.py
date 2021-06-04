@@ -32,12 +32,16 @@ def outboxAnnounce(recentPostsCache: {},
     """
     if not messageJson.get('actor'):
         return False
+    if not isinstance(messageJson['actor'], str):
+        return False
     if not messageJson.get('type'):
         return False
     if not messageJson.get('object'):
         return False
     if messageJson['type'] == 'Announce':
         if not isinstance(messageJson['object'], str):
+            return False
+        if isSelfAnnounce(messageJson):
             return False
         nickname = getNicknameFromActor(messageJson['actor'])
         if not nickname:
@@ -386,3 +390,21 @@ def outboxUndoAnnounce(recentPostsCache: {},
                                 messageJson['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + postFilename)
+
+
+def isSelfAnnounce(postJsonObject: {}) -> bool:
+    """Is the given post a self announce?
+    """
+    if not postJsonObject.get('actor'):
+        return False
+    if not postJsonObject.get('type'):
+        return False
+    if postJsonObject['type'] != 'Announce':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['actor'], str):
+        return False
+    if not isinstance(postJsonObject['object'], str):
+        return False
+    return postJsonObject['actor'] in postJsonObject['object']

@@ -60,6 +60,25 @@ def metaDataNodeInfo(baseDir: str,
     return nodeinfo
 
 
+def _getStatusCount(baseDir: str) -> int:
+    """Get the total number of posts
+    """
+    statusCtr = 0
+    accountsDir = baseDir + '/accounts'
+    for subdir, dirs, files in os.walk(accountsDir):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct or 'news@' in acct:
+                continue
+            acctDir = os.path.join(accountsDir, acct + '/outbox')
+            for subdir2, dirs2, files2 in os.walk(acctDir):
+                statusCtr += len(files2)
+                break
+        break
+    return statusCtr
+
+
 def metaDataInstance(instanceTitle: str,
                      instanceDescriptionShort: str,
                      instanceDescription: str,
@@ -94,30 +113,21 @@ def metaDataInstance(instanceTitle: str,
             'avatar': adminActor['icon']['url'],
             'avatar_static': adminActor['icon']['url'],
             'bot': isBot,
-            'created_at': '2019-07-01T10:30:00Z',
             'display_name': adminActor['name'],
-            'emojis': [],
-            'fields': [],
-            'followers_count': 1,
-            'following_count': 1,
             'header': adminActor['image']['url'],
             'header_static': adminActor['image']['url'],
-            'id': '1',
-            'last_status_at': '2019-07-01T10:30:00Z',
             'locked': adminActor['manuallyApprovesFollowers'],
             'note': '<p>Admin of ' + domain + '</p>',
-            'statuses_count': 1,
             'url': url,
             'username': adminActor['preferredUsername']
         },
         'description': instanceDescription,
-        'email': 'admin@' + domain,
         'languages': [systemLanguage],
         'registrations': registration,
         'short_description': instanceDescriptionShort,
         'stats': {
             'domain_count': 2,
-            'status_count': 1,
+            'status_count': _getStatusCount(baseDir),
             'user_count': noOfAccounts(baseDir)
         },
         'thumbnail': httpPrefix + '://' + domainFull + '/login.png',

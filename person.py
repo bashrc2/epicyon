@@ -1205,7 +1205,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
 
 
 def getActorJson(handle: str, http: bool, gnunet: bool,
-                 debug: bool, quiet=False) -> {}:
+                 debug: bool, quiet=False) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1216,15 +1216,16 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
        handle.startswith('http') or \
        handle.startswith('dat'):
         # format: https://domain/@nick
+        originalHandle = handle
+        if not hasUsersPath(originalHandle):
+            if not quiet or debug:
+                print('getActorJson: Expected actor format: ' +
+                      'https://domain/@nick or https://domain/users/nick')
+            return None, None
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
         handle = handle.replace('/@', '/users/')
-        if not hasUsersPath(handle):
-            if not quiet or debug:
-                print('getActorJson: Expected actor format: ' +
-                      'https://domain/@nick or https://domain/users/nick')
-            return None
         if '/users/' in handle:
             nickname = handle.split('/users/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
@@ -1245,18 +1246,27 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
             nickname = handle.split('/u/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = handle.split('/u/')[0]
+        elif '://' in originalHandle:
+            domain = originalHandle.split('://')[1]
+            if '/' in domain:
+                domain = domain.split('/')[0]
+            if '://' + domain + '/' not in originalHandle:
+                return None, None
+            nickname = originalHandle.split('://' + domain + '/')[1]
+            if '/' in nickname or '.' in nickname:
+                return None, None
     else:
         # format: @nick@domain
         if '@' not in handle:
             if not quiet:
                 print('getActorJson Syntax: --actor nickname@domain')
-            return None
+            return None, None
         if handle.startswith('@'):
             handle = handle[1:]
         if '@' not in handle:
             if not quiet:
                 print('getActorJsonSyntax: --actor nickname@domain')
-            return None
+            return None, None
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
@@ -1287,12 +1297,12 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
     if not wfRequest:
         if not quiet:
             print('getActorJson Unable to webfinger ' + handle)
-        return None
+        return None, None
     if not isinstance(wfRequest, dict):
         if not quiet:
             print('getActorJson Webfinger for ' + handle +
                   ' did not return a dict. ' + str(wfRequest))
-        return None
+        return None, None
 
     if not quiet:
         pprint(wfRequest)
@@ -1306,12 +1316,12 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         else:
             if debug:
                 print('No users path in ' + handle)
-            return None
+            return None, None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
+    headersList = (
+        "activity+json", "ld+json", "jrd+json"
+    )
     if not personUrl:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
@@ -1322,36 +1332,26 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         personUrl = personUrl.replace('/u/', '/actor/')
     if not personUrl:
         # try single user instance
-        personUrl = httpPrefix + '://' + domain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
+        personUrl = httpPrefix + '://' + domain + '/' + nickname
+        headersList = (
+            "ld+json", "jrd+json", "activity+json"
+        )
     if '/channel/' in personUrl or '/accounts/' in personUrl:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
+        headersList = (
+            "ld+json", "jrd+json", "activity+json"
+        )
+    if debug:
+        print('personUrl: ' + personUrl)
+    for headerType in headersList:
+        headerMimeType = 'application/' + headerType
         asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-
-    personJson = \
-        getJson(session, personUrl, asHeader, None,
-                debug, __version__, httpPrefix, None, 20, quiet)
-    if personJson:
-        if not quiet:
-            pprint(personJson)
-        return personJson
-    else:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/jrd+json; profile="' + profileStr + '"'
+            'Accept': headerMimeType + '; profile="' + profileStr + '"'
         }
         personJson = \
             getJson(session, personUrl, asHeader, None,
-                    debug, __version__, httpPrefix, None)
-        if not quiet:
-            if personJson:
-                print('getActorJson returned actor')
+                    debug, __version__, httpPrefix, None, 20, quiet)
+        if personJson:
+            if not quiet:
                 pprint(personJson)
-            else:
-                print('Failed to get ' + personUrl)
-        return personJson
+            return personJson, asHeader
+    return None, None

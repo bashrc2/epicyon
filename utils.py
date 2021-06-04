@@ -15,7 +15,6 @@ import json
 import idna
 import locale
 from pprint import pprint
-from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -98,6 +97,16 @@ def hasUsersPath(pathStr: str) -> bool:
     for usersStr in usersList:
         if '/' + usersStr + '/' in pathStr:
             return True
+    if '://' in pathStr:
+        domain = pathStr.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if '://' + domain + '/' not in pathStr:
+            return False
+        nickname = pathStr.split('://' + domain + '/')[1]
+        if '/' in nickname or '.' in nickname:
+            return False
+        return True
     return False
 
 
@@ -841,6 +850,16 @@ def getNicknameFromActor(actor: str) -> str:
             return nickStr
         elif '@' in actor:
             nickStr = actor.split('@')[0]
+            return nickStr
+        elif '://' in actor:
+            domain = actor.split('://')[1]
+            if '/' in domain:
+                domain = domain.split('/')[0]
+            if '://' + domain + '/' not in actor:
+                return None
+            nickStr = actor.split('://' + domain + '/')[1]
+            if '/' in nickStr or '.' in nickStr:
+                return None
             return nickStr
         return None
     nickStr = actor.split('/users/')[1].replace('@', '')

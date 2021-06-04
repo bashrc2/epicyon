@@ -336,7 +336,7 @@ def _getPGPPublicKeyFromActor(handle: str, actorJson=None) -> str:
     public key specified
     """
     if not actorJson:
-        actorJson = getActorJson(handle, False, False, False, True)
+        actorJson, asHeader = getActorJson(handle, False, False, False, True)
     if not actorJson:
         return None
     if not actorJson.get('attachment'):
@@ -476,7 +476,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
     if debug:
         print('Getting actor for ' + handle)
 
-    actorJson = getActorJson(handle, False, False, debug, True)
+    actorJson, asHeader = getActorJson(handle, False, False, debug, True)
     if not actorJson:
         if debug:
             print('No actor returned for ' + handle)

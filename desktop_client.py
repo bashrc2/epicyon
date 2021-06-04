@@ -836,7 +836,7 @@ def _desktopShowProfile(session, nickname: str, domain: str,
     isHttp = False
     if 'http://' in actor:
         isHttp = True
-    actorJson = getActorJson(actor, isHttp, False, False, True)
+    actorJson, asHeader = getActorJson(actor, isHttp, False, False, True)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -854,7 +854,7 @@ def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
     """Shows the profile for a handle
     Returns the actor json
     """
-    actorJson = getActorJson(handle, False, False, False, True)
+    actorJson, asHeader = getActorJson(handle, False, False, False, True)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)

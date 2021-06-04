@@ -31,6 +31,7 @@ from webapp_column_left import getLeftColumnContent
 from webapp_column_right import getRightColumnContent
 from webapp_headerbuttons import headerButtonsTimeline
 from posts import isModerator
+from announce import isSelfAnnounce
 
 
 def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
@@ -683,6 +684,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
                 if isPersonSnoozed(baseDir, nickname, domain, item['actor']):
+                    continue
+                if isSelfAnnounce(item):
                     continue
 
                 # is the post in the memory cache of recent ones?
