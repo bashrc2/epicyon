@@ -550,13 +550,13 @@ parser.add_argument('--location', dest='location', type=str, default=None,
 parser.add_argument('--duration', dest='duration', type=str, default=None,
                     help='Duration for which to share an item')
 parser.add_argument('--registration', dest='registration', type=str,
-                    default=None,
+                    default='open',
                     help='Whether new registrations are open or closed')
 parser.add_argument("--nosharedinbox", type=str2bool, nargs='?',
                     const=True, default=False,
                     help='Disable shared inbox')
 parser.add_argument('--maxregistrations', dest='maxRegistrations',
-                    type=int, default=None,
+                    type=int, default=10,
                     help='The maximum number of new registrations')
 parser.add_argument("--resetregistrations", type=str2bool, nargs='?',
                     const=True, default=False,
