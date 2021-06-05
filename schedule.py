@@ -155,7 +155,7 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
                 if not os.path.isfile(scheduleIndexFilename):
                     continue
                 _updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
-        break
+            break
 
 
 def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
@@ -167,12 +167,13 @@ def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrPostSchedule.start()
     while True:
         time.sleep(20)
-        if not httpd.thrPostSchedule.is_alive():
-            httpd.thrPostSchedule.kill()
-            httpd.thrPostSchedule = \
-                postScheduleOriginal.clone(runPostSchedule)
-            httpd.thrPostSchedule.start()
-            print('Restarting scheduled posts...')
+        if httpd.thrPostSchedule.is_alive():
+            continue
+        httpd.thrPostSchedule.kill()
+        httpd.thrPostSchedule = \
+            postScheduleOriginal.clone(runPostSchedule)
+        httpd.thrPostSchedule.start()
+        print('Restarting scheduled posts...')
 
 
 def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:

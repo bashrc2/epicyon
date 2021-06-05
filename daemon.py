@@ -877,7 +877,8 @@ class PubServer(BaseHTTPRequestHandler):
                     registration: bool,
                     systemLanguage: str,
                     projectVersion: str,
-                    customEmoji: []) -> bool:
+                    customEmoji: [],
+                    showNodeInfoAccounts: bool) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -977,8 +978,12 @@ class PubServer(BaseHTTPRequestHandler):
                 domainFull = i2pDomain
                 httpPrefix = 'http'
 
+            if brochModeIsActive(baseDir):
+                showNodeInfoAccounts = False
+
             sendJson = \
-                metaDataInstance(instanceTitle,
+                metaDataInstance(showNodeInfoAccounts,
+                                 instanceTitle,
                                  instanceDescriptionShort,
                                  instanceDescription,
                                  httpPrefix,
@@ -1033,12 +1038,14 @@ class PubServer(BaseHTTPRequestHandler):
                   registration: bool,
                   systemLanguage: str,
                   projectVersion: str,
-                  customEmoji: []) -> bool:
+                  customEmoji: [],
+                  showNodeInfoAccounts: bool) -> bool:
         return self._mastoApiV1(path, callingDomain, authorized,
                                 httpPrefix, baseDir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
-                                projectVersion, customEmoji)
+                                projectVersion, customEmoji,
+                                showNodeInfoAccounts)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -10849,7 +10856,8 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.registration,
                           self.server.systemLanguage,
                           self.server.projectVersion,
-                          self.server.customEmoji):
+                          self.server.customEmoji,
+                          self.server.showNodeInfoAccounts):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -14894,11 +14902,12 @@ def runPostsWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrPostsQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrPostsQueue.is_alive():
-            httpd.thrPostsQueue.kill()
-            httpd.thrPostsQueue = postsQueueOriginal.clone(runPostsQueue)
-            httpd.thrPostsQueue.start()
-            print('Restarting posts queue...')
+        if httpd.thrPostsQueue.is_alive():
+            continue
+        httpd.thrPostsQueue.kill()
+        httpd.thrPostsQueue = postsQueueOriginal.clone(runPostsQueue)
+        httpd.thrPostsQueue.start()
+        print('Restarting posts queue...')
 
 
 def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
@@ -14909,11 +14918,12 @@ def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrSharesExpire.start()
     while True:
         time.sleep(20)
-        if not httpd.thrSharesExpire.is_alive():
-            httpd.thrSharesExpire.kill()
-            httpd.thrSharesExpire = sharesExpireOriginal.clone(runSharesExpire)
-            httpd.thrSharesExpire.start()
-            print('Restarting shares expiry...')
+        if httpd.thrSharesExpire.is_alive():
+            continue
+        httpd.thrSharesExpire.kill()
+        httpd.thrSharesExpire = sharesExpireOriginal.clone(runSharesExpire)
+        httpd.thrSharesExpire.start()
+        print('Restarting shares expiry...')
 
 
 def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
