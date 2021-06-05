@@ -706,9 +706,9 @@ def brochModeLapses(baseDir: str, lapseDays=7) -> bool:
         modifiedDate = \
             datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        return brochMode
+        return False
     if not modifiedDate:
-        return brochMode
+        return False
     currTime = datetime.datetime.utcnow()
     daysSinceBroch = (currTime - modifiedDate).days
     if daysSinceBroch >= lapseDays:
@@ -717,6 +717,7 @@ def brochModeLapses(baseDir: str, lapseDays=7) -> bool:
             brochMode = False
             setConfigParam(baseDir, "brochMode", brochMode)
             print('Broch mode has elapsed')
+            return True
         except BaseException:
             pass
-    return brochMode
+    return False
