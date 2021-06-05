@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+import random
 from linked_data_sig import verifyJsonSignature
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
@@ -2730,6 +2731,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
     # within _bounceDM
     lastBounceMessage = [int(time.time())]
 
+    # how long it takes for broch mode to lapse
+    brochLapseDays = random.randrange(7, 14)
+
     while True:
         time.sleep(1)
 
@@ -2737,7 +2741,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         heartBeatCtr += 1
         if heartBeatCtr >= 10:
             # turn off broch mode after it has timed out
-            brochModeLapses(baseDir)
+            if brochModeLapses(baseDir, brochLapseDays):
+                brochLapseDays = random.randrange(7, 14)
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
             heartBeatCtr = 0
