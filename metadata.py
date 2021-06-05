@@ -12,54 +12,6 @@ from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
 
-def metaDataNodeInfo(baseDir: str,
-                     aboutUrl: str,
-                     termsOfServiceUrl: str,
-                     registration: bool, version: str,
-                     showAccounts: bool) -> {}:
-    """ /nodeinfo/2.0 endpoint
-    Also see https://socialhub.activitypub.rocks/t/
-    fep-f1d5-nodeinfo-in-fediverse-software/1190/4
-
-    Note that there are security considerations with this. If an adversary
-    sees a lot of accounts and "local" posts then the instance may be
-    considered a higher priority target.
-    Also exposure of the version number and number of accounts could be
-    sensitive
-    """
-    if showAccounts:
-        activeAccounts = noOfAccounts(baseDir)
-        activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
-        activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
-    else:
-        activeAccounts = 1
-        activeAccountsMonthly = 1
-        activeAccountsHalfYear = 1
-
-    nodeinfo = {
-        'openRegistrations': registration,
-        'protocols': ['activitypub'],
-        'software': {
-            'name': 'epicyon',
-            'version': version
-        },
-        'documents': {
-            'about': aboutUrl,
-            'terms': termsOfServiceUrl
-        },
-        'usage': {
-            'localPosts': 1,
-            'users': {
-                'activeHalfyear': activeAccountsHalfYear,
-                'activeMonth': activeAccountsMonthly,
-                'total': activeAccounts
-            }
-        },
-        'version': '2.0'
-    }
-    return nodeinfo
-
-
 def _getStatusCount(baseDir: str) -> int:
     """Get the total number of posts
     """
@@ -79,7 +31,58 @@ def _getStatusCount(baseDir: str) -> int:
     return statusCtr
 
 
-def metaDataInstance(instanceTitle: str,
+def metaDataNodeInfo(baseDir: str,
+                     aboutUrl: str,
+                     termsOfServiceUrl: str,
+                     registration: bool, version: str,
+                     showAccounts: bool) -> {}:
+    """ /nodeinfo/2.0 endpoint
+    Also see https://socialhub.activitypub.rocks/t/
+    fep-f1d5-nodeinfo-in-fediverse-software/1190/4
+
+    Note that there are security considerations with this. If an adversary
+    sees a lot of accounts and "local" posts then the instance may be
+    considered a higher priority target.
+    Also exposure of the version number and number of accounts could be
+    sensitive
+    """
+    if showAccounts:
+        activeAccounts = noOfAccounts(baseDir)
+        activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
+        activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
+        localPosts = _getStatusCount(baseDir)
+    else:
+        activeAccounts = 1
+        activeAccountsMonthly = 1
+        activeAccountsHalfYear = 1
+        localPosts = 1
+
+    nodeinfo = {
+        'openRegistrations': registration,
+        'protocols': ['activitypub'],
+        'software': {
+            'name': 'epicyon',
+            'version': version
+        },
+        'documents': {
+            'about': aboutUrl,
+            'terms': termsOfServiceUrl
+        },
+        'usage': {
+            'localPosts': localPosts,
+            'users': {
+                'activeHalfyear': activeAccountsHalfYear,
+                'activeMonth': activeAccountsMonthly,
+                'total': activeAccounts
+            }
+        },
+        'version': '2.0'
+    }
+    return nodeinfo
+
+
+def metaDataInstance(showAccounts: bool,
+                     instanceTitle: str,
                      instanceDescriptionShort: str,
                      instanceDescription: str,
                      httpPrefix: str, baseDir: str,
@@ -106,6 +109,13 @@ def metaDataInstance(instanceTitle: str,
         httpPrefix + '://' + domainFull + '/@' + \
         adminActor['preferredUsername']
 
+    if showAccounts:
+        activeAccounts = noOfAccounts(baseDir)
+        localPosts = _getStatusCount(baseDir)
+    else:
+        activeAccounts = 1
+        localPosts = 1
+
     instance = {
         'approval_required': False,
         'contact_account': {
@@ -126,9 +136,9 @@ def metaDataInstance(instanceTitle: str,
         'registrations': registration,
         'short_description': instanceDescriptionShort,
         'stats': {
-            'domain_count': 2,
-            'status_count': _getStatusCount(baseDir),
-            'user_count': noOfAccounts(baseDir)
+            'domain_count': 1,
+            'status_count': localPosts,
+            'user_count': activeAccounts
         },
         'thumbnail': httpPrefix + '://' + domainFull + '/login.png',
         'title': instanceTitle,
