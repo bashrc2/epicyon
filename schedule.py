@@ -155,7 +155,7 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
                 if not os.path.isfile(scheduleIndexFilename):
                     continue
                 _updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
-        break
+            break
 
 
 def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
