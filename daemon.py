@@ -14902,11 +14902,12 @@ def runPostsWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrPostsQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrPostsQueue.is_alive():
-            httpd.thrPostsQueue.kill()
-            httpd.thrPostsQueue = postsQueueOriginal.clone(runPostsQueue)
-            httpd.thrPostsQueue.start()
-            print('Restarting posts queue...')
+        if httpd.thrPostsQueue.is_alive():
+            continue
+        httpd.thrPostsQueue.kill()
+        httpd.thrPostsQueue = postsQueueOriginal.clone(runPostsQueue)
+        httpd.thrPostsQueue.start()
+        print('Restarting posts queue...')
 
 
 def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
@@ -14917,11 +14918,12 @@ def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrSharesExpire.start()
     while True:
         time.sleep(20)
-        if not httpd.thrSharesExpire.is_alive():
-            httpd.thrSharesExpire.kill()
-            httpd.thrSharesExpire = sharesExpireOriginal.clone(runSharesExpire)
-            httpd.thrSharesExpire.start()
-            print('Restarting shares expiry...')
+        if httpd.thrSharesExpire.is_alive():
+            continue
+        httpd.thrSharesExpire.kill()
+        httpd.thrSharesExpire = sharesExpireOriginal.clone(runSharesExpire)
+        httpd.thrSharesExpire.start()
+        print('Restarting shares expiry...')
 
 
 def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
