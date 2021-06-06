@@ -2639,6 +2639,7 @@ def clearQueueItems(baseDir: str, queue: []) -> None:
                         ctr += 1
                     except BaseException:
                         pass
+                break
         break
     if ctr > 0:
         print('Removed ' + str(ctr) + ' inbox queue items')
@@ -2656,6 +2657,7 @@ def _restoreQueueItems(baseDir: str, queue: []) -> None:
             for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
                 for qfile in queuefiles:
                     queue.append(os.path.join(queueDir, qfile))
+                break
         break
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')

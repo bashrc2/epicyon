@@ -701,7 +701,6 @@ def brochModeLapses(baseDir: str, lapseDays=7) -> bool:
         return False
     lastModified = fileLastModified(allowFilename)
     modifiedDate = None
-    brochMode = True
     try:
         modifiedDate = \
             datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
@@ -714,8 +713,7 @@ def brochModeLapses(baseDir: str, lapseDays=7) -> bool:
     if daysSinceBroch >= lapseDays:
         try:
             os.remove(allowFilename)
-            brochMode = False
-            setConfigParam(baseDir, "brochMode", brochMode)
+            setConfigParam(baseDir, "brochMode", False)
             print('Broch mode has elapsed')
             return True
         except BaseException:
