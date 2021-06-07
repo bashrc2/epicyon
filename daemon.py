@@ -113,6 +113,9 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from media import pathIsImage
+from media import pathIsVideo
+from media import pathIsAudio
 from blocking import mutePost
 from blocking import unmutePost
 from blocking import setBrochMode
@@ -354,28 +357,6 @@ class PubServer(BaseHTTPRequestHandler):
             # Ye olde Masto http sig
             return self.headers['signature']
         return None
-
-    def _pathIsImage(self, path: str) -> bool:
-        if path.endswith('.png') or \
-           path.endswith('.jpg') or \
-           path.endswith('.gif') or \
-           path.endswith('.svg') or \
-           path.endswith('.avif') or \
-           path.endswith('.webp'):
-            return True
-        return False
-
-    def _pathIsVideo(self, path: str) -> bool:
-        if path.endswith('.ogv') or \
-           path.endswith('.mp4'):
-            return True
-        return False
-
-    def _pathIsAudio(self, path: str) -> bool:
-        if path.endswith('.ogg') or \
-           path.endswith('.mp3'):
-            return True
-        return False
 
     def handle_error(self, request, client_address):
         print('ERROR: http server error: ' + str(request) + ', ' +
@@ -6033,9 +6014,9 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime, GETtimings: {}) -> None:
         """Returns a media file
         """
-        if self._pathIsImage(path) or \
-           self._pathIsVideo(path) or \
-           self._pathIsAudio(path):
+        if pathIsImage(path) or \
+           pathIsVideo(path) or \
+           pathIsAudio(path):
             mediaStr = path.split('/media/')[1]
             mediaFilename = baseDir + '/media/' + mediaStr
             if os.path.isfile(mediaFilename):
@@ -6063,7 +6044,7 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime, GETtimings: {}) -> None:
         """Returns an emoji image
         """
-        if self._pathIsImage(path):
+        if pathIsImage(path):
             emojiStr = path.split('/emoji/')[1]
             emojiFilename = baseDir + '/emoji/' + emojiStr
             if os.path.isfile(emojiFilename):
@@ -10308,7 +10289,7 @@ class PubServer(BaseHTTPRequestHandler):
                         GETstartTime, GETtimings: {}) -> bool:
         """Show a shared item image
         """
-        if not self._pathIsImage(path):
+        if not pathIsImage(path):
             self._404()
             return True
 
@@ -10356,7 +10337,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' not in path:
             return False
-        if not self._pathIsImage(path):
+        if not pathIsImage(path):
             return False
         avatarStr = path.split('/users/')[1]
         if not ('/' in avatarStr and '.temp.' not in path):
@@ -11569,7 +11550,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not self._pathIsImage(self.path) and \
+           not pathIsImage(self.path) and \
            self.path != '/' and \
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
@@ -13227,9 +13208,9 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if self._pathIsImage(self.path) or \
-               self._pathIsVideo(self.path) or \
-               self._pathIsAudio(self.path):
+            if pathIsImage(self.path) or \
+               pathIsVideo(self.path) or \
+               pathIsAudio(self.path):
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr

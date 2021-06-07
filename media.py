@@ -283,3 +283,28 @@ def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
                     # archive to /dev/null
                     rmtree(os.path.join(baseDir + '/media', weekDir))
         break
+
+
+def pathIsImage(path: str) -> bool:
+    if path.endswith('.png') or \
+       path.endswith('.jpg') or \
+       path.endswith('.gif') or \
+       path.endswith('.svg') or \
+       path.endswith('.avif') or \
+       path.endswith('.webp'):
+        return True
+    return False
+
+
+def pathIsVideo(path: str) -> bool:
+    if path.endswith('.ogv') or \
+       path.endswith('.mp4'):
+        return True
+    return False
+
+
+def pathIsAudio(path: str) -> bool:
+    if path.endswith('.ogg') or \
+       path.endswith('.mp3'):
+        return True
+    return False
