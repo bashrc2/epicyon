@@ -1372,3 +1372,19 @@ def isMinimal(baseDir: str, domain: str, nickname: str) -> bool:
     if os.path.isfile(minimalFilename):
         return False
     return True
+
+
+def setMinimal(baseDir: str, domain: str, nickname: str,
+               minimal: bool) -> None:
+    """Sets whether an account should display minimal buttons
+    """
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(accountDir):
+        return
+    minimalFilename = accountDir + '/.notminimal'
+    minimalFileExists = os.path.isfile(minimalFilename)
+    if minimal and minimalFileExists:
+        os.remove(minimalFilename)
+    elif not minimal and not minimalFileExists:
+        with open(minimalFilename, 'w+') as fp:
+            fp.write('\n')

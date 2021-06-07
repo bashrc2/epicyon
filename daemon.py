@@ -139,6 +139,7 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import setMinimal
 from webapp_utils import isMinimal
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
@@ -363,21 +364,6 @@ class PubServer(BaseHTTPRequestHandler):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
         pass
-
-    def _setMinimal(self, nickname: str, minimal: bool) -> None:
-        """Sets whether an account should display minimal buttons
-        """
-        accountDir = self.server.baseDir + '/accounts/' + \
-            nickname + '@' + self.server.domain
-        if not os.path.isdir(accountDir):
-            return
-        minimalFilename = accountDir + '/.notminimal'
-        minimalFileExists = os.path.isfile(minimalFilename)
-        if minimal and minimalFileExists:
-            os.remove(minimalFilename)
-        elif not minimal and not minimalFileExists:
-            with open(minimalFilename, 'w+') as fp:
-                fp.write('\n')
 
     def _sendReplyToQuestion(self, nickname: str, messageId: str,
                              answer: str) -> None:
@@ -12033,7 +12019,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
                 notMin = not isMinimal(self.server.baseDir,
                                        self.server.domain, nickname)
-                self._setMinimal(nickname, notMin)
+                setMinimal(self.server.baseDir,
+                           self.server.domain, nickname, notMin)
                 if not (self.server.mediaInstance or
                         self.server.blogsInstance):
                     self.path = '/users/' + nickname + '/inbox'
