@@ -2410,3 +2410,14 @@ def isAccountDir(dirName: str) -> bool:
     if 'inbox@' in dirName or 'news@' in dirName:
         return False
     return True
+
+
+def permittedDir(path: str) -> bool:
+    """These are special paths which should not be accessible
+       directly via GET or POST
+    """
+    if path.startswith('/wfendpoints') or \
+       path.startswith('/keys') or \
+       path.startswith('/accounts'):
+        return False
+    return True

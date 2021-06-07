@@ -205,6 +205,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import permittedDir
 from utils import isAccountDir
 from utils import getOccupationSkills
 from utils import getOccupationName
@@ -1018,16 +1019,6 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: WEBFINGER lookup 404 ' + self.path)
             self._404()
-        return True
-
-    def _permittedDir(self, path: str) -> bool:
-        """These are special paths which should not be accessible
-        directly via GET or POST
-        """
-        if path.startswith('/wfendpoints') or \
-           path.startswith('/keys') or \
-           path.startswith('/accounts'):
-            return False
         return True
 
     def _postToOutbox(self, messageJson: {}, version: str,
@@ -11727,7 +11718,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'avatar background shown done',
                                   'GET busy time')
 
-        if not self._permittedDir(self.path):
+        if not permittedDir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
             self._404()
