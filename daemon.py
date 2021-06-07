@@ -1283,6 +1283,49 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return 3
 
+        # check that some additional fields are strings
+        stringFields = ('id', 'type', 'published')
+        for checkField in stringFields:
+            if not messageJson.get(checkField):
+                continue
+            if not isinstance(messageJson[checkField], str):
+                self._400()
+                self.server.POSTbusy = False
+                return 3
+
+        # check that to/cc fields are lists
+        listFields = ('to', 'cc')
+        for checkField in listFields:
+            if not messageJson.get(checkField):
+                continue
+            if not isinstance(messageJson[checkField], list):
+                self._400()
+                self.server.POSTbusy = False
+                return 3
+
+        if messageJson.get('object'):
+            if isinstance(messageJson['object'], dict):
+                stringFields = (
+                    'id', 'actor', 'type', 'content', 'published',
+                    'summary', 'url', 'attributedTo'
+                )
+                for checkField in stringFields:
+                    if not messageJson['object'].get(checkField):
+                        continue
+                    if not isinstance(messageJson['object'][checkField], str):
+                        self._400()
+                        self.server.POSTbusy = False
+                        return 3
+                # check that some fields are lists
+                listFields = ('to', 'cc', 'attachment')
+                for checkField in listFields:
+                    if not messageJson['object'].get(checkField):
+                        continue
+                    if not isinstance(messageJson['object'][checkField], list):
+                        self._400()
+                        self.server.POSTbusy = False
+                        return 3
+
         # actor should look like a url
         if '://' not in messageJson['actor'] or \
            '.' not in messageJson['actor']:
@@ -1345,6 +1388,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         originalMessageJson = messageJson.copy()
 
+        # whether to add a 'to' field to the message
         addToFieldTypes = ('Follow', 'Like', 'Add', 'Remove', 'Ignore')
         for addToType in addToFieldTypes:
             messageJson, toFieldExists = \

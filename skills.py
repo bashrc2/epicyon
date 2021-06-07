@@ -95,7 +95,7 @@ def setActorSkillLevel(actorJson: {},
         ]
     ocSkillsList = getOccupationSkills(actorJson)
     skillsDict = getSkillsFromList(ocSkillsList)
-    if not skillsDict.get(skill):        
+    if not skillsDict.get(skill):
         if len(skillsDict.items()) >= 32:
             print('WARN: Maximum number of skills reached for ' +
                   actorJson['id'])
