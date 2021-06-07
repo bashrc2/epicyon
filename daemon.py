@@ -130,6 +130,7 @@ from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
 from roles import clearArtistStatus
+from blog import pathContainsBlogLink
 from blog import htmlBlogPageRSS2
 from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
@@ -1361,36 +1362,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('POST TIMING|' + str(ctr) + '|' + timeDiff)
                     ctr += 1
-
-    def _pathContainsBlogLink(self, baseDir: str,
-                              httpPrefix: str, domain: str,
-                              domainFull: str, path: str) -> (str, str):
-        """If the path contains a blog entry then return its filename
-        """
-        if '/users/' not in path:
-            return None, None
-        userEnding = path.split('/users/', 1)[1]
-        if '/' not in userEnding:
-            return None, None
-        userEnding2 = userEnding.split('/')
-        nickname = userEnding2[0]
-        if len(userEnding2) != 2:
-            return None, None
-        if len(userEnding2[1]) < 14:
-            return None, None
-        userEnding2[1] = userEnding2[1].strip()
-        if not userEnding2[1].isdigit():
-            return None, None
-        # check for blog posts
-        blogIndexFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/tlblogs.index'
-        if not os.path.isfile(blogIndexFilename):
-            return None, None
-        if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
-            return None, None
-        messageId = httpPrefix + '://' + domainFull + \
-            '/users/' + nickname + '/statuses/' + userEnding2[1]
-        return locatePost(baseDir, nickname, domain, messageId), nickname
 
     def _loginScreen(self, path: str, callingDomain: str, cookie: str,
                      baseDir: str, httpPrefix: str,
@@ -11135,11 +11106,11 @@ class PubServer(BaseHTTPRequestHandler):
                                       'person options done')
             # show blog post
             blogFilename, nickname = \
-                self._pathContainsBlogLink(self.server.baseDir,
-                                           self.server.httpPrefix,
-                                           self.server.domain,
-                                           self.server.domainFull,
-                                           self.path)
+                pathContainsBlogLink(self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.path)
             if blogFilename and nickname:
                 postJsonObject = loadJson(blogFilename)
                 if isBlogPost(postJsonObject):
