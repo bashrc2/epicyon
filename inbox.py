@@ -2220,6 +2220,103 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     return True
 
 
+def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
+               postJsonObject: {}, updateIndexList: [],
+               session, httpPrefix: str,
+               federationList: [],
+               sendThreads: [], postLog: [],
+               cachedWebfingers: {},
+               personCache: {},
+               translate: {}, debug: bool,
+               lastBounceMessage: [],
+               handle: str) -> bool:
+    """Is the given message a valid DM?
+    """
+    if nickname == 'inbox':
+        # going to the shared inbox
+        return True
+
+    # check for the flag file which indicates to
+    # only receive DMs from people you are following
+    followDMsFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/.followDMs'
+    if not os.path.isfile(followDMsFilename):
+        # dm index will be updated
+        updateIndexList.append('dm')
+        _dmNotify(baseDir, handle,
+                  httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+        return True
+        
+    # get the file containing following handles
+    followingFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/following.txt'
+    # who is sending a DM?
+    if not postJsonObject.get('actor'):
+        return False
+    sendingActor = postJsonObject['actor']
+    sendingActorNickname = \
+        getNicknameFromActor(sendingActor)
+    if not sendingActorNickname:
+        return False
+    sendingActorDomain, sendingActorPort = \
+        getDomainFromActor(sendingActor)
+    if not sendingActorDomain:
+        return False
+    # Is this DM to yourself? eg. a reminder
+    sendingToSelf = False
+    if sendingActorNickname == nickname and \
+       sendingActorDomain == domain:
+        sendingToSelf = True
+
+    # check that the following file exists
+    if not sendingToSelf:
+        if not os.path.isfile(followingFilename):
+            print('No following.txt file exists for ' +
+                  nickname + '@' + domain +
+                  ' so not accepting DM from ' +
+                  sendingActorNickname + '@' +
+                  sendingActorDomain)
+            return False
+
+    # Not sending to yourself
+    if not sendingToSelf:
+        # get the handle of the DM sender
+        sendH = sendingActorNickname + '@' + sendingActorDomain
+        # check the follow
+        if not isFollowingActor(baseDir, nickname, domain, sendH):
+            # DMs may always be allowed from some domains
+            if not dmAllowedFromDomain(baseDir,
+                                       nickname, domain,
+                                       sendingActorDomain):
+                # send back a bounce DM
+                if postJsonObject.get('id') and \
+                   postJsonObject.get('object'):
+                    # don't send bounces back to
+                    # replies to bounce messages
+                    obj = postJsonObject['object']
+                    if isinstance(obj, dict):
+                        if not obj.get('inReplyTo'):
+                            _bounceDM(postJsonObject['id'],
+                                      session, httpPrefix,
+                                      baseDir,
+                                      nickname, domain,
+                                      port, sendH,
+                                      federationList,
+                                      sendThreads, postLog,
+                                      cachedWebfingers,
+                                      personCache,
+                                      translate, debug,
+                                      lastBounceMessage)
+                return False
+
+    # dm index will be updated
+    updateIndexList.append('dm')
+    _dmNotify(baseDir, handle,
+              httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+    return True
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2429,83 +2526,17 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             # create a DM notification file if needed
             postIsDM = isDM(postJsonObject)
             if postIsDM:
-                if nickname != 'inbox':
-                    # check for the flag file which indicates to
-                    # only receive DMs from people you are following
-                    followDMsFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + '/.followDMs'
-                    if os.path.isfile(followDMsFilename):
-                        # get the file containing following handles
-                        followingFilename = \
-                            baseDir + '/accounts/' + \
-                            nickname + '@' + domain + '/following.txt'
-                        # who is sending a DM?
-                        if not postJsonObject.get('actor'):
-                            return False
-                        sendingActor = postJsonObject['actor']
-                        sendingActorNickname = \
-                            getNicknameFromActor(sendingActor)
-                        if not sendingActorNickname:
-                            return False
-                        sendingActorDomain, sendingActorPort = \
-                            getDomainFromActor(sendingActor)
-                        if not sendingActorDomain:
-                            return False
-                        sendingToSelf = False
-                        if sendingActorNickname == nickname and \
-                           sendingActorDomain == domain:
-                            sendingToSelf = True
-                        # check that the following file exists
-                        if not sendingToSelf:
-                            if not os.path.isfile(followingFilename):
-                                print('No following.txt file exists for ' +
-                                      nickname + '@' + domain +
-                                      ' so not accepting DM from ' +
-                                      sendingActorNickname + '@' +
-                                      sendingActorDomain)
-                                return False
-                        # Not sending to yourself
-                        if not sendingToSelf:
-                            # get the handle of the DM sender
-                            sendH = \
-                                sendingActorNickname + '@' + sendingActorDomain
-                            # check the follow
-                            if not isFollowingActor(baseDir,
-                                                    nickname, domain,
-                                                    sendH):
-                                # DMs may always be allowed from some domains
-                                if not dmAllowedFromDomain(baseDir,
-                                                           nickname, domain,
-                                                           sendingActorDomain):
-                                    # send back a bounce DM
-                                    if postJsonObject.get('id') and \
-                                       postJsonObject.get('object'):
-                                        # don't send bounces back to
-                                        # replies to bounce messages
-                                        obj = postJsonObject['object']
-                                        if isinstance(obj, dict):
-                                            if not obj.get('inReplyTo'):
-                                                senderPostId = \
-                                                    postJsonObject['id']
-                                                _bounceDM(senderPostId,
-                                                          session, httpPrefix,
-                                                          baseDir,
-                                                          nickname, domain,
-                                                          port, sendH,
-                                                          federationList,
-                                                          sendThreads, postLog,
-                                                          cachedWebfingers,
-                                                          personCache,
-                                                          translate, debug,
-                                                          lastBounceMessage)
-                                    return False
-
-                    # dm index will be updated
-                    updateIndexList.append('dm')
-                    _dmNotify(baseDir, handle,
-                              httpPrefix + '://' + domain + '/users/' +
-                              nickname + '/dm')
+                if not _isValidDM(baseDir, nickname, domain, port,
+                                  postJsonObject, updateIndexList,
+                                  session, httpPrefix,
+                                  federationList,
+                                  sendThreads, postLog,
+                                  cachedWebfingers,
+                                  personCache,
+                                  translate, debug,
+                                  lastBounceMessage,
+                                  handle):
+                    return False
 
             # get the actor being replied to
             domainFull = getFullDomain(domain, port)
@@ -2682,6 +2713,165 @@ def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
             httpd.restartInboxQueue = False
 
 
+def _inboxQuotaExceeded(queue: {}, queueFilename: str,
+                        queueJson: {}, quotasDaily: {}, quotasPerMin: {},
+                        domainMaxPostsPerDay: int,
+                        accountMaxPostsPerDay: int,
+                        debug: bool) -> bool:
+    """limit the number of posts which can arrive per domain per day
+    """
+    postDomain = queueJson['postDomain']
+    if not postDomain:
+        return False
+
+    if domainMaxPostsPerDay > 0:
+        if quotasDaily['domains'].get(postDomain):
+            if quotasDaily['domains'][postDomain] > \
+               domainMaxPostsPerDay:
+                print('Queue: Quota per day - Maximum posts for ' +
+                      postDomain + ' reached (' +
+                      str(domainMaxPostsPerDay) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasDaily['domains'][postDomain] += 1
+        else:
+            quotasDaily['domains'][postDomain] = 1
+
+        if quotasPerMin['domains'].get(postDomain):
+            domainMaxPostsPerMin = \
+                int(domainMaxPostsPerDay / (24 * 60))
+            if domainMaxPostsPerMin < 5:
+                domainMaxPostsPerMin = 5
+            if quotasPerMin['domains'][postDomain] > \
+               domainMaxPostsPerMin:
+                print('Queue: Quota per min - Maximum posts for ' +
+                      postDomain + ' reached (' +
+                      str(domainMaxPostsPerMin) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasPerMin['domains'][postDomain] += 1
+        else:
+            quotasPerMin['domains'][postDomain] = 1
+
+    if accountMaxPostsPerDay > 0:
+        postHandle = queueJson['postNickname'] + '@' + postDomain
+        if quotasDaily['accounts'].get(postHandle):
+            if quotasDaily['accounts'][postHandle] > \
+               accountMaxPostsPerDay:
+                print('Queue: Quota account posts per day -' +
+                      ' Maximum posts for ' +
+                      postHandle + ' reached (' +
+                      str(accountMaxPostsPerDay) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasDaily['accounts'][postHandle] += 1
+        else:
+            quotasDaily['accounts'][postHandle] = 1
+
+        if quotasPerMin['accounts'].get(postHandle):
+            accountMaxPostsPerMin = \
+                int(accountMaxPostsPerDay / (24 * 60))
+            if accountMaxPostsPerMin < 5:
+                accountMaxPostsPerMin = 5
+            if quotasPerMin['accounts'][postHandle] > \
+               accountMaxPostsPerMin:
+                print('Queue: Quota account posts per min -' +
+                      ' Maximum posts for ' +
+                      postHandle + ' reached (' +
+                      str(accountMaxPostsPerMin) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasPerMin['accounts'][postHandle] += 1
+        else:
+            quotasPerMin['accounts'][postHandle] = 1
+
+    if debug:
+        if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
+            pprint(quotasDaily)
+    return False
+
+
+def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
+    """check if a json signature exists on this post
+    """
+    hasJsonSignature = False
+    jwebsigType = None
+    originalJson = queueJson['original']
+    if not originalJson.get('@context') or \
+       not originalJson.get('signature'):
+        return hasJsonSignature, jwebsigType
+    if not isinstance(originalJson['signature'], dict):
+        return hasJsonSignature, jwebsigType
+    # see https://tools.ietf.org/html/rfc7515
+    jwebsig = originalJson['signature']
+    # signature exists and is of the expected type
+    if not jwebsig.get('type') or \
+       not jwebsig.get('signatureValue'):
+        return hasJsonSignature, jwebsigType
+    jwebsigType = jwebsig['type']
+    if jwebsigType == 'RsaSignature2017':
+        if hasValidContext(originalJson):
+            hasJsonSignature = True
+        else:
+            unknownContextsFile = \
+                baseDir + '/accounts/unknownContexts.txt'
+            unknownContext = str(originalJson['@context'])
+
+            print('unrecognized @context: ' +
+                  unknownContext)
+
+            alreadyUnknown = False
+            if os.path.isfile(unknownContextsFile):
+                if unknownContext in \
+                   open(unknownContextsFile).read():
+                    alreadyUnknown = True
+
+            if not alreadyUnknown:
+                unknownFile = open(unknownContextsFile, "a+")
+                if unknownFile:
+                    unknownFile.write(unknownContext + '\n')
+                    unknownFile.close()
+    else:
+        print('Unrecognized jsonld signature type: ' +
+              jwebsigType)
+
+        unknownSignaturesFile = \
+            baseDir + '/accounts/unknownJsonSignatures.txt'
+
+        alreadyUnknown = False
+        if os.path.isfile(unknownSignaturesFile):
+            if jwebsigType in \
+               open(unknownSignaturesFile).read():
+                alreadyUnknown = True
+
+        if not alreadyUnknown:
+            unknownFile = open(unknownSignaturesFile, "a+")
+            if unknownFile:
+                unknownFile.write(jwebsigType + '\n')
+                unknownFile.close()
+    return hasJsonSignature, jwebsigType
+
+
 def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   projectVersion: str,
                   baseDir: str, httpPrefix: str, sendThreads: [], postLog: [],
@@ -2817,93 +3007,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             # change the last time that this was done
             quotasLastUpdatePerMin = currTime
 
-        # limit the number of posts which can arrive per domain per day
-        postDomain = queueJson['postDomain']
-        if postDomain:
-            if domainMaxPostsPerDay > 0:
-                if quotasDaily['domains'].get(postDomain):
-                    if quotasDaily['domains'][postDomain] > \
-                       domainMaxPostsPerDay:
-                        print('Queue: Quota per day - Maximum posts for ' +
-                              postDomain + ' reached (' +
-                              str(domainMaxPostsPerDay) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasDaily['domains'][postDomain] += 1
-                else:
-                    quotasDaily['domains'][postDomain] = 1
-
-                if quotasPerMin['domains'].get(postDomain):
-                    domainMaxPostsPerMin = \
-                        int(domainMaxPostsPerDay / (24 * 60))
-                    if domainMaxPostsPerMin < 5:
-                        domainMaxPostsPerMin = 5
-                    if quotasPerMin['domains'][postDomain] > \
-                       domainMaxPostsPerMin:
-                        print('Queue: Quota per min - Maximum posts for ' +
-                              postDomain + ' reached (' +
-                              str(domainMaxPostsPerMin) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasPerMin['domains'][postDomain] += 1
-                else:
-                    quotasPerMin['domains'][postDomain] = 1
-
-            if accountMaxPostsPerDay > 0:
-                postHandle = queueJson['postNickname'] + '@' + postDomain
-                if quotasDaily['accounts'].get(postHandle):
-                    if quotasDaily['accounts'][postHandle] > \
-                       accountMaxPostsPerDay:
-                        print('Queue: Quota account posts per day -' +
-                              ' Maximum posts for ' +
-                              postHandle + ' reached (' +
-                              str(accountMaxPostsPerDay) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasDaily['accounts'][postHandle] += 1
-                else:
-                    quotasDaily['accounts'][postHandle] = 1
-
-                if quotasPerMin['accounts'].get(postHandle):
-                    accountMaxPostsPerMin = \
-                        int(accountMaxPostsPerDay / (24 * 60))
-                    if accountMaxPostsPerMin < 5:
-                        accountMaxPostsPerMin = 5
-                    if quotasPerMin['accounts'][postHandle] > \
-                       accountMaxPostsPerMin:
-                        print('Queue: Quota account posts per min -' +
-                              ' Maximum posts for ' +
-                              postHandle + ' reached (' +
-                              str(accountMaxPostsPerMin) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasPerMin['accounts'][postHandle] += 1
-                else:
-                    quotasPerMin['accounts'][postHandle] = 1
-
-            if debug:
-                if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
-                    pprint(quotasDaily)
+        if _inboxQuotaExceeded(queue, queueFilename,
+                               queueJson, quotasDaily, quotasPerMin,
+                               domainMaxPostsPerDay,
+                               accountMaxPostsPerDay, debug):
+            continue
 
         if debug and queueJson.get('actor'):
             print('Obtaining public key for actor ' + queueJson['actor'])
@@ -2971,57 +3079,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 print('DEBUG: http header signature check success')
 
         # check if a json signature exists on this post
-        hasJsonSignature = False
-        jwebsigType = None
-        originalJson = queueJson['original']
-        if originalJson.get('@context') and \
-           originalJson.get('signature'):
-            if isinstance(originalJson['signature'], dict):
-                # see https://tools.ietf.org/html/rfc7515
-                jwebsig = originalJson['signature']
-                # signature exists and is of the expected type
-                if jwebsig.get('type') and jwebsig.get('signatureValue'):
-                    jwebsigType = jwebsig['type']
-                    if jwebsigType == 'RsaSignature2017':
-                        if hasValidContext(originalJson):
-                            hasJsonSignature = True
-                        else:
-                            unknownContextsFile = \
-                                baseDir + '/accounts/unknownContexts.txt'
-                            unknownContext = str(originalJson['@context'])
-
-                            print('unrecognized @context: ' +
-                                  unknownContext)
-
-                            alreadyUnknown = False
-                            if os.path.isfile(unknownContextsFile):
-                                if unknownContext in \
-                                   open(unknownContextsFile).read():
-                                    alreadyUnknown = True
-
-                            if not alreadyUnknown:
-                                unknownFile = open(unknownContextsFile, "a+")
-                                if unknownFile:
-                                    unknownFile.write(unknownContext + '\n')
-                                    unknownFile.close()
-                    else:
-                        print('Unrecognized jsonld signature type: ' +
-                              jwebsigType)
-
-                        unknownSignaturesFile = \
-                            baseDir + '/accounts/unknownJsonSignatures.txt'
-
-                        alreadyUnknown = False
-                        if os.path.isfile(unknownSignaturesFile):
-                            if jwebsigType in \
-                               open(unknownSignaturesFile).read():
-                                alreadyUnknown = True
-
-                        if not alreadyUnknown:
-                            unknownFile = open(unknownSignaturesFile, "a+")
-                            if unknownFile:
-                                unknownFile.write(jwebsigType + '\n')
-                                unknownFile.close()
+        hasJsonSignature, jwebsigType = _checkJsonSignature(baseDir, queueJson)
 
         # strict enforcement of json signatures
         if not hasJsonSignature:
@@ -3037,6 +3095,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                     pprint(queueJson['httpHeaders'])
 
             if verifyAllSignatures:
+                originalJson = queueJson['original']
                 print('Queue: inbox post does not have a jsonld signature ' +
                       keyId + ' ' + str(originalJson))
 
@@ -3050,6 +3109,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if httpSignatureFailed or verifyAllSignatures:
                 # use the original json message received, not one which
                 # may have been modified along the way
+                originalJson = queueJson['original']
                 if not verifyJsonSignature(originalJson, pubKey):
                     if debug:
                         print('WARN: jsonld inbox signature check failed ' +
