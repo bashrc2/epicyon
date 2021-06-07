@@ -24,10 +24,7 @@ from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
-from mastoapiv1 import getMastoApiV1Account
-from mastoapiv1 import getMastApiV1Id
-from mastoapiv1 import getNicknameFromMastoApiV1Id
-from metadata import metaDataInstance
+from mastoapiv1 import mastoApiV1Response
 from metadata import metaDataNodeInfo
 from metadata import metadataCustomEmoji
 from pgp import getEmailAddress
@@ -805,6 +802,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _hasAccept(self, callingDomain: str) -> bool:
+        """Do the http headers have an Accept field?
+        """
         if self.headers.get('Accept') or callingDomain.endswith('.b32.i2p'):
             if not self.headers.get('Accept'):
                 self.headers['Accept'] = \
@@ -835,123 +834,23 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
 
-        sendJson = None
-        sendJsonStr = ''
-
-        # parts of the api needing authorization
-        if authorized and nickname:
-            if path == '/api/v1/accounts/verify_credentials':
-                sendJson = getMastoApiV1Account(baseDir, nickname, domain)
-                sendJsonStr = 'masto API account sent for ' + nickname
-
-        # Parts of the api which don't need authorization
-        mastoId = getMastApiV1Id(path)
-        if mastoId is not None:
-            pathNickname = getNicknameFromMastoApiV1Id(mastoId)
-            if pathNickname:
-                originalPath = path
-                if '/followers?' in path or \
-                   '/following?' in path or \
-                   '/search?' in path or \
-                   '/relationships?' in path or \
-                   '/statuses?' in path:
-                    path = path.split('?')[0]
-                if path.endswith('/followers'):
-                    sendJson = []
-                    sendJsonStr = 'masto API followers sent for ' + nickname
-                elif path.endswith('/following'):
-                    sendJson = []
-                    sendJsonStr = 'masto API following sent for ' + nickname
-                elif path.endswith('/statuses'):
-                    sendJson = []
-                    sendJsonStr = 'masto API statuses sent for ' + nickname
-                elif path.endswith('/search'):
-                    sendJson = []
-                    sendJsonStr = 'masto API search sent ' + originalPath
-                elif path.endswith('/relationships'):
-                    sendJson = []
-                    sendJsonStr = \
-                        'masto API relationships sent ' + originalPath
-                else:
-                    sendJson = \
-                        getMastoApiV1Account(baseDir, pathNickname, domain)
-                    sendJsonStr = 'masto API account sent for ' + nickname
-
-        if path.startswith('/api/v1/blocks'):
-            sendJson = []
-            sendJsonStr = 'masto API instance blocks sent'
-        elif path.startswith('/api/v1/favorites'):
-            sendJson = []
-            sendJsonStr = 'masto API favorites sent'
-        elif path.startswith('/api/v1/follow_requests'):
-            sendJson = []
-            sendJsonStr = 'masto API follow requests sent'
-        elif path.startswith('/api/v1/mutes'):
-            sendJson = []
-            sendJsonStr = 'masto API mutes sent'
-        elif path.startswith('/api/v1/notifications'):
-            sendJson = []
-            sendJsonStr = 'masto API notifications sent'
-        elif path.startswith('/api/v1/reports'):
-            sendJson = []
-            sendJsonStr = 'masto API reports sent'
-        elif path.startswith('/api/v1/statuses'):
-            sendJson = []
-            sendJsonStr = 'masto API statuses sent'
-        elif path.startswith('/api/v1/timelines'):
-            sendJson = []
-            sendJsonStr = 'masto API timelines sent'
-        elif path.startswith('/api/v1/custom_emojis'):
-            sendJson = customEmoji
-            sendJsonStr = 'masto API custom emojis sent'
-
-        adminNickname = getConfigParam(baseDir, 'admin')
-        if adminNickname and path == '/api/v1/instance':
-            instanceDescriptionShort = \
-                getConfigParam(baseDir,
-                               'instanceDescriptionShort')
-            if not instanceDescriptionShort:
-                instanceDescriptionShort = \
-                    translate['Yet another Epicyon Instance']
-            instanceDescription = getConfigParam(baseDir,
-                                                 'instanceDescription')
-            instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-
-            if callingDomain.endswith('.onion') and onionDomain:
-                domainFull = onionDomain
-                httpPrefix = 'http'
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                domainFull = i2pDomain
-                httpPrefix = 'http'
-
-            if brochModeIsActive(baseDir):
-                showNodeInfoAccounts = False
-
-            sendJson = \
-                metaDataInstance(showNodeInfoAccounts,
-                                 instanceTitle,
-                                 instanceDescriptionShort,
-                                 instanceDescription,
-                                 httpPrefix,
-                                 baseDir,
-                                 adminNickname,
-                                 domain,
-                                 domainFull,
-                                 registration,
-                                 systemLanguage,
-                                 projectVersion)
-            sendJsonStr = 'masto API instance metadata sent'
-        elif path.startswith('/api/v1/instance/peers'):
-            # This is just a dummy result.
-            # Showing the full list of peers would have privacy implications.
-            # On a large instance you are somewhat lost in the crowd, but on
-            # small instances a full list of peers would convey a lot of
-            # information about the interests of a small number of accounts
-            sendJson = ['mastodon.social', domainFull]
-            sendJsonStr = 'masto API peers metadata sent'
-        elif path.startswith('/api/v1/instance/activity'):
-            sendJson = []
-            sendJsonStr = 'masto API activity metadata sent'
+        brochMode = brochModeIsActive(baseDir)
+        sendJson, sendJsonStr = mastoApiV1Response(path,
+                                                   callingDomain,
+                                                   authorized,
+                                                   httpPrefix,
+                                                   baseDir,
+                                                   nickname, domain,
+                                                   domainFull,
+                                                   onionDomain,
+                                                   i2pDomain,
+                                                   translate,
+                                                   registration,
+                                                   systemLanguage,
+                                                   projectVersion,
+                                                   customEmoji,
+                                                   showNodeInfoAccounts,
+                                                   brochMode)
 
         if sendJson is not None:
             msg = json.dumps(sendJson).encode('utf-8')
