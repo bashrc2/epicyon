@@ -1358,3 +1358,17 @@ def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
             str(title) + '</a></label></li>\n'
     htmlStr += '</ul></div>\n'
     return htmlStr
+
+
+def isMinimal(baseDir: str, domain: str, nickname: str) -> bool:
+    """Returns true if minimal buttons should be shown
+       for the given account
+    """
+    accountDir = baseDir + '/accounts/' + \
+        nickname + '@' + domain
+    if not os.path.isdir(accountDir):
+        return True
+    minimalFilename = accountDir + '/.notminimal'
+    if os.path.isfile(minimalFilename):
+        return False
+    return True

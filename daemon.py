@@ -139,6 +139,7 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import isMinimal
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
@@ -362,19 +363,6 @@ class PubServer(BaseHTTPRequestHandler):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
         pass
-
-    def _isMinimal(self, nickname: str) -> bool:
-        """Returns true if minimal buttons should be shown
-        for the given account
-        """
-        accountDir = self.server.baseDir + '/accounts/' + \
-            nickname + '@' + self.server.domain
-        if not os.path.isdir(accountDir):
-            return True
-        minimalFilename = accountDir + '/.notminimal'
-        if os.path.isfile(minimalFilename):
-            return False
-        return True
 
     def _setMinimal(self, nickname: str, minimal: bool) -> None:
         """Sets whether an account should display minimal buttons
@@ -8049,7 +8037,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show inbox page')
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -8185,7 +8173,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -8314,7 +8302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8443,7 +8431,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8573,7 +8561,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8711,7 +8699,7 @@ class PubServer(BaseHTTPRequestHandler):
                     editor = isEditor(baseDir, currNickname)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8847,7 +8835,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -9056,7 +9044,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -9189,7 +9177,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -9314,7 +9302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.votingTimeMins)
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
-                minimalNick = self._isMinimal(nickname)
+                minimalNick = isMinimal(baseDir, domain, nickname)
 
                 accessKeys = self.server.accessKeys
                 if self.server.keyShortcuts.get(nickname):
@@ -12043,7 +12031,9 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-                self._setMinimal(nickname, not self._isMinimal(nickname))
+                notMin = not isMinimal(self.server.baseDir,
+                                       self.server.domain, nickname)
+                self._setMinimal(nickname, notMin)
                 if not (self.server.mediaInstance or
                         self.server.blogsInstance):
                     self.path = '/users/' + nickname + '/inbox'
