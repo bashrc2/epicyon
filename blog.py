@@ -863,3 +863,34 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     editBlogForm += htmlFooter()
     return editBlogForm
+
+
+def pathContainsBlogLink(baseDir: str,
+                         httpPrefix: str, domain: str,
+                         domainFull: str, path: str) -> (str, str):
+    """If the path contains a blog entry then return its filename
+    """
+    if '/users/' not in path:
+        return None, None
+    userEnding = path.split('/users/', 1)[1]
+    if '/' not in userEnding:
+        return None, None
+    userEnding2 = userEnding.split('/')
+    nickname = userEnding2[0]
+    if len(userEnding2) != 2:
+        return None, None
+    if len(userEnding2[1]) < 14:
+        return None, None
+    userEnding2[1] = userEnding2[1].strip()
+    if not userEnding2[1].isdigit():
+        return None, None
+    # check for blog posts
+    blogIndexFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/tlblogs.index'
+    if not os.path.isfile(blogIndexFilename):
+        return None, None
+    if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
+        return None, None
+    messageId = httpPrefix + '://' + domainFull + \
+        '/users/' + nickname + '/statuses/' + userEnding2[1]
+    return locatePost(baseDir, nickname, domain, messageId), nickname

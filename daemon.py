@@ -24,10 +24,7 @@ from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
-from mastoapiv1 import getMastoApiV1Account
-from mastoapiv1 import getMastApiV1Id
-from mastoapiv1 import getNicknameFromMastoApiV1Id
-from metadata import metaDataInstance
+from mastoapiv1 import mastoApiV1Response
 from metadata import metaDataNodeInfo
 from metadata import metadataCustomEmoji
 from pgp import getEmailAddress
@@ -113,6 +110,9 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from media import pathIsImage
+from media import pathIsVideo
+from media import pathIsAudio
 from blocking import mutePost
 from blocking import unmutePost
 from blocking import setBrochMode
@@ -130,12 +130,15 @@ from roles import clearModeratorStatus
 from roles import clearEditorStatus
 from roles import clearCounselorStatus
 from roles import clearArtistStatus
+from blog import pathContainsBlogLink
 from blog import htmlBlogPageRSS2
 from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import setMinimal
+from webapp_utils import isMinimal
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
@@ -203,6 +206,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import permittedDir
 from utils import isAccountDir
 from utils import getOccupationSkills
 from utils import getOccupationName
@@ -290,6 +294,7 @@ from filters import addGlobalFilter
 from filters import removeGlobalFilter
 from context import hasValidContext
 from speaker import getSSMLbox
+from city import getSpoofedCity
 import os
 
 
@@ -327,18 +332,6 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _getSpoofedCity(self, baseDir: str, nickname: str, domain: str) -> str:
-        """Returns the name of the city to use as a GPS spoofing location for
-        image metadata
-        """
-        city = self.server.city
-        cityFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/city.txt'
-        if os.path.isfile(cityFilename):
-            with open(cityFilename, 'r') as fp:
-                city = fp.read().replace('\n', '')
-        return city
-
     def _getInstalceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
         """
@@ -366,60 +359,10 @@ class PubServer(BaseHTTPRequestHandler):
             return self.headers['signature']
         return None
 
-    def _pathIsImage(self, path: str) -> bool:
-        if path.endswith('.png') or \
-           path.endswith('.jpg') or \
-           path.endswith('.gif') or \
-           path.endswith('.svg') or \
-           path.endswith('.avif') or \
-           path.endswith('.webp'):
-            return True
-        return False
-
-    def _pathIsVideo(self, path: str) -> bool:
-        if path.endswith('.ogv') or \
-           path.endswith('.mp4'):
-            return True
-        return False
-
-    def _pathIsAudio(self, path: str) -> bool:
-        if path.endswith('.ogg') or \
-           path.endswith('.mp3'):
-            return True
-        return False
-
     def handle_error(self, request, client_address):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
         pass
-
-    def _isMinimal(self, nickname: str) -> bool:
-        """Returns true if minimal buttons should be shown
-        for the given account
-        """
-        accountDir = self.server.baseDir + '/accounts/' + \
-            nickname + '@' + self.server.domain
-        if not os.path.isdir(accountDir):
-            return True
-        minimalFilename = accountDir + '/.notminimal'
-        if os.path.isfile(minimalFilename):
-            return False
-        return True
-
-    def _setMinimal(self, nickname: str, minimal: bool) -> None:
-        """Sets whether an account should display minimal buttons
-        """
-        accountDir = self.server.baseDir + '/accounts/' + \
-            nickname + '@' + self.server.domain
-        if not os.path.isdir(accountDir):
-            return
-        minimalFilename = accountDir + '/.notminimal'
-        minimalFileExists = os.path.isfile(minimalFilename)
-        if minimal and minimalFileExists:
-            os.remove(minimalFilename)
-        elif not minimal and not minimalFileExists:
-            with open(minimalFilename, 'w+') as fp:
-                fp.write('\n')
 
     def _sendReplyToQuestion(self, nickname: str, messageId: str,
                              answer: str) -> None:
@@ -447,8 +390,9 @@ class PubServer(BaseHTTPRequestHandler):
         eventDate = None
         eventTime = None
         location = None
-        city = self._getSpoofedCity(self.server.baseDir,
-                                    nickname, self.server.domain)
+        city = getSpoofedCity(self.server.city,
+                              self.server.baseDir,
+                              nickname, self.server.domain)
 
         messageJson = \
             createPublicPost(self.server.baseDir,
@@ -860,6 +804,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _hasAccept(self, callingDomain: str) -> bool:
+        """Do the http headers have an Accept field?
+        """
         if self.headers.get('Accept') or callingDomain.endswith('.b32.i2p'):
             if not self.headers.get('Accept'):
                 self.headers['Accept'] = \
@@ -890,123 +836,23 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
 
-        sendJson = None
-        sendJsonStr = ''
-
-        # parts of the api needing authorization
-        if authorized and nickname:
-            if path == '/api/v1/accounts/verify_credentials':
-                sendJson = getMastoApiV1Account(baseDir, nickname, domain)
-                sendJsonStr = 'masto API account sent for ' + nickname
-
-        # Parts of the api which don't need authorization
-        mastoId = getMastApiV1Id(path)
-        if mastoId is not None:
-            pathNickname = getNicknameFromMastoApiV1Id(mastoId)
-            if pathNickname:
-                originalPath = path
-                if '/followers?' in path or \
-                   '/following?' in path or \
-                   '/search?' in path or \
-                   '/relationships?' in path or \
-                   '/statuses?' in path:
-                    path = path.split('?')[0]
-                if path.endswith('/followers'):
-                    sendJson = []
-                    sendJsonStr = 'masto API followers sent for ' + nickname
-                elif path.endswith('/following'):
-                    sendJson = []
-                    sendJsonStr = 'masto API following sent for ' + nickname
-                elif path.endswith('/statuses'):
-                    sendJson = []
-                    sendJsonStr = 'masto API statuses sent for ' + nickname
-                elif path.endswith('/search'):
-                    sendJson = []
-                    sendJsonStr = 'masto API search sent ' + originalPath
-                elif path.endswith('/relationships'):
-                    sendJson = []
-                    sendJsonStr = \
-                        'masto API relationships sent ' + originalPath
-                else:
-                    sendJson = \
-                        getMastoApiV1Account(baseDir, pathNickname, domain)
-                    sendJsonStr = 'masto API account sent for ' + nickname
-
-        if path.startswith('/api/v1/blocks'):
-            sendJson = []
-            sendJsonStr = 'masto API instance blocks sent'
-        elif path.startswith('/api/v1/favorites'):
-            sendJson = []
-            sendJsonStr = 'masto API favorites sent'
-        elif path.startswith('/api/v1/follow_requests'):
-            sendJson = []
-            sendJsonStr = 'masto API follow requests sent'
-        elif path.startswith('/api/v1/mutes'):
-            sendJson = []
-            sendJsonStr = 'masto API mutes sent'
-        elif path.startswith('/api/v1/notifications'):
-            sendJson = []
-            sendJsonStr = 'masto API notifications sent'
-        elif path.startswith('/api/v1/reports'):
-            sendJson = []
-            sendJsonStr = 'masto API reports sent'
-        elif path.startswith('/api/v1/statuses'):
-            sendJson = []
-            sendJsonStr = 'masto API statuses sent'
-        elif path.startswith('/api/v1/timelines'):
-            sendJson = []
-            sendJsonStr = 'masto API timelines sent'
-        elif path.startswith('/api/v1/custom_emojis'):
-            sendJson = customEmoji
-            sendJsonStr = 'masto API custom emojis sent'
-
-        adminNickname = getConfigParam(baseDir, 'admin')
-        if adminNickname and path == '/api/v1/instance':
-            instanceDescriptionShort = \
-                getConfigParam(baseDir,
-                               'instanceDescriptionShort')
-            if not instanceDescriptionShort:
-                instanceDescriptionShort = \
-                    translate['Yet another Epicyon Instance']
-            instanceDescription = getConfigParam(baseDir,
-                                                 'instanceDescription')
-            instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-
-            if callingDomain.endswith('.onion') and onionDomain:
-                domainFull = onionDomain
-                httpPrefix = 'http'
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                domainFull = i2pDomain
-                httpPrefix = 'http'
-
-            if brochModeIsActive(baseDir):
-                showNodeInfoAccounts = False
-
-            sendJson = \
-                metaDataInstance(showNodeInfoAccounts,
-                                 instanceTitle,
-                                 instanceDescriptionShort,
-                                 instanceDescription,
-                                 httpPrefix,
-                                 baseDir,
-                                 adminNickname,
-                                 domain,
-                                 domainFull,
-                                 registration,
-                                 systemLanguage,
-                                 projectVersion)
-            sendJsonStr = 'masto API instance metadata sent'
-        elif path.startswith('/api/v1/instance/peers'):
-            # This is just a dummy result.
-            # Showing the full list of peers would have privacy implications.
-            # On a large instance you are somewhat lost in the crowd, but on
-            # small instances a full list of peers would convey a lot of
-            # information about the interests of a small number of accounts
-            sendJson = ['mastodon.social', domainFull]
-            sendJsonStr = 'masto API peers metadata sent'
-        elif path.startswith('/api/v1/instance/activity'):
-            sendJson = []
-            sendJsonStr = 'masto API activity metadata sent'
+        brochMode = brochModeIsActive(baseDir)
+        sendJson, sendJsonStr = mastoApiV1Response(path,
+                                                   callingDomain,
+                                                   authorized,
+                                                   httpPrefix,
+                                                   baseDir,
+                                                   nickname, domain,
+                                                   domainFull,
+                                                   onionDomain,
+                                                   i2pDomain,
+                                                   translate,
+                                                   registration,
+                                                   systemLanguage,
+                                                   projectVersion,
+                                                   customEmoji,
+                                                   showNodeInfoAccounts,
+                                                   brochMode)
 
         if sendJson is not None:
             msg = json.dumps(sendJson).encode('utf-8')
@@ -1176,16 +1022,6 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
         return True
 
-    def _permittedDir(self, path: str) -> bool:
-        """These are special paths which should not be accessible
-        directly via GET or POST
-        """
-        if path.startswith('/wfendpoints') or \
-           path.startswith('/keys') or \
-           path.startswith('/accounts'):
-            return False
-        return True
-
     def _postToOutbox(self, messageJson: {}, version: str,
                       postToNickname=None) -> bool:
         """post is received by the outbox
@@ -1197,8 +1033,9 @@ class PubServer(BaseHTTPRequestHandler):
         if postToNickname:
             print('Posting to nickname ' + postToNickname)
             self.postToNickname = postToNickname
-            city = self._getSpoofedCity(self.server.baseDir,
-                                        postToNickname, self.server.domain)
+            city = getSpoofedCity(self.server.city,
+                                  self.server.baseDir,
+                                  postToNickname, self.server.domain)
 
         return postMessageToOutbox(self.server.session,
                                    self.server.translate,
@@ -1427,13 +1264,13 @@ class PubServer(BaseHTTPRequestHandler):
     def _isAuthorized(self) -> bool:
         self.authorizedNickname = None
 
-        if self.path.startswith('/icons/') or \
-           self.path.startswith('/avatars/') or \
-           self.path.startswith('/favicon.ico') or \
-           self.path.startswith('/newswire_favicon.ico') or \
-           self.path.startswith('/categories.xml') or \
-           self.path.startswith('/newswire.xml'):
-            return False
+        notAuthPaths = (
+            '/icons/', '/avatars/', '/favicon.ico', '/newswire.xml',
+            '/newswire_favicon.ico', '/categories.xml'
+        )
+        for notAuthStr in notAuthPaths:
+            if self.path.startswith(notAuthStr):
+                return False
 
         # token based authenticated used by the web interface
         if self.headers.get('Cookie'):
@@ -1525,36 +1362,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('POST TIMING|' + str(ctr) + '|' + timeDiff)
                     ctr += 1
-
-    def _pathContainsBlogLink(self, baseDir: str,
-                              httpPrefix: str, domain: str,
-                              domainFull: str, path: str) -> (str, str):
-        """If the path contains a blog entry then return its filename
-        """
-        if '/users/' not in path:
-            return None, None
-        userEnding = path.split('/users/', 1)[1]
-        if '/' not in userEnding:
-            return None, None
-        userEnding2 = userEnding.split('/')
-        nickname = userEnding2[0]
-        if len(userEnding2) != 2:
-            return None, None
-        if len(userEnding2[1]) < 14:
-            return None, None
-        userEnding2[1] = userEnding2[1].strip()
-        if not userEnding2[1].isdigit():
-            return None, None
-        # check for blog posts
-        blogIndexFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/tlblogs.index'
-        if not os.path.isfile(blogIndexFilename):
-            return None, None
-        if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
-            return None, None
-        messageId = httpPrefix + '://' + domainFull + \
-            '/users/' + nickname + '/statuses/' + userEnding2[1]
-        return locatePost(baseDir, nickname, domain, messageId), nickname
 
     def _loginScreen(self, path: str, callingDomain: str, cookie: str,
                      baseDir: str, httpPrefix: str,
@@ -4184,7 +3991,8 @@ class PubServer(BaseHTTPRequestHandler):
                     except BaseException:
                         pass
 
-                city = self._getSpoofedCity(baseDir, nickname, domain)
+                city = getSpoofedCity(self.server.city,
+                                      baseDir, nickname, domain)
 
                 processMetaData(baseDir, nickname, domain,
                                 filename, postImageFilename, city)
@@ -6041,9 +5849,9 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime, GETtimings: {}) -> None:
         """Returns a media file
         """
-        if self._pathIsImage(path) or \
-           self._pathIsVideo(path) or \
-           self._pathIsAudio(path):
+        if pathIsImage(path) or \
+           pathIsVideo(path) or \
+           pathIsAudio(path):
             mediaStr = path.split('/media/')[1]
             mediaFilename = baseDir + '/media/' + mediaStr
             if os.path.isfile(mediaFilename):
@@ -6071,7 +5879,7 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime, GETtimings: {}) -> None:
         """Returns an emoji image
         """
-        if self._pathIsImage(path):
+        if pathIsImage(path):
             emojiStr = path.split('/emoji/')[1]
             emojiFilename = baseDir + '/emoji/' + emojiStr
             if os.path.isfile(emojiFilename):
@@ -7585,7 +7393,9 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = self.server.keyShortcuts[nickname]
 
                     rolesList = getActorRolesList(actorJson)
-                    city = self._getSpoofedCity(baseDir, nickname, domain)
+                    city = \
+                        getSpoofedCity(self.server.city,
+                                       baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7683,8 +7493,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorSkillsList = \
                                     getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
-                                city = self._getSpoofedCity(baseDir,
-                                                            nickname, domain)
+                                city = getSpoofedCity(self.server.city,
+                                                      baseDir,
+                                                      nickname, domain)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -8073,7 +7884,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show inbox page')
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -8209,7 +8020,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -8338,7 +8149,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8467,7 +8278,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8597,7 +8408,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8735,7 +8546,7 @@ class PubServer(BaseHTTPRequestHandler):
                     editor = isEditor(baseDir, currNickname)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -8871,7 +8682,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
-                    minimalNick = self._isMinimal(nickname)
+                    minimalNick = isMinimal(baseDir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -9080,7 +8891,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -9213,7 +9024,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        minimalNick = self._isMinimal(nickname)
+                        minimalNick = isMinimal(baseDir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
                         if self.server.keyShortcuts.get(nickname):
@@ -9338,7 +9149,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.votingTimeMins)
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
-                minimalNick = self._isMinimal(nickname)
+                minimalNick = isMinimal(baseDir, domain, nickname)
 
                 accessKeys = self.server.accessKeys
                 if self.server.keyShortcuts.get(nickname):
@@ -9582,7 +9393,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                    city = self._getSpoofedCity(baseDir, nickname, domain)
+                    city = getSpoofedCity(self.server.city,
+                                          baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9694,7 +9506,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        city = self._getSpoofedCity(baseDir, nickname, domain)
+                        city = getSpoofedCity(self.server.city,
+                                              baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9805,7 +9618,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        city = self._getSpoofedCity(baseDir, nickname, domain)
+                        city = getSpoofedCity(self.server.city,
+                                              baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9940,7 +9754,8 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = \
                         self.server.keyShortcuts[nickname]
 
-                city = self._getSpoofedCity(baseDir, nickname, domain)
+                city = getSpoofedCity(self.server.city,
+                                      baseDir, nickname, domain)
             msg = \
                 htmlProfile(self.server.rssIconAtTop,
                             self.server.cssCache,
@@ -10309,7 +10124,7 @@ class PubServer(BaseHTTPRequestHandler):
                         GETstartTime, GETtimings: {}) -> bool:
         """Show a shared item image
         """
-        if not self._pathIsImage(path):
+        if not pathIsImage(path):
             self._404()
             return True
 
@@ -10357,7 +10172,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' not in path:
             return False
-        if not self._pathIsImage(path):
+        if not pathIsImage(path):
             return False
         avatarStr = path.split('/users/')[1]
         if not ('/' in avatarStr and '.temp.' not in path):
@@ -10542,7 +10357,8 @@ class PubServer(BaseHTTPRequestHandler):
             peertubeInstances = self.server.peertubeInstances
             nickname = getNicknameFromActor(path)
             if nickname:
-                city = self._getSpoofedCity(baseDir, nickname, domain)
+                city = getSpoofedCity(self.server.city,
+                                      baseDir, nickname, domain)
             else:
                 city = self.server.city
 
@@ -11290,11 +11106,11 @@ class PubServer(BaseHTTPRequestHandler):
                                       'person options done')
             # show blog post
             blogFilename, nickname = \
-                self._pathContainsBlogLink(self.server.baseDir,
-                                           self.server.httpPrefix,
-                                           self.server.domain,
-                                           self.server.domainFull,
-                                           self.path)
+                pathContainsBlogLink(self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.path)
             if blogFilename and nickname:
                 postJsonObject = loadJson(blogFilename)
                 if isBlogPost(postJsonObject):
@@ -11569,7 +11385,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not self._pathIsImage(self.path) and \
+           not pathIsImage(self.path) and \
            self.path != '/' and \
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
@@ -11873,7 +11689,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'avatar background shown done',
                                   'GET busy time')
 
-        if not self._permittedDir(self.path):
+        if not permittedDir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
             self._404()
@@ -12062,7 +11878,10 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-                self._setMinimal(nickname, not self._isMinimal(nickname))
+                notMin = not isMinimal(self.server.baseDir,
+                                       self.server.domain, nickname)
+                setMinimal(self.server.baseDir,
+                           self.server.domain, nickname, notMin)
                 if not (self.server.mediaInstance or
                         self.server.blogsInstance):
                     self.path = '/users/' + nickname + '/inbox'
@@ -13227,9 +13046,9 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if self._pathIsImage(self.path) or \
-               self._pathIsVideo(self.path) or \
-               self._pathIsAudio(self.path):
+            if pathIsImage(self.path) or \
+               pathIsVideo(self.path) or \
+               pathIsAudio(self.path):
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr
@@ -13335,8 +13154,9 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.gif'):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
-                    city = self._getSpoofedCity(self.server.baseDir,
-                                                nickname, self.server.domain)
+                    city = getSpoofedCity(self.server.city,
+                                          self.server.baseDir,
+                                          nickname, self.server.domain)
                     processMetaData(self.server.baseDir,
                                     nickname, self.server.domain,
                                     filename, postImageFilename, city)
@@ -13448,8 +13268,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname, self.server.domain)
                         return 1
 
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname, self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname, self.server.domain)
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
@@ -13597,9 +13418,10 @@ class PubServer(BaseHTTPRequestHandler):
                             imgDescription = fields['imageDescription']
 
                         if filename:
-                            city = self._getSpoofedCity(self.server.baseDir,
-                                                        nickname,
-                                                        self.server.domain)
+                            city = getSpoofedCity(self.server.city,
+                                                  self.server.baseDir,
+                                                  nickname,
+                                                  self.server.domain)
                             postJsonObject['object'] = \
                                 attachMedia(self.server.baseDir,
                                             self.server.httpPrefix,
@@ -13632,9 +13454,10 @@ class PubServer(BaseHTTPRequestHandler):
                           str(fields['postUrl']))
                 return -1
             elif postType == 'newunlisted':
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createUnlistedPost(self.server.baseDir,
                                        nickname,
@@ -13666,9 +13489,10 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newfollowers':
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createFollowersOnlyPost(self.server.baseDir,
                                             nickname,
@@ -13722,9 +13546,10 @@ class PubServer(BaseHTTPRequestHandler):
                     maximumAttendeeCapacity = \
                         int(fields['maximumAttendeeCapacity'])
 
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createEventPost(self.server.baseDir,
                                     nickname,
@@ -13762,9 +13587,10 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson = None
                 print('A DM was posted')
                 if '@' in mentionsStr:
-                    city = self._getSpoofedCity(self.server.baseDir,
-                                                nickname,
-                                                self.server.domain)
+                    city = getSpoofedCity(self.server.city,
+                                          self.server.baseDir,
+                                          nickname,
+                                          self.server.domain)
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
@@ -13806,9 +13632,10 @@ class PubServer(BaseHTTPRequestHandler):
                 print('A reminder was posted for ' + handle)
                 if '@' + handle not in mentionsStr:
                     mentionsStr = '@' + handle + ' ' + mentionsStr
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
@@ -13843,9 +13670,10 @@ class PubServer(BaseHTTPRequestHandler):
                 # and not accounts being reported we disable any
                 # included fediverse addresses by replacing '@' with '-at-'
                 fields['message'] = fields['message'].replace('@', '-at-')
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createReportPost(self.server.baseDir,
                                      nickname,
@@ -13875,9 +13703,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                str(questionCtr)])
                 if not qOptions:
                     return -1
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
                                        nickname,
@@ -13914,9 +13743,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if durationStr:
                     if ' ' not in durationStr:
                         durationStr = durationStr + ' days'
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,

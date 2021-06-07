@@ -2246,7 +2246,7 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
         _dmNotify(baseDir, handle,
                   httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
         return True
-        
+
     # get the file containing following handles
     followingFilename = \
         baseDir + '/accounts/' + \
