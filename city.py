@@ -217,3 +217,15 @@ def spoofGeolocation(baseDir: str,
     return (default_latitude, default_longitude,
             default_latdirection, default_longdirection,
             "", "", 0)
+
+
+def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
+    """Returns the name of the city to use as a GPS spoofing location for
+    image metadata
+    """
+    cityFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/city.txt'
+    if os.path.isfile(cityFilename):
+        with open(cityFilename, 'r') as fp:
+            city = fp.read().replace('\n', '')
+    return city

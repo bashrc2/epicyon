@@ -290,6 +290,7 @@ from filters import addGlobalFilter
 from filters import removeGlobalFilter
 from context import hasValidContext
 from speaker import getSSMLbox
+from city import getSpoofedCity
 import os
 
 
@@ -326,18 +327,6 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
-
-    def _getSpoofedCity(self, baseDir: str, nickname: str, domain: str) -> str:
-        """Returns the name of the city to use as a GPS spoofing location for
-        image metadata
-        """
-        city = self.server.city
-        cityFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/city.txt'
-        if os.path.isfile(cityFilename):
-            with open(cityFilename, 'r') as fp:
-                city = fp.read().replace('\n', '')
-        return city
 
     def _getInstalceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
@@ -447,8 +436,9 @@ class PubServer(BaseHTTPRequestHandler):
         eventDate = None
         eventTime = None
         location = None
-        city = self._getSpoofedCity(self.server.baseDir,
-                                    nickname, self.server.domain)
+        city = getSpoofedCity(self.server.city,
+                              self.server.baseDir,
+                              nickname, self.server.domain)
 
         messageJson = \
             createPublicPost(self.server.baseDir,
@@ -1197,8 +1187,9 @@ class PubServer(BaseHTTPRequestHandler):
         if postToNickname:
             print('Posting to nickname ' + postToNickname)
             self.postToNickname = postToNickname
-            city = self._getSpoofedCity(self.server.baseDir,
-                                        postToNickname, self.server.domain)
+            city = getSpoofedCity(self.server.city,
+                                  self.server.baseDir,
+                                  postToNickname, self.server.domain)
 
         return postMessageToOutbox(self.server.session,
                                    self.server.translate,
@@ -4184,7 +4175,8 @@ class PubServer(BaseHTTPRequestHandler):
                     except BaseException:
                         pass
 
-                city = self._getSpoofedCity(baseDir, nickname, domain)
+                city = getSpoofedCity(self.server.city,
+                                      baseDir, nickname, domain)
 
                 processMetaData(baseDir, nickname, domain,
                                 filename, postImageFilename, city)
@@ -7585,7 +7577,9 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = self.server.keyShortcuts[nickname]
 
                     rolesList = getActorRolesList(actorJson)
-                    city = self._getSpoofedCity(baseDir, nickname, domain)
+                    city = \
+                        getSpoofedCity(self.server.city,
+                                       baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -7683,8 +7677,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorSkillsList = \
                                     getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
-                                city = self._getSpoofedCity(baseDir,
-                                                            nickname, domain)
+                                city = getSpoofedCity(self.server.city,
+                                                      baseDir,
+                                                      nickname, domain)
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -9582,7 +9577,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                    city = self._getSpoofedCity(baseDir, nickname, domain)
+                    city = getSpoofedCity(self.server.city,
+                                          baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9694,7 +9690,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        city = self._getSpoofedCity(baseDir, nickname, domain)
+                        city = getSpoofedCity(self.server.city,
+                                              baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9805,7 +9802,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        city = self._getSpoofedCity(baseDir, nickname, domain)
+                        city = getSpoofedCity(self.server.city,
+                                              baseDir, nickname, domain)
                     msg = \
                         htmlProfile(self.server.rssIconAtTop,
                                     self.server.cssCache,
@@ -9940,7 +9938,8 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = \
                         self.server.keyShortcuts[nickname]
 
-                city = self._getSpoofedCity(baseDir, nickname, domain)
+                city = getSpoofedCity(self.server.city,
+                                      baseDir, nickname, domain)
             msg = \
                 htmlProfile(self.server.rssIconAtTop,
                             self.server.cssCache,
@@ -10542,7 +10541,8 @@ class PubServer(BaseHTTPRequestHandler):
             peertubeInstances = self.server.peertubeInstances
             nickname = getNicknameFromActor(path)
             if nickname:
-                city = self._getSpoofedCity(baseDir, nickname, domain)
+                city = getSpoofedCity(self.server.city,
+                                      baseDir, nickname, domain)
             else:
                 city = self.server.city
 
@@ -13335,8 +13335,9 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.gif'):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
-                    city = self._getSpoofedCity(self.server.baseDir,
-                                                nickname, self.server.domain)
+                    city = getSpoofedCity(self.server.city,
+                                          self.server.baseDir,
+                                          nickname, self.server.domain)
                     processMetaData(self.server.baseDir,
                                     nickname, self.server.domain,
                                     filename, postImageFilename, city)
@@ -13448,8 +13449,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname, self.server.domain)
                         return 1
 
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname, self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname, self.server.domain)
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
@@ -13597,9 +13599,10 @@ class PubServer(BaseHTTPRequestHandler):
                             imgDescription = fields['imageDescription']
 
                         if filename:
-                            city = self._getSpoofedCity(self.server.baseDir,
-                                                        nickname,
-                                                        self.server.domain)
+                            city = getSpoofedCity(self.server.city,
+                                                  self.server.baseDir,
+                                                  nickname,
+                                                  self.server.domain)
                             postJsonObject['object'] = \
                                 attachMedia(self.server.baseDir,
                                             self.server.httpPrefix,
@@ -13632,9 +13635,10 @@ class PubServer(BaseHTTPRequestHandler):
                           str(fields['postUrl']))
                 return -1
             elif postType == 'newunlisted':
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createUnlistedPost(self.server.baseDir,
                                        nickname,
@@ -13666,9 +13670,10 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newfollowers':
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createFollowersOnlyPost(self.server.baseDir,
                                             nickname,
@@ -13722,9 +13727,10 @@ class PubServer(BaseHTTPRequestHandler):
                     maximumAttendeeCapacity = \
                         int(fields['maximumAttendeeCapacity'])
 
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createEventPost(self.server.baseDir,
                                     nickname,
@@ -13762,9 +13768,10 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson = None
                 print('A DM was posted')
                 if '@' in mentionsStr:
-                    city = self._getSpoofedCity(self.server.baseDir,
-                                                nickname,
-                                                self.server.domain)
+                    city = getSpoofedCity(self.server.city,
+                                          self.server.baseDir,
+                                          nickname,
+                                          self.server.domain)
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
@@ -13806,9 +13813,10 @@ class PubServer(BaseHTTPRequestHandler):
                 print('A reminder was posted for ' + handle)
                 if '@' + handle not in mentionsStr:
                     mentionsStr = '@' + handle + ' ' + mentionsStr
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
@@ -13843,9 +13851,10 @@ class PubServer(BaseHTTPRequestHandler):
                 # and not accounts being reported we disable any
                 # included fediverse addresses by replacing '@' with '-at-'
                 fields['message'] = fields['message'].replace('@', '-at-')
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createReportPost(self.server.baseDir,
                                      nickname,
@@ -13875,9 +13884,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                str(questionCtr)])
                 if not qOptions:
                     return -1
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
                                        nickname,
@@ -13914,9 +13924,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if durationStr:
                     if ' ' not in durationStr:
                         durationStr = durationStr + ' days'
-                city = self._getSpoofedCity(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain)
+                city = getSpoofedCity(self.server.city,
+                                      self.server.baseDir,
+                                      nickname,
+                                      self.server.domain)
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
