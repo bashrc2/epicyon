@@ -1264,13 +1264,13 @@ class PubServer(BaseHTTPRequestHandler):
     def _isAuthorized(self) -> bool:
         self.authorizedNickname = None
 
-        if self.path.startswith('/icons/') or \
-           self.path.startswith('/avatars/') or \
-           self.path.startswith('/favicon.ico') or \
-           self.path.startswith('/newswire_favicon.ico') or \
-           self.path.startswith('/categories.xml') or \
-           self.path.startswith('/newswire.xml'):
-            return False
+        notAuthPaths = (
+            '/icons/', '/avatars/', '/favicon.ico', '/newswire.xml',
+            '/newswire_favicon.ico', '/categories.xml'
+        )
+        for notAuthStr in notAuthPaths:
+            if self.path.startswith(notAuthStr):
+                return False
 
         # token based authenticated used by the web interface
         if self.headers.get('Cookie'):
