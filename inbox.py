@@ -2682,6 +2682,104 @@ def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
             httpd.restartInboxQueue = False
 
 
+def _inboxQuotaExceeded(queue: {}, queueFilename: str,
+                        queueJson: {}, quotasDaily: {}, quotasPerMin: {},
+                        domainMaxPostsPerDay: int,
+                        accountMaxPostsPerDay: int,
+                        debug: bool) -> bool:
+    """limit the number of posts which can arrive per domain per day
+    """
+    postDomain = queueJson['postDomain']
+    if not postDomain:
+        return False
+
+    if domainMaxPostsPerDay > 0:
+        if quotasDaily['domains'].get(postDomain):
+            if quotasDaily['domains'][postDomain] > \
+               domainMaxPostsPerDay:
+                print('Queue: Quota per day - Maximum posts for ' +
+                      postDomain + ' reached (' +
+                      str(domainMaxPostsPerDay) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasDaily['domains'][postDomain] += 1
+        else:
+            quotasDaily['domains'][postDomain] = 1
+
+        if quotasPerMin['domains'].get(postDomain):
+            domainMaxPostsPerMin = \
+                int(domainMaxPostsPerDay / (24 * 60))
+            if domainMaxPostsPerMin < 5:
+                domainMaxPostsPerMin = 5
+            if quotasPerMin['domains'][postDomain] > \
+               domainMaxPostsPerMin:
+                print('Queue: Quota per min - Maximum posts for ' +
+                      postDomain + ' reached (' +
+                      str(domainMaxPostsPerMin) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasPerMin['domains'][postDomain] += 1
+        else:
+            quotasPerMin['domains'][postDomain] = 1
+
+    if accountMaxPostsPerDay > 0:
+        postHandle = queueJson['postNickname'] + '@' + postDomain
+        if quotasDaily['accounts'].get(postHandle):
+            if quotasDaily['accounts'][postHandle] > \
+               accountMaxPostsPerDay:
+                print('Queue: Quota account posts per day -' +
+                      ' Maximum posts for ' +
+                      postHandle + ' reached (' +
+                      str(accountMaxPostsPerDay) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasDaily['accounts'][postHandle] += 1
+        else:
+            quotasDaily['accounts'][postHandle] = 1
+
+        if quotasPerMin['accounts'].get(postHandle):
+            accountMaxPostsPerMin = \
+                int(accountMaxPostsPerDay / (24 * 60))
+            if accountMaxPostsPerMin < 5:
+                accountMaxPostsPerMin = 5
+            if quotasPerMin['accounts'][postHandle] > \
+               accountMaxPostsPerMin:
+                print('Queue: Quota account posts per min -' +
+                      ' Maximum posts for ' +
+                      postHandle + ' reached (' +
+                      str(accountMaxPostsPerMin) + ')')
+                if len(queue) > 0:
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
+                    queue.pop(0)
+                return True
+            quotasPerMin['accounts'][postHandle] += 1
+        else:
+            quotasPerMin['accounts'][postHandle] = 1
+
+    if debug:
+        if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
+            pprint(quotasDaily)
+    return False
+
+
 def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   projectVersion: str,
                   baseDir: str, httpPrefix: str, sendThreads: [], postLog: [],
@@ -2817,93 +2915,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             # change the last time that this was done
             quotasLastUpdatePerMin = currTime
 
-        # limit the number of posts which can arrive per domain per day
-        postDomain = queueJson['postDomain']
-        if postDomain:
-            if domainMaxPostsPerDay > 0:
-                if quotasDaily['domains'].get(postDomain):
-                    if quotasDaily['domains'][postDomain] > \
-                       domainMaxPostsPerDay:
-                        print('Queue: Quota per day - Maximum posts for ' +
-                              postDomain + ' reached (' +
-                              str(domainMaxPostsPerDay) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasDaily['domains'][postDomain] += 1
-                else:
-                    quotasDaily['domains'][postDomain] = 1
-
-                if quotasPerMin['domains'].get(postDomain):
-                    domainMaxPostsPerMin = \
-                        int(domainMaxPostsPerDay / (24 * 60))
-                    if domainMaxPostsPerMin < 5:
-                        domainMaxPostsPerMin = 5
-                    if quotasPerMin['domains'][postDomain] > \
-                       domainMaxPostsPerMin:
-                        print('Queue: Quota per min - Maximum posts for ' +
-                              postDomain + ' reached (' +
-                              str(domainMaxPostsPerMin) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasPerMin['domains'][postDomain] += 1
-                else:
-                    quotasPerMin['domains'][postDomain] = 1
-
-            if accountMaxPostsPerDay > 0:
-                postHandle = queueJson['postNickname'] + '@' + postDomain
-                if quotasDaily['accounts'].get(postHandle):
-                    if quotasDaily['accounts'][postHandle] > \
-                       accountMaxPostsPerDay:
-                        print('Queue: Quota account posts per day -' +
-                              ' Maximum posts for ' +
-                              postHandle + ' reached (' +
-                              str(accountMaxPostsPerDay) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasDaily['accounts'][postHandle] += 1
-                else:
-                    quotasDaily['accounts'][postHandle] = 1
-
-                if quotasPerMin['accounts'].get(postHandle):
-                    accountMaxPostsPerMin = \
-                        int(accountMaxPostsPerDay / (24 * 60))
-                    if accountMaxPostsPerMin < 5:
-                        accountMaxPostsPerMin = 5
-                    if quotasPerMin['accounts'][postHandle] > \
-                       accountMaxPostsPerMin:
-                        print('Queue: Quota account posts per min -' +
-                              ' Maximum posts for ' +
-                              postHandle + ' reached (' +
-                              str(accountMaxPostsPerMin) + ')')
-                        if len(queue) > 0:
-                            try:
-                                os.remove(queueFilename)
-                            except BaseException:
-                                pass
-                            queue.pop(0)
-                        continue
-                    quotasPerMin['accounts'][postHandle] += 1
-                else:
-                    quotasPerMin['accounts'][postHandle] = 1
-
-            if debug:
-                if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
-                    pprint(quotasDaily)
+        if _inboxQuotaExceeded(queue, queueFilename,
+                               queueJson, quotasDaily, quotasPerMin,
+                               domainMaxPostsPerDay,
+                               accountMaxPostsPerDay, debug):
+            continue
 
         if debug and queueJson.get('actor'):
             print('Obtaining public key for actor ' + queueJson['actor'])
