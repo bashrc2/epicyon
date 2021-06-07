@@ -47,17 +47,20 @@ def removeFilter(baseDir: str, nickname: str, domain: str,
     """
     filtersFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/filters.txt'
-    if os.path.isfile(filtersFilename):
-        if words in open(filtersFilename).read():
-            with open(filtersFilename, 'r') as fp:
-                with open(filtersFilename + '.new', 'w+') as fpnew:
-                    for line in fp:
-                        line = line.replace('\n', '')
-                        if line != words:
-                            fpnew.write(line + '\n')
-            if os.path.isfile(filtersFilename + '.new'):
-                os.rename(filtersFilename + '.new', filtersFilename)
-                return True
+    if not os.path.isfile(filtersFilename):
+        return False
+    if words not in open(filtersFilename).read():
+        return False
+    newFiltersFilename = filtersFilename + '.new'
+    with open(filtersFilename, 'r') as fp:
+        with open(newFiltersFilename, 'w+') as fpnew:
+            for line in fp:
+                line = line.replace('\n', '')
+                if line != words:
+                    fpnew.write(line + '\n')
+    if os.path.isfile(newFiltersFilename):
+        os.rename(newFiltersFilename, filtersFilename)
+        return True
     return False
 
 
@@ -65,17 +68,20 @@ def removeGlobalFilter(baseDir: str, words: str) -> bool:
     """Removes a global word filter
     """
     filtersFilename = baseDir + '/accounts/filters.txt'
-    if os.path.isfile(filtersFilename):
-        if words in open(filtersFilename).read():
-            with open(filtersFilename, 'r') as fp:
-                with open(filtersFilename + '.new', 'w+') as fpnew:
-                    for line in fp:
-                        line = line.replace('\n', '')
-                        if line != words:
-                            fpnew.write(line + '\n')
-            if os.path.isfile(filtersFilename + '.new'):
-                os.rename(filtersFilename + '.new', filtersFilename)
-                return True
+    if not os.path.isfile(filtersFilename):
+        return False
+    if words not in open(filtersFilename).read():
+        return False
+    newFiltersFilename = filtersFilename + '.new'
+    with open(filtersFilename, 'r') as fp:
+        with open(newFiltersFilename, 'w+') as fpnew:
+            for line in fp:
+                line = line.replace('\n', '')
+                if line != words:
+                    fpnew.write(line + '\n')
+    if os.path.isfile(newFiltersFilename):
+        os.rename(newFiltersFilename, filtersFilename)
+        return True
     return False
 
 
