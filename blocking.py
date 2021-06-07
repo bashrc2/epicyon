@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import json
 from datetime import datetime
+from utils import isAccountDir
 from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
@@ -660,9 +661,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
         followFiles = ('following.txt', 'followers.txt')
         for subdir, dirs, files in os.walk(baseDir + '/accounts'):
             for acct in dirs:
-                if '@' not in acct:
-                    continue
-                if 'inbox@' in acct or 'news@' in acct:
+                if not isAccountDir(acct):
                     continue
                 accountDir = os.path.join(baseDir + '/accounts', acct)
                 for followFileType in followFiles:

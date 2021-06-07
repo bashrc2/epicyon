@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import isAccountDir
 from utils import loadJson
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -19,9 +20,7 @@ def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {},
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct or 'news@' in acct:
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             accessKeysFilename = accountDir + '/accessKeys.json'

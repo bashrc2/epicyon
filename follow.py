@@ -22,6 +22,7 @@ from posts import sendSignedJson
 from posts import getPersonBox
 from utils import loadJson
 from utils import saveJson
+from utils import isAccountDir
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -37,9 +38,7 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct or 'news@' in acct:
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             followingFilename = accountDir + '/following.txt'
