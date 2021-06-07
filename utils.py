@@ -2400,3 +2400,13 @@ def setOccupationSkillsList(actorJson: {}, skillsList: []) -> bool:
         occupationItem['skills'] = skillsList
         return True
     return False
+
+
+def isAccountDir(dirName: str) -> bool:
+    """Is the given directory an account within /accounts ?
+    """
+    if '@' not in dirName:
+        return False
+    if 'inbox@' in dirName or 'news@' in dirName:
+        return False
+    return True

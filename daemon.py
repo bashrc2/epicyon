@@ -203,6 +203,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import isAccountDir
 from utils import getOccupationSkills
 from utils import getOccupationName
 from utils import setOccupationName
@@ -5700,9 +5701,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = ''
         for subdir, dirs, files in os.walk(baseDir + '/accounts'):
             for acct in dirs:
-                if '@' not in acct:
-                    continue
-                if 'inbox@' in acct or 'news@' in acct:
+                if not isAccountDir(acct):
                     continue
                 nickname = acct.split('@')[0]
                 domain = acct.split('@')[1]

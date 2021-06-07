@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import isAccountDir
 from utils import loadJson
 from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
@@ -19,9 +20,7 @@ def _getStatusCount(baseDir: str) -> int:
     accountsDir = baseDir + '/accounts'
     for subdir, dirs, files in os.walk(accountsDir):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct or 'news@' in acct:
+            if not isAccountDir(acct):
                 continue
             acctDir = os.path.join(accountsDir, acct + '/outbox')
             for subdir2, dirs2, files2 in os.walk(acctDir):
