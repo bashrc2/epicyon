@@ -2220,6 +2220,103 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     return True
 
 
+def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
+               postJsonObject: {}, updateIndexList: [],
+               session, httpPrefix: str,
+               federationList: [],
+               sendThreads: [], postLog: [],
+               cachedWebfingers: {},
+               personCache: {},
+               translate: {}, debug: bool,
+               lastBounceMessage: [],
+               handle: str) -> bool:
+    """Is the given message a valid DM?
+    """
+    if nickname == 'inbox':
+        # going to the shared inbox
+        return True
+
+    # check for the flag file which indicates to
+    # only receive DMs from people you are following
+    followDMsFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/.followDMs'
+    if not os.path.isfile(followDMsFilename):
+        # dm index will be updated
+        updateIndexList.append('dm')
+        _dmNotify(baseDir, handle,
+                  httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+        return True
+        
+    # get the file containing following handles
+    followingFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/following.txt'
+    # who is sending a DM?
+    if not postJsonObject.get('actor'):
+        return False
+    sendingActor = postJsonObject['actor']
+    sendingActorNickname = \
+        getNicknameFromActor(sendingActor)
+    if not sendingActorNickname:
+        return False
+    sendingActorDomain, sendingActorPort = \
+        getDomainFromActor(sendingActor)
+    if not sendingActorDomain:
+        return False
+    # Is this DM to yourself? eg. a reminder
+    sendingToSelf = False
+    if sendingActorNickname == nickname and \
+       sendingActorDomain == domain:
+        sendingToSelf = True
+
+    # check that the following file exists
+    if not sendingToSelf:
+        if not os.path.isfile(followingFilename):
+            print('No following.txt file exists for ' +
+                  nickname + '@' + domain +
+                  ' so not accepting DM from ' +
+                  sendingActorNickname + '@' +
+                  sendingActorDomain)
+            return False
+
+    # Not sending to yourself
+    if not sendingToSelf:
+        # get the handle of the DM sender
+        sendH = sendingActorNickname + '@' + sendingActorDomain
+        # check the follow
+        if not isFollowingActor(baseDir, nickname, domain, sendH):
+            # DMs may always be allowed from some domains
+            if not dmAllowedFromDomain(baseDir,
+                                       nickname, domain,
+                                       sendingActorDomain):
+                # send back a bounce DM
+                if postJsonObject.get('id') and \
+                   postJsonObject.get('object'):
+                    # don't send bounces back to
+                    # replies to bounce messages
+                    obj = postJsonObject['object']
+                    if isinstance(obj, dict):
+                        if not obj.get('inReplyTo'):
+                            _bounceDM(postJsonObject['id'],
+                                      session, httpPrefix,
+                                      baseDir,
+                                      nickname, domain,
+                                      port, sendH,
+                                      federationList,
+                                      sendThreads, postLog,
+                                      cachedWebfingers,
+                                      personCache,
+                                      translate, debug,
+                                      lastBounceMessage)
+                return False
+
+    # dm index will be updated
+    updateIndexList.append('dm')
+    _dmNotify(baseDir, handle,
+              httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+    return True
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2429,83 +2526,17 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             # create a DM notification file if needed
             postIsDM = isDM(postJsonObject)
             if postIsDM:
-                if nickname != 'inbox':
-                    # check for the flag file which indicates to
-                    # only receive DMs from people you are following
-                    followDMsFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + '/.followDMs'
-                    if os.path.isfile(followDMsFilename):
-                        # get the file containing following handles
-                        followingFilename = \
-                            baseDir + '/accounts/' + \
-                            nickname + '@' + domain + '/following.txt'
-                        # who is sending a DM?
-                        if not postJsonObject.get('actor'):
-                            return False
-                        sendingActor = postJsonObject['actor']
-                        sendingActorNickname = \
-                            getNicknameFromActor(sendingActor)
-                        if not sendingActorNickname:
-                            return False
-                        sendingActorDomain, sendingActorPort = \
-                            getDomainFromActor(sendingActor)
-                        if not sendingActorDomain:
-                            return False
-                        sendingToSelf = False
-                        if sendingActorNickname == nickname and \
-                           sendingActorDomain == domain:
-                            sendingToSelf = True
-                        # check that the following file exists
-                        if not sendingToSelf:
-                            if not os.path.isfile(followingFilename):
-                                print('No following.txt file exists for ' +
-                                      nickname + '@' + domain +
-                                      ' so not accepting DM from ' +
-                                      sendingActorNickname + '@' +
-                                      sendingActorDomain)
-                                return False
-                        # Not sending to yourself
-                        if not sendingToSelf:
-                            # get the handle of the DM sender
-                            sendH = \
-                                sendingActorNickname + '@' + sendingActorDomain
-                            # check the follow
-                            if not isFollowingActor(baseDir,
-                                                    nickname, domain,
-                                                    sendH):
-                                # DMs may always be allowed from some domains
-                                if not dmAllowedFromDomain(baseDir,
-                                                           nickname, domain,
-                                                           sendingActorDomain):
-                                    # send back a bounce DM
-                                    if postJsonObject.get('id') and \
-                                       postJsonObject.get('object'):
-                                        # don't send bounces back to
-                                        # replies to bounce messages
-                                        obj = postJsonObject['object']
-                                        if isinstance(obj, dict):
-                                            if not obj.get('inReplyTo'):
-                                                senderPostId = \
-                                                    postJsonObject['id']
-                                                _bounceDM(senderPostId,
-                                                          session, httpPrefix,
-                                                          baseDir,
-                                                          nickname, domain,
-                                                          port, sendH,
-                                                          federationList,
-                                                          sendThreads, postLog,
-                                                          cachedWebfingers,
-                                                          personCache,
-                                                          translate, debug,
-                                                          lastBounceMessage)
-                                    return False
-
-                    # dm index will be updated
-                    updateIndexList.append('dm')
-                    _dmNotify(baseDir, handle,
-                              httpPrefix + '://' + domain + '/users/' +
-                              nickname + '/dm')
+                if not _isValidDM(baseDir, nickname, domain, port,
+                                  postJsonObject, updateIndexList,
+                                  session, httpPrefix,
+                                  federationList,
+                                  sendThreads, postLog,
+                                  cachedWebfingers,
+                                  personCache,
+                                  translate, debug,
+                                  lastBounceMessage,
+                                  handle):
+                    return False
 
             # get the actor being replied to
             domainFull = getFullDomain(domain, port)
