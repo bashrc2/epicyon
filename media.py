@@ -87,7 +87,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         (latitude, longitude, latitudeRef, longitudeRef,
          camMake, camModel, camSerialNumber) = \
             spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
-                             decoySeed, None)
+                             decoySeed, None, None)
         os.system('exiftool -artist="' + nickname + '" ' +
                   '-Make="' + camMake + '" ' +
                   '-Model="' + camModel + '" ' +

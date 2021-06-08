@@ -126,10 +126,45 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
     return distanceFromCityCenter, angleRadians
 
 
+def parseNogoString(nogoLine: str) -> []:
+    """Parses a line from locations_nogo.txt and returns the polygon
+    """
+    polygonStr = nogoLine.split(':', 1)[1]
+    if ';' in polygonStr:
+        pts = polygonStr.split(';')
+    else:
+        pts = polygonStr.split(',')
+    if len(pts) <= 4:
+        return []
+    polygon = []
+    for index in range(int(len(pts)/2)):
+        if index*2 + 1 >= len(pts):
+            break
+        longitudeStr = pts[index*2].strip()
+        latitudeStr = pts[index*2 + 1].strip()
+        if 'E' in latitudeStr or 'W' in latitudeStr:
+            longitudeStr = pts[index*2 + 1].strip()
+            latitudeStr = pts[index*2].strip()
+        if 'E' in longitudeStr:
+            longitudeStr = \
+                longitudeStr.replace('E', '')
+            longitude = float(longitudeStr)
+        elif 'W' in longitudeStr:
+            longitudeStr = \
+                longitudeStr.replace('W', '')
+            longitude = -float(longitudeStr)
+        else:
+            longitude = float(longitudeStr)
+        latitude = float(latitudeStr)
+        polygon.append([latitude, longitude])
+    return polygon
+
+
 def spoofGeolocation(baseDir: str,
                      city: str, currTime, decoySeed: int,
-                     citiesList: []) -> (float, float, str, str,
-                                         str, str, int):
+                     citiesList: [],
+                     nogoList: []) -> (float, float, str, str,
+                                       str, str, int):
     """Given a city and the current time spoofs the location
     for an image
     returns latitude, longitude, N/S, E/W,
@@ -138,6 +173,11 @@ def spoofGeolocation(baseDir: str,
     locationsFilename = baseDir + '/custom_locations.txt'
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
+
+    nogoFilename = baseDir + '/custom_locations_nogo.txt'
+    if not os.path.isfile(nogoFilename):
+        nogoFilename = baseDir + '/locations_nogo.txt'
+
     manCityRadius = 0.1
     varianceAtLocation = 0.0004
     default_latitude = 51.8744
@@ -155,6 +195,19 @@ def spoofGeolocation(baseDir: str,
         cities = []
         with open(locationsFilename, "r") as f:
             cities = f.readlines()
+
+    nogo = []
+    if nogoList:
+        nogo = nogoList
+    else:
+        if os.path.isfile(nogoFilename):
+            with open(nogoFilename, "r") as f:
+                nogoList = f.readlines()
+                for line in nogoList:
+                    if line.startswith(city + ':'):
+                        polygon = parseNogoString(line)
+                        if polygon:
+                            nogo.append(polygon)
 
     city = city.lower()
     for cityName in cities:
@@ -183,22 +236,35 @@ def spoofGeolocation(baseDir: str,
                 datetime.timedelta(hours=approxTimeZone)
             camMake, camModel, camSerialNumber = \
                 _getDecoyCamera(decoySeed)
-            # patterns of activity change in the city over time
-            (distanceFromCityCenter, angleRadians) = \
-                _getCityPulse(currTimeAdjusted, decoySeed)
-            # The city radius value is in longitude and the reference
-            # is Manchester. Adjust for the radius of the chosen city.
-            if areaKm2 > 1:
-                manRadius = math.sqrt(630 / math.pi)
-                radius = math.sqrt(areaKm2 / math.pi)
-                cityRadius = manCityRadius * manRadius / radius
-            else:
-                cityRadius = manCityRadius
-            # Get the position within the city, with some randomness added
-            latitude += \
-                distanceFromCityCenter * cityRadius * math.cos(angleRadians)
-            longitude += \
-                distanceFromCityCenter * cityRadius * math.sin(angleRadians)
+            validCoord = False
+            seedOffset = 0
+            while not validCoord:
+                # patterns of activity change in the city over time
+                (distanceFromCityCenter, angleRadians) = \
+                    _getCityPulse(currTimeAdjusted, decoySeed + seedOffset)
+                # The city radius value is in longitude and the reference
+                # is Manchester. Adjust for the radius of the chosen city.
+                if areaKm2 > 1:
+                    manRadius = math.sqrt(630 / math.pi)
+                    radius = math.sqrt(areaKm2 / math.pi)
+                    cityRadius = manCityRadius * manRadius / radius
+                else:
+                    cityRadius = manCityRadius
+                # Get the position within the city, with some randomness added
+                latitude += \
+                    distanceFromCityCenter * cityRadius * \
+                    math.cos(angleRadians)
+                longitude += \
+                    distanceFromCityCenter * cityRadius * \
+                    math.sin(angleRadians)
+                longval = longitude
+                if longdirection == 'W':
+                    longval = -longitude
+                validCoord = not pointInNogo(nogo, latitude, longval)
+                if not validCoord:
+                    seedOffset += 1
+                    if seedOffset > 100:
+                        break
             # add a small amount of variance around the location
             fraction = randint(0, 100000) / 100000
             distanceFromLocation = fraction * fraction * varianceAtLocation
@@ -229,3 +295,33 @@ def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
         with open(cityFilename, 'r') as fp:
             city = fp.read().replace('\n', '')
     return city
+
+
+def _pointInPolygon(poly: [], x: float, y: float) -> bool:
+    """Returns true if the given point is inside the given polygon
+    """
+    n = len(poly)
+    inside = False
+    p2x = 0.0
+    p2y = 0.0
+    xints = 0.0
+    p1x, p1y = poly[0]
+    for i in range(n + 1):
+        p2x, p2y = poly[i % n]
+        if y > min(p1y, p2y):
+            if y <= max(p1y, p2y):
+                if x <= max(p1x, p2x):
+                    if p1y != p2y:
+                        xints = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
+                    if p1x == p2x or x <= xints:
+                        inside = not inside
+        p1x, p1y = p2x, p2y
+
+    return inside
+
+
+def pointInNogo(nogo: [], latitude: float, longitude: float) -> bool:
+    for polygon in nogo:
+        if _pointInPolygon(polygon, latitude, longitude):
+            return True
+    return False

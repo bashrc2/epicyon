@@ -81,7 +81,9 @@ from like import likePost
 from like import sendLikeViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
+from city import parseNogoString
 from city import spoofGeolocation
+from city import pointInNogo
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -3605,6 +3607,19 @@ def testRemovePostInteractions() -> None:
 
 def testSpoofGeolocation() -> None:
     print('testSpoofGeolocation')
+    nogoLine = \
+        'NEW YORK, USA: 73.951W,40.879,  73.974W,40.83,  ' + \
+        '74.029W,40.756,  74.038W,40.713,  74.056W,40.713,  ' + \
+        '74.127W,40.647,  74.038W,40.629,  73.995W,40.667,  ' + \
+        '74.014W,40.676,  73.994W,40.702,  73.967W,40.699,  ' + \
+        '73.958W,40.729,  73.956W,40.745,  73.918W,40.781,  ' + \
+        '73.937W,40.793,  73.946W,40.782,  73.977W,40.738,  ' + \
+        '73.98W,40.713,  74.012W,40.705,  74.006W,40.752,  ' + \
+        '73.955W,40.824'
+    polygon = parseNogoString(nogoLine)
+    assert len(polygon) > 0
+    assert polygon[0][1] == -73.951
+    assert polygon[0][0] == 40.879
     citiesList = [
         'NEW YORK, USA:40.7127281:W74.0060152:784',
         'LOS ANGELES, USA:34.0536909:W118.242766:1214',
@@ -3613,11 +3628,23 @@ def testSpoofGeolocation() -> None:
         'BERLIN, GERMANY:52.5170365:13.3888599:891',
         'ANKARA, TURKEY:39.93:32.85:24521'
     ]
+    testSquare = [
+        [[0.03, 0.01], [0.02, 10], [10.01, 10.02], [10.03, 0.02]]
+    ]
+    assert pointInNogo(testSquare, 5, 5)
+    assert pointInNogo(testSquare, 2, 3)
+    assert not pointInNogo(testSquare, 20, 5)
+    assert not pointInNogo(testSquare, 11, 6)
+    assert not pointInNogo(testSquare, 5, -5)
+    assert not pointInNogo(testSquare, 5, 11)
+    assert not pointInNogo(testSquare, -5, -5)
+    assert not pointInNogo(testSquare, -5, 5)
+    nogoList = []
     currTime = datetime.datetime.utcnow()
     decoySeed = 7634681
     cityRadius = 0.1
     coords = spoofGeolocation('', 'los angeles', currTime,
-                              decoySeed, citiesList)
+                              decoySeed, citiesList, nogoList)
     assert coords[0] >= 34.0536909 - cityRadius
     assert coords[0] <= 34.0536909 + cityRadius
     assert coords[1] >= 118.242766 - cityRadius
@@ -3627,8 +3654,9 @@ def testSpoofGeolocation() -> None:
     assert len(coords[4]) > 4
     assert len(coords[5]) > 4
     assert coords[6] > 0
+    nogoList = []
     coords = spoofGeolocation('', 'unknown', currTime,
-                              decoySeed, citiesList)
+                              decoySeed, citiesList, nogoList)
     assert coords[0] >= 51.8744 - cityRadius
     assert coords[0] <= 51.8744 + cityRadius
     assert coords[1] >= 0.368333 - cityRadius
@@ -3641,6 +3669,14 @@ def testSpoofGeolocation() -> None:
     kmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n'
     kmlStr += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
     kmlStr += '<Document>\n'
+    nogoLine2 = \
+        'NEW YORK, USA: 74.115W,40.663,  74.065W,40.602,  ' + \
+        '74.118W,40.555,  74.047W,40.516,  73.882W,40.547,  ' + \
+        '73.909W,40.618,  73.978W,40.579,  74.009W,40.602,  ' + \
+        '74.033W,40.61,  74.039W,40.623,  74.032W,40.641,  ' + \
+        '73.996W,40.665'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoList = [polygon, polygon2]
     for i in range(1000):
         dayNumber = randint(10, 30)
         hour = randint(1, 23)
@@ -3651,7 +3687,7 @@ def testSpoofGeolocation() -> None:
                                               " " + hourStr + ":14",
                                               "%Y-%m-%d %H:%M")
         coords = spoofGeolocation('', 'new york, usa', currTime,
-                                  decoySeed, citiesList)
+                                  decoySeed, citiesList, nogoList)
         longitude = coords[1]
         if coords[3] == 'W':
             longitude = -coords[1]
