@@ -41,6 +41,10 @@ def getHashtagCategoriesFeed(baseDir: str,
         rssStr += '  <title>' + categoryStr + '</title>\n'
         listStr = ''
         for hashtag in hashtagList:
+            if ':' in hashtag:
+                continue
+            if '&' in hashtag:
+                continue
             listStr += hashtag + ' '
         rssStr += '  <description>' + listStr.strip() + '</description>\n'
         rssStr += '  <link/>\n'
