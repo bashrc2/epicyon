@@ -3626,7 +3626,8 @@ def testSpoofGeolocation() -> None:
         'HOUSTON, USA:29.6072:W95.1586:1553',
         'MANCHESTER, ENGLAND:53.4794892:W2.2451148:630',
         'BERLIN, GERMANY:52.5170365:13.3888599:891',
-        'ANKARA, TURKEY:39.93:32.85:24521'
+        'ANKARA, TURKEY:39.93:32.85:24521',
+        'LONDON, ENGLAND:51.5073219:W0.1276474:1738'
     ]
     testSquare = [
         [[0.03, 0.01], [0.02, 10], [10.01, 10.02], [10.03, 0.02]]
@@ -3687,6 +3688,44 @@ def testSpoofGeolocation() -> None:
                                               " " + hourStr + ":14",
                                               "%Y-%m-%d %H:%M")
         coords = spoofGeolocation('', 'new york, usa', currTime,
+                                  decoySeed, citiesList, nogoList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+
+    nogoLine = \
+        'LONDON, ENGLAND: 0.23888E,51.459,  0.1216E,51.5,  ' + \
+        '0.016E,51.479,  0.097W,51.502,  0.126W,51.482,  ' + \
+        '0.196W,51.457,  0.292W,51.465,  0.309W,51.49,  ' + \
+        '0.226W,51.495,  0.198W,51.47,  0.174W,51.488,  ' + \
+        '0.136W,51.489,  0.1189W,51.515,  0.038E,51.513,  ' + \
+        '0.0692E,51.51,  0.12833E,51.526,  0.3289E,51.475'
+    polygon = parseNogoString(nogoLine)
+    nogoLine2 = \
+        'LONDON, ENGLAND: 0.054W,51.535,  0.044W,51.53,  ' + \
+        '0.008W,51.55,  0.0429W,51.57,  0.038W,51.6,  ' + \
+        '0.0209W,51.603,  0.032W,51.613,  0.00191E,51.66,  ' + \
+        '0.024W,51.666,  0.0313W,51.659,  0.0639W,51.579,  ' + \
+        '0.059W,51.568,  0.0329W,51.552'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoList = [polygon, polygon2]
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        currTime = datetime.datetime.strptime("2021-05-" + str(dayNumber) +
+                                              " " + hourStr + ":14",
+                                              "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'london, england', currTime,
                                   decoySeed, citiesList, nogoList)
         longitude = coords[1]
         if coords[3] == 'W':
