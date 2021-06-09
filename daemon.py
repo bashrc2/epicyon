@@ -101,6 +101,7 @@ from skills import noOfActorSkills
 from skills import actorHasSkill
 from skills import actorSkillValue
 from skills import setActorSkillLevel
+from auth import recordLoginFailure
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -206,6 +207,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import isLocalNetworkAddress
 from utils import permittedDir
 from utils import isAccountDir
 from utils import getOccupationSkills
@@ -1437,15 +1439,33 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             authHeader = \
                 createBasicAuthHeader(loginNickname, loginPassword)
+            if self.headers.get('X-Forward-For'):
+                ipAddress = self.headers['X-Forward-For']
+            elif self.headers.get('X-Forwarded-For'):
+                ipAddress = self.headers['X-Forwarded-For']
+            else:
+                ipAddress = self.client_address[0]
+            if not domain.endswith('.onion'):
+                if not isLocalNetworkAddress(ipAddress):
+                    print('Login attempt from IP: ' + str(ipAddress))
             if not authorizeBasic(baseDir, '/users/' +
                                   loginNickname + '/outbox',
                                   authHeader, False):
                 print('Login failed: ' + loginNickname)
                 self._clearLoginDetails(loginNickname, callingDomain)
-                self.server.lastLoginFailure = int(time.time())
+                failTime = int(time.time())
+                self.server.lastLoginFailure = failTime
+                if not domain.endswith('.onion'):
+                    if not isLocalNetworkAddress(ipAddress):
+                        recordLoginFailure(baseDir, ipAddress,
+                                           self.server.loginFailureCount,
+                                           failTime,
+                                           self.server.logLoginFailures)
                 self.server.POSTbusy = False
                 return
             else:
+                if self.server.loginFailureCount.get(ipAddress):
+                    del self.server.loginFailureCount[ipAddress]
                 if isSuspended(baseDir, loginNickname):
                     msg = \
                         htmlSuspended(self.server.cssCache,
@@ -14829,7 +14849,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(city: str,
+def runDaemon(logLoginFailures: bool,
+              city: str,
               showNodeInfoAccounts: bool,
               showNodeInfoVersion: bool,
               brochMode: bool,
@@ -15097,6 +15118,8 @@ def runDaemon(city: str,
     httpd.allowDeletion = allowDeletion
     httpd.lastLoginTime = 0
     httpd.lastLoginFailure = 0
+    httpd.loginFailureCount = {}
+    httpd.logLoginFailures = logLoginFailures
     httpd.maxReplies = maxReplies
     httpd.tokens = {}
     httpd.tokensLookup = {}
