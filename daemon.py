@@ -1437,15 +1437,42 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             authHeader = \
                 createBasicAuthHeader(loginNickname, loginPassword)
+            ipAddress = self.client_address[0]
+            print('Login attempt from IP: ' + str(ipAddress))
             if not authorizeBasic(baseDir, '/users/' +
                                   loginNickname + '/outbox',
                                   authHeader, False):
                 print('Login failed: ' + loginNickname)
                 self._clearLoginDetails(loginNickname, callingDomain)
-                self.server.lastLoginFailure = int(time.time())
+                failTime = int(time.time())
+                self.server.lastLoginFailure = failTime
+                if not self.server.loginFailureCount.get(ipAddress):
+                    while len(self.server.loginFailureCount.items()) > 100:
+                        oldestTime = 0
+                        oldestIP = None
+                        for ipAddr, ipItem in self.server.loginFailureCount:
+                            if oldestTime == 0 or ipItem['time'] < oldestTime:
+                                oldestTime = ipItem['time']
+                                oldestIP = ipAddr
+                        if oldestTime > 0:
+                            del self.server.loginFailureCount[oldestIP]
+                    self.server.loginFailureCount[ipAddress] = {
+                        "count": 1,
+                        "time": failTime
+                    }
+                else:
+                    self.server.loginFailureCount[ipAddress]['count'] += 1
+                    failCount = \
+                        self.server.loginFailureCount[ipAddress]['count']
+                    if failCount > 4:
+                        print('WARN: ' + str(ipAddress) +
+                              ' failed to log in ' + str(failCount) + ' times')
+                    self.server.loginFailureCount[ipAddress]['time'] = failTime
                 self.server.POSTbusy = False
                 return
             else:
+                if self.server.loginFailureCount.get(ipAddress):
+                    del self.server.loginFailureCount[ipAddress]
                 if isSuspended(baseDir, loginNickname):
                     msg = \
                         htmlSuspended(self.server.cssCache,
@@ -15097,6 +15124,7 @@ def runDaemon(city: str,
     httpd.allowDeletion = allowDeletion
     httpd.lastLoginTime = 0
     httpd.lastLoginFailure = 0
+    httpd.loginFailureCount = {}
     httpd.maxReplies = maxReplies
     httpd.tokens = {}
     httpd.tokensLookup = {}
