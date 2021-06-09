@@ -1372,7 +1372,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # ensure that there is a minimum delay between failed login
         # attempts, to mitigate brute force
-        if int(time.time()) - self.server.lastLoginAttempt < 5:
+        if int(time.time()) - self.server.lastLoginFailure < 5:
             self._503()
             self.server.POSTbusy = False
             return
@@ -1442,7 +1442,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   authHeader, False):
                 print('Login failed: ' + loginNickname)
                 self._clearLoginDetails(loginNickname, callingDomain)
-                self.server.lastLoginAttempt = int(time.time())
+                self.server.lastLoginFailure = int(time.time())
                 self.server.POSTbusy = False
                 return
             else:
@@ -15096,7 +15096,7 @@ def runDaemon(city: str,
     httpd.maxQueueLength = 64
     httpd.allowDeletion = allowDeletion
     httpd.lastLoginTime = 0
-    httpd.lastLoginAttempt = 0
+    httpd.lastLoginFailure = 0
     httpd.maxReplies = maxReplies
     httpd.tokens = {}
     httpd.tokensLookup = {}
