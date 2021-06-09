@@ -1441,6 +1441,8 @@ class PubServer(BaseHTTPRequestHandler):
                 createBasicAuthHeader(loginNickname, loginPassword)
             if self.headers.get('X-Forward-For'):
                 ipAddress = self.headers['X-Forward-For']
+            elif self.headers.get('X-Forwarded-For'):
+                ipAddress = self.headers['X-Forwarded-For']
             else:
                 ipAddress = self.client_address[0]
             if not domain.endswith('.onion'):
