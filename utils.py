@@ -669,6 +669,16 @@ def getLocalNetworkAddresses() -> []:
     return ('localhost', '127.0.', '192.168', '10.0.')
 
 
+def isLocalNetworkAddress(ipAddress: str) -> bool:
+    """
+    """
+    localIPs = getLocalNetworkAddresses()
+    for ipAddr in localIPs:
+        if ipAddress.startswith(ipAddr):
+            return True
+    return False
+
+
 def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
