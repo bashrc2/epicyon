@@ -291,6 +291,11 @@ parser.add_argument("--iconsAsButtons",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show header icons as buttons")
+parser.add_argument("--logLoginFailures",
+                    dest='logLoginFailures',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to log longin failures")
 parser.add_argument("--rssIconAtTop",
                     dest='rssIconAtTop',
                     type=str2bool, nargs='?',
@@ -2510,6 +2515,11 @@ brochMode = \
 if brochMode is not None:
     args.brochMode = bool(brochMode)
 
+logLoginFailures = \
+    getConfigParam(baseDir, 'logLoginFailures')
+if logLoginFailures is not None:
+    args.logLoginFailures = bool(logLoginFailures)
+
 showNodeInfoAccounts = \
     getConfigParam(baseDir, 'showNodeInfoAccounts')
 if showNodeInfoAccounts is not None:
@@ -2539,7 +2549,8 @@ if setTheme(baseDir, themeName, domain,
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.city,
+    runDaemon(args.logLoginFailures,
+              args.city,
               args.showNodeInfoAccounts,
               args.showNodeInfoVersion,
               args.brochMode,

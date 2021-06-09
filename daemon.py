@@ -1443,8 +1443,9 @@ class PubServer(BaseHTTPRequestHandler):
                 ipAddress = self.headers['X-Forwarded-For']
             else:
                 ipAddress = self.client_address[0]
-            if not isLocalNetworkAddress(ipAddress):
-                print('Login attempt from IP: ' + str(ipAddress))
+            if not domain.endswith('.onion'):
+                if not isLocalNetworkAddress(ipAddress):
+                    print('Login attempt from IP: ' + str(ipAddress))
             if not authorizeBasic(baseDir, '/users/' +
                                   loginNickname + '/outbox',
                                   authHeader, False):
@@ -1452,10 +1453,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self._clearLoginDetails(loginNickname, callingDomain)
                 failTime = int(time.time())
                 self.server.lastLoginFailure = failTime
-                if not isLocalNetworkAddress(ipAddress):
-                    recordLoginFailure(ipAddress,
-                                       self.server.loginFailureCount,
-                                       failTime)
+                if not domain.endswith('.onion'):
+                    if not isLocalNetworkAddress(ipAddress):
+                        recordLoginFailure(baseDir, ipAddress,
+                                           self.server.loginFailureCount,
+                                           failTime,
+                                           self.server.logLoginFailures)
                 self.server.POSTbusy = False
                 return
             else:
@@ -14844,7 +14847,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(city: str,
+def runDaemon(logLoginFailures: bool,
+              city: str,
               showNodeInfoAccounts: bool,
               showNodeInfoVersion: bool,
               brochMode: bool,
@@ -15113,6 +15117,7 @@ def runDaemon(city: str,
     httpd.lastLoginTime = 0
     httpd.lastLoginFailure = 0
     httpd.loginFailureCount = {}
+    httpd.logLoginFailures = logLoginFailures
     httpd.maxReplies = maxReplies
     httpd.tokens = {}
     httpd.tokensLookup = {}
