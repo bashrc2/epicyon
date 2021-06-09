@@ -101,6 +101,7 @@ from skills import noOfActorSkills
 from skills import actorHasSkill
 from skills import actorSkillValue
 from skills import setActorSkillLevel
+from auth import recordLoginFailure
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -1442,7 +1443,8 @@ class PubServer(BaseHTTPRequestHandler):
                 ipAddress = self.headers['X-Forwarded-For']
             else:
                 ipAddress = self.client_address[0]
-            print('Login attempt from IP: ' + str(ipAddress))
+            if not isLocalNetworkAddress(ipAddress):
+                print('Login attempt from IP: ' + str(ipAddress))
             if not authorizeBasic(baseDir, '/users/' +
                                   loginNickname + '/outbox',
                                   authHeader, False):
@@ -1451,32 +1453,9 @@ class PubServer(BaseHTTPRequestHandler):
                 failTime = int(time.time())
                 self.server.lastLoginFailure = failTime
                 if not isLocalNetworkAddress(ipAddress):
-                    countDict = self.server.loginFailureCount
-                    if not countDict.get(ipAddress):
-                        while len(countDict.items()) > 100:
-                            oldestTime = 0
-                            oldestIP = None
-                            for ipAddr, ipItem in countDict.items():
-                                if oldestTime == 0 or \
-                                   ipItem['time'] < oldestTime:
-                                    oldestTime = ipItem['time']
-                                    oldestIP = ipAddr
-                            if oldestTime > 0:
-                                del countDict[oldestIP]
-                        countDict[ipAddress] = {
-                            "count": 1,
-                            "time": failTime
-                        }
-                    else:
-                        countDict[ipAddress]['count'] += 1
-                        failCount = \
-                            countDict[ipAddress]['count']
-                        if failCount > 4:
-                            print('WARN: ' + str(ipAddress) +
-                                  ' failed to log in ' +
-                                  str(failCount) + ' times')
-                        countDict[ipAddress]['time'] = \
-                            failTime
+                    recordLoginFailure(ipAddress,
+                                       self.server.loginFailureCount,
+                                       failTime)
                 self.server.POSTbusy = False
                 return
             else:

@@ -204,3 +204,30 @@ def createPassword(length=10):
     validChars = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return ''.join((secrets.choice(validChars) for i in range(length)))
+
+
+def recordLoginFailure(ipAddress: str, countDict: {}, failTime: int) -> None:
+    """Keeps ip addresses and the number of times login failures
+    occured for them in a dict
+    """
+    if not countDict.get(ipAddress):
+        while len(countDict.items()) > 100:
+            oldestTime = 0
+            oldestIP = None
+            for ipAddr, ipItem in countDict.items():
+                if oldestTime == 0 or ipItem['time'] < oldestTime:
+                    oldestTime = ipItem['time']
+                    oldestIP = ipAddr
+            if oldestIP:
+                del countDict[oldestIP]
+        countDict[ipAddress] = {
+            "count": 1,
+            "time": failTime
+        }
+    else:
+        countDict[ipAddress]['count'] += 1
+        failCount = countDict[ipAddress]['count']
+        if failCount > 4:
+            print('WARN: ' + str(ipAddress) + ' failed to log in ' +
+                  str(failCount) + ' times')
+        countDict[ipAddress]['time'] = failTime
