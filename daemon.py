@@ -1370,6 +1370,13 @@ class PubServer(BaseHTTPRequestHandler):
                      debug: bool) -> None:
         """Shows the login screen
         """
+        # ensure that there is a minimum delay between failed login
+        # attempts, to mitigate brute force
+        if int(time.time()) - self.server.lastLoginAttempt < 5:
+            self._503()
+            self.server.POSTbusy = False
+            return
+
         # get the contents of POST containing login credentials
         length = int(self.headers['Content-length'])
         if length > 512:
@@ -1435,6 +1442,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   authHeader, False):
                 print('Login failed: ' + loginNickname)
                 self._clearLoginDetails(loginNickname, callingDomain)
+                self.server.lastLoginAttempt = int(time.time())
                 self.server.POSTbusy = False
                 return
             else:
@@ -15088,6 +15096,7 @@ def runDaemon(city: str,
     httpd.maxQueueLength = 64
     httpd.allowDeletion = allowDeletion
     httpd.lastLoginTime = 0
+    httpd.lastLoginAttempt = 0
     httpd.maxReplies = maxReplies
     httpd.tokens = {}
     httpd.tokensLookup = {}
