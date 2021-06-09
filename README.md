@@ -78,7 +78,7 @@ Type=simple
 User=epicyon
 Group=epicyon
 WorkingDirectory=/opt/epicyon
-ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open
+ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --logLoginFailures
 Environment=USER=epicyon
 Environment=PYTHONUNBUFFERED=true
 Restart=always
@@ -203,6 +203,8 @@ And restart the web server:
 ``` bash
 systemctl restart nginx
 ```
+
+If you need to use **fail2ban** then failed login attempts can be found in *accounts/loginfailures.log*.
 
 If you are using the [Caddy web server](https://caddyserver.com) then see *caddy.example.conf*
 

@@ -1343,7 +1343,7 @@
       User=epicyon<br>
       Group=epicyon<br>
       WorkingDirectory=/opt/epicyon<br>
-      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug<br>
+      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug --logLoginFailures<br>
       Environment=USER=epicyon<br>
       Environment=PYTHONUNBUFFERED=true<br>
       Restart=always<br>
@@ -1492,6 +1492,9 @@
     <div class="shell">
       systemctl restart nginx
     </div>
+    <p class="intro">
+      If you need to use <a href="https://www.fail2ban.org">fail2ban</a> then failed login attempts can be found in <b>accounts/loginfailures.log</b>.
+    </p>
     <p class="intro">
       If you are using the <a href="https://caddyserver.com">Caddy web server</a> then see <a href="https://code.freedombone.net/bashrc/epicyon/raw/main/caddy.example.conf">caddy.example.conf</a>
     </p>
