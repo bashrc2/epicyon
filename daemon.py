@@ -1267,7 +1267,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.authorizedNickname = None
 
         notAuthPaths = (
-            '/icons/', '/avatars/', '/favicon.ico', '/newswire.xml',
+            '/icons/', '/avatars/',
+            '/accounts/avatars/', '/accounts/headers/',
+            '/favicon.ico', '/newswire.xml',
             '/newswire_favicon.ico', '/categories.xml'
         )
         for notAuthStr in notAuthPaths:
@@ -9902,6 +9904,7 @@ class PubServer(BaseHTTPRequestHandler):
            '/emoji/' not in path and \
            '/tags/' not in path and \
            '/avatars/' not in path and \
+           '/headers/' not in path and \
            '/fonts/' not in path and \
            '/icons/' not in path:
             divertToLoginScreen = True
@@ -10199,10 +10202,17 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows an avatar or banner or profile background image
         """
         if '/users/' not in path:
-            return False
+            if '/accounts/avatars/' not in path:
+                if '/accounts/headers/' not in path:
+                    return False
         if not pathIsImage(path):
             return False
-        avatarStr = path.split('/users/')[1]
+        if '/accounts/avatars/' in path:
+            avatarStr = path.split('/accounts/avatars/')[1]
+        elif '/accounts/headers/' in path:
+            avatarStr = path.split('/accounts/headers/')[1]
+        else:
+            avatarStr = path.split('/users/')[1]
         if not ('/' in avatarStr and '.temp.' not in path):
             return False
         avatarNickname = avatarStr.split('/')[0]

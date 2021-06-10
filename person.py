@@ -162,13 +162,17 @@ def randomizeActorImages(personJson: {}) -> None:
     # NOTE: these files don't need to have cryptographically
     # secure names
     randStr = str(randint(10000000000000, 99999999999999))  # nosec
+    baseUrl = personId.split('/users/')[0]
+    nickname = personJson['preferredUsername']
     personJson['icon']['url'] = \
-        personId + '/avatar' + randStr + '.' + existingExtension
+        baseUrl + '/accounts/avatars/' + nickname + \
+        '/avatar' + randStr + '.' + existingExtension
     lastPartOfFilename = personJson['image']['url'].split('/')[-1]
     existingExtension = lastPartOfFilename.split('.')[1]
     randStr = str(randint(10000000000000, 99999999999999))  # nosec
     personJson['image']['url'] = \
-        personId + '/image' + randStr + '.' + existingExtension
+        baseUrl + '/accounts/headers/' + nickname + \
+        '/image' + randStr + '.' + existingExtension
 
 
 def getDefaultPersonContext() -> str:
