@@ -27,5 +27,7 @@ clean:
 	rm -f translations/*~
 	rm -rf __pycache__
 	rm -f datashards/*~
+	rm -f datashards/stores/*~
 	rm -rf datashards/__pycache__
+	rm -rf datashards/stores/__pycache__
 	rm -f calendar.css blog.css epicyon.css follow.css login.css options.css search.css suspended.css
