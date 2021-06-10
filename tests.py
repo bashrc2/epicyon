@@ -3803,12 +3803,12 @@ def testDatashards() -> None:
     print('testDatashards')
     shipper = datashards.utils.store('memory://')
     assert shipper
-    saveData = open('README.md', 'rb').read()
+    saveData = b'some data to be stored'
     data_size = len(saveData)
     saveData = saveData + (b'\0' * (32768 - data_size))
     assert len(saveData) == 32768
     urn = shipper.put(saveData)
-    assert urn
+    assert urn == 'urn:sha256d:5JSThDD4-TdA24qygZPKtmVwbv1fErijAnF-u5EOLco='
     loadData = shipper.get(urn)
     assert loadData
 
