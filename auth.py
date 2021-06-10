@@ -245,7 +245,12 @@ def recordLoginFailure(baseDir: str, ipAddress: str,
     currTime = datetime.datetime.utcnow()
     try:
         with open(failureLog, writeType) as fp:
-            fp.write(currTime.strftime("%Y-%m-%d %H:%M:%SZ") +
-                     ' ' + ipAddress + '\n')
+            # here we use a similar format to an ssh log, so that
+            # systems such as fail2ban can parse it
+            fp.write(currTime.strftime("%Y-%m-%d %H:%M:%SZ") + ' ' +
+                     'ip-127-0-0-1 sshd[20710]: ' +
+                     'Disconnecting invalid user epicyon ' +
+                     ipAddress + ' port 443: ' +
+                     'Too many authentication failures [preauth]\n')
     except BaseException:
         pass
