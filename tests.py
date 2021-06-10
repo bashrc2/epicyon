@@ -116,7 +116,6 @@ from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
 from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
-import datashards
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3799,24 +3798,9 @@ def testRoles() -> None:
     assert not actorHasRole(actorJson, "artist")
 
 
-def testDatashards() -> None:
-    print('testDatashards')
-    shipper = datashards.utils.store('memory://')
-    assert shipper
-    saveData = b'some data to be stored'
-    data_size = len(saveData)
-    saveData = saveData + (b'\0' * (32768 - data_size))
-    assert len(saveData) == 32768
-    urn = shipper.put(saveData)
-    assert urn == 'urn:sha256d:5JSThDD4-TdA24qygZPKtmVwbv1fErijAnF-u5EOLco='
-    loadData = shipper.get(urn)
-    assert loadData
-
-
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
-    testDatashards()
     testFunctions()
     testRoles()
     testSkills()
