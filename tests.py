@@ -3626,8 +3626,9 @@ def testSpoofGeolocation() -> None:
     citiesList = [
         'NEW YORK, USA:40.7127281:W74.0060152:784',
         'LOS ANGELES, USA:34.0536909:W118.242766:1214',
+        'SAN FRANCISCO, USA:37.74594738515095:W122.44299445520019:121',
         'HOUSTON, USA:29.6072:W95.1586:1553',
-        'MANCHESTER, ENGLAND:53.4794892:W2.2451148:630',
+        'MANCHESTER, ENGLAND:53.4794892:W2.2451148:1276',
         'BERLIN, GERMANY:52.5170365:13.3888599:891',
         'ANKARA, TURKEY:39.93:32.85:24521',
         'LONDON, ENGLAND:51.5073219:W0.1276474:1738'
@@ -3740,6 +3741,36 @@ def testSpoofGeolocation() -> None:
             str(coords[0]) + ',0</coordinates>\n'
         kmlStr += '  </Point>\n'
         kmlStr += '</Placemark>\n'
+
+    nogoLine = \
+        'SAN FRANCISCO, USA: 121.988W,37.408,  121.924W,37.452,  121.951W,37.498,  121.992W,37.505,  122.056W,37.54,  122.077W,37.578,  122.098W,37.618,  122.131W,37.637,  122.189W,37.706,  122.227W,37.775,  122.279W,37.798,  122.315W,37.802,  122.291W,37.832,  122.309W,37.902,  122.382W,37.915,  122.368W,37.927,  122.514W,37.882,  122.473W,37.83,  122.481W,37.788,  122.394W,37.796,  122.384W,37.729,  122.4W,37.688,  122.382W,37.654,  122.406W,37.637,  122.392W,37.612,  122.356W,37.586,  122.332W,37.586,  122.275W,37.529,  122.228W,37.488,  122.181W,37.482,  122.134W,37.48,  122.128W,37.471,  122.122W,37.448,  122.095W,37.428,  122.07W,37.413,  122.036W,37.402,  122.035W,37.421'
+    polygon = parseNogoString(nogoLine)
+    nogoLine2 = \
+        'SAN FRANCISCO, USA: 122.446W,37.794,  122.511W,37.778,  122.51W,37.771,  122.454W,37.775,  122.452W,37.766,  122.510W,37.763,  122.506W,37.735,  122.498W,37.733,  122.496W,37.729,  122.491W,37.729,  122.475W,37.73,  122.474W,37.72,  122.484W,37.72,  122.485W,37.703,  122.495W,37.702,  122.493W,37.679,  122.486W,37.667,  122.492W,37.664,  122.493W,37.629,  122.456W,37.625,  122.450W,37.617,  122.455W,37.621,  122.41W,37.586,  122.383W,37.561,  122.335W,37.509,  122.655W,37.48,  122.67W,37.9,  122.272W,37.93,  122.294W,37.801,  122.448W,37.804'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoList = [polygon, polygon2]
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        currTime = datetime.datetime.strptime("2021-05-" + str(dayNumber) +
+                                              " " + hourStr + ":14",
+                                              "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'SAN FRANCISCO, USA', currTime,
+                                  decoySeed, citiesList, nogoList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+
     kmlStr += '</Document>\n'
     kmlStr += '</kml>'
     kmlFile = open('unittest_decoy.kml', 'w+')
@@ -3800,6 +3831,8 @@ def testRoles() -> None:
 
 def runAllTests():
     print('Running tests...')
+    testSpoofGeolocation()
+    return
     updateDefaultThemesList(os.getcwd())
     testFunctions()
     testRoles()
