@@ -613,7 +613,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'public')
         self.send_header('Referrer-Policy', 'origin')
         self.send_header('Accept-Ranges', 'none')
-        self.send_header('Expires', 'Sun, 12 Jun 2050 17:28:50 GMT')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
                      callingDomain: str) -> None:
