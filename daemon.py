@@ -610,6 +610,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag',
                          'noindex, nofollow, noarchive, nosnippet')
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('Cache-Control', 'max-age=31536000')
         self.send_header('Cache-Control', 'public')
         self.send_header('Referrer-Policy', 'origin')
         self.send_header('Accept-Ranges', 'none')
