@@ -245,17 +245,17 @@ def spoofGeolocation(baseDir: str,
                 # The city radius value is in longitude and the reference
                 # is Manchester. Adjust for the radius of the chosen city.
                 if areaKm2 > 1:
-                    manRadius = math.sqrt(630 / math.pi)
+                    manRadius = math.sqrt(1276 / math.pi)
                     radius = math.sqrt(areaKm2 / math.pi)
-                    cityRadius = manCityRadius * manRadius / radius
+                    cityRadiusDeg = (radius / manRadius) * manCityRadius
                 else:
-                    cityRadius = manCityRadius
+                    cityRadiusDeg = manCityRadius
                 # Get the position within the city, with some randomness added
                 latitude += \
-                    distanceFromCityCenter * cityRadius * \
+                    distanceFromCityCenter * cityRadiusDeg * \
                     math.cos(angleRadians)
                 longitude += \
-                    distanceFromCityCenter * cityRadius * \
+                    distanceFromCityCenter * cityRadiusDeg * \
                     math.sin(angleRadians)
                 longval = longitude
                 if longdirection == 'W':
