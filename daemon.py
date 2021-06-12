@@ -607,13 +607,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
-        self.send_header('X-Robots-Tag',
-                         'noindex, nofollow, noarchive, nosnippet')
+        # self.send_header('X-Robots-Tag',
+        #                  'noindex, nofollow, noarchive, nosnippet')
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         self.send_header('Cache-Control', 'max-age=31536000')
         self.send_header('Cache-Control', 'public')
-        self.send_header('Referrer-Policy', 'origin')
-        self.send_header('Accept-Ranges', 'none')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
                      callingDomain: str) -> None:
