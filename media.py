@@ -113,13 +113,11 @@ def processMetaData(baseDir: str, nickname: str, domain: str,
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
-    copyfile(imageFilename, outputFilename)
-    
     # first remove the metadata
-    # _removeMetaData(imageFilename, outputFilename)
+    _removeMetaData(imageFilename, outputFilename)
 
     # now add some spoofed data to misdirect surveillance capitalists
-    # _spoofMetaData(baseDir, nickname, domain, outputFilename, city)
+    _spoofMetaData(baseDir, nickname, domain, outputFilename, city)
 
 
 def _isMedia(imageFilename: str) -> bool:
