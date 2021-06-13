@@ -910,23 +910,6 @@ if args.resetregistrations:
     setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
     print('Number of new registrations reset to ' + str(maxRegistrations))
 
-# whether new registrations are open or closed
-if args.registration:
-    if args.registration.lower() == 'open':
-        registration = getConfigParam(baseDir, 'registration')
-        if not registration:
-            setConfigParam(baseDir, 'registrationsRemaining',
-                           str(maxRegistrations))
-        else:
-            if registration != 'open':
-                setConfigParam(baseDir, 'registrationsRemaining',
-                               str(maxRegistrations))
-        setConfigParam(baseDir, 'registration', 'open')
-        print('New registrations open')
-    else:
-        setConfigParam(baseDir, 'registration', 'closed')
-        print('New registrations closed')
-
 # unique ID for the instance
 instanceId = getConfigParam(baseDir, 'instanceId')
 if not instanceId:
@@ -2549,6 +2532,23 @@ if YTDomain:
 if setTheme(baseDir, themeName, domain,
             args.allowLocalNetworkAccess, args.language):
     print('Theme set to ' + themeName)
+
+# whether new registrations are open or closed
+if args.registration:
+    if args.registration.lower() == 'open':
+        registration = getConfigParam(baseDir, 'registration')
+        if not registration:
+            setConfigParam(baseDir, 'registrationsRemaining',
+                           str(maxRegistrations))
+        else:
+            if registration != 'open':
+                setConfigParam(baseDir, 'registrationsRemaining',
+                               str(maxRegistrations))
+        setConfigParam(baseDir, 'registration', 'open')
+        print('New registrations open')
+    else:
+        setConfigParam(baseDir, 'registration', 'closed')
+        print('New registrations closed')
 
 if __name__ == "__main__":
     runDaemon(args.logLoginFailures,
