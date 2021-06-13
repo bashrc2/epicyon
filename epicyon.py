@@ -903,7 +903,8 @@ if not getConfigParam(baseDir, 'registration'):
     if args.registration.lower() == 'open':
         setConfigParam(baseDir, 'registration', 'open')
         setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
-        setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
+        setConfigParam(baseDir, 'registrationsRemaining',
+                       str(maxRegistrations))
 
 if args.resetregistrations:
     setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
