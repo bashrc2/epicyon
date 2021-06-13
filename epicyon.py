@@ -900,9 +900,11 @@ else:
 
 # if this is the initial run then allow new registrations
 if not getConfigParam(baseDir, 'registration'):
-    setConfigParam(baseDir, 'registration', 'open')
-    setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
-    setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
+    if args.registration.lower() == 'open':
+        setConfigParam(baseDir, 'registration', 'open')
+        setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
+        setConfigParam(baseDir, 'registrationsRemaining',
+                       str(maxRegistrations))
 
 if args.resetregistrations:
     setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))

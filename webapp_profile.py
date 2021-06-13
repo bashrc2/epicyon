@@ -472,9 +472,7 @@ def htmlProfile(rssIconAtTop: bool,
         addEmojiToDisplayName(baseDir, httpPrefix,
                               nickname, domain,
                               profileJson['name'], True)
-    domainFull = domain
-    if port:
-        domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     profileDescription = \
         addEmojiToDisplayName(baseDir, httpPrefix,
                               nickname, domain,
@@ -666,6 +664,11 @@ def htmlProfile(rssIconAtTop: bool,
         occupationName = getOccupationName(profileJson)
 
     avatarUrl = profileJson['icon']['url']
+    # use alternate path for local avatars to avoid any caching issues
+    if '://' + domainFull + '/accounts/avatars/' in avatarUrl:
+        avatarUrl = \
+            avatarUrl.replace('://' + domainFull + '/accounts/avatars/',
+                              '://' + domainFull + '/users/')
 
     # get pinned post content
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain

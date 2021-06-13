@@ -183,8 +183,12 @@ server {
         proxy_buffers 16 32k;
         proxy_busy_buffers_size 64k;
         proxy_redirect off;
-        proxy_request_buffering on;
-        proxy_buffering on;
+        proxy_request_buffering off;
+        proxy_buffering off;
+        location ~ ^/accounts/(avatars|headers)/(.*).(png|jpg|gif|webp|svg) {
+          expires 1d;
+          proxy_pass http://localhost:7156;
+        }
         proxy_pass http://localhost:7156;
     }
 }
