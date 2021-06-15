@@ -2877,6 +2877,7 @@ def testFunctions():
     function = {}
     functionProperties = {}
     modules = {}
+    modGroups = {}
 
     for subdir, dirs, files in os.walk('.'):
         for sourceFile in files:
@@ -2894,6 +2895,17 @@ def testFunctions():
                 lines = f.readlines()
                 modules[modName]['lines'] = lines
                 for line in lines:
+                    if '__module_group__' in line:
+                        if '=' in line:
+                            groupName = line.split('=')[1].strip()
+                            groupName = groupName.replace('"', '')
+                            groupName = groupName.replace("'", '')
+                            modules[modName]['group'] = groupName
+                            if not modGroups.get(groupName):
+                                modGroups[groupName] = [modName]
+                            else:
+                                if modName not in modGroups[groupName]:
+                                    modGroups[groupName].append(modName)
                     if not line.strip().startswith('def '):
                         continue
                     methodName = line.split('def ', 1)[1].split('(')[0]
@@ -3134,6 +3146,19 @@ def testFunctions():
             continue
         for modCall in modProperties['calls']:
             callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
+    # module groups/clusters
+    clusterCtr = 1
+    for groupName, groupModules in modGroups.items():
+        callGraphStr += '\n'
+        callGraphStr += \
+            '  subgraph cluster_' + str(clusterCtr) + ' {\n'
+        callGraphStr += '    node [style=filled];\n'
+        for modName in groupModules:
+            callGraphStr += '    ' + modName + ';\n'
+        callGraphStr += '    label = "' + groupName + '";\n'
+        callGraphStr += '    color = blue;\n'
+        callGraphStr += '  }\n'
+        clusterCtr += 1
     callGraphStr += '\n}\n'
     with open('epicyon_modules.dot', 'w+') as fp:
         fp.write(callGraphStr)
