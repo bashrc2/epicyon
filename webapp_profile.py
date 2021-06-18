@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
@@ -79,7 +80,7 @@ def htmlProfileAfterSearch(cssCache: {},
     elif httpPrefix == 'gnunet':
         gnunet = True
     profileJson, asHeader = \
-        getActorJson(profileHandle, http, gnunet, debug, False)
+        getActorJson(domain, profileHandle, http, gnunet, debug, False)
     if not profileJson:
         return None
 

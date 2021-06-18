@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Core"
 
 import os
 import requests
@@ -12,6 +13,7 @@ from utils import urlPermitted
 import json
 from socket import error as SocketError
 import errno
+from http.client import HTTPConnection
 
 baseDirectory = None
 
@@ -103,27 +105,41 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
         if not quiet:
             print('WARN: getJson failed, no session specified for getJson')
         return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
     try:
         result = session.get(url, headers=sessionHeaders,
                              params=sessionParams, timeout=timeoutSec)
+        if result.status_code != 200:
+            if result.status_code == 401:
+                print('WARN: getJson Unauthorized url: ' + url)
+            elif result.status_code == 403:
+                print('WARN: getJson Forbidden url: ' + url)
+            elif result.status_code == 404:
+                print('WARN: getJson Not Found url: ' + url)
+            else:
+                print('WARN: getJson url: ' + url +
+                      ' failed with error code ' +
+                      str(result.status_code))
         return result.json()
     except requests.exceptions.RequestException as e:
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-                  'headers: ' + str(sessionHeaders2) + ' ' +
-                  'params: ' + str(sessionParams))
-            print(e)
+            print('ERROR: getJson failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(sessionHeaders2) + ', ' +
+                  'params: ' + str(sessionParams) + ', ' + str(e))
     except ValueError as e:
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-                  'headers: ' + str(sessionHeaders2) + ' ' +
-                  'params: ' + str(sessionParams) + ' ' + str(e))
+            print('ERROR: getJson failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(sessionHeaders2) + ', ' +
+                  'params: ' + str(sessionParams) + ', ' + str(e))
     except SocketError as e:
         if not quiet:
             if e.errno == errno.ECONNRESET:

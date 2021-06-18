@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "RSS Feeds"
 
 
 def rss2TagHeader(hashtag: str, httpPrefix: str, domainFull: str) -> str:

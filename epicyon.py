@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Commandline Interface"
 
 import os
 import shutil
@@ -1631,7 +1632,7 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    getActorJson(args.actor, args.http, args.gnunet, debug)
+    getActorJson(args.domain, args.actor, args.http, args.gnunet, debug)
     sys.exit()
 
 if args.followers:
