@@ -119,7 +119,7 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
                 print('WARN: getJson Not Found url: ' + url)
-            elif result.status_code != 200:
+            else:
                 print('WARN: getJson url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code))
