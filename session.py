@@ -13,6 +13,7 @@ from utils import urlPermitted
 import json
 from socket import error as SocketError
 import errno
+from http.client import HTTPConnection
 
 baseDirectory = None
 
@@ -104,9 +105,24 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
         if not quiet:
             print('WARN: getJson failed, no session specified for getJson')
         return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
     try:
         result = session.get(url, headers=sessionHeaders,
                              params=sessionParams, timeout=timeoutSec)
+        if result.status_code != 200:
+            if result.status_code == 401:
+                print('WARN: getJson Unauthorized url: ' + url)
+            elif result.status_code == 403:
+                print('WARN: getJson Forbidden url: ' + url)
+            elif result.status_code == 404:
+                print('WARN: getJson Not Found url: ' + url)
+            elif result.status_code != 200:
+                print('WARN: getJson url: ' + url +
+                      ' failed with error code ' +
+                      str(result.status_code))
         return result.json()
     except requests.exceptions.RequestException as e:
         sessionHeaders2 = sessionHeaders.copy()
