@@ -1632,7 +1632,7 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    getActorJson(args.actor, args.http, args.gnunet, debug)
+    getActorJson(args.domain, args.actor, args.http, args.gnunet, debug)
     sys.exit()
 
 if args.followers:

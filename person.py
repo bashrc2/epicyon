@@ -1209,7 +1209,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getActorJson(handle: str, http: bool, gnunet: bool,
+def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                  debug: bool, quiet=False) -> ({}, {}):
     """Returns the actor json
     """
@@ -1354,7 +1354,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         }
         personJson = \
             getJson(session, personUrl, asHeader, None,
-                    debug, __version__, httpPrefix, None, 20, quiet)
+                    debug, __version__, httpPrefix, hostDomain, 20, quiet)
         if personJson:
             if not quiet:
                 pprint(personJson)

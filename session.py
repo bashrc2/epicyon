@@ -113,18 +113,17 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-                  'headers: ' + str(sessionHeaders2) + ' ' +
-                  'params: ' + str(sessionParams))
-            print(e)
+            print('ERROR: getJson failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(sessionHeaders2) + ', ' +
+                  'params: ' + str(sessionParams) + ', ' + str(e))
     except ValueError as e:
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-                  'headers: ' + str(sessionHeaders2) + ' ' +
-                  'params: ' + str(sessionParams) + ' ' + str(e))
+            print('ERROR: getJson failed, url: ' + str(url) + ', ' +
+                  'headers: ' + str(sessionHeaders2) + ', ' +
+                  'params: ' + str(sessionParams) + ', ' + str(e))
     except SocketError as e:
         if not quiet:
             if e.errno == errno.ECONNRESET:

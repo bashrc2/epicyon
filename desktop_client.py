@@ -726,7 +726,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     if isPGPEncrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        content = pgpDecrypt(content, actor)
+        content = pgpDecrypt(domain, content, actor)
         if isPGPEncrypted(content):
             sayStr = 'Message could not be decrypted'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
@@ -837,7 +837,8 @@ def _desktopShowProfile(session, nickname: str, domain: str,
     isHttp = False
     if 'http://' in actor:
         isHttp = True
-    actorJson, asHeader = getActorJson(actor, isHttp, False, False, True)
+    actorJson, asHeader = \
+        getActorJson(domain, actor, isHttp, False, False, True)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -855,7 +856,8 @@ def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
     """Shows the profile for a handle
     Returns the actor json
     """
-    actorJson, asHeader = getActorJson(handle, False, False, False, True)
+    actorJson, asHeader = \
+        getActorJson(domain, handle, False, False, False, True)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -1183,7 +1185,7 @@ def _desktopNewDMbase(session, toHandle: str,
             for after in range(randint(1, 16)):
                 paddedMessage += ' '
         cipherText = \
-            pgpEncryptToActor(paddedMessage, toHandle)
+            pgpEncryptToActor(domain, paddedMessage, toHandle)
         if not cipherText:
             sayStr = \
                 toHandle + ' has no PGP public key. ' + \

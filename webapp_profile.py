@@ -80,7 +80,7 @@ def htmlProfileAfterSearch(cssCache: {},
     elif httpPrefix == 'gnunet':
         gnunet = True
     profileJson, asHeader = \
-        getActorJson(profileHandle, http, gnunet, debug, False)
+        getActorJson(domain, profileHandle, http, gnunet, debug, False)
     if not profileJson:
         return None
 

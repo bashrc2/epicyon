@@ -332,12 +332,13 @@ def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
     return encryptResult
 
 
-def _getPGPPublicKeyFromActor(handle: str, actorJson=None) -> str:
+def _getPGPPublicKeyFromActor(domain: str, handle: str, actorJson=None) -> str:
     """Searches tags on the actor to see if there is any PGP
     public key specified
     """
     if not actorJson:
-        actorJson, asHeader = getActorJson(handle, False, False, False, True)
+        actorJson, asHeader = \
+            getActorJson(domain, handle, False, False, False, True)
     if not actorJson:
         return None
     if not actorJson.get('attachment'):
@@ -369,18 +370,18 @@ def hasLocalPGPkey() -> bool:
     return False
 
 
-def pgpEncryptToActor(content: str, toHandle: str) -> str:
+def pgpEncryptToActor(domain: str, content: str, toHandle: str) -> str:
     """PGP encrypt a message to the given actor or handle
     """
     # get the actor and extract the pgp public key from it
-    recipientPubKey = _getPGPPublicKeyFromActor(toHandle)
+    recipientPubKey = _getPGPPublicKeyFromActor(domain, toHandle)
     if not recipientPubKey:
         return None
     # encrypt using the recipient public key
     return _pgpEncrypt(content, recipientPubKey)
 
 
-def pgpDecrypt(content: str, fromHandle: str) -> str:
+def pgpDecrypt(domain: str, content: str, fromHandle: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
     fromHandle can be a handle or actor url
     """
@@ -391,7 +392,7 @@ def pgpDecrypt(content: str, fromHandle: str) -> str:
     if containsPGPPublicKey(content):
         pubKey = extractPGPPublicKey(content)
     else:
-        pubKey = _getPGPPublicKeyFromActor(content, fromHandle)
+        pubKey = _getPGPPublicKeyFromActor(domain, content, fromHandle)
     if pubKey:
         _pgpImportPubKey(pubKey)
 
