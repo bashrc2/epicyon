@@ -473,17 +473,19 @@ class PubServer(BaseHTTPRequestHandler):
             return None
         return agentDomain
 
-    def _blockedUserAgent(self) -> bool:
+    def _blockedUserAgent(self, callingDomain: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
         agentDomain = self._userAgentDomain()
+        blockedUA = False
         if not agentDomain:
             if self.server.userAgentDomainRequired:
                 return True
-            return False
-        blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
-        if blockedUA and self.server.debug:
-            print('Blocked User agent: ' + agentDomain)
+            return blockedUA
+        if not agentDomain.startswith(callingDomain):
+            blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
+            if blockedUA and self.server.debug:
+                print('Blocked User agent: ' + agentDomain)
         return blockedUA
 
     def _requestHTTP(self) -> bool:
@@ -10628,7 +10630,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        if self._blockedUserAgent():
+        if self._blockedUserAgent(callingDomain):
             self._400()
             return
 
@@ -14130,7 +14132,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        if self._blockedUserAgent():
+        if self._blockedUserAgent(callingDomain):
             self._400()
             return
 
