@@ -37,13 +37,14 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from siteactive import siteIsActive
+from utils import userAgentDomain
 from utils import camelCaseSplit
 from utils import decodedHost
 from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
-from siteactive import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
@@ -3938,10 +3939,21 @@ def _testRoles() -> None:
     assert not actorHasRole(actorJson, "artist")
 
 
+def _testUserAgentDomain() -> None:
+    print('testUserAgentDomain')
+    userAgent = \
+        'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
+    assert userAgentDomain(userAgent, False) == 'mastodon.something'
+    userAgent = \
+        'Mozilla/70.0 (X11; Linux x86_64; rv:1.0) Gecko/20450101 Firefox/1.0'
+    assert userAgentDomain(userAgent, False) is None
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
     _testFunctions()
+    _testUserAgentDomain()
     _testRoles()
     _testSkills()
     _testSpoofGeolocation()

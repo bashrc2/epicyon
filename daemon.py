@@ -207,6 +207,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import userAgentDomain
 from utils import isLocalNetworkAddress
 from utils import permittedDir
 from utils import isAccountDir
@@ -452,35 +453,13 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _userAgentDomain(self) -> str:
-        """Returns the domain specified within User-Agent header
-        """
-        if not self.headers.get('User-Agent'):
-            return None
-        agentStr = self.headers.get('User-Agent')
-        if '+http' not in agentStr:
-            return None
-        agentDomain = agentStr.split('+http')[1].strip()
-        if '://' in agentDomain:
-            agentDomain = agentDomain.split('://')[1]
-        if '/' in agentDomain:
-            agentDomain = agentDomain.split('/')[0]
-        if ')' in agentDomain:
-            agentDomain = agentDomain.split(')')[0].strip()
-        if ' ' in agentDomain:
-            agentDomain = agentDomain.replace(' ', '')
-        if ';' in agentDomain:
-            agentDomain = agentDomain.replace(';', '')
-        if '.' not in agentDomain:
-            return None
-        if self.server.debug:
-            print('User-Agent Domain: ' + agentDomain)
-        return agentDomain
-
     def _blockedUserAgent(self, callingDomain: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
-        agentDomain = self._userAgentDomain()
+        agentDomain = None
+        if self.headers.get('User-Agent'):
+            agentDomain = userAgentDomain(self.headers['User-Agent'],
+                                          self.server.debug)
         blockedUA = False
         if not agentDomain:
             if self.server.userAgentDomainRequired:
