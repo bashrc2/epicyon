@@ -14130,6 +14130,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
+        if self._blockedUserAgent():
+            self._400()
+            return
+
         self.server.POSTbusy = True
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
