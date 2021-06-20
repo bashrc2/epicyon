@@ -458,15 +458,15 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.headers.get('User-Agent'):
             return None
         agentStr = self.headers.get('User-Agent')
-        if '+' not in agentStr:
+        if '+http' not in agentStr:
             return None
-        agentDomain = agentStr.split('+')[1].strip()
+        agentDomain = agentStr.split('+http')[1].strip()
         if '://' in agentDomain:
             agentDomain = agentDomain.split('://')[1]
         if '/' in agentDomain:
             agentDomain = agentDomain.split('/')[0]
         if ')' in agentDomain:
-            agentDomain = agentDomain.split('/')[0].strip()
+            agentDomain = agentDomain.split(')')[0].strip()
         if ' ' in agentDomain:
             agentDomain = agentDomain.replace(' ', '')
         if ';' in agentDomain:
