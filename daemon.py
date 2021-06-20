@@ -467,11 +467,11 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             return True
 
-        blockedUA = False
         if not agentDomain:
             if self.server.userAgentDomainRequired:
                 return True
-            return blockedUA
+            return False
+        blockedUA = False
         if not agentDomain.startswith(callingDomain):
             blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
             # if self.server.debug:
