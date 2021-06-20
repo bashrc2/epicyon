@@ -248,7 +248,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                       path: str, GETmethod: bool,
                       messageBodyDigest: str,
                       messageBodyJsonStr: str, debug: bool,
-                      noRecencyCheck=False) -> bool:
+                      noRecencyCheck: bool = False) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
     publicKeyPem - the public key from an rsa key pair

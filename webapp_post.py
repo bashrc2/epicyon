@@ -1159,11 +1159,11 @@ def individualPostAsHtml(allowDownloads: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str,
-                         showRepeats=True,
-                         showIcons=False,
-                         manuallyApprovesFollowers=False,
-                         showPublicOnly=False,
-                         storeToCache=True) -> str:
+                         showRepeats: bool = True,
+                         showIcons: bool = False,
+                         manuallyApprovesFollowers: bool = False,
+                         showPublicOnly: bool = False,
+                         storeToCache: bool = True) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:

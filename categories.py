@@ -30,7 +30,8 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     return ''
 
 
-def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
+def getHashtagCategories(baseDir: str,
+                         recent: bool = False, category: str = None) -> None:
     """Returns a dictionary containing hashtag categories
     """
     maxTagLength = 42
@@ -128,7 +129,7 @@ def _validHashtagCategory(category: str) -> bool:
 
 
 def setHashtagCategory(baseDir: str, hashtag: str, category: str,
-                       force=False) -> bool:
+                       force: bool = False) -> bool:
     """Sets the category for the hashtag
     """
     if not _validHashtagCategory(category):

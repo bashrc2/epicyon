@@ -736,7 +736,8 @@ def _autoTag(baseDir: str, nickname: str, domain: str,
 
 def addHtmlTags(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, content: str,
-                recipients: [], hashtags: {}, isJsonContent=False) -> str:
+                recipients: [], hashtags: {},
+                isJsonContent: bool = False) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
@@ -923,7 +924,7 @@ def extractMediaInFormPOST(postBytes, boundary, name: str):
 
 
 def saveMediaInFormPOST(mediaBytes, debug: bool,
-                        filenameBase=None) -> (str, str):
+                        filenameBase: str = None) -> (str, str):
     """Saves the given media bytes extracted from http form POST
     Returns the filename and attachment type
     """
@@ -1007,8 +1008,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     return filename, attachmentMediaType
 
 
-def extractTextFieldsInPOST(postBytes, boundary, debug: bool,
-                            unitTestData=None) -> {}:
+def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
+                            unitTestData: str = None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """

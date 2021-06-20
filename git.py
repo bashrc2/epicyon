@@ -44,7 +44,7 @@ def _getGitProjectName(baseDir: str, nickname: str, domain: str,
 def isGitPatch(baseDir: str, nickname: str, domain: str,
                messageType: str,
                subject: str, content: str,
-               checkProjectName=True) -> bool:
+               checkProjectName: bool = True) -> bool:
     """Is the given post content a git patch?
     """
     if messageType != 'Note' and \

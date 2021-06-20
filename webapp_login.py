@@ -55,7 +55,7 @@ def htmlLogin(cssCache: {}, translate: {},
               baseDir: str,
               httpPrefix: str, domain: str,
               systemLanguage: str,
-              autocomplete=True) -> str:
+              autocomplete: bool = True) -> str:
     """Shows the login screen
     """
     accounts = noOfAccounts(baseDir)

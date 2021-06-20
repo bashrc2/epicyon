@@ -220,7 +220,7 @@ def getDefaultPersonContext() -> str:
 def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str, saveToFile: bool,
                       manualFollowerApproval: bool,
-                      password=None) -> (str, str, {}, {}):
+                      password: str = None) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     privateKeyPem, publicKeyPem = generateRSAKey()
@@ -421,7 +421,7 @@ def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
 
 def createGroup(baseDir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, saveToFile: bool,
-                password=None) -> (str, str, {}, {}):
+                password: str = None) -> (str, str, {}, {}):
     """Returns a group
     """
     (privateKeyPem, publicKeyPem,
@@ -451,7 +451,7 @@ def savePersonQrcode(baseDir: str,
 def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  httpPrefix: str, saveToFile: bool,
                  manualFollowerApproval: bool,
-                 password=None) -> (str, str, {}, {}):
+                 password: str = None) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not validNickname(domain, nickname):
@@ -1210,7 +1210,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
 
 
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
-                 debug: bool, quiet=False) -> ({}, {}):
+                 debug: bool, quiet: bool = False) -> ({}, {}):
     """Returns the actor json
     """
     if debug:

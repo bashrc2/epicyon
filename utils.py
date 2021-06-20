@@ -110,7 +110,8 @@ def hasUsersPath(pathStr: str) -> bool:
     return False
 
 
-def validPostDate(published: str, maxAgeDays=90, debug=False) -> bool:
+def validPostDate(published: str, maxAgeDays: int = 90,
+                  debug: bool = False) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
     baselineTime = datetime.datetime(1970, 1, 1)
@@ -545,7 +546,7 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
     return jsonObject
 
 
-def getStatusNumber(publishedStr=None) -> (str, str):
+def getStatusNumber(publishedStr: str = None) -> (str, str):
     """Returns the status number and published date
     """
     if not publishedStr:
@@ -1146,7 +1147,7 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
 
 
 def locatePost(baseDir: str, nickname: str, domain: str,
-               postUrl: str, replies=False) -> str:
+               postUrl: str, replies: bool = False) -> str:
     """Returns the filename for the given status post url
     """
     if not replies:
@@ -1535,7 +1536,7 @@ def isPublicPost(postJsonObject: {}) -> bool:
     return False
 
 
-def copytree(src: str, dst: str, symlinks=False, ignore=None):
+def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
     """Copy a directory
     """
     for item in os.listdir(src):

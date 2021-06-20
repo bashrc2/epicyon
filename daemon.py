@@ -1009,7 +1009,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _postToOutbox(self, messageJson: {}, version: str,
-                      postToNickname=None) -> bool:
+                      postToNickname: str = None) -> bool:
         """post is received by the outbox
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -14878,14 +14878,19 @@ def runDaemon(logLoginFailures: bool,
               baseDir: str, domain: str,
               onionDomain: str, i2pDomain: str,
               YTReplacementDomain: str,
-              port=80, proxyPort=80, httpPrefix='https',
-              fedList=[], maxMentions=10, maxEmoji=10,
-              authenticatedFetch=False,
-              proxyType=None, maxReplies=64,
-              domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
-              allowDeletion=False, debug=False, unitTest=False,
-              instanceOnlySkillsSearch=False, sendThreads=[],
-              manualFollowerApproval=True) -> None:
+              port: int = 80, proxyPort: int = 80,
+              httpPrefix: str = 'https',
+              fedList: [] = [],
+              maxMentions: int = 10, maxEmoji: int = 10,
+              authenticatedFetch: bool = False,
+              proxyType: str = None, maxReplies: int = 64,
+              domainMaxPostsPerDay: int = 8640,
+              accountMaxPostsPerDay: int = 864,
+              allowDeletion: bool = False,
+              debug: bool = False, unitTest: bool = False,
+              instanceOnlySkillsSearch: bool = False,
+              sendThreads: [] = [],
+              manualFollowerApproval: bool = True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
