@@ -473,7 +473,8 @@ class PubServer(BaseHTTPRequestHandler):
             agentDomain = agentDomain.replace(';', '')
         if '.' not in agentDomain:
             return None
-        print('User-Agent Domain: ' + agentDomain)
+        if self.server.debug:
+            print('User-Agent Domain: ' + agentDomain)
         return agentDomain
 
     def _blockedUserAgent(self, callingDomain: str) -> bool:
