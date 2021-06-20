@@ -458,10 +458,14 @@ class PubServer(BaseHTTPRequestHandler):
         """
         agentDomain = None
         if self.headers.get('User-Agent'):
-            agentDomain = userAgentDomain(self.headers['User-Agent'],
-                                          self.server.debug)
+            agentStr = self.headers['User-Agent']
+            if 'bot/' in agentStr or 'bot-' in agentStr.lower():
+                print('Crawler: ' + agentStr)
+                return True
+            agentDomain = userAgentDomain(agentStr, self.server.debug)
         else:
             return True
+
         blockedUA = False
         if not agentDomain:
             if self.server.userAgentDomainRequired:
