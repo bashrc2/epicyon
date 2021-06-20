@@ -488,7 +488,8 @@ class PubServer(BaseHTTPRequestHandler):
             return blockedUA
         if not agentDomain.startswith(callingDomain):
             blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
-            if blockedUA and self.server.debug:
+            # if self.server.debug:
+            if blockedUA:
                 print('Blocked User agent: ' + agentDomain)
         return blockedUA
 
