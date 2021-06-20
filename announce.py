@@ -253,7 +253,8 @@ def sendAnnounceViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newAnnounceJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newAnnounceJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
         print('WARN: announce not posted')
@@ -332,7 +333,8 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, unAnnounceJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, domainFull,
+                          session, unAnnounceJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
         print('WARN: undo announce not posted')

@@ -246,7 +246,8 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newSkillJson, [], inboxUrl,
+        postJson(httpPrefix, domainFull,
+                 session, newSkillJson, [], inboxUrl,
                  headers, 30, True)
     if not postResult:
         if debug:

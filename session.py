@@ -149,7 +149,8 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
     return None
 
 
-def postJson(session, postJsonObject: {}, federationList: [],
+def postJson(httpPrefix: str, domainFull: str,
+             session, postJsonObject: {}, federationList: [],
              inboxUrl: str, headers: {}, timeoutSec: int = 60,
              quiet: bool = False) -> str:
     """Post a json message to the inbox of another person
@@ -159,6 +160,11 @@ def postJson(session, postJsonObject: {}, federationList: [],
         if not quiet:
             print('postJson: ' + inboxUrl + ' not permitted')
         return None
+
+    sessionHeaders = headers
+    sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
+    sessionHeaders['User-Agent'] += \
+        '; +' + httpPrefix + '://' + domainFull + '/'
 
     try:
         postResult = \

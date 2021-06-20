@@ -205,7 +205,8 @@ def sendLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newLikeJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newLikeJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
         if debug:
@@ -287,7 +288,8 @@ def sendUndoLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newUndoLikeJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newUndoLikeJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
         if debug:

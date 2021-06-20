@@ -588,7 +588,8 @@ def pgpPublicKeyUpload(baseDir: str, session,
     tries = 0
     while tries < 4:
         postResult = \
-            postJson(session, actorUpdate, [], inboxUrl,
+            postJson(httpPrefix, domainFull,
+                     session, actorUpdate, [], inboxUrl,
                      headers, 5, quiet)
         if postResult:
             break
