@@ -207,6 +207,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import userAgentDomain
 from utils import isLocalNetworkAddress
 from utils import permittedDir
 from utils import isAccountDir
@@ -452,38 +453,44 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _userAgentDomain(self) -> str:
-        """Returns the domain specified within User-Agent header
-        """
-        if not self.headers.get('User-Agent'):
-            return None
-        agentStr = self.headers.get('User-Agent')
-        if '+' not in agentStr:
-            return None
-        agentDomain = agentStr.split('+')[1].strip()
-        if '://' in agentDomain:
-            agentDomain = agentDomain.split('://')[1]
-        if '/' in agentDomain:
-            agentDomain = agentDomain.split('/')[0]
-        if ' ' in agentDomain:
-            agentDomain = agentDomain.replace(' ', '')
-        if ';' in agentDomain:
-            agentDomain = agentDomain.replace(';', '')
-        if '.' not in agentDomain:
-            return None
-        return agentDomain
-
-    def _blockedUserAgent(self) -> bool:
+    def _blockedUserAgent(self, callingDomain: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
-        agentDomain = self._userAgentDomain()
-        if not agentDomain:
-            if self.server.userAgentDomainRequired:
+        agentDomain = None
+        agentStr = None
+        if self.headers.get('User-Agent'):
+            agentStr = self.headers['User-Agent']
+            # is this a web crawler? If so the block it
+            agentStrLower = agentStr.lower()
+            if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
+                print('Blocked Crawler: ' + agentStr)
                 return True
+            # get domain name from User-Agent
+            agentDomain = userAgentDomain(agentStr, self.server.debug)
+        else:
+            # no User-Agent header is present
+            return True
+
+        # is the User-Agent type blocked? eg. "Mastodon"
+        if self.server.userAgentsBlocked:
+            blockedUA = False
+            for agentName in self.server.userAgentsBlocked:
+                if agentName in agentStr:
+                    blockedUA = True
+                    break
+            if blockedUA:
+                return True
+
+        if not agentDomain:
             return False
-        blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
-        if blockedUA and self.server.debug:
-            print('Blocked User agent: ' + agentDomain)
+
+        # is the User-Agent domain blocked
+        blockedUA = False
+        if not agentDomain.startswith(callingDomain):
+            blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
+            # if self.server.debug:
+            if blockedUA:
+                print('Blocked User agent: ' + agentDomain)
         return blockedUA
 
     def _requestHTTP(self) -> bool:
@@ -10628,7 +10635,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        if self._blockedUserAgent():
+        if self._blockedUserAgent(callingDomain):
             self._400()
             return
 
@@ -14130,6 +14137,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
+        if self._blockedUserAgent(callingDomain):
+            self._400()
+            return
+
         self.server.POSTbusy = True
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
@@ -14881,7 +14892,7 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(userAgentDomainRequired: bool,
+def runDaemon(userAgentsBlocked: [],
               logLoginFailures: bool,
               city: str,
               showNodeInfoAccounts: bool,
@@ -15008,9 +15019,8 @@ def runDaemon(userAgentDomainRequired: bool,
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
 
-    # if set to True then the calling domain must be specified
-    # within the User-Agent header
-    httpd.userAgentDomainRequired = userAgentDomainRequired
+    # list of blocked user agent types within the User-Agent header
+    httpd.userAgentsBlocked = userAgentsBlocked
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess

@@ -2433,3 +2433,27 @@ def permittedDir(path: str) -> bool:
        path.startswith('/accounts'):
         return False
     return True
+
+
+def userAgentDomain(userAgent: str, debug: bool) -> str:
+    """If the User-Agent string contains a domain
+    then return it
+    """
+    if '+http' not in userAgent:
+        return None
+    agentDomain = userAgent.split('+http')[1].strip()
+    if '://' in agentDomain:
+        agentDomain = agentDomain.split('://')[1]
+    if '/' in agentDomain:
+        agentDomain = agentDomain.split('/')[0]
+    if ')' in agentDomain:
+        agentDomain = agentDomain.split(')')[0].strip()
+    if ' ' in agentDomain:
+        agentDomain = agentDomain.replace(' ', '')
+    if ';' in agentDomain:
+        agentDomain = agentDomain.replace(';', '')
+    if '.' not in agentDomain:
+        return None
+    if debug:
+        print('User-Agent Domain: ' + agentDomain)
+    return agentDomain
