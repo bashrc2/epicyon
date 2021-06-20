@@ -393,8 +393,8 @@ def _textToSpeech(sayStr: str, screenreader: str,
 def _sayCommand(content: str, sayStr: str, screenreader: str,
                 systemLanguage: str,
                 espeak=None,
-                speakerName='screen reader',
-                speakerGender='They/Them') -> None:
+                speakerName: str = 'screen reader',
+                speakerGender: str = 'They/Them') -> None:
     """Speaks a command
     """
     print(content)
@@ -927,9 +927,9 @@ def _desktopShowBox(indent: str,
                     yourActor: str, boxName: str, boxJson: {},
                     translate: {},
                     screenreader: str, systemLanguage: str, espeak,
-                    pageNumber=1,
-                    newReplies=False,
-                    newDMs=False) -> bool:
+                    pageNumber: int = 1,
+                    newReplies: bool = False,
+                    newDMs: bool = False) -> bool:
     """Shows online timeline
     """
     numberWidth = 2

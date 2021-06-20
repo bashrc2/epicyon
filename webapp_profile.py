@@ -444,8 +444,8 @@ def htmlProfile(rssIconAtTop: bool,
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
-                extraJson=None, pageNumber=None,
-                maxItemsPerPage=None) -> str:
+                extraJson: {} = None, pageNumber: int = None,
+                maxItemsPerPage: int = None) -> str:
     """Show the profile page as html
     """
     nickname = profileJson['preferredUsername']

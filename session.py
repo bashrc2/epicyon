@@ -84,8 +84,9 @@ def urlExists(session, url: str, timeoutSec=3,
 
 
 def getJson(session, url: str, headers: {}, params: {}, debug: bool,
-            version='1.2.0', httpPrefix='https',
-            domain='testdomain', timeoutSec=20, quiet=False) -> {}:
+            version: str = '1.2.0', httpPrefix: str = 'https',
+            domain: str = 'testdomain',
+            timeoutSec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))
@@ -149,7 +150,8 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
 
 
 def postJson(session, postJsonObject: {}, federationList: [],
-             inboxUrl: str, headers: {}, timeoutSec=60, quiet=False) -> str:
+             inboxUrl: str, headers: {}, timeoutSec: int = 60,
+             quiet: bool = False) -> str:
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
@@ -195,8 +197,8 @@ def postJsonString(session, postJsonStr: str,
                    inboxUrl: str,
                    headers: {},
                    debug: bool,
-                   timeoutSec=30,
-                   quiet=False) -> (bool, bool):
+                   timeoutSec: int = 30,
+                   quiet: bool = False) -> (bool, bool):
     """Post a json message string to the inbox of another person
     The second boolean returned is true if the send is unauthorized
     NOTE: Here we post a string rather than the original json so that

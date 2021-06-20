@@ -121,8 +121,8 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
     return ctr
 
 
-def _getPersonKey(nickname: str, domain: str, baseDir: str, keyType='public',
-                  debug=False):
+def _getPersonKey(nickname: str, domain: str, baseDir: str,
+                  keyType: str = 'public', debug: bool = False):
     """Returns the public or private key of a person
     """
     handle = nickname + '@' + domain
@@ -147,7 +147,7 @@ def _cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}, sourceId=0, debug=False) -> str:
+def getUserUrl(wfRequest: {}, sourceId: int = 0, debug: bool = False) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wfRequest.get('links'):
@@ -871,15 +871,18 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     mediaType: str, imageDescription: str, city: str,
                     isModerationReport: bool,
                     isArticle: bool,
-                    inReplyTo=None,
-                    inReplyToAtomUri=None, subject=None, schedulePost=False,
-                    eventDate=None, eventTime=None, location=None,
-                    eventUUID=None, category=None, joinMode=None,
-                    endDate=None, endTime=None,
-                    maximumAttendeeCapacity=None,
-                    repliesModerationOption=None,
-                    anonymousParticipationEnabled=None,
-                    eventStatus=None, ticketUrl=None) -> {}:
+                    inReplyTo: str = None,
+                    inReplyToAtomUri: str = None,
+                    subject: str = None, schedulePost: bool = False,
+                    eventDate: str = None, eventTime: str = None,
+                    location: str = None,
+                    eventUUID: str = None, category: str = None,
+                    joinMode: str = None,
+                    endDate: str = None, endTime: str = None,
+                    maximumAttendeeCapacity: int = None,
+                    repliesModerationOption: str = None,
+                    anonymousParticipationEnabled: bool = None,
+                    eventStatus: str = None, ticketUrl: str = None) -> {}:
     """Creates a message
     """
     content = removeInvalidChars(content)
@@ -1399,10 +1402,12 @@ def createPublicPost(baseDir: str,
                      clientToServer: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
-                     inReplyTo=None, inReplyToAtomUri=None, subject=None,
-                     schedulePost=False,
-                     eventDate=None, eventTime=None, location=None,
-                     isArticle=False) -> {}:
+                     inReplyTo: str = None,
+                     inReplyToAtomUri: str = None, subject: str = None,
+                     schedulePost: bool = False,
+                     eventDate: str = None, eventTime: str = None,
+                     location: str = None,
+                     isArticle: bool = False) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)
@@ -1472,9 +1477,10 @@ def createBlogPost(baseDir: str,
                    clientToServer: bool, commentsEnabled: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, city: str,
-                   inReplyTo=None, inReplyToAtomUri=None, subject=None,
-                   schedulePost=False,
-                   eventDate=None, eventTime=None, location=None) -> {}:
+                   inReplyTo: str = None, inReplyToAtomUri: str = None,
+                   subject: str = None, schedulePost: bool = False,
+                   eventDate: str = None, eventTime: str = None,
+                   location: str = None) -> {}:
     blogJson = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
@@ -1570,9 +1576,10 @@ def createUnlistedPost(baseDir: str,
                        clientToServer: bool, commentsEnabled: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, city: str,
-                       inReplyTo=None, inReplyToAtomUri=None, subject=None,
-                       schedulePost=False,
-                       eventDate=None, eventTime=None, location=None) -> {}:
+                       inReplyTo: str = None, inReplyToAtomUri: str = None,
+                       subject: str = None, schedulePost: bool = False,
+                       eventDate: str = None, eventTime: str = None,
+                       location: str = None) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domainFull = getFullDomain(domain, port)
@@ -1599,10 +1606,11 @@ def createFollowersOnlyPost(baseDir: str,
                             clientToServer: bool, commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, city: str,
-                            inReplyTo=None, inReplyToAtomUri=None,
-                            subject=None, schedulePost=False,
-                            eventDate=None, eventTime=None,
-                            location=None) -> {}:
+                            inReplyTo: str = None,
+                            inReplyToAtomUri: str = None,
+                            subject: str = None, schedulePost: bool = False,
+                            eventDate: str = None, eventTime: str = None,
+                            location: str = None) -> {}:
     """Followers only post
     """
     domainFull = getFullDomain(domain, port)
@@ -1629,14 +1637,15 @@ def createEventPost(baseDir: str,
                     clientToServer: bool, commentsEnabled: bool,
                     attachImageFilename: str, mediaType: str,
                     imageDescription: str, city: str,
-                    subject=None, schedulePost=False,
-                    eventDate=None, eventTime=None,
-                    location=None, category=None, joinMode=None,
-                    endDate=None, endTime=None,
-                    maximumAttendeeCapacity=None,
-                    repliesModerationOption=None,
-                    anonymousParticipationEnabled=None,
-                    eventStatus=None, ticketUrl=None) -> {}:
+                    subject: str = None, schedulePost: str = False,
+                    eventDate: str = None, eventTime: str = None,
+                    location: str = None, category: str = None,
+                    joinMode: str = None,
+                    endDate: str = None, endTime: str = None,
+                    maximumAttendeeCapacity: int = None,
+                    repliesModerationOption: str = None,
+                    anonymousParticipationEnabled: bool = None,
+                    eventStatus: str = None, ticketUrl: str = None) -> {}:
     """Mobilizon-type Event post
     """
     if not attachImageFilename:
@@ -1714,11 +1723,12 @@ def createDirectMessagePost(baseDir: str,
                             commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, city: str,
-                            inReplyTo=None, inReplyToAtomUri=None,
-                            subject=None, debug=False,
-                            schedulePost=False,
-                            eventDate=None, eventTime=None,
-                            location=None) -> {}:
+                            inReplyTo: str = None,
+                            inReplyToAtomUri: str = None,
+                            subject: str = None, debug: bool = False,
+                            schedulePost: bool = False,
+                            eventDate: str = None, eventTime: str = None,
+                            location: str = None) -> {}:
     """Direct Message post
     """
     content = resolvePetnames(baseDir, nickname, domain, content)
@@ -1759,7 +1769,7 @@ def createReportPost(baseDir: str,
                      clientToServer: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
-                     debug: bool, subject=None) -> {}:
+                     debug: bool, subject: str = None) -> {}:
     """Send a report to moderators
     """
     domainFull = getFullDomain(domain, port)
@@ -1916,8 +1926,8 @@ def sendPost(projectVersion: str,
              federationList: [], sendThreads: [], postLog: [],
              cachedWebfingers: {}, personCache: {},
              isArticle: bool,
-             debug=False, inReplyTo=None,
-             inReplyToAtomUri=None, subject=None) -> int:
+             debug: bool = False, inReplyTo: str = None,
+             inReplyToAtomUri: str = None, subject: str = None) -> int:
     """Post to another inbox
     """
     withDigest = True
@@ -2035,8 +2045,10 @@ def sendPostViaServer(projectVersion: str,
                       attachImageFilename: str, mediaType: str,
                       imageDescription: str, city: str,
                       cachedWebfingers: {}, personCache: {},
-                      isArticle: bool, debug=False, inReplyTo=None,
-                      inReplyToAtomUri=None, subject=None) -> int:
+                      isArticle: bool, debug: bool = False,
+                      inReplyTo: str = None,
+                      inReplyToAtomUri: str = None,
+                      subject: str = None) -> int:
     """Send a post via a proxy (c2s)
     """
     if not session:
@@ -2784,7 +2796,7 @@ def sendToFollowersThread(session, baseDir: str,
 def createInbox(recentPostsCache: {},
                 session, baseDir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                pageNumber=None) -> {}:
+                pageNumber: int = None) -> {}:
     return _createBoxIndexed(recentPostsCache,
                              session, baseDir, 'inbox',
                              nickname, domain, port, httpPrefix,
@@ -2794,7 +2806,7 @@ def createInbox(recentPostsCache: {},
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             port: int, httpPrefix: str, itemsPerPage: int,
-                            headerOnly: bool, pageNumber=None) -> {}:
+                            headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                              nickname, domain,
                              port, httpPrefix, itemsPerPage, headerOnly,
@@ -2804,7 +2816,7 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
 def createEventsTimeline(recentPostsCache: {},
                          session, baseDir: str, nickname: str, domain: str,
                          port: int, httpPrefix: str, itemsPerPage: int,
-                         headerOnly: bool, pageNumber=None) -> {}:
+                         headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                              nickname, domain,
                              port, httpPrefix, itemsPerPage, headerOnly,
@@ -2814,7 +2826,7 @@ def createEventsTimeline(recentPostsCache: {},
 def createDMTimeline(recentPostsCache: {},
                      session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
-                     headerOnly: bool, pageNumber=None) -> {}:
+                     headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed(recentPostsCache,
                              session, baseDir, 'dm', nickname,
                              domain, port, httpPrefix, itemsPerPage,
@@ -2824,7 +2836,7 @@ def createDMTimeline(recentPostsCache: {},
 def createRepliesTimeline(recentPostsCache: {},
                           session, baseDir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
-                          headerOnly: bool, pageNumber=None) -> {}:
+                          headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -2833,7 +2845,7 @@ def createRepliesTimeline(recentPostsCache: {},
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber=None) -> {}:
+                        headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -2842,7 +2854,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
 
 def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str, itemsPerPage: int,
-                           headerOnly: bool, pageNumber=None) -> {}:
+                           headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlfeatures', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -2851,7 +2863,7 @@ def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber=None) -> {}:
+                        headerOnly: bool, pageNumber: int = None) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -2862,7 +2874,7 @@ def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
                        positiveVoting: bool, votingTimeMins: int,
-                       pageNumber=None) -> {}:
+                       pageNumber: int = None) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'outbox', 'news',
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -2873,7 +2885,7 @@ def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
                  port: int, httpPrefix: str,
                  itemsPerPage: int, headerOnly: bool, authorized: bool,
-                 pageNumber=None) -> {}:
+                 pageNumber: int = None) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'outbox',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, authorized,
@@ -2882,7 +2894,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                     pageNumber=None) -> {}:
+                     pageNumber: int = None) -> {}:
     boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
     boxname = 'moderation'
 
@@ -3137,7 +3149,7 @@ def _createBoxIndexed(recentPostsCache: {},
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
                       newswireVotesThreshold: int, positiveVoting: bool,
-                      votingTimeMins: int, pageNumber=None) -> {}:
+                      votingTimeMins: int, pageNumber: int = None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -3611,9 +3623,9 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
 
 
 def downloadFollowCollection(followType: str,
-                             session, httpPrefix,
-                             actor: str, pageNumber=1,
-                             noOfPages=1, debug=False) -> []:
+                             session, httpPrefix: str,
+                             actor: str, pageNumber: int = 1,
+                             noOfPages: int = 1, debug: bool = False) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """

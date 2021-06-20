@@ -21,7 +21,7 @@ from webapp_utils import htmlFooter
 
 
 def getHashtagCategoriesFeed(baseDir: str,
-                             hashtagCategories=None) -> str:
+                             hashtagCategories: {} = None) -> str:
     """Returns an rss feed for hashtag categories
     """
     if not hashtagCategories:

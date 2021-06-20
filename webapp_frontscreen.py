@@ -98,8 +98,9 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
                     accessKeys: {},
-                    extraJson=None,
-                    pageNumber=None, maxItemsPerPage=None) -> str:
+                    extraJson: {} = None,
+                    pageNumber: int = None,
+                    maxItemsPerPage: int = None) -> str:
     """Show the news instance front screen
     """
     nickname = profileJson['preferredUsername']

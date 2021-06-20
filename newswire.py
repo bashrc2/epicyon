@@ -145,7 +145,7 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     ]
 
 
-def _validFeedDate(pubDate: str, debug=False) -> bool:
+def _validFeedDate(pubDate: str, debug: bool = False) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
     postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
@@ -226,7 +226,7 @@ def loadHashtagCategories(baseDir: str, language: str) -> None:
 
 def _xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
                                 maxCategoriesFeedItemSizeKb: int,
-                                force=False) -> None:
+                                force: bool = False) -> None:
     """Updates hashtag categories based upon an rss feed
     """
     rssItems = xmlStr.split('<item>')

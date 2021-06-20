@@ -238,8 +238,8 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
 
 def unfollowAccount(baseDir: str, nickname: str, domain: str,
                     followNickname: str, followDomain: str,
-                    followFile='following.txt',
-                    debug=False) -> bool:
+                    followFile: str = 'following.txt',
+                    debug: bool = False) -> bool:
     """Removes a person to the follow list
     """
     if ':' in domain:
@@ -287,7 +287,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
 
 def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
                         followerNickname: str, followerDomain: str,
-                        debug=False) -> bool:
+                        debug: bool = False) -> bool:
     """Remove a follower of a person
     """
     return unfollowAccount(baseDir, nickname, domain,

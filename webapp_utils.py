@@ -104,7 +104,7 @@ def _markdownReplaceQuotes(markdown: str) -> str:
     return result
 
 
-def _markdownReplaceLinks(markdown: str, images=False) -> str:
+def _markdownReplaceLinks(markdown: str, images: bool = False) -> str:
     """Replaces markdown links with html
     Optionally replace image links
     """
@@ -442,7 +442,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
-                           force=False, debug=False) -> str:
+                           force: bool = False, debug: bool = False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -1327,9 +1327,9 @@ def htmlHideFromScreenReader(htmlStr: str) -> str:
 
 
 def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
-                           subHeading=None,
-                           usersPath=None, translate=None,
-                           followApprovals=False) -> str:
+                           subHeading: str = None,
+                           usersPath: str = None, translate: {} = None,
+                           followApprovals: bool = False) -> str:
     """Given a set of links return the html for keyboard navigation
     """
     htmlStr = '<div class="transparent"><ul>\n'

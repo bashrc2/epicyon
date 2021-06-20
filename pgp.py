@@ -332,7 +332,8 @@ def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
     return encryptResult
 
 
-def _getPGPPublicKeyFromActor(domain: str, handle: str, actorJson=None) -> str:
+def _getPGPPublicKeyFromActor(domain: str, handle: str,
+                              actorJson: {} = None) -> str:
     """Searches tags on the actor to see if there is any PGP
     public key specified
     """

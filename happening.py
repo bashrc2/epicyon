@@ -173,8 +173,8 @@ def _isHappeningPost(postJsonObject: {}) -> bool:
 
 
 def getTodaysEvents(baseDir: str, nickname: str, domain: str,
-                    currYear=None, currMonthNumber=None,
-                    currDayOfMonth=None) -> {}:
+                    currYear: int = None, currMonthNumber: int = None,
+                    currDayOfMonth: int = None) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
