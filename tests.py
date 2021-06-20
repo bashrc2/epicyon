@@ -519,8 +519,10 @@ def createServerAlice(path: str, domain: str, port: int,
     showNodeInfoVersion = True
     city = 'London, England'
     logLoginFailures = False
+    userAgentDomainRequired = False
     print('Server running: Alice')
-    runDaemon(logLoginFailures, city,
+    runDaemon(userAgentDomainRequired,
+              logLoginFailures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
@@ -622,8 +624,10 @@ def createServerBob(path: str, domain: str, port: int,
     showNodeInfoVersion = True
     city = 'London, England'
     logLoginFailures = False
+    userAgentDomainRequired = False
     print('Server running: Bob')
-    runDaemon(logLoginFailures, city,
+    runDaemon(userAgentDomainRequired,
+              logLoginFailures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
@@ -680,8 +684,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     showNodeInfoVersion = True
     city = 'London, England'
     logLoginFailures = False
+    userAgentDomainRequired = False
     print('Server running: Eve')
-    runDaemon(logLoginFailures, city,
+    runDaemon(userAgentDomainRequired,
+              logLoginFailures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,

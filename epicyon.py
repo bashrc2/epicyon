@@ -274,6 +274,12 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
+parser.add_argument("--userAgentDomainRequired",
+                    dest='userAgentDomainRequired',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether User-Agent header must " +
+                    "contain the calling domain")
 parser.add_argument("--showPublishAsIcon",
                     dest='showPublishAsIcon',
                     type=str2bool, nargs='?',
@@ -2516,6 +2522,11 @@ showNodeInfoVersion = \
 if showNodeInfoVersion is not None:
     args.showNodeInfoVersion = bool(showNodeInfoVersion)
 
+userAgentDomainRequired = \
+    getConfigParam(baseDir, 'userAgentDomainRequired')
+if userAgentDomainRequired is not None:
+    args.userAgentDomainRequired = bool(userAgentDomainRequired)
+
 city = \
     getConfigParam(baseDir, 'city')
 if city is not None:
@@ -2552,7 +2563,8 @@ if args.registration:
         print('New registrations closed')
 
 if __name__ == "__main__":
-    runDaemon(args.logLoginFailures,
+    runDaemon(args.userAgentDomainRequired,
+              args.logLoginFailures,
               args.city,
               args.showNodeInfoAccounts,
               args.showNodeInfoVersion,

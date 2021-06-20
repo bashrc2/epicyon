@@ -452,6 +452,40 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
+    def _userAgentDomain(self) -> str:
+        """Returns the domain specified within User-Agent header
+        """
+        if not self.headers.get('User-Agent'):
+            return None
+        agentStr = self.headers.get('User-Agent')
+        if '+' not in agentStr:
+            return None
+        agentDomain = agentStr.split('+')[1].strip()
+        if '://' in agentDomain:
+            agentDomain = agentDomain.split('://')[1]
+        if '/' in agentDomain:
+            agentDomain = agentDomain.split('/')[0]
+        if ' ' in agentDomain:
+            agentDomain = agentDomain.replace(' ', '')
+        if ';' in agentDomain:
+            agentDomain = agentDomain.replace(';', '')
+        if '.' not in agentDomain:
+            return None
+        return agentDomain
+
+    def _blockedUserAgent(self) -> bool:
+        """Should a GET or POST be blocked based upon its user agent?
+        """
+        agentDomain = self._userAgentDomain()
+        if not agentDomain:
+            if self.server.userAgentDomainRequired:
+                return True
+            return False
+        blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
+        if blockedUA and self.server.debug:
+            print('Blocked User agent: ' + agentDomain)
+        return blockedUA
+
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
         """
@@ -10594,6 +10628,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
+        if self._blockedUserAgent():
+            self._400()
+            return
+
         GETstartTime = time.time()
         GETtimings = {}
 
@@ -14843,7 +14881,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(logLoginFailures: bool,
+def runDaemon(userAgentDomainRequired: bool,
+              logLoginFailures: bool,
               city: str,
               showNodeInfoAccounts: bool,
               showNodeInfoVersion: bool,
@@ -14968,6 +15007,10 @@ def runDaemon(logLoginFailures: bool,
     }
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
+
+    # if set to True then the calling domain must be specified
+    # within the User-Agent header
+    httpd.userAgentDomainRequired = userAgentDomainRequired
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
