@@ -457,20 +457,34 @@ class PubServer(BaseHTTPRequestHandler):
         """Should a GET or POST be blocked based upon its user agent?
         """
         agentDomain = None
+        agentStr = None
         if self.headers.get('User-Agent'):
             agentStr = self.headers['User-Agent']
+            # is this a web crawler? If so the block it
             agentStrLower = agentStr.lower()
             if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
                 print('Crawler: ' + agentStr)
                 return True
+            # get domain name from User-Agent
             agentDomain = userAgentDomain(agentStr, self.server.debug)
         else:
+            # no User-Agent header is present
             return True
 
-        if not agentDomain:
-            if self.server.userAgentDomainRequired:
+        # is the User-Agent type blocked? eg. "Mastodon"
+        if self.server.userAgentsBlocked:
+            blockedUA = False
+            for agentName in self.server.userAgentsBlocked:
+                if agentName in agentStr:
+                    blockedUA = True
+                    break
+            if blockedUA:
                 return True
+
+        if not agentDomain:
             return False
+
+        # is the User-Agent domain blocked
         blockedUA = False
         if not agentDomain.startswith(callingDomain):
             blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
@@ -14878,7 +14892,7 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(userAgentDomainRequired: bool,
+def runDaemon(userAgentsBlocked: [],
               logLoginFailures: bool,
               city: str,
               showNodeInfoAccounts: bool,
@@ -15005,9 +15019,8 @@ def runDaemon(userAgentDomainRequired: bool,
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
 
-    # if set to True then the calling domain must be specified
-    # within the User-Agent header
-    httpd.userAgentDomainRequired = userAgentDomainRequired
+    # list of blocked user agent types within the User-Agent header
+    httpd.userAgentsBlocked = userAgentsBlocked
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
