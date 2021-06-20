@@ -465,12 +465,15 @@ class PubServer(BaseHTTPRequestHandler):
             agentDomain = agentDomain.split('://')[1]
         if '/' in agentDomain:
             agentDomain = agentDomain.split('/')[0]
+        if ')' in agentDomain:
+            agentDomain = agentDomain.split('/')[0].strip()
         if ' ' in agentDomain:
             agentDomain = agentDomain.replace(' ', '')
         if ';' in agentDomain:
             agentDomain = agentDomain.replace(';', '')
         if '.' not in agentDomain:
             return None
+        print('User-Agent Domain: ' + agentDomain)
         return agentDomain
 
     def _blockedUserAgent(self, callingDomain: str) -> bool:
