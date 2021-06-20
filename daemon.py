@@ -459,7 +459,8 @@ class PubServer(BaseHTTPRequestHandler):
         agentDomain = None
         if self.headers.get('User-Agent'):
             agentStr = self.headers['User-Agent']
-            if 'bot/' in agentStr or 'bot-' in agentStr.lower():
+            agentStrLower = agentStr.lower()
+            if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
                 print('Crawler: ' + agentStr)
                 return True
             agentDomain = userAgentDomain(agentStr, self.server.debug)
