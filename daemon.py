@@ -460,6 +460,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('User-Agent'):
             agentDomain = userAgentDomain(self.headers['User-Agent'],
                                           self.server.debug)
+        else:
+            return True
         blockedUA = False
         if not agentDomain:
             if self.server.userAgentDomainRequired:
