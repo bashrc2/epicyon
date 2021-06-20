@@ -410,7 +410,8 @@ def sendShareViaServer(baseDir, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newShareJson, [], inboxUrl, headers, 30, True)
+        postJson(httpPrefix, fromDomainFull,
+                 session, newShareJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
             print('DEBUG: POST share failed for c2s to ' + inboxUrl)
@@ -500,7 +501,8 @@ def sendUndoShareViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, undoShareJson, [], inboxUrl,
+        postJson(httpPrefix, fromDomainFull,
+                 session, undoShareJson, [], inboxUrl,
                  headers, 30, True)
     if not postResult:
         if debug:

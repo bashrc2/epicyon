@@ -4198,7 +4198,8 @@ def sendBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newBlockJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
         print('WARN: block unable to post')
@@ -4273,7 +4274,8 @@ def sendMuteViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newMuteJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newMuteJson, [], inboxUrl,
                           headers, 3, True)
     if postResult is None:
         print('WARN: mute unable to post')
@@ -4354,7 +4356,8 @@ def sendUndoMuteViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, undoMuteJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, undoMuteJson, [], inboxUrl,
                           headers, 3, True)
     if postResult is None:
         print('WARN: undo mute unable to post')
@@ -4438,7 +4441,8 @@ def sendUndoBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newBlockJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
         print('WARN: unblock unable to post')

@@ -418,7 +418,8 @@ def sendBookmarkViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBookmarkJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, domainFull,
+                          session, newBookmarkJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
         if debug:
@@ -502,7 +503,8 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBookmarkJson, [], inboxUrl,
+    postResult = postJson(httpPrefix, domainFull,
+                          session, newBookmarkJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
         if debug:
