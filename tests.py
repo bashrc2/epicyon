@@ -125,7 +125,7 @@ thrBob = None
 thrEve = None
 
 
-def testHttpSigNew():
+def _testHttpSigNew():
     print('testHttpSigNew')
     messageBodyJson = {"hello": "world"}
     messageBodyJsonStr = json.dumps(messageBodyJson)
@@ -398,12 +398,12 @@ def _testHttpsigBase(withDigest):
     shutil.rmtree(path)
 
 
-def testHttpsig():
+def _testHttpsig():
     _testHttpsigBase(True)
     _testHttpsigBase(False)
 
 
-def testCache():
+def _testCache():
     print('testCache')
     personUrl = "cat@cardboard.box"
     personJson = {
@@ -417,15 +417,15 @@ def testCache():
     assert result['test'] == 'This is a test'
 
 
-def testThreadsFunction(param: str):
+def _testThreadsFunction(param: str):
     for i in range(10000):
         time.sleep(2)
 
 
-def testThreads():
+def _testThreads():
     print('testThreads')
     thr = \
-        threadWithTrace(target=testThreadsFunction,
+        threadWithTrace(target=_testThreadsFunction,
                         args=('test',),
                         daemon=True)
     thr.start()
@@ -1151,7 +1151,7 @@ def testFollowBetweenServers():
     shutil.rmtree(baseDir + '/.tests')
 
 
-def testFollowersOfPerson():
+def _testFollowersOfPerson():
     print('testFollowersOfPerson')
     currDir = os.getcwd()
     nickname = 'mxpop'
@@ -1200,7 +1200,7 @@ def testFollowersOfPerson():
     shutil.rmtree(baseDir)
 
 
-def testNoOfFollowersOnDomain():
+def _testNoOfFollowersOnDomain():
     print('testNoOfFollowersOnDomain')
     currDir = os.getcwd()
     nickname = 'mxpop'
@@ -1261,7 +1261,7 @@ def testNoOfFollowersOnDomain():
     shutil.rmtree(baseDir)
 
 
-def testGroupFollowers():
+def _testGroupFollowers():
     print('testGroupFollowers')
 
     currDir = os.getcwd()
@@ -1306,7 +1306,7 @@ def testGroupFollowers():
     shutil.rmtree(baseDir)
 
 
-def testFollows():
+def _testFollows():
     print('testFollows')
     currDir = os.getcwd()
     nickname = 'test529'
@@ -1383,7 +1383,7 @@ def testFollows():
     shutil.rmtree(baseDir)
 
 
-def testCreatePerson():
+def _testCreatePerson():
     print('testCreatePerson')
     currDir = os.getcwd()
     nickname = 'test382'
@@ -1417,7 +1417,7 @@ def testCreatePerson():
     shutil.rmtree(baseDir)
 
 
-def testAuthentication():
+def _testAuthentication():
     print('testAuthentication')
     currDir = os.getcwd()
     nickname = 'test8743'
@@ -1824,7 +1824,7 @@ def testClientToServer():
     # shutil.rmtree(bobDir)
 
 
-def testActorParsing():
+def _testActorParsing():
     print('testActorParsing')
     actor = 'https://mydomain:72/users/mynick'
     domain, port = getDomainFromActor(actor)
@@ -1871,7 +1871,7 @@ def testActorParsing():
     assert nickname == 'othernick'
 
 
-def testWebLinks():
+def _testWebLinks():
     print('testWebLinks')
 
     exampleText = \
@@ -1998,7 +1998,7 @@ def testWebLinks():
     assert resultText == exampleText
 
 
-def testAddEmoji():
+def _testAddEmoji():
     print('testAddEmoji')
     content = "Emoji :lemon: :strawberry: :banana:"
     httpPrefix = 'http'
@@ -2045,7 +2045,7 @@ def testAddEmoji():
     shutil.rmtree(baseDirOriginal + '/.tests')
 
 
-def testGetStatusNumber():
+def _testGetStatusNumber():
     print('testGetStatusNumber')
     prevStatusNumber = None
     for i in range(1, 20):
@@ -2056,7 +2056,7 @@ def testGetStatusNumber():
         prevStatusNumber = int(statusNumber)
 
 
-def testJsonString() -> None:
+def _testJsonString() -> None:
     print('testJsonString')
     filename = '.epicyon_tests_testJsonString.json'
     messageStr = "Crème brûlée यह एक परीक्षण ह"
@@ -2072,7 +2072,7 @@ def testJsonString() -> None:
     os.remove(filename)
 
 
-def testSaveLoadJson():
+def _testSaveLoadJson():
     print('testSaveLoadJson')
     testJson = {
         "param1": 3,
@@ -2092,7 +2092,7 @@ def testSaveLoadJson():
     os.remove(testFilename)
 
 
-def testTheme():
+def _testTheme():
     print('testTheme')
     css = 'somestring --background-value: 24px; --foreground-value: 24px;'
     result = setCSSparam(css, 'background-value', '32px')
@@ -2110,7 +2110,7 @@ def testTheme():
     assert result == '--background-value: 32px; --foreground-value: 24px;'
 
 
-def testRecentPostsCache():
+def _testRecentPostsCache():
     print('testRecentPostsCache')
     recentPostsCache = {}
     maxRecentPosts = 3
@@ -2126,7 +2126,7 @@ def testRecentPostsCache():
     assert len(recentPostsCache['html'].items()) == maxRecentPosts
 
 
-def testRemoveTextFormatting():
+def _testRemoveTextFormatting():
     print('testRemoveTextFormatting')
     testStr = '<p>Text without formatting</p>'
     resultStr = removeTextFormatting(testStr)
@@ -2136,7 +2136,7 @@ def testRemoveTextFormatting():
     assert(resultStr == '<p>Text with formatting</p>')
 
 
-def testJsonld():
+def _testJsonld():
     print("testJsonld")
 
     jldDocument = {
@@ -2225,14 +2225,14 @@ def testJsonld():
            signedDocument2['signature']['signatureValue'])
 
 
-def testSiteIsActive():
+def _testSiteIsActive():
     print('testSiteIsActive')
     assert(siteIsActive('https://archive.org'))
     assert(siteIsActive('https://mastodon.social'))
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
 
-def testRemoveHtml():
+def _testRemoveHtml():
     print('testRemoveHtml')
     testStr = 'This string has no html.'
     assert(removeHtml(testStr) == testStr)
@@ -2249,7 +2249,7 @@ def testRemoveHtml():
            'This string contains a url http://somesite.or.other')
 
 
-def testDangerousCSS():
+def _testDangerousCSS():
     print('testDangerousCSS')
     baseDir = os.getcwd()
     for subdir, dirs, files in os.walk(baseDir):
@@ -2260,7 +2260,7 @@ def testDangerousCSS():
         break
 
 
-def testDangerousMarkup():
+def _testDangerousMarkup():
     print('testDangerousMarkup')
     allowLocalNetworkAccess = False
     content = '<p>This is a valid message</p>'
@@ -2322,7 +2322,7 @@ def testDangerousMarkup():
     assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
 
-def runHtmlReplaceQuoteMarks():
+def _runHtmlReplaceQuoteMarks():
     print('htmlReplaceQuoteMarks')
     testStr = 'The "cat" "sat" on the mat'
     result = htmlReplaceQuoteMarks(testStr)
@@ -2341,7 +2341,7 @@ def runHtmlReplaceQuoteMarks():
     assert result == '“hello” <a href="somesite.html">“test” html</a>'
 
 
-def testJsonPostAllowsComments():
+def _testJsonPostAllowsComments():
     print('testJsonPostAllowsComments')
     postJsonObject = {
         "id": "123"
@@ -2373,7 +2373,7 @@ def testJsonPostAllowsComments():
     assert not jsonPostAllowsComments(postJsonObject)
 
 
-def testRemoveIdEnding():
+def _testRemoveIdEnding():
     print('testRemoveIdEnding')
     testStr = 'https://activitypub.somedomain.net'
     resultStr = removeIdEnding(testStr)
@@ -2399,7 +2399,7 @@ def testRemoveIdEnding():
         'https://event.somedomain.net/users/foo/statuses/34544814814'
 
 
-def testValidContentWarning():
+def _testValidContentWarning():
     print('testValidContentWarning')
     resultStr = validContentWarning('Valid content warning')
     assert resultStr == 'Valid content warning'
@@ -2412,7 +2412,7 @@ def testValidContentWarning():
     assert resultStr == 'Invalid content warning'
 
 
-def testTranslations():
+def _testTranslations():
     print('testTranslations')
     languagesStr = ('ar', 'ca', 'cy', 'de', 'es', 'fr', 'ga',
                     'hi', 'it', 'ja', 'oc', 'pt', 'ru', 'zh')
@@ -2438,7 +2438,7 @@ def testTranslations():
             assert langJson.get(englishStr)
 
 
-def testConstantTimeStringCheck():
+def _testConstantTimeStringCheck():
     print('testConstantTimeStringCheck')
     assert constantTimeStringCheck('testing', 'testing')
     assert not constantTimeStringCheck('testing', '1234')
@@ -2476,7 +2476,7 @@ def testConstantTimeStringCheck():
     assert int(timeDiffMicroseconds) < 10
 
 
-def testReplaceEmailQuote():
+def _testReplaceEmailQuote():
     print('testReplaceEmailQuote')
     testStr = '<p>This content has no quote.</p>'
     assert htmlReplaceEmailQuote(testStr) == testStr
@@ -2534,7 +2534,7 @@ def testReplaceEmailQuote():
     assert resultStr == expectedStr
 
 
-def testRemoveHtmlTag():
+def _testRemoveHtmlTag():
     print('testRemoveHtmlTag')
     testStr = "<p><img width=\"864\" height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
@@ -2543,7 +2543,7 @@ def testRemoveHtmlTag():
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
 
-def testHashtagRuleTree():
+def _testHashtagRuleTree():
     print('testHashtagRuleTree')
     operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
 
@@ -2675,7 +2675,7 @@ def testHashtagRuleTree():
     assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
 
-def testGetNewswireTags():
+def _testGetNewswireTags():
     print('testGetNewswireTags')
     rssDescription = '<img src="https://somesite/someimage.jpg" ' + \
         'class="misc-stuff" alt="#ExcitingHashtag" ' + \
@@ -2689,7 +2689,7 @@ def testGetNewswireTags():
     assert '#ExcitingHashtag' in tags
 
 
-def testFirstParagraphFromString():
+def _testFirstParagraphFromString():
     print('testFirstParagraphFromString')
     testStr = \
         '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
@@ -2704,7 +2704,7 @@ def testFirstParagraphFromString():
     assert resultStr == testStr
 
 
-def testParseFeedDate():
+def _testParseFeedDate():
     print('testParseFeedDate')
 
     pubDate = "2020-12-14T00:08:06+00:00"
@@ -2724,7 +2724,7 @@ def testParseFeedDate():
     assert publishedDate == "2020-11-22 18:51:33+00:00"
 
 
-def testValidNickname():
+def _testValidNickname():
     print('testValidNickname')
     domain = 'somedomain.net'
 
@@ -2741,7 +2741,7 @@ def testValidNickname():
     assert not validNickname(domain, nickname)
 
 
-def testGuessHashtagCategory() -> None:
+def _testGuessHashtagCategory() -> None:
     print('testGuessHashtagCategory')
     hashtagCategories = {
         "foo": ["swan", "goose"],
@@ -2754,7 +2754,7 @@ def testGuessHashtagCategory() -> None:
     assert guess == "bar"
 
 
-def testGetMentionedPeople() -> None:
+def _testGetMentionedPeople() -> None:
     print('testGetMentionedPeople')
     baseDir = os.getcwd()
 
@@ -2768,7 +2768,7 @@ def testGetMentionedPeople() -> None:
     assert actors[1] == "https://cave.site/users/bat"
 
 
-def testReplyToPublicPost() -> None:
+def _testReplyToPublicPost() -> None:
     baseDir = os.getcwd()
     nickname = 'test7492362'
     domain = 'other.site'
@@ -2810,7 +2810,7 @@ def testReplyToPublicPost() -> None:
         httpPrefix + '://rat.site/users/ninjarodent'
 
 
-def getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
+def _getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
     """Returns the arguments of a function call given lines
     of source code and a starting line number
     """
@@ -2848,7 +2848,7 @@ def getFunctionCalls(name: str, lines: [], startLineCtr: int,
     return callsFunctions
 
 
-def functionArgsMatch(callArgs: [], funcArgs: []):
+def _functionArgsMatch(callArgs: [], funcArgs: []):
     """Do the function artuments match the function call arguments
     """
     if len(callArgs) == len(funcArgs):
@@ -2872,7 +2872,7 @@ def functionArgsMatch(callArgs: [], funcArgs: []):
     return callArgsCtr >= funcArgsCtr
 
 
-def testFunctions():
+def _testFunctions():
     print('testFunctions')
     function = {}
     functionProperties = {}
@@ -2959,11 +2959,11 @@ def testFunctions():
                         lineCtr += 1
                         continue
                     callArgs = \
-                        getFunctionCallArgs(name,
-                                            modules[modName]['lines'],
-                                            lineCtr)
-                    if not functionArgsMatch(callArgs,
-                                             functionProperties[name]['args']):
+                        _getFunctionCallArgs(name,
+                                             modules[modName]['lines'],
+                                             lineCtr)
+                    funcArgs = functionProperties[name]['args']
+                    if not _functionArgsMatch(callArgs, funcArgs):
                         print('Call to function ' + name +
                               ' does not match its arguments')
                         print('def args: ' +
@@ -3012,7 +3012,7 @@ def testFunctions():
         'runSharesExpireWatchdog',
         'getThisWeeksEvents',
         'getAvailability',
-        'testThreadsFunction',
+        '_testThreadsFunction',
         'createServerAlice',
         'createServerBob',
         'createServerEve',
@@ -3224,7 +3224,7 @@ def testFunctions():
               '-Gsep=+120 -Tx11 epicyon.dot')
 
 
-def testLinksWithinPost() -> None:
+def _testLinksWithinPost() -> None:
     baseDir = os.getcwd()
     nickname = 'test27636'
     domain = 'rando.site'
@@ -3276,7 +3276,7 @@ def testLinksWithinPost() -> None:
     assert postJsonObject['object']['content'] == content
 
 
-def testMastoApi():
+def _testMastoApi():
     print('testMastoApi')
     nickname = 'ThisIsATestNickname'
     mastoId = getMastoApiV1IdFromNickname(nickname)
@@ -3287,7 +3287,7 @@ def testMastoApi():
     assert nickname2 == nickname
 
 
-def testDomainHandling():
+def _testDomainHandling():
     print('testDomainHandling')
     testDomain = 'localhost'
     assert decodedHost(testDomain) == testDomain
@@ -3299,7 +3299,7 @@ def testDomainHandling():
     assert decodedHost(testDomain) == "españa.icom.museum"
 
 
-def testPrepareHtmlPostNickname():
+def _testPrepareHtmlPostNickname():
     print('testPrepareHtmlPostNickname')
     postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
     postHtml += '<a class="imageAnchor" href="/users/bob?repeatprivate='
@@ -3314,7 +3314,7 @@ def testPrepareHtmlPostNickname():
     assert result == expectedHtml
 
 
-def testValidHashTag():
+def _testValidHashTag():
     print('testValidHashTag')
     assert validHashTag('ThisIsValid')
     assert validHashTag('ThisIsValid12345')
@@ -3329,7 +3329,7 @@ def testValidHashTag():
     assert not validHashTag('This=IsAlsoNotValid"')
 
 
-def testMarkdownToHtml():
+def _testMarkdownToHtml():
     print('testMarkdownToHtml')
     markdown = 'This is just plain text'
     assert markdownToHtml(markdown) == markdown
@@ -3376,7 +3376,7 @@ def testMarkdownToHtml():
         'Or <img class="markdownImage" src="/cat.jpg" alt="pounce" />.'
 
 
-def testExtractTextFieldsInPOST():
+def _testExtractTextFieldsInPOST():
     print('testExtractTextFieldsInPOST')
     boundary = '-----------------------------116202748023898664511855843036'
     formData = '-----------------------------116202748023898664511855' + \
@@ -3413,7 +3413,7 @@ def testExtractTextFieldsInPOST():
     assert fields['message'] == 'This is a ; test'
 
 
-def testSpeakerReplaceLinks():
+def _testSpeakerReplaceLinks():
     print('testSpeakerReplaceLinks')
     text = 'The Tor Project: For Snowflake volunteers: If you use ' + \
         'Firefox, Brave, or Chrome, our Snowflake extension turns ' + \
@@ -3431,7 +3431,7 @@ def testSpeakerReplaceLinks():
     assert 'Web link support.torproject.org' in result
 
 
-def testCamelCaseSplit():
+def _testCamelCaseSplit():
     print('testCamelCaseSplit')
     testStr = 'ThisIsCamelCase'
     assert camelCaseSplit(testStr) == 'This Is Camel Case'
@@ -3440,7 +3440,7 @@ def testCamelCaseSplit():
     assert camelCaseSplit(testStr) == 'Notcamelcase test'
 
 
-def testEmojiImages():
+def _testEmojiImages():
     print('testEmojiImages')
     emojiFilename = 'emoji/default_emoji.json'
     assert os.path.isfile(emojiFilename)
@@ -3454,7 +3454,7 @@ def testEmojiImages():
         assert os.path.isfile(emojiImageFilename)
 
 
-def testExtractPGPPublicKey():
+def _testExtractPGPPublicKey():
     print('testExtractPGPPublicKey')
     pubKey = \
         '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
@@ -3601,7 +3601,7 @@ def testUpdateActor():
         shutil.rmtree(baseDir + '/.tests')
 
 
-def testRemovePostInteractions() -> None:
+def _testRemovePostInteractions() -> None:
     print('testRemovePostInteractions')
     postJsonObject = {
         "type": "Create",
@@ -3633,7 +3633,7 @@ def testRemovePostInteractions() -> None:
     assert not removePostInteractions(postJsonObject, False)
 
 
-def testSpoofGeolocation() -> None:
+def _testSpoofGeolocation() -> None:
     print('testSpoofGeolocation')
     nogoLine = \
         'NEW YORK, USA: 73.951W,40.879,  73.974W,40.83,  ' + \
@@ -3882,7 +3882,7 @@ def testSpoofGeolocation() -> None:
         kmlFile.close()
 
 
-def testSkills() -> None:
+def _testSkills() -> None:
     print('testSkills')
     actorJson = {
         'hasOccupation': [
@@ -3908,7 +3908,7 @@ def testSkills() -> None:
     assert actorSkillValue(actorJson, 'gardening') == 70
 
 
-def testRoles() -> None:
+def _testRoles() -> None:
     print('testRoles')
     actorJson = {
         'hasOccupation': [
@@ -3935,60 +3935,60 @@ def testRoles() -> None:
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
-    testFunctions()
-    testRoles()
-    testSkills()
-    testSpoofGeolocation()
-    testRemovePostInteractions()
-    testExtractPGPPublicKey()
-    testEmojiImages()
-    testCamelCaseSplit()
-    testSpeakerReplaceLinks()
-    testExtractTextFieldsInPOST()
-    testMarkdownToHtml()
-    testValidHashTag()
-    testPrepareHtmlPostNickname()
-    testDomainHandling()
-    testMastoApi()
-    testLinksWithinPost()
-    testReplyToPublicPost()
-    testGetMentionedPeople()
-    testGuessHashtagCategory()
-    testValidNickname()
-    testParseFeedDate()
-    testFirstParagraphFromString()
-    testGetNewswireTags()
-    testHashtagRuleTree()
-    testRemoveHtmlTag()
-    testReplaceEmailQuote()
-    testConstantTimeStringCheck()
-    testTranslations()
-    testValidContentWarning()
-    testRemoveIdEnding()
-    testJsonPostAllowsComments()
-    runHtmlReplaceQuoteMarks()
-    testDangerousCSS()
-    testDangerousMarkup()
-    testRemoveHtml()
-    testSiteIsActive()
-    testJsonld()
-    testRemoveTextFormatting()
-    testWebLinks()
-    testRecentPostsCache()
-    testTheme()
-    testSaveLoadJson()
-    testJsonString()
-    testGetStatusNumber()
-    testAddEmoji()
-    testActorParsing()
-    testHttpsig()
-    testHttpSigNew()
-    testCache()
-    testThreads()
-    testCreatePerson()
-    testAuthentication()
-    testFollowersOfPerson()
-    testNoOfFollowersOnDomain()
-    testFollows()
-    testGroupFollowers()
+    _testFunctions()
+    _testRoles()
+    _testSkills()
+    _testSpoofGeolocation()
+    _testRemovePostInteractions()
+    _testExtractPGPPublicKey()
+    _testEmojiImages()
+    _testCamelCaseSplit()
+    _testSpeakerReplaceLinks()
+    _testExtractTextFieldsInPOST()
+    _testMarkdownToHtml()
+    _testValidHashTag()
+    _testPrepareHtmlPostNickname()
+    _testDomainHandling()
+    _testMastoApi()
+    _testLinksWithinPost()
+    _testReplyToPublicPost()
+    _testGetMentionedPeople()
+    _testGuessHashtagCategory()
+    _testValidNickname()
+    _testParseFeedDate()
+    _testFirstParagraphFromString()
+    _testGetNewswireTags()
+    _testHashtagRuleTree()
+    _testRemoveHtmlTag()
+    _testReplaceEmailQuote()
+    _testConstantTimeStringCheck()
+    _testTranslations()
+    _testValidContentWarning()
+    _testRemoveIdEnding()
+    _testJsonPostAllowsComments()
+    _runHtmlReplaceQuoteMarks()
+    _testDangerousCSS()
+    _testDangerousMarkup()
+    _testRemoveHtml()
+    _testSiteIsActive()
+    _testJsonld()
+    _testRemoveTextFormatting()
+    _testWebLinks()
+    _testRecentPostsCache()
+    _testTheme()
+    _testSaveLoadJson()
+    _testJsonString()
+    _testGetStatusNumber()
+    _testAddEmoji()
+    _testActorParsing()
+    _testHttpsig()
+    _testHttpSigNew()
+    _testCache()
+    _testThreads()
+    _testCreatePerson()
+    _testAuthentication()
+    _testFollowersOfPerson()
+    _testNoOfFollowersOnDomain()
+    _testFollows()
+    _testGroupFollowers()
     print('Tests succeeded\n')
