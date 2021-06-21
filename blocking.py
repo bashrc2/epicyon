@@ -186,9 +186,12 @@ def updateBlockedCache(baseDir: str,
         return blockedCacheLastUpdated
     with open(globalBlockingFilename, 'r') as fpBlocked:
         blockedLines = fpBlocked.readlines()
+        # remove newlines
+        for index in range(len(blockedLines)):
+            blockedLines[index] = blockedLines[index].replace('\n', '')
+        # update the cache
         blockedCache.clear()
-        for line in blockedLines:
-            blockedCache.append(line.replace('\n', ''))
+        blockedCache += blockedLines
     return currTime
 
 
