@@ -195,6 +195,18 @@ def updateBlockedCache(baseDir: str,
     return currTime
 
 
+def _getShortDomain(domain: str) -> str:
+    """ by checking a shorter version we can thwart adversaries
+    who constantly change their subdomain
+    e.g. subdomain123.mydomain.com becomes mydomain.com
+    """
+    sections = domain.split('.')
+    noOfSections = len(sections)
+    if noOfSections > 2:
+        return sections[noOfSections-2] + '.' + sections[-1]
+    return None
+
+
 def isBlockedDomain(baseDir: str, domain: str,
                     blockedCache: [] = None) -> bool:
     """Is the given domain blocked?
@@ -205,13 +217,7 @@ def isBlockedDomain(baseDir: str, domain: str,
     if isEvil(domain):
         return True
 
-    # by checking a shorter version we can thwart adversaries
-    # who constantly change their subdomain
-    sections = domain.split('.')
-    noOfSections = len(sections)
-    shortDomain = None
-    if noOfSections > 2:
-        shortDomain = domain[noOfSections-2] + '.' + domain[noOfSections-1]
+    shortDomain = _getShortDomain(domain)
 
     if not brochModeIsActive(baseDir):
         if blockedCache:
@@ -257,29 +263,43 @@ def isBlocked(baseDir: str, nickname: str, domain: str,
     if blockNickname and blockDomain:
         blockHandle = blockNickname + '@' + blockDomain
 
-    if blockedCache:
-        for blockedStr in blockedCache:
-            if '*@' + domain in blockedStr:
-                return True
-            if blockHandle:
-                if blockHandle in blockedStr:
+    if not brochModeIsActive(baseDir):
+        # instance level block list
+        if blockedCache:
+            for blockedStr in blockedCache:
+                if '*@' + domain in blockedStr:
                     return True
+                if blockHandle:
+                    if blockHandle in blockedStr:
+                        return True
+        else:
+            globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+            if os.path.isfile(globalBlockingFilename):
+                if '*@' + blockDomain in open(globalBlockingFilename).read():
+                    return True
+                if blockHandle:
+                    if blockHandle in open(globalBlockingFilename).read():
+                        return True
     else:
-        globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-        if os.path.isfile(globalBlockingFilename):
-            if '*@' + blockDomain in open(globalBlockingFilename).read():
+        # instance allow list
+        allowFilename = baseDir + '/accounts/allowedinstances.txt'
+        shortDomain = _getShortDomain(blockDomain)
+        if not shortDomain:
+            if blockDomain not in open(allowFilename).read():
                 return True
-            if blockHandle:
-                if blockHandle in open(globalBlockingFilename).read():
-                    return True
+        else:
+            if shortDomain not in open(allowFilename).read():
+                return True
 
-    allowFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/allowedinstances.txt'
+    # account level allow list
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    allowFilename = accountDir + '/allowedinstances.txt'
     if os.path.isfile(allowFilename):
         if blockDomain not in open(allowFilename).read():
             return True
-    blockingFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/blocking.txt'
+
+    # account level block list
+    blockingFilename = accountDir + '/blocking.txt'
     if os.path.isfile(blockingFilename):
         if '*@' + blockDomain in open(blockingFilename).read():
             return True
