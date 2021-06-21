@@ -14841,6 +14841,8 @@ class EpicyonServer(ThreadingHTTPServer):
             if e.errno != errno.ECONNRESET:
                 print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             pass
+        elif cls is BrokenPipeError:
+            pass
         else:
             print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             return HTTPServer.handle_error(self, request, client_address)
