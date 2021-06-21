@@ -130,6 +130,7 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
 def parseNogoString(nogoLine: str) -> []:
     """Parses a line from locations_nogo.txt and returns the polygon
     """
+    nogoLine = nogoLine.replace('\n', '').replace('\r', '')
     polygonStr = nogoLine.split(':', 1)[1]
     if ';' in polygonStr:
         pts = polygonStr.split(';')
