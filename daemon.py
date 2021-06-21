@@ -15200,7 +15200,7 @@ def runDaemon(userAgentsBlocked: [],
     # This limits the amount of slow disk reads which need to be done
     httpd.blockedCache = []
     httpd.blockedCacheLastUpdated = 0
-    httpd.blockedCacheUpdateSecs = 60
+    httpd.blockedCacheUpdateSecs = 120
     httpd.blockedCacheLastUpdated = \
         updateBlockedCache(baseDir, httpd.blockedCache,
                            httpd.blockedCacheLastUpdated,
