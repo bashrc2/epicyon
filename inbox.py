@@ -353,7 +353,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          originalPostJsonObject: {},
                          messageBytes: str,
                          httpHeaders: {},
-                         postPath: str, debug: bool) -> str:
+                         postPath: str, debug: bool,
+                         blockedCache: []) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -384,7 +385,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                 pprint(postJsonObject)
             print('No post Domain in actor')
             return None
-        if isBlocked(baseDir, nickname, domain, postNickname, postDomain):
+        if isBlocked(baseDir, nickname, domain,
+                     postNickname, postDomain, blockedCache):
             if debug:
                 print('DEBUG: post from ' + postNickname + ' blocked')
             return None
@@ -398,7 +400,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         postJsonObject['object']['inReplyTo']
                     replyDomain, replyPort = \
                         getDomainFromActor(inReplyTo)
-                    if isBlockedDomain(baseDir, replyDomain):
+                    if isBlockedDomain(baseDir, replyDomain, blockedCache):
                         if debug:
                             print('WARN: post contains reply from ' +
                                   str(actor) +
@@ -409,7 +411,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                             getNicknameFromActor(inReplyTo)
                         if replyNickname and replyDomain:
                             if isBlocked(baseDir, nickname, domain,
-                                         replyNickname, replyDomain):
+                                         replyNickname, replyDomain,
+                                         blockedCache):
                                 if debug:
                                     print('WARN: post contains reply from ' +
                                           str(actor) +

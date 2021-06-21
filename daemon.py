@@ -1277,6 +1277,13 @@ class PubServer(BaseHTTPRequestHandler):
         beginSaveTime = time.time()
         # save the json for later queue processing
         messageBytesDecoded = messageBytes.decode('utf-8')
+
+        self.server.blockedCacheLastUpdated = \
+            updateBlockedCache(self.server.baseDir,
+                               self.server.blockedCache,
+                               self.server.blockedCacheLastUpdated,
+                               self.server.blockedCacheUpdateSecs)
+
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir,
                                  self.server.httpPrefix,
@@ -1286,7 +1293,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  messageBytesDecoded,
                                  headersDict,
                                  self.path,
-                                 self.server.debug)
+                                 self.server.debug,
+                                 self.server.blockedCache)
         if queueFilename:
             # add json to the queue
             if queueFilename not in self.server.inboxQueue:
@@ -14833,7 +14841,10 @@ class EpicyonServer(ThreadingHTTPServer):
             if e.errno != errno.ECONNRESET:
                 print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             pass
+        elif cls is BrokenPipeError:
+            pass
         else:
+            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             return HTTPServer.handle_error(self, request, client_address)
 
 
