@@ -9,7 +9,6 @@ __module_group__ = "RSS Feeds"
 
 import os
 import datetime
-from storage import storeValue
 
 
 def getHashtagCategory(baseDir: str, hashtag: str) -> str:
@@ -107,7 +106,8 @@ def _updateHashtagCategories(baseDir: str) -> None:
         categoryListStr += categoryStr + '\n'
 
     # save a list of available categories for quick lookup
-    storeValue(categoryListFilename, categoryListStr, 'writeonly')
+    with open(categoryListFilename, 'w+') as fp:
+        fp.write(categoryListStr)
 
 
 def _validHashtagCategory(category: str) -> bool:
@@ -153,7 +153,8 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
         # don't overwrite any existing categories
         if os.path.isfile(categoryFilename):
             return False
-    if storeValue(categoryFilename, category, 'writeonly'):
+    with open(categoryFilename, 'w+') as fp:
+        fp.write(category)
         _updateHashtagCategories(baseDir)
         return True
 

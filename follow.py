@@ -30,7 +30,6 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from session import getJson
 from session import postJson
-from storage import storeValue
 
 
 def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
@@ -65,7 +64,8 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
                         lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
                     print('lastSeenFilename: ' + lastSeenFilename)
                     if not os.path.isfile(lastSeenFilename):
-                        storeValue(lastSeenFilename, '100', 'writeonly')
+                        with open(lastSeenFilename, 'w+') as fp:
+                            fp.write(str(100))
         break
 
 
@@ -279,7 +279,8 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
             with open(unfollowedFilename, "a+") as f:
                 f.write(handleToUnfollow + '\n')
     else:
-        storeValue(unfollowedFilename, handleToUnfollow, 'write')
+        with open(unfollowedFilename, "w+") as f:
+            f.write(handleToUnfollow + '\n')
 
     return True
 
@@ -606,7 +607,8 @@ def _storeFollowRequest(baseDir: str,
                 print('DEBUG: ' + approveHandleStored +
                       ' is already awaiting approval')
     else:
-        storeValue(approveFollowsFilename, approveHandleStored, 'write')
+        with open(approveFollowsFilename, "w+") as fp:
+            fp.write(approveHandleStored + '\n')
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -763,7 +765,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                               'Failed to write entry to followers file ' +
                               str(e))
             else:
-                storeValue(followersFilename, approveHandle, 'write')
+                followersFile = open(followersFilename, "w+")
+                followersFile.write(approveHandle + '\n')
+                followersFile.close()
 
     print('Beginning follow accept')
     return followedAccountAccepts(session, baseDir, httpPrefix,

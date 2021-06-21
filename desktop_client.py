@@ -56,7 +56,6 @@ from bookmarks import sendBookmarkViaServer
 from bookmarks import sendUndoBookmarkViaServer
 from delete import sendDeleteViaServer
 from person import getActorJson
-from storage import storeValue
 
 
 def _desktopHelp() -> None:
@@ -176,7 +175,10 @@ def _markPostAsRead(actor: str, postId: str, postCategory: str) -> None:
         except Exception as e:
             print('WARN: Failed to mark post as read' + str(e))
     else:
-        storeValue(readPostsFilename, postId, 'write')
+        readFile = open(readPostsFilename, 'w+')
+        if readFile:
+            readFile.write(postId + '\n')
+            readFile.close()
 
 
 def _hasReadPost(actor: str, postId: str, postCategory: str) -> bool:

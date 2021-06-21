@@ -24,7 +24,6 @@ from utils import loadJson
 from utils import saveJson
 from posts import getPersonBox
 from session import postJson
-from storage import storeValue
 
 
 def undoBookmarksCollectionEntry(recentPostsCache: {},
@@ -62,7 +61,10 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     indexStr = ''
     with open(bookmarksIndexFilename, 'r') as indexFile:
         indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
-        storeValue(bookmarksIndexFilename, indexStr, 'writeonly')
+        bookmarksIndexFile = open(bookmarksIndexFilename, 'w+')
+        if bookmarksIndexFile:
+            bookmarksIndexFile.write(indexStr)
+            bookmarksIndexFile.close()
 
     if not postJsonObject.get('type'):
         return
@@ -217,7 +219,10 @@ def updateBookmarksCollection(recentPostsCache: {},
                     print('WARN: Failed to write entry to bookmarks index ' +
                           bookmarksIndexFilename + ' ' + str(e))
         else:
-            storeValue(bookmarksIndexFilename, bookmarkIndex, 'write')
+            bookmarksIndexFile = open(bookmarksIndexFilename, 'w+')
+            if bookmarksIndexFile:
+                bookmarksIndexFile.write(bookmarkIndex + '\n')
+                bookmarksIndexFile.close()
 
 
 def bookmark(recentPostsCache: {},

@@ -20,7 +20,6 @@ from cache import getPersonFromCache
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
-from storage import storeValue
 
 
 def _markdownEmphasisHtml(markdown: str) -> str:
@@ -1388,4 +1387,5 @@ def setMinimal(baseDir: str, domain: str, nickname: str,
     if minimal and minimalFileExists:
         os.remove(minimalFilename)
     elif not minimal and not minimalFileExists:
-        storeValue(minimalFilename, '\n', 'writeonly')
+        with open(minimalFilename, 'w+') as fp:
+            fp.write('\n')

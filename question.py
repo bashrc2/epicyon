@@ -11,7 +11,6 @@ import os
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
-from storage import storeValue
 
 
 def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
@@ -68,17 +67,21 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     votersFilename = questionPostFilename.replace('.json', '.voters')
     if not os.path.isfile(votersFilename):
         # create a new voters file
-        vStr = replyJson['actor'] + \
-            votersFileSeparator + \
-            foundAnswer
-        storeValue(votersFilename, vStr, 'write')
+        votersFile = open(votersFilename, 'w+')
+        if votersFile:
+            votersFile.write(replyJson['actor'] +
+                             votersFileSeparator +
+                             foundAnswer + '\n')
+            votersFile.close()
     else:
         if replyJson['actor'] not in open(votersFilename).read():
             # append to the voters file
-            vStr = replyJson['actor'] + \
-                votersFileSeparator + \
-                foundAnswer
-            storeValue(votersFilename, vStr, 'append')
+            votersFile = open(votersFilename, "a+")
+            if votersFile:
+                votersFile.write(replyJson['actor'] +
+                                 votersFileSeparator +
+                                 foundAnswer + '\n')
+                votersFile.close()
         else:
             # change an entry in the voters file
             with open(votersFilename, "r") as votersFile:

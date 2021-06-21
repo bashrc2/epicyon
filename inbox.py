@@ -83,7 +83,6 @@ from categories import guessHashtagCategory
 from context import hasValidContext
 from speaker import updateSpeaker
 from announce import isSelfAnnounce
-from storage import storeValue
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -128,7 +127,10 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
         daysSinceEpoch = daysDiff.days
         tagline = str(daysSinceEpoch) + '  ' + nickname + '  ' + postUrl + '\n'
         if not os.path.isfile(tagsFilename):
-            storeValue(tagsFilename, tagline, 'write')
+            tagsFile = open(tagsFilename, "w+")
+            if tagsFile:
+                tagsFile.write(tagline)
+                tagsFile.close()
         else:
             if postUrl not in open(tagsFilename).read():
                 try:
@@ -1458,7 +1460,10 @@ def _receiveAnnounce(recentPostsCache: {},
                                       postJsonObject, personCache,
                                       translate, lookupActor,
                                       themeName)
-                        storeValue(postFilename + '.tts', '\n', 'writeonly')
+                        ttsFile = open(postFilename + '.tts', "w+")
+                        if ttsFile:
+                            ttsFile.write('\n')
+                            ttsFile.close()
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -1637,9 +1642,15 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if numLines > maxReplies:
             return False
         if messageId not in open(postRepliesFilename).read():
-            storeValue(postRepliesFilename, messageId, 'append')
+            repliesFile = open(postRepliesFilename, 'a+')
+            if repliesFile:
+                repliesFile.write(messageId + '\n')
+                repliesFile.close()
     else:
-        storeValue(postRepliesFilename, messageId, 'write')
+        repliesFile = open(postRepliesFilename, 'w+')
+        if repliesFile:
+            repliesFile.write(messageId + '\n')
+            repliesFile.close()
     return True
 
 
@@ -1803,7 +1814,8 @@ def _dmNotify(baseDir: str, handle: str, url: str) -> None:
         return
     dmFile = accountDir + '/.newDM'
     if not os.path.isfile(dmFile):
-        storeValue(dmFile, url, 'writeonly')
+        with open(dmFile, 'w+') as fp:
+            fp.write(url)
 
 
 def _alreadyLiked(baseDir: str, nickname: str, domain: str,
@@ -1883,8 +1895,20 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
                 prevLikeStr = fp.read()
                 if prevLikeStr == likeStr:
                     return
-        storeValue(prevLikeFile, likeStr, 'writeonly')
-        storeValue(likeFile, likeStr, 'writeonly')
+        try:
+            with open(prevLikeFile, 'w+') as fp:
+                fp.write(likeStr)
+        except BaseException:
+            print('ERROR: unable to save previous like notification ' +
+                  prevLikeFile)
+            pass
+        try:
+            with open(likeFile, 'w+') as fp:
+                fp.write(likeStr)
+        except BaseException:
+            print('ERROR: unable to write like notification file ' +
+                  likeFile)
+            pass
 
 
 def _replyNotify(baseDir: str, handle: str, url: str) -> None:
@@ -1895,7 +1919,8 @@ def _replyNotify(baseDir: str, handle: str, url: str) -> None:
         return
     replyFile = accountDir + '/.newReply'
     if not os.path.isfile(replyFile):
-        storeValue(replyFile, url, 'writeonly')
+        with open(replyFile, 'w+') as fp:
+            fp.write(url)
 
 
 def _gitPatchNotify(baseDir: str, handle: str,
@@ -1909,7 +1934,8 @@ def _gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     subject = subject.replace('[PATCH]', '').strip()
     handle = '@' + fromNickname + '@' + fromDomain
-    storeValue(patchFile, 'git ' + handle + ' ' + subject, 'writeonly')
+    with open(patchFile, 'w+') as fp:
+        fp.write('git ' + handle + ' ' + subject)
 
 
 def _groupHandle(baseDir: str, handle: str) -> bool:
@@ -2080,7 +2106,13 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
         except Exception as e:
             print('WARN: Failed to write entry to index ' + str(e))
     else:
-        storeValue(indexFilename, destinationFilename, 'write')
+        try:
+            indexFile = open(indexFilename, 'w+')
+            if indexFile:
+                indexFile.write(destinationFilename + '\n')
+                indexFile.close()
+        except Exception as e:
+            print('WARN: Failed to write initial entry to index ' + str(e))
 
     return False
 
@@ -2113,8 +2145,8 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
             if int(daysSinceEpochFile) == daysSinceEpoch:
                 # value hasn't changed, so we can save writing anything to file
                 return
-    daysSinceEpochStr = str(daysSinceEpoch)
-    storeValue(lastSeenFilename, daysSinceEpochStr, 'writeonly')
+    with open(lastSeenFilename, 'w+') as lastSeenFile:
+        lastSeenFile.write(str(daysSinceEpoch))
 
 
 def _bounceDM(senderPostId: str, session, httpPrefix: str,
@@ -2558,7 +2590,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             # This enables you to ignore a threat that's getting boring
             if isReplyToMutedPost:
                 print('MUTE REPLY: ' + destinationFilename)
-                storeValue(destinationFilename + '.muted', '\n', 'writeonly')
+                muteFile = open(destinationFilename + '.muted', 'w+')
+                if muteFile:
+                    muteFile.write('\n')
+                    muteFile.close()
 
             # update the indexes for different timelines
             for boxname in updateIndexList:

@@ -69,7 +69,6 @@ from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
 from speaker import updateSpeaker
-from storage import storeValue
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -157,7 +156,13 @@ def _saveIndividualPostAsHtmlToCache(baseDir: str,
     if not os.path.isdir(htmlPostCacheDir):
         os.mkdir(htmlPostCacheDir)
 
-    return storeValue(cachedPostFilename, postHtml, 'writeonly')
+    try:
+        with open(cachedPostFilename, 'w+') as fp:
+            fp.write(postHtml)
+            return True
+    except Exception as e:
+        print('ERROR: saving post to cache ' + str(e))
+    return False
 
 
 def _getPostFromRecentCache(session,
@@ -1327,8 +1332,10 @@ def individualPostAsHtml(allowDownloads: bool,
                                       postJsonObject, personCache,
                                       translate, postJsonObject['actor'],
                                       themeName)
-                        storeValue(announceFilename + '.tts',
-                                   '\n', 'writeonly')
+                        ttsFile = open(announceFilename + '.tts', "w+")
+                        if ttsFile:
+                            ttsFile.write('\n')
+                            ttsFile.close()
 
         isAnnounced = True
 

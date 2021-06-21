@@ -15,7 +15,6 @@ from blocking import isBlocked
 from session import getJson
 from posts import getUserUrl
 from follow import unfollowAccount
-from storage import storeValue
 
 
 def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
@@ -149,11 +148,11 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
 
                         # save the new handles to the refollow list
                         if os.path.isfile(refollowFilename):
-                            storeValue(refollowFilename,
-                                       movedToHandle, 'append')
+                            with open(refollowFilename, 'a+') as f:
+                                f.write(movedToHandle + '\n')
                         else:
-                            storeValue(refollowFilename,
-                                       movedToHandle, 'write')
+                            with open(refollowFilename, 'w+') as f:
+                                f.write(movedToHandle + '\n')
 
     followersFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/followers.txt'

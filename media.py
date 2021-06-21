@@ -21,7 +21,6 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 from city import spoofGeolocation
-from storage import storeValue
 
 
 def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
@@ -74,8 +73,11 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
             decoySeed = int(fp.read())
     else:
         decoySeed = randint(10000, 10000000000000000)
-        decoySeedStr = str(decoySeed)
-        storeValue(decoySeedFilename, decoySeedStr, 'writeonly')
+        try:
+            with open(decoySeedFilename, 'w+') as fp:
+                fp.write(str(decoySeed))
+        except BaseException:
+            pass
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
@@ -190,7 +192,11 @@ def _updateEtag(mediaFilename: str) -> None:
     # calculate hash
     etag = sha1(data).hexdigest()  # nosec
     # save the hash
-    storeValue(mediaFilename + '.etag', etag, 'writeonly')
+    try:
+        with open(mediaFilename + '.etag', 'w+') as etagFile:
+            etagFile.write(etag)
+    except BaseException:
+        pass
 
 
 def attachMedia(baseDir: str, httpPrefix: str,

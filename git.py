@@ -9,7 +9,6 @@ __module_group__ = "ActivityPub"
 
 import os
 import html
-from storage import storeValue
 
 
 def _gitFormatContent(content: str) -> str:
@@ -212,10 +211,12 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
         return False
     patchStr = \
         _gitAddFromHandle(patchStr, '@' + fromNickname + '@' + fromDomain)
-    if storeValue(patchFilename, patchStr, 'writeonly'):
+    with open(patchFilename, 'w+') as patchFile:
+        patchFile.write(patchStr)
         patchNotifyFilename = \
             baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.newPatchContent'
-        if storeValue(patchNotifyFilename, patchStr, 'writeonly'):
+        with open(patchNotifyFilename, 'w+') as patchFile:
+            patchFile.write(patchStr)
             return True
     return False

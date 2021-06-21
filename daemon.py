@@ -300,7 +300,6 @@ from context import hasValidContext
 from speaker import getSSMLbox
 from city import getSpoofedCity
 import os
-from storage import storeValue
 
 
 # maximum number of posts to list in outbox feed
@@ -675,7 +674,11 @@ class PubServer(BaseHTTPRequestHandler):
                 pass
         if not etag:
             etag = sha1(data).hexdigest()  # nosec
-            storeValue(mediaFilename + '.etag', etag, 'writeonly')
+            try:
+                with open(mediaFilename + '.etag', 'w+') as etagFile:
+                    etagFile.write(etag)
+            except BaseException:
+                pass
         if etag:
             self.send_header('ETag', etag)
         self.end_headers()
@@ -1542,7 +1545,12 @@ class PubServer(BaseHTTPRequestHandler):
                         print('WARN: Unable to read salt for ' +
                               loginNickname + ' ' + str(e))
                 else:
-                    storeValue(saltFilename, salt, 'writeonly')
+                    try:
+                        with open(saltFilename, 'w+') as fp:
+                            fp.write(salt)
+                    except Exception as e:
+                        print('WARN: Unable to save salt for ' +
+                              loginNickname + ' ' + str(e))
 
                 tokenText = loginNickname + loginPassword + salt
                 token = sha256(tokenText.encode('utf-8')).hexdigest()
@@ -1551,7 +1559,12 @@ class PubServer(BaseHTTPRequestHandler):
                 tokenFilename = \
                     baseDir+'/accounts/' + \
                     loginHandle + '/.token'
-                storeValue(tokenFilename, token, 'writeonly')
+                try:
+                    with open(tokenFilename, 'w+') as fp:
+                        fp.write(token)
+                except Exception as e:
+                    print('WARN: Unable to save token for ' +
+                          loginNickname + ' ' + str(e))
 
                 personUpgradeActor(baseDir, None, loginHandle,
                                    baseDir + '/accounts/' +
@@ -2091,8 +2104,10 @@ class PubServer(BaseHTTPRequestHandler):
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
-                        if storeValue(newswireBlockedFilename,
-                                      '\n', 'writeonly'):
+                        noNewswireFile = open(newswireBlockedFilename, "w+")
+                        if noNewswireFile:
+                            noNewswireFile.write('\n')
+                            noNewswireFile.close()
                             refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
@@ -2125,8 +2140,10 @@ class PubServer(BaseHTTPRequestHandler):
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
-                        if storeValue(featuresBlockedFilename,
-                                      '\n', 'writeonly'):
+                        noFeaturesFile = open(featuresBlockedFilename, "w+")
+                        if noFeaturesFile:
+                            noFeaturesFile.write('\n')
+                            noFeaturesFile.close()
                             refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
@@ -2158,7 +2175,10 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(newswireModFilename)
                 else:
                     if os.path.isdir(accountDir):
-                        storeValue(newswireModFilename, '\n', 'writeonly')
+                        modNewswireFile = open(newswireModFilename, "w+")
+                        if modNewswireFile:
+                            modNewswireFile.write('\n')
+                            modNewswireFile.close()
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -3439,7 +3459,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             if fields.get('editedLinks'):
                 linksStr = fields['editedLinks']
-                storeValue(linksFilename, linksStr, 'writeonly')
+                linksFile = open(linksFilename, "w+")
+                if linksFile:
+                    linksFile.write(linksStr)
+                    linksFile.close()
             else:
                 if os.path.isfile(linksFilename):
                     os.remove(linksFilename)
@@ -3451,7 +3474,10 @@ class PubServer(BaseHTTPRequestHandler):
                     aboutStr = fields['editedAbout']
                     if not dangerousMarkup(aboutStr,
                                            allowLocalNetworkAccess):
-                        storeValue(aboutFilename, aboutStr, 'writeonly')
+                        aboutFile = open(aboutFilename, "w+")
+                        if aboutFile:
+                            aboutFile.write(aboutStr)
+                            aboutFile.close()
                 else:
                     if os.path.isfile(aboutFilename):
                         os.remove(aboutFilename)
@@ -3460,7 +3486,10 @@ class PubServer(BaseHTTPRequestHandler):
                     TOSStr = fields['editedTOS']
                     if not dangerousMarkup(TOSStr,
                                            allowLocalNetworkAccess):
-                        storeValue(TOSFilename, TOSStr, 'writeonly')
+                        TOSFile = open(TOSFilename, "w+")
+                        if TOSFile:
+                            TOSFile.write(TOSStr)
+                            TOSFile.close()
                 else:
                     if os.path.isfile(TOSFilename):
                         os.remove(TOSFilename)
@@ -3635,7 +3664,10 @@ class PubServer(BaseHTTPRequestHandler):
                 extractTextFieldsInPOST(postBytes, boundary, debug)
             if fields.get('editedNewswire'):
                 newswireStr = fields['editedNewswire']
-                storeValue(newswireFilename, newswireStr, 'writeonly')
+                newswireFile = open(newswireFilename, "w+")
+                if newswireFile:
+                    newswireFile.write(newswireStr)
+                    newswireFile.close()
             else:
                 if os.path.isfile(newswireFilename):
                     os.remove(newswireFilename)
@@ -3645,8 +3677,8 @@ class PubServer(BaseHTTPRequestHandler):
                 baseDir + '/accounts/' + \
                 'news@' + domain + '/filters.txt'
             if fields.get('filteredWordsNewswire'):
-                storeValue(filterNewswireFilename,
-                           fields['filteredWordsNewswire'], 'writeonly')
+                with open(filterNewswireFilename, 'w+') as filterfile:
+                    filterfile.write(fields['filteredWordsNewswire'])
             else:
                 if os.path.isfile(filterNewswireFilename):
                     os.remove(filterNewswireFilename)
@@ -3655,8 +3687,8 @@ class PubServer(BaseHTTPRequestHandler):
             hashtagRulesFilename = \
                 baseDir + '/accounts/hashtagrules.txt'
             if fields.get('hashtagRulesList'):
-                storeValue(hashtagRulesFilename,
-                           fields['hashtagRulesList'], 'writeonly')
+                with open(hashtagRulesFilename, 'w+') as rulesfile:
+                    rulesfile.write(fields['hashtagRulesList'])
             else:
                 if os.path.isfile(hashtagRulesFilename):
                     os.remove(hashtagRulesFilename)
@@ -3666,8 +3698,10 @@ class PubServer(BaseHTTPRequestHandler):
                 newswireTrusted = fields['trustedNewswire']
                 if not newswireTrusted.endswith('\n'):
                     newswireTrusted += '\n'
-                storeValue(newswireTrustedFilename,
-                           newswireTrusted, 'writeonly')
+                trustFile = open(newswireTrustedFilename, "w+")
+                if trustFile:
+                    trustFile.write(newswireTrusted)
+                    trustFile.close()
             else:
                 if os.path.isfile(newswireTrustedFilename):
                     os.remove(newswireTrustedFilename)
@@ -3753,8 +3787,10 @@ class PubServer(BaseHTTPRequestHandler):
                     citationsStr += citationDate + '\n'
                 # save citations dates, so that they can be added when
                 # reloading the newblog screen
-                storeValue(citationsFilename,
-                           citationsStr, 'writeonly')
+                citationsFile = open(citationsFilename, "w+")
+                if citationsFile:
+                    citationsFile.write(citationsStr)
+                    citationsFile.close()
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/newblog',
@@ -4190,8 +4226,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('cityDropdown'):
                         cityFilename = baseDir + '/accounts/' + \
                             nickname + '@' + domain + '/city.txt'
-                        storeValue(cityFilename,
-                                   fields['cityDropdown'], 'writeonly')
+                        with open(cityFilename, 'w+') as fp:
+                            fp.write(fields['cityDropdown'])
 
                     # change displayed name
                     if fields.get('displayNickname'):
@@ -4964,15 +5000,16 @@ class PubServer(BaseHTTPRequestHandler):
                     if onFinalWelcomeScreen:
                         # initial default setting created via
                         # the welcome screen
-                        storeValue(followDMsFilename, '\n', 'writeonly')
+                        with open(followDMsFilename, 'w+') as fFile:
+                            fFile.write('\n')
                         actorChanged = True
                     else:
                         followDMsActive = False
                         if fields.get('followDMs'):
                             if fields['followDMs'] == 'on':
                                 followDMsActive = True
-                                storeValue(followDMsFilename,
-                                           '\n', 'writeonly')
+                                with open(followDMsFilename, 'w+') as fFile:
+                                    fFile.write('\n')
                         if not followDMsActive:
                             if os.path.isfile(followDMsFilename):
                                 os.remove(followDMsFilename)
@@ -4986,8 +5023,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('removeTwitter'):
                         if fields['removeTwitter'] == 'on':
                             removeTwitterActive = True
-                            storeValue(removeTwitterFilename,
-                                       '\n', 'writeonly')
+                            with open(removeTwitterFilename,
+                                      'w+') as rFile:
+                                rFile.write('\n')
                     if not removeTwitterActive:
                         if os.path.isfile(removeTwitterFilename):
                             os.remove(removeTwitterFilename)
@@ -5005,8 +5043,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('hideLikeButton'):
                         if fields['hideLikeButton'] == 'on':
                             hideLikeButtonActive = True
-                            storeValue(hideLikeButtonFile,
-                                       '\n', 'writeonly')
+                            with open(hideLikeButtonFile, 'w+') as rFile:
+                                rFile.write('\n')
                             # remove notify likes selection
                             if os.path.isfile(notifyLikesFilename):
                                 os.remove(notifyLikesFilename)
@@ -5017,8 +5055,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # notify about new Likes
                     if onFinalWelcomeScreen:
                         # default setting from welcome screen
-                        storeValue(notifyLikesFilename,
-                                   '\n', 'writeonly')
+                        with open(notifyLikesFilename, 'w+') as rFile:
+                            rFile.write('\n')
                         actorChanged = True
                     else:
                         notifyLikesActive = False
@@ -5026,8 +5064,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['notifyLikes'] == 'on' and \
                                not hideLikeButtonActive:
                                 notifyLikesActive = True
-                                storeValue(notifyLikesFilename,
-                                           '\n', 'writeonly')
+                                with open(notifyLikesFilename, 'w+') as rFile:
+                                    rFile.write('\n')
                         if not notifyLikesActive:
                             if os.path.isfile(notifyLikesFilename):
                                 os.remove(notifyLikesFilename)
@@ -5070,8 +5108,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname + '@' + domain + \
                         '/filters.txt'
                     if fields.get('filteredWords'):
-                        storeValue(filterFilename,
-                                   fields['filteredWords'], 'writeonly')
+                        with open(filterFilename, 'w+') as filterfile:
+                            filterfile.write(fields['filteredWords'])
                     else:
                         if os.path.isfile(filterFilename):
                             os.remove(filterFilename)
@@ -5082,8 +5120,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname + '@' + domain + \
                         '/replacewords.txt'
                     if fields.get('switchWords'):
-                        storeValue(switchFilename,
-                                   fields['switchWords'], 'writeonly')
+                        with open(switchFilename, 'w+') as switchfile:
+                            switchfile.write(fields['switchWords'])
                     else:
                         if os.path.isfile(switchFilename):
                             os.remove(switchFilename)
@@ -5094,8 +5132,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname + '@' + domain + \
                         '/autotags.txt'
                     if fields.get('autoTags'):
-                        storeValue(autoTagsFilename,
-                                   fields['autoTags'], 'writeonly')
+                        with open(autoTagsFilename, 'w+') as autoTagsFile:
+                            autoTagsFile.write(fields['autoTags'])
                     else:
                         if os.path.isfile(autoTagsFilename):
                             os.remove(autoTagsFilename)
@@ -5106,8 +5144,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname + '@' + domain + \
                         '/autocw.txt'
                     if fields.get('autoCW'):
-                        storeValue(autoCWFilename,
-                                   fields['autoCW'], 'writeonly')
+                        with open(autoCWFilename, 'w+') as autoCWFile:
+                            autoCWFile.write(fields['autoCW'])
                     else:
                         if os.path.isfile(autoCWFilename):
                             os.remove(autoCWFilename)
@@ -5118,8 +5156,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname + '@' + domain + \
                         '/blocking.txt'
                     if fields.get('blocked'):
-                        storeValue(blockedFilename,
-                                   fields['blocked'], 'writeonly')
+                        with open(blockedFilename, 'w+') as blockedfile:
+                            blockedfile.write(fields['blocked'])
                     else:
                         if os.path.isfile(blockedFilename):
                             os.remove(blockedFilename)
@@ -5131,8 +5169,8 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + '/dmAllowedinstances.txt'
                     if fields.get('dmAllowedInstances'):
-                        storeValue(dmAllowedInstancesFilename,
-                                   fields['dmAllowedInstances'], 'writeonly')
+                        with open(dmAllowedInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['dmAllowedInstances'])
                     else:
                         if os.path.isfile(dmAllowedInstancesFilename):
                             os.remove(dmAllowedInstancesFilename)
@@ -5143,8 +5181,8 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + '/allowedinstances.txt'
                     if fields.get('allowedInstances'):
-                        storeValue(allowedInstancesFilename,
-                                   fields['allowedInstances'], 'writeonly')
+                        with open(allowedInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['allowedInstances'])
                     else:
                         if os.path.isfile(allowedInstancesFilename):
                             os.remove(allowedInstancesFilename)
@@ -5159,8 +5197,8 @@ class PubServer(BaseHTTPRequestHandler):
                            path.startswith('/users/' +
                                            adminNickname + '/'):
                             self.server.peertubeInstances.clear()
-                            storeValue(peertubeInstancesFile,
-                                       fields['ptInstances'], 'writeonly')
+                            with open(peertubeInstancesFile, 'w+') as aFile:
+                                aFile.write(fields['ptInstances'])
                             ptInstancesList = \
                                 fields['ptInstances'].split('\n')
                             if ptInstancesList:
@@ -5182,9 +5220,8 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname + '@' + domain + \
                         '/gitprojects.txt'
                     if fields.get('gitProjects'):
-                        projectsStr = fields['gitProjects'].lower()
-                        storeValue(gitProjectsFilename,
-                                   projectsStr, 'writeonly')
+                        with open(gitProjectsFilename, 'w+') as aFile:
+                            aFile.write(fields['gitProjects'].lower())
                     else:
                         if os.path.isfile(gitProjectsFilename):
                             os.remove(gitProjectsFilename)
@@ -13120,7 +13157,11 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             etag = sha1(mediaBinary).hexdigest()  # nosec
-                            storeValue(mediaTagFilename, etag, 'writeonly')
+                            try:
+                                with open(mediaTagFilename, 'w+') as etagFile:
+                                    etagFile.write(etag)
+                            except BaseException:
+                                pass
 
         mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
@@ -13285,8 +13326,13 @@ class PubServer(BaseHTTPRequestHandler):
                 lastUsedFilename = \
                     self.server.baseDir + '/accounts/' + \
                     nickname + '@' + self.server.domain + '/.lastUsed'
-                lastUsedStr = str(int(time.time()))
-                storeValue(lastUsedFilename, lastUsedStr, 'writeonly')
+                try:
+                    lastUsedFile = open(lastUsedFilename, 'w+')
+                    if lastUsedFile:
+                        lastUsedFile.write(str(int(time.time())))
+                        lastUsedFile.close()
+                except BaseException:
+                    pass
 
             mentionsStr = ''
             if fields.get('mentions'):

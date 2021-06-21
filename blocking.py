@@ -25,7 +25,6 @@ from utils import locatePost
 from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from storage import storeValue
 
 
 def addGlobalBlock(baseDir: str,
@@ -494,7 +493,10 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
-    if storeValue(postFilename + '.muted', '\n', 'writeonly'):
+    muteFile = open(postFilename + '.muted', 'w+')
+    if muteFile:
+        muteFile.write('\n')
+        muteFile.close()
         print('MUTE: ' + postFilename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted

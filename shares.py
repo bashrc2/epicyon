@@ -20,7 +20,6 @@ from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
 from media import processMetaData
-from storage import storeValue
 
 
 def getValidSharedItemID(displayName: str) -> str:
@@ -162,10 +161,12 @@ def addShare(baseDir: str,
             newShareFile = accountDir + '/.newShare'
             if not os.path.isfile(newShareFile):
                 nickname = handle.split('@')[0]
-                storeValue(newShareFile,
-                           httpPrefix + '://' + domainFull +
-                           '/users/' + nickname + '/tlshares',
-                           'writeonly')
+                try:
+                    with open(newShareFile, 'w+') as fp:
+                        fp.write(httpPrefix + '://' + domainFull +
+                                 '/users/' + nickname + '/tlshares')
+                except BaseException:
+                    pass
         break
 
 
