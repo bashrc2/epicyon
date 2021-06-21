@@ -17,7 +17,6 @@ from shutil import unpack_archive
 from shutil import rmtree
 from content import dangerousCSS
 from storage import storeValue
-from storage import readWholeFile
 
 
 def importTheme(baseDir: str, filename: str) -> bool:
@@ -36,9 +35,9 @@ def importTheme(baseDir: str, filename: str) -> bool:
             print('WARN: ' + themeFile +
                   ' missing from imported theme')
             return False
-    newThemeName = readWholeFile(tempThemeDir + '/name.txt')
-    if newThemeName:
-        newThemeName = newThemeName.replace('\n', '').replace('\r', '')
+    newThemeName = None
+    with open(tempThemeDir + '/name.txt', 'r') as fp:
+        newThemeName = fp.read().replace('\n', '').replace('\r', '')
         if len(newThemeName) > 20:
             print('WARN: Imported theme name is too long')
             return False
@@ -328,8 +327,8 @@ def _setThemeFromDict(baseDir: str, name: str,
         if not os.path.isfile(templateFilename):
             continue
 
-        css = readWholeFile(templateFilename)
-        if css:
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
             for paramName, paramValue in themeParams.items():
                 if paramName == 'newswire-publish-icon':
                     if paramValue.lower() == 'true':
@@ -386,8 +385,8 @@ def _setBackgroundFormat(baseDir: str, name: str,
     cssFilename = baseDir + '/' + backgroundType + '.css'
     if not os.path.isfile(cssFilename):
         return
-    css = readWholeFile(cssFilename)
-    if css:
+    with open(cssFilename, 'r') as cssfile:
+        css = cssfile.read()
         css = css.replace('background.jpg', 'background.' + extension)
         storeValue(cssFilename, css, 'writeonly')
 
@@ -400,8 +399,8 @@ def enableGrayscale(baseDir: str) -> None:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
-        css = readWholeFile(templateFilename)
-        if css:
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
             if 'grayscale' not in css:
                 css = \
                     css.replace('body, html {',
@@ -421,8 +420,8 @@ def disableGrayscale(baseDir: str) -> None:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
-        css = readWholeFile(templateFilename)
-        if css:
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
             if 'grayscale' in css:
                 css = \
                     css.replace('\n    filter: grayscale(100%);', '')
@@ -457,8 +456,8 @@ def _setCustomFont(baseDir: str):
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
-        css = readWholeFile(templateFilename)
-        if css:
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
             css = \
                 setCSSparam(css, "*src",
                             "url('./fonts/custom." +
@@ -541,9 +540,10 @@ def getTextModeBanner(baseDir: str) -> str:
     """
     textModeBannerFilename = baseDir + '/accounts/banner.txt'
     if os.path.isfile(textModeBannerFilename):
-        bannerStr = readWholeFile(textModeBannerFilename)
-        if bannerStr:
-            return bannerStr.replace('\n', '<br>')
+        with open(textModeBannerFilename, 'r') as fp:
+            bannerStr = fp.read()
+            if bannerStr:
+                return bannerStr.replace('\n', '<br>')
     return None
 
 
@@ -554,9 +554,10 @@ def getTextModeLogo(baseDir: str) -> str:
     if not os.path.isfile(textModeLogoFilename):
         textModeLogoFilename = baseDir + '/img/logo.txt'
 
-    logoStr = readWholeFile(textModeLogoFilename)
-    if logoStr:
-        return logoStr.replace('\n', '<br>')
+    with open(textModeLogoFilename, 'r') as fp:
+        logoStr = fp.read()
+        if logoStr:
+            return logoStr.replace('\n', '<br>')
     return None
 
 

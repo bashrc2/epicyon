@@ -18,7 +18,6 @@ from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
-from storage import readWholeFile
 
 
 def _linksExist(baseDir: str) -> bool:
@@ -404,7 +403,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     linksFilename = baseDir + '/accounts/links.txt'
     linksStr = ''
     if os.path.isfile(linksFilename):
-        linksStr = readWholeFile(linksFilename)
+        with open(linksFilename, 'r') as fp:
+            linksStr = fp.read()
 
     editLinksForm += \
         '<div class="container">'
@@ -426,7 +426,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             aboutFilename = baseDir + '/accounts/about.md'
             aboutStr = ''
             if os.path.isfile(aboutFilename):
-                aboutStr = readWholeFile(aboutFilename)
+                with open(aboutFilename, 'r') as fp:
+                    aboutStr = fp.read()
 
             editLinksForm += \
                 '<div class="container">'
@@ -444,7 +445,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             TOSFilename = baseDir + '/accounts/tos.md'
             TOSStr = ''
             if os.path.isfile(TOSFilename):
-                TOSStr = readWholeFile(TOSFilename)
+                with open(TOSFilename, 'r') as fp:
+                    TOSStr = fp.read()
 
             editLinksForm += \
                 '<div class="container">'

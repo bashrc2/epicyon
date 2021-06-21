@@ -84,7 +84,6 @@ from context import hasValidContext
 from speaker import updateSpeaker
 from announce import isSelfAnnounce
 from storage import storeValue
-from storage import readWholeFile
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1880,9 +1879,10 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
         # was there a previous like notification?
         if os.path.isfile(prevLikeFile):
             # is it the same as the current notification ?
-            prevLikeStr = readWholeFile(prevLikeFile)
-            if prevLikeStr == likeStr:
-                return
+            with open(prevLikeFile, 'r') as fp:
+                prevLikeStr = fp.read()
+                if prevLikeStr == likeStr:
+                    return
         storeValue(prevLikeFile, likeStr, 'writeonly')
         storeValue(likeFile, likeStr, 'writeonly')
 
@@ -2108,8 +2108,8 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
     daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
     # has the value changed?
     if os.path.isfile(lastSeenFilename):
-        daysSinceEpochFile = readWholeFile(lastSeenFilename)
-        if daysSinceEpochFile:
+        with open(lastSeenFilename, 'r') as lastSeenFile:
+            daysSinceEpochFile = lastSeenFile.read()
             if int(daysSinceEpochFile) == daysSinceEpoch:
                 # value hasn't changed, so we can save writing anything to file
                 return

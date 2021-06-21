@@ -28,7 +28,6 @@ from utils import firstParagraphFromString
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
-from storage import readWholeFile
 
 
 def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
@@ -745,9 +744,8 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
-        newPostStr = readWholeFile(baseDir + '/accounts/newpost.txt')
-        if newPostStr:
-            editBlogText = '<p>' + newPostStr + '</p>'
+        with open(baseDir + '/accounts/newpost.txt', 'r') as file:
+            editBlogText = '<p>' + file.read() + '</p>'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

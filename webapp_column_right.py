@@ -24,7 +24,6 @@ from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
-from storage import readWholeFile
 
 
 def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
@@ -577,7 +576,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     newswireFilename = baseDir + '/accounts/newswire.txt'
     newswireStr = ''
     if os.path.isfile(newswireFilename):
-        newswireStr = readWholeFile(newswireFilename)
+        with open(newswireFilename, 'r') as fp:
+            newswireStr = fp.read()
 
     editNewswireForm += \
         '<div class="container">'
@@ -595,7 +595,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     filterFilename = \
         baseDir + '/accounts/news@' + domain + '/filters.txt'
     if os.path.isfile(filterFilename):
-        filterStr = readWholeFile(filterFilename)
+        with open(filterFilename, 'r') as filterfile:
+            filterStr = filterfile.read()
 
     editNewswireForm += \
         '      <br><b><label class="labels">' + \
@@ -610,7 +611,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     hashtagRulesFilename = \
         baseDir + '/accounts/hashtagrules.txt'
     if os.path.isfile(hashtagRulesFilename):
-        hashtagRulesStr = readWholeFile(hashtagRulesFilename)
+        with open(hashtagRulesFilename, 'r') as rulesfile:
+            hashtagRulesStr = rulesfile.read()
 
     editNewswireForm += \
         '      <br><b><label class="labels">' + \

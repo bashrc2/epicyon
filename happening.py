@@ -17,7 +17,6 @@ from utils import loadJson
 from utils import saveJson
 from utils import locatePost
 from storage import storeValue
-from storage import readWholeFile
 
 
 def _validUuid(testUuid: str, version=4):
@@ -36,9 +35,9 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
     """
     if eventId + '\n' not in open(tlEventsFilename).read():
         return
-    eventsTimeline = readWholeFile(tlEventsFilename)
-    eventsTimeline = eventsTimeline.replace(eventId + '\n', '')
-    storeValue(tlEventsFilename, eventsTimeline, 'writeonly')
+    with open(tlEventsFilename, 'r') as fp:
+        eventsTimeline = fp.read().replace(eventId + '\n', '')
+        storeValue(tlEventsFilename, eventsTimeline, 'writeonly')
 
 
 def saveEventPost(baseDir: str, handle: str, postId: str,

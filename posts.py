@@ -72,7 +72,6 @@ from git import convertPostToPatch
 from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
 from storage import storeValue
-from storage import readWholeFile
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -3023,8 +3022,9 @@ def _addPostToTimeline(filePath: str, boxname: str,
                        postsInBox: [], boxActor: str) -> bool:
     """ Reads a post from file and decides whether it is valid
     """
-    postStr = readWholeFile(filePath)
-    if postStr:
+    with open(filePath, 'r') as postFile:
+        postStr = postFile.read()
+
         if filePath.endswith('.json'):
             repliesFilename = filePath.replace('.json', '.replies')
             if os.path.isfile(repliesFilename):
@@ -3715,7 +3715,9 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
         return []
 
     # read the blocked domains as a single string
-    blockedStr = readWholeFile(blockingFilename)
+    blockedStr = ''
+    with open(blockingFilename, 'r') as fp:
+        blockedStr = fp.read()
 
     blockedDomains = []
     for domainName in postDomains:
@@ -3764,7 +3766,8 @@ def checkDomains(session, baseDir: str,
     updateFollowerWarnings = False
     followerWarningStr = ''
     if os.path.isfile(followerWarningFilename):
-        followerWarningStr = readWholeFile(followerWarningFilename)
+        with open(followerWarningFilename, 'r') as fp:
+            followerWarningStr = fp.read()
 
     if singleCheck:
         # checks a single random non-mutual

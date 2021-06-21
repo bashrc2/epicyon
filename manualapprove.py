@@ -12,7 +12,6 @@ from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
 from utils import loadJson
-from storage import readWholeFile
 from storage import storeValue
 
 
@@ -97,7 +96,9 @@ def manualApproveFollowRequest(session, baseDir: str,
         return
 
     # is the handle in the requests file?
-    approveFollowsStr = readWholeFile(approveFollowsFilename)
+    approveFollowsStr = ''
+    with open(approveFollowsFilename, 'r') as fpFollowers:
+        approveFollowsStr = fpFollowers.read()
     exists = False
     approveHandleFull = approveHandle
     if approveHandle in approveFollowsStr:

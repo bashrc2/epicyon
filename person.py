@@ -52,7 +52,6 @@ from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
 from pprint import pprint
-from storage import readWholeFile
 from storage import storeValue
 
 
@@ -1122,7 +1121,9 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
                     replaceStr = line
                 break
     if replaceStr:
-        content = readWholeFile(snoozedFilename).replace(replaceStr, '')
+        content = None
+        with open(snoozedFilename, 'r') as snoozedFile:
+            content = snoozedFile.read().replace(replaceStr, '')
         if content:
             storeValue(snoozedFilename, content, 'writeonly')
 
@@ -1167,7 +1168,9 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
                 replaceStr = line
                 break
     if replaceStr:
-        content = readWholeFile(snoozedFilename).replace(replaceStr, '')
+        content = None
+        with open(snoozedFilename, 'r') as snoozedFile:
+            content = snoozedFile.read().replace(replaceStr, '')
         if content:
             storeValue(snoozedFilename, content, 'writeonly')
 

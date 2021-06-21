@@ -12,7 +12,6 @@ import datetime
 import random
 import math
 from random import randint
-from storage import readWholeFile
 
 # states which the simulated city dweller can be in
 PERSON_SLEEP = 0
@@ -295,7 +294,8 @@ def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
     cityFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/city.txt'
     if os.path.isfile(cityFilename):
-        city = readWholeFile(cityFilename).replace('\n', '')
+        with open(cityFilename, 'r') as fp:
+            city = fp.read().replace('\n', '')
     return city
 
 

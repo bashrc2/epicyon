@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from storage import readWholeFile
 from storage import storeValue
 
 
@@ -29,8 +28,8 @@ def setPetName(baseDir: str, nickname: str, domain: str,
 
     # does this entry already exist?
     if os.path.isfile(petnamesFilename):
-        petnamesStr = readWholeFile(petnamesFilename)
-        if petnamesStr:
+        with open(petnamesFilename, 'r') as petnamesFile:
+            petnamesStr = petnamesFile.read()
             if entry in petnamesStr:
                 return True
             if ' ' + handle + '\n' in petnamesStr:
@@ -66,8 +65,8 @@ def getPetName(baseDir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnamesFilename):
         return ''
-    petnamesStr = readWholeFile(petnamesFilename)
-    if petnamesStr:
+    with open(petnamesFilename, 'r') as petnamesFile:
+        petnamesStr = petnamesFile.read()
         if ' ' + handle + '\n' in petnamesStr:
             petnamesList = petnamesStr.split('\n')
             for pet in petnamesList:
@@ -87,8 +86,8 @@ def _getPetNameHandle(baseDir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnamesFilename):
         return ''
-    petnamesStr = readWholeFile(petnamesFilename)
-    if petnamesStr:
+    with open(petnamesFilename, 'r') as petnamesFile:
+        petnamesStr = petnamesFile.read()
         if petname + ' ' in petnamesStr:
             petnamesList = petnamesStr.split('\n')
             for pet in petnamesList:

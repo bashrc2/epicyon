@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
-from storage import readWholeFile
 from storage import storeValue
 
 
@@ -30,8 +29,9 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
         if not os.path.isfile(followingFilename):
             return False
         # create a new calendar file from the following file
-        followingHandles = readWholeFile(followingFilename)
-        storeValue(calendarFilename, followingHandles, 'writeonly')
+        with open(followingFilename, 'r') as followingFile:
+            followingHandles = followingFile.read()
+            storeValue(calendarFilename, followingHandles, 'writeonly')
     return handle + '\n' in open(calendarFilename).read()
 
 
@@ -66,11 +66,14 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     followingHandles = ''
     if os.path.isfile(calendarFilename):
         print('Calendar file exists')
-        followingHandles = readWholeFile(calendarFilename)
+        with open(calendarFilename, 'r') as calendarFile:
+            followingHandles = calendarFile.read()
     else:
         # create a new calendar file from the following file
         print('Creating calendar file ' + calendarFilename)
-        followingHandles = readWholeFile(followingFilename)
+        followingHandles = ''
+        with open(followingFilename, 'r') as followingFile:
+            followingHandles = followingFile.read()
         if add:
             storeValue(calendarFilename, followingHandles + handle, 'write')
 

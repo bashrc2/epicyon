@@ -34,7 +34,6 @@ from utils import clearFromPostCaches
 from utils import dangerousMarkup
 from inbox import storeHashTags
 from session import createSession
-from storage import readWholeFile
 from storage import storeValue
 
 
@@ -399,8 +398,9 @@ def _createNewsMirror(baseDir: str, domain: str,
 
         # remove the corresponding index entries
         if removals:
-            indexContent = readWholeFile(mirrorIndexFilename)
-            if indexContent:
+            indexContent = ''
+            with open(mirrorIndexFilename, 'r') as indexFile:
+                indexContent = indexFile.read()
                 for removePostId in removals:
                     indexContent = \
                         indexContent.replace(removePostId + '\n', '')

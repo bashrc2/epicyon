@@ -54,19 +54,3 @@ def storeValue(filename: str, lineStr: str, storeType: str) -> bool:
                 print('WARN: Unable to prepend to ' +
                       filename + ' ' + str(e))
     return False
-
-
-def readWholeFile(filename: str) -> str:
-    """Returns the entire contents of a file
-    """
-    with open(filename, 'r') as fp:
-        return fp.read()
-    return ''
-
-
-def readFileLines(filename: str) -> []:
-    """Returns a list of lines from a file
-    """
-    with open(filename, 'r') as fp:
-        return fp.readlines()
-    return []

@@ -57,7 +57,6 @@ from bookmarks import sendUndoBookmarkViaServer
 from delete import sendDeleteViaServer
 from person import getActorJson
 from storage import storeValue
-from storage import readWholeFile
 
 
 def _desktopHelp() -> None:
@@ -285,9 +284,10 @@ def _desktopShowBanner() -> None:
         bannerFilename = 'theme/' + bannerTheme + '/banner.txt'
         if not os.path.isfile(bannerFilename):
             return
-    banner = readWholeFile(bannerFilename)
-    if banner:
-        print(banner + '\n')
+    with open(bannerFilename, 'r') as bannerFile:
+        banner = bannerFile.read()
+        if banner:
+            print(banner + '\n')
 
 
 def _desktopWaitForCmd(timeout: int, debug: bool) -> str:
