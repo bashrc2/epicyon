@@ -175,6 +175,9 @@ def updateBlockedCache(baseDir: str,
     """Updates the cache of globally blocked domains held in memory
     """
     currTime = int(time.time())
+    if blockedCacheLastUpdated > currTime:
+        print('WARN: Cache updated in the future')
+        blockedCacheLastUpdated = 0
     secondsSinceLastUpdate = currTime - blockedCacheLastUpdated
     if secondsSinceLastUpdate < blockedCacheUpdateSecs:
         return blockedCacheLastUpdated
