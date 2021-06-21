@@ -185,7 +185,7 @@ def updateBlockedCache(baseDir: str,
         blockedLines = fpBlocked.readlines()
         blockedCache.clear()
         for line in blockedLines:
-            blockedCache.append(line)
+            blockedCache.append(line.replace('\n', ''))
     return currTime
 
 
