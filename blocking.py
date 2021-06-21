@@ -210,8 +210,7 @@ def isBlockedDomain(baseDir: str, domain: str,
     if noOfSections > 2:
         shortDomain = domain[noOfSections-2] + '.' + domain[noOfSections-1]
 
-    allowFilename = baseDir + '/accounts/allowedinstances.txt'
-    if not os.path.isfile(allowFilename):
+    if not brochModeIsActive(baseDir):
         if blockedCache:
             for blockedStr in blockedCache:
                 if '*@' + domain in blockedStr:
@@ -231,6 +230,7 @@ def isBlockedDomain(baseDir: str, domain: str,
                         if '*@' + shortDomain in blockedStr:
                             return True
     else:
+        allowFilename = baseDir + '/accounts/allowedinstances.txt'
         # instance allow list
         if not shortDomain:
             if domain not in open(allowFilename).read():
