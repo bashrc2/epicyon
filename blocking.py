@@ -243,19 +243,33 @@ def isBlockedDomain(baseDir: str, domain: str,
 
 
 def isBlocked(baseDir: str, nickname: str, domain: str,
-              blockNickname: str, blockDomain: str) -> bool:
+              blockNickname: str, blockDomain: str,
+              blockedCache: [] = None) -> bool:
     """Is the given nickname blocked?
     """
     if isEvil(blockDomain):
         return True
-    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-    if os.path.isfile(globalBlockingFilename):
-        if '*@' + blockDomain in open(globalBlockingFilename).read():
-            return True
-        if blockNickname:
-            blockHandle = blockNickname + '@' + blockDomain
-            if blockHandle in open(globalBlockingFilename).read():
+
+    blockHandle = None
+    if blockNickname and blockDomain:
+        blockHandle = blockNickname + '@' + blockDomain
+
+    if blockedCache:
+        for blockedStr in blockedCache:
+            if '*@' + domain in blockedStr:
                 return True
+            if blockHandle:
+                if blockHandle in blockedStr:
+                    return True
+    else:
+        globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+        if os.path.isfile(globalBlockingFilename):
+            if '*@' + blockDomain in open(globalBlockingFilename).read():
+                return True
+            if blockHandle:
+                if blockHandle in open(globalBlockingFilename).read():
+                    return True
+
     allowFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/allowedinstances.txt'
     if os.path.isfile(allowFilename):
@@ -266,8 +280,7 @@ def isBlocked(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(blockingFilename):
         if '*@' + blockDomain in open(blockingFilename).read():
             return True
-        if blockNickname:
-            blockHandle = blockNickname + '@' + blockDomain
+        if blockHandle:
             if blockHandle in open(blockingFilename).read():
                 return True
     return False
