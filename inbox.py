@@ -2816,10 +2816,7 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                     alreadyUnknown = True
 
             if not alreadyUnknown:
-                unknownFile = open(unknownContextsFile, "a+")
-                if unknownFile:
-                    unknownFile.write(unknownContext + '\n')
-                    unknownFile.close()
+                storeValue(unknownContextsFile, unknownContext, 'append')
     else:
         print('Unrecognized jsonld signature type: ' +
               jwebsigType)
@@ -2834,10 +2831,7 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                 alreadyUnknown = True
 
         if not alreadyUnknown:
-            unknownFile = open(unknownSignaturesFile, "a+")
-            if unknownFile:
-                unknownFile.write(jwebsigType + '\n')
-                unknownFile.close()
+            storeValue(unknownSignaturesFile, jwebsigType, 'append')
     return hasJsonSignature, jwebsigType
 
 

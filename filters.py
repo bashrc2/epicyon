@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from storage import storeValue
 
 
 def addFilter(baseDir: str, nickname: str, domain: str, words: str) -> bool:
@@ -17,9 +18,7 @@ def addFilter(baseDir: str, nickname: str, domain: str, words: str) -> bool:
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
-    filtersFile = open(filtersFilename, "a+")
-    filtersFile.write(words + '\n')
-    filtersFile.close()
+    storeValue(filtersFilename, words, 'append')
     return True
 
 
@@ -35,9 +34,7 @@ def addGlobalFilter(baseDir: str, words: str) -> bool:
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
-    filtersFile = open(filtersFilename, "a+")
-    filtersFile.write(words + '\n')
-    filtersFile.close()
+    storeValue(filtersFilename, words, 'append')
     return True
 
 

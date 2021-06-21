@@ -276,8 +276,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(unfollowedFilename):
         if handleToUnfollowLower not in \
            open(unfollowedFilename).read().lower():
-            with open(unfollowedFilename, "a+") as f:
-                f.write(handleToUnfollow + '\n')
+            storeValue(unfollowedFilename, handleToUnfollow, 'append')
     else:
         storeValue(unfollowedFilename, handleToUnfollow, 'write')
 
@@ -599,8 +598,7 @@ def _storeFollowRequest(baseDir: str,
 
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
-            with open(approveFollowsFilename, 'a+') as fp:
-                fp.write(approveHandleStored + '\n')
+            storeValue(approveFollowsFilename, approveHandleStored, 'append')
         else:
             if debug:
                 print('DEBUG: ' + approveHandleStored +

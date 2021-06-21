@@ -1144,11 +1144,8 @@ def personSnooze(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(snoozedFilename):
         if snoozeActor + ' ' in open(snoozedFilename).read():
             return
-    snoozedFile = open(snoozedFilename, "a+")
-    if snoozedFile:
-        snoozedFile.write(snoozeActor + ' ' +
-                          str(int(time.time())) + '\n')
-        snoozedFile.close()
+    storeStr = snoozeActor + ' ' + str(int(time.time()))
+    storeValue(snoozedFilename, storeStr, 'append')
 
 
 def personUnsnooze(baseDir: str, nickname: str, domain: str,

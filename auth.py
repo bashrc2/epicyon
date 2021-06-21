@@ -173,8 +173,7 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
             os.rename(passwordFile + '.new', passwordFile)
         else:
             # append to password file
-            with open(passwordFile, 'a+') as passfile:
-                passfile.write(storeStr + '\n')
+            storeValue(passwordFile, storeStr, 'append')
     else:
         storeValue(passwordFile, storeStr, 'write')
     return True

@@ -432,10 +432,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.maxReplies,
                                         self.server.debug)
                         # record the vote
-                        votesFile = open(votesFilename, 'a+')
-                        if votesFile:
-                            votesFile.write(messageId + '\n')
-                            votesFile.close()
+                        storeValue(votesFilename, messageId, 'append')
 
                         # ensure that the cached post is removed if it exists,
                         # so that it then will be recreated
