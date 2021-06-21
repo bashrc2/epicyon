@@ -14842,6 +14842,7 @@ class EpicyonServer(ThreadingHTTPServer):
                 print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             pass
         else:
+            print('ERROR: (EpicyonServer) ' + str(cls) + ", " + str(e))
             return HTTPServer.handle_error(self, request, client_address)
 
 
