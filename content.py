@@ -19,6 +19,7 @@ from utils import dangerousMarkup
 from utils import isPGPEncrypted
 from utils import containsPGPPublicKey
 from petnames import getPetName
+from storage import readWholeFile
 
 
 def removeHtmlTag(htmlStr: str, tag: str) -> str:
@@ -169,8 +170,9 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
     if not os.path.isfile(filename):
         return False
 
-    with open(filename, 'r') as fp:
-        content = fp.read().lower()
+    content = readWholeFile(filename)
+    if content:
+        content = content.lower()
 
         cssMatches = ('behavior:', ':expression', '?php', '.php',
                       'google', 'regexp', 'localhost',

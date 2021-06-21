@@ -10,6 +10,7 @@ __module_group__ = "RSS Feeds"
 import os
 import datetime
 from storage import storeValue
+from storage import readWholeFile
 
 
 def getHashtagCategory(baseDir: str, hashtag: str) -> str:
@@ -24,10 +25,9 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
             if not os.path.isfile(categoryFilename):
                 return ''
 
-    with open(categoryFilename, 'r') as fp:
-        categoryStr = fp.read()
-        if categoryStr:
-            return categoryStr
+    categoryStr = readWholeFile(categoryFilename)
+    if categoryStr:
+        return categoryStr
     return ''
 
 
@@ -53,12 +53,10 @@ def getHashtagCategories(baseDir: str,
             hashtag = f.split('.')[0]
             if len(hashtag) > maxTagLength:
                 continue
-            with open(categoryFilename, 'r') as fp:
-                categoryStr = fp.read()
-
-                if not categoryStr:
-                    continue
-
+            categoryStr = readWholeFile(categoryFilename)
+            if not categoryStr:
+                continue
+            if categoryStr:
                 if category:
                     # only return a dictionary for a specific category
                     if categoryStr != category:

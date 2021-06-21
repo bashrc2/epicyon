@@ -31,6 +31,8 @@ from auth import createBasicAuthHeader
 from session import getJson
 from session import postJson
 from storage import storeValue
+from storage import readWholeFile
+from storage import readFileLines
 
 
 def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
@@ -49,8 +51,8 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
             lastSeenDir = accountDir + '/lastseen'
             if not os.path.isdir(lastSeenDir):
                 os.mkdir(lastSeenDir)
-            with open(followingFilename, 'r') as fp:
-                followingHandles = fp.readlines()
+            followingHandles = readFileLines(followingFilename)
+            if followingHandles:
                 for handle in followingHandles:
                     if '#' in handle:
                         continue
@@ -214,9 +216,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
 
     alreadyFollowing = False
 
-    followersStr = ''
-    with open(followersFile, 'r') as fpFollowers:
-        followersStr = fpFollowers.read()
+    followersStr = readWholeFile(followersFile)
 
     if handle in followersStr:
         alreadyFollowing = True
@@ -556,9 +556,7 @@ def _storeFollowRequest(baseDir: str,
     if os.path.isfile(followersFilename):
         alreadyFollowing = False
 
-        followersStr = ''
-        with open(followersFilename, 'r') as fpFollowers:
-            followersStr = fpFollowers.read()
+        followersStr = readWholeFile(followersFilename)
 
         if approveHandle in followersStr:
             alreadyFollowing = True

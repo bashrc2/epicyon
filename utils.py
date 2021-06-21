@@ -19,6 +19,7 @@ from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from storage import storeValue
+from storage import readWholeFile
 
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
@@ -163,8 +164,8 @@ def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
     if not os.path.isfile(lastSeenFilename):
         return False
 
-    with open(lastSeenFilename, 'r') as lastSeenFile:
-        daysSinceEpochStr = lastSeenFile.read()
+    daysSinceEpochStr = readWholeFile(lastSeenFilename)
+    if daysSinceEpochStr:
         daysSinceEpoch = int(daysSinceEpochStr)
         currTime = datetime.datetime.utcnow()
         currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
@@ -506,8 +507,8 @@ def loadJson(filename: str, delaySec=2, maxTries=5) -> {}:
     tries = 0
     while tries < maxTries:
         try:
-            with open(filename, 'r') as fp:
-                data = fp.read()
+            data = readWholeFile(filename)
+            if data:
                 jsonObject = json.loads(data)
                 break
         except BaseException:
@@ -527,14 +528,13 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'r') as fp:
-                data = fp.read()
-                if data:
-                    data = data.replace(domain, onionDomain)
-                    data = data.replace('https:', 'http:')
-                    print('*****data: ' + data)
-                jsonObject = json.loads(data)
-                break
+            data = readWholeFile(filename)
+            if data:
+                data = data.replace(domain, onionDomain)
+                data = data.replace('https:', 'http:')
+                print('*****data: ' + data)
+            jsonObject = json.loads(data)
+            break
         except BaseException:
             print('WARN: loadJson exception')
             if delaySec > 0:
@@ -942,14 +942,13 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
         storeValue(petnamesFilename, petnameLookupEntry, 'writeonly')
         return
 
-    with open(petnamesFilename, 'r') as petnamesFile:
-        petnamesStr = petnamesFile.read()
-        if petnamesStr:
-            petnamesList = petnamesStr.split('\n')
-            for pet in petnamesList:
-                if pet.startswith(followNickname + ' '):
-                    # petname already exists
-                    return
+    petnamesStr = readWholeFile(petnamesFilename)
+    if petnamesStr:
+        petnamesList = petnamesStr.split('\n')
+        for pet in petnamesList:
+            if pet.startswith(followNickname + ' '):
+                # petname already exists
+                return
     # petname doesn't already exist
     storeValue(petnamesFilename, petnameLookupEntry, 'append')
 
@@ -1094,13 +1093,12 @@ def locateNewsArrival(baseDir: str, domain: str,
     accountDir = baseDir + '/accounts/news@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
     if os.path.isfile(postFilename):
-        with open(postFilename, 'r') as arrivalFile:
-            arrival = arrivalFile.read()
-            if arrival:
-                arrivalDate = \
-                    datetime.datetime.strptime(arrival,
-                                               "%Y-%m-%dT%H:%M:%SZ")
-                return arrivalDate
+        arrival = readWholeFile(postFilename)
+        if arrival:
+            arrivalDate = \
+                datetime.datetime.strptime(arrival,
+                                           "%Y-%m-%dT%H:%M:%SZ")
+            return arrivalDate
 
     return None
 
@@ -1488,8 +1486,8 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
                     lastUsedFilename = \
                         baseDir + '/accounts/' + account + '/.lastUsed'
                     if os.path.isfile(lastUsedFilename):
-                        with open(lastUsedFilename, 'r') as lastUsedFile:
-                            lastUsed = lastUsedFile.read()
+                        lastUsed = readWholeFile(lastUsedFilename)
+                        if lastUsed:
                             if lastUsed.isdigit():
                                 timeDiff = (currTime - int(lastUsed))
                                 if timeDiff < monthSeconds:
@@ -1645,8 +1643,8 @@ def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
             # file hasn't changed, so return the version in the cache
             return cssCache[cssFilename][1]
 
-    with open(cssFilename, 'r') as fpCSS:
-        css = fpCSS.read()
+    css = readWholeFile(cssFilename)
+    if css:
         if cssCache.get(cssFilename):
             # alter the cache contents
             cssCache[cssFilename][0] = lastModified
@@ -1756,9 +1754,8 @@ def _searchVirtualBoxPosts(baseDir: str, nickname: str, domain: str,
             postFilename = path + '/' + postFilename.strip()
             if not os.path.isfile(postFilename):
                 continue
-            with open(postFilename, 'r') as postFile:
-                data = postFile.read().lower()
-
+            data = readWholeFile(postFilename).lower()
+            if data:
                 notFound = False
                 for keyword in searchWords:
                     if keyword not in data:
@@ -1799,9 +1796,8 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     for root, dirs, fnames in os.walk(path):
         for fname in fnames:
             filePath = os.path.join(root, fname)
-            with open(filePath, 'r') as postFile:
-                data = postFile.read().lower()
-
+            data = readWholeFile(filePath).lower()
+            if data:
                 notFound = False
                 for keyword in searchWords:
                     if keyword not in data:

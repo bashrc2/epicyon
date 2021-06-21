@@ -13,6 +13,7 @@ from utils import getConfigParam
 from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import markdownToHtml
+from storage import readWholeFile
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
@@ -32,8 +33,9 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
 
     aboutText = 'Information about this instance goes here.'
     if os.path.isfile(baseDir + '/accounts/about.md'):
-        with open(baseDir + '/accounts/about.md', 'r') as aboutFile:
-            aboutText = markdownToHtml(aboutFile.read())
+        aboutText = readWholeFile(baseDir + '/accounts/about.md')
+        if aboutText:
+            aboutText = markdownToHtml(aboutText)
 
     aboutForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'

@@ -29,6 +29,8 @@ from utils import removeHtml
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
+from storage import readWholeFile
+from storage import readFileLines
 
 
 def _removeCDATA(text: str) -> str:
@@ -219,8 +221,8 @@ def loadHashtagCategories(baseDir: str, language: str) -> None:
         if not os.path.isfile(hashtagCategoriesFilename):
             return
 
-    with open(hashtagCategoriesFilename, 'r') as fp:
-        xmlStr = fp.read()
+    xmlStr = readWholeFile(hashtagCategoriesFilename)
+    if xmlStr:
         _xml2StrToHashtagCategories(baseDir, xmlStr, 1024, True)
 
 
@@ -1014,9 +1016,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
     maxPostsPerSource = 5
 
     # add rss feeds
-    rssFeed = []
-    with open(subscriptionsFilename, 'r') as fp:
-        rssFeed = fp.readlines()
+    rssFeed = readFileLines(subscriptionsFilename)
     result = {}
     for url in rssFeed:
         url = url.strip()

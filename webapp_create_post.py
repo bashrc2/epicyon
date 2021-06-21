@@ -17,6 +17,7 @@ from utils import getConfigParam
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from storage import readWholeFile
 
 
 def _htmlFollowingDataList(baseDir: str, nickname: str,
@@ -27,34 +28,33 @@ def _htmlFollowingDataList(baseDir: str, nickname: str,
     followingFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
     if os.path.isfile(followingFilename):
-        with open(followingFilename, 'r') as followingFile:
-            msg = followingFile.read()
-            # add your own handle, so that you can send DMs
-            # to yourself as reminders
-            msg += nickname + '@' + domainFull + '\n'
-            # include petnames
-            petnamesFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/petnames.txt'
-            if os.path.isfile(petnamesFilename):
-                followingList = []
-                with open(petnamesFilename, 'r') as petnamesFile:
-                    petStr = petnamesFile.read()
-                    # extract each petname and append it
-                    petnamesList = petStr.split('\n')
-                    for pet in petnamesList:
-                        followingList.append(pet.split(' ')[0])
-                # add the following.txt entries
-                followingList += msg.split('\n')
-            else:
-                # no petnames list exists - just use following.txt
-                followingList = msg.split('\n')
-            followingList.sort()
-            if followingList:
-                for followingAddress in followingList:
-                    if followingAddress:
-                        listStr += \
-                            '<option>@' + followingAddress + '</option>\n'
+        msg = readWholeFile(followingFilename)
+        # add your own handle, so that you can send DMs
+        # to yourself as reminders
+        msg += nickname + '@' + domainFull + '\n'
+        # include petnames
+        petnamesFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/petnames.txt'
+        if os.path.isfile(petnamesFilename):
+            followingList = []
+            petStr = readWholeFile(petnamesFilename)
+            if petStr:
+                # extract each petname and append it
+                petnamesList = petStr.split('\n')
+                for pet in petnamesList:
+                    followingList.append(pet.split(' ')[0])
+            # add the following.txt entries
+            followingList += msg.split('\n')
+        else:
+            # no petnames list exists - just use following.txt
+            followingList = msg.split('\n')
+        followingList.sort()
+        if followingList:
+            for followingAddress in followingList:
+                if followingAddress:
+                    listStr += \
+                        '<option>@' + followingAddress + '</option>\n'
     listStr += '</datalist>\n'
     return listStr
 

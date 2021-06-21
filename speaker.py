@@ -22,6 +22,8 @@ from utils import loadJson
 from utils import saveJson
 from utils import isPGPEncrypted
 from content import htmlReplaceQuoteMarks
+from storage import readFileLines
+from storage import readWholeFile
 
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -135,8 +137,8 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             ")": ","
         }
     if os.path.isfile(pronounceFilename):
-        with open(pronounceFilename, 'r') as fp:
-            pronounceList = fp.readlines()
+        pronounceList = readFileLines(pronounceFilename)
+        if pronounceList:
             for conversion in pronounceList:
                 separator = None
                 if '->' in conversion:
@@ -494,8 +496,8 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     accountsDir = baseDir + '/accounts/' + nickname + '@' + domainFull
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
-        with open(approveFollowsFilename, 'r') as fp:
-            follows = fp.readlines()
+        follows = readFileLines(approveFollowsFilename)
+        if follows:
             if len(follows) > 0:
                 followRequestsExist = True
                 for i in range(len(follows)):
@@ -512,8 +514,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     likedBy = ''
     likeFilename = accountsDir + '/.newLike'
     if os.path.isfile(likeFilename):
-        with open(likeFilename, 'r') as fp:
-            likedBy = fp.read()
+        likedBy = readWholeFile(likeFilename)
     calendarFilename = accountsDir + '/.newCalendar'
     postCal = os.path.isfile(calendarFilename)
     shareFilename = accountsDir + '/.newShare'

@@ -301,6 +301,7 @@ from speaker import getSSMLbox
 from city import getSpoofedCity
 import os
 from storage import storeValue
+from storage import readWholeFile
 
 
 # maximum number of posts to list in outbox feed
@@ -665,11 +666,7 @@ class PubServer(BaseHTTPRequestHandler):
         # self.send_header('Cache-Control', 'public, max-age=86400')
         etag = None
         if os.path.isfile(mediaFilename + '.etag'):
-            try:
-                with open(mediaFilename + '.etag', 'r') as etagFile:
-                    etag = etagFile.read()
-            except BaseException:
-                pass
+            etag = readWholeFile(mediaFilename + '.etag')
         if not etag:
             etag = sha1(data).hexdigest()  # nosec
             storeValue(mediaFilename + '.etag', etag, 'writeonly')
@@ -690,12 +687,7 @@ class PubServer(BaseHTTPRequestHandler):
             oldEtag = self.headers['If-None-Match']
             if os.path.isfile(mediaFilename + '.etag'):
                 # load the etag from file
-                currEtag = ''
-                try:
-                    with open(mediaFilename, 'r') as etagFile:
-                        currEtag = etagFile.read()
-                except BaseException:
-                    pass
+                currEtag = readWholeFile(mediaFilename)
                 if oldEtag == currEtag:
                     # The file has not changed
                     return True
@@ -1532,12 +1524,7 @@ class PubServer(BaseHTTPRequestHandler):
                     loginNickname + '@' + domain + '/.salt'
                 salt = createPassword(32)
                 if os.path.isfile(saltFilename):
-                    try:
-                        with open(saltFilename, 'r') as fp:
-                            salt = fp.read()
-                    except Exception as e:
-                        print('WARN: Unable to read salt for ' +
-                              loginNickname + ' ' + str(e))
+                    salt = readWholeFile(saltFilename)
                 else:
                     storeValue(saltFilename, salt, 'writeonly')
 
@@ -13108,11 +13095,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fileLength = os.path.getsize(mediaFilename)
                     mediaTagFilename = mediaFilename + '.etag'
                     if os.path.isfile(mediaTagFilename):
-                        try:
-                            with open(mediaTagFilename, 'r') as etagFile:
-                                etag = etagFile.read()
-                        except BaseException:
-                            pass
+                        etag = readWholeFile(mediaTagFilename)
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
@@ -14856,13 +14839,7 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 if not os.path.isfile(tokenFilename):
                     continue
                 nickname = handle.split('@')[0]
-                token = None
-                try:
-                    with open(tokenFilename, 'r') as fp:
-                        token = fp.read()
-                except Exception as e:
-                    print('WARN: Unable to read token for ' +
-                          nickname + ' ' + str(e))
+                token = readWholeFile(tokenFilename)
                 if not token:
                     continue
                 tokensDict[nickname] = token

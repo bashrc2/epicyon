@@ -21,6 +21,7 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 from city import spoofGeolocation
+from storage import readWholeFile
 from storage import storeValue
 
 
@@ -70,8 +71,10 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         baseDir + '/accounts/' + nickname + '@' + domain + '/decoyseed'
     decoySeed = 63725
     if os.path.isfile(decoySeedFilename):
-        with open(decoySeedFilename, 'r') as fp:
-            decoySeed = int(fp.read())
+        decoySeedStr = readWholeFile(decoySeedFilename)
+        if decoySeedStr:
+            if decoySeedStr.isdigit():
+                decoySeed = int(decoySeedStr)
     else:
         decoySeed = randint(10000, 10000000000000000)
         decoySeedStr = str(decoySeed)
