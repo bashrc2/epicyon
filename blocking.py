@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 import json
+import time
 from datetime import datetime
 from utils import isAccountDir
 from utils import getCachedPostFilename
@@ -167,7 +168,29 @@ def getDomainBlocklist(baseDir: str) -> str:
     return blockedStr
 
 
-def isBlockedDomain(baseDir: str, domain: str) -> bool:
+def updateBlockedCache(baseDir: str,
+                       blockedCache: [],
+                       blockedCacheLastUpdated: int,
+                       blockedCacheUpdateSecs: int) -> int:
+    """Updates the cache of globally blocked domains held in memory
+    """
+    currTime = int(time.time())
+    secondsSinceLastUpdate = currTime - blockedCacheLastUpdated
+    if secondsSinceLastUpdate < blockedCacheUpdateSecs:
+        return blockedCacheLastUpdated
+    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+    if not os.path.isfile(globalBlockingFilename):
+        return blockedCacheLastUpdated
+    with open(globalBlockingFilename, 'r') as fpBlocked:
+        blockedLines = fpBlocked.readlines()
+        blockedCache.clear()
+        for line in blockedLines:
+            blockedCache.append(line)
+    return currTime
+
+
+def isBlockedDomain(baseDir: str, domain: str,
+                    blockedCache: [] = None) -> bool:
     """Is the given domain blocked?
     """
     if '.' not in domain:
@@ -186,16 +209,24 @@ def isBlockedDomain(baseDir: str, domain: str) -> bool:
 
     allowFilename = baseDir + '/accounts/allowedinstances.txt'
     if not os.path.isfile(allowFilename):
-        # instance block list
-        globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-        if os.path.isfile(globalBlockingFilename):
-            with open(globalBlockingFilename, 'r') as fpBlocked:
-                blockedStr = fpBlocked.read()
+        if blockedCache:
+            for blockedStr in blockedCache:
                 if '*@' + domain in blockedStr:
                     return True
                 if shortDomain:
                     if '*@' + shortDomain in blockedStr:
                         return True
+        else:
+            # instance block list
+            globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+            if os.path.isfile(globalBlockingFilename):
+                with open(globalBlockingFilename, 'r') as fpBlocked:
+                    blockedStr = fpBlocked.read()
+                    if '*@' + domain in blockedStr:
+                        return True
+                    if shortDomain:
+                        if '*@' + shortDomain in blockedStr:
+                            return True
     else:
         # instance allow list
         if not shortDomain:

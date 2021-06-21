@@ -114,6 +114,7 @@ from media import attachMedia
 from media import pathIsImage
 from media import pathIsVideo
 from media import pathIsAudio
+from blocking import updateBlockedCache
 from blocking import mutePost
 from blocking import unmutePost
 from blocking import setBrochMode
@@ -487,6 +488,12 @@ class PubServer(BaseHTTPRequestHandler):
         # is the User-Agent domain blocked
         blockedUA = False
         if not agentDomain.startswith(callingDomain):
+            self.server.blockedCacheLastUpdated = \
+                updateBlockedCache(self.server.baseDir,
+                                   self.server.blockedCache,
+                                   self.server.blockedCacheLastUpdated,
+                                   self.server.blockedCacheUpdateSecs)
+
             blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
             # if self.server.debug:
             if blockedUA:
@@ -1212,6 +1219,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         messageDomain, messagePort = \
             getDomainFromActor(messageJson['actor'])
+
+        self.server.blockedCacheLastUpdated = \
+            updateBlockedCache(self.server.baseDir,
+                               self.server.blockedCache,
+                               self.server.blockedCacheLastUpdated,
+                               self.server.blockedCacheUpdateSecs)
+
         if isBlockedDomain(self.server.baseDir, messageDomain):
             print('POST from blocked domain ' + messageDomain)
             self._400()
@@ -15179,6 +15193,16 @@ def runDaemon(userAgentsBlocked: [],
     httpd.instanceOnlySkillsSearch = instanceOnlySkillsSearch
     # contains threads used to send posts to followers
     httpd.followersThreads = []
+
+    # create a cache of blocked domains in memory.
+    # This limits the amount of slow disk reads which need to be done
+    httpd.blockedCache = []
+    httpd.blockedCacheLastUpdated = 0
+    httpd.blockedCacheUpdateSecs = 60
+    httpd.blockedCacheLastUpdated = \
+        updateBlockedCache(baseDir, httpd.blockedCache,
+                           httpd.blockedCacheLastUpdated,
+                           httpd.blockedCacheUpdateSecs)
 
     # cache to store css files
     httpd.cssCache = {}
