@@ -14,6 +14,7 @@ from utils import removeHtml
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import markdownToHtml
+from storage import storeValue
 
 
 def isWelcomeScreenComplete(baseDir: str, nickname: str, domain: str) -> bool:
@@ -34,10 +35,7 @@ def welcomeScreenIsComplete(baseDir: str,
     if not os.path.isdir(accountPath):
         return
     completeFilename = accountPath + '/.welcome_complete'
-    completeFile = open(completeFilename, 'w+')
-    if completeFile:
-        completeFile.write('\n')
-        completeFile.close()
+    storeValue(completeFilename, '\n', 'writeonly')
 
 
 def htmlWelcomeScreen(baseDir: str, nickname: str,

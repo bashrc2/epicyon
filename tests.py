@@ -117,6 +117,7 @@ from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
 from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
+from storage import storeValue
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3167,12 +3168,11 @@ def _testFunctions():
         callGraphStr += '  }\n'
         clusterCtr += 1
     callGraphStr += '\n}\n'
-    with open('epicyon_modules.dot', 'w+') as fp:
-        fp.write(callGraphStr)
-        print('Modules call graph saved to epicyon_modules.dot')
-        print('Plot using: ' +
-              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
-              '-Gsep=+100 -Tx11 epicyon_modules.dot')
+    assert storeValue('epicyon_modules.dot', callGraphStr, 'writeonly')
+    print('Modules call graph saved to epicyon_modules.dot')
+    print('Plot using: ' +
+          'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
+          '-Gsep=+100 -Tx11 epicyon_modules.dot')
 
     callGraphStr = 'digraph Epicyon {\n\n'
     callGraphStr += '  size="8,6"; ratio=fill;\n'
@@ -3223,12 +3223,11 @@ def _testFunctions():
                     '" [color=' + modColor + '];\n'
 
     callGraphStr += '\n}\n'
-    with open('epicyon.dot', 'w+') as fp:
-        fp.write(callGraphStr)
-        print('Call graph saved to epicyon.dot')
-        print('Plot using: ' +
-              'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
-              '-Gsep=+120 -Tx11 epicyon.dot')
+    assert storeValue('epicyon.dot', callGraphStr, 'writeonly')
+    print('Call graph saved to epicyon.dot')
+    print('Plot using: ' +
+          'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
+          '-Gsep=+120 -Tx11 epicyon.dot')
 
 
 def _testLinksWithinPost() -> None:
@@ -3883,10 +3882,7 @@ def _testSpoofGeolocation() -> None:
 
     kmlStr += '</Document>\n'
     kmlStr += '</kml>'
-    kmlFile = open('unittest_decoy.kml', 'w+')
-    if kmlFile:
-        kmlFile.write(kmlStr)
-        kmlFile.close()
+    assert storeValue('unittest_decoy.kml', kmlStr, 'writeonly')
 
 
 def _testSkills() -> None:

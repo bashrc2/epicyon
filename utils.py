@@ -18,6 +18,7 @@ from pprint import pprint
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+from storage import storeValue
 
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
@@ -43,9 +44,7 @@ def refreshNewswire(baseDir: str):
     refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
     if os.path.isfile(refreshNewswireFilename):
         return
-    refreshFile = open(refreshNewswireFilename, 'w+')
-    refreshFile.write('\n')
-    refreshFile.close()
+    storeValue(refreshNewswireFilename, '\n', 'writeonly')
 
 
 def getSHA256(msg: str):
@@ -490,15 +489,13 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
     """Saves json to a file
     """
     tries = 0
+    storeStr = json.dumps(jsonObject)
     while tries < 5:
-        try:
-            with open(filename, 'w+') as fp:
-                fp.write(json.dumps(jsonObject))
-                return True
-        except BaseException:
-            print('WARN: saveJson ' + str(tries))
-            time.sleep(1)
-            tries += 1
+        if storeValue(filename, storeStr, 'writeonly'):
+            return True
+        print('WARN: saveJson ' + str(tries))
+        time.sleep(1)
+        tries += 1
     return False
 
 
@@ -942,8 +939,7 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
         followNickname + '@' + followDomain + '\n'
     if not os.path.isfile(petnamesFilename):
         # if there is no existing petnames lookup file
-        with open(petnamesFilename, 'w+') as petnamesFile:
-            petnamesFile.write(petnameLookupEntry)
+        storeValue(petnamesFilename, petnameLookupEntry, 'writeonly')
         return
 
     with open(petnamesFilename, 'r') as petnamesFile:
@@ -1000,8 +996,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                 for line in lines:
                     if handleToFollow not in line:
                         newLines += line
-            with open(unfollowedFilename, 'w+') as f:
-                f.write(newLines)
+            storeValue(unfollowedFilename, newLines, 'writeonly')
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
@@ -1029,8 +1024,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
             print('DEBUG: ' + handle +
                   ' creating new following file to follow ' + handleToFollow +
                   ', filename is ' + filename)
-        with open(filename, 'w+') as f:
-            f.write(handleToFollow + '\n')
+        storeValue(filename, handleToFollow, 'write')
 
     if followFile.endswith('following.txt'):
         # Default to adding new follows to the calendar.
@@ -1352,8 +1346,7 @@ def deletePost(baseDir: str, httpPrefix: str,
                             # hashtag file
                             os.remove(tagIndexFilename)
                         else:
-                            with open(tagIndexFilename, "w+") as f:
-                                f.write(newlines)
+                            storeValue(tagIndexFilename, newlines, 'writeonly')
 
     # remove any replies
     repliesFilename = postFilename.replace('.json', '.replies')
@@ -2198,10 +2191,7 @@ def rejectPostId(baseDir: str, nickname: str, domain: str,
             if recentPostsCache['html'].get(postUrl):
                 del recentPostsCache['html'][postUrl]
 
-    rejectFile = open(postFilename + '.reject', "w+")
-    if rejectFile:
-        rejectFile.write('\n')
-        rejectFile.close()
+    storeValue(postFilename + '.reject', '\n', 'writeonly')
 
 
 def isDM(postJsonObject: {}) -> bool:

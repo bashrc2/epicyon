@@ -52,6 +52,7 @@ from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
 from pprint import pprint
+from storage import storeValue
 
 
 def generateRSAKey() -> (str, str):
@@ -494,15 +495,13 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
     if manualFollowerApproval:
         followDMsFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.followDMs'
-        with open(followDMsFilename, 'w+') as fFile:
-            fFile.write('\n')
+        storeValue(followDMsFilename, '\n', 'writeonly')
 
     # notify when posts are liked
     if nickname != 'news':
         notifyLikesFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.notifyLikes'
-        with open(notifyLikesFilename, 'w+') as nFile:
-            nFile.write('\n')
+        storeValue(notifyLikesFilename, '\n', 'writeonly')
 
     theme = getConfigParam(baseDir, 'theme')
     if not theme:
@@ -923,15 +922,9 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
-        suspendedFile = open(suspendedFilename, 'a+')
-        if suspendedFile:
-            suspendedFile.write(nickname + '\n')
-            suspendedFile.close()
+        storeValue(suspendedFilename, nickname, 'append')
     else:
-        suspendedFile = open(suspendedFilename, 'w+')
-        if suspendedFile:
-            suspendedFile.write(nickname + '\n')
-            suspendedFile.close()
+        storeValue(suspendedFilename, nickname, 'write')
 
 
 def canRemovePost(baseDir: str, nickname: str,
@@ -1132,10 +1125,7 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            writeSnoozedFile = open(snoozedFilename, 'w+')
-            if writeSnoozedFile:
-                writeSnoozedFile.write(content)
-                writeSnoozedFile.close()
+            storeValue(snoozedFilename, content, 'writeonly')
 
     if snoozeActor + ' ' in open(snoozedFilename).read():
         return True
@@ -1185,10 +1175,7 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            writeSnoozedFile = open(snoozedFilename, 'w+')
-            if writeSnoozedFile:
-                writeSnoozedFile.write(content)
-                writeSnoozedFile.close()
+            storeValue(snoozedFilename, content, 'writeonly')
 
 
 def setPersonNotes(baseDir: str, nickname: str, domain: str,
@@ -1204,8 +1191,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     if not os.path.isdir(notesDir):
         os.mkdir(notesDir)
     notesFilename = notesDir + '/' + handle + '.txt'
-    with open(notesFilename, 'w+') as notesFile:
-        notesFile.write(notes)
+    storeValue(notesFilename, notes, 'writeonly')
     return True
 
 

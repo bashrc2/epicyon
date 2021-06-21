@@ -16,6 +16,7 @@ from shutil import make_archive
 from shutil import unpack_archive
 from shutil import rmtree
 from content import dangerousCSS
+from storage import storeValue
 
 
 def importTheme(baseDir: str, filename: str) -> bool:
@@ -361,8 +362,7 @@ def _setThemeFromDict(baseDir: str, name: str,
                     continue
                 css = setCSSparam(css, paramName, paramValue)
             filename = baseDir + '/' + filename
-            with open(filename, 'w+') as cssfile:
-                cssfile.write(css)
+            storeValue(filename, css, 'writeonly')
 
     if bgParams.get('login'):
         _setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
@@ -388,8 +388,7 @@ def _setBackgroundFormat(baseDir: str, name: str,
     with open(cssFilename, 'r') as cssfile:
         css = cssfile.read()
         css = css.replace('background.jpg', 'background.' + extension)
-        with open(cssFilename, 'w+') as cssfile2:
-            cssfile2.write(css)
+        storeValue(cssFilename, css, 'writeonly')
 
 
 def enableGrayscale(baseDir: str) -> None:
@@ -407,12 +406,10 @@ def enableGrayscale(baseDir: str) -> None:
                     css.replace('body, html {',
                                 'body, html {\n    filter: grayscale(100%);')
                 filename = baseDir + '/' + filename
-                with open(filename, 'w+') as cssfile:
-                    cssfile.write(css)
+                storeValue(filename, css, 'writeonly')
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if not os.path.isfile(grayscaleFilename):
-        with open(grayscaleFilename, 'w+') as grayfile:
-            grayfile.write(' ')
+        storeValue(grayscaleFilename, ' ', 'writeonly')
 
 
 def disableGrayscale(baseDir: str) -> None:
@@ -429,8 +426,7 @@ def disableGrayscale(baseDir: str) -> None:
                 css = \
                     css.replace('\n    filter: grayscale(100%);', '')
                 filename = baseDir + '/' + filename
-                with open(filename, 'w+') as cssfile:
-                    cssfile.write(css)
+                storeValue(filename, css, 'writeonly')
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
         os.remove(grayscaleFilename)
@@ -470,8 +466,7 @@ def _setCustomFont(baseDir: str):
                             customFontType + "')")
             css = setCSSparam(css, "*font-family", "'CustomFont'")
             filename = baseDir + '/' + filename
-            with open(filename, 'w+') as cssfile:
-                cssfile.write(css)
+            storeValue(filename, css, 'writeonly')
 
 
 def _readVariablesFile(baseDir: str, themeName: str,
@@ -739,8 +734,7 @@ def _setClearCacheFlag(baseDir: str) -> None:
     if not os.path.isdir(baseDir + '/accounts'):
         return
     flagFilename = baseDir + '/accounts/.clear_cache'
-    with open(flagFilename, 'w+') as flagFile:
-        flagFile.write('\n')
+    storeValue(flagFilename, '\n', 'writeonly')
 
 
 def setTheme(baseDir: str, name: str, domain: str,

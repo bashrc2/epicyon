@@ -15,6 +15,7 @@ import secrets
 import datetime
 from utils import isSystemAccount
 from utils import hasUsersPath
+from storage import storeValue
 
 
 def _hashPassword(password: str) -> str:
@@ -175,8 +176,7 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
             with open(passwordFile, 'a+') as passfile:
                 passfile.write(storeStr + '\n')
     else:
-        with open(passwordFile, 'w+') as passfile:
-            passfile.write(storeStr + '\n')
+        storeValue(passwordFile, storeStr, 'write')
     return True
 
 
@@ -240,18 +240,14 @@ def recordLoginFailure(baseDir: str, ipAddress: str,
         return
 
     failureLog = baseDir + '/accounts/loginfailures.log'
-    writeType = 'a+'
+    writeType = 'append'
     if not os.path.isfile(failureLog):
-        writeType = 'w+'
+        writeType = 'writeonly'
     currTime = datetime.datetime.utcnow()
-    try:
-        with open(failureLog, writeType) as fp:
-            # here we use a similar format to an ssh log, so that
-            # systems such as fail2ban can parse it
-            fp.write(currTime.strftime("%Y-%m-%d %H:%M:%SZ") + ' ' +
-                     'ip-127-0-0-1 sshd[20710]: ' +
-                     'Disconnecting invalid user epicyon ' +
-                     ipAddress + ' port 443: ' +
-                     'Too many authentication failures [preauth]\n')
-    except BaseException:
-        pass
+    logLineStr = \
+        currTime.strftime("%Y-%m-%d %H:%M:%SZ") + ' ' + \
+        'ip-127-0-0-1 sshd[20710]: ' + \
+        'Disconnecting invalid user epicyon ' + \
+        ipAddress + ' port 443: ' + \
+        'Too many authentication failures [preauth]\n'
+    storeValue(failureLog, logLineStr, writeType)

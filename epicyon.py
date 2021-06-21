@@ -88,6 +88,7 @@ from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
 from desktop_client import runDesktopClient
+from storage import storeValue
 
 
 def str2bool(v) -> bool:
@@ -759,12 +760,8 @@ if args.socnet:
                               proxyType, args.port,
                               httpPrefix, debug,
                               __version__)
-    try:
-        with open('socnet.dot', 'w+') as fp:
-            fp.write(dotGraph)
-            print('Saved to socnet.dot')
-    except BaseException:
-        pass
+    if storeValue('socnet.dot', dotGraph, 'writeonly'):
+        print('Saved to socnet.dot')
     sys.exit()
 
 if args.postsraw:

@@ -34,6 +34,7 @@ from utils import clearFromPostCaches
 from utils import dangerousMarkup
 from inbox import storeHashTags
 from session import createSession
+from storage import storeValue
 
 
 def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
@@ -55,19 +56,13 @@ def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
                 print('WARN: Failed to write entry to feeds posts index ' +
                       indexFilename + ' ' + str(e))
     else:
-        feedsFile = open(indexFilename, 'w+')
-        if feedsFile:
-            feedsFile.write(postId + '\n')
-            feedsFile.close()
+        storeValue(indexFilename, postId, 'write')
 
 
 def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
-    arrivedFile = open(postFilename + '.arrived', 'w+')
-    if arrivedFile:
-        arrivedFile.write(arrived)
-        arrivedFile.close()
+    storeValue(postFilename + '.arrived', arrived, 'writeonly')
 
 
 def _removeControlCharacters(content: str) -> str:
@@ -409,8 +404,7 @@ def _createNewsMirror(baseDir: str, domain: str,
                 for removePostId in removals:
                     indexContent = \
                         indexContent.replace(removePostId + '\n', '')
-            with open(mirrorIndexFilename, "w+") as indexFile:
-                indexFile.write(indexContent)
+            storeValue(mirrorIndexFilename, indexContent, 'writeonly')
 
     mirrorArticleDir = mirrorDir + '/' + postIdNumber
     if os.path.isdir(mirrorArticleDir):
@@ -435,15 +429,9 @@ def _createNewsMirror(baseDir: str, domain: str,
 
     # append the post Id number to the index file
     if os.path.isfile(mirrorIndexFilename):
-        indexFile = open(mirrorIndexFilename, "a+")
-        if indexFile:
-            indexFile.write(postIdNumber + '\n')
-            indexFile.close()
+        storeValue(mirrorIndexFilename, postIdNumber, 'append')
     else:
-        indexFile = open(mirrorIndexFilename, "w+")
-        if indexFile:
-            indexFile.write(postIdNumber + '\n')
-            indexFile.close()
+        storeValue(mirrorIndexFilename, postIdNumber, 'write')
 
     return True
 

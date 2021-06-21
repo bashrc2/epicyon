@@ -71,6 +71,7 @@ from filters import isFiltered
 from git import convertPostToPatch
 from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
+from storage import storeValue
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -733,17 +734,7 @@ def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
             tagsFile.write(tagline)
             tagsFile.close()
     else:
-        # prepend to tags index file
-        if tagline not in open(tagsFilename).read():
-            try:
-                with open(tagsFilename, 'r+') as tagsFile:
-                    content = tagsFile.read()
-                    if tagline not in content:
-                        tagsFile.seek(0, 0)
-                        tagsFile.write(tagline + content)
-            except Exception as e:
-                print('WARN: Failed to write entry to tags file ' +
-                      tagsFilename + ' ' + str(e))
+        storeValue(tagsFilename, tagline, 'prepend')
 
 
 def _addSchedulePost(baseDir: str, nickname: str, domain: str,
@@ -767,10 +758,7 @@ def _addSchedulePost(baseDir: str, nickname: str, domain: str,
                 print('WARN: Failed to write entry to scheduled posts index ' +
                       scheduleIndexFilename + ' ' + str(e))
     else:
-        scheduleFile = open(scheduleIndexFilename, 'w+')
-        if scheduleFile:
-            scheduleFile.write(indexStr + '\n')
-            scheduleFile.close()
+        storeValue(scheduleIndexFilename, indexStr, 'write')
 
 
 def _appendEventFields(newPost: {},
@@ -1194,10 +1182,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             newPost['moderationStatus'] = 'pending'
         # save to index file
         moderationIndexFile = baseDir + '/accounts/moderation.txt'
-        modFile = open(moderationIndexFile, "a+")
-        if modFile:
-            modFile.write(newPostId + '\n')
-            modFile.close()
+        storeValue(moderationIndexFile, newPostId, 'append')
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
@@ -1305,10 +1290,7 @@ def pinPost(baseDir: str, nickname: str, domain: str,
     """
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
     pinnedFilename = accountDir + '/pinToProfile.txt'
-    pinFile = open(pinnedFilename, "w+")
-    if pinFile:
-        pinFile.write(pinnedContent)
-        pinFile.close()
+    storeValue(pinnedFilename, pinnedContent, 'writeonly')
 
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
@@ -1850,11 +1832,7 @@ def createReportPost(baseDir: str,
         newReportFile = baseDir + '/accounts/' + handle + '/.newReport'
         if os.path.isfile(newReportFile):
             continue
-        try:
-            with open(newReportFile, 'w+') as fp:
-                fp.write(toUrl + '/moderation')
-        except BaseException:
-            pass
+        storeValue(newReportFile, toUrl + '/moderation', 'writeonly')
 
     return postJsonObject
 
@@ -1898,8 +1876,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         if debug:
             # save the log file
             postLogFilename = baseDir + '/post.log'
-            with open(postLogFilename, "a+") as logFile:
-                logFile.write(logStr + '\n')
+            storeValue(postLogFilename, logStr, 'append')
 
         if postResult:
             if debug:
@@ -3452,10 +3429,7 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
                     break
         # save the new index file
         if len(newIndex) > 0:
-            indexFile = open(indexFilename, 'w+')
-            if indexFile:
-                indexFile.write(newIndex)
-                indexFile.close()
+            storeValue(indexFilename, newIndex, 'writeonly')
 
     postsInBoxDict = {}
     postsCtr = 0
@@ -3838,8 +3812,7 @@ def checkDomains(session, baseDir: str,
                     updateFollowerWarnings = True
 
     if updateFollowerWarnings and followerWarningStr:
-        with open(followerWarningFilename, 'w+') as fp:
-            fp.write(followerWarningStr)
+        storeValue(followerWarningFilename, followerWarningStr, 'writeonly')
         if not singleCheck:
             print(followerWarningStr)
 
@@ -3919,10 +3892,7 @@ def _rejectAnnounce(announceFilename: str,
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
-        rejectAnnounceFile = open(announceFilename + '.reject', "w+")
-        if rejectAnnounceFile:
-            rejectAnnounceFile.write('\n')
-            rejectAnnounceFile.close()
+        storeValue(announceFilename + '.reject', '\n', 'writeonly')
 
 
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,

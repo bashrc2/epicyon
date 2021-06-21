@@ -16,6 +16,7 @@ from utils import isPublicPost
 from utils import loadJson
 from utils import saveJson
 from utils import locatePost
+from storage import storeValue
 
 
 def _validUuid(testUuid: str, version=4):
@@ -36,12 +37,7 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
         return
     with open(tlEventsFilename, 'r') as fp:
         eventsTimeline = fp.read().replace(eventId + '\n', '')
-        try:
-            with open(tlEventsFilename, 'w+') as fp2:
-                fp2.write(eventsTimeline)
-        except BaseException:
-            print('ERROR: unable to save events timeline')
-            pass
+        storeValue(tlEventsFilename, eventsTimeline, 'writeonly')
 
 
 def saveEventPost(baseDir: str, handle: str, postId: str,
@@ -105,9 +101,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
                       tlEventsFilename + ' ' + str(e))
                 return False
         else:
-            tlEventsFile = open(tlEventsFilename, 'w+')
-            tlEventsFile.write(eventId + '\n')
-            tlEventsFile.close()
+            storeValue(tlEventsFilename, eventId, 'write')
 
     # create a directory for the calendar year
     if not os.path.isdir(calendarPath + '/' + str(eventYear)):
@@ -134,17 +128,16 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     # a new event has been added
     calendarNotificationFilename = \
         baseDir + '/accounts/' + handle + '/.newCalendar'
-    calendarNotificationFile = \
-        open(calendarNotificationFilename, 'w+')
-    if not calendarNotificationFile:
+    calEventStr = \
+        '/calendar?year=' + \
+        str(eventYear) + \
+        '?month=' + \
+        str(eventMonthNumber) + \
+        '?day=' + \
+        str(eventDayOfMonth)
+    if not storeValue(calendarNotificationFilename,
+                      calEventStr, 'write'):
         return False
-    calendarNotificationFile.write('/calendar?year=' +
-                                   str(eventYear) +
-                                   '?month=' +
-                                   str(eventMonthNumber) +
-                                   '?day=' +
-                                   str(eventDayOfMonth))
-    calendarNotificationFile.close()
     return True
 
 

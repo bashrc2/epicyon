@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from storage import storeValue
 
 
 def setPetName(baseDir: str, nickname: str, domain: str,
@@ -40,17 +41,14 @@ def setPetName(baseDir: str, nickname: str, domain: str,
                     else:
                         newPetnamesStr += entry
                 # save the updated petnames file
-                with open(petnamesFilename, 'w+') as petnamesFile:
-                    petnamesFile.write(newPetnamesStr)
+                storeValue(petnamesFilename, newPetnamesStr, 'writeonly')
                 return True
             # entry does not exist in the petnames file
-            with open(petnamesFilename, 'a+') as petnamesFile:
-                petnamesFile.write(entry)
+            storeValue(petnamesFilename, entry, 'append')
             return True
 
     # first entry
-    with open(petnamesFilename, 'w+') as petnamesFile:
-        petnamesFile.write(entry)
+    storeValue(petnamesFilename, entry, 'writeonly')
     return True
 
 
