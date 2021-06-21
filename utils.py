@@ -951,7 +951,8 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
                     # petname already exists
                     return
     # petname doesn't already exist
-    storeValue(petnamesFilename, petnameLookupEntry, 'append')
+    with open(petnamesFilename, 'a+') as petnamesFile:
+        petnamesFile.write(petnameLookupEntry)
 
 
 def followPerson(baseDir: str, nickname: str, domain: str,

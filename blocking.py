@@ -40,7 +40,10 @@ def addGlobalBlock(baseDir: str,
             if blockHandle in open(blockingFilename).read():
                 return False
         # block an account handle or domain
-        storeValue(blockingFilename, blockHandle, 'append')
+        blockFile = open(blockingFilename, "a+")
+        if blockFile:
+            blockFile.write(blockHandle + '\n')
+            blockFile.close()
     else:
         blockHashtag = blockNickname
         # is the hashtag already blocked?
@@ -48,7 +51,10 @@ def addGlobalBlock(baseDir: str,
             if blockHashtag + '\n' in open(blockingFilename).read():
                 return False
         # block a hashtag
-        storeValue(blockingFilename, blockHashtag, 'append')
+        blockFile = open(blockingFilename, "a+")
+        if blockFile:
+            blockFile.write(blockHashtag + '\n')
+            blockFile.close()
     return True
 
 
@@ -64,7 +70,9 @@ def addBlock(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
             return False
-    storeValue(blockingFilename, blockHandle, 'append')
+    blockFile = open(blockingFilename, "a+")
+    blockFile.write(blockHandle + '\n')
+    blockFile.close()
     return True
 
 

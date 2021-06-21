@@ -118,8 +118,11 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
             return False
 
     # append the post Id to the file for the calendar month
-    if not storeValue(calendarFilename, postId, 'append'):
+    calendarFile = open(calendarFilename, 'a+')
+    if not calendarFile:
         return False
+    calendarFile.write(postId + '\n')
+    calendarFile.close()
 
     # create a file which will trigger a notification that
     # a new event has been added
@@ -242,10 +245,9 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
         calendarFile = open(calendarFilename, 'w+')
-        if calendarFile:
-            for postId in calendarPostIds:
-                calendarFile.write(postId + '\n')
-            calendarFile.close()
+        for postId in calendarPostIds:
+            calendarFile.write(postId + '\n')
+        calendarFile.close()
 
     return events
 
@@ -360,10 +362,9 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
         calendarFile = open(calendarFilename, 'w+')
-        if calendarFile:
-            for postId in calendarPostIds:
-                calendarFile.write(postId + '\n')
-            calendarFile.close()
+        for postId in calendarPostIds:
+            calendarFile.write(postId + '\n')
+        calendarFile.close()
 
     return events
 
@@ -426,10 +427,9 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
         calendarFile = open(calendarFilename, 'w+')
-        if calendarFile:
-            for postId in calendarPostIds:
-                calendarFile.write(postId + '\n')
-            calendarFile.close()
+        for postId in calendarPostIds:
+            calendarFile.write(postId + '\n')
+        calendarFile.close()
 
     return events
 

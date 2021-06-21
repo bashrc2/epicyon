@@ -12,7 +12,6 @@ from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
 from utils import loadJson
-from storage import storeValue
 
 
 def manualDenyFollowRequest(session, baseDir: str,
@@ -42,7 +41,9 @@ def manualDenyFollowRequest(session, baseDir: str,
     removeFromFollowRequests(baseDir, nickname, domain, denyHandle, debug)
 
     # Store rejected follows
-    storeValue(rejectedFollowsFilename, denyHandle, 'append')
+    rejectsFile = open(rejectedFollowsFilename, "a+")
+    rejectsFile.write(denyHandle + '\n')
+    rejectsFile.close()
 
     denyNickname = denyHandle.split('@')[0]
     denyDomain = \
@@ -69,9 +70,13 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
     approvedFilename = accountDir + '/approved.txt'
     if os.path.isfile(approvedFilename):
         if approveHandle not in open(approvedFilename).read():
-            storeValue(approvedFilename, approveHandle, 'append')
+            approvedFile = open(approvedFilename, "a+")
+            approvedFile.write(approveHandle + '\n')
+            approvedFile.close()
     else:
-        storeValue(approvedFilename, approveHandle, 'write')
+        approvedFile = open(approvedFilename, "w+")
+        approvedFile.write(approveHandle + '\n')
+        approvedFile.close()
 
 
 def manualApproveFollowRequest(session, baseDir: str,
@@ -196,7 +201,9 @@ def manualApproveFollowRequest(session, baseDir: str,
         else:
             print('Manual follow accept: first follower accepted for ' +
                   handle + ' is ' + approveHandleFull)
-            storeValue(followersFilename, approveHandleFull, 'write')
+            followersFile = open(followersFilename, "w+")
+            followersFile.write(approveHandleFull + '\n')
+            followersFile.close()
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt

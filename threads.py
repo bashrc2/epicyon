@@ -10,7 +10,6 @@ import threading
 import sys
 import time
 import datetime
-from storage import storeValue
 
 
 class threadWithTrace(threading.Thread):
@@ -140,8 +139,10 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
 
     if debug:
         sendLogFilename = baseDir + '/send.csv'
-        storeStr = \
-            currTime.strftime("%Y-%m-%dT%H:%M:%SZ") + \
-            ',' + str(noOfActiveThreads) + \
-            ',' + str(len(threadsList))
-        storeValue(sendLogFilename, storeStr, 'append')
+        try:
+            with open(sendLogFilename, "a+") as logFile:
+                logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ") +
+                              ',' + str(noOfActiveThreads) +
+                              ',' + str(len(threadsList)) + '\n')
+        except BaseException:
+            pass
