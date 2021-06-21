@@ -494,7 +494,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.blockedCacheLastUpdated,
                                    self.server.blockedCacheUpdateSecs)
 
-            blockedUA = isBlockedDomain(self.server.baseDir, agentDomain)
+            blockedUA = isBlockedDomain(self.server.baseDir, agentDomain,
+                                        self.server.blockedCache)
             # if self.server.debug:
             if blockedUA:
                 print('Blocked User agent: ' + agentDomain)
@@ -1226,7 +1227,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.blockedCacheLastUpdated,
                                self.server.blockedCacheUpdateSecs)
 
-        if isBlockedDomain(self.server.baseDir, messageDomain):
+        if isBlockedDomain(self.server.baseDir, messageDomain,
+                           self.server.blockedCache):
             print('POST from blocked domain ' + messageDomain)
             self._400()
             self.server.POSTbusy = False
