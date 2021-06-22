@@ -11,6 +11,7 @@ import os
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
+from utils import hasObjectDict
 
 
 def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
@@ -18,9 +19,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     """ For a given reply update the votes on a question
     Returns the question json object if the vote totals were changed
     """
-    if not replyJson.get('object'):
-        return None
-    if not isinstance(replyJson['object'], dict):
+    if not hasObjectDict(replyJson):
         return None
     if not replyJson['object'].get('inReplyTo'):
         return None
@@ -37,9 +36,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     questionJson = loadJson(questionPostFilename)
     if not questionJson:
         return None
-    if not questionJson.get('object'):
-        return None
-    if not isinstance(questionJson['object'], dict):
+    if not hasObjectDict(questionJson):
         return None
     if not questionJson['object'].get('type'):
         return None

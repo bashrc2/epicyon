@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from utils import hasObjectDict
 from utils import removeIdEnding
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -356,9 +357,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: undo like object is not dict')
         return

@@ -18,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
 from categories import setHashtagCategory
+from utils import hasObjectDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
@@ -839,9 +840,7 @@ def _isNewswireBlogPost(postJsonObject: {}) -> bool:
     """
     if not postJsonObject:
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if postJsonObject['object'].get('summary') and \
        postJsonObject['object'].get('url') and \
@@ -854,9 +853,7 @@ def _isNewswireBlogPost(postJsonObject: {}) -> bool:
 def _getHashtagsFromPost(postJsonObject: {}) -> []:
     """Returns a list of any hashtags within a post
     """
-    if not postJsonObject.get('object'):
-        return []
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return []
     if not postJsonObject['object'].get('tag'):
         return []

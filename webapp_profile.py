@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
+from utils import hasObjectDict
 from utils import getOccupationName
 from utils import getLockedAccount
 from utils import getFullDomain
@@ -230,7 +231,7 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         if item['type'] != 'Create':
             continue
-        if not item.get('object'):
+        if not hasObjectDict(item):
             continue
 
         profileStr += \

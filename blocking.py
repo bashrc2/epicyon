@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from utils import hasObjectDict
 from utils import isAccountDir
 from utils import getCachedPostFilename
 from utils import loadJson
@@ -372,11 +373,7 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in undo block')
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: undo block object is not string')
         return
@@ -444,41 +441,40 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
     if not postJsonObject:
         return
 
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            domainFull = getFullDomain(domain, port)
-            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
-            # does this post have ignores on it from differenent actors?
-            if not postJsonObject['object'].get('ignores'):
-                if debug:
-                    print('DEBUG: Adding initial mute to ' + postId)
-                ignoresJson = {
-                    "@context": "https://www.w3.org/ns/activitystreams",
-                    'id': postId,
-                    'type': 'Collection',
-                    "totalItems": 1,
-                    'items': [{
-                        'type': 'Ignore',
-                        'actor': actor
-                    }]
-                }
-                postJsonObject['object']['ignores'] = ignoresJson
-            else:
-                if not postJsonObject['object']['ignores'].get('items'):
-                    postJsonObject['object']['ignores']['items'] = []
-                itemsList = postJsonObject['object']['ignores']['items']
-                for ignoresItem in itemsList:
-                    if ignoresItem.get('actor'):
-                        if ignoresItem['actor'] == actor:
-                            return
-                newIgnore = {
+    if hasObjectDict(postJsonObject):
+        domainFull = getFullDomain(domain, port)
+        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        # does this post have ignores on it from differenent actors?
+        if not postJsonObject['object'].get('ignores'):
+            if debug:
+                print('DEBUG: Adding initial mute to ' + postId)
+            ignoresJson = {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                'id': postId,
+                'type': 'Collection',
+                "totalItems": 1,
+                'items': [{
                     'type': 'Ignore',
                     'actor': actor
-                }
-                igIt = len(itemsList)
-                itemsList.append(newIgnore)
-                postJsonObject['object']['ignores']['totalItems'] = igIt
-                saveJson(postJsonObject, postFilename)
+                }]
+            }
+            postJsonObject['object']['ignores'] = ignoresJson
+        else:
+            if not postJsonObject['object']['ignores'].get('items'):
+                postJsonObject['object']['ignores']['items'] = []
+            itemsList = postJsonObject['object']['ignores']['items']
+            for ignoresItem in itemsList:
+                if ignoresItem.get('actor'):
+                    if ignoresItem['actor'] == actor:
+                        return
+            newIgnore = {
+                'type': 'Ignore',
+                'actor': actor
+            }
+            igIt = len(itemsList)
+            itemsList.append(newIgnore)
+            postJsonObject['object']['ignores']['totalItems'] = igIt
+            saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -525,31 +521,30 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         os.remove(muteFilename)
         print('UNMUTE: ' + muteFilename + ' file removed')
 
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('ignores'):
-                domainFull = getFullDomain(domain, port)
-                actor = httpPrefix + '://' + domainFull + '/users/' + nickname
-                totalItems = 0
-                if postJsonObject['object']['ignores'].get('totalItems'):
-                    totalItems = \
-                        postJsonObject['object']['ignores']['totalItems']
-                itemsList = postJsonObject['object']['ignores']['items']
-                for ignoresItem in itemsList:
-                    if ignoresItem.get('actor'):
-                        if ignoresItem['actor'] == actor:
-                            if debug:
-                                print('DEBUG: mute was removed for ' + actor)
-                            itemsList.remove(ignoresItem)
-                            break
-                if totalItems == 1:
-                    if debug:
-                        print('DEBUG: mute was removed from post')
-                    del postJsonObject['object']['ignores']
-                else:
-                    igItLen = len(postJsonObject['object']['ignores']['items'])
-                    postJsonObject['object']['ignores']['totalItems'] = igItLen
-                saveJson(postJsonObject, postFilename)
+    if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('ignores'):
+            domainFull = getFullDomain(domain, port)
+            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+            totalItems = 0
+            if postJsonObject['object']['ignores'].get('totalItems'):
+                totalItems = \
+                    postJsonObject['object']['ignores']['totalItems']
+            itemsList = postJsonObject['object']['ignores']['items']
+            for ignoresItem in itemsList:
+                if ignoresItem.get('actor'):
+                    if ignoresItem['actor'] == actor:
+                        if debug:
+                            print('DEBUG: mute was removed for ' + actor)
+                        itemsList.remove(ignoresItem)
+                        break
+            if totalItems == 1:
+                if debug:
+                    print('DEBUG: mute was removed from post')
+                del postJsonObject['object']['ignores']
+            else:
+                igItLen = len(postJsonObject['object']['ignores']['items'])
+                postJsonObject['object']['ignores']['totalItems'] = igItLen
+            saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
@@ -646,9 +641,7 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return
     if not messageJson['object'].get('type'):
         return

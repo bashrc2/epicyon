@@ -13,6 +13,7 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
+from utils import hasObjectDict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
 from utils import getConfigParam
@@ -91,9 +92,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     """
     if not isPublicPost(postJsonObject):
         return
-    if not postJsonObject.get('object'):
-        return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('tag'):
         return
@@ -331,10 +330,8 @@ def inboxPermittedMessage(domain: str, messageJson: {},
 
     alwaysAllowedTypes = ('Follow', 'Join', 'Like', 'Delete', 'Announce')
     if messageJson['type'] not in alwaysAllowedTypes:
-        if not messageJson.get('object'):
+        if not hasObjectDict(messageJson):
             return True
-        if not isinstance(messageJson['object'], dict):
-            return False
         if messageJson['object'].get('inReplyTo'):
             inReplyTo = messageJson['object']['inReplyTo']
             if not isinstance(inReplyTo, str):
@@ -390,40 +387,39 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
             return None
         postDomain = getFullDomain(postDomain, postPort)
 
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('inReplyTo'):
-                if isinstance(postJsonObject['object']['inReplyTo'], str):
-                    inReplyTo = \
-                        postJsonObject['object']['inReplyTo']
-                    replyDomain, replyPort = \
-                        getDomainFromActor(inReplyTo)
-                    if isBlockedDomain(baseDir, replyDomain, blockedCache):
-                        if debug:
-                            print('WARN: post contains reply from ' +
-                                  str(actor) +
-                                  ' to a blocked domain: ' + replyDomain)
-                        return None
-                    else:
-                        replyNickname = \
-                            getNicknameFromActor(inReplyTo)
-                        if replyNickname and replyDomain:
-                            if isBlocked(baseDir, nickname, domain,
-                                         replyNickname, replyDomain,
-                                         blockedCache):
-                                if debug:
-                                    print('WARN: post contains reply from ' +
-                                          str(actor) +
-                                          ' to a blocked account: ' +
-                                          replyNickname + '@' + replyDomain)
-                                return None
-            if postJsonObject['object'].get('content'):
-                if isinstance(postJsonObject['object']['content'], str):
-                    if isFiltered(baseDir, nickname, domain,
-                                  postJsonObject['object']['content']):
-                        if debug:
-                            print('WARN: post was filtered out due to content')
-                        return None
+    if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('inReplyTo'):
+            if isinstance(postJsonObject['object']['inReplyTo'], str):
+                inReplyTo = \
+                    postJsonObject['object']['inReplyTo']
+                replyDomain, replyPort = \
+                    getDomainFromActor(inReplyTo)
+                if isBlockedDomain(baseDir, replyDomain, blockedCache):
+                    if debug:
+                        print('WARN: post contains reply from ' +
+                              str(actor) +
+                              ' to a blocked domain: ' + replyDomain)
+                    return None
+                else:
+                    replyNickname = \
+                        getNicknameFromActor(inReplyTo)
+                    if replyNickname and replyDomain:
+                        if isBlocked(baseDir, nickname, domain,
+                                     replyNickname, replyDomain,
+                                     blockedCache):
+                            if debug:
+                                print('WARN: post contains reply from ' +
+                                      str(actor) +
+                                      ' to a blocked account: ' +
+                                      replyNickname + '@' + replyDomain)
+                            return None
+        if postJsonObject['object'].get('content'):
+            if isinstance(postJsonObject['object']['content'], str):
+                if isFiltered(baseDir, nickname, domain,
+                              postJsonObject['object']['content']):
+                    if debug:
+                        print('WARN: post was filtered out due to content')
+                    return None
     originalPostId = None
     if postJsonObject.get('id'):
         if not isinstance(postJsonObject['id'], str):
@@ -550,51 +546,50 @@ def _inboxPostRecipients(baseDir: str, postJsonObject: {},
     # first get any specific people which the post is addressed to
 
     followerRecipients = False
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('to'):
-                if isinstance(postJsonObject['object']['to'], list):
-                    recipientsList = postJsonObject['object']['to']
-                else:
-                    recipientsList = [postJsonObject['object']['to']]
-                if debug:
-                    print('DEBUG: resolving "to"')
-                includesFollowers, recipientsDict = \
-                    _inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                            recipientsList,
-                                            recipientsDict,
-                                            domainMatch, domainBase,
-                                            actor, debug)
-                if includesFollowers:
-                    followerRecipients = True
+    if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('to'):
+            if isinstance(postJsonObject['object']['to'], list):
+                recipientsList = postJsonObject['object']['to']
             else:
-                if debug:
-                    print('DEBUG: inbox post has no "to"')
-
-            if postJsonObject['object'].get('cc'):
-                if isinstance(postJsonObject['object']['cc'], list):
-                    recipientsList = postJsonObject['object']['cc']
-                else:
-                    recipientsList = [postJsonObject['object']['cc']]
-                includesFollowers, recipientsDict = \
-                    _inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                            recipientsList,
-                                            recipientsDict,
-                                            domainMatch, domainBase,
-                                            actor, debug)
-                if includesFollowers:
-                    followerRecipients = True
-            else:
-                if debug:
-                    print('DEBUG: inbox post has no cc')
+                recipientsList = [postJsonObject['object']['to']]
+            if debug:
+                print('DEBUG: resolving "to"')
+            includesFollowers, recipientsDict = \
+                _inboxPostRecipientsAdd(baseDir, httpPrefix,
+                                        recipientsList,
+                                        recipientsDict,
+                                        domainMatch, domainBase,
+                                        actor, debug)
+            if includesFollowers:
+                followerRecipients = True
         else:
             if debug:
-                if isinstance(postJsonObject['object'], str):
-                    if '/statuses/' in postJsonObject['object']:
-                        print('DEBUG: inbox item is a link to a post')
-                    else:
-                        if '/users/' in postJsonObject['object']:
-                            print('DEBUG: inbox item is a link to an actor')
+                print('DEBUG: inbox post has no "to"')
+
+        if postJsonObject['object'].get('cc'):
+            if isinstance(postJsonObject['object']['cc'], list):
+                recipientsList = postJsonObject['object']['cc']
+            else:
+                recipientsList = [postJsonObject['object']['cc']]
+            includesFollowers, recipientsDict = \
+                _inboxPostRecipientsAdd(baseDir, httpPrefix,
+                                        recipientsList,
+                                        recipientsDict,
+                                        domainMatch, domainBase,
+                                        actor, debug)
+            if includesFollowers:
+                followerRecipients = True
+        else:
+            if debug:
+                print('DEBUG: inbox post has no cc')
+    else:
+        if debug and postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], str):
+                if '/statuses/' in postJsonObject['object']:
+                    print('DEBUG: inbox item is a link to a post')
+                else:
+                    if '/users/' in postJsonObject['object']:
+                        print('DEBUG: inbox item is a link to an actor')
 
     if postJsonObject.get('to'):
         if isinstance(postJsonObject['to'], list):
@@ -709,13 +704,9 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not isinstance(messageJson['object'], dict):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object is not a dict')
         return False
     if not messageJson['object'].get('type'):
         if debug:
@@ -884,13 +875,9 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no actor')
         return False
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not isinstance(messageJson['object'], dict):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object is not a dict')
         return False
     if not messageJson['object'].get('type'):
         if debug:
@@ -1031,9 +1018,7 @@ def _receiveUndoLike(recentPostsCache: {},
         return False
     if not messageJson.get('actor'):
         return False
-    if not messageJson.get('object'):
-        return False
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return False
     if not messageJson['object'].get('type'):
         return False
@@ -1095,17 +1080,13 @@ def _receiveBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no actor in inbox bookmark Add')
         return False
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: no object in inbox bookmark Add')
         return False
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
-        return False
-    if not isinstance(messageJson['object'], dict):
-        if debug:
-            print('DEBUG: inbox bookmark Add object is not string')
         return False
     if not messageJson['object'].get('type'):
         if debug:
@@ -1174,17 +1155,13 @@ def _receiveUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no actor in inbox undo bookmark Remove')
         return False
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: no object in inbox undo bookmark Remove')
         return False
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
-        return False
-    if not isinstance(messageJson['object'], dict):
-        if debug:
-            print('DEBUG: inbox Remove bookmark object is not dict')
         return False
     if not messageJson['object'].get('type'):
         if debug:
@@ -1439,12 +1416,11 @@ def _receiveAnnounce(recentPostsCache: {},
             if isinstance(postJsonObject['attributedTo'], str):
                 lookupActor = postJsonObject['attributedTo']
         else:
-            if postJsonObject.get('object'):
-                if isinstance(postJsonObject['object'], dict):
-                    if postJsonObject['object'].get('attributedTo'):
-                        attrib = postJsonObject['object']['attributedTo']
-                        if isinstance(attrib, str):
-                            lookupActor = attrib
+            if hasObjectDict(postJsonObject):
+                if postJsonObject['object'].get('attributedTo'):
+                    attrib = postJsonObject['object']['attributedTo']
+                    if isinstance(attrib, str):
+                        lookupActor = attrib
         if lookupActor:
             if hasUsersPath(lookupActor):
                 if '/statuses/' in lookupActor:
@@ -1497,9 +1473,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
         return False
     if not messageJson.get('actor'):
         return False
-    if not messageJson.get('object'):
-        return False
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return False
     if not messageJson['object'].get('object'):
         return False
@@ -1548,9 +1522,9 @@ def jsonPostAllowsComments(postJsonObject: {}) -> bool:
     if 'commentsEnabled' in postJsonObject:
         return postJsonObject['commentsEnabled']
     if postJsonObject.get('object'):
-        if not isinstance(postJsonObject['object'], dict):
+        if not hasObjectDict(postJsonObject):
             return False
-        if 'commentsEnabled' in postJsonObject['object']:
+        elif 'commentsEnabled' in postJsonObject['object']:
             return postJsonObject['object']['commentsEnabled']
     return True
 
@@ -1571,9 +1545,7 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
     """
     if not messageJson.get('id'):
         return False
-    if not messageJson.get('object'):
-        return False
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return False
     if not messageJson['object'].get('inReplyTo'):
         return False
@@ -1666,9 +1638,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
     Check for hellthreads
     Check number of tags is reasonable
     """
-    if not messageJson.get('object'):
-        return True
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return True
     if not messageJson['object'].get('content'):
         return True
@@ -1756,10 +1726,7 @@ def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
-    if not postJsonObject.get('object'):
-        return
-
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
 
     if not postJsonObject['object'].get('inReplyTo'):
@@ -1821,9 +1788,7 @@ def _alreadyLiked(baseDir: str, nickname: str, domain: str,
     postJsonObject = loadJson(postFilename, 1)
     if not postJsonObject:
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if not postJsonObject['object'].get('likes'):
         return False
@@ -2039,9 +2004,7 @@ def _inboxUpdateCalendar(baseDir: str, handle: str,
     """
     if not postJsonObject.get('actor'):
         return
-    if not postJsonObject.get('object'):
-        return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('tag'):
         return

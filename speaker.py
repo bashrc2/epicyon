@@ -21,6 +21,7 @@ from utils import removeHtml
 from utils import loadJson
 from utils import saveJson
 from utils import isPGPEncrypted
+from utils import hasObjectDict
 from content import htmlReplaceQuoteMarks
 
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
@@ -407,9 +408,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     NOTE: There currently appears to be no standardized json
     format for speech synthesis
     """
-    if not postJsonObject.get('object'):
-        return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('content'):
         return
