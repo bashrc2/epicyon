@@ -105,9 +105,8 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
                       tlEventsFilename + ' ' + str(e))
                 return False
         else:
-            tlEventsFile = open(tlEventsFilename, 'w+')
-            tlEventsFile.write(eventId + '\n')
-            tlEventsFile.close()
+            with open(tlEventsFilename, 'w+') as tlEventsFile:
+                tlEventsFile.write(eventId + '\n')
 
     # create a directory for the calendar year
     if not os.path.isdir(calendarPath + '/' + str(eventYear)):
@@ -124,27 +123,20 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
             return False
 
     # append the post Id to the file for the calendar month
-    calendarFile = open(calendarFilename, 'a+')
-    if not calendarFile:
-        return False
-    calendarFile.write(postId + '\n')
-    calendarFile.close()
+    with open(calendarFilename, 'a+') as calendarFile:
+        calendarFile.write(postId + '\n')
 
     # create a file which will trigger a notification that
     # a new event has been added
     calendarNotificationFilename = \
         baseDir + '/accounts/' + handle + '/.newCalendar'
-    calendarNotificationFile = \
-        open(calendarNotificationFilename, 'w+')
-    if not calendarNotificationFile:
-        return False
-    calendarNotificationFile.write('/calendar?year=' +
-                                   str(eventYear) +
-                                   '?month=' +
-                                   str(eventMonthNumber) +
-                                   '?day=' +
-                                   str(eventDayOfMonth))
-    calendarNotificationFile.close()
+    with open(calendarNotificationFilename, 'w+') as calendarNotificationFile:
+        calendarNotificationFile.write('/calendar?year=' +
+                                       str(eventYear) +
+                                       '?month=' +
+                                       str(eventMonthNumber) +
+                                       '?day=' +
+                                       str(eventDayOfMonth))
     return True
 
 
@@ -251,10 +243,9 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        calendarFile = open(calendarFilename, 'w+')
-        for postId in calendarPostIds:
-            calendarFile.write(postId + '\n')
-        calendarFile.close()
+        with open(calendarFilename, 'w+') as calendarFile:
+            for postId in calendarPostIds:
+                calendarFile.write(postId + '\n')
 
     return events
 
@@ -368,10 +359,9 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        calendarFile = open(calendarFilename, 'w+')
-        for postId in calendarPostIds:
-            calendarFile.write(postId + '\n')
-        calendarFile.close()
+        with open(calendarFilename, 'w+') as calendarFile:
+            for postId in calendarPostIds:
+                calendarFile.write(postId + '\n')
 
     return events
 
@@ -433,10 +423,9 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        calendarFile = open(calendarFilename, 'w+')
-        for postId in calendarPostIds:
-            calendarFile.write(postId + '\n')
-        calendarFile.close()
+        with open(calendarFilename, 'w+') as calendarFile:
+            for postId in calendarPostIds:
+                calendarFile.write(postId + '\n')
 
     return events
 

@@ -728,10 +728,8 @@ def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
 
     if not os.path.isfile(tagsFilename):
         # create a new tags index file
-        tagsFile = open(tagsFilename, "w+")
-        if tagsFile:
+        with open(tagsFilename, 'w+') as tagsFile:
             tagsFile.write(tagline)
-            tagsFile.close()
     else:
         # prepend to tags index file
         if tagline not in open(tagsFilename).read():
@@ -767,10 +765,8 @@ def _addSchedulePost(baseDir: str, nickname: str, domain: str,
                 print('WARN: Failed to write entry to scheduled posts index ' +
                       scheduleIndexFilename + ' ' + str(e))
     else:
-        scheduleFile = open(scheduleIndexFilename, 'w+')
-        if scheduleFile:
+        with open(scheduleIndexFilename, 'w+') as scheduleFile:
             scheduleFile.write(indexStr + '\n')
-            scheduleFile.close()
 
 
 def _appendEventFields(newPost: {},
@@ -1194,10 +1190,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             newPost['moderationStatus'] = 'pending'
         # save to index file
         moderationIndexFile = baseDir + '/accounts/moderation.txt'
-        modFile = open(moderationIndexFile, "a+")
-        if modFile:
+        with open(moderationIndexFile, 'a+') as modFile:
             modFile.write(newPostId + '\n')
-            modFile.close()
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
@@ -1305,10 +1299,8 @@ def pinPost(baseDir: str, nickname: str, domain: str,
     """
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
     pinnedFilename = accountDir + '/pinToProfile.txt'
-    pinFile = open(pinnedFilename, "w+")
-    if pinFile:
+    with open(pinnedFilename, 'w+') as pinFile:
         pinFile.write(pinnedContent)
-        pinFile.close()
 
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
@@ -3452,10 +3444,8 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
                     break
         # save the new index file
         if len(newIndex) > 0:
-            indexFile = open(indexFilename, 'w+')
-            if indexFile:
+            with open(indexFilename, 'w+') as indexFile:
                 indexFile.write(newIndex)
-                indexFile.close()
 
     postsInBoxDict = {}
     postsCtr = 0
@@ -3919,10 +3909,8 @@ def _rejectAnnounce(announceFilename: str,
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
-        rejectAnnounceFile = open(announceFilename + '.reject', "w+")
-        if rejectAnnounceFile:
+        with open(announceFilename + '.reject', 'w+') as rejectAnnounceFile:
             rejectAnnounceFile.write('\n')
-            rejectAnnounceFile.close()
 
 
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,

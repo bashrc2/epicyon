@@ -175,10 +175,8 @@ def _markPostAsRead(actor: str, postId: str, postCategory: str) -> None:
         except Exception as e:
             print('WARN: Failed to mark post as read' + str(e))
     else:
-        readFile = open(readPostsFilename, 'w+')
-        if readFile:
+        with open(readPostsFilename, 'w+') as readFile:
             readFile.write(postId + '\n')
-            readFile.close()
 
 
 def _hasReadPost(actor: str, postId: str, postCategory: str) -> bool:

@@ -115,17 +115,17 @@ def _removeFromFollowBase(baseDir: str,
                 break
         if not actorFound:
             return
-    approvefilenew = open(approveFollowsFilename + '.new', 'w+')
-    with open(approveFollowsFilename, 'r') as approvefile:
-        if not acceptDenyActor:
-            for approveHandle in approvefile:
-                if not approveHandle.startswith(acceptOrDenyHandle):
-                    approvefilenew.write(approveHandle)
-        else:
-            for approveHandle in approvefile:
-                if acceptDenyActor not in approveHandle:
-                    approvefilenew.write(approveHandle)
-    approvefilenew.close()
+    with open(approveFollowsFilename + '.new', 'w+') as approvefilenew:
+        with open(approveFollowsFilename, 'r') as approvefile:
+            if not acceptDenyActor:
+                for approveHandle in approvefile:
+                    if not approveHandle.startswith(acceptOrDenyHandle):
+                        approvefilenew.write(approveHandle)
+            else:
+                for approveHandle in approvefile:
+                    if acceptDenyActor not in approveHandle:
+                        approvefilenew.write(approveHandle)
+
     os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
 
 
@@ -765,9 +765,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                               'Failed to write entry to followers file ' +
                               str(e))
             else:
-                followersFile = open(followersFilename, "w+")
-                followersFile.write(approveHandle + '\n')
-                followersFile.close()
+                with open(followersFilename, 'w+') as followersFile:
+                    followersFile.write(approveHandle + '\n')
 
     print('Beginning follow accept')
     return followedAccountAccepts(session, baseDir, httpPrefix,

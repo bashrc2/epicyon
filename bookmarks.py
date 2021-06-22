@@ -61,10 +61,8 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     indexStr = ''
     with open(bookmarksIndexFilename, 'r') as indexFile:
         indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
-        bookmarksIndexFile = open(bookmarksIndexFilename, 'w+')
-        if bookmarksIndexFile:
+        with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
             bookmarksIndexFile.write(indexStr)
-            bookmarksIndexFile.close()
 
     if not postJsonObject.get('type'):
         return
@@ -219,10 +217,8 @@ def updateBookmarksCollection(recentPostsCache: {},
                     print('WARN: Failed to write entry to bookmarks index ' +
                           bookmarksIndexFilename + ' ' + str(e))
         else:
-            bookmarksIndexFile = open(bookmarksIndexFilename, 'w+')
-            if bookmarksIndexFile:
+            with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
                 bookmarksIndexFile.write(bookmarkIndex + '\n')
-                bookmarksIndexFile.close()
 
 
 def bookmark(recentPostsCache: {},

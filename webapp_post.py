@@ -1332,10 +1332,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                       postJsonObject, personCache,
                                       translate, postJsonObject['actor'],
                                       themeName)
-                        ttsFile = open(announceFilename + '.tts', "w+")
-                        if ttsFile:
+                        with open(announceFilename + '.tts', 'w+') as ttsFile:
                             ttsFile.write('\n')
-                            ttsFile.close()
 
         isAnnounced = True
 

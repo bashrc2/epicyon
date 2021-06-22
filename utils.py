@@ -43,9 +43,8 @@ def refreshNewswire(baseDir: str):
     refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
     if os.path.isfile(refreshNewswireFilename):
         return
-    refreshFile = open(refreshNewswireFilename, 'w+')
-    refreshFile.write('\n')
-    refreshFile.close()
+    with open(refreshNewswireFilename, 'w+') as refreshFile:
+        refreshFile.write('\n')
 
 
 def getSHA256(msg: str):
@@ -2198,10 +2197,8 @@ def rejectPostId(baseDir: str, nickname: str, domain: str,
             if recentPostsCache['html'].get(postUrl):
                 del recentPostsCache['html'][postUrl]
 
-    rejectFile = open(postFilename + '.reject', "w+")
-    if rejectFile:
+    with open(postFilename + '.reject', 'w+') as rejectFile:
         rejectFile.write('\n')
-        rejectFile.close()
 
 
 def isDM(postJsonObject: {}) -> bool:

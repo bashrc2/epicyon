@@ -3883,10 +3883,8 @@ def _testSpoofGeolocation() -> None:
 
     kmlStr += '</Document>\n'
     kmlStr += '</kml>'
-    kmlFile = open('unittest_decoy.kml', 'w+')
-    if kmlFile:
+    with open('unittest_decoy.kml', 'w+') as kmlFile:
         kmlFile.write(kmlStr)
-        kmlFile.close()
 
 
 def _testSkills() -> None:
