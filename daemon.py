@@ -821,6 +821,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.wfile.write(msg)
                 return True
             except BrokenPipeError as e:
+                if self.server.debug:
+                    print('ERROR: _write error ' + str(tries) + ' ' + str(e))
                 break
             except Exception as e:
                 print('ERROR: _write error ' + str(tries) + ' ' + str(e))
