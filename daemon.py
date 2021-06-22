@@ -1532,7 +1532,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # This produces a deterministic token based
                 # on nick+password+salt
                 saltFilename = \
-                    baseDir+'/accounts/' + \
+                    baseDir + '/accounts/' + \
                     loginNickname + '@' + domain + '/.salt'
                 salt = createPassword(32)
                 if os.path.isfile(saltFilename):
@@ -1555,7 +1555,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.tokens[loginNickname] = token
                 loginHandle = loginNickname + '@' + domain
                 tokenFilename = \
-                    baseDir+'/accounts/' + \
+                    baseDir + '/accounts/' + \
                     loginHandle + '/.token'
                 try:
                     with open(tokenFilename, 'w+') as fp:

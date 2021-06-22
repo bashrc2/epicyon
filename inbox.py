@@ -189,7 +189,7 @@ def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
     """
     if ':' in domain:
         domain = domain.split(':')[0]
-    inboxDir = baseDir+'/accounts/' + nickname + '@' + domain + '/inbox'
+    inboxDir = baseDir + '/accounts/' + nickname + '@' + domain + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
     for subdir, dirs, files in os.walk(inboxDir):

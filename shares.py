@@ -264,8 +264,8 @@ def getSharesFeedForPerson(baseDir: str,
         idStr = httpPrefix + '://' + domain + '/users/' + nickname
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': idStr+'/shares?page=1',
-            'id': idStr+'/shares',
+            'first': idStr + '/shares?page=1',
+            'id': idStr + '/shares',
             'totalItems': str(noOfShares),
             'type': 'OrderedCollection'
         }
@@ -278,9 +278,9 @@ def getSharesFeedForPerson(baseDir: str,
     idStr = httpPrefix + '://' + domain + '/users/' + nickname
     shares = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': idStr+'/shares?page='+str(pageNumber),
+        'id': idStr + '/shares?page=' + str(pageNumber),
         'orderedItems': [],
-        'partOf': idStr+'/shares',
+        'partOf': idStr + '/shares',
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
@@ -339,7 +339,7 @@ def sendShareViaServer(baseDir, session,
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Add',
         'actor': actor,
-        'target': actor+'/shares',
+        'target': actor + '/shares',
         'object': {
             "type": "Offer",
             "displayName": displayName,

@@ -126,7 +126,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
         return False
-    passwordFile = baseDir+'/accounts/passwords'
+    passwordFile = baseDir + '/accounts/passwords'
     if not os.path.isfile(passwordFile):
         if debug:
             print('DEBUG: passwords file missing')

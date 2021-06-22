@@ -68,7 +68,7 @@ def storePersonInCache(baseDir: str, personUrl: str,
     # store to file
     if not allowWriteToFile:
         return
-    if os.path.isdir(baseDir+'/cache/actors'):
+    if os.path.isdir(baseDir + '/cache/actors'):
         cacheFilename = baseDir + '/cache/actors/' + \
             personUrl.replace('/', '#')+'.json'
         if not os.path.isfile(cacheFilename):
