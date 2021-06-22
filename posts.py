@@ -3362,7 +3362,7 @@ def expireCache(baseDir: str, personCache: {},
     while True:
         # once per day
         time.sleep(60 * 60 * 24)
-        expirePersonCache(baseDir, personCache)
+        expirePersonCache(personCache)
         archivePosts(baseDir, httpPrefix, archiveDir, recentPostsCache,
                      maxPostsInBox)
 
