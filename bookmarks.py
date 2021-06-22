@@ -22,6 +22,7 @@ from utils import locatePost
 from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
+from utils import hasObjectDict
 from posts import getPersonBox
 from session import postJson
 
@@ -68,12 +69,10 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         return
     if postJsonObject['type'] != 'Create':
         return
-    if not postJsonObject.get('object'):
+    if not hasObjectDict(postJsonObject):
         if debug:
             print('DEBUG: bookmarked post has no object ' +
                   str(postJsonObject))
-        return
-    if not isinstance(postJsonObject['object'], dict):
         return
     if not postJsonObject['object'].get('bookmarks'):
         return
@@ -123,9 +122,7 @@ def bookmarkedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
 def _noOfBookmarks(postJsonObject: {}) -> int:
     """Returns the number of bookmarks ona  given post
     """
-    if not postJsonObject.get('object'):
-        return 0
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return 0
     if not postJsonObject['object'].get('bookmarks'):
         return 0
@@ -527,17 +524,13 @@ def outboxBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no actor in bookmark Add')
         return
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: no object in bookmark Add')
         return
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in bookmark Add')
-        return
-    if not isinstance(messageJson['object'], dict):
-        if debug:
-            print('DEBUG: bookmark Add object is not dict')
         return
     if not messageJson['object'].get('type'):
         if debug:
@@ -596,17 +589,13 @@ def outboxUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no actor in unbookmark Remove')
         return
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: no object in unbookmark Remove')
         return
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in unbookmark Remove')
-        return
-    if not isinstance(messageJson['object'], dict):
-        if debug:
-            print('DEBUG: unbookmark Remove object is not dict')
         return
     if not messageJson['object'].get('type'):
         if debug:

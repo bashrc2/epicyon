@@ -208,6 +208,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import hasObjectDict
 from utils import userAgentDomain
 from utils import isLocalNetworkAddress
 from utils import permittedDir
@@ -819,6 +820,10 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 self.wfile.write(msg)
                 return True
+            except BrokenPipeError as e:
+                if self.server.debug:
+                    print('ERROR: _write error ' + str(tries) + ' ' + str(e))
+                break
             except Exception as e:
                 print('ERROR: _write error ' + str(tries) + ' ' + str(e))
                 time.sleep(0.5)
@@ -1173,28 +1178,27 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return 3
 
-        if messageJson.get('object'):
-            if isinstance(messageJson['object'], dict):
-                stringFields = (
-                    'id', 'actor', 'type', 'content', 'published',
-                    'summary', 'url', 'attributedTo'
-                )
-                for checkField in stringFields:
-                    if not messageJson['object'].get(checkField):
-                        continue
-                    if not isinstance(messageJson['object'][checkField], str):
-                        self._400()
-                        self.server.POSTbusy = False
-                        return 3
-                # check that some fields are lists
-                listFields = ('to', 'cc', 'attachment')
-                for checkField in listFields:
-                    if not messageJson['object'].get(checkField):
-                        continue
-                    if not isinstance(messageJson['object'][checkField], list):
-                        self._400()
-                        self.server.POSTbusy = False
-                        return 3
+        if hasObjectDict(messageJson):
+            stringFields = (
+                'id', 'actor', 'type', 'content', 'published',
+                'summary', 'url', 'attributedTo'
+            )
+            for checkField in stringFields:
+                if not messageJson['object'].get(checkField):
+                    continue
+                if not isinstance(messageJson['object'][checkField], str):
+                    self._400()
+                    self.server.POSTbusy = False
+                    return 3
+            # check that some fields are lists
+            listFields = ('to', 'cc', 'attachment')
+            for checkField in listFields:
+                if not messageJson['object'].get(checkField):
+                    continue
+                if not isinstance(messageJson['object'][checkField], list):
+                    self._400()
+                    self.server.POSTbusy = False
+                    return 3
 
         # actor should look like a url
         if '://' not in messageJson['actor'] or \

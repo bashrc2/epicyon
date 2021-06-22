@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 import html
+from utils import hasObjectDict
 
 
 def _gitFormatContent(content: str) -> str:
@@ -113,9 +114,7 @@ def convertPostToPatch(baseDir: str, nickname: str, domain: str,
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if not postJsonObject['object'].get('type'):
         return False

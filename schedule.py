@@ -10,6 +10,7 @@ __module_group__ = "Calendar"
 import os
 import time
 import datetime
+from utils import hasObjectDict
 from utils import getStatusNumber
 from utils import loadJson
 from outbox import postMessageToOutbox
@@ -77,10 +78,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
             statusNumber, published = getStatusNumber()
             if postJsonObject.get('published'):
                 postJsonObject['published'] = published
-            if postJsonObject.get('object'):
-                if isinstance(postJsonObject['object'], dict):
-                    if postJsonObject['object'].get('published'):
-                        postJsonObject['published'] = published
+            if hasObjectDict(postJsonObject):
+                if postJsonObject['object'].get('published'):
+                    postJsonObject['published'] = published
 
             print('Sending scheduled post ' + postId)
 

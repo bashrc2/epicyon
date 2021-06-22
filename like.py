@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -38,9 +39,7 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
 def noOfLikes(postJsonObject: {}) -> int:
     """Returns the number of likes ona  given post
     """
-    if not postJsonObject.get('object'):
-        return 0
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return 0
     if not postJsonObject['object'].get('likes'):
         return 0
@@ -354,9 +353,7 @@ def outboxUndoLike(recentPostsCache: {},
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: undo like object is not dict')
         return

@@ -32,6 +32,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from utils import hasObjectDict
 from utils import rejectPostId
 from utils import removeInvalidChars
 from utils import fileLastModified
@@ -361,11 +362,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             if debug:
                 print('Not Create type')
             continue
-        if not item.get('object'):
-            if debug:
-                print('No object')
-            continue
-        if not isinstance(item['object'], dict):
+        if not hasObjectDict(item):
             if debug:
                 print('item object is not a dict')
             continue
@@ -561,9 +558,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
         i += 1
         if i > maxPosts:
             break
-        if not item.get('object'):
-            continue
-        if not isinstance(item['object'], dict):
+        if not hasObjectDict(item):
             continue
         if item['object'].get('content'):
             _updateWordFrequency(item['object']['content'],
@@ -618,9 +613,7 @@ def _getPostsForBlockedDomains(baseDir: str,
         i += 1
         if i > maxPosts:
             break
-        if not item.get('object'):
-            continue
-        if not isinstance(item['object'], dict):
+        if not hasObjectDict(item):
             continue
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
@@ -699,10 +692,9 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
             httpPrefix + '://' + originalDomain + '/users/' + nickname + \
             '/statuses/' + statusNumber
         postJsonObject['id'] = postId + '/activity'
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            postJsonObject['object']['id'] = postId
-            postJsonObject['object']['atomUri'] = postId
+    if hasObjectDict(postJsonObject):
+        postJsonObject['object']['id'] = postId
+        postJsonObject['object']['atomUri'] = postId
 
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     filename = boxDir + '/' + postId.replace('/', '#') + '.json'
@@ -2391,7 +2383,7 @@ def addToField(activityType: str, postJsonObject: {},
                         toAddress = toAddress.split('/statuses/')[0]
                     postJsonObject['to'] = [toAddress]
                     toFieldAdded = True
-        elif isinstance(postJsonObject['object'], dict):
+        elif hasObjectDict(postJsonObject):
             # add a to field to bookmark add or remove
             if postJsonObject.get('type') and \
                postJsonObject.get('actor') and \
@@ -2590,9 +2582,7 @@ def _sendingProfileUpdate(postJsonObject: {}) -> bool:
     """
     if postJsonObject['type'] != 'Update':
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if not postJsonObject['object'].get('type'):
         return False
@@ -2970,9 +2960,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if postJsonObject['object'].get('moderationStatus'):
         return False
@@ -3057,9 +3045,8 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
     Returns False if this is a private post
     """
     hasObject = False
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            hasObject = True
+    if hasObjectDict(postJsonObject):
+        hasObject = True
     if hasObject:
         postObj = postJsonObject['object']
         if not force:

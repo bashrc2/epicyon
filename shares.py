@@ -19,6 +19,7 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
+from utils import hasObjectDict
 from media import processMetaData
 
 
@@ -524,9 +525,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Add':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return
     if not messageJson['object'].get('type'):
         if debug:
@@ -583,9 +582,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Remove':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return
     if not messageJson['object'].get('type'):
         if debug:

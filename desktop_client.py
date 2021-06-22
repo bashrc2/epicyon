@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import hasObjectDict
 from utils import getFullDomain
 from utils import isDM
 from utils import loadTranslationsFromFile
@@ -207,14 +208,13 @@ def _postIsToYou(actor: str, postJsonObject: {}) -> bool:
     if not toYourActor and postJsonObject.get('cc'):
         if actor in postJsonObject['cc']:
             toYourActor = True
-    if not toYourActor and postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('to'):
-                if actor in postJsonObject['object']['to']:
-                    toYourActor = True
-            if not toYourActor and postJsonObject['object'].get('cc'):
-                if actor in postJsonObject['object']['cc']:
-                    toYourActor = True
+    if not toYourActor and hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('to'):
+            if actor in postJsonObject['object']['to']:
+                toYourActor = True
+        if not toYourActor and postJsonObject['object'].get('cc'):
+            if actor in postJsonObject['object']['cc']:
+                toYourActor = True
     return toYourActor
 
 
@@ -606,9 +606,7 @@ def _getImageDescription(postJsonObject: {}) -> str:
 def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
     """Shows the likes on a post
     """
-    if not postJsonObject.get('object'):
-        return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('likes'):
         return
@@ -630,9 +628,7 @@ def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
 def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
     """Shows the replies on a post
     """
-    if not postJsonObject.get('object'):
-        return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('replies'):
         return
@@ -693,7 +689,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              allowLocalNetworkAccess,
                              recentPostsCache, False)
         if postJsonObject2:
-            if postJsonObject2.get('object'):
+            if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
                    postJsonObject2['object'].get('content'):
                     actor = postJsonObject2['object']['attributedTo']
@@ -879,7 +875,7 @@ def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
             if ctr == index:
                 return postJsonObject
             continue
-        if not isinstance(postJsonObject['object'], dict):
+        if not hasObjectDict(postJsonObject):
             continue
         if not postJsonObject['object'].get('published'):
             continue
@@ -991,9 +987,7 @@ def _desktopShowBox(indent: str,
                     ctr += 1
                     continue
 
-        if not postJsonObject.get('object'):
-            continue
-        if not isinstance(postJsonObject['object'], dict):
+        if not hasObjectDict(postJsonObject):
             continue
         if not postJsonObject['object'].get('published'):
             continue
@@ -1888,7 +1882,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if postJsonObject:
                     if postJsonObject.get('id') and \
                        postJsonObject.get('object'):
-                        if isinstance(postJsonObject['object'], dict):
+                        if hasObjectDict(postJsonObject):
                             if postJsonObject['object'].get('attributedTo'):
                                 blockActor = \
                                     postJsonObject['object']['attributedTo']
@@ -1932,7 +1926,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if postJsonObject and not blockActor:
                     if postJsonObject.get('id') and \
                        postJsonObject.get('object'):
-                        if isinstance(postJsonObject['object'], dict):
+                        if hasObjectDict(postJsonObject):
                             if postJsonObject['object'].get('attributedTo'):
                                 blockActor = \
                                     postJsonObject['object']['attributedTo']

@@ -16,6 +16,7 @@ from utils import isPublicPost
 from utils import loadJson
 from utils import saveJson
 from utils import locatePost
+from utils import hasObjectDict
 
 
 def _validUuid(testUuid: str, version=4):
@@ -155,9 +156,7 @@ def _isHappeningPost(postJsonObject: {}) -> bool:
     """
     if not postJsonObject:
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if not postJsonObject['object'].get('tag'):
         return False

@@ -16,6 +16,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import hasObjectDict
 from utils import getLocalNetworkAddresses
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -62,9 +63,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     print("messageJson['type'] " + messageJson['type'])
     if messageJson['type'] != 'Update':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: c2s actor update object is not dict')
         return
@@ -199,14 +198,13 @@ def postMessageToOutbox(session, translate: {},
 
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
-    if messageJson.get('object'):
-        if isinstance(messageJson['object'], dict):
-            if messageJson['object'].get('content'):
-                if dangerousMarkup(messageJson['object']['content'],
-                                   allowLocalNetworkAccess):
-                    print('POST to outbox contains dangerous markup: ' +
-                          str(messageJson))
-                    return False
+    if hasObjectDict(messageJson):
+        if messageJson['object'].get('content'):
+            if dangerousMarkup(messageJson['object']['content'],
+                               allowLocalNetworkAccess):
+                print('POST to outbox contains dangerous markup: ' +
+                      str(messageJson))
+                return False
 
     if messageJson['type'] == 'Create':
         if not (messageJson.get('id') and
@@ -335,13 +333,12 @@ def postMessageToOutbox(session, translate: {},
 
         # if this is a blog post or an event then save to its own box
         if messageJson['type'] == 'Create':
-            if messageJson.get('object'):
-                if isinstance(messageJson['object'], dict):
-                    if messageJson['object'].get('type'):
-                        if messageJson['object']['type'] == 'Article':
-                            outboxName = 'tlblogs'
-                        elif messageJson['object']['type'] == 'Event':
-                            outboxName = 'tlevents'
+            if hasObjectDict(messageJson):
+                if messageJson['object'].get('type'):
+                    if messageJson['object']['type'] == 'Article':
+                        outboxName = 'tlblogs'
+                    elif messageJson['object']['type'] == 'Event':
+                        outboxName = 'tlevents'
 
         savedFilename = \
             savePostToBox(baseDir,
@@ -403,6 +400,7 @@ def postMessageToOutbox(session, translate: {},
 
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
+
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
                 if selfActor not in messageJson['to']:
