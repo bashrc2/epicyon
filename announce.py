@@ -27,6 +27,24 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
 
+def isSelfAnnounce(postJsonObject: {}) -> bool:
+    """Is the given post a self announce?
+    """
+    if not postJsonObject.get('actor'):
+        return False
+    if not postJsonObject.get('type'):
+        return False
+    if postJsonObject['type'] != 'Announce':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['actor'], str):
+        return False
+    if not isinstance(postJsonObject['object'], str):
+        return False
+    return postJsonObject['actor'] in postJsonObject['object']
+
+
 def outboxAnnounce(recentPostsCache: {},
                    baseDir: str, messageJson: {}, debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
@@ -393,21 +411,3 @@ def outboxUndoAnnounce(recentPostsCache: {},
                                 messageJson['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + postFilename)
-
-
-def isSelfAnnounce(postJsonObject: {}) -> bool:
-    """Is the given post a self announce?
-    """
-    if not postJsonObject.get('actor'):
-        return False
-    if not postJsonObject.get('type'):
-        return False
-    if postJsonObject['type'] != 'Announce':
-        return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['actor'], str):
-        return False
-    if not isinstance(postJsonObject['object'], str):
-        return False
-    return postJsonObject['actor'] in postJsonObject['object']
