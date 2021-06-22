@@ -403,7 +403,7 @@ def postMessageToOutbox(session, translate: {},
 
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
-                if messageJson['to'] != selfActor:
+                if selfActor not in messageJson['to']:
                     # show sent post within the inbox,
                     # as is the typical convention
                     inboxUpdateIndex(boxNameIndex, baseDir,
