@@ -400,6 +400,7 @@ def postMessageToOutbox(session, translate: {},
 
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
+
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
                 if messageJson['to'] != selfActor:

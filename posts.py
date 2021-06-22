@@ -3908,7 +3908,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      recentPostsCache: {}, debug: bool) -> {}:
     """Download the post referenced by an announce
     """
-    if not hasObjectDict(postJsonObject):
+    if not postJsonObject.get('object'):
+        return None
+    if not isinstance(postJsonObject['object'], str):
         return None
     # ignore self-boosts
     if postJsonObject['actor'] in postJsonObject['object']:
