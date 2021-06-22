@@ -243,7 +243,7 @@ def bookmark(recentPostsCache: {},
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'object': objectUrl
     }
     if ccList:
@@ -302,10 +302,10 @@ def undoBookmark(recentPostsCache: {},
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'object': {
             'type': 'Bookmark',
-            'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+            'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
             'object': objectUrl
         }
     }

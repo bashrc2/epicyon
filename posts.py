@@ -1060,7 +1060,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
         newPostUrl = \
-            httpPrefix + '://' + domain + '/@' + nickname + '/'+statusNumber
+            httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
         newPostAttributedTo = \
             httpPrefix + '://' + domain + '/users/' + nickname
         newPost = {
@@ -1120,7 +1120,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
         newPostUrl = \
-            httpPrefix + '://' + domain + '/@' + nickname+'/' + statusNumber
+            httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
         newPost = {
             "@context": postContext,
             'id': newPostId,
@@ -2896,7 +2896,7 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
         pageNumber = 1
 
     pageStr = '?page=' + str(pageNumber)
-    boxUrl = httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname
+    boxUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/' + boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'first': boxUrl + '?page=true',
@@ -3849,8 +3849,8 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
                 searchFilename = \
                     baseDir + \
                     '/accounts/' + nickname + '@' + \
-                    domain+'/' + \
-                    boxname+'/' + \
+                    domain + '/' + \
+                    boxname + '/' + \
                     messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
                     if authorized or \
@@ -3877,7 +3877,7 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
                 searchFilename = \
                     baseDir + \
                     '/accounts/inbox@' + \
-                    domain+'/inbox/' + \
+                    domain + '/inbox/' + \
                     messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
                     if authorized or \

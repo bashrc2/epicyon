@@ -306,7 +306,7 @@ def _addMusicTag(content: str, tag: str) -> str:
     musicSites = ('soundcloud.com', 'bandcamp.com')
     musicSiteFound = False
     for site in musicSites:
-        if site+'/' in content:
+        if site + '/' in content:
             musicSiteFound = True
             break
     if not musicSiteFound:
@@ -458,7 +458,7 @@ def _addEmoji(baseDir: str, wordStr: str,
             'type': 'Image',
             'url': emojiUrl
         },
-        'name': ':'+emoji+':',
+        'name': ':' + emoji + ':',
         "updated": fileLastModified(emojiFilename),
         "id": emojiUrl.replace('.png', ''),
         'type': 'Emoji'
@@ -820,7 +820,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                     continue
             elif ':' in wordStr:
                 wordStr2 = wordStr.split(':')[1]
-#                print('TAG: emoji located - '+wordStr)
+#                print('TAG: emoji located - ' + wordStr)
                 if not emojiDict:
                     # emoji.json is generated so that it can be customized and
                     # the changes will be retained even if default_emoji.json
@@ -830,7 +830,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                                  baseDir + '/emoji/emoji.json')
                 emojiDict = loadJson(baseDir + '/emoji/emoji.json')
 
-#                print('TAG: looking up emoji for :'+wordStr2+':')
+#                print('TAG: looking up emoji for :' + wordStr2 + ':')
                 _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
                           originalDomain, replaceEmoji, hashtags,
                           emojiDict)

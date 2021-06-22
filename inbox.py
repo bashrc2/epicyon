@@ -506,7 +506,7 @@ def _inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
         if domainMatch in recipient:
             # get the handle for the local account
             nickname = recipient.split(domainMatch)[1]
-            handle = nickname+'@'+domain
+            handle = nickname + '@' + domain
             if os.path.isdir(baseDir + '/accounts/' + handle):
                 recipientsDict[handle] = None
             else:

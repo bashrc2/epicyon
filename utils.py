@@ -1563,10 +1563,10 @@ def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
     """
     cachedPostDir = getCachedPostDirectory(baseDir, nickname, domain)
     if not os.path.isdir(cachedPostDir):
-        # print('ERROR: invalid html cache directory '+cachedPostDir)
+        # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
     if '@' not in cachedPostDir:
-        # print('ERROR: invalid html cache directory '+cachedPostDir)
+        # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
     cachedPostId = removeIdEnding(postJsonObject['id'])
     cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
@@ -1866,7 +1866,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
-                print('DEBUG: post '+objectUrl+' has no object')
+                print('DEBUG: post ' + objectUrl + ' has no object')
             return
         if not isinstance(postJsonObject['object'], dict):
             return

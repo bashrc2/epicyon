@@ -20,7 +20,7 @@ def _removePersonFromCache(baseDir: str, personUrl: str,
     """Removes an actor from the cache
     """
     cacheFilename = baseDir + '/cache/actors/' + \
-        personUrl.replace('/', '#')+'.json'
+        personUrl.replace('/', '#') + '.json'
     if os.path.isfile(cacheFilename):
         try:
             os.remove(cacheFilename)
@@ -70,7 +70,7 @@ def storePersonInCache(baseDir: str, personUrl: str,
         return
     if os.path.isdir(baseDir + '/cache/actors'):
         cacheFilename = baseDir + '/cache/actors/' + \
-            personUrl.replace('/', '#')+'.json'
+            personUrl.replace('/', '#') + '.json'
         if not os.path.isfile(cacheFilename):
             saveJson(personJson, cacheFilename)
 
@@ -84,7 +84,7 @@ def getPersonFromCache(baseDir: str, personUrl: str, personCache: {},
     if not personCache.get(personUrl):
         # does the person exist as a cached file?
         cacheFilename = baseDir + '/cache/actors/' + \
-            personUrl.replace('/', '#')+'.json'
+            personUrl.replace('/', '#') + '.json'
         actorFilename = getFileCaseInsensitive(cacheFilename)
         if actorFilename:
             personJson = loadJson(actorFilename)

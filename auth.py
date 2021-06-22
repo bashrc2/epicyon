@@ -134,7 +134,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     providedPassword = plain.split(':')[1]
     passfile = open(passwordFile, "r")
     for line in passfile:
-        if line.startswith(nickname+':'):
+        if line.startswith(nickname + ':'):
             storedPassword = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
             success = _verifyPassword(storedPassword, providedPassword)

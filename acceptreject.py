@@ -38,7 +38,7 @@ def _createAcceptReject(baseDir: str, federationList: [],
     newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
-        'actor': httpPrefix+'://' + domain + '/users/' + nickname,
+        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
         'to': [toUrl],
         'cc': [],
         'object': objectJson
@@ -120,9 +120,9 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
                 print('DEBUG: unrecognized actor ' + thisActor)
             return
     else:
-        if not '/' + acceptedDomain+'/users/' + nickname in thisActor:
+        if not '/' + acceptedDomain + '/users/' + nickname in thisActor:
             if debug:
-                print('Expected: /' + acceptedDomain+'/users/' + nickname)
+                print('Expected: /' + acceptedDomain + '/users/' + nickname)
                 print('Actual:   ' + thisActor)
                 print('DEBUG: unrecognized actor ' + thisActor)
             return
@@ -134,7 +134,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
         return
     followedDomainFull = followedDomain
     if port:
-        followedDomainFull = followedDomain+':' + str(port)
+        followedDomainFull = followedDomain + ':' + str(port)
     followedNickname = getNicknameFromActor(followedActor)
     if not followedNickname:
         print('DEBUG: no nickname found within Follow activity object ' +
@@ -168,7 +168,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
     else:
         if debug:
             print('DEBUG: Unable to create follow - ' +
-                  nickname + '@' + acceptedDomain+' -> ' +
+                  nickname + '@' + acceptedDomain + ' -> ' +
                   followedNickname + '@' + followedDomain)
 
 

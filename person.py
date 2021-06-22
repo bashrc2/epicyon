@@ -131,7 +131,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
             httpPrefix + '://' + fullDomain + '/users/' + \
-            nickname + '/'+iconFilename
+            nickname + '/' + iconFilename
         saveJson(personJson, personFilename)
 
         cmd = \
