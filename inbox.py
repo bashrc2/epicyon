@@ -127,10 +127,8 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
         daysSinceEpoch = daysDiff.days
         tagline = str(daysSinceEpoch) + '  ' + nickname + '  ' + postUrl + '\n'
         if not os.path.isfile(tagsFilename):
-            tagsFile = open(tagsFilename, "w+")
-            if tagsFile:
+            with open(tagsFilename, 'w+') as tagsFile:
                 tagsFile.write(tagline)
-                tagsFile.close()
         else:
             if postUrl not in open(tagsFilename).read():
                 try:
@@ -191,7 +189,7 @@ def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
     """
     if ':' in domain:
         domain = domain.split(':')[0]
-    inboxDir = baseDir+'/accounts/' + nickname + '@' + domain + '/inbox'
+    inboxDir = baseDir + '/accounts/' + nickname + '@' + domain + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
     for subdir, dirs, files in os.walk(inboxDir):
@@ -508,7 +506,7 @@ def _inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
         if domainMatch in recipient:
             # get the handle for the local account
             nickname = recipient.split(domainMatch)[1]
-            handle = nickname+'@'+domain
+            handle = nickname + '@' + domain
             if os.path.isdir(baseDir + '/accounts/' + handle):
                 recipientsDict[handle] = None
             else:
@@ -1460,10 +1458,8 @@ def _receiveAnnounce(recentPostsCache: {},
                                       postJsonObject, personCache,
                                       translate, lookupActor,
                                       themeName)
-                        ttsFile = open(postFilename + '.tts', "w+")
-                        if ttsFile:
+                        with open(postFilename + '.tts', 'w+') as ttsFile:
                             ttsFile.write('\n')
-                            ttsFile.close()
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -1642,15 +1638,11 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if numLines > maxReplies:
             return False
         if messageId not in open(postRepliesFilename).read():
-            repliesFile = open(postRepliesFilename, 'a+')
-            if repliesFile:
+            with open(postRepliesFilename, 'a+') as repliesFile:
                 repliesFile.write(messageId + '\n')
-                repliesFile.close()
     else:
-        repliesFile = open(postRepliesFilename, 'w+')
-        if repliesFile:
+        with open(postRepliesFilename, 'w+') as repliesFile:
             repliesFile.write(messageId + '\n')
-            repliesFile.close()
     return True
 
 
@@ -2107,10 +2099,8 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
             print('WARN: Failed to write entry to index ' + str(e))
     else:
         try:
-            indexFile = open(indexFilename, 'w+')
-            if indexFile:
+            with open(indexFilename, 'w+') as indexFile:
                 indexFile.write(destinationFilename + '\n')
-                indexFile.close()
         except Exception as e:
             print('WARN: Failed to write initial entry to index ' + str(e))
 
@@ -2590,10 +2580,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             # This enables you to ignore a threat that's getting boring
             if isReplyToMutedPost:
                 print('MUTE REPLY: ' + destinationFilename)
-                muteFile = open(destinationFilename + '.muted', 'w+')
-                if muteFile:
+                with open(destinationFilename + '.muted', 'w+') as muteFile:
                     muteFile.write('\n')
-                    muteFile.close()
 
             # update the indexes for different timelines
             for boxname in updateIndexList:
@@ -2851,10 +2839,8 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                     alreadyUnknown = True
 
             if not alreadyUnknown:
-                unknownFile = open(unknownContextsFile, "a+")
-                if unknownFile:
+                with open(unknownContextsFile, 'a+') as unknownFile:
                     unknownFile.write(unknownContext + '\n')
-                    unknownFile.close()
     else:
         print('Unrecognized jsonld signature type: ' +
               jwebsigType)
@@ -2869,10 +2855,8 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                 alreadyUnknown = True
 
         if not alreadyUnknown:
-            unknownFile = open(unknownSignaturesFile, "a+")
-            if unknownFile:
+            with open(unknownSignaturesFile, 'a+') as unknownFile:
                 unknownFile.write(jwebsigType + '\n')
-                unknownFile.close()
     return hasJsonSignature, jwebsigType
 
 

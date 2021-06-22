@@ -34,10 +34,8 @@ def welcomeScreenIsComplete(baseDir: str,
     if not os.path.isdir(accountPath):
         return
     completeFilename = accountPath + '/.welcome_complete'
-    completeFile = open(completeFilename, 'w+')
-    if completeFile:
+    with open(completeFilename, 'w+') as completeFile:
         completeFile.write('\n')
-        completeFile.close()
 
 
 def htmlWelcomeScreen(baseDir: str, nickname: str,

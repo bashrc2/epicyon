@@ -131,7 +131,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
             httpPrefix + '://' + fullDomain + '/users/' + \
-            nickname + '/'+iconFilename
+            nickname + '/' + iconFilename
         saveJson(personJson, personFilename)
 
         cmd = \
@@ -879,13 +879,13 @@ def reenableAccount(baseDir: str, nickname: str) -> None:
     """
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
+        lines = []
         with open(suspendedFilename, "r") as f:
             lines = f.readlines()
-        suspendedFile = open(suspendedFilename, "w+")
-        for suspended in lines:
-            if suspended.strip('\n').strip('\r') != nickname:
-                suspendedFile.write(suspended)
-        suspendedFile.close()
+        with open(suspendedFilename, 'w+') as suspendedFile:
+            for suspended in lines:
+                if suspended.strip('\n').strip('\r') != nickname:
+                    suspendedFile.write(suspended)
 
 
 def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
@@ -923,15 +923,11 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
-        suspendedFile = open(suspendedFilename, 'a+')
-        if suspendedFile:
+        with open(suspendedFilename, 'a+') as suspendedFile:
             suspendedFile.write(nickname + '\n')
-            suspendedFile.close()
     else:
-        suspendedFile = open(suspendedFilename, 'w+')
-        if suspendedFile:
+        with open(suspendedFilename, 'w+') as suspendedFile:
             suspendedFile.write(nickname + '\n')
-            suspendedFile.close()
 
 
 def canRemovePost(baseDir: str, nickname: str,
@@ -983,14 +979,13 @@ def _removeTagsForNickname(baseDir: str, nickname: str,
             continue
         if matchStr not in open(tagFilename).read():
             continue
+        lines = []
         with open(tagFilename, "r") as f:
             lines = f.readlines()
-        tagFile = open(tagFilename, "w+")
-        if tagFile:
+        with open(tagFilename, 'w+') as tagFile:
             for tagline in lines:
                 if matchStr not in tagline:
                     tagFile.write(tagline)
-            tagFile.close()
 
 
 def removeAccount(baseDir: str, nickname: str,
@@ -1132,10 +1127,8 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            writeSnoozedFile = open(snoozedFilename, 'w+')
-            if writeSnoozedFile:
+            with open(snoozedFilename, 'w+') as writeSnoozedFile:
                 writeSnoozedFile.write(content)
-                writeSnoozedFile.close()
 
     if snoozeActor + ' ' in open(snoozedFilename).read():
         return True
@@ -1154,11 +1147,9 @@ def personSnooze(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(snoozedFilename):
         if snoozeActor + ' ' in open(snoozedFilename).read():
             return
-    snoozedFile = open(snoozedFilename, "a+")
-    if snoozedFile:
+    with open(snoozedFilename, 'a+') as snoozedFile:
         snoozedFile.write(snoozeActor + ' ' +
                           str(int(time.time())) + '\n')
-        snoozedFile.close()
 
 
 def personUnsnooze(baseDir: str, nickname: str, domain: str,
@@ -1185,10 +1176,8 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            writeSnoozedFile = open(snoozedFilename, 'w+')
-            if writeSnoozedFile:
+            with open(snoozedFilename, 'w+') as writeSnoozedFile:
                 writeSnoozedFile.write(content)
-                writeSnoozedFile.close()
 
 
 def setPersonNotes(baseDir: str, nickname: str, domain: str,

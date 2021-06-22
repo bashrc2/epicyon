@@ -17,9 +17,8 @@ def addFilter(baseDir: str, nickname: str, domain: str, words: str) -> bool:
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
-    filtersFile = open(filtersFilename, "a+")
-    filtersFile.write(words + '\n')
-    filtersFile.close()
+    with open(filtersFilename, 'a+') as filtersFile:
+        filtersFile.write(words + '\n')
     return True
 
 
@@ -35,9 +34,8 @@ def addGlobalFilter(baseDir: str, words: str) -> bool:
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
-    filtersFile = open(filtersFilename, "a+")
-    filtersFile.write(words + '\n')
-    filtersFile.close()
+    with open(filtersFilename, 'a+') as filtersFile:
+        filtersFile.write(words + '\n')
     return True
 
 

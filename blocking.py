@@ -39,10 +39,8 @@ def addGlobalBlock(baseDir: str,
             if blockHandle in open(blockingFilename).read():
                 return False
         # block an account handle or domain
-        blockFile = open(blockingFilename, "a+")
-        if blockFile:
+        with open(blockingFilename, 'a+') as blockFile:
             blockFile.write(blockHandle + '\n')
-            blockFile.close()
     else:
         blockHashtag = blockNickname
         # is the hashtag already blocked?
@@ -50,10 +48,8 @@ def addGlobalBlock(baseDir: str,
             if blockHashtag + '\n' in open(blockingFilename).read():
                 return False
         # block a hashtag
-        blockFile = open(blockingFilename, "a+")
-        if blockFile:
+        with open(blockingFilename, 'a+') as blockFile:
             blockFile.write(blockHashtag + '\n')
-            blockFile.close()
     return True
 
 
@@ -69,9 +65,8 @@ def addBlock(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
             return False
-    blockFile = open(blockingFilename, "a+")
-    blockFile.write(blockHandle + '\n')
-    blockFile.close()
+    with open(blockingFilename, 'a+') as blockFile:
+        blockFile.write(blockHandle + '\n')
     return True
 
 
@@ -493,10 +488,8 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
-    muteFile = open(postFilename + '.muted', 'w+')
-    if muteFile:
+    with open(postFilename + '.muted', 'w+') as muteFile:
         muteFile.write('\n')
-        muteFile.close()
         print('MUTE: ' + postFilename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
@@ -751,12 +744,10 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
             break
 
         # write the allow file
-        allowFile = open(allowFilename, "w+")
-        if allowFile:
+        with open(allowFilename, 'w+') as allowFile:
             allowFile.write(domainFull + '\n')
             for d in allowedDomains:
                 allowFile.write(d + '\n')
-            allowFile.close()
             print('Broch mode enabled')
 
     setConfigParam(baseDir, "brochMode", enabled)

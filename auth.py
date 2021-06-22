@@ -126,7 +126,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
         return False
-    passwordFile = baseDir+'/accounts/passwords'
+    passwordFile = baseDir + '/accounts/passwords'
     if not os.path.isfile(passwordFile):
         if debug:
             print('DEBUG: passwords file missing')
@@ -134,7 +134,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     providedPassword = plain.split(':')[1]
     passfile = open(passwordFile, "r")
     for line in passfile:
-        if line.startswith(nickname+':'):
+        if line.startswith(nickname + ':'):
             storedPassword = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
             success = _verifyPassword(storedPassword, providedPassword)

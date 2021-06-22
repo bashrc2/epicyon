@@ -1242,7 +1242,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     galleryStr += \
                         '    ' + replyStr + announceStr + \
                         likeStr + bookmarkStr + \
-                        deleteStr + muteStr+'\n'
+                        deleteStr + muteStr + '\n'
                     galleryStr += '  </div>\n'
                     galleryStr += '  <div class="mediaavatar">\n'
                     galleryStr += '    ' + avatarLink + '\n'

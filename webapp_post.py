@@ -161,7 +161,7 @@ def _saveIndividualPostAsHtmlToCache(baseDir: str,
             fp.write(postHtml)
             return True
     except Exception as e:
-        print('ERROR: saving post to cache ' + str(e))
+        print('ERROR: saving post to cache, ' + str(e))
     return False
 
 
@@ -1332,10 +1332,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                       postJsonObject, personCache,
                                       translate, postJsonObject['actor'],
                                       themeName)
-                        ttsFile = open(announceFilename + '.tts', "w+")
-                        if ttsFile:
+                        with open(announceFilename + '.tts', 'w+') as ttsFile:
                             ttsFile.write('\n')
-                            ttsFile.close()
 
         isAnnounced = True
 

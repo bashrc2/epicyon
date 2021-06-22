@@ -808,9 +808,6 @@ def updateDefaultThemesList(baseDir: str) -> None:
     """
     themeNames = getThemesList(baseDir)
     defaultThemesFilename = baseDir + '/defaultthemes.txt'
-    defaultThemesFile = open(defaultThemesFilename, "w+")
-    if not defaultThemesFile:
-        return
-    for name in themeNames:
-        defaultThemesFile.write(name + '\n')
-    defaultThemesFile.close()
+    with open(defaultThemesFilename, 'w+') as defaultThemesFile:
+        for name in themeNames:
+            defaultThemesFile.write(name + '\n')

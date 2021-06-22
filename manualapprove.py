@@ -41,9 +41,8 @@ def manualDenyFollowRequest(session, baseDir: str,
     removeFromFollowRequests(baseDir, nickname, domain, denyHandle, debug)
 
     # Store rejected follows
-    rejectsFile = open(rejectedFollowsFilename, "a+")
-    rejectsFile.write(denyHandle + '\n')
-    rejectsFile.close()
+    with open(rejectedFollowsFilename, 'a+') as rejectsFile:
+        rejectsFile.write(denyHandle + '\n')
 
     denyNickname = denyHandle.split('@')[0]
     denyDomain = \
@@ -70,13 +69,11 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
     approvedFilename = accountDir + '/approved.txt'
     if os.path.isfile(approvedFilename):
         if approveHandle not in open(approvedFilename).read():
-            approvedFile = open(approvedFilename, "a+")
-            approvedFile.write(approveHandle + '\n')
-            approvedFile.close()
+            with open(approvedFilename, 'a+') as approvedFile:
+                approvedFile.write(approveHandle + '\n')
     else:
-        approvedFile = open(approvedFilename, "w+")
-        approvedFile.write(approveHandle + '\n')
-        approvedFile.close()
+        with open(approvedFilename, 'w+') as approvedFile:
+            approvedFile.write(approveHandle + '\n')
 
 
 def manualApproveFollowRequest(session, baseDir: str,
@@ -131,53 +128,60 @@ def manualApproveFollowRequest(session, baseDir: str,
               '" ' + approveFollowsFilename)
         return
 
-    approvefilenew = open(approveFollowsFilename + '.new', 'w+')
-    updateApprovedFollowers = False
-    followActivityfilename = None
-    with open(approveFollowsFilename, 'r') as approvefile:
-        for handleOfFollowRequester in approvefile:
-            # is this the approved follow?
-            if handleOfFollowRequester.startswith(approveHandleFull):
-                handleOfFollowRequester = \
-                    handleOfFollowRequester.replace('\n', '').replace('\r', '')
-                port2 = port
-                if ':' in handleOfFollowRequester:
-                    port2Str = handleOfFollowRequester.split(':')[1]
-                    if port2Str.isdigit():
-                        port2 = int(port2Str)
-                requestsDir = accountDir + '/requests'
-                followActivityfilename = \
-                    requestsDir + '/' + handleOfFollowRequester + '.follow'
-                if os.path.isfile(followActivityfilename):
-                    followJson = loadJson(followActivityfilename)
-                    if followJson:
-                        approveNickname = approveHandle.split('@')[0]
-                        approveDomain = approveHandle.split('@')[1]
-                        approveDomain = \
-                            approveDomain.replace('\n', '').replace('\r', '')
-                        approvePort = port2
-                        if ':' in approveDomain:
-                            approvePort = approveDomain.split(':')[1]
-                            approveDomain = approveDomain.split(':')[0]
-                        print('Manual follow accept: Sending Accept for ' +
-                              handle + ' follow request from ' +
-                              approveNickname + '@' + approveDomain)
-                        followedAccountAccepts(session, baseDir, httpPrefix,
-                                               nickname, domain, port,
-                                               approveNickname, approveDomain,
-                                               approvePort,
-                                               followJson['actor'],
-                                               federationList,
-                                               followJson,
-                                               sendThreads, postLog,
-                                               cachedWebfingers, personCache,
-                                               debug, projectVersion, False)
-                updateApprovedFollowers = True
-            else:
-                # this isn't the approved follow so it will remain
-                # in the requests file
-                approvefilenew.write(handleOfFollowRequester)
-    approvefilenew.close()
+    with open(approveFollowsFilename + '.new', 'w+') as approvefilenew:
+        updateApprovedFollowers = False
+        followActivityfilename = None
+        with open(approveFollowsFilename, 'r') as approvefile:
+            for handleOfFollowRequester in approvefile:
+                # is this the approved follow?
+                if handleOfFollowRequester.startswith(approveHandleFull):
+                    handleOfFollowRequester = \
+                        handleOfFollowRequester.replace('\n', '')
+                    handleOfFollowRequester = \
+                        handleOfFollowRequester.replace('\r', '')
+                    port2 = port
+                    if ':' in handleOfFollowRequester:
+                        port2Str = handleOfFollowRequester.split(':')[1]
+                        if port2Str.isdigit():
+                            port2 = int(port2Str)
+                    requestsDir = accountDir + '/requests'
+                    followActivityfilename = \
+                        requestsDir + '/' + handleOfFollowRequester + '.follow'
+                    if os.path.isfile(followActivityfilename):
+                        followJson = loadJson(followActivityfilename)
+                        if followJson:
+                            approveNickname = approveHandle.split('@')[0]
+                            approveDomain = approveHandle.split('@')[1]
+                            approveDomain = \
+                                approveDomain.replace('\n', '')
+                            approveDomain = \
+                                approveDomain.replace('\r', '')
+                            approvePort = port2
+                            if ':' in approveDomain:
+                                approvePort = approveDomain.split(':')[1]
+                                approveDomain = approveDomain.split(':')[0]
+                            print('Manual follow accept: Sending Accept for ' +
+                                  handle + ' follow request from ' +
+                                  approveNickname + '@' + approveDomain)
+                            followedAccountAccepts(session, baseDir,
+                                                   httpPrefix,
+                                                   nickname, domain, port,
+                                                   approveNickname,
+                                                   approveDomain,
+                                                   approvePort,
+                                                   followJson['actor'],
+                                                   federationList,
+                                                   followJson,
+                                                   sendThreads, postLog,
+                                                   cachedWebfingers,
+                                                   personCache,
+                                                   debug,
+                                                   projectVersion, False)
+                    updateApprovedFollowers = True
+                else:
+                    # this isn't the approved follow so it will remain
+                    # in the requests file
+                    approvefilenew.write(handleOfFollowRequester)
 
     followersFilename = accountDir + '/followers.txt'
     if updateApprovedFollowers:
@@ -201,9 +205,8 @@ def manualApproveFollowRequest(session, baseDir: str,
         else:
             print('Manual follow accept: first follower accepted for ' +
                   handle + ' is ' + approveHandleFull)
-            followersFile = open(followersFilename, "w+")
-            followersFile.write(approveHandleFull + '\n')
-            followersFile.close()
+            with open(followersFilename, 'w+') as followersFile:
+                followersFile.write(approveHandleFull + '\n')
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt

@@ -431,10 +431,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.maxReplies,
                                         self.server.debug)
                         # record the vote
-                        votesFile = open(votesFilename, 'a+')
-                        if votesFile:
+                        with open(votesFilename, 'a+') as votesFile:
                             votesFile.write(messageId + '\n')
-                            votesFile.close()
 
                         # ensure that the cached post is removed if it exists,
                         # so that it then will be recreated
@@ -1534,7 +1532,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # This produces a deterministic token based
                 # on nick+password+salt
                 saltFilename = \
-                    baseDir+'/accounts/' + \
+                    baseDir + '/accounts/' + \
                     loginNickname + '@' + domain + '/.salt'
                 salt = createPassword(32)
                 if os.path.isfile(saltFilename):
@@ -1557,7 +1555,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.tokens[loginNickname] = token
                 loginHandle = loginNickname + '@' + domain
                 tokenFilename = \
-                    baseDir+'/accounts/' + \
+                    baseDir + '/accounts/' + \
                     loginHandle + '/.token'
                 try:
                     with open(tokenFilename, 'w+') as fp:
@@ -2104,10 +2102,9 @@ class PubServer(BaseHTTPRequestHandler):
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
-                        noNewswireFile = open(newswireBlockedFilename, "w+")
-                        if noNewswireFile:
+                        nwFilename = newswireBlockedFilename
+                        with open(nwFilename, 'w+') as noNewswireFile:
                             noNewswireFile.write('\n')
-                            noNewswireFile.close()
                             refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
@@ -2140,10 +2137,9 @@ class PubServer(BaseHTTPRequestHandler):
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
-                        noFeaturesFile = open(featuresBlockedFilename, "w+")
-                        if noFeaturesFile:
+                        featFilename = featuresBlockedFilename
+                        with open(featFilename, 'w+') as noFeaturesFile:
                             noFeaturesFile.write('\n')
-                            noFeaturesFile.close()
                             refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
@@ -2175,10 +2171,9 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(newswireModFilename)
                 else:
                     if os.path.isdir(accountDir):
-                        modNewswireFile = open(newswireModFilename, "w+")
-                        if modNewswireFile:
+                        nwFilename = newswireModFilename
+                        with open(nwFilename, 'w+') as modNewswireFile:
                             modNewswireFile.write('\n')
-                            modNewswireFile.close()
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -3459,10 +3454,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             if fields.get('editedLinks'):
                 linksStr = fields['editedLinks']
-                linksFile = open(linksFilename, "w+")
-                if linksFile:
+                with open(linksFilename, 'w+') as linksFile:
                     linksFile.write(linksStr)
-                    linksFile.close()
             else:
                 if os.path.isfile(linksFilename):
                     os.remove(linksFilename)
@@ -3474,10 +3467,8 @@ class PubServer(BaseHTTPRequestHandler):
                     aboutStr = fields['editedAbout']
                     if not dangerousMarkup(aboutStr,
                                            allowLocalNetworkAccess):
-                        aboutFile = open(aboutFilename, "w+")
-                        if aboutFile:
+                        with open(aboutFilename, 'w+') as aboutFile:
                             aboutFile.write(aboutStr)
-                            aboutFile.close()
                 else:
                     if os.path.isfile(aboutFilename):
                         os.remove(aboutFilename)
@@ -3486,10 +3477,8 @@ class PubServer(BaseHTTPRequestHandler):
                     TOSStr = fields['editedTOS']
                     if not dangerousMarkup(TOSStr,
                                            allowLocalNetworkAccess):
-                        TOSFile = open(TOSFilename, "w+")
-                        if TOSFile:
+                        with open(TOSFilename, 'w+') as TOSFile:
                             TOSFile.write(TOSStr)
-                            TOSFile.close()
                 else:
                     if os.path.isfile(TOSFilename):
                         os.remove(TOSFilename)
@@ -3664,10 +3653,8 @@ class PubServer(BaseHTTPRequestHandler):
                 extractTextFieldsInPOST(postBytes, boundary, debug)
             if fields.get('editedNewswire'):
                 newswireStr = fields['editedNewswire']
-                newswireFile = open(newswireFilename, "w+")
-                if newswireFile:
+                with open(newswireFilename, 'w+') as newswireFile:
                     newswireFile.write(newswireStr)
-                    newswireFile.close()
             else:
                 if os.path.isfile(newswireFilename):
                     os.remove(newswireFilename)
@@ -3698,10 +3685,8 @@ class PubServer(BaseHTTPRequestHandler):
                 newswireTrusted = fields['trustedNewswire']
                 if not newswireTrusted.endswith('\n'):
                     newswireTrusted += '\n'
-                trustFile = open(newswireTrustedFilename, "w+")
-                if trustFile:
+                with open(newswireTrustedFilename, 'w+') as trustFile:
                     trustFile.write(newswireTrusted)
-                    trustFile.close()
             else:
                 if os.path.isfile(newswireTrustedFilename):
                     os.remove(newswireTrustedFilename)
@@ -3787,10 +3772,8 @@ class PubServer(BaseHTTPRequestHandler):
                     citationsStr += citationDate + '\n'
                 # save citations dates, so that they can be added when
                 # reloading the newblog screen
-                citationsFile = open(citationsFilename, "w+")
-                if citationsFile:
+                with open(citationsFilename, 'w+') as citationsFile:
                     citationsFile.write(citationsStr)
-                    citationsFile.close()
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/newblog',
@@ -4710,17 +4693,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 clearModeratorStatus(baseDir)
                                 if ',' in fields['moderators']:
                                     # if the list was given as comma separated
-                                    modFile = open(moderatorsFile, "w+")
                                     mods = fields['moderators'].split(',')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + domain
-                                        if os.path.isdir(modDir):
-                                            modFile.write(modNick + '\n')
-                                    modFile.close()
-                                    mods = fields['moderators'].split(',')
+                                    with open(moderatorsFile, 'w+') as modFile:
+                                        for modNick in mods:
+                                            modNick = modNick.strip()
+                                            modDir = baseDir + \
+                                                '/accounts/' + modNick + \
+                                                '@' + domain
+                                            if os.path.isdir(modDir):
+                                                modFile.write(modNick + '\n')
+
                                     for modNick in mods:
                                         modNick = modNick.strip()
                                         modDir = baseDir + \
@@ -4732,18 +4714,17 @@ class PubServer(BaseHTTPRequestHandler):
                                                     'moderator')
                                 else:
                                     # nicknames on separate lines
-                                    modFile = open(moderatorsFile, "w+")
                                     mods = fields['moderators'].split('\n')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = \
-                                            baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + domain
-                                        if os.path.isdir(modDir):
-                                            modFile.write(modNick + '\n')
-                                    modFile.close()
-                                    mods = fields['moderators'].split('\n')
+                                    with open(moderatorsFile, 'w+') as modFile:
+                                        for modNick in mods:
+                                            modNick = modNick.strip()
+                                            modDir = \
+                                                baseDir + \
+                                                '/accounts/' + modNick + \
+                                                '@' + domain
+                                            if os.path.isdir(modDir):
+                                                modFile.write(modNick + '\n')
+
                                     for modNick in mods:
                                         modNick = modNick.strip()
                                         modDir = \
@@ -4766,17 +4747,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 clearEditorStatus(baseDir)
                                 if ',' in fields['editors']:
                                     # if the list was given as comma separated
-                                    edFile = open(editorsFile, "w+")
                                     eds = fields['editors'].split(',')
-                                    for edNick in eds:
-                                        edNick = edNick.strip()
-                                        edDir = baseDir + \
-                                            '/accounts/' + edNick + \
-                                            '@' + domain
-                                        if os.path.isdir(edDir):
-                                            edFile.write(edNick + '\n')
-                                    edFile.close()
-                                    eds = fields['editors'].split(',')
+                                    with open(editorsFile, 'w+') as edFile:
+                                        for edNick in eds:
+                                            edNick = edNick.strip()
+                                            edDir = baseDir + \
+                                                '/accounts/' + edNick + \
+                                                '@' + domain
+                                            if os.path.isdir(edDir):
+                                                edFile.write(edNick + '\n')
+
                                     for edNick in eds:
                                         edNick = edNick.strip()
                                         edDir = baseDir + \
@@ -4788,18 +4768,17 @@ class PubServer(BaseHTTPRequestHandler):
                                                     'editor')
                                 else:
                                     # nicknames on separate lines
-                                    edFile = open(editorsFile, "w+")
                                     eds = fields['editors'].split('\n')
-                                    for edNick in eds:
-                                        edNick = edNick.strip()
-                                        edDir = \
-                                            baseDir + \
-                                            '/accounts/' + edNick + \
-                                            '@' + domain
-                                        if os.path.isdir(edDir):
-                                            edFile.write(edNick + '\n')
-                                    edFile.close()
-                                    eds = fields['editors'].split('\n')
+                                    with open(editorsFile, 'w+') as edFile:
+                                        for edNick in eds:
+                                            edNick = edNick.strip()
+                                            edDir = \
+                                                baseDir + \
+                                                '/accounts/' + edNick + \
+                                                '@' + domain
+                                            if os.path.isdir(edDir):
+                                                edFile.write(edNick + '\n')
+
                                     for edNick in eds:
                                         edNick = edNick.strip()
                                         edDir = \
@@ -4822,17 +4801,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 clearCounselorStatus(baseDir)
                                 if ',' in fields['counselors']:
                                     # if the list was given as comma separated
-                                    edFile = open(counselorsFile, "w+")
                                     eds = fields['counselors'].split(',')
-                                    for edNick in eds:
-                                        edNick = edNick.strip()
-                                        edDir = baseDir + \
-                                            '/accounts/' + edNick + \
-                                            '@' + domain
-                                        if os.path.isdir(edDir):
-                                            edFile.write(edNick + '\n')
-                                    edFile.close()
-                                    eds = fields['counselors'].split(',')
+                                    with open(counselorsFile, 'w+') as edFile:
+                                        for edNick in eds:
+                                            edNick = edNick.strip()
+                                            edDir = baseDir + \
+                                                '/accounts/' + edNick + \
+                                                '@' + domain
+                                            if os.path.isdir(edDir):
+                                                edFile.write(edNick + '\n')
+
                                     for edNick in eds:
                                         edNick = edNick.strip()
                                         edDir = baseDir + \
@@ -4844,18 +4822,17 @@ class PubServer(BaseHTTPRequestHandler):
                                                     'counselor')
                                 else:
                                     # nicknames on separate lines
-                                    edFile = open(counselorsFile, "w+")
                                     eds = fields['counselors'].split('\n')
-                                    for edNick in eds:
-                                        edNick = edNick.strip()
-                                        edDir = \
-                                            baseDir + \
-                                            '/accounts/' + edNick + \
-                                            '@' + domain
-                                        if os.path.isdir(edDir):
-                                            edFile.write(edNick + '\n')
-                                    edFile.close()
-                                    eds = fields['counselors'].split('\n')
+                                    with open(counselorsFile, 'w+') as edFile:
+                                        for edNick in eds:
+                                            edNick = edNick.strip()
+                                            edDir = \
+                                                baseDir + \
+                                                '/accounts/' + edNick + \
+                                                '@' + domain
+                                            if os.path.isdir(edDir):
+                                                edFile.write(edNick + '\n')
+
                                     for edNick in eds:
                                         edNick = edNick.strip()
                                         edDir = \
@@ -4878,17 +4855,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 clearArtistStatus(baseDir)
                                 if ',' in fields['artists']:
                                     # if the list was given as comma separated
-                                    edFile = open(artistsFile, "w+")
                                     eds = fields['artists'].split(',')
-                                    for edNick in eds:
-                                        edNick = edNick.strip()
-                                        edDir = baseDir + \
-                                            '/accounts/' + edNick + \
-                                            '@' + domain
-                                        if os.path.isdir(edDir):
-                                            edFile.write(edNick + '\n')
-                                    edFile.close()
-                                    eds = fields['artists'].split(',')
+                                    with open(artistsFile, 'w+') as edFile:
+                                        for edNick in eds:
+                                            edNick = edNick.strip()
+                                            edDir = baseDir + \
+                                                '/accounts/' + edNick + \
+                                                '@' + domain
+                                            if os.path.isdir(edDir):
+                                                edFile.write(edNick + '\n')
+
                                     for edNick in eds:
                                         edNick = edNick.strip()
                                         edDir = baseDir + \
@@ -4900,18 +4876,17 @@ class PubServer(BaseHTTPRequestHandler):
                                                     'artist')
                                 else:
                                     # nicknames on separate lines
-                                    edFile = open(artistsFile, "w+")
                                     eds = fields['artists'].split('\n')
-                                    for edNick in eds:
-                                        edNick = edNick.strip()
-                                        edDir = \
-                                            baseDir + \
-                                            '/accounts/' + edNick + \
-                                            '@' + domain
-                                        if os.path.isdir(edDir):
-                                            edFile.write(edNick + '\n')
-                                    edFile.close()
-                                    eds = fields['artists'].split('\n')
+                                    with open(artistsFile, 'w+') as edFile:
+                                        for edNick in eds:
+                                            edNick = edNick.strip()
+                                            edDir = \
+                                                baseDir + \
+                                                '/accounts/' + edNick + \
+                                                '@' + domain
+                                            if os.path.isdir(edDir):
+                                                edFile.write(edNick + '\n')
+
                                     for edNick in eds:
                                         edNick = edNick.strip()
                                         edDir = \
@@ -13327,10 +13302,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir + '/accounts/' + \
                     nickname + '@' + self.server.domain + '/.lastUsed'
                 try:
-                    lastUsedFile = open(lastUsedFilename, 'w+')
-                    if lastUsedFile:
+                    with open(lastUsedFilename, 'w+') as lastUsedFile:
                         lastUsedFile.write(str(int(time.time())))
-                        lastUsedFile.close()
                 except BaseException:
                     pass
 

@@ -55,19 +55,15 @@ def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
                 print('WARN: Failed to write entry to feeds posts index ' +
                       indexFilename + ' ' + str(e))
     else:
-        feedsFile = open(indexFilename, 'w+')
-        if feedsFile:
+        with open(indexFilename, 'w+') as feedsFile:
             feedsFile.write(postId + '\n')
-            feedsFile.close()
 
 
 def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
-    arrivedFile = open(postFilename + '.arrived', 'w+')
-    if arrivedFile:
+    with open(postFilename + '.arrived', 'w+') as arrivedFile:
         arrivedFile.write(arrived)
-        arrivedFile.close()
 
 
 def _removeControlCharacters(content: str) -> str:
@@ -435,15 +431,11 @@ def _createNewsMirror(baseDir: str, domain: str,
 
     # append the post Id number to the index file
     if os.path.isfile(mirrorIndexFilename):
-        indexFile = open(mirrorIndexFilename, "a+")
-        if indexFile:
+        with open(mirrorIndexFilename, 'a+') as indexFile:
             indexFile.write(postIdNumber + '\n')
-            indexFile.close()
     else:
-        indexFile = open(mirrorIndexFilename, "w+")
-        if indexFile:
+        with open(mirrorIndexFilename, 'w+') as indexFile:
             indexFile.write(postIdNumber + '\n')
-            indexFile.close()
 
     return True
 

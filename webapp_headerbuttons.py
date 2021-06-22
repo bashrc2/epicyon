@@ -116,7 +116,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '<a href="' + usersPath + \
                 '/inbox" tabindex="-1"><button class="' + \
-                inboxButton+'"><span>' + translate['Inbox'] + \
+                inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
     if not featuresHeader:

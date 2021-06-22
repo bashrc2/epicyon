@@ -95,8 +95,8 @@ def sendAvailabilityViaServer(baseDir: str, session,
 
     newAvailabilityJson = {
         'type': 'Availability',
-        'actor': httpPrefix+'://'+domainFull+'/users/'+nickname,
-        'object': '"'+status+'"',
+        'actor': httpPrefix + '://' + domainFull + '/users/' + nickname,
+        'object': '"' + status + '"',
         'to': [toUrl],
         'cc': [ccUrl]
     }

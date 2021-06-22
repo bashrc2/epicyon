@@ -198,9 +198,10 @@ def sendAnnounceViaServer(baseDir: str, session,
     statusNumber, published = getStatusNumber()
     newAnnounceId = httpPrefix + '://' + fromDomainFull + '/users/' + \
         fromNickname + '/statuses/' + statusNumber
+    actorStr = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
     newAnnounceJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
+        'actor': actorStr,
         'atomUri': newAnnounceId,
         'cc': [ccUrl],
         'id': newAnnounceId + '/activity',

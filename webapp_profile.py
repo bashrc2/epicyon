@@ -534,7 +534,7 @@ def htmlProfile(rssIconAtTop: bool,
         if xmppAddress:
             donateSection += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
-                xmppAddress + '">'+xmppAddress + '</a></p>\n'
+                xmppAddress + '">' + xmppAddress + '</a></p>\n'
         if matrixAddress:
             donateSection += \
                 '<p>' + translate['Matrix'] + ': ' + matrixAddress + '</p>\n'
@@ -1675,7 +1675,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['Matrix'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="matrixAddress" value="' + \
-        matrixAddress+'">\n'
+        matrixAddress + '">\n'
 
     editProfileForm += '<label class="labels">SSB</label><br>\n'
     editProfileForm += \

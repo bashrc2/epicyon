@@ -129,11 +129,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
     # write the new schedule index file
     scheduleIndexFile = \
         baseDir + '/accounts/' + handle + '/schedule.index'
-    scheduleFile = open(scheduleIndexFile, "w+")
-    if scheduleFile:
+    with open(scheduleIndexFile, 'w+') as scheduleFile:
         for line in indexLines:
             scheduleFile.write(line)
-        scheduleFile.close()
 
 
 def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):

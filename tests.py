@@ -2045,7 +2045,7 @@ def _testAddEmoji():
         tags.append(tag)
     content = contentModified
     contentModified = replaceEmojiFromTags(content, tags, 'content')
-    # print('contentModified: '+contentModified)
+    # print('contentModified: ' + contentModified)
     assert contentModified == '<p>Emoji 🍋 🍓 🍌</p>'
 
     os.chdir(baseDirOriginal)
@@ -2124,7 +2124,7 @@ def _testRecentPostsCache():
     htmlStr = '<html></html>'
     for i in range(5):
         postJsonObject = {
-            "id": "https://somesite.whatever/users/someuser/statuses/"+str(i)
+            "id": "https://somesite.whatever/users/someuser/statuses/" + str(i)
         }
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                postJsonObject, htmlStr)
@@ -3883,10 +3883,8 @@ def _testSpoofGeolocation() -> None:
 
     kmlStr += '</Document>\n'
     kmlStr += '</kml>'
-    kmlFile = open('unittest_decoy.kml', 'w+')
-    if kmlFile:
+    with open('unittest_decoy.kml', 'w+') as kmlFile:
         kmlFile.write(kmlStr)
-        kmlFile.close()
 
 
 def _testSkills() -> None:

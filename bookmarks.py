@@ -61,10 +61,8 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     indexStr = ''
     with open(bookmarksIndexFilename, 'r') as indexFile:
         indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
-        bookmarksIndexFile = open(bookmarksIndexFilename, 'w+')
-        if bookmarksIndexFile:
+        with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
             bookmarksIndexFile.write(indexStr)
-            bookmarksIndexFile.close()
 
     if not postJsonObject.get('type'):
         return
@@ -219,10 +217,8 @@ def updateBookmarksCollection(recentPostsCache: {},
                     print('WARN: Failed to write entry to bookmarks index ' +
                           bookmarksIndexFilename + ' ' + str(e))
         else:
-            bookmarksIndexFile = open(bookmarksIndexFilename, 'w+')
-            if bookmarksIndexFile:
+            with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
                 bookmarksIndexFile.write(bookmarkIndex + '\n')
-                bookmarksIndexFile.close()
 
 
 def bookmark(recentPostsCache: {},
@@ -247,7 +243,7 @@ def bookmark(recentPostsCache: {},
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'object': objectUrl
     }
     if ccList:
@@ -306,10 +302,10 @@ def undoBookmark(recentPostsCache: {},
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'object': {
             'type': 'Bookmark',
-            'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+            'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
             'object': objectUrl
         }
     }
