@@ -820,6 +820,8 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 self.wfile.write(msg)
                 return True
+            except BrokenPipeError as e:
+                break
             except Exception as e:
                 print('ERROR: _write error ' + str(tries) + ' ' + str(e))
                 time.sleep(0.5)
