@@ -14,6 +14,7 @@ import time
 import random
 from linked_data_sig import verifyJsonSignature
 from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from utils import hasObjectDict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
@@ -1978,9 +1979,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                 memberDomain = memberHandle.split('@')[1]
                 memberPort = port
                 if ':' in memberDomain:
-                    memberPortStr = memberDomain.split(':')[1]
-                    if memberPortStr.isdigit():
-                        memberPort = int(memberPortStr)
+                    memberPort = getPortFromDomain(memberDomain)
                     memberDomain = removeDomainPort(memberDomain)
                 sendSignedJson(postJsonObject, session, baseDir,
                                nickname, domain, port,
@@ -2123,10 +2122,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
     if ':' in senderDomain:
-        senderPortStr = senderDomain.split(':')[1]
-        if senderPortStr.isdigit():
-            senderPort = int(senderPortStr)
-            senderDomain = removeDomainPort(senderDomain)
+        senderPort = getPortFromDomain(senderDomain)
+        senderDomain = removeDomainPort(senderDomain)
     cc = []
 
     # create the bounce DM

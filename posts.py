@@ -33,6 +33,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from utils import hasObjectDict
 from utils import rejectPostId
 from utils import removeInvalidChars
@@ -2665,7 +2666,7 @@ def sendToFollowers(session, baseDir: str,
         index = 0
         toDomain = followerHandles[index].split('@')[1]
         if ':' in toDomain:
-            toPort = toDomain.split(':')[1]
+            toPort = getPortFromDomain(toDomain)
             toDomain = removeDomainPort(toDomain)
 
         cc = ''

@@ -16,6 +16,7 @@ import idna
 import locale
 from pprint import pprint
 from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -918,10 +919,7 @@ def getDomainFromActor(actor: str) -> (str, int):
         if '/' in actor:
             domain = domain.split('/')[0]
     if ':' in domain:
-        portStr = domain.split(':')[1]
-        if not portStr.isdigit():
-            return None, None
-        port = int(portStr)
+        port = getPortFromDomain(domain)
         domain = removeDomainPort(domain)
     return domain, port
 

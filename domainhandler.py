@@ -15,3 +15,13 @@ def removeDomainPort(domain: str) -> str:
     if ':' in domain:
         domain = domain.split(':')[0]
     return domain
+
+
+def getPortFromDomain(domain: str) -> int:
+    """If the domain has a port number appended then return it
+    """
+    if ':' in domain:
+        portStr = domain.split(':')[1]
+        if portStr.isdigit():
+            return int(portStr)
+    return None
