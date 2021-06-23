@@ -15,6 +15,7 @@ import json
 import idna
 import locale
 from pprint import pprint
+from domainhandler import removeDomainPort
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -417,8 +418,7 @@ def getFollowersOfPerson(baseDir: str,
     Used by the shared inbox to know who to send incoming mail to
     """
     followers = []
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         return followers
@@ -645,8 +645,7 @@ def createInboxQueueDir(nickname: str, domain: str, baseDir: str) -> str:
 def domainPermitted(domain: str, federationList: []):
     if len(federationList) == 0:
         return True
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     if domain in federationList:
         return True
     return False
@@ -923,7 +922,7 @@ def getDomainFromActor(actor: str) -> (str, int):
         if not portStr.isdigit():
             return None, None
         port = int(portStr)
-        domain = domain.split(':')[0]
+        domain = removeDomainPort(domain)
     return domain, port
 
 
@@ -932,8 +931,7 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     userPath = baseDir + '/accounts/' + nickname + '@' + domain
     petnamesFilename = userPath + '/petnames.txt'
 
@@ -975,7 +973,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         print('DEBUG: follow of domain ' + followDomain)
 
     if ':' in domain:
-        handle = nickname + '@' + domain.split(':')[0]
+        domainOnly = removeDomainPort(domain)
+        handle = nickname + '@' + domainOnly
     else:
         handle = nickname + '@' + domain
 
@@ -984,7 +983,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         return False
 
     if ':' in followDomain:
-        handleToFollow = followNickname + '@' + followDomain.split(':')[0]
+        followDomainOnly = removeDomainPort(followDomain)
+        handleToFollow = followNickname + '@' + followDomainOnly
     else:
         handleToFollow = followNickname + '@' + followDomain
 

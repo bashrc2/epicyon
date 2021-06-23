@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from domainhandler import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -153,8 +154,7 @@ def isFollowingActor(baseDir: str,
     """Is the given nickname following the given actor?
     The actor can also be a handle: nickname@domain
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         return False
@@ -205,8 +205,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
                        followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     followersFile = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/followers.txt'
     if not os.path.isfile(followersFile):
@@ -243,8 +242,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
                     debug: bool = False) -> bool:
     """Removes a person to the follow list
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     handleToUnfollow = followNickname + '@' + followDomain
     if not os.path.isdir(baseDir + '/accounts'):
@@ -433,8 +431,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     }
 
     handleDomain = domain
-    if ':' in handleDomain:
-        handleDomain = domain.split(':')[0]
+    handleDomain = removeDomainPort(handleDomain)
     handle = nickname + '@' + handleDomain
     filename = baseDir + '/accounts/' + handle + '/' + followFile + '.txt'
     if not os.path.isfile(filename):
@@ -493,8 +490,7 @@ def _followApprovalRequired(baseDir: str, nicknameToFollow: str,
         return False
 
     manuallyApproveFollows = False
-    if ':' in domainToFollow:
-        domainToFollow = domainToFollow.split(':')[0]
+    domainToFollow = removeDomainPort(domainToFollow)
     actorFilename = baseDir + '/accounts/' + \
         nicknameToFollow + '@' + domainToFollow + '.json'
     if os.path.isfile(actorFilename):

@@ -17,6 +17,7 @@ from utils import loadJson
 from utils import loadJsonOnionify
 from utils import saveJson
 from utils import getProtocolPrefixes
+from domainhandler import removeDomainPort
 
 
 def _parseHandle(handle: str) -> (str, str):
@@ -53,13 +54,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     nickname, domain = _parseHandle(handle)
     if not nickname:
         return None
-    wfDomain = domain
-    if ':' in wfDomain:
-        # wfPortStr=wfDomain.split(':')[1]
-        # if wfPortStr.isdigit():
-        #     wfPort=int(wfPortStr)
-        # if wfPort==80 or wfPort==443:
-        wfDomain = wfDomain.split(':')[0]
+    wfDomain = removeDomainPort(domain)
+
     wf = getWebfingerFromCache(nickname + '@' + wfDomain,
                                cachedWebfingers)
     if wf:

@@ -18,6 +18,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import weekDayOfMonthStart
+from domainhandler import removeDomainPort
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -247,9 +248,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
                  textModeBanner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
-    domain = domainFull
-    if ':' in domainFull:
-        domain = domainFull.split(':')[0]
+    domain = removeDomainPort(domainFull)
 
     monthNumber = 0
     dayNumber = None

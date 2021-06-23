@@ -17,6 +17,7 @@ from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import isEditor
 from utils import getConfigParam
+from domainhandler import removeDomainPort
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -58,9 +59,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     """
     htmlStr = ''
 
-    domain = domainFull
-    if ':' in domain:
-        domain = domain.split(':')
+    domain = removeDomainPort(domainFull)
 
     if authorized:
         # only show the publish button if logged in, otherwise replace it with

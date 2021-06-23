@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from domainhandler import removeDomainPort
 from utils import hasObjectDict
 from utils import isAccountDir
 from utils import getCachedPostFilename
@@ -58,8 +59,7 @@ def addBlock(baseDir: str, nickname: str, domain: str,
              blockNickname: str, blockDomain: str) -> bool:
     """Block the given account
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     blockingFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/blocking.txt'
     blockHandle = blockNickname + '@' + blockDomain
@@ -111,8 +111,7 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
                 unblockNickname: str, unblockDomain: str) -> bool:
     """Unblock the given account
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     unblockingFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/blocking.txt'
     unblockHandle = unblockNickname + '@' + unblockDomain
@@ -338,8 +337,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s block object has no nickname')
         return
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
@@ -406,8 +404,7 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s undo block object has no nickname')
         return
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
@@ -605,8 +602,7 @@ def outboxMute(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s mute object has no nickname')
         return
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
@@ -663,8 +659,7 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s undo mute object has no nickname')
         return
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:

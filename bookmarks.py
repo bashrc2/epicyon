@@ -11,6 +11,7 @@ import os
 from pprint import pprint
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
+from domainhandler import removeDomainPort
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -560,8 +561,7 @@ def outboxBookmark(recentPostsCache: {},
         print('DEBUG: c2s bookmark Add request arrived in outbox')
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
@@ -625,8 +625,7 @@ def outboxUndoBookmark(recentPostsCache: {},
         print('DEBUG: c2s unbookmark Remove request arrived in outbox')
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:

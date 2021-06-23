@@ -10,6 +10,7 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from domainhandler import removeDomainPort
 from utils import isValidLanguage
 from utils import getImageExtensions
 from utils import loadJson
@@ -772,8 +773,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     replaceEmoji = {}
     emojiDict = {}
     originalDomain = domain
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     followingFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/following.txt'
 

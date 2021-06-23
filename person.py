@@ -38,6 +38,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
+from domainhandler import removeDomainPort
 from utils import getStatusNumber
 from utils import getFullDomain
 from utils import validNickname
@@ -93,8 +94,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     if imageFilename.startswith('~/'):
         imageFilename = imageFilename.replace('~/', str(Path.home()) + '/')
 
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     fullDomain = getFullDomain(domain, port)
 
     handle = nickname + '@' + domain
@@ -147,8 +147,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
 def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     return os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain) or \
         os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain)
 
@@ -720,8 +719,7 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
         return None
     if not isSharedInbox and not validNickname(domain, nickname):
         return None
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     filename = baseDir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):

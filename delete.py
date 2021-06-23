@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
+from domainhandler import removeDomainPort
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -154,8 +155,7 @@ def outboxDelete(baseDir: str, httpPrefix: str,
                   "wasn't created by you (nickname does not match)")
         return
     deleteDomain, deletePort = getDomainFromActor(messageId)
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     if deleteDomain != domain:
         if debug:
             print("DEBUG: you can't delete a post which " +

@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from domainhandler import removeDomainPort
 from utils import hasObjectDict
 from utils import removeIdEnding
 from utils import hasUsersPath
@@ -128,8 +129,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
     if not urlPermitted(objectUrl, federationList):
         return None
 
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     fullDomain = getFullDomain(domain, port)
 
     statusNumber, published = getStatusNumber()
@@ -399,8 +399,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
         print('DEBUG: c2s undo announce request arrived in outbox')
 
     messageId = removeIdEnding(messageJson['object']['object'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:

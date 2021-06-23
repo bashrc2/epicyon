@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
+from domainhandler import removeDomainPort
 
 
 def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
@@ -43,8 +44,7 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     indicating whether to receive calendar events from that account
     """
     # check that a following file exists
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     followingFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/following.txt'
     if not os.path.isfile(followingFilename):
