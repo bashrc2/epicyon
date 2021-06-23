@@ -21,6 +21,7 @@ def removeDomainPort(domain: str) -> str:
 
 def getPortFromDomain(domain: str) -> int:
     """If the domain has a port number appended then return it
+    eg. mydomain.com:80 returns 80
     """
     if ':' in domain:
         if domain.startswith('did:'):
