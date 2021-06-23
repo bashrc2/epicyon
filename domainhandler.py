@@ -13,6 +13,8 @@ def removeDomainPort(domain: str) -> str:
     eg. mydomain.com:80 becomes mydomain.com
     """
     if ':' in domain:
+        if domain.startswith('did:'):
+            return domain
         domain = domain.split(':')[0]
     return domain
 
@@ -21,6 +23,8 @@ def getPortFromDomain(domain: str) -> int:
     """If the domain has a port number appended then return it
     """
     if ':' in domain:
+        if domain.startswith('did:'):
+            return None
         portStr = domain.split(':')[1]
         if portStr.isdigit():
             return int(portStr)
