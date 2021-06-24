@@ -834,56 +834,34 @@ def getNicknameFromActor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    if '/users/' not in actor:
-        if '/profile/' in actor:
-            nickStr = actor.split('/profile/')[1].replace('@', '')
+    usersPaths = ('/users/', '/profile/', '/channel/', '/accounts/', '/u/')
+    for possiblePath in usersPaths:
+        if possiblePath in actor:
+            nickStr = actor.split(possiblePath)[1].replace('@', '')
             if '/' not in nickStr:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
-        elif '/channel/' in actor:
-            nickStr = actor.split('/channel/')[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
-        elif '/accounts/' in actor:
-            nickStr = actor.split('/accounts/')[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
-        elif '/u/' in actor:
-            nickStr = actor.split('/u/')[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
-        elif '/@' in actor:
-            # https://domain/@nick
-            nickStr = actor.split('/@')[1]
-            if '/' in nickStr:
-                nickStr = nickStr.split('/')[0]
-            return nickStr
-        elif '@' in actor:
-            nickStr = actor.split('@')[0]
-            return nickStr
-        elif '://' in actor:
-            domain = actor.split('://')[1]
-            if '/' in domain:
-                domain = domain.split('/')[0]
-            if '://' + domain + '/' not in actor:
-                return None
-            nickStr = actor.split('://' + domain + '/')[1]
-            if '/' in nickStr or '.' in nickStr:
-                return None
-            return nickStr
-        return None
-    nickStr = actor.split('/users/')[1].replace('@', '')
-    if '/' not in nickStr:
+    if '/@' in actor:
+        # https://domain/@nick
+        nickStr = actor.split('/@')[1]
+        if '/' in nickStr:
+            nickStr = nickStr.split('/')[0]
         return nickStr
-    else:
-        return nickStr.split('/')[0]
+    elif '@' in actor:
+        nickStr = actor.split('@')[0]
+        return nickStr
+    elif '://' in actor:
+        domain = actor.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if '://' + domain + '/' not in actor:
+            return None
+        nickStr = actor.split('://' + domain + '/')[1]
+        if '/' in nickStr or '.' in nickStr:
+            return None
+        return nickStr
+    return None
 
 
 def getDomainFromActor(actor: str) -> (str, int):
@@ -893,27 +871,14 @@ def getDomainFromActor(actor: str) -> (str, int):
         actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
-    if '/profile/' in actor:
-        domain = actor.split('/profile/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/accounts/' in actor:
-        domain = actor.split('/accounts/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/channel/' in actor:
-        domain = actor.split('/channel/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/users/' in actor:
-        domain = actor.split('/users/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/u/' in actor:
-        domain = actor.split('/u/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/@' in actor:
+    usersPaths = ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+    for possiblePath in usersPaths:
+        if possiblePath in actor:
+            domain = actor.split(possiblePath)[0]
+            for prefix in prefixes:
+                domain = domain.replace(prefix, '')
+            break
+    if '/@' in actor:
         domain = actor.split('/@')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
