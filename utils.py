@@ -743,6 +743,8 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
 
 
 def _genderFromString(translate: {}, text: str) -> str:
+    """Given some text, does it contain a gender description?
+    """
     gender = None
     textOrig = text
     text = text.lower()
