@@ -742,14 +742,36 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
     return nameFound
 
 
+def _genderFromString(translate: {}, text: str) -> str:
+    gender = None
+    textOrig = text
+    text = text.lower()
+    if translate['He/Him'].lower() in text or \
+       translate['boy'].lower() in text:
+        gender = 'He/Him'
+    elif (translate['She/Her'].lower() in text or
+          translate['girl'].lower() in text):
+        gender = 'She/Her'
+    elif 'him' in text or 'male' in text:
+        gender = 'He/Him'
+    elif 'her' in text or 'she' in text or \
+         'fem' in text or 'woman' in text:
+        gender = 'She/Her'
+    elif 'man' in text or 'He' in textOrig:
+        gender = 'He/Him'
+    return gender
+
+
 def getGenderFromBio(baseDir: str, actor: str, personCache: {},
                      translate: {}) -> str:
     """Tries to ascertain gender from bio description
+    This is for use by text-to-speech for pitch setting
     """
+    defaultGender = 'They/Them'
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
     if not personCache.get(actor):
-        return None
+        return defaultGender
     bioFound = None
     if translate:
         pronounStr = translate['pronoun'].lower()
@@ -765,11 +787,12 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
         if os.path.isfile(cachedActorFilename):
             actorJson = loadJson(cachedActorFilename, 1)
     if not actorJson:
-        return None
+        return defaultGender
     # is gender defined as a profile tag?
     if actorJson.get('attachment'):
         tagsList = actorJson['attachment']
         if isinstance(tagsList, list):
+            # look for a gender field name
             for tag in tagsList:
                 if not isinstance(tag, dict):
                     continue
@@ -782,27 +805,25 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
                 elif tag['name'].lower().startswith(pronounStr):
                     bioFound = tag['value']
                     break
+            # the field name could be anything,
+            # just look at the value
+            if not bioFound:
+                for tag in tagsList:
+                    if not isinstance(tag, dict):
+                        continue
+                    if not tag.get('name') or not tag.get('value'):
+                        continue
+                    gender = _genderFromString(translate, tag['value'])
+                    if gender:
+                        return gender
     # if not then use the bio
     if not bioFound and actorJson.get('summary'):
         bioFound = actorJson['summary']
     if not bioFound:
-        return None
-    gender = 'They/Them'
-    bioFoundOrig = bioFound
-    bioFound = bioFound.lower()
-    if translate['He/Him'].lower() in bioFound or \
-       translate['boy'].lower() in bioFound:
-        gender = 'He/Him'
-    elif (translate['She/Her'].lower() in bioFound or
-          translate['girl'].lower() in bioFound):
-        gender = 'She/Her'
-    elif 'him' in bioFound or 'male' in bioFound:
-        gender = 'He/Him'
-    elif 'her' in bioFound or 'she' in bioFound or \
-         'fem' in bioFound or 'woman' in bioFound:
-        gender = 'She/Her'
-    elif 'man' in bioFound or 'He' in bioFoundOrig:
-        gender = 'He/Him'
+        return defaultGender
+    gender = _genderFromString(translate, bioFound)
+    if not gender:
+        gender = defaultGender
     return gender
 
 
