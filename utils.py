@@ -755,52 +755,36 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
         pronounStr = translate['pronoun'].lower()
     else:
         pronounStr = 'pronoun'
+    actorJson = None
     if personCache[actor].get('actor'):
-        # is gender defined as a profile tag?
-        if personCache[actor]['actor'].get('attachment'):
-            tagsList = personCache[actor]['actor']['attachment']
-            if isinstance(tagsList, list):
-                for tag in tagsList:
-                    if not isinstance(tag, dict):
-                        continue
-                    if not tag.get('name') or not tag.get('value'):
-                        continue
-                    if tag['name'].lower() == \
-                       translate['gender'].lower():
-                        bioFound = tag['value']
-                        break
-                    elif tag['name'].lower().startswith(pronounStr):
-                        bioFound = tag['value']
-                        break
-        # if not then use the bio
-        if not bioFound and personCache[actor]['actor'].get('summary'):
-            bioFound = personCache[actor]['actor']['summary']
+        actorJson = personCache[actor]['actor']
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
             baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
             actorJson = loadJson(cachedActorFilename, 1)
-            if actorJson:
-                # is gender defined as a profile tag?
-                if actorJson.get('attachment'):
-                    tagsList = actorJson['attachment']
-                    if isinstance(tagsList, list):
-                        for tag in tagsList:
-                            if not isinstance(tag, dict):
-                                continue
-                            if not tag.get('name') or not tag.get('value'):
-                                continue
-                            if tag['name'].lower() == \
-                               translate['gender'].lower():
-                                bioFound = tag['value']
-                                break
-                            elif tag['name'].lower().startswith(pronounStr):
-                                bioFound = tag['value']
-                                break
-                # if not then use the bio
-                if not bioFound and actorJson.get('summary'):
-                    bioFound = actorJson['summary']
+    if not actorJson:
+        return None
+    # is gender defined as a profile tag?
+    if actorJson.get('attachment'):
+        tagsList = actorJson['attachment']
+        if isinstance(tagsList, list):
+            for tag in tagsList:
+                if not isinstance(tag, dict):
+                    continue
+                if not tag.get('name') or not tag.get('value'):
+                    continue
+                if tag['name'].lower() == \
+                   translate['gender'].lower():
+                    bioFound = tag['value']
+                    break
+                elif tag['name'].lower().startswith(pronounStr):
+                    bioFound = tag['value']
+                    break
+    # if not then use the bio
+    if not bioFound and actorJson.get('summary'):
+        bioFound = actorJson['summary']
     if not bioFound:
         return None
     gender = 'They/Them'
