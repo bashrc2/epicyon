@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from domainhandler import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -327,8 +328,7 @@ def outboxLike(recentPostsCache: {},
         print('DEBUG: c2s like request arrived in outbox')
 
     messageId = removeIdEnding(messageJson['object'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
@@ -377,8 +377,7 @@ def outboxUndoLike(recentPostsCache: {},
         print('DEBUG: c2s undo like request arrived in outbox')
 
     messageId = removeIdEnding(messageJson['object']['object'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:

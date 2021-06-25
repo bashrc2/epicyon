@@ -11,6 +11,7 @@ import os
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
+from domainhandler import removeDomainPort
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
@@ -76,9 +77,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     htmlStr = ''
 
     separatorStr = htmlPostSeparator(baseDir, 'left')
-    domain = domainFull
-    if ':' in domain:
-        domain = domain.split(':')
+    domain = removeDomainPort(domainFull)
 
     editImageClass = ''
     if showHeaderImage:
@@ -298,9 +297,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     else:
         editor = isEditor(baseDir, nickname)
 
-    domain = domainFull
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domainFull)
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')

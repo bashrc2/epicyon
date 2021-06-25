@@ -38,6 +38,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
+from domainhandler import removeDomainPort
 from utils import getStatusNumber
 from utils import getFullDomain
 from utils import validNickname
@@ -48,10 +49,12 @@ from utils import getConfigParam
 from utils import refreshNewswire
 from utils import getProtocolPrefixes
 from utils import hasUsersPath
+from utils import getImageExtensions
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
 from pprint import pprint
+from cache import getPersonFromCache
 
 
 def generateRSAKey() -> (str, str):
@@ -93,8 +96,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     if imageFilename.startswith('~/'):
         imageFilename = imageFilename.replace('~/', str(Path.home()) + '/')
 
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     fullDomain = getFullDomain(domain, port)
 
     handle = nickname + '@' + domain
@@ -147,8 +149,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
 def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     return os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain) or \
         os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain)
 
@@ -720,8 +721,7 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
         return None
     if not isSharedInbox and not validNickname(domain, nickname):
         return None
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     filename = baseDir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
@@ -1349,3 +1349,31 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                 pprint(personJson)
             return personJson, asHeader
     return None, None
+
+
+def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
+                       allowDownloads: bool) -> str:
+    """Returns the avatar url for the person
+    """
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
+    if not personJson:
+        return None
+
+    # get from locally stored image
+    if not personJson.get('id'):
+        return None
+    actorStr = personJson['id'].replace('/', '-')
+    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
+
+    imageExtension = getImageExtensions()
+    for ext in imageExtension:
+        if os.path.isfile(avatarImagePath + '.' + ext):
+            return '/avatars/' + actorStr + '.' + ext
+        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
+            return '/avatars/' + actorStr.lower() + '.' + ext
+
+    if personJson.get('icon'):
+        if personJson['icon'].get('url'):
+            return personJson['icon']['url']
+    return None

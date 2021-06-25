@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import isAccountDir
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
@@ -407,11 +408,7 @@ def htmlSkillsSearch(actor: str,
         for f in files:
             if not f.endswith('.json'):
                 continue
-            if '@' not in f:
-                continue
-            if f.startswith('inbox@'):
-                continue
-            elif f.startswith('news@'):
+            if not isAccountDir(f):
                 continue
             actorFilename = os.path.join(subdir, f)
             actorJson = loadJson(actorFilename)
@@ -446,11 +443,7 @@ def htmlSkillsSearch(actor: str,
             for f in files:
                 if not f.endswith('.json'):
                     continue
-                if '@' not in f:
-                    continue
-                if f.startswith('inbox@'):
-                    continue
-                elif f.startswith('news@'):
+                if not isAccountDir(f):
                     continue
                 actorFilename = os.path.join(subdir, f)
                 cachedActorJson = loadJson(actorFilename)

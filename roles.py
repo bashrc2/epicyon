@@ -10,6 +10,7 @@ import os
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
+from domainhandler import removeDomainPort
 
 
 def _clearRoleStatus(baseDir: str, role: str) -> None:
@@ -75,8 +76,7 @@ def _addRole(baseDir: str, nickname: str, domain: str,
     """Adds a role nickname to the file.
     This is a file containing the nicknames of accounts having this role
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     roleFile = baseDir + '/accounts/' + roleFilename
     if os.path.isfile(roleFile):
         # is this nickname already in the file?

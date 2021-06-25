@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Core"
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
 import sys
@@ -139,8 +140,8 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
-from webapp_utils import setMinimal
-from webapp_utils import isMinimal
+from webapp_minimalbutton import setMinimal
+from webapp_minimalbutton import isMinimal
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList

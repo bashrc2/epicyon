@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPu"
 
 import os
 import re
@@ -15,6 +16,8 @@ import json
 import idna
 import locale
 from pprint import pprint
+from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -417,8 +420,7 @@ def getFollowersOfPerson(baseDir: str,
     Used by the shared inbox to know who to send incoming mail to
     """
     followers = []
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         return followers
@@ -645,8 +647,7 @@ def createInboxQueueDir(nickname: str, domain: str, baseDir: str) -> str:
 def domainPermitted(domain: str, federationList: []):
     if len(federationList) == 0:
         return True
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     if domain in federationList:
         return True
     return False
@@ -742,83 +743,90 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
     return nameFound
 
 
+def _genderFromString(translate: {}, text: str) -> str:
+    """Given some text, does it contain a gender description?
+    """
+    gender = None
+    textOrig = text
+    text = text.lower()
+    if translate['He/Him'].lower() in text or \
+       translate['boy'].lower() in text:
+        gender = 'He/Him'
+    elif (translate['She/Her'].lower() in text or
+          translate['girl'].lower() in text):
+        gender = 'She/Her'
+    elif 'him' in text or 'male' in text:
+        gender = 'He/Him'
+    elif 'her' in text or 'she' in text or \
+         'fem' in text or 'woman' in text:
+        gender = 'She/Her'
+    elif 'man' in text or 'He' in textOrig:
+        gender = 'He/Him'
+    return gender
+
+
 def getGenderFromBio(baseDir: str, actor: str, personCache: {},
                      translate: {}) -> str:
     """Tries to ascertain gender from bio description
+    This is for use by text-to-speech for pitch setting
     """
+    defaultGender = 'They/Them'
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
     if not personCache.get(actor):
-        return None
+        return defaultGender
     bioFound = None
     if translate:
         pronounStr = translate['pronoun'].lower()
     else:
         pronounStr = 'pronoun'
+    actorJson = None
     if personCache[actor].get('actor'):
-        # is gender defined as a profile tag?
-        if personCache[actor]['actor'].get('attachment'):
-            tagsList = personCache[actor]['actor']['attachment']
-            if isinstance(tagsList, list):
-                for tag in tagsList:
-                    if not isinstance(tag, dict):
-                        continue
-                    if not tag.get('name') or not tag.get('value'):
-                        continue
-                    if tag['name'].lower() == \
-                       translate['gender'].lower():
-                        bioFound = tag['value']
-                        break
-                    elif tag['name'].lower().startswith(pronounStr):
-                        bioFound = tag['value']
-                        break
-        # if not then use the bio
-        if not bioFound and personCache[actor]['actor'].get('summary'):
-            bioFound = personCache[actor]['actor']['summary']
+        actorJson = personCache[actor]['actor']
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
             baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
             actorJson = loadJson(cachedActorFilename, 1)
-            if actorJson:
-                # is gender defined as a profile tag?
-                if actorJson.get('attachment'):
-                    tagsList = actorJson['attachment']
-                    if isinstance(tagsList, list):
-                        for tag in tagsList:
-                            if not isinstance(tag, dict):
-                                continue
-                            if not tag.get('name') or not tag.get('value'):
-                                continue
-                            if tag['name'].lower() == \
-                               translate['gender'].lower():
-                                bioFound = tag['value']
-                                break
-                            elif tag['name'].lower().startswith(pronounStr):
-                                bioFound = tag['value']
-                                break
-                # if not then use the bio
-                if not bioFound and actorJson.get('summary'):
-                    bioFound = actorJson['summary']
+    if not actorJson:
+        return defaultGender
+    # is gender defined as a profile tag?
+    if actorJson.get('attachment'):
+        tagsList = actorJson['attachment']
+        if isinstance(tagsList, list):
+            # look for a gender field name
+            for tag in tagsList:
+                if not isinstance(tag, dict):
+                    continue
+                if not tag.get('name') or not tag.get('value'):
+                    continue
+                if tag['name'].lower() == \
+                   translate['gender'].lower():
+                    bioFound = tag['value']
+                    break
+                elif tag['name'].lower().startswith(pronounStr):
+                    bioFound = tag['value']
+                    break
+            # the field name could be anything,
+            # just look at the value
+            if not bioFound:
+                for tag in tagsList:
+                    if not isinstance(tag, dict):
+                        continue
+                    if not tag.get('name') or not tag.get('value'):
+                        continue
+                    gender = _genderFromString(translate, tag['value'])
+                    if gender:
+                        return gender
+    # if not then use the bio
+    if not bioFound and actorJson.get('summary'):
+        bioFound = actorJson['summary']
     if not bioFound:
-        return None
-    gender = 'They/Them'
-    bioFoundOrig = bioFound
-    bioFound = bioFound.lower()
-    if translate['He/Him'].lower() in bioFound or \
-       translate['boy'].lower() in bioFound:
-        gender = 'He/Him'
-    elif (translate['She/Her'].lower() in bioFound or
-          translate['girl'].lower() in bioFound):
-        gender = 'She/Her'
-    elif 'him' in bioFound or 'male' in bioFound:
-        gender = 'He/Him'
-    elif 'her' in bioFound or 'she' in bioFound or \
-         'fem' in bioFound or 'woman' in bioFound:
-        gender = 'She/Her'
-    elif 'man' in bioFound or 'He' in bioFoundOrig:
-        gender = 'He/Him'
+        return defaultGender
+    gender = _genderFromString(translate, bioFound)
+    if not gender:
+        gender = defaultGender
     return gender
 
 
@@ -827,56 +835,34 @@ def getNicknameFromActor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    if '/users/' not in actor:
-        if '/profile/' in actor:
-            nickStr = actor.split('/profile/')[1].replace('@', '')
+    usersPaths = ('/users/', '/profile/', '/channel/', '/accounts/', '/u/')
+    for possiblePath in usersPaths:
+        if possiblePath in actor:
+            nickStr = actor.split(possiblePath)[1].replace('@', '')
             if '/' not in nickStr:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
-        elif '/channel/' in actor:
-            nickStr = actor.split('/channel/')[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
-        elif '/accounts/' in actor:
-            nickStr = actor.split('/accounts/')[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
-        elif '/u/' in actor:
-            nickStr = actor.split('/u/')[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
-        elif '/@' in actor:
-            # https://domain/@nick
-            nickStr = actor.split('/@')[1]
-            if '/' in nickStr:
-                nickStr = nickStr.split('/')[0]
-            return nickStr
-        elif '@' in actor:
-            nickStr = actor.split('@')[0]
-            return nickStr
-        elif '://' in actor:
-            domain = actor.split('://')[1]
-            if '/' in domain:
-                domain = domain.split('/')[0]
-            if '://' + domain + '/' not in actor:
-                return None
-            nickStr = actor.split('://' + domain + '/')[1]
-            if '/' in nickStr or '.' in nickStr:
-                return None
-            return nickStr
-        return None
-    nickStr = actor.split('/users/')[1].replace('@', '')
-    if '/' not in nickStr:
+    if '/@' in actor:
+        # https://domain/@nick
+        nickStr = actor.split('/@')[1]
+        if '/' in nickStr:
+            nickStr = nickStr.split('/')[0]
         return nickStr
-    else:
-        return nickStr.split('/')[0]
+    elif '@' in actor:
+        nickStr = actor.split('@')[0]
+        return nickStr
+    elif '://' in actor:
+        domain = actor.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if '://' + domain + '/' not in actor:
+            return None
+        nickStr = actor.split('://' + domain + '/')[1]
+        if '/' in nickStr or '.' in nickStr:
+            return None
+        return nickStr
+    return None
 
 
 def getDomainFromActor(actor: str) -> (str, int):
@@ -886,27 +872,14 @@ def getDomainFromActor(actor: str) -> (str, int):
         actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
-    if '/profile/' in actor:
-        domain = actor.split('/profile/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/accounts/' in actor:
-        domain = actor.split('/accounts/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/channel/' in actor:
-        domain = actor.split('/channel/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/users/' in actor:
-        domain = actor.split('/users/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/u/' in actor:
-        domain = actor.split('/u/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
-    elif '/@' in actor:
+    usersPaths = ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+    for possiblePath in usersPaths:
+        if possiblePath in actor:
+            domain = actor.split(possiblePath)[0]
+            for prefix in prefixes:
+                domain = domain.replace(prefix, '')
+            break
+    if '/@' in actor:
         domain = actor.split('/@')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
@@ -919,11 +892,8 @@ def getDomainFromActor(actor: str) -> (str, int):
         if '/' in actor:
             domain = domain.split('/')[0]
     if ':' in domain:
-        portStr = domain.split(':')[1]
-        if not portStr.isdigit():
-            return None, None
-        port = int(portStr)
-        domain = domain.split(':')[0]
+        port = getPortFromDomain(domain)
+        domain = removeDomainPort(domain)
     return domain, port
 
 
@@ -932,8 +902,7 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     userPath = baseDir + '/accounts/' + nickname + '@' + domain
     petnamesFilename = userPath + '/petnames.txt'
 
@@ -975,7 +944,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         print('DEBUG: follow of domain ' + followDomain)
 
     if ':' in domain:
-        handle = nickname + '@' + domain.split(':')[0]
+        domainOnly = removeDomainPort(domain)
+        handle = nickname + '@' + domainOnly
     else:
         handle = nickname + '@' + domain
 
@@ -984,7 +954,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         return False
 
     if ':' in followDomain:
-        handleToFollow = followNickname + '@' + followDomain.split(':')[0]
+        followDomainOnly = removeDomainPort(followDomain)
+        handleToFollow = followNickname + '@' + followDomainOnly
     else:
         handleToFollow = followNickname + '@' + followDomain
 
@@ -1189,10 +1160,6 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
         return
     if not postJson['attachment'][0].get('url'):
         return
-#    if port:
-#        if port != 80 and port != 443:
-#            if ':' not in domain:
-#                domain = domain + ':' + str(port)
     attachmentUrl = postJson['attachment'][0]['url']
     if not attachmentUrl:
         return
@@ -1487,18 +1454,18 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
     monthSeconds = int(60*60*24*30*months)
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' in account:
-                if not account.startswith('inbox@') and \
-                   not account.startswith('news@'):
-                    lastUsedFilename = \
-                        baseDir + '/accounts/' + account + '/.lastUsed'
-                    if os.path.isfile(lastUsedFilename):
-                        with open(lastUsedFilename, 'r') as lastUsedFile:
-                            lastUsed = lastUsedFile.read()
-                            if lastUsed.isdigit():
-                                timeDiff = (currTime - int(lastUsed))
-                                if timeDiff < monthSeconds:
-                                    accountCtr += 1
+            if not isAccountDir(account):
+                continue
+            lastUsedFilename = \
+                baseDir + '/accounts/' + account + '/.lastUsed'
+            if not os.path.isfile(lastUsedFilename):
+                continue
+            with open(lastUsedFilename, 'r') as lastUsedFile:
+                lastUsed = lastUsedFile.read()
+                if lastUsed.isdigit():
+                    timeDiff = (currTime - int(lastUsed))
+                    if timeDiff < monthSeconds:
+                        accountCtr += 1
         break
     return accountCtr
 
@@ -1824,13 +1791,6 @@ def getFileCaseInsensitive(path: str) -> str:
     if path != path.lower():
         if os.path.isfile(path.lower()):
             return path.lower()
-    # directory, filename = os.path.split(path)
-    # directory, filename = (directory or '.'), filename.lower()
-    # for f in os.listdir(directory):
-    #     if f.lower() == filename:
-    #         newpath = os.path.join(directory, f)
-    #         if os.path.isfile(newpath):
-    #             return newpath
     return None
 
 

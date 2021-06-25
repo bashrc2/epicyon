@@ -61,6 +61,8 @@ from tests import testUpdateActor
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
+from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import setConfigParam
@@ -1080,8 +1082,8 @@ if args.message:
         toDomain = toDomain.replace('\n', '').replace('\r', '')
         toPort = 443
         if ':' in toDomain:
-            toPort = toDomain.split(':')[1]
-            toDomain = toDomain.split(':')[0]
+            toPort = getPortFromDomain(toDomain)
+            toDomain = removeDomainPort(toDomain)
     else:
         if args.sendto.endswith('followers'):
             toNickname = None

@@ -13,7 +13,7 @@ from utils import removeHtml
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from webapp_utils import markdownToHtml
+from markdown import markdownToHtml
 
 
 def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,

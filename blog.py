@@ -16,6 +16,7 @@ from webapp_utils import htmlHeaderWithBlogMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_media import addEmbeddedElements
+from utils import isAccountDir
 from utils import removeHtml
 from utils import getConfigParam
 from utils import getFullDomain
@@ -643,11 +644,7 @@ def _noOfBlogAccounts(baseDir: str) -> int:
     ctr = 0
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if acct.startswith('inbox@'):
-                continue
-            elif acct.startswith('news@'):
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -662,11 +659,7 @@ def _singleBlogAccountNickname(baseDir: str) -> str:
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if acct.startswith('inbox@'):
-                continue
-            elif acct.startswith('news@'):
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -704,11 +697,7 @@ def htmlBlogView(authorized: bool,
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if acct.startswith('inbox@'):
-                continue
-            elif acct.startswith('news@'):
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'

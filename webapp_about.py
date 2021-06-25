@@ -12,7 +12,7 @@ from shutil import copyfile
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
-from webapp_utils import markdownToHtml
+from markdown import markdownToHtml
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,

@@ -32,6 +32,8 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from utils import hasObjectDict
 from utils import rejectPostId
 from utils import removeInvalidChars
@@ -683,8 +685,7 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
        boxname != 'scheduled':
         return None
     originalDomain = domain
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
 
     if not postId:
         statusNumber, published = getStatusNumber()
@@ -1077,6 +1078,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 'atomUri': newPostId,
                 'inReplyToAtomUri': inReplyToAtomUri,
                 'commentsEnabled': commentsEnabled,
+                'rejectReplies': not commentsEnabled,
                 'mediaType': 'text/html',
                 'content': content,
                 'contentMap': {
@@ -1128,6 +1130,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             'atomUri': newPostId,
             'inReplyToAtomUri': inReplyToAtomUri,
             'commentsEnabled': commentsEnabled,
+            'rejectReplies': not commentsEnabled,
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
@@ -1689,7 +1692,7 @@ def getMentionedPeople(baseDir: str, httpPrefix: str,
             mentionedNickname = handle.split('@')[0]
             mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
             if ':' in mentionedDomain:
-                mentionedDomain = mentionedDomain.split(':')[0]
+                mentionedDomain = removeDomainPort(mentionedDomain)
             if not validNickname(mentionedDomain, mentionedNickname):
                 continue
             actor = \
@@ -2665,8 +2668,8 @@ def sendToFollowers(session, baseDir: str,
         index = 0
         toDomain = followerHandles[index].split('@')[1]
         if ':' in toDomain:
-            toPort = toDomain.split(':')[1]
-            toDomain = toDomain.split(':')[0]
+            toPort = getPortFromDomain(toDomain)
+            toDomain = removeDomainPort(toDomain)
 
         cc = ''
 

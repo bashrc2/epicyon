@@ -20,6 +20,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
 from utils import hasObjectDict
+from domainhandler import removeDomainPort
 from media import processMetaData
 
 
@@ -187,9 +188,7 @@ def expireShares(baseDir: str) -> None:
 def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
     """Removes expired items from shares for a particular account
     """
-    handleDomain = domain
-    if ':' in handleDomain:
-        handleDomain = domain.split(':')[0]
+    handleDomain = removeDomainPort(domain)
     handle = nickname + '@' + handleDomain
     sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
     if os.path.isfile(sharesFilename):
@@ -250,9 +249,7 @@ def getSharesFeedForPerson(baseDir: str,
 
     domain = getFullDomain(domain, port)
 
-    handleDomain = domain
-    if ':' in handleDomain:
-        handleDomain = domain.split(':')[0]
+    handleDomain = removeDomainPort(domain)
     handle = nickname + '@' + handleDomain
     sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
 

@@ -16,7 +16,7 @@ from utils import getImageExtensions
 from utils import getImageFormats
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from webapp_utils import markdownToHtml
+from markdown import markdownToHtml
 
 
 def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,

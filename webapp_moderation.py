@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import isAccountDir
 from utils import getFullDomain
 from utils import isEditor
 from utils import loadJson
@@ -270,11 +271,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     accounts = []
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if acct.startswith('inbox@'):
-                continue
-            elif acct.startswith('news@'):
+            if not isAccountDir(acct):
                 continue
             accounts.append(acct)
         break

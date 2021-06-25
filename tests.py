@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Testing"
 
 import time
 import os
@@ -115,8 +116,8 @@ from newswire import parseFeedDate
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
-from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
+from markdown import markdownToHtml
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -2357,6 +2358,16 @@ def _testJsonPostAllowsComments():
     postJsonObject = {
         "id": "123",
         "commentsEnabled": False
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "rejectReplies": False
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "rejectReplies": True
     }
     assert not jsonPostAllowsComments(postJsonObject)
     postJsonObject = {

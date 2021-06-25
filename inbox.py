@@ -13,6 +13,8 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
+from domainhandler import removeDomainPort
+from domainhandler import getPortFromDomain
 from utils import hasObjectDict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
@@ -186,8 +188,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
 def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     inboxDir = baseDir + '/accounts/' + nickname + '@' + domain + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
@@ -209,8 +210,7 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
     """Used by unit tests to check that the port number gets appended to
     domain names within saved post filenames
     """
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     inboxDir = baseDir + '/accounts/' + nickname + '@' + domain + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
@@ -358,8 +358,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
               str(len(messageBytes)) + ' bytes')
         return None
     originalDomain = domain
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
 
     # block at the ealiest stage possible, which means the data
     # isn't written to file
@@ -536,8 +535,7 @@ def _inboxPostRecipients(baseDir: str, postJsonObject: {},
             print('WARNING: inbox post has no actor')
         return recipientsDict, recipientsDictFollowers
 
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     domainBase = domain
     domain = getFullDomain(domain, port)
     domainMatch = '/' + domain + '/users/'
@@ -1124,8 +1122,7 @@ def _receiveBookmark(recentPostsCache: {},
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
@@ -1200,8 +1197,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
               'request arrived in outbox')
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
@@ -1521,11 +1517,15 @@ def jsonPostAllowsComments(postJsonObject: {}) -> bool:
     """
     if 'commentsEnabled' in postJsonObject:
         return postJsonObject['commentsEnabled']
+    if 'rejectReplies' in postJsonObject:
+        return not postJsonObject['rejectReplies']
     if postJsonObject.get('object'):
         if not hasObjectDict(postJsonObject):
             return False
         elif 'commentsEnabled' in postJsonObject['object']:
             return postJsonObject['object']['commentsEnabled']
+        elif 'rejectReplies' in postJsonObject['object']:
+            return not postJsonObject['object']['rejectReplies']
     return True
 
 
@@ -1580,24 +1580,6 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
             print('DEBUG: post may have expired - ' + replyTo)
         return False
 
-# TODO store replies collection
-#    replyItem = {
-#        "type": "Document",
-#        "url": replyTo
-#    }
-#    if not messageJson['object'].get('replies'):
-#        messageJson['object']['replies'] = {
-#            "items": [replyItem]
-#        }
-#    else:
-#        found = False
-#        for item in messageJson['object']['replies']['items']:
-#            if item['url'] == replyTo:
-#                found = True
-#                break
-#        if not found:
-#            messageJson['object']['replies']['items'].append(replyItem)
-#
     if not _postAllowsComments(postFilename):
         if debug:
             print('DEBUG: post does not allow comments - ' + replyTo)
@@ -1975,8 +1957,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     # set subject
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary'] = 'General Discussion'
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     with open(followersFile, 'r') as groupMembers:
         for memberHandle in groupMembers:
             if memberHandle != handle:
@@ -1984,10 +1965,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                 memberDomain = memberHandle.split('@')[1]
                 memberPort = port
                 if ':' in memberDomain:
-                    memberPortStr = memberDomain.split(':')[1]
-                    if memberPortStr.isdigit():
-                        memberPort = int(memberPortStr)
-                    memberDomain = memberDomain.split(':')[0]
+                    memberPort = getPortFromDomain(memberDomain)
+                    memberDomain = removeDomainPort(memberDomain)
                 sendSignedJson(postJsonObject, session, baseDir,
                                nickname, domain, port,
                                memberNickname, memberDomain, memberPort, cc,
@@ -2078,8 +2057,7 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
         return
     nickname = handle.split('@')[0]
     domain = handle.split('@')[1]
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     accountPath = baseDir + '/accounts/' + nickname + '@' + domain
     if not os.path.isdir(accountPath):
         return
@@ -2130,10 +2108,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
     if ':' in senderDomain:
-        senderPortStr = senderDomain.split(':')[1]
-        if senderPortStr.isdigit():
-            senderPort = int(senderPortStr)
-            senderDomain = senderDomain.split(':')[0]
+        senderPort = getPortFromDomain(senderDomain)
+        senderDomain = removeDomainPort(senderDomain)
     cc = []
 
     # create the bounce DM

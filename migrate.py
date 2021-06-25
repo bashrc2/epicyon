@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+from utils import isAccountDir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from webfinger import webfingerHandle
@@ -186,11 +187,7 @@ def migrateAccounts(baseDir: str, session,
     ctr = 0
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
-                continue
-            if handle.startswith('inbox@'):
-                continue
-            if handle.startswith('news@'):
+            if not isAccountDir(handle):
                 continue
             nickname = handle.split('@')[0]
             domain = handle.split('@')[1]
