@@ -139,8 +139,8 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
-from webapp_utils import setMinimal
-from webapp_utils import isMinimal
+from webapp_minimalbutton import setMinimal
+from webapp_minimalbutton import isMinimal
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
