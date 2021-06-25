@@ -17,7 +17,7 @@ from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
-from webapp_utils import markdownToHtml
+from markdown import markdownToHtml
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlPostSeparator

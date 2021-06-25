@@ -115,8 +115,8 @@ from newswire import parseFeedDate
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
-from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
+from markdown import markdownToHtml
 
 testServerAliceRunning = False
 testServerBobRunning = False

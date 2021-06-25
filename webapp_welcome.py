@@ -13,7 +13,7 @@ from utils import getConfigParam
 from utils import removeHtml
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from webapp_utils import markdownToHtml
+from markdown import markdownToHtml
 
 
 def isWelcomeScreenComplete(baseDir: str, nickname: str, domain: str) -> bool:
