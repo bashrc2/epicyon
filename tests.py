@@ -2361,6 +2361,16 @@ def _testJsonPostAllowsComments():
     assert not jsonPostAllowsComments(postJsonObject)
     postJsonObject = {
         "id": "123",
+        "rejectReplies": False
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "rejectReplies": True
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
         "commentsEnabled": True
     }
     assert jsonPostAllowsComments(postJsonObject)

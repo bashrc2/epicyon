@@ -1159,10 +1159,6 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
         return
     if not postJson['attachment'][0].get('url'):
         return
-#    if port:
-#        if port != 80 and port != 443:
-#            if ':' not in domain:
-#                domain = domain + ':' + str(port)
     attachmentUrl = postJson['attachment'][0]['url']
     if not attachmentUrl:
         return
@@ -1457,18 +1453,21 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
     monthSeconds = int(60*60*24*30*months)
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' in account:
-                if not account.startswith('inbox@') and \
-                   not account.startswith('news@'):
-                    lastUsedFilename = \
-                        baseDir + '/accounts/' + account + '/.lastUsed'
-                    if os.path.isfile(lastUsedFilename):
-                        with open(lastUsedFilename, 'r') as lastUsedFile:
-                            lastUsed = lastUsedFile.read()
-                            if lastUsed.isdigit():
-                                timeDiff = (currTime - int(lastUsed))
-                                if timeDiff < monthSeconds:
-                                    accountCtr += 1
+            if '@' not in account:
+                continue
+            if account.startswith('inbox@') or \
+               account.startswith('news@'):
+                continue
+            lastUsedFilename = \
+                baseDir + '/accounts/' + account + '/.lastUsed'
+            if not os.path.isfile(lastUsedFilename):
+                continue
+            with open(lastUsedFilename, 'r') as lastUsedFile:
+                lastUsed = lastUsedFile.read()
+                if lastUsed.isdigit():
+                    timeDiff = (currTime - int(lastUsed))
+                    if timeDiff < monthSeconds:
+                        accountCtr += 1
         break
     return accountCtr
 
@@ -1794,13 +1793,6 @@ def getFileCaseInsensitive(path: str) -> str:
     if path != path.lower():
         if os.path.isfile(path.lower()):
             return path.lower()
-    # directory, filename = os.path.split(path)
-    # directory, filename = (directory or '.'), filename.lower()
-    # for f in os.listdir(directory):
-    #     if f.lower() == filename:
-    #         newpath = os.path.join(directory, f)
-    #         if os.path.isfile(newpath):
-    #             return newpath
     return None
 
 

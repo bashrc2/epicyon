@@ -1401,6 +1401,9 @@ def individualPostAsHtml(allowDownloads: bool,
     if 'commentsEnabled' in postJsonObject['object']:
         if postJsonObject['object']['commentsEnabled'] is False:
             commentsEnabled = False
+        elif 'rejectReplies' in postJsonObject['object']:
+            if postJsonObject['object']['rejectReplies']:
+                commentsEnabled = False
 
     replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
                                  showIcons, commentsEnabled,

@@ -1517,11 +1517,15 @@ def jsonPostAllowsComments(postJsonObject: {}) -> bool:
     """
     if 'commentsEnabled' in postJsonObject:
         return postJsonObject['commentsEnabled']
+    if 'rejectReplies' in postJsonObject:
+        return not postJsonObject['rejectReplies']
     if postJsonObject.get('object'):
         if not hasObjectDict(postJsonObject):
             return False
         elif 'commentsEnabled' in postJsonObject['object']:
             return postJsonObject['object']['commentsEnabled']
+        elif 'rejectReplies' in postJsonObject['object']:
+            return not postJsonObject['object']['rejectReplies']
     return True
 
 
@@ -1576,24 +1580,6 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
             print('DEBUG: post may have expired - ' + replyTo)
         return False
 
-# TODO store replies collection
-#    replyItem = {
-#        "type": "Document",
-#        "url": replyTo
-#    }
-#    if not messageJson['object'].get('replies'):
-#        messageJson['object']['replies'] = {
-#            "items": [replyItem]
-#        }
-#    else:
-#        found = False
-#        for item in messageJson['object']['replies']['items']:
-#            if item['url'] == replyTo:
-#                found = True
-#                break
-#        if not found:
-#            messageJson['object']['replies']['items'].append(replyItem)
-#
     if not _postAllowsComments(postFilename):
         if debug:
             print('DEBUG: post does not allow comments - ' + replyTo)
