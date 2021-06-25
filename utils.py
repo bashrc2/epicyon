@@ -5,7 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
-__module_group__ = "Core"
+__module_group__ = "ActivityPu"
 
 import os
 import re
@@ -1454,10 +1454,7 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
     monthSeconds = int(60*60*24*30*months)
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' not in account:
-                continue
-            if account.startswith('inbox@') or \
-               account.startswith('news@'):
+            if not isAccountDir(account):
                 continue
             lastUsedFilename = \
                 baseDir + '/accounts/' + account + '/.lastUsed'

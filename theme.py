@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import isAccountDir
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
@@ -623,11 +624,7 @@ def _setThemeImages(baseDir: str, name: str) -> None:
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if acct.startswith('inbox@'):
-                continue
-            elif acct.startswith('news@'):
+            if not isAccountDir(acct):
                 continue
             accountDir = \
                 os.path.join(baseDir + '/accounts', acct)
