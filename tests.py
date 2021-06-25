@@ -3960,8 +3960,6 @@ def _testUserAgentDomain() -> None:
 
 def runAllTests():
     print('Running tests...')
-    _testFunctions()
-    return
     updateDefaultThemesList(os.getcwd())
     _testFunctions()
     _testUserAgentDomain()
