@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Testing"
 
 import time
 import os
@@ -3959,6 +3960,8 @@ def _testUserAgentDomain() -> None:
 
 def runAllTests():
     print('Running tests...')
+    _testFunctions()
+    return
     updateDefaultThemesList(os.getcwd())
     _testFunctions()
     _testUserAgentDomain()
