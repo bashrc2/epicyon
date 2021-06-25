@@ -16,10 +16,10 @@ from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
 from utils import getConfigParam
-from cache import getPersonFromCache
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
+from person import getPersonAvatarUrl
 
 
 def _markdownEmphasisHtml(markdown: str) -> str:
@@ -531,34 +531,6 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                                       allowDownloads)
         return None
     return avatarImageFilename.replace(baseDir + '/cache', '')
-
-
-def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
-                       allowDownloads: bool) -> str:
-    """Returns the avatar url for the person
-    """
-    personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
-    if not personJson:
-        return None
-
-    # get from locally stored image
-    if not personJson.get('id'):
-        return None
-    actorStr = personJson['id'].replace('/', '-')
-    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
-
-    imageExtension = getImageExtensions()
-    for ext in imageExtension:
-        if os.path.isfile(avatarImagePath + '.' + ext):
-            return '/avatars/' + actorStr + '.' + ext
-        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
-            return '/avatars/' + actorStr.lower() + '.' + ext
-
-    if personJson.get('icon'):
-        if personJson['icon'].get('url'):
-            return personJson['icon']['url']
-    return None
 
 
 def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:

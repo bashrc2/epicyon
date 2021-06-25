@@ -26,6 +26,7 @@ from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson
 from person import getActorJson
+from person import getPersonAvatarUrl
 from webfinger import webfingerHandle
 from posts import parseUserFeed
 from posts import getPersonBox
@@ -45,7 +46,6 @@ from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import scheduledPostsExist
-from webapp_utils import getPersonAvatarUrl
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlHeaderWithPersonMarkup
 from webapp_utils import htmlFooter

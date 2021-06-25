@@ -52,9 +52,9 @@ from content import removeLongWords
 from content import getMentionsFromHtml
 from content import switchWords
 from person import isPersonSnoozed
+from person import getPersonAvatarUrl
 from announce import announcedByPerson
 from webapp_utils import getAvatarImageUrl
-from webapp_utils import getPersonAvatarUrl
 from webapp_utils import updateAvatarImageCache
 from webapp_utils import loadIndividualPostAsHtmlFromCache
 from webapp_utils import addEmojiToDisplayName

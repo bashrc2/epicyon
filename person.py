@@ -49,10 +49,12 @@ from utils import getConfigParam
 from utils import refreshNewswire
 from utils import getProtocolPrefixes
 from utils import hasUsersPath
+from utils import getImageExtensions
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
 from pprint import pprint
+from cache import getPersonFromCache
 
 
 def generateRSAKey() -> (str, str):
@@ -1347,3 +1349,31 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                 pprint(personJson)
             return personJson, asHeader
     return None, None
+
+
+def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
+                       allowDownloads: bool) -> str:
+    """Returns the avatar url for the person
+    """
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
+    if not personJson:
+        return None
+
+    # get from locally stored image
+    if not personJson.get('id'):
+        return None
+    actorStr = personJson['id'].replace('/', '-')
+    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
+
+    imageExtension = getImageExtensions()
+    for ext in imageExtension:
+        if os.path.isfile(avatarImagePath + '.' + ext):
+            return '/avatars/' + actorStr + '.' + ext
+        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
+            return '/avatars/' + actorStr.lower() + '.' + ext
+
+    if personJson.get('icon'):
+        if personJson['icon'].get('url'):
+            return personJson['icon']['url']
+    return None
