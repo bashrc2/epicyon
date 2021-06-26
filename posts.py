@@ -852,6 +852,30 @@ def _addAutoCW(baseDir: str, nickname: str, domain: str,
     return newSubject
 
 
+def _createPostCWFromReply(baseDir: str, nickname: str, domain: str,
+                           inReplyTo: str,
+                           sensitive: bool, summary: str) -> (bool, str):
+    """If this is a reply and the original post has a CW
+    then use the same CW
+    """
+    if inReplyTo and not sensitive:
+        # locate the post which this is a reply to and check if
+        # it has a content warning. If it does then reproduce
+        # the same warning
+        replyPostFilename = \
+            locatePost(baseDir, nickname, domain, inReplyTo)
+        if replyPostFilename:
+            replyToJson = loadJson(replyPostFilename)
+            if replyToJson:
+                if replyToJson.get('object'):
+                    if replyToJson['object'].get('sensitive'):
+                        if replyToJson['object']['sensitive']:
+                            sensitive = True
+                            if replyToJson['object'].get('summary'):
+                                summary = replyToJson['object']['summary']
+    return sensitive, summary
+
+
 def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                     followersOnly: bool, saveToFile: bool,
@@ -952,21 +976,9 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 _updateHashtagsIndex(baseDir, tag, newPostId)
         # print('Content tags: ' + str(tags))
 
-    if inReplyTo and not sensitive:
-        # locate the post which this is a reply to and check if
-        # it has a content warning. If it does then reproduce
-        # the same warning
-        replyPostFilename = \
-            locatePost(baseDir, nickname, domain, inReplyTo)
-        if replyPostFilename:
-            replyToJson = loadJson(replyPostFilename)
-            if replyToJson:
-                if replyToJson.get('object'):
-                    if replyToJson['object'].get('sensitive'):
-                        if replyToJson['object']['sensitive']:
-                            sensitive = True
-                            if replyToJson['object'].get('summary'):
-                                summary = replyToJson['object']['summary']
+    sensitive, summary = \
+        _createPostCWFromReply(baseDir, nickname, domain,
+                               inReplyTo, sensitive, summary)
 
     # get the ending date and time
     endDateStr = None

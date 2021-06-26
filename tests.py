@@ -3016,6 +3016,7 @@ def _testFunctions():
                     if not line.strip().startswith('def '):
                         if lineCount > 0:
                             lineCount += 1
+                        # add LOC count for this function
                         if len(prevLine.strip()) == 0 and \
                            len(line.strip()) == 0 and \
                            lineCount > 2:
@@ -3051,6 +3052,19 @@ def _testFunctions():
                         "module": modName,
                         "calledInModule": []
                     }
+                # LOC count for the last function
+                if lineCount > 2:
+                    lineCount -= 2
+                    if lineCount > 80:
+                        locStr = str(lineCount) + ';' + methodName
+                        if lineCount < 1000:
+                            locStr = '0' + locStr
+                        if lineCount < 100:
+                            locStr = '0' + locStr
+                        if lineCount < 10:
+                            locStr = '0' + locStr
+                        if locStr not in methodLOC:
+                            methodLOC.append(locStr)
         break
 
     print('LOC counts:')
