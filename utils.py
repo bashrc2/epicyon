@@ -16,8 +16,6 @@ import json
 import idna
 import locale
 from pprint import pprint
-from domainhandler import removeDomainPort
-from domainhandler import getPortFromDomain
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -2453,3 +2451,27 @@ def getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
             continue
         return propertyValue['value']
     return ''
+
+
+def removeDomainPort(domain: str) -> str:
+    """If the domain has a port appended then remove it
+    eg. mydomain.com:80 becomes mydomain.com
+    """
+    if ':' in domain:
+        if domain.startswith('did:'):
+            return domain
+        domain = domain.split(':')[0]
+    return domain
+
+
+def getPortFromDomain(domain: str) -> int:
+    """If the domain has a port number appended then return it
+    eg. mydomain.com:80 returns 80
+    """
+    if ':' in domain:
+        if domain.startswith('did:'):
+            return None
+        portStr = domain.split(':')[1]
+        if portStr.isdigit():
+            return int(portStr)
+    return None

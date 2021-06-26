@@ -32,8 +32,8 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
-from domainhandler import removeDomainPort
-from domainhandler import getPortFromDomain
+from utils import removeDomainPort
+from utils import getPortFromDomain
 from utils import hasObjectDict
 from utils import rejectPostId
 from utils import removeInvalidChars

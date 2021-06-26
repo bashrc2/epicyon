@@ -61,8 +61,8 @@ from tests import testUpdateActor
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
-from domainhandler import removeDomainPort
-from domainhandler import getPortFromDomain
+from utils import removeDomainPort
+from utils import getPortFromDomain
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import setConfigParam

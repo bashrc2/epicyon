@@ -13,8 +13,8 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
-from domainhandler import removeDomainPort
-from domainhandler import getPortFromDomain
+from utils import removeDomainPort
+from utils import getPortFromDomain
 from utils import hasObjectDict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost

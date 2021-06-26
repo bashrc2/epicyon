@@ -17,7 +17,7 @@ from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import isEditor
 from utils import getConfigParam
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle

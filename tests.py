@@ -2900,6 +2900,7 @@ def _moduleInGroups(modName: str, includeGroups: [], modGroups: {}) -> bool:
 
 
 def _diagramGroups(includeGroups: [],
+                   excludeExtraModules: [],
                    modules: {}, modGroups: {},
                    maxModuleCalls: int) -> None:
     """Draws a dot diagram containing only the given module groups
@@ -2907,9 +2908,10 @@ def _diagramGroups(includeGroups: [],
     callGraphStr = 'digraph EpicyonGroups {\n\n'
     callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
     callGraphStr += '  node [fontsize=10 fontname="Verdana"];\n\n'
-    excludeModulesFromDiagram = (
+    excludeModulesFromDiagram = [
         'setup', 'tests', '__init__'
-    )
+    ]
+    excludeModulesFromDiagram += excludeExtraModules
     # colors of modules nodes
     for modName, modProperties in modules.items():
         if modName in excludeModulesFromDiagram:
@@ -3223,15 +3225,21 @@ def _testFunctions():
                             modules[modName]['calls'] = [modCall]
             lineCtr += 1
 
-    _diagramGroups(['Commandline Interface', 'ActivityPub', 'Core'],
+    _diagramGroups(['Commandline Interface', 'ActivityPub'], ['utils'],
                    modules, modGroups, maxModuleCalls)
-    _diagramGroups(['Timeline', 'Core'],
+    _diagramGroups(['Commandline Interface', 'Core'], ['utils'],
                    modules, modGroups, maxModuleCalls)
-    _diagramGroups(['Web Interface', 'Core'],
+    _diagramGroups(['Timeline', 'Core'], ['utils'],
                    modules, modGroups, maxModuleCalls)
-    _diagramGroups(['Web Interface Columns', 'Core'],
+    _diagramGroups(['Web Interface', 'Core'], ['utils'],
                    modules, modGroups, maxModuleCalls)
-    _diagramGroups(['Core'],
+    _diagramGroups(['Web Interface Columns', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core'], [],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub'], [],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub', 'Core'], ['utils'],
                    modules, modGroups, maxModuleCalls)
 
     callGraphStr = 'digraph Epicyon {\n\n'

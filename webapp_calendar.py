@@ -19,7 +19,7 @@ from utils import locatePost
 from utils import loadJson
 from utils import weekDayOfMonthStart
 from utils import getAltPath
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle

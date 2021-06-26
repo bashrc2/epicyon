@@ -17,7 +17,7 @@ from utils import loadJson
 from utils import loadJsonOnionify
 from utils import saveJson
 from utils import getProtocolPrefixes
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 
 
 def _parseHandle(handle: str) -> (str, str):

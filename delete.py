@@ -9,7 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding

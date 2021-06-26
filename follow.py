@@ -9,7 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain

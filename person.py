@@ -38,7 +38,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from utils import getStatusNumber
 from utils import getFullDomain
 from utils import validNickname

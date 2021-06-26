@@ -7,7 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain

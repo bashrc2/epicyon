@@ -20,7 +20,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
 from utils import hasObjectDict
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from media import processMetaData
 
 
