@@ -8,7 +8,18 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
-from domainhandler import removeDomainPort
+
+
+def _portDomainRemove(domain: str) -> str:
+    """If the domain has a port appended then remove it
+    eg. mydomain.com:80 becomes mydomain.com
+    same as removeDomainPort in utils.py
+    """
+    if ':' in domain:
+        if domain.startswith('did:'):
+            return domain
+        domain = domain.split(':')[0]
+    return domain
 
 
 def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
@@ -44,7 +55,7 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     indicating whether to receive calendar events from that account
     """
     # check that a following file exists
-    domain = removeDomainPort(domain)
+    domain = _portDomainRemove(domain)
     followingFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/following.txt'
     if not os.path.isfile(followingFilename):

@@ -2890,6 +2890,91 @@ def _functionArgsMatch(callArgs: [], funcArgs: []):
     return callArgsCtr >= funcArgsCtr
 
 
+def _moduleInGroups(modName: str, includeGroups: [], modGroups: {}) -> bool:
+    """Is the given module within the included groups list?
+    """
+    for groupName in includeGroups:
+        if modName in modGroups[groupName]:
+            return True
+    return False
+
+
+def _diagramGroups(includeGroups: [],
+                   excludeExtraModules: [],
+                   modules: {}, modGroups: {},
+                   maxModuleCalls: int) -> None:
+    """Draws a dot diagram containing only the given module groups
+    """
+    callGraphStr = 'digraph EpicyonGroups {\n\n'
+    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    callGraphStr += '  node [fontsize=10 fontname="Verdana"];\n\n'
+    excludeModulesFromDiagram = [
+        'setup', 'tests', '__init__', 'pyjsonld'
+    ]
+    excludeModulesFromDiagram += excludeExtraModules
+    # colors of modules nodes
+    for modName, modProperties in modules.items():
+        if modName in excludeModulesFromDiagram:
+            continue
+        if not _moduleInGroups(modName, includeGroups, modGroups):
+            continue
+        if not modProperties.get('calls'):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=yellow style=filled];\n'
+            continue
+        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=green style=filled];\n'
+        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=orange style=filled];\n'
+        else:
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=red style=filled];\n'
+    callGraphStr += '\n'
+    # connections between modules
+    for modName, modProperties in modules.items():
+        if modName in excludeModulesFromDiagram:
+            continue
+        if not _moduleInGroups(modName, includeGroups, modGroups):
+            continue
+        if not modProperties.get('calls'):
+            continue
+        for modCall in modProperties['calls']:
+            if modCall in excludeModulesFromDiagram:
+                continue
+            if not _moduleInGroups(modCall, includeGroups, modGroups):
+                continue
+            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
+    # module groups/clusters
+    clusterCtr = 1
+    for groupName, groupModules in modGroups.items():
+        if groupName not in includeGroups:
+            continue
+        callGraphStr += '\n'
+        callGraphStr += \
+            '  subgraph cluster_' + str(clusterCtr) + ' {\n'
+        callGraphStr += '    node [style=filled];\n'
+        for modName in groupModules:
+            if modName not in excludeModulesFromDiagram:
+                callGraphStr += '    ' + modName + ';\n'
+        callGraphStr += '    label = "' + groupName + '";\n'
+        callGraphStr += '    color = blue;\n'
+        callGraphStr += '  }\n'
+        clusterCtr += 1
+    callGraphStr += '\n}\n'
+    filename = 'epicyon_groups'
+    for groupName in includeGroups:
+        filename += '_' + groupName.replace(' ', '-')
+    filename += '.dot'
+    with open(filename, 'w+') as fp:
+        fp.write(callGraphStr)
+        print('Graph saved to ' + filename)
+        print('Plot using: ' +
+              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
+              '-Gsep=+100 -Tx11 epicyon_modules.dot')
+
+
 def _testFunctions():
     print('testFunctions')
     function = {}
@@ -3139,51 +3224,29 @@ def _testFunctions():
                         else:
                             modules[modName]['calls'] = [modCall]
             lineCtr += 1
-    callGraphStr = 'digraph EpicyonModules {\n\n'
-    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
-    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
-    # colors of modules nodes
-    for modName, modProperties in modules.items():
-        if not modProperties.get('calls'):
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=yellow style=filled];\n'
-            continue
-        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=green style=filled];\n'
-        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=orange style=filled];\n'
-        else:
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=red style=filled];\n'
-    callGraphStr += '\n'
-    # connections between modules
-    for modName, modProperties in modules.items():
-        if not modProperties.get('calls'):
-            continue
-        for modCall in modProperties['calls']:
-            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
-    # module groups/clusters
-    clusterCtr = 1
-    for groupName, groupModules in modGroups.items():
-        callGraphStr += '\n'
-        callGraphStr += \
-            '  subgraph cluster_' + str(clusterCtr) + ' {\n'
-        callGraphStr += '    node [style=filled];\n'
-        for modName in groupModules:
-            callGraphStr += '    ' + modName + ';\n'
-        callGraphStr += '    label = "' + groupName + '";\n'
-        callGraphStr += '    color = blue;\n'
-        callGraphStr += '  }\n'
-        clusterCtr += 1
-    callGraphStr += '\n}\n'
-    with open('epicyon_modules.dot', 'w+') as fp:
-        fp.write(callGraphStr)
-        print('Modules call graph saved to epicyon_modules.dot')
-        print('Plot using: ' +
-              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
-              '-Gsep=+100 -Tx11 epicyon_modules.dot')
+
+    _diagramGroups(['Commandline Interface', 'ActivityPub'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Commandline Interface', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Timeline', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Web Interface', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Web Interface Columns', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core'], [],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub'], [],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Timeline', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
 
     callGraphStr = 'digraph Epicyon {\n\n'
     callGraphStr += '  size="8,6"; ratio=fill;\n'

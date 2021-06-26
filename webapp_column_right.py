@@ -5,7 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
-__module_group__ = "Web Interface"
+__module_group__ = "Web Interface Columns"
 
 import os
 from datetime import datetime
@@ -17,7 +17,7 @@ from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import isEditor
 from utils import getConfigParam
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle

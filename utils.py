@@ -5,7 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
-__module_group__ = "ActivityPu"
+__module_group__ = "Core"
 
 import os
 import re
@@ -16,8 +16,6 @@ import json
 import idna
 import locale
 from pprint import pprint
-from domainhandler import removeDomainPort
-from domainhandler import getPortFromDomain
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -2403,3 +2401,77 @@ def hasObjectDict(postJsonObject: {}) -> bool:
         if isinstance(postJsonObject['object'], dict):
             return True
     return False
+
+
+def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
+    """Returns alternate path from the actor
+    eg. https://clearnetdomain/path becomes http://oniondomain/path
+    """
+    postActor = actor
+    if callingDomain not in actor and domainFull in actor:
+        if callingDomain.endswith('.onion') or \
+           callingDomain.endswith('.i2p'):
+            postActor = \
+                'http://' + callingDomain + actor.split(domainFull)[1]
+            print('Changed POST domain from ' + actor + ' to ' + postActor)
+    return postActor
+
+
+def getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
+    """Returns a url property from an actor
+    """
+    if not actorJson.get('attachment'):
+        return ''
+    propertyName = propertyName.lower()
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue['name'].lower().startswith(propertyName):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        propertyValue['value'] = propertyValue['value'].strip()
+        prefixes = getProtocolPrefixes()
+        prefixFound = False
+        for prefix in prefixes:
+            if propertyValue['value'].startswith(prefix):
+                prefixFound = True
+                break
+        if not prefixFound:
+            continue
+        if '.' not in propertyValue['value']:
+            continue
+        if ' ' in propertyValue['value']:
+            continue
+        if ',' in propertyValue['value']:
+            continue
+        return propertyValue['value']
+    return ''
+
+
+def removeDomainPort(domain: str) -> str:
+    """If the domain has a port appended then remove it
+    eg. mydomain.com:80 becomes mydomain.com
+    """
+    if ':' in domain:
+        if domain.startswith('did:'):
+            return domain
+        domain = domain.split(':')[0]
+    return domain
+
+
+def getPortFromDomain(domain: str) -> int:
+    """If the domain has a port number appended then return it
+    eg. mydomain.com:80 returns 80
+    """
+    if ':' in domain:
+        if domain.startswith('did:'):
+            return None
+        portStr = domain.split(':')[1]
+        if portStr.isdigit():
+            return int(portStr)
+    return None

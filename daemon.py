@@ -140,13 +140,13 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from blog import getBlogAddress
 from webapp_minimalbutton import setMinimal
 from webapp_minimalbutton import isMinimal
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
 from webapp_utils import setBlogAddress
-from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout

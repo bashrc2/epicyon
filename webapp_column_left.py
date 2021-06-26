@@ -5,13 +5,13 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
-__module_group__ = "Web Interface"
+__module_group__ = "Web Interface Columns"
 
 import os
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile

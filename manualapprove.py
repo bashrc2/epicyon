@@ -12,8 +12,8 @@ from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
 from utils import loadJson
-from domainhandler import removeDomainPort
-from domainhandler import getPortFromDomain
+from utils import removeDomainPort
+from utils import getPortFromDomain
 
 
 def manualDenyFollowRequest(session, baseDir: str,

@@ -11,7 +11,7 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import getImageExtensions
 from utils import loadJson

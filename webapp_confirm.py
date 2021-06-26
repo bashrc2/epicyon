@@ -15,7 +15,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import getConfigParam
-from webapp_utils import getAltPath
+from utils import getAltPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml

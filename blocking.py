@@ -11,7 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import isAccountDir
 from utils import getCachedPostFilename

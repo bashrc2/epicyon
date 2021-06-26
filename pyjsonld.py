@@ -15,7 +15,7 @@ JSON-LD.
 __copyright__ = 'Copyright (c) 2011-2014 Digital Bazaar, Inc.'
 __license__ = 'New BSD license'
 __version__ = '0.6.8'
-__module_group__ = "ActivityPub"
+__module_group__ = "Security"
 
 __all__ = [
     'compact', 'expand', 'flatten', 'frame', 'link', 'from_rdf', 'to_rdf',

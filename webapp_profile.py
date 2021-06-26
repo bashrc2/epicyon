@@ -52,7 +52,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
-from webapp_utils import getBlogAddress
+from blog import getBlogAddress
 from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
 

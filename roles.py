@@ -5,12 +5,13 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Profile Metadata"
 
 import os
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
-from domainhandler import removeDomainPort
+from utils import removeDomainPort
 
 
 def _clearRoleStatus(baseDir: str, role: str) -> None:
