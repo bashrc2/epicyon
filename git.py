@@ -5,7 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
-__module_group__ = "Core"
+__module_group__ = "Profile Metadata"
 
 import os
 import html

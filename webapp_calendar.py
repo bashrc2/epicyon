@@ -18,12 +18,12 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import weekDayOfMonthStart
+from utils import getAltPath
 from domainhandler import removeDomainPort
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from webapp_utils import getAltPath
 from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlKeyboardNavigation
 

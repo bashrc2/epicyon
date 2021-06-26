@@ -26,6 +26,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import firstParagraphFromString
+from utils import getActorPropertyUrl
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
@@ -884,3 +885,9 @@ def pathContainsBlogLink(baseDir: str,
     messageId = httpPrefix + '://' + domainFull + \
         '/users/' + nickname + '/statuses/' + userEnding2[1]
     return locatePost(baseDir, nickname, domain, messageId), nickname
+
+
+def getBlogAddress(actorJson: {}) -> str:
+    """Returns blog address for the given actor
+    """
+    return getActorPropertyUrl(actorJson, 'Blog')

@@ -150,20 +150,6 @@ def headerButtonsFrontScreen(translate: {},
     return headerStr
 
 
-def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
-    """Returns alternate path from the actor
-    eg. https://clearnetdomain/path becomes http://oniondomain/path
-    """
-    postActor = actor
-    if callingDomain not in actor and domainFull in actor:
-        if callingDomain.endswith('.onion') or \
-           callingDomain.endswith('.i2p'):
-            postActor = \
-                'http://' + callingDomain + actor.split(domainFull)[1]
-            print('Changed POST domain from ' + actor + ' to ' + postActor)
-    return postActor
-
-
 def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
@@ -172,48 +158,6 @@ def getContentWarningButton(postID: str, translate: {},
         translate['SHOW MORE'] + '</summary>' + \
         '<div id="' + postID + '">' + content + \
         '</div></details>\n'
-
-
-def _getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
-    """Returns a url property from an actor
-    """
-    if not actorJson.get('attachment'):
-        return ''
-    propertyName = propertyName.lower()
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
-            continue
-        if not propertyValue['name'].lower().startswith(propertyName):
-            continue
-        if not propertyValue.get('type'):
-            continue
-        if not propertyValue.get('value'):
-            continue
-        if propertyValue['type'] != 'PropertyValue':
-            continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        prefixes = getProtocolPrefixes()
-        prefixFound = False
-        for prefix in prefixes:
-            if propertyValue['value'].startswith(prefix):
-                prefixFound = True
-                break
-        if not prefixFound:
-            continue
-        if '.' not in propertyValue['value']:
-            continue
-        if ' ' in propertyValue['value']:
-            continue
-        if ',' in propertyValue['value']:
-            continue
-        return propertyValue['value']
-    return ''
-
-
-def getBlogAddress(actorJson: {}) -> str:
-    """Returns blog address for the given actor
-    """
-    return _getActorPropertyUrl(actorJson, 'Blog')
 
 
 def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
