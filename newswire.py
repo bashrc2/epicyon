@@ -5,7 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
-__module_group__ = "RSS Feeds"
+__module_group__ = "Web Interface Columns"
 
 import os
 import json
