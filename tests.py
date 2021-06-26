@@ -2909,7 +2909,7 @@ def _diagramGroups(includeGroups: [],
     callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
     callGraphStr += '  node [fontsize=10 fontname="Verdana"];\n\n'
     excludeModulesFromDiagram = [
-        'setup', 'tests', '__init__'
+        'setup', 'tests', '__init__', 'pyjsonld'
     ]
     excludeModulesFromDiagram += excludeExtraModules
     # colors of modules nodes
@@ -3240,6 +3240,12 @@ def _testFunctions():
     _diagramGroups(['ActivityPub'], [],
                    modules, modGroups, maxModuleCalls)
     _diagramGroups(['ActivityPub', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Timeline', 'Security'], ['utils'],
                    modules, modGroups, maxModuleCalls)
 
     callGraphStr = 'digraph Epicyon {\n\n'
