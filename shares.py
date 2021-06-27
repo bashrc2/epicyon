@@ -72,6 +72,27 @@ def removeShare(baseDir: str, nickname: str, domain: str,
               '" does not exist in ' + sharesFilename)
 
 
+def _addShareDurationSec(duration: str, published: str) -> int:
+    """Returns the duration for the shared item in seconds
+    """
+    if ' ' not in duration:
+        return 0
+    durationList = duration.split(' ')
+    if not durationList[0].isdigit():
+        return 0
+    if 'hour' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60)
+    if 'day' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24)
+    if 'week' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24 * 7)
+    if 'month' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24 * 30)
+    if 'year' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24 * 365)
+    return 0
+
+
 def addShare(baseDir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
@@ -86,24 +107,8 @@ def addShare(baseDir: str,
         sharesJson = loadJson(sharesFilename)
 
     duration = duration.lower()
-    durationSec = 0
     published = int(time.time())
-    if ' ' in duration:
-        durationList = duration.split(' ')
-        if durationList[0].isdigit():
-            if 'hour' in durationList[1]:
-                durationSec = published + (int(durationList[0]) * 60 * 60)
-            if 'day' in durationList[1]:
-                durationSec = published + (int(durationList[0]) * 60 * 60 * 24)
-            if 'week' in durationList[1]:
-                durationSec = \
-                    published + (int(durationList[0]) * 60 * 60 * 24 * 7)
-            if 'month' in durationList[1]:
-                durationSec = \
-                    published + (int(durationList[0]) * 60 * 60 * 24 * 30)
-            if 'year' in durationList[1]:
-                durationSec = \
-                    published + (int(durationList[0]) * 60 * 60 * 24 * 365)
+    durationSec = _addShareDurationSec(duration, published)
 
     itemID = getValidSharedItemID(displayName)
 

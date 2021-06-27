@@ -1,22 +1,24 @@
-# Roadman
+# Roadmap
 
 ## UX
- * Change animation on buttons (themeable?)
+ * Minimize button shows different icons or highlighting
+ * Layout of buttons on person options screen
 
-## Teams
+## Groups
 
- * Test groups
+ * Unit test for group creation
  * Groups can be defined as having particular roles/skills
- * Templates for different group organizations
 
-## Events
+## Questions
 
- * Events timeline
- * Events appear on calendar
- * Check compatibility with Mobilizon
+ * Still not implemented ideally
+ * Instance-only questions
+ * Active polls screen?
+ * Questions more integrated into overall organization
 
 ## Code
 
- * Modularize daemon
- * Move modules out of the daemon
- * Make comment notes linking daemon functions to webinterface
+ * More unit test coverage
+ * Break up large functions into smaller ones
+ * Architecture diagrams
+ * Code documentation?
