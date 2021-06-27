@@ -1651,6 +1651,88 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     return editProfileForm
 
 
+def _htmlEditProfileContactInfo(nickname: str,
+                                emailAddress: str,
+                                xmppAddress: str,
+                                matrixAddress: str,
+                                ssbAddress: str,
+                                toxAddress: str,
+                                briarAddress: str,
+                                jamiAddress: str,
+                                cwtchAddress: str,
+                                PGPfingerprint: str,
+                                PGPpubKey: str,
+                                translate: {}) -> str:
+    """Contact Information section of edit profile screen
+    """
+    editProfileForm = '    <details><summary class="cw">' + \
+        translate['Contact Details'] + '</summary>\n'
+    editProfileForm += '<div class="container">'
+    editProfileForm += '<label class="labels">' + \
+        translate['Email'] + '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="email" value="' + emailAddress + '">\n'
+    editProfileForm += \
+        '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="xmppAddress" value="' + \
+        xmppAddress + '">\n'
+    editProfileForm += '<label class="labels">' + \
+        translate['Matrix'] + '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="matrixAddress" value="' + \
+        matrixAddress + '">\n'
+
+    editProfileForm += '<label class="labels">SSB</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="ssbAddress" value="' + \
+        ssbAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Tox</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="toxAddress" value="' + \
+        toxAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Briar</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="briarAddress" value="' + \
+        briarAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Jami</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="jamiAddress" value="' + \
+        jamiAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Cwtch</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="cwtchAddress" value="' + \
+        cwtchAddress + '">\n'
+
+    editProfileForm += \
+        '<label class="labels">' + \
+        translate['PGP Fingerprint'] + '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="openpgp" value="' + \
+        PGPfingerprint + '">\n'
+    editProfileForm += \
+        '<label class="labels">' + translate['PGP'] + '</label><br>\n'
+    editProfileForm += \
+        '      <textarea id="message" placeholder=' + \
+        '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
+        'style="height:600px" spellcheck="false">' + \
+        PGPpubKey + '</textarea>\n'
+    editProfileForm += '<a href="/users/' + nickname + \
+        '/followingaccounts"><label class="labels">' + \
+        translate['Following'] + '</label></a><br>\n'
+    editProfileForm += '    </div></details>\n'
+    return editProfileForm
+
+
+def _htmlEditProfileOptions(translate: {}) -> str:
+    """option checkboxes section of edit profile screen
+    """
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1922,66 +2004,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div>\n'
 
     # Contact information
-    editProfileForm += '    <details><summary class="cw">' + \
-        translate['Contact Details'] + '</summary>\n'
-    editProfileForm += '<div class="container">'
-    editProfileForm += '<label class="labels">' + \
-        translate['Email'] + '</label><br>\n'
     editProfileForm += \
-        '      <input type="text" name="email" value="' + emailAddress + '">\n'
-    editProfileForm += \
-        '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="xmppAddress" value="' + \
-        xmppAddress + '">\n'
-    editProfileForm += '<label class="labels">' + \
-        translate['Matrix'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="matrixAddress" value="' + \
-        matrixAddress + '">\n'
-
-    editProfileForm += '<label class="labels">SSB</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="ssbAddress" value="' + \
-        ssbAddress + '">\n'
-
-    editProfileForm += '<label class="labels">Tox</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="toxAddress" value="' + \
-        toxAddress + '">\n'
-
-    editProfileForm += '<label class="labels">Briar</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="briarAddress" value="' + \
-        briarAddress + '">\n'
-
-    editProfileForm += '<label class="labels">Jami</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="jamiAddress" value="' + \
-        jamiAddress + '">\n'
-
-    editProfileForm += '<label class="labels">Cwtch</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="cwtchAddress" value="' + \
-        cwtchAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">' + \
-        translate['PGP Fingerprint'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="openpgp" value="' + \
-        PGPfingerprint + '">\n'
-    editProfileForm += \
-        '<label class="labels">' + translate['PGP'] + '</label><br>\n'
-    editProfileForm += \
-        '      <textarea id="message" placeholder=' + \
-        '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:600px" spellcheck="false">' + \
-        PGPpubKey + '</textarea>\n'
-    editProfileForm += '<a href="/users/' + nickname + \
-        '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>\n'
-    editProfileForm += '    </div></details>\n'
+        _htmlEditProfileContactInfo(nickname, emailAddress,
+                                    xmppAddress, matrixAddress,
+                                    ssbAddress, toxAddress,
+                                    briarAddress, jamiAddress,
+                                    cwtchAddress, PGPfingerprint,
+                                    PGPpubKey, translate)
 
     # Customize images and banners
     editProfileForm += _htmlEditProfileBackground(newsInstance, translate)
