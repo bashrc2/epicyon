@@ -40,6 +40,7 @@ from pgp import getPGPpubKey
 from tox import getToxAddress
 from briar import getBriarAddress
 from jami import getJamiAddress
+from cwtch import getCwtchAddress
 from filters import isFiltered
 from follow import isFollowerOfPerson
 from webapp_frontscreen import htmlFrontScreen
@@ -517,9 +518,10 @@ def htmlProfile(rssIconAtTop: bool,
     toxAddress = getToxAddress(profileJson)
     briarAddress = getBriarAddress(profileJson)
     jamiAddress = getJamiAddress(profileJson)
+    cwtchAddress = getCwtchAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
-       jamiAddress or PGPpubKey or \
+       jamiAddress or cwtchAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -560,6 +562,10 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>Jami: <label class="toxaddr">' + \
                 jamiAddress + '</label></p>\n'
+        if cwtchAddress:
+            donateSection += \
+                '<p>Cwtch: <label class="toxaddr">' + \
+                cwtchAddress + '</label></p>\n'
         if PGPfingerprint:
             donateSection += \
                 '<p class="pgp">PGP: ' + \
@@ -1063,6 +1069,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         toxAddress = getToxAddress(actorJson)
         briarAddress = getBriarAddress(actorJson)
         jamiAddress = getJamiAddress(actorJson)
+        cwtchAddress = getCwtchAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
@@ -1697,6 +1704,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="jamiAddress" value="' + \
         jamiAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Cwtch</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="cwtchAddress" value="' + \
+        cwtchAddress + '">\n'
 
     editProfileForm += \
         '<label class="labels">' + \

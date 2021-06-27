@@ -44,6 +44,8 @@ from briar import getBriarAddress
 from briar import setBriarAddress
 from jami import getJamiAddress
 from jami import setJamiAddress
+from cwtch import getCwtchAddress
+from cwtch import setCwtchAddress
 from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
@@ -4517,6 +4519,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setJamiAddress(actorJson, '')
                             actorChanged = True
 
+                    # change cwtch address
+                    currentCwtchAddress = getCwtchAddress(actorJson)
+                    if fields.get('cwtchAddress'):
+                        if fields['cwtchAddress'] != currentCwtchAddress:
+                            setCwtchAddress(actorJson,
+                                            fields['cwtchAddress'])
+                            actorChanged = True
+                    else:
+                        if currentCwtchAddress:
+                            setCwtchAddress(actorJson, '')
+                            actorChanged = True
+
                     # change PGP public key
                     currentPGPpubKey = getPGPpubKey(actorJson)
                     if fields.get('pgp'):
@@ -5811,6 +5825,7 @@ class PubServer(BaseHTTPRequestHandler):
             toxAddress = None
             briarAddress = None
             jamiAddress = None
+            cwtchAddress = None
             ssbAddress = None
             emailAddress = None
             lockedAccount = False
@@ -5832,6 +5847,7 @@ class PubServer(BaseHTTPRequestHandler):
                 toxAddress = getToxAddress(actorJson)
                 briarAddress = getBriarAddress(actorJson)
                 jamiAddress = getJamiAddress(actorJson)
+                cwtchAddress = getCwtchAddress(actorJson)
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
@@ -5866,7 +5882,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
                                     toxAddress, briarAddress,
-                                    jamiAddress,
+                                    jamiAddress, cwtchAddress,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
                                     self.server.dormantMonths,
