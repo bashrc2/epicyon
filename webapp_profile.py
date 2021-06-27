@@ -1080,6 +1080,249 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
     return graphicsStr
 
 
+def _htmlEditProfileInstance(baseDir: str, translate: {},
+                             peertubeInstances: [],
+                             mediaInstanceStr: str,
+                             blogsInstanceStr: str,
+                             newsInstanceStr: str) -> (str, str, str):
+    """Edit profile instance settings
+    """
+    imageFormats = getImageFormats()
+
+    # Instance details section
+    instanceDescription = \
+        getConfigParam(baseDir, 'instanceDescription')
+    customSubmitText = \
+        getConfigParam(baseDir, 'customSubmitText')
+    instanceDescriptionShort = \
+        getConfigParam(baseDir, 'instanceDescriptionShort')
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+
+    instanceStr = '<details><summary class="cw">' + \
+        translate['Instance Settings'] + '</summary>\n'
+    instanceStr += '<div class="container">'
+    instanceStr += \
+        '  <label class="labels">' + \
+        translate['Instance Title'] + '</label>'
+    if instanceTitle:
+        instanceStr += \
+            '  <input type="text" name="instanceTitle" value="' + \
+            instanceTitle + '"><br>'
+    else:
+        instanceStr += \
+            '  <input type="text" name="instanceTitle" value=""><br>'
+    instanceStr += \
+        '  <label class="labels">' + \
+        translate['Instance Short Description'] + '</label>'
+    if instanceDescriptionShort:
+        instanceStr += \
+            '  <input type="text" ' + \
+            'name="instanceDescriptionShort" value="' + \
+            instanceDescriptionShort + '"><br>'
+    else:
+        instanceStr += \
+            '  <input type="text" ' + \
+            'name="instanceDescriptionShort" value=""><br>'
+    instanceStr += \
+        '  <label class="labels">' + \
+        translate['Instance Description'] + '</label>'
+    if instanceDescription:
+        instanceStr += \
+            '  <textarea id="message" name="instanceDescription" ' + \
+            'style="height:200px" spellcheck="true">' + \
+            instanceDescription + '</textarea>'
+    else:
+        instanceStr += \
+            '  <textarea id="message" name="instanceDescription" ' + \
+            'style="height:200px" spellcheck="true"></textarea>'
+
+    instanceStr += \
+        '  <label class="labels">' + \
+        translate['Custom post submit button text'] + '</label>'
+    if customSubmitText:
+        instanceStr += \
+            '  <input type="text" ' + \
+            'name="customSubmitText" value="' + \
+            customSubmitText + '"><br>'
+    else:
+        instanceStr += \
+            '  <input type="text" ' + \
+            'name="customSubmitText" value=""><br>'
+
+    instanceStr += \
+        '  <label class="labels">' + \
+        translate['Instance Logo'] + '</label>'
+    instanceStr += \
+        '  <input type="file" id="instanceLogo" name="instanceLogo"'
+    instanceStr += '      accept="' + imageFormats + '"><br>\n'
+
+    instanceStr += \
+        '  <br><label class="labels">' + \
+        translate['Security'] + '</label><br>\n'
+
+    nodeInfoStr = \
+        translate['Show numbers of accounts within instance metadata']
+    if getConfigParam(baseDir, "showNodeInfoAccounts"):
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="showNodeInfoAccounts" checked> ' + \
+            nodeInfoStr + '<br>\n'
+    else:
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="showNodeInfoAccounts"> ' + \
+            nodeInfoStr + '<br>\n'
+
+    nodeInfoStr = \
+        translate['Show version number within instance metadata']
+    if getConfigParam(baseDir, "showNodeInfoVersion"):
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="showNodeInfoVersion" checked> ' + \
+            nodeInfoStr + '<br>\n'
+    else:
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="showNodeInfoVersion"> ' + \
+            nodeInfoStr + '<br>\n'
+
+    if getConfigParam(baseDir, "verifyAllSignatures"):
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="verifyallsignatures" checked> ' + \
+            translate['Verify all signatures'] + '<br>\n'
+    else:
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="verifyallsignatures"> ' + \
+            translate['Verify all signatures'] + '<br>\n'
+
+    instanceStr += translate['Enabling broch mode'] + '<br>\n'
+    if getConfigParam(baseDir, "brochMode"):
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="brochMode" checked> ' + \
+            translate['Broch mode'] + '<br>\n'
+    else:
+        instanceStr += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="brochMode"> ' + \
+            translate['Broch mode'] + '<br>\n'
+    # Instance type
+    instanceStr += \
+        '  <br><label class="labels">' + \
+        translate['Type of instance'] + '</label><br>\n'
+    instanceStr += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
+        translate['This is a media instance'] + '<br>\n'
+    instanceStr += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
+        translate['This is a blogging instance'] + '<br>\n'
+    instanceStr += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="newsInstance" ' + newsInstanceStr + '> ' + \
+        translate['This is a news instance'] + '<br>\n'
+    instanceStr += '    </div></details>\n'
+
+    # Role assignments section
+    moderators = ''
+    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    if os.path.isfile(moderatorsFile):
+        with open(moderatorsFile, "r") as f:
+            moderators = f.read()
+    # site moderators
+    roleAssignStr = '<details><summary class="cw">' + \
+        translate['Role Assignment'] + '</summary>\n'
+    roleAssignStr += '<div class="container">'
+    roleAssignStr += '  <b><label class="labels">' + \
+        translate['Moderators'] + '</label></b><br>\n'
+    roleAssignStr += '  ' + \
+        translate['A list of moderator nicknames. One per line.']
+    roleAssignStr += \
+        '  <textarea id="message" name="moderators" placeholder="' + \
+        translate['List of moderator nicknames'] + \
+        '..." style="height:200px" spellcheck="false">' + \
+        moderators + '</textarea>'
+
+    # site editors
+    editors = ''
+    editorsFile = baseDir + '/accounts/editors.txt'
+    if os.path.isfile(editorsFile):
+        with open(editorsFile, "r") as f:
+            editors = f.read()
+    roleAssignStr += '  <b><label class="labels">' + \
+        translate['Site Editors'] + '</label></b><br>\n'
+    roleAssignStr += '  ' + \
+        translate['A list of editor nicknames. One per line.']
+    roleAssignStr += \
+        '  <textarea id="message" name="editors" placeholder="" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        editors + '</textarea>'
+
+    # counselors
+    counselors = ''
+    counselorsFile = baseDir + '/accounts/counselors.txt'
+    if os.path.isfile(counselorsFile):
+        with open(counselorsFile, "r") as f:
+            counselors = f.read()
+    roleAssignStr += '  <b><label class="labels">' + \
+        translate['Counselors'] + '</label></b><br>\n'
+    roleAssignStr += \
+        '  <textarea id="message" name="counselors" ' + \
+        'placeholder="" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        counselors + '</textarea>'
+
+    # artists
+    artists = ''
+    artistsFile = baseDir + '/accounts/artists.txt'
+    if os.path.isfile(artistsFile):
+        with open(artistsFile, "r") as f:
+            artists = f.read()
+    roleAssignStr += '  <b><label class="labels">' + \
+        translate['Artists'] + '</label></b><br>\n'
+    roleAssignStr += \
+        '  <textarea id="message" name="artists" ' + \
+        'placeholder="" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        artists + '</textarea>'
+    roleAssignStr += '    </div></details>\n'
+
+    # Video section
+    peertubeStr = '    <details><summary class="cw">' + \
+        translate['Video Settings'] + '</summary>\n'
+    peertubeStr += '    <div class="container">\n'
+    peertubeStr += \
+        '      <b><label class="labels">' + \
+        translate['Peertube Instances'] + '</label></b>\n'
+    idx = 'Show video previews for the following Peertube sites.'
+    peertubeStr += \
+        '      <br><label class="labels">' + \
+        translate[idx] + '</label>\n'
+    peertubeInstancesStr = ''
+    for url in peertubeInstances:
+        peertubeInstancesStr += url + '\n'
+    peertubeStr += \
+        '      <textarea id="message" name="ptInstances" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        peertubeInstancesStr + '</textarea>\n'
+    peertubeStr += \
+        '      <br><b><label class="labels">' + \
+        translate['YouTube Replacement Domain'] + '</label></b>\n'
+    YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
+    if not YTReplacementDomain:
+        YTReplacementDomain = ''
+    peertubeStr += \
+        '      <input type="text" name="ytdomain" value="' + \
+        YTReplacementDomain + '">\n'
+    peertubeStr += '    </div></details>\n'
+
+    return instanceStr, roleAssignStr, peertubeStr
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1287,236 +1530,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
-            # Instance details section
-            instanceDescription = \
-                getConfigParam(baseDir, 'instanceDescription')
-            customSubmitText = \
-                getConfigParam(baseDir, 'customSubmitText')
-            instanceDescriptionShort = \
-                getConfigParam(baseDir, 'instanceDescriptionShort')
-            instanceTitle = \
-                getConfigParam(baseDir, 'instanceTitle')
-
-            instanceStr = '<details><summary class="cw">' + \
-                translate['Instance Settings'] + '</summary>\n'
-            instanceStr += '<div class="container">'
-            instanceStr += \
-                '  <label class="labels">' + \
-                translate['Instance Title'] + '</label>'
-            if instanceTitle:
-                instanceStr += \
-                    '  <input type="text" name="instanceTitle" value="' + \
-                    instanceTitle + '"><br>'
-            else:
-                instanceStr += \
-                    '  <input type="text" name="instanceTitle" value=""><br>'
-            instanceStr += \
-                '  <label class="labels">' + \
-                translate['Instance Short Description'] + '</label>'
-            if instanceDescriptionShort:
-                instanceStr += \
-                    '  <input type="text" ' + \
-                    'name="instanceDescriptionShort" value="' + \
-                    instanceDescriptionShort + '"><br>'
-            else:
-                instanceStr += \
-                    '  <input type="text" ' + \
-                    'name="instanceDescriptionShort" value=""><br>'
-            instanceStr += \
-                '  <label class="labels">' + \
-                translate['Instance Description'] + '</label>'
-            if instanceDescription:
-                instanceStr += \
-                    '  <textarea id="message" name="instanceDescription" ' + \
-                    'style="height:200px" spellcheck="true">' + \
-                    instanceDescription + '</textarea>'
-            else:
-                instanceStr += \
-                    '  <textarea id="message" name="instanceDescription" ' + \
-                    'style="height:200px" spellcheck="true"></textarea>'
-
-            instanceStr += \
-                '  <label class="labels">' + \
-                translate['Custom post submit button text'] + '</label>'
-            if customSubmitText:
-                instanceStr += \
-                    '  <input type="text" ' + \
-                    'name="customSubmitText" value="' + \
-                    customSubmitText + '"><br>'
-            else:
-                instanceStr += \
-                    '  <input type="text" ' + \
-                    'name="customSubmitText" value=""><br>'
-
-            instanceStr += \
-                '  <label class="labels">' + \
-                translate['Instance Logo'] + '</label>'
-            instanceStr += \
-                '  <input type="file" id="instanceLogo" name="instanceLogo"'
-            instanceStr += '      accept="' + imageFormats + '"><br>\n'
-
-            instanceStr += \
-                '  <br><label class="labels">' + \
-                translate['Security'] + '</label><br>\n'
-
-            nodeInfoStr = \
-                translate['Show numbers of accounts within instance metadata']
-            if getConfigParam(baseDir, "showNodeInfoAccounts"):
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="showNodeInfoAccounts" checked> ' + \
-                    nodeInfoStr + '<br>\n'
-            else:
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="showNodeInfoAccounts"> ' + \
-                    nodeInfoStr + '<br>\n'
-
-            nodeInfoStr = \
-                translate['Show version number within instance metadata']
-            if getConfigParam(baseDir, "showNodeInfoVersion"):
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="showNodeInfoVersion" checked> ' + \
-                    nodeInfoStr + '<br>\n'
-            else:
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="showNodeInfoVersion"> ' + \
-                    nodeInfoStr + '<br>\n'
-
-            if getConfigParam(baseDir, "verifyAllSignatures"):
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="verifyallsignatures" checked> ' + \
-                    translate['Verify all signatures'] + '<br>\n'
-            else:
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="verifyallsignatures"> ' + \
-                    translate['Verify all signatures'] + '<br>\n'
-
-            instanceStr += translate['Enabling broch mode'] + '<br>\n'
-            if getConfigParam(baseDir, "brochMode"):
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="brochMode" checked> ' + \
-                    translate['Broch mode'] + '<br>\n'
-            else:
-                instanceStr += \
-                    '      <input type="checkbox" class="profilecheckbox" ' + \
-                    'name="brochMode"> ' + \
-                    translate['Broch mode'] + '<br>\n'
-            # Instance type
-            instanceStr += \
-                '  <br><label class="labels">' + \
-                translate['Type of instance'] + '</label><br>\n'
-            instanceStr += \
-                '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-                translate['This is a media instance'] + '<br>\n'
-            instanceStr += \
-                '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
-                translate['This is a blogging instance'] + '<br>\n'
-            instanceStr += \
-                '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="newsInstance" ' + newsInstanceStr + '> ' + \
-                translate['This is a news instance'] + '<br>\n'
-            instanceStr += '    </div></details>\n'
-
-            # Role assignments section
-            moderators = ''
-            moderatorsFile = baseDir + '/accounts/moderators.txt'
-            if os.path.isfile(moderatorsFile):
-                with open(moderatorsFile, "r") as f:
-                    moderators = f.read()
-            # site moderators
-            roleAssignStr = '<details><summary class="cw">' + \
-                translate['Role Assignment'] + '</summary>\n'
-            roleAssignStr += '<div class="container">'
-            roleAssignStr += '  <b><label class="labels">' + \
-                translate['Moderators'] + '</label></b><br>\n'
-            roleAssignStr += '  ' + \
-                translate['A list of moderator nicknames. One per line.']
-            roleAssignStr += \
-                '  <textarea id="message" name="moderators" placeholder="' + \
-                translate['List of moderator nicknames'] + \
-                '..." style="height:200px" spellcheck="false">' + \
-                moderators + '</textarea>'
-
-            # site editors
-            editors = ''
-            editorsFile = baseDir + '/accounts/editors.txt'
-            if os.path.isfile(editorsFile):
-                with open(editorsFile, "r") as f:
-                    editors = f.read()
-            roleAssignStr += '  <b><label class="labels">' + \
-                translate['Site Editors'] + '</label></b><br>\n'
-            roleAssignStr += '  ' + \
-                translate['A list of editor nicknames. One per line.']
-            roleAssignStr += \
-                '  <textarea id="message" name="editors" placeholder="" ' + \
-                'style="height:200px" spellcheck="false">' + \
-                editors + '</textarea>'
-
-            # counselors
-            counselors = ''
-            counselorsFile = baseDir + '/accounts/counselors.txt'
-            if os.path.isfile(counselorsFile):
-                with open(counselorsFile, "r") as f:
-                    counselors = f.read()
-            roleAssignStr += '  <b><label class="labels">' + \
-                translate['Counselors'] + '</label></b><br>\n'
-            roleAssignStr += \
-                '  <textarea id="message" name="counselors" ' + \
-                'placeholder="" ' + \
-                'style="height:200px" spellcheck="false">' + \
-                counselors + '</textarea>'
-
-            # artists
-            artists = ''
-            artistsFile = baseDir + '/accounts/artists.txt'
-            if os.path.isfile(artistsFile):
-                with open(artistsFile, "r") as f:
-                    artists = f.read()
-            roleAssignStr += '  <b><label class="labels">' + \
-                translate['Artists'] + '</label></b><br>\n'
-            roleAssignStr += \
-                '  <textarea id="message" name="artists" ' + \
-                'placeholder="" ' + \
-                'style="height:200px" spellcheck="false">' + \
-                artists + '</textarea>'
-            roleAssignStr += '    </div></details>\n'
-
-            # Video section
-            peertubeStr = '    <details><summary class="cw">' + \
-                translate['Video Settings'] + '</summary>\n'
-            peertubeStr += '    <div class="container">\n'
-            peertubeStr += \
-                '      <b><label class="labels">' + \
-                translate['Peertube Instances'] + '</label></b>\n'
-            idx = 'Show video previews for the following Peertube sites.'
-            peertubeStr += \
-                '      <br><label class="labels">' + \
-                translate[idx] + '</label>\n'
-            peertubeInstancesStr = ''
-            for url in peertubeInstances:
-                peertubeInstancesStr += url + '\n'
-            peertubeStr += \
-                '      <textarea id="message" name="ptInstances" ' + \
-                'style="height:200px" spellcheck="false">' + \
-                peertubeInstancesStr + '</textarea>\n'
-            peertubeStr += \
-                '      <br><b><label class="labels">' + \
-                translate['YouTube Replacement Domain'] + '</label></b>\n'
-            YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
-            if not YTReplacementDomain:
-                YTReplacementDomain = ''
-            peertubeStr += \
-                '      <input type="text" name="ytdomain" value="' + \
-                YTReplacementDomain + '">\n'
-            peertubeStr += '    </div></details>\n'
+            instanceStr, roleAssignStr, peertubeStr = \
+                _htmlEditProfileInstance(baseDir, translate,
+                                         peertubeInstances,
+                                         mediaInstanceStr,
+                                         blogsInstanceStr,
+                                         newsInstanceStr)
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
