@@ -1015,6 +1015,49 @@ def _createPostPlaceAndTime(eventDate: str, endDate: str,
     return eventDateStr
 
 
+def _createPostMentions(ccUrl: str, newPost: {},
+                        toRecipients: [], tags: []) -> None:
+    """Updates mentions for a new post
+    """
+    if not ccUrl:
+        return
+    if len(ccUrl) == 0:
+        return
+    newPost['cc'] = [ccUrl]
+    if newPost.get('object'):
+        newPost['object']['cc'] = [ccUrl]
+
+        # if this is a public post then include any mentions in cc
+        toCC = newPost['object']['cc']
+        if len(toRecipients) != 1:
+            return
+        if toRecipients[0].endswith('#Public') and \
+           ccUrl.endswith('/followers'):
+            for tag in tags:
+                if tag['type'] != 'Mention':
+                    continue
+                if tag['href'] not in toCC:
+                    newPost['object']['cc'].append(tag['href'])
+
+
+def _createPostModReport(baseDir: str,
+                         isModerationReport: bool, newPost: {},
+                         newPostId: str) -> None:
+    """ if this is a moderation report then add a status
+    """
+    if not isModerationReport:
+        return
+    # add status
+    if newPost.get('object'):
+        newPost['object']['moderationStatus'] = 'pending'
+    else:
+        newPost['moderationStatus'] = 'pending'
+    # save to index file
+    moderationIndexFile = baseDir + '/accounts/moderation.txt'
+    with open(moderationIndexFile, 'a+') as modFile:
+        modFile.write(newPostId + '\n')
+
+
 def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                     followersOnly: bool, saveToFile: bool,
@@ -1177,33 +1220,10 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
                            inReplyToAtomUri)
-    if ccUrl:
-        if len(ccUrl) > 0:
-            newPost['cc'] = [ccUrl]
-            if newPost.get('object'):
-                newPost['object']['cc'] = [ccUrl]
 
-                # if this is a public post then include any mentions in cc
-                toCC = newPost['object']['cc']
-                if len(toRecipients) == 1:
-                    if toRecipients[0].endswith('#Public') and \
-                       ccUrl.endswith('/followers'):
-                        for tag in tags:
-                            if tag['type'] == 'Mention':
-                                if tag['href'] not in toCC:
-                                    toCC.append(tag['href'])
+    _createPostMentions(ccUrl, newPost, toRecipients, tags)
 
-    # if this is a moderation report then add a status
-    if isModerationReport:
-        # add status
-        if newPost.get('object'):
-            newPost['object']['moderationStatus'] = 'pending'
-        else:
-            newPost['moderationStatus'] = 'pending'
-        # save to index file
-        moderationIndexFile = baseDir + '/accounts/moderation.txt'
-        with open(moderationIndexFile, 'a+') as modFile:
-            modFile.write(newPostId + '\n')
+    _createPostModReport(baseDir, isModerationReport, newPost, newPostId)
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
