@@ -1838,6 +1838,43 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
     return editProfileForm
 
 
+def _htmlEditProfileTopBanner(baseDir: str,
+                              nickname: str, domain: str, domainFull: str,
+                              defaultTimeline: str, bannerFile: str,
+                              path: str, accessKeys: {}, translate: {}) -> str:
+    """top banner on edit profile screen
+    """
+    editProfileForm = \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">'
+    editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
+
+    editProfileForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
+    editProfileForm += '  <div class="vertical-center">\n'
+    editProfileForm += \
+        '    <h1>' + translate['Profile for'] + \
+        ' ' + nickname + '@' + domainFull + '</h1>'
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += \
+        '      <center>\n' + \
+        '        <input type="submit" name="submitProfile" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '" ' + \
+        'value="' + translate['Submit'] + '">\n' + \
+        '      </center>\n'
+    editProfileForm += '    </div>\n'
+
+    if scheduledPostsExist(baseDir, nickname, domain):
+        editProfileForm += '    <div class="container">\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="removeScheduledPosts"> ' + \
+            translate['Remove scheduled posts'] + '<br>\n'
+        editProfileForm += '    </div>\n'
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1987,33 +2024,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # top banner
     editProfileForm += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">'
-    editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
-
-    editProfileForm += \
-        '<form enctype="multipart/form-data" method="POST" ' + \
-        'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
-    editProfileForm += '  <div class="vertical-center">\n'
-    editProfileForm += \
-        '    <h1>' + translate['Profile for'] + \
-        ' ' + nickname + '@' + domainFull + '</h1>'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
-        '      <center>\n' + \
-        '        <input type="submit" name="submitProfile" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '" ' + \
-        'value="' + translate['Submit'] + '">\n' + \
-        '      </center>\n'
-    editProfileForm += '    </div>\n'
-
-    if scheduledPostsExist(baseDir, nickname, domain):
-        editProfileForm += '    <div class="container">\n'
-        editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="removeScheduledPosts"> ' + \
-            translate['Remove scheduled posts'] + '<br>\n'
-        editProfileForm += '    </div>\n'
+        _htmlEditProfileTopBanner(baseDir, nickname, domain, domainFull,
+                                  defaultTimeline, bannerFile,
+                                  path, accessKeys, translate)
 
     # main info
     editProfileForm += \
