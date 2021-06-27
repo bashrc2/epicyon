@@ -1605,6 +1605,52 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
     return editProfileForm
 
 
+def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
+    """Background images section of edit profile screen
+    """
+    editProfileForm = '    <details><summary class="cw">' + \
+        translate['Background Images'] + '</summary>\n'
+    editProfileForm += '    <div class="container">\n'
+    idx = 'The files attached below should be no larger than ' + \
+        '10MB in total uploaded at once.'
+    editProfileForm += \
+        '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
+
+    if not newsInstance:
+        imageFormats = getImageFormats()
+        editProfileForm += \
+            '      <label class="labels">' + \
+            translate['Background image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="image" name="image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
+
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Timeline banner image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="banner" name="banner"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
+
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Search banner image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="search_banner" '
+        editProfileForm += 'name="search_banner"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
+
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Left column image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="left_col_image" '
+        editProfileForm += 'name="left_col_image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
+
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Right column image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="right_col_image" '
+        editProfileForm += 'name="right_col_image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
+
+    editProfileForm += '    </div></details>\n'
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1938,49 +1984,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div></details>\n'
 
     # Customize images and banners
-    editProfileForm += '    <details><summary class="cw">' + \
-        translate['Background Images'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    idx = 'The files attached below should be no larger than ' + \
-        '10MB in total uploaded at once.'
-    editProfileForm += \
-        '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
-
-    if not newsInstance:
-        editProfileForm += \
-            '      <label class="labels">' + \
-            translate['Background image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="image" name="image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Timeline banner image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="banner" name="banner"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Search banner image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="search_banner" '
-        editProfileForm += 'name="search_banner"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Left column image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="left_col_image" '
-        editProfileForm += 'name="left_col_image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Right column image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="right_col_image" '
-        editProfileForm += 'name="right_col_image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
-
-    editProfileForm += '    </div></details>\n'
+    editProfileForm += _htmlEditProfileBackground(newsInstance, translate)
 
     # Change password
-    editProfileForm += \
-        _htmlEditProfileChangePassword(translate)
+    editProfileForm += _htmlEditProfileChangePassword(translate)
 
     # Filtering and blocking section
     editProfileForm += \
