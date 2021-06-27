@@ -1386,6 +1386,33 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
     return editProfileForm
 
 
+def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
+                                translate: {}) -> str:
+    """git projects section of edit profile screen
+    """
+    gitProjectsStr = ''
+    gitProjectsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/gitprojects.txt'
+    if os.path.isfile(gitProjectsFilename):
+        with open(gitProjectsFilename, 'r') as gitProjectsFile:
+            gitProjectsStr = gitProjectsFile.read()
+
+    editProfileForm = '<details><summary class="cw">' + \
+        translate['Git Projects'] + '</summary>\n'
+    editProfileForm += '    <div class="container">\n'
+    idx = 'List of project names that you wish to receive git patches for'
+    editProfileForm += \
+        '      <label class="labels">' + \
+        translate[idx] + '</label>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="gitProjects" ' + \
+        'style="height:100px" spellcheck="false">' + \
+        gitProjectsStr + '</textarea>\n'
+    editProfileForm += '    </div></details>\n'
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1541,14 +1568,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(allowedInstancesFilename):
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
-
-    gitProjectsStr = ''
-    gitProjectsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/gitprojects.txt'
-    if os.path.isfile(gitProjectsFilename):
-        with open(gitProjectsFilename, 'r') as gitProjectsFile:
-            gitProjectsStr = gitProjectsFile.read()
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -1951,19 +1970,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div></details>\n'
 
     # git projects section
-    editProfileForm += '<details><summary class="cw">' + \
-        translate['Git Projects'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
-        '      <label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += \
-        '      <textarea id="message" name="gitProjects" ' + \
-        'style="height:100px" spellcheck="false">' + \
-        gitProjectsStr + '</textarea>\n'
-
-    editProfileForm += '    </div></details>\n'
+        _htmlEditProfileGitProjects(baseDir, nickname, domain, translate)
 
     # Skills section
     editProfileForm += \
