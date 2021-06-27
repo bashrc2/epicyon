@@ -1585,6 +1585,26 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
     return editProfileForm
 
 
+def _htmlEditProfileChangePassword(translate: {}) -> str:
+    """Change password section of edit profile screen
+    """
+    editProfileForm = '    <details><summary class="cw">' + \
+        translate['Change Password'] + '</summary>\n'
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += \
+        '<label class="labels">' + translate['Change Password'] + \
+        '</label><br>\n'
+    editProfileForm += '      <input type="text" name="password" ' + \
+        'value=""><br>\n'
+    editProfileForm += \
+        '<label class="labels">' + translate['Confirm Password'] + \
+        '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="passwordconfirm" value="">\n'
+    editProfileForm += '    </div></details>\n'
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1959,20 +1979,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div></details>\n'
 
     # Change password
-    editProfileForm += '    <details><summary class="cw">' + \
-        translate['Change Password'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
-        '<label class="labels">' + translate['Change Password'] + \
-        '</label><br>\n'
-    editProfileForm += '      <input type="text" name="password" ' + \
-        'value=""><br>\n'
-    editProfileForm += \
-        '<label class="labels">' + translate['Confirm Password'] + \
-        '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="passwordconfirm" value="">\n'
-    editProfileForm += '    </div></details>\n'
+        _htmlEditProfileChangePassword(translate)
 
     # Filtering and blocking section
     editProfileForm += \
