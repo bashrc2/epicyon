@@ -1768,6 +1768,76 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     return editProfileForm
 
 
+def _htmlEditProfileMain(displayNickname: str, bioStr: str,
+                         movedTo: str, donateUrl: str,
+                         blogAddress: str, actorJson: {},
+                         translate: {}) -> str:
+    """main info on edit profile screen
+    """
+    imageFormats = getImageFormats()
+
+    editProfileForm = '    <div class="container">\n'
+    editProfileForm += '      <label class="labels">' + \
+        translate['Nickname'] + '</label>\n'
+    editProfileForm += \
+        '      <input type="text" name="displayNickname" value="' + \
+        displayNickname + '"><br>\n'
+    editProfileForm += \
+        '      <label class="labels">' + translate['Your bio'] + '</label>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="bio" style="height:200px" ' + \
+        'spellcheck="true">' + bioStr + '</textarea>\n'
+    editProfileForm += \
+        '      <label class="labels">' + translate['Avatar image'] + \
+        '</label>\n'
+    editProfileForm += \
+        '      <input type="file" id="avatar" name="avatar"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
+
+    occupationName = ''
+    if actorJson.get('hasOccupation'):
+        occupationName = getOccupationName(actorJson)
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Occupation'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" ' + \
+        'name="occupationName" value="' + occupationName + '">\n'
+
+    alsoKnownAsStr = ''
+    if actorJson.get('alsoKnownAs'):
+        alsoKnownAs = actorJson['alsoKnownAs']
+        ctr = 0
+        for altActor in alsoKnownAs:
+            if ctr > 0:
+                alsoKnownAsStr += ', '
+            ctr += 1
+            alsoKnownAsStr += altActor
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Other accounts'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Moved to new account address'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="movedTo" value="' + movedTo + '">\n'
+    editProfileForm += '<label class="labels">' + \
+        translate['Donations link'] + '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="donateUrl" value="' + donateUrl + '">\n'
+    editProfileForm += '<label class="labels">Blog</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="blogAddress" value="' + \
+        blogAddress + '">\n'
+    editProfileForm += '    </div>\n'
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1776,7 +1846,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     accessKeys: {}) -> str:
     """Shows the edit profile screen
     """
-    imageFormats = getImageFormats()
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)
@@ -1946,65 +2015,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             translate['Remove scheduled posts'] + '<br>\n'
         editProfileForm += '    </div>\n'
 
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += '      <label class="labels">' + \
-        translate['Nickname'] + '</label>\n'
+    # main info
     editProfileForm += \
-        '      <input type="text" name="displayNickname" value="' + \
-        displayNickname + '"><br>\n'
-    editProfileForm += \
-        '      <label class="labels">' + translate['Your bio'] + '</label>\n'
-    editProfileForm += \
-        '      <textarea id="message" name="bio" style="height:200px" ' + \
-        'spellcheck="true">' + bioStr + '</textarea>\n'
-    editProfileForm += \
-        '      <label class="labels">' + translate['Avatar image'] + \
-        '</label>\n'
-    editProfileForm += \
-        '      <input type="file" id="avatar" name="avatar"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
-
-    occupationName = ''
-    if actorJson.get('hasOccupation'):
-        occupationName = getOccupationName(actorJson)
-
-    editProfileForm += '<label class="labels">' + \
-        translate['Occupation'] + ':</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" ' + \
-        'name="occupationName" value="' + occupationName + '">\n'
-
-    alsoKnownAsStr = ''
-    if actorJson.get('alsoKnownAs'):
-        alsoKnownAs = actorJson['alsoKnownAs']
-        ctr = 0
-        for altActor in alsoKnownAs:
-            if ctr > 0:
-                alsoKnownAsStr += ', '
-            ctr += 1
-            alsoKnownAsStr += altActor
-
-    editProfileForm += '<label class="labels">' + \
-        translate['Other accounts'] + ':</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
-
-    editProfileForm += '<label class="labels">' + \
-        translate['Moved to new account address'] + ':</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="movedTo" value="' + movedTo + '">\n'
-    editProfileForm += '<label class="labels">' + \
-        translate['Donations link'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="donateUrl" value="' + donateUrl + '">\n'
-    editProfileForm += '<label class="labels">Blog</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">\n'
-    editProfileForm += '    </div>\n'
+        _htmlEditProfileMain(displayNickname, bioStr, movedTo, donateUrl,
+                             blogAddress, actorJson, translate)
 
     # Option checkboxes
     editProfileForm += \
