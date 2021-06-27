@@ -1054,6 +1054,32 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
     return themesDropdown
 
 
+def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
+    """Graphic design section on Edit Profile screen
+    """
+    themeFormats = '.zip, .gz'
+
+    graphicsStr = '<details><summary class="cw">' + \
+        translate['Graphic Design'] + '</summary>\n'
+    graphicsStr += '<div class="container">'
+    graphicsStr += _htmlThemesDropdown(baseDir, translate)
+    graphicsStr += \
+        '      <label class="labels">' + \
+        translate['Import Theme'] + '</label>\n'
+    graphicsStr += '      <input type="file" id="importTheme" '
+    graphicsStr += 'name="submitImportTheme" '
+    graphicsStr += 'accept="' + themeFormats + '">\n'
+    graphicsStr += \
+        '      <label class="labels">' + \
+        translate['Export Theme'] + '</label><br>\n'
+    graphicsStr += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportTheme">➤</button>\n'
+
+    graphicsStr += '    </div></details>\n'
+    return graphicsStr
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1063,7 +1089,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
-    themeFormats = '.zip, .gz'
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)
@@ -1258,24 +1283,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     if isArtist(baseDir, nickname) or \
        path.startswith('/users/' + str(adminNickname) + '/'):
-        graphicsStr = '<details><summary class="cw">' + \
-            translate['Graphic Design'] + '</summary>\n'
-        graphicsStr += '<div class="container">'
-        graphicsStr += _htmlThemesDropdown(baseDir, translate)
-        graphicsStr += \
-            '      <label class="labels">' + \
-            translate['Import Theme'] + '</label>\n'
-        graphicsStr += '      <input type="file" id="importTheme" '
-        graphicsStr += 'name="submitImportTheme" '
-        graphicsStr += 'accept="' + themeFormats + '">\n'
-        graphicsStr += \
-            '      <label class="labels">' + \
-            translate['Export Theme'] + '</label><br>\n'
-        graphicsStr += \
-            '      <button type="submit" class="button" ' + \
-            'name="submitExportTheme">➤</button>\n'
-
-        graphicsStr += '    </div></details>\n'
+        graphicsStr = _htmlEditProfileGraphicDesign(baseDir, translate)
 
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
