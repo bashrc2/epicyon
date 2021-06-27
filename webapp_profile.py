@@ -1323,6 +1323,22 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     return instanceStr, roleAssignStr, peertubeStr
 
 
+def _htmlEditProfileDangerZone(translate: {}) -> str:
+    """danger zone section of Edit Profile screen
+    """
+    editProfileForm = '    <details><summary class="cw">' + \
+        translate['Danger Zone'] + '</summary>\n'
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += '      <b><label class="labels">' + \
+        translate['Danger Zone'] + '</label></b><br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class=dangercheckbox" ' + \
+        'name="deactivateThisAccount"> ' + \
+        translate['Deactivate this account'] + '<br>\n'
+    editProfileForm += '    </div></details>\n'
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1945,16 +1961,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += roleAssignStr + peertubeStr + graphicsStr + instanceStr
 
     # danger zone section
-    editProfileForm += '    <details><summary class="cw">' + \
-        translate['Danger Zone'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += '      <b><label class="labels">' + \
-        translate['Danger Zone'] + '</label></b><br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class=dangercheckbox" ' + \
-        'name="deactivateThisAccount"> ' + \
-        translate['Deactivate this account'] + '<br>\n'
-    editProfileForm += '    </div></details>\n'
+    editProfileForm += _htmlEditProfileDangerZone(translate)
 
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
