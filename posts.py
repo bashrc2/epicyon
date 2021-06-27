@@ -762,50 +762,6 @@ def _addSchedulePost(baseDir: str, nickname: str, domain: str,
             scheduleFile.write(indexStr + '\n')
 
 
-def _appendEventFields(newPost: {},
-                       eventUUID: str, eventStatus: str,
-                       anonymousParticipationEnabled: bool,
-                       repliesModerationOption: str,
-                       category: str,
-                       joinMode: str,
-                       eventDateStr: str,
-                       endDateStr: str,
-                       location: str,
-                       maximumAttendeeCapacity: int,
-                       ticketUrl: str,
-                       subject: str) -> None:
-    """Appends Mobilizon-type event fields to a post
-    """
-    if not eventUUID:
-        return
-
-    # add attributes for Mobilizon-type events
-    newPost['uuid'] = eventUUID
-    if eventStatus:
-        newPost['ical:status'] = eventStatus
-    if anonymousParticipationEnabled:
-        newPost['anonymousParticipationEnabled'] = \
-            anonymousParticipationEnabled
-    if repliesModerationOption:
-        newPost['repliesModerationOption'] = repliesModerationOption
-    if category:
-        newPost['category'] = category
-    if joinMode:
-        newPost['joinMode'] = joinMode
-    newPost['startTime'] = eventDateStr
-    newPost['endTime'] = endDateStr
-    if location:
-        newPost['location'] = location
-    if maximumAttendeeCapacity:
-        newPost['maximumAttendeeCapacity'] = maximumAttendeeCapacity
-    if ticketUrl:
-        newPost['ticketUrl'] = ticketUrl
-    if subject:
-        newPost['name'] = subject
-        newPost['summary'] = None
-        newPost['sensitive'] = False
-
-
 def validContentWarning(cw: str) -> str:
     """Returns a validated content warning
     """
@@ -874,6 +830,131 @@ def _createPostCWFromReply(baseDir: str, nickname: str, domain: str,
                             if replyToJson['object'].get('summary'):
                                 summary = replyToJson['object']['summary']
     return sensitive, summary
+
+
+def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
+                   httpPrefix: str, content: str, statusNumber: str,
+                   published: str, newPostId: str, postContext: {},
+                   toRecipients: [], toCC: [], inReplyTo: str,
+                   sensitive: bool, commentsEnabled: bool,
+                   tags: {}, attachImageFilename: str,
+                   mediaType: str, imageDescription: str, city: str,
+                   postObjectType: str, summary: str,
+                   inReplyToAtomUri: str) -> {}:
+    """Creates a new server-to-server post
+    """
+    actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    idStr = \
+        httpPrefix + '://' + domain + '/users/' + nickname + \
+        '/statuses/' + statusNumber + '/replies'
+    newPostUrl = \
+        httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
+    newPostAttributedTo = \
+        httpPrefix + '://' + domain + '/users/' + nickname
+    newPost = {
+        '@context': postContext,
+        'id': newPostId + '/activity',
+        'type': 'Create',
+        'actor': actorUrl,
+        'published': published,
+        'to': toRecipients,
+        'cc': toCC,
+        'object': {
+            'id': newPostId,
+            'type': postObjectType,
+            'summary': summary,
+            'inReplyTo': inReplyTo,
+            'published': published,
+            'url': newPostUrl,
+            'attributedTo': newPostAttributedTo,
+            'to': toRecipients,
+            'cc': toCC,
+            'sensitive': sensitive,
+            'atomUri': newPostId,
+            'inReplyToAtomUri': inReplyToAtomUri,
+            'commentsEnabled': commentsEnabled,
+            'rejectReplies': not commentsEnabled,
+            'mediaType': 'text/html',
+            'content': content,
+            'contentMap': {
+                'en': content
+            },
+            'attachment': [],
+            'tag': tags,
+            'replies': {
+                'id': idStr,
+                'type': 'Collection',
+                'first': {
+                    'type': 'CollectionPage',
+                    'partOf': idStr,
+                    'items': []
+                }
+            }
+        }
+    }
+    if attachImageFilename:
+        newPost['object'] = \
+            attachMedia(baseDir, httpPrefix, nickname, domain, port,
+                        newPost['object'], attachImageFilename,
+                        mediaType, imageDescription, city)
+    return newPost
+
+
+def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
+                   httpPrefix: str, content: str, statusNumber: str,
+                   published: str, newPostId: str, postContext: {},
+                   toRecipients: [], toCC: [], inReplyTo: str,
+                   sensitive: bool, commentsEnabled: bool,
+                   tags: {}, attachImageFilename: str,
+                   mediaType: str, imageDescription: str, city: str,
+                   postObjectType: str, summary: str,
+                   inReplyToAtomUri: str) -> {}:
+    """Creates a new client-to-server post
+    """
+    idStr = \
+        httpPrefix + '://' + domain + '/users/' + nickname + \
+        '/statuses/' + statusNumber + '/replies'
+    newPostUrl = \
+        httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
+    newPost = {
+        "@context": postContext,
+        'id': newPostId,
+        'type': postObjectType,
+        'summary': summary,
+        'inReplyTo': inReplyTo,
+        'published': published,
+        'url': newPostUrl,
+        'attributedTo': httpPrefix + '://' + domain + '/users/' + nickname,
+        'to': toRecipients,
+        'cc': toCC,
+        'sensitive': sensitive,
+        'atomUri': newPostId,
+        'inReplyToAtomUri': inReplyToAtomUri,
+        'commentsEnabled': commentsEnabled,
+        'rejectReplies': not commentsEnabled,
+        'mediaType': 'text/html',
+        'content': content,
+        'contentMap': {
+            'en': content
+        },
+        'attachment': [],
+        'tag': tags,
+        'replies': {
+            'id': idStr,
+            'type': 'Collection',
+            'first': {
+                'type': 'CollectionPage',
+                'partOf': idStr,
+                'items': []
+            }
+        }
+    }
+    if attachImageFilename:
+        newPost = \
+            attachMedia(baseDir, httpPrefix, nickname, domain, port,
+                        newPost, attachImageFilename,
+                        mediaType, imageDescription, city)
+    return newPost
 
 
 def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
@@ -1059,119 +1140,27 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         postObjectType = 'Article'
 
     if not clientToServer:
-        actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
-
-        idStr = \
-            httpPrefix + '://' + domain + '/users/' + nickname + \
-            '/statuses/' + statusNumber + '/replies'
-        newPostUrl = \
-            httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-        newPostAttributedTo = \
-            httpPrefix + '://' + domain + '/users/' + nickname
-        newPost = {
-            '@context': postContext,
-            'id': newPostId + '/activity',
-            'type': 'Create',
-            'actor': actorUrl,
-            'published': published,
-            'to': toRecipients,
-            'cc': toCC,
-            'object': {
-                'id': newPostId,
-                'type': postObjectType,
-                'summary': summary,
-                'inReplyTo': inReplyTo,
-                'published': published,
-                'url': newPostUrl,
-                'attributedTo': newPostAttributedTo,
-                'to': toRecipients,
-                'cc': toCC,
-                'sensitive': sensitive,
-                'atomUri': newPostId,
-                'inReplyToAtomUri': inReplyToAtomUri,
-                'commentsEnabled': commentsEnabled,
-                'rejectReplies': not commentsEnabled,
-                'mediaType': 'text/html',
-                'content': content,
-                'contentMap': {
-                    'en': content
-                },
-                'attachment': [],
-                'tag': tags,
-                'replies': {
-                    'id': idStr,
-                    'type': 'Collection',
-                    'first': {
-                        'type': 'CollectionPage',
-                        'partOf': idStr,
-                        'items': []
-                    }
-                }
-            }
-        }
-        if attachImageFilename:
-            newPost['object'] = \
-                attachMedia(baseDir, httpPrefix, nickname, domain, port,
-                            newPost['object'], attachImageFilename,
-                            mediaType, imageDescription, city)
-        _appendEventFields(newPost['object'], eventUUID, eventStatus,
-                           anonymousParticipationEnabled,
-                           repliesModerationOption,
-                           category, joinMode,
-                           eventDateStr, endDateStr,
-                           location, maximumAttendeeCapacity,
-                           ticketUrl, subject)
+        newPost = \
+            _createPostS2S(baseDir, nickname, domain, port,
+                           httpPrefix, content, statusNumber,
+                           published, newPostId, postContext,
+                           toRecipients, toCC, inReplyTo,
+                           sensitive, commentsEnabled,
+                           tags, attachImageFilename,
+                           mediaType, imageDescription, city,
+                           postObjectType, summary,
+                           inReplyToAtomUri)
     else:
-        idStr = \
-            httpPrefix + '://' + domain + '/users/' + nickname + \
-            '/statuses/' + statusNumber + '/replies'
-        newPostUrl = \
-            httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-        newPost = {
-            "@context": postContext,
-            'id': newPostId,
-            'type': postObjectType,
-            'summary': summary,
-            'inReplyTo': inReplyTo,
-            'published': published,
-            'url': newPostUrl,
-            'attributedTo': httpPrefix + '://' + domain + '/users/' + nickname,
-            'to': toRecipients,
-            'cc': toCC,
-            'sensitive': sensitive,
-            'atomUri': newPostId,
-            'inReplyToAtomUri': inReplyToAtomUri,
-            'commentsEnabled': commentsEnabled,
-            'rejectReplies': not commentsEnabled,
-            'mediaType': 'text/html',
-            'content': content,
-            'contentMap': {
-                'en': content
-            },
-            'attachment': [],
-            'tag': tags,
-            'replies': {
-                'id': idStr,
-                'type': 'Collection',
-                'first': {
-                    'type': 'CollectionPage',
-                    'partOf': idStr,
-                    'items': []
-                }
-            }
-        }
-        if attachImageFilename:
-            newPost = \
-                attachMedia(baseDir, httpPrefix, nickname, domain, port,
-                            newPost, attachImageFilename,
-                            mediaType, imageDescription, city)
-        _appendEventFields(newPost, eventUUID, eventStatus,
-                           anonymousParticipationEnabled,
-                           repliesModerationOption,
-                           category, joinMode,
-                           eventDateStr, endDateStr,
-                           location, maximumAttendeeCapacity,
-                           ticketUrl, subject)
+        newPost = \
+            _createPostC2S(baseDir, nickname, domain, port,
+                           httpPrefix, content, statusNumber,
+                           published, newPostId, postContext,
+                           toRecipients, toCC, inReplyTo,
+                           sensitive, commentsEnabled,
+                           tags, attachImageFilename,
+                           mediaType, imageDescription, city,
+                           postObjectType, summary,
+                           inReplyToAtomUri)
     if ccUrl:
         if len(ccUrl) > 0:
             newPost['cc'] = [ccUrl]
