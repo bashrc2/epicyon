@@ -270,6 +270,81 @@ def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
     return tlStr
 
 
+def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
+                          nickname: str, newCalendarEvent: bool,
+                          newDM: bool, newReply: bool, newShare: bool,
+                          followApprovals: bool,
+                          accessKeys: {}, translate: {}) -> str:
+    """Returns html for timeline keyboard navigation
+    """
+    calendarStr = translate['Calendar']
+    if newCalendarEvent:
+        calendarStr = '<strong>' + calendarStr + '</strong>'
+    dmStr = translate['DM']
+    if newDM:
+        dmStr = '<strong>' + dmStr + '</strong>'
+    repliesStr = translate['Replies']
+    if newReply:
+        repliesStr = '<strong>' + repliesStr + '</strong>'
+    sharesStr = translate['Shares']
+    if newShare:
+        sharesStr = '<strong>' + sharesStr + '</strong>'
+    menuProfile = \
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
+    menuInbox = \
+        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
+    menuOutbox = \
+        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
+    menuSearch = \
+        htmlHideFromScreenReader('🔍') + ' ' + \
+        translate['Search and follow']
+    menuCalendar = \
+        htmlHideFromScreenReader('📅') + ' ' + calendarStr
+    menuDM = \
+        htmlHideFromScreenReader('📩') + ' ' + dmStr
+    menuReplies = \
+        htmlHideFromScreenReader('📨') + ' ' + repliesStr
+    menuBookmarks = \
+        htmlHideFromScreenReader('🔖') + ' ' + translate['Bookmarks']
+    menuShares = \
+        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
+    menuBlogs = \
+        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
+    menuNewswire = \
+        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
+    menuLinks = \
+        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
+    menuNewPost = \
+        htmlHideFromScreenReader('➕') + ' ' + translate['Create a new post']
+    menuModeration = \
+        htmlHideFromScreenReader('⚡️') + ' ' + translate['Mod']
+    navLinks = {
+        menuProfile: '/users/' + nickname,
+        menuInbox: usersPath + '/inbox#timelineposts',
+        menuSearch: usersPath + '/search',
+        menuNewPost: usersPath + '/newpost',
+        menuCalendar: usersPath + '/calendar',
+        menuDM: usersPath + '/dm#timelineposts',
+        menuReplies: usersPath + '/tlreplies#timelineposts',
+        menuOutbox: usersPath + '/outbox#timelineposts',
+        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
+        menuShares: usersPath + '/tlshares#timelineposts',
+        menuBlogs: usersPath + '/tlblogs#timelineposts',
+        menuNewswire: usersPath + '/newswiremobile',
+        menuLinks: usersPath + '/linksmobile'
+    }
+    navAccessKeys = {}
+    for variableName, key in accessKeys.items():
+        if not locals().get(variableName):
+            continue
+        navAccessKeys[locals()[variableName]] = key
+    if moderator:
+        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
+    return htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+                                  None, usersPath, translate, followApprovals)
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -513,78 +588,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                              iconsAsButtons, usersPath, translate)
 
     # keyboard navigation
-    calendarStr = translate['Calendar']
-    if newCalendarEvent:
-        calendarStr = '<strong>' + calendarStr + '</strong>'
-    dmStr = translate['DM']
-    if newDM:
-        dmStr = '<strong>' + dmStr + '</strong>'
-    repliesStr = translate['Replies']
-    if newReply:
-        repliesStr = '<strong>' + repliesStr + '</strong>'
-    sharesStr = translate['Shares']
-    if newShare:
-        sharesStr = '<strong>' + sharesStr + '</strong>'
-    menuProfile = \
-        htmlHideFromScreenReader('👤') + ' ' + \
-        translate['Switch to profile view']
-    menuInbox = \
-        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
-    menuOutbox = \
-        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
-    menuSearch = \
-        htmlHideFromScreenReader('🔍') + ' ' + \
-        translate['Search and follow']
-    menuCalendar = \
-        htmlHideFromScreenReader('📅') + ' ' + calendarStr
-    menuDM = \
-        htmlHideFromScreenReader('📩') + ' ' + dmStr
-    menuReplies = \
-        htmlHideFromScreenReader('📨') + ' ' + repliesStr
-    menuBookmarks = \
-        htmlHideFromScreenReader('🔖') + ' ' + \
-        translate['Bookmarks']
-    menuShares = \
-        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
-#    menuEvents = \
-#        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
-    menuBlogs = \
-        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
-    menuNewswire = \
-        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
-    menuLinks = \
-        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
-    menuNewPost = \
-        htmlHideFromScreenReader('➕') + ' ' + \
-        translate['Create a new post']
-    menuModeration = \
-        htmlHideFromScreenReader('⚡️') + ' ' + \
-        translate['Mod']
-    navLinks = {
-        menuProfile: '/users/' + nickname,
-        menuInbox: usersPath + '/inbox#timelineposts',
-        menuSearch: usersPath + '/search',
-        menuNewPost: usersPath + '/newpost',
-        menuCalendar: usersPath + '/calendar',
-        menuDM: usersPath + '/dm#timelineposts',
-        menuReplies: usersPath + '/tlreplies#timelineposts',
-        menuOutbox: usersPath + '/outbox#timelineposts',
-        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
-        menuShares: usersPath + '/tlshares#timelineposts',
-        menuBlogs: usersPath + '/tlblogs#timelineposts',
-        menuNewswire: usersPath + '/newswiremobile',
-        menuLinks: usersPath + '/linksmobile'
-    }
-    navAccessKeys = {}
-    for variableName, key in accessKeys.items():
-        if not locals().get(variableName):
-            continue
-        navAccessKeys[locals()[variableName]] = key
-    if moderator:
-        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
-                                    None, usersPath, translate,
-                                    followApprovals)
+    tlStr += \
+        _htmlTimelineKeyboard(moderator, textModeBanner, usersPath, nickname,
+                              newCalendarEvent, newDM, newReply, newShare,
+                              followApprovals, accessKeys, translate)
 
     # banner and row of buttons
     tlStr += \
