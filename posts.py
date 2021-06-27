@@ -762,50 +762,6 @@ def _addSchedulePost(baseDir: str, nickname: str, domain: str,
             scheduleFile.write(indexStr + '\n')
 
 
-def _appendEventFields(newPost: {},
-                       eventUUID: str, eventStatus: str,
-                       anonymousParticipationEnabled: bool,
-                       repliesModerationOption: str,
-                       category: str,
-                       joinMode: str,
-                       eventDateStr: str,
-                       endDateStr: str,
-                       location: str,
-                       maximumAttendeeCapacity: int,
-                       ticketUrl: str,
-                       subject: str) -> None:
-    """Appends Mobilizon-type event fields to a post
-    """
-    if not eventUUID:
-        return
-
-    # add attributes for Mobilizon-type events
-    newPost['uuid'] = eventUUID
-    if eventStatus:
-        newPost['ical:status'] = eventStatus
-    if anonymousParticipationEnabled:
-        newPost['anonymousParticipationEnabled'] = \
-            anonymousParticipationEnabled
-    if repliesModerationOption:
-        newPost['repliesModerationOption'] = repliesModerationOption
-    if category:
-        newPost['category'] = category
-    if joinMode:
-        newPost['joinMode'] = joinMode
-    newPost['startTime'] = eventDateStr
-    newPost['endTime'] = endDateStr
-    if location:
-        newPost['location'] = location
-    if maximumAttendeeCapacity:
-        newPost['maximumAttendeeCapacity'] = maximumAttendeeCapacity
-    if ticketUrl:
-        newPost['ticketUrl'] = ticketUrl
-    if subject:
-        newPost['name'] = subject
-        newPost['summary'] = None
-        newPost['sensitive'] = False
-
-
 def validContentWarning(cw: str) -> str:
     """Returns a validated content warning
     """
@@ -874,6 +830,232 @@ def _createPostCWFromReply(baseDir: str, nickname: str, domain: str,
                             if replyToJson['object'].get('summary'):
                                 summary = replyToJson['object']['summary']
     return sensitive, summary
+
+
+def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
+                   httpPrefix: str, content: str, statusNumber: str,
+                   published: str, newPostId: str, postContext: {},
+                   toRecipients: [], toCC: [], inReplyTo: str,
+                   sensitive: bool, commentsEnabled: bool,
+                   tags: [], attachImageFilename: str,
+                   mediaType: str, imageDescription: str, city: str,
+                   postObjectType: str, summary: str,
+                   inReplyToAtomUri: str) -> {}:
+    """Creates a new server-to-server post
+    """
+    actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    idStr = \
+        httpPrefix + '://' + domain + '/users/' + nickname + \
+        '/statuses/' + statusNumber + '/replies'
+    newPostUrl = \
+        httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
+    newPostAttributedTo = \
+        httpPrefix + '://' + domain + '/users/' + nickname
+    newPost = {
+        '@context': postContext,
+        'id': newPostId + '/activity',
+        'type': 'Create',
+        'actor': actorUrl,
+        'published': published,
+        'to': toRecipients,
+        'cc': toCC,
+        'object': {
+            'id': newPostId,
+            'type': postObjectType,
+            'summary': summary,
+            'inReplyTo': inReplyTo,
+            'published': published,
+            'url': newPostUrl,
+            'attributedTo': newPostAttributedTo,
+            'to': toRecipients,
+            'cc': toCC,
+            'sensitive': sensitive,
+            'atomUri': newPostId,
+            'inReplyToAtomUri': inReplyToAtomUri,
+            'commentsEnabled': commentsEnabled,
+            'rejectReplies': not commentsEnabled,
+            'mediaType': 'text/html',
+            'content': content,
+            'contentMap': {
+                'en': content
+            },
+            'attachment': [],
+            'tag': tags,
+            'replies': {
+                'id': idStr,
+                'type': 'Collection',
+                'first': {
+                    'type': 'CollectionPage',
+                    'partOf': idStr,
+                    'items': []
+                }
+            }
+        }
+    }
+    if attachImageFilename:
+        newPost['object'] = \
+            attachMedia(baseDir, httpPrefix, nickname, domain, port,
+                        newPost['object'], attachImageFilename,
+                        mediaType, imageDescription, city)
+    return newPost
+
+
+def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
+                   httpPrefix: str, content: str, statusNumber: str,
+                   published: str, newPostId: str, postContext: {},
+                   toRecipients: [], toCC: [], inReplyTo: str,
+                   sensitive: bool, commentsEnabled: bool,
+                   tags: [], attachImageFilename: str,
+                   mediaType: str, imageDescription: str, city: str,
+                   postObjectType: str, summary: str,
+                   inReplyToAtomUri: str) -> {}:
+    """Creates a new client-to-server post
+    """
+    idStr = \
+        httpPrefix + '://' + domain + '/users/' + nickname + \
+        '/statuses/' + statusNumber + '/replies'
+    newPostUrl = \
+        httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
+    newPost = {
+        "@context": postContext,
+        'id': newPostId,
+        'type': postObjectType,
+        'summary': summary,
+        'inReplyTo': inReplyTo,
+        'published': published,
+        'url': newPostUrl,
+        'attributedTo': httpPrefix + '://' + domain + '/users/' + nickname,
+        'to': toRecipients,
+        'cc': toCC,
+        'sensitive': sensitive,
+        'atomUri': newPostId,
+        'inReplyToAtomUri': inReplyToAtomUri,
+        'commentsEnabled': commentsEnabled,
+        'rejectReplies': not commentsEnabled,
+        'mediaType': 'text/html',
+        'content': content,
+        'contentMap': {
+            'en': content
+        },
+        'attachment': [],
+        'tag': tags,
+        'replies': {
+            'id': idStr,
+            'type': 'Collection',
+            'first': {
+                'type': 'CollectionPage',
+                'partOf': idStr,
+                'items': []
+            }
+        }
+    }
+    if attachImageFilename:
+        newPost = \
+            attachMedia(baseDir, httpPrefix, nickname, domain, port,
+                        newPost, attachImageFilename,
+                        mediaType, imageDescription, city)
+    return newPost
+
+
+def _createPostPlaceAndTime(eventDate: str, endDate: str,
+                            eventTime: str, endTime: str,
+                            summary: str, content: str,
+                            schedulePost: bool,
+                            eventUUID: str,
+                            location: str,
+                            tags: []) -> str:
+    """Adds a place and time to the tags on a new post
+    """
+    endDateStr = None
+    if endDate:
+        eventName = summary
+        if not eventName:
+            eventName = content
+        endDateStr = endDate
+        if endTime:
+            if endTime.endswith('Z'):
+                endDateStr = endDate + 'T' + endTime
+            else:
+                endDateStr = endDate + 'T' + endTime + \
+                    ':00' + strftime("%z", gmtime())
+        else:
+            endDateStr = endDate + 'T12:00:00Z'
+
+    # get the starting date and time
+    eventDateStr = None
+    if eventDate:
+        eventName = summary
+        if not eventName:
+            eventName = content
+        eventDateStr = eventDate
+        if eventTime:
+            if eventTime.endswith('Z'):
+                eventDateStr = eventDate + 'T' + eventTime
+            else:
+                eventDateStr = eventDate + 'T' + eventTime + \
+                    ':00' + strftime("%z", gmtime())
+        else:
+            eventDateStr = eventDate + 'T12:00:00Z'
+        if not endDateStr:
+            endDateStr = eventDateStr
+        if not schedulePost and not eventUUID:
+            tags.append({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "Event",
+                "name": eventName,
+                "startTime": eventDateStr,
+                "endTime": endDateStr
+            })
+    if location and not eventUUID:
+        tags.append({
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Place",
+            "name": location
+        })
+    return eventDateStr
+
+
+def _createPostMentions(ccUrl: str, newPost: {},
+                        toRecipients: [], tags: []) -> None:
+    """Updates mentions for a new post
+    """
+    if not ccUrl:
+        return
+    if len(ccUrl) == 0:
+        return
+    newPost['cc'] = [ccUrl]
+    if newPost.get('object'):
+        newPost['object']['cc'] = [ccUrl]
+
+        # if this is a public post then include any mentions in cc
+        toCC = newPost['object']['cc']
+        if len(toRecipients) != 1:
+            return
+        if toRecipients[0].endswith('#Public') and \
+           ccUrl.endswith('/followers'):
+            for tag in tags:
+                if tag['type'] != 'Mention':
+                    continue
+                if tag['href'] not in toCC:
+                    newPost['object']['cc'].append(tag['href'])
+
+
+def _createPostModReport(baseDir: str,
+                         isModerationReport: bool, newPost: {},
+                         newPostId: str) -> None:
+    """ if this is a moderation report then add a status
+    """
+    if not isModerationReport:
+        return
+    # add status
+    if newPost.get('object'):
+        newPost['object']['moderationStatus'] = 'pending'
+    else:
+        newPost['moderationStatus'] = 'pending'
+    # save to index file
+    moderationIndexFile = baseDir + '/accounts/moderation.txt'
+    with open(moderationIndexFile, 'a+') as modFile:
+        modFile.write(newPostId + '\n')
 
 
 def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
@@ -980,53 +1162,11 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         _createPostCWFromReply(baseDir, nickname, domain,
                                inReplyTo, sensitive, summary)
 
-    # get the ending date and time
-    endDateStr = None
-    if endDate:
-        eventName = summary
-        if not eventName:
-            eventName = content
-        endDateStr = endDate
-        if endTime:
-            if endTime.endswith('Z'):
-                endDateStr = endDate + 'T' + endTime
-            else:
-                endDateStr = endDate + 'T' + endTime + \
-                    ':00' + strftime("%z", gmtime())
-        else:
-            endDateStr = endDate + 'T12:00:00Z'
-
-    # get the starting date and time
-    eventDateStr = None
-    if eventDate:
-        eventName = summary
-        if not eventName:
-            eventName = content
-        eventDateStr = eventDate
-        if eventTime:
-            if eventTime.endswith('Z'):
-                eventDateStr = eventDate + 'T' + eventTime
-            else:
-                eventDateStr = eventDate + 'T' + eventTime + \
-                    ':00' + strftime("%z", gmtime())
-        else:
-            eventDateStr = eventDate + 'T12:00:00Z'
-        if not endDateStr:
-            endDateStr = eventDateStr
-        if not schedulePost and not eventUUID:
-            tags.append({
-                "@context": "https://www.w3.org/ns/activitystreams",
-                "type": "Event",
-                "name": eventName,
-                "startTime": eventDateStr,
-                "endTime": endDateStr
-            })
-    if location and not eventUUID:
-        tags.append({
-            "@context": "https://www.w3.org/ns/activitystreams",
-            "type": "Place",
-            "name": location
-        })
+    eventDateStr = \
+        _createPostPlaceAndTime(eventDate, endDate,
+                                eventTime, endTime,
+                                summary, content, schedulePost,
+                                eventUUID, location, tags)
 
     postContext = [
         'https://www.w3.org/ns/activitystreams',
@@ -1059,146 +1199,31 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         postObjectType = 'Article'
 
     if not clientToServer:
-        actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
-
-        idStr = \
-            httpPrefix + '://' + domain + '/users/' + nickname + \
-            '/statuses/' + statusNumber + '/replies'
-        newPostUrl = \
-            httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-        newPostAttributedTo = \
-            httpPrefix + '://' + domain + '/users/' + nickname
-        newPost = {
-            '@context': postContext,
-            'id': newPostId + '/activity',
-            'type': 'Create',
-            'actor': actorUrl,
-            'published': published,
-            'to': toRecipients,
-            'cc': toCC,
-            'object': {
-                'id': newPostId,
-                'type': postObjectType,
-                'summary': summary,
-                'inReplyTo': inReplyTo,
-                'published': published,
-                'url': newPostUrl,
-                'attributedTo': newPostAttributedTo,
-                'to': toRecipients,
-                'cc': toCC,
-                'sensitive': sensitive,
-                'atomUri': newPostId,
-                'inReplyToAtomUri': inReplyToAtomUri,
-                'commentsEnabled': commentsEnabled,
-                'rejectReplies': not commentsEnabled,
-                'mediaType': 'text/html',
-                'content': content,
-                'contentMap': {
-                    'en': content
-                },
-                'attachment': [],
-                'tag': tags,
-                'replies': {
-                    'id': idStr,
-                    'type': 'Collection',
-                    'first': {
-                        'type': 'CollectionPage',
-                        'partOf': idStr,
-                        'items': []
-                    }
-                }
-            }
-        }
-        if attachImageFilename:
-            newPost['object'] = \
-                attachMedia(baseDir, httpPrefix, nickname, domain, port,
-                            newPost['object'], attachImageFilename,
-                            mediaType, imageDescription, city)
-        _appendEventFields(newPost['object'], eventUUID, eventStatus,
-                           anonymousParticipationEnabled,
-                           repliesModerationOption,
-                           category, joinMode,
-                           eventDateStr, endDateStr,
-                           location, maximumAttendeeCapacity,
-                           ticketUrl, subject)
+        newPost = \
+            _createPostS2S(baseDir, nickname, domain, port,
+                           httpPrefix, content, statusNumber,
+                           published, newPostId, postContext,
+                           toRecipients, toCC, inReplyTo,
+                           sensitive, commentsEnabled,
+                           tags, attachImageFilename,
+                           mediaType, imageDescription, city,
+                           postObjectType, summary,
+                           inReplyToAtomUri)
     else:
-        idStr = \
-            httpPrefix + '://' + domain + '/users/' + nickname + \
-            '/statuses/' + statusNumber + '/replies'
-        newPostUrl = \
-            httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-        newPost = {
-            "@context": postContext,
-            'id': newPostId,
-            'type': postObjectType,
-            'summary': summary,
-            'inReplyTo': inReplyTo,
-            'published': published,
-            'url': newPostUrl,
-            'attributedTo': httpPrefix + '://' + domain + '/users/' + nickname,
-            'to': toRecipients,
-            'cc': toCC,
-            'sensitive': sensitive,
-            'atomUri': newPostId,
-            'inReplyToAtomUri': inReplyToAtomUri,
-            'commentsEnabled': commentsEnabled,
-            'rejectReplies': not commentsEnabled,
-            'mediaType': 'text/html',
-            'content': content,
-            'contentMap': {
-                'en': content
-            },
-            'attachment': [],
-            'tag': tags,
-            'replies': {
-                'id': idStr,
-                'type': 'Collection',
-                'first': {
-                    'type': 'CollectionPage',
-                    'partOf': idStr,
-                    'items': []
-                }
-            }
-        }
-        if attachImageFilename:
-            newPost = \
-                attachMedia(baseDir, httpPrefix, nickname, domain, port,
-                            newPost, attachImageFilename,
-                            mediaType, imageDescription, city)
-        _appendEventFields(newPost, eventUUID, eventStatus,
-                           anonymousParticipationEnabled,
-                           repliesModerationOption,
-                           category, joinMode,
-                           eventDateStr, endDateStr,
-                           location, maximumAttendeeCapacity,
-                           ticketUrl, subject)
-    if ccUrl:
-        if len(ccUrl) > 0:
-            newPost['cc'] = [ccUrl]
-            if newPost.get('object'):
-                newPost['object']['cc'] = [ccUrl]
+        newPost = \
+            _createPostC2S(baseDir, nickname, domain, port,
+                           httpPrefix, content, statusNumber,
+                           published, newPostId, postContext,
+                           toRecipients, toCC, inReplyTo,
+                           sensitive, commentsEnabled,
+                           tags, attachImageFilename,
+                           mediaType, imageDescription, city,
+                           postObjectType, summary,
+                           inReplyToAtomUri)
 
-                # if this is a public post then include any mentions in cc
-                toCC = newPost['object']['cc']
-                if len(toRecipients) == 1:
-                    if toRecipients[0].endswith('#Public') and \
-                       ccUrl.endswith('/followers'):
-                        for tag in tags:
-                            if tag['type'] == 'Mention':
-                                if tag['href'] not in toCC:
-                                    toCC.append(tag['href'])
+    _createPostMentions(ccUrl, newPost, toRecipients, tags)
 
-    # if this is a moderation report then add a status
-    if isModerationReport:
-        # add status
-        if newPost.get('object'):
-            newPost['object']['moderationStatus'] = 'pending'
-        else:
-            newPost['moderationStatus'] = 'pending'
-        # save to index file
-        moderationIndexFile = baseDir + '/accounts/moderation.txt'
-        with open(moderationIndexFile, 'a+') as modFile:
-            modFile.write(newPostId + '\n')
+    _createPostModReport(baseDir, isModerationReport, newPost, newPostId)
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
