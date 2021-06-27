@@ -189,6 +189,87 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
     return newPostButtonStr
 
 
+def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
+                                   nickname: str, moderationActionStr: str,
+                                   translate: {}) -> str:
+    """Returns html for the moderation screen buttons
+    """
+    tlStr = ''
+    if moderator and boxName == 'moderation':
+        tlStr += \
+            '<form id="modtimeline" method="POST" action="/users/' + \
+            nickname + '/moderationaction">'
+        tlStr += '<div class="container">\n'
+        idx = 'Nickname or URL. Block using *@domain or nickname@domain'
+        tlStr += \
+            '    <b>' + translate[idx] + '</b><br>\n'
+        if moderationActionStr:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="' + \
+                moderationActionStr + '" autofocus><br>\n'
+        else:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="" autofocus><br>\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Information about current blocks/suspensions'] + \
+            '" alt="' + \
+            translate['Information about current blocks/suspensions'] + \
+            ' | " ' + \
+            'name="submitInfo" value="' + translate['Info'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Remove the above item'] + '" ' + \
+            'alt="' + translate['Remove the above item'] + ' | " ' + \
+            'name="submitRemove" value="' + \
+            translate['Remove'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Suspend the above account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Suspend the above account nickname'] + ' | " ' + \
+            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Remove a suspension for an account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Remove a suspension for an account nickname'] + \
+            ' | " ' + \
+            'name="submitUnsuspend" value="' + \
+            translate['Unsuspend'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Block an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Block an account on another instance'] + ' | " ' + \
+            'name="submitBlock" value="' + translate['Block'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unblock an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Unblock an account on another instance'] + ' | " ' + \
+            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Filter out words'] + '" ' + \
+            'alt="' + \
+            translate['Filter out words'] + ' | " ' + \
+            'name="submitFilter" value="' + translate['Filter'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unfilter words'] + '" ' + \
+            'alt="' + \
+            translate['Unfilter words'] + ' | " ' + \
+            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+
+        tlStr += '</div>\n</form>\n'
+    return tlStr
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -575,78 +656,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
-    if moderator and boxName == 'moderation':
-        tlStr += \
-            '<form id="modtimeline" method="POST" action="/users/' + \
-            nickname + '/moderationaction">'
-        tlStr += '<div class="container">\n'
-        idx = 'Nickname or URL. Block using *@domain or nickname@domain'
-        tlStr += \
-            '    <b>' + translate[idx] + '</b><br>\n'
-        if moderationActionStr:
-            tlStr += '    <input type="text" ' + \
-                'name="moderationAction" value="' + \
-                moderationActionStr + '" autofocus><br>\n'
-        else:
-            tlStr += '    <input type="text" ' + \
-                'name="moderationAction" value="" autofocus><br>\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Information about current blocks/suspensions'] + \
-            '" alt="' + \
-            translate['Information about current blocks/suspensions'] + \
-            ' | " ' + \
-            'name="submitInfo" value="' + translate['Info'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Remove the above item'] + '" ' + \
-            'alt="' + translate['Remove the above item'] + ' | " ' + \
-            'name="submitRemove" value="' + \
-            translate['Remove'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Suspend the above account nickname'] + '" ' + \
-            'alt="' + \
-            translate['Suspend the above account nickname'] + ' | " ' + \
-            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Remove a suspension for an account nickname'] + '" ' + \
-            'alt="' + \
-            translate['Remove a suspension for an account nickname'] + \
-            ' | " ' + \
-            'name="submitUnsuspend" value="' + \
-            translate['Unsuspend'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Block an account on another instance'] + '" ' + \
-            'alt="' + \
-            translate['Block an account on another instance'] + ' | " ' + \
-            'name="submitBlock" value="' + translate['Block'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Unblock an account on another instance'] + '" ' + \
-            'alt="' + \
-            translate['Unblock an account on another instance'] + ' | " ' + \
-            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Filter out words'] + '" ' + \
-            'alt="' + \
-            translate['Filter out words'] + ' | " ' + \
-            'name="submitFilter" value="' + translate['Filter'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Unfilter words'] + '" ' + \
-            'alt="' + \
-            translate['Unfilter words'] + ' | " ' + \
-            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
-
-        tlStr += '</div>\n</form>\n'
+    tlStr += \
+        _htmlTimelineModerationButtons(moderator, boxName, nickname,
+                                       moderationActionStr, translate)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
 
