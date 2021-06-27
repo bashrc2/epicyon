@@ -1339,6 +1339,53 @@ def _htmlEditProfileDangerZone(translate: {}) -> str:
     return editProfileForm
 
 
+def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
+                           translate: {}) -> str:
+    """skills section of Edit Profile screen
+    """
+    skills = getSkills(baseDir, nickname, domain)
+    skillsStr = ''
+    skillCtr = 1
+    if skills:
+        for skillDesc, skillValue in skills.items():
+            if isFiltered(baseDir, nickname, domain, skillDesc):
+                continue
+            skillsStr += \
+                '<p><input type="text" placeholder="' + translate['Skill'] + \
+                ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
+                '" value="' + skillDesc + '" style="width:40%">'
+            skillsStr += \
+                '<input type="range" min="1" max="100" ' + \
+                'class="slider" name="skillValue' + \
+                str(skillCtr) + '" value="' + str(skillValue) + '"></p>'
+            skillCtr += 1
+
+    skillsStr += \
+        '<p><input type="text" placeholder="Skill ' + str(skillCtr) + \
+        '" name="skillName' + str(skillCtr) + \
+        '" value="" style="width:40%">'
+    skillsStr += \
+        '<input type="range" min="1" max="100" ' + \
+        'class="slider" name="skillValue' + \
+        str(skillCtr) + '" value="50"></p>'
+    skillsStr += '    </div></details>\n'
+
+    editProfileForm = '<details><summary class="cw">' + \
+        translate['Skills'] + '</summary>\n'
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += \
+        '      <b><label class="labels">' + \
+        translate['Skills'] + '</label></b><br>\n'
+    idx = 'If you want to participate within organizations then you ' + \
+        'can indicate some skills that you have and approximate ' + \
+        'proficiency levels. This helps organizers to construct ' + \
+        'teams with an appropriate combination of skills.'
+    editProfileForm += '      <label class="labels">' + \
+        translate[idx] + '</label>\n'
+    editProfileForm += skillsStr
+    return editProfileForm
+
+
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
@@ -1502,33 +1549,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(gitProjectsFilename):
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
-
-    skills = getSkills(baseDir, nickname, domain)
-    skillsStr = ''
-    skillCtr = 1
-    if skills:
-        for skillDesc, skillValue in skills.items():
-            if isFiltered(baseDir, nickname, domain, skillDesc):
-                continue
-            skillsStr += \
-                '<p><input type="text" placeholder="' + translate['Skill'] + \
-                ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
-                '" value="' + skillDesc + '" style="width:40%">'
-            skillsStr += \
-                '<input type="range" min="1" max="100" ' + \
-                'class="slider" name="skillValue' + \
-                str(skillCtr) + '" value="' + str(skillValue) + '"></p>'
-            skillCtr += 1
-
-    skillsStr += \
-        '<p><input type="text" placeholder="Skill ' + str(skillCtr) + \
-        '" name="skillName' + str(skillCtr) + \
-        '" value="" style="width:40%">'
-    skillsStr += \
-        '<input type="range" min="1" max="100" ' + \
-        'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>'
-    skillsStr += '    </div></details>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -1930,6 +1950,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     editProfileForm += '    </div></details>\n'
 
+    # git projects section
     editProfileForm += '<details><summary class="cw">' + \
         translate['Git Projects'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
@@ -1945,19 +1966,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div></details>\n'
 
     # Skills section
-    editProfileForm += '<details><summary class="cw">' + \
-        translate['Skills'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
-        '      <b><label class="labels">' + \
-        translate['Skills'] + '</label></b><br>\n'
-    idx = 'If you want to participate within organizations then you ' + \
-        'can indicate some skills that you have and approximate ' + \
-        'proficiency levels. This helps organizers to construct ' + \
-        'teams with an appropriate combination of skills.'
-    editProfileForm += '      <label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += skillsStr
+        _htmlEditProfileSkills(baseDir, nickname, domain, translate)
+
     editProfileForm += roleAssignStr + peertubeStr + graphicsStr + instanceStr
 
     # danger zone section
