@@ -957,6 +957,64 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
     return newPost
 
 
+def _createPostPlaceAndTime(eventDate: str, endDate: str,
+                            eventTime: str, endTime: str,
+                            summary: str, content: str,
+                            schedulePost: bool,
+                            eventUUID: str,
+                            location: str,
+                            tags: []) -> str:
+    """Adds a place and time to the tags on a new post
+    """
+    endDateStr = None
+    if endDate:
+        eventName = summary
+        if not eventName:
+            eventName = content
+        endDateStr = endDate
+        if endTime:
+            if endTime.endswith('Z'):
+                endDateStr = endDate + 'T' + endTime
+            else:
+                endDateStr = endDate + 'T' + endTime + \
+                    ':00' + strftime("%z", gmtime())
+        else:
+            endDateStr = endDate + 'T12:00:00Z'
+
+    # get the starting date and time
+    eventDateStr = None
+    if eventDate:
+        eventName = summary
+        if not eventName:
+            eventName = content
+        eventDateStr = eventDate
+        if eventTime:
+            if eventTime.endswith('Z'):
+                eventDateStr = eventDate + 'T' + eventTime
+            else:
+                eventDateStr = eventDate + 'T' + eventTime + \
+                    ':00' + strftime("%z", gmtime())
+        else:
+            eventDateStr = eventDate + 'T12:00:00Z'
+        if not endDateStr:
+            endDateStr = eventDateStr
+        if not schedulePost and not eventUUID:
+            tags.append({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                "type": "Event",
+                "name": eventName,
+                "startTime": eventDateStr,
+                "endTime": endDateStr
+            })
+    if location and not eventUUID:
+        tags.append({
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Place",
+            "name": location
+        })
+    return eventDateStr
+
+
 def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                     followersOnly: bool, saveToFile: bool,
@@ -1061,53 +1119,11 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         _createPostCWFromReply(baseDir, nickname, domain,
                                inReplyTo, sensitive, summary)
 
-    # get the ending date and time
-    endDateStr = None
-    if endDate:
-        eventName = summary
-        if not eventName:
-            eventName = content
-        endDateStr = endDate
-        if endTime:
-            if endTime.endswith('Z'):
-                endDateStr = endDate + 'T' + endTime
-            else:
-                endDateStr = endDate + 'T' + endTime + \
-                    ':00' + strftime("%z", gmtime())
-        else:
-            endDateStr = endDate + 'T12:00:00Z'
-
-    # get the starting date and time
-    eventDateStr = None
-    if eventDate:
-        eventName = summary
-        if not eventName:
-            eventName = content
-        eventDateStr = eventDate
-        if eventTime:
-            if eventTime.endswith('Z'):
-                eventDateStr = eventDate + 'T' + eventTime
-            else:
-                eventDateStr = eventDate + 'T' + eventTime + \
-                    ':00' + strftime("%z", gmtime())
-        else:
-            eventDateStr = eventDate + 'T12:00:00Z'
-        if not endDateStr:
-            endDateStr = eventDateStr
-        if not schedulePost and not eventUUID:
-            tags.append({
-                "@context": "https://www.w3.org/ns/activitystreams",
-                "type": "Event",
-                "name": eventName,
-                "startTime": eventDateStr,
-                "endTime": endDateStr
-            })
-    if location and not eventUUID:
-        tags.append({
-            "@context": "https://www.w3.org/ns/activitystreams",
-            "type": "Place",
-            "name": location
-        })
+    eventDateStr = \
+        _createPostPlaceAndTime(eventDate, endDate,
+                                eventTime, endTime,
+                                summary, content, schedulePost,
+                                eventUUID, location, tags)
 
     postContext = [
         'https://www.w3.org/ns/activitystreams',
