@@ -1728,9 +1728,44 @@ def _htmlEditProfileContactInfo(nickname: str,
     return editProfileForm
 
 
-def _htmlEditProfileOptions(translate: {}) -> str:
+def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
+                            isBot: str, isGroup: str,
+                            followDMs: str, removeTwitter: str,
+                            notifyLikes: str, hideLikeButton: str,
+                            translate: {}) -> str:
     """option checkboxes section of edit profile screen
     """
+    editProfileForm = '    <div class="container">\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="approveFollowers" ' + manuallyApprovesFollowers + \
+        '> ' + translate['Approve follower requests'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" ' + \
+        'class="profilecheckbox" name="isBot" ' + \
+        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" ' + \
+        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
+        translate['This is a group account'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="followDMs" ' + followDMs + '> ' + \
+        translate['Only people I follow can send me DMs'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="removeTwitter" ' + removeTwitter + '> ' + \
+        translate['Remove Twitter posts'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="notifyLikes" ' + notifyLikes + '> ' + \
+        translate['Notify when posts are liked'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
+        translate["Don't show the Like button"] + '<br>\n'
+    editProfileForm += '    </div>\n'
+    return editProfileForm
 
 
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
@@ -1972,36 +2007,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div>\n'
 
     # Option checkboxes
-    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '> ' + translate['Approve follower requests'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isBot" ' + \
-        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
-        translate['This is a group account'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="followDMs" ' + followDMs + '> ' + \
-        translate['Only people I follow can send me DMs'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="removeTwitter" ' + removeTwitter + '> ' + \
-        translate['Remove Twitter posts'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="notifyLikes" ' + notifyLikes + '> ' + \
-        translate['Notify when posts are liked'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
-        translate["Don't show the Like button"] + '<br>\n'
-    editProfileForm += '    </div>\n'
+        _htmlEditProfileOptions(manuallyApprovesFollowers,
+                                isBot, isGroup, followDMs, removeTwitter,
+                                notifyLikes, hideLikeButton, translate)
 
     # Contact information
     editProfileForm += \
