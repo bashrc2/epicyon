@@ -1034,31 +1034,15 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
 
-    isBot = ''
-    isGroup = ''
-    followDMs = ''
-    removeTwitter = ''
-    notifyLikes = ''
-    hideLikeButton = ''
-    mediaInstanceStr = ''
-    blogsInstanceStr = ''
-    newsInstanceStr = ''
     displayNickname = nickname
-    bioStr = ''
-    donateUrl = ''
-    emailAddress = ''
-    PGPpubKey = ''
-    PGPfingerprint = ''
-    xmppAddress = ''
-    matrixAddress = ''
-    ssbAddress = ''
-    blogAddress = ''
-    toxAddress = ''
-    jamiAddress = ''
-    cwtchAddress = ''
-    briarAddress = ''
-    manuallyApprovesFollowers = ''
-    movedTo = ''
+    isBot = isGroup = followDMs = removeTwitter = ''
+    notifyLikes = hideLikeButton = mediaInstanceStr = ''
+    blogsInstanceStr = newsInstanceStr = movedTo = ''
+    bioStr = donateUrl = emailAddress = PGPpubKey = ''
+    PGPfingerprint = xmppAddress = matrixAddress = ''
+    ssbAddress = blogAddress = toxAddress = jamiAddress = ''
+    cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
+
     actorJson = loadJson(actorFilename)
     if actorJson:
         if actorJson.get('movedTo'):
