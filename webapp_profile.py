@@ -1054,6 +1054,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     ssbAddress = ''
     blogAddress = ''
     toxAddress = ''
+    jamiAddress = ''
+    cwtchAddress = ''
     briarAddress = ''
     manuallyApprovesFollowers = ''
     movedTo = ''
