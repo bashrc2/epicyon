@@ -93,6 +93,258 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
     return ''
 
 
+def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
+                         boxName: str, iconsAsButtons: bool,
+                         usersPath: str, translate: {}) -> str:
+    """Returns html for the new post button
+    """
+    newPostButtonStr = ''
+    if boxName == 'dm':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newdm?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new DM'] + \
+                '" alt="| ' + translate['Create a new DM'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newdm?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + ' </span></button></a>'
+    elif (boxName == 'tlblogs' or
+          boxName == 'tlnews' or
+          boxName == 'tlfeatures'):
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newblog"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new post'] + '" alt="| ' + \
+                translate['Create a new post'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newblog">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlevents':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newevent?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new event'] + '" alt="| ' + \
+                translate['Create a new event'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newevent?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlshares':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newshare?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new shared item'] + '" alt="| ' + \
+                translate['Create a new shared item'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newshare?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    else:
+        if not manuallyApproveFollowers:
+            if not iconsAsButtons:
+                newPostButtonStr += \
+                    '<a class="imageAnchor" href="' + usersPath + \
+                    '/newpost"><img loading="lazy" src="/' + \
+                    'icons/newpost.png" title="' + \
+                    translate['Create a new post'] + '" alt="| ' + \
+                    translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr += \
+                    '<a href="' + usersPath + '/newpost">' + \
+                    '<button class="button"><span>' + \
+                    translate['Post'] + '</span></button></a>'
+        else:
+            if not iconsAsButtons:
+                newPostButtonStr += \
+                    '<a class="imageAnchor" href="' + usersPath + \
+                    '/newfollowers"><img loading="lazy" src="/' + \
+                    'icons/newpost.png" title="' + \
+                    translate['Create a new post'] + \
+                    '" alt="| ' + translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr += \
+                    '<a href="' + usersPath + '/newfollowers">' + \
+                    '<button class="button"><span>' + \
+                    translate['Post'] + '</span></button></a>'
+    return newPostButtonStr
+
+
+def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
+                                   nickname: str, moderationActionStr: str,
+                                   translate: {}) -> str:
+    """Returns html for the moderation screen buttons
+    """
+    tlStr = ''
+    if moderator and boxName == 'moderation':
+        tlStr += \
+            '<form id="modtimeline" method="POST" action="/users/' + \
+            nickname + '/moderationaction">'
+        tlStr += '<div class="container">\n'
+        idx = 'Nickname or URL. Block using *@domain or nickname@domain'
+        tlStr += \
+            '    <b>' + translate[idx] + '</b><br>\n'
+        if moderationActionStr:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="' + \
+                moderationActionStr + '" autofocus><br>\n'
+        else:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="" autofocus><br>\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Information about current blocks/suspensions'] + \
+            '" alt="' + \
+            translate['Information about current blocks/suspensions'] + \
+            ' | " ' + \
+            'name="submitInfo" value="' + translate['Info'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Remove the above item'] + '" ' + \
+            'alt="' + translate['Remove the above item'] + ' | " ' + \
+            'name="submitRemove" value="' + \
+            translate['Remove'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Suspend the above account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Suspend the above account nickname'] + ' | " ' + \
+            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Remove a suspension for an account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Remove a suspension for an account nickname'] + \
+            ' | " ' + \
+            'name="submitUnsuspend" value="' + \
+            translate['Unsuspend'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Block an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Block an account on another instance'] + ' | " ' + \
+            'name="submitBlock" value="' + translate['Block'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unblock an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Unblock an account on another instance'] + ' | " ' + \
+            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Filter out words'] + '" ' + \
+            'alt="' + \
+            translate['Filter out words'] + ' | " ' + \
+            'name="submitFilter" value="' + translate['Filter'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unfilter words'] + '" ' + \
+            'alt="' + \
+            translate['Unfilter words'] + ' | " ' + \
+            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+
+        tlStr += '</div>\n</form>\n'
+    return tlStr
+
+
+def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
+                          nickname: str, newCalendarEvent: bool,
+                          newDM: bool, newReply: bool, newShare: bool,
+                          followApprovals: bool,
+                          accessKeys: {}, translate: {}) -> str:
+    """Returns html for timeline keyboard navigation
+    """
+    calendarStr = translate['Calendar']
+    if newCalendarEvent:
+        calendarStr = '<strong>' + calendarStr + '</strong>'
+    dmStr = translate['DM']
+    if newDM:
+        dmStr = '<strong>' + dmStr + '</strong>'
+    repliesStr = translate['Replies']
+    if newReply:
+        repliesStr = '<strong>' + repliesStr + '</strong>'
+    sharesStr = translate['Shares']
+    if newShare:
+        sharesStr = '<strong>' + sharesStr + '</strong>'
+    menuProfile = \
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
+    menuInbox = \
+        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
+    menuOutbox = \
+        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
+    menuSearch = \
+        htmlHideFromScreenReader('🔍') + ' ' + \
+        translate['Search and follow']
+    menuCalendar = \
+        htmlHideFromScreenReader('📅') + ' ' + calendarStr
+    menuDM = \
+        htmlHideFromScreenReader('📩') + ' ' + dmStr
+    menuReplies = \
+        htmlHideFromScreenReader('📨') + ' ' + repliesStr
+    menuBookmarks = \
+        htmlHideFromScreenReader('🔖') + ' ' + translate['Bookmarks']
+    menuShares = \
+        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
+    menuBlogs = \
+        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
+    menuNewswire = \
+        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
+    menuLinks = \
+        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
+    menuNewPost = \
+        htmlHideFromScreenReader('➕') + ' ' + translate['Create a new post']
+    menuModeration = \
+        htmlHideFromScreenReader('⚡️') + ' ' + translate['Mod']
+    navLinks = {
+        menuProfile: '/users/' + nickname,
+        menuInbox: usersPath + '/inbox#timelineposts',
+        menuSearch: usersPath + '/search',
+        menuNewPost: usersPath + '/newpost',
+        menuCalendar: usersPath + '/calendar',
+        menuDM: usersPath + '/dm#timelineposts',
+        menuReplies: usersPath + '/tlreplies#timelineposts',
+        menuOutbox: usersPath + '/outbox#timelineposts',
+        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
+        menuShares: usersPath + '/tlshares#timelineposts',
+        menuBlogs: usersPath + '/tlblogs#timelineposts',
+        menuNewswire: usersPath + '/newswiremobile',
+        menuLinks: usersPath + '/linksmobile'
+    }
+    navAccessKeys = {}
+    for variableName, key in accessKeys.items():
+        if not locals().get(variableName):
+            continue
+        navAccessKeys[locals()[variableName]] = key
+    if moderator:
+        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
+    return htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+                                  None, usersPath, translate, followApprovals)
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -331,167 +583,15 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += '<div class="headericons">'
 
     # what screen to go to when a new post is created
-    if boxName == 'dm':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newdm?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new DM'] + \
-                '" alt="| ' + translate['Create a new DM'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newdm?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>'
-    elif (boxName == 'tlblogs' or
-          boxName == 'tlnews' or
-          boxName == 'tlfeatures'):
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newblog"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new post'] + '" alt="| ' + \
-                translate['Create a new post'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newblog">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlevents':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newevent?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new event'] + '" alt="| ' + \
-                translate['Create a new event'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newevent?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlshares':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newshare?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new shared item'] + '" alt="| ' + \
-                translate['Create a new shared item'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newshare?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    else:
-        if not manuallyApproveFollowers:
-            if not iconsAsButtons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newpost"><img loading="lazy" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + '" alt="| ' + \
-                    translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newpost">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
-        else:
-            if not iconsAsButtons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newfollowers"><img loading="lazy" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + \
-                    '" alt="| ' + translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newfollowers">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
+    newPostButtonStr += \
+        _htmlTimelineNewPost(manuallyApproveFollowers, boxName,
+                             iconsAsButtons, usersPath, translate)
 
     # keyboard navigation
-    calendarStr = translate['Calendar']
-    if newCalendarEvent:
-        calendarStr = '<strong>' + calendarStr + '</strong>'
-    dmStr = translate['DM']
-    if newDM:
-        dmStr = '<strong>' + dmStr + '</strong>'
-    repliesStr = translate['Replies']
-    if newReply:
-        repliesStr = '<strong>' + repliesStr + '</strong>'
-    sharesStr = translate['Shares']
-    if newShare:
-        sharesStr = '<strong>' + sharesStr + '</strong>'
-    menuProfile = \
-        htmlHideFromScreenReader('👤') + ' ' + \
-        translate['Switch to profile view']
-    menuInbox = \
-        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
-    menuOutbox = \
-        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
-    menuSearch = \
-        htmlHideFromScreenReader('🔍') + ' ' + \
-        translate['Search and follow']
-    menuCalendar = \
-        htmlHideFromScreenReader('📅') + ' ' + calendarStr
-    menuDM = \
-        htmlHideFromScreenReader('📩') + ' ' + dmStr
-    menuReplies = \
-        htmlHideFromScreenReader('📨') + ' ' + repliesStr
-    menuBookmarks = \
-        htmlHideFromScreenReader('🔖') + ' ' + \
-        translate['Bookmarks']
-    menuShares = \
-        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
-#    menuEvents = \
-#        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
-    menuBlogs = \
-        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
-    menuNewswire = \
-        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
-    menuLinks = \
-        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
-    menuNewPost = \
-        htmlHideFromScreenReader('➕') + ' ' + \
-        translate['Create a new post']
-    menuModeration = \
-        htmlHideFromScreenReader('⚡️') + ' ' + \
-        translate['Mod']
-    navLinks = {
-        menuProfile: '/users/' + nickname,
-        menuInbox: usersPath + '/inbox#timelineposts',
-        menuSearch: usersPath + '/search',
-        menuNewPost: usersPath + '/newpost',
-        menuCalendar: usersPath + '/calendar',
-        menuDM: usersPath + '/dm#timelineposts',
-        menuReplies: usersPath + '/tlreplies#timelineposts',
-        menuOutbox: usersPath + '/outbox#timelineposts',
-        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
-        menuShares: usersPath + '/tlshares#timelineposts',
-        menuBlogs: usersPath + '/tlblogs#timelineposts',
-        menuNewswire: usersPath + '/newswiremobile',
-        menuLinks: usersPath + '/linksmobile'
-    }
-    navAccessKeys = {}
-    for variableName, key in accessKeys.items():
-        if not locals().get(variableName):
-            continue
-        navAccessKeys[locals()[variableName]] = key
-    if moderator:
-        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
-                                    None, usersPath, translate,
-                                    followApprovals)
+    tlStr += \
+        _htmlTimelineKeyboard(moderator, textModeBanner, usersPath, nickname,
+                              newCalendarEvent, newDM, newReply, newShare,
+                              followApprovals, accessKeys, translate)
 
     # banner and row of buttons
     tlStr += \
@@ -563,78 +663,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
-    if moderator and boxName == 'moderation':
-        tlStr += \
-            '<form id="modtimeline" method="POST" action="/users/' + \
-            nickname + '/moderationaction">'
-        tlStr += '<div class="container">\n'
-        idx = 'Nickname or URL. Block using *@domain or nickname@domain'
-        tlStr += \
-            '    <b>' + translate[idx] + '</b><br>\n'
-        if moderationActionStr:
-            tlStr += '    <input type="text" ' + \
-                'name="moderationAction" value="' + \
-                moderationActionStr + '" autofocus><br>\n'
-        else:
-            tlStr += '    <input type="text" ' + \
-                'name="moderationAction" value="" autofocus><br>\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Information about current blocks/suspensions'] + \
-            '" alt="' + \
-            translate['Information about current blocks/suspensions'] + \
-            ' | " ' + \
-            'name="submitInfo" value="' + translate['Info'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Remove the above item'] + '" ' + \
-            'alt="' + translate['Remove the above item'] + ' | " ' + \
-            'name="submitRemove" value="' + \
-            translate['Remove'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Suspend the above account nickname'] + '" ' + \
-            'alt="' + \
-            translate['Suspend the above account nickname'] + ' | " ' + \
-            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Remove a suspension for an account nickname'] + '" ' + \
-            'alt="' + \
-            translate['Remove a suspension for an account nickname'] + \
-            ' | " ' + \
-            'name="submitUnsuspend" value="' + \
-            translate['Unsuspend'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Block an account on another instance'] + '" ' + \
-            'alt="' + \
-            translate['Block an account on another instance'] + ' | " ' + \
-            'name="submitBlock" value="' + translate['Block'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Unblock an account on another instance'] + '" ' + \
-            'alt="' + \
-            translate['Unblock an account on another instance'] + ' | " ' + \
-            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Filter out words'] + '" ' + \
-            'alt="' + \
-            translate['Filter out words'] + ' | " ' + \
-            'name="submitFilter" value="' + translate['Filter'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Unfilter words'] + '" ' + \
-            'alt="' + \
-            translate['Unfilter words'] + ' | " ' + \
-            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
-
-        tlStr += '</div>\n</form>\n'
+    tlStr += \
+        _htmlTimelineModerationButtons(moderator, boxName, nickname,
+                                       moderationActionStr, translate)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
 
