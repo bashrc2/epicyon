@@ -93,6 +93,102 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
     return ''
 
 
+def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
+                         boxName: str, iconsAsButtons: bool,
+                         usersPath: str, translate: {}) -> str:
+    """Returns html for the new post button
+    """
+    newPostButtonStr = ''
+    if boxName == 'dm':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newdm?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new DM'] + \
+                '" alt="| ' + translate['Create a new DM'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newdm?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + ' </span></button></a>'
+    elif (boxName == 'tlblogs' or
+          boxName == 'tlnews' or
+          boxName == 'tlfeatures'):
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newblog"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new post'] + '" alt="| ' + \
+                translate['Create a new post'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newblog">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlevents':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newevent?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new event'] + '" alt="| ' + \
+                translate['Create a new event'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newevent?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlshares':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newshare?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new shared item'] + '" alt="| ' + \
+                translate['Create a new shared item'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newshare?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    else:
+        if not manuallyApproveFollowers:
+            if not iconsAsButtons:
+                newPostButtonStr += \
+                    '<a class="imageAnchor" href="' + usersPath + \
+                    '/newpost"><img loading="lazy" src="/' + \
+                    'icons/newpost.png" title="' + \
+                    translate['Create a new post'] + '" alt="| ' + \
+                    translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr += \
+                    '<a href="' + usersPath + '/newpost">' + \
+                    '<button class="button"><span>' + \
+                    translate['Post'] + '</span></button></a>'
+        else:
+            if not iconsAsButtons:
+                newPostButtonStr += \
+                    '<a class="imageAnchor" href="' + usersPath + \
+                    '/newfollowers"><img loading="lazy" src="/' + \
+                    'icons/newpost.png" title="' + \
+                    translate['Create a new post'] + \
+                    '" alt="| ' + translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr += \
+                    '<a href="' + usersPath + '/newfollowers">' + \
+                    '<button class="button"><span>' + \
+                    translate['Post'] + '</span></button></a>'
+    return newPostButtonStr
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -331,93 +427,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += '<div class="headericons">'
 
     # what screen to go to when a new post is created
-    if boxName == 'dm':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newdm?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new DM'] + \
-                '" alt="| ' + translate['Create a new DM'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newdm?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>'
-    elif (boxName == 'tlblogs' or
-          boxName == 'tlnews' or
-          boxName == 'tlfeatures'):
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newblog"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new post'] + '" alt="| ' + \
-                translate['Create a new post'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newblog">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlevents':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newevent?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new event'] + '" alt="| ' + \
-                translate['Create a new event'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newevent?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlshares':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newshare?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new shared item'] + '" alt="| ' + \
-                translate['Create a new shared item'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newshare?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    else:
-        if not manuallyApproveFollowers:
-            if not iconsAsButtons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newpost"><img loading="lazy" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + '" alt="| ' + \
-                    translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newpost">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
-        else:
-            if not iconsAsButtons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newfollowers"><img loading="lazy" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + \
-                    '" alt="| ' + translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newfollowers">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
+    newPostButtonStr += \
+        _htmlTimelineNewPost(manuallyApproveFollowers, boxName,
+                             iconsAsButtons, usersPath, translate)
 
     # keyboard navigation
     calendarStr = translate['Calendar']
