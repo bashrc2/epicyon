@@ -1096,22 +1096,19 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if mediaInstance:
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
-            blogsInstanceStr = ''
-            newsInstanceStr = ''
+            blogsInstanceStr = newsInstanceStr = ''
 
     newsInstance = getConfigParam(baseDir, "newsInstance")
     if newsInstance:
         if newsInstance is True:
             newsInstanceStr = 'checked'
-            blogsInstanceStr = ''
-            mediaInstanceStr = ''
+            blogsInstanceStr = mediaInstanceStr = ''
 
     blogsInstance = getConfigParam(baseDir, "blogsInstance")
     if blogsInstance:
         if blogsInstance is True:
             blogsInstanceStr = 'checked'
-            mediaInstanceStr = ''
-            newsInstanceStr = ''
+            mediaInstanceStr = newsInstanceStr = ''
 
     filterStr = ''
     filterFilename = \
