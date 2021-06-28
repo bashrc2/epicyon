@@ -466,7 +466,7 @@ class PubServer(BaseHTTPRequestHandler):
             # is this a web crawler? If so the block it
             agentStrLower = agentStr.lower()
             if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
-                if if self.server.newsInstance:
+                if self.server.newsInstance:
                     return False
                 print('Blocked Crawler: ' + agentStr)
                 return True
