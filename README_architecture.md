@@ -1,5 +1,13 @@
 # Epicyon Software Architecture
 
+## Anti-scale principle
+
+In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
+
+Being hostile towards the common notion of scaling means that this system will be of no interest to "big tech" and can't easily be used within extractive economic models without needing a substantial rewrite.
+
+This system should however be able to scale rhizomatically with the deployment of many small instances federated together.
+
 ## High level architecture
 
 The main modules are *epicyon.py* and *daemon.py*. *epicyon.py* is the commandline interface and *daemon.py* is the http server.
@@ -18,5 +26,8 @@ It is possible to include arbitrary CSS within a custom theme. To avoid security
 
 The way that the theming system was designed is in order to avoid problems similar to Wordpress, in which an adversary will create an attactive looking theme which contains an expolit. The discovery of exploits then leads to a centralizing dynamic where there is a single "official" themes website or app store. With Epicyon, *themes should always be safe to use no matter where they were downloaded from*.
 
+## Notifications
 
+There are no notifications in the conventional sense. That is, there is no streaming API or linkage to browser notifications. Instead when significant events occur these create text files which can then be detected by other systems via polling.
 
+See *scripts/epicyon-notifications* for an example of a script which could be run in a cron job to then send notifications via XMPP or Matrix.
