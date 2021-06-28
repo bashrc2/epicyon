@@ -1,6 +1,6 @@
 # Epicyon Software Architecture
 
-## Anti-scale principle
+## Anti-scale Principle
 
 In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
 
@@ -12,7 +12,7 @@ This system should however be able to scale rhizomatically with the deployment o
 
 This is so that the system can be accessed and used normally with javascript in the web browser turned off. If you want to have good security then this is useful, since lack of javascript greatly reduces the attack surface and constrains adversaries to a limited number of vectors.
 
-## High level architecture
+## High Level Architecture
 
 The main modules are *epicyon.py* and *daemon.py*. *epicyon.py* is the commandline interface and *daemon.py* is the http server.
 
@@ -24,11 +24,15 @@ All ActivityPub posts are stored as text files, and there is no database as such
 
 ![timeline and core modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Timeline_Core.png)
 
-## Themes security
+## Themes Security
 
 It is possible to include arbitrary CSS within a custom theme. To avoid security problems the CSS is sanitized before being used. Scripts or import references to other CSS files are not permitted.
 
 The way that the theming system was designed is in order to avoid problems similar to Wordpress, in which an adversary will create an attactive looking theme which contains an expolit. The discovery of exploits then leads to a centralizing dynamic where there is a single "official" themes website or app store. With Epicyon, *themes should always be safe to use no matter where they were downloaded from*. There should be nothing *Turing complete* within a theme.
+
+## C2S Security
+
+This currently uses basic auth, which is simple to implement. Oauth2 is conventional, but seems overly complex and the user interface for it within other comparable apps is clunky.
 
 ## Notifications
 
