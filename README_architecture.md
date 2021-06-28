@@ -1,6 +1,8 @@
 # Epicyon Software Architecture
 
-## Anti-scale Principle
+## Design Constrains
+
+### Anti-scale Principle
 
 In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
 
@@ -8,9 +10,26 @@ Being hostile towards the common notion of scaling means that this system will b
 
 This system should however be able to scale rhizomatically with the deployment of many small instances federated together.
 
-## No Javascript
+### No Javascript
 
 This is so that the system can be accessed and used normally with javascript in the web browser turned off. If you want to have good security then this is useful, since lack of javascript greatly reduces the attack surface and constrains adversaries to a limited number of vectors.
+
+### Block Crawlers
+
+Ordinarily web crawlers would not be a problem, but in the context of a social network even having crawlers index public posts can create ethical dilemmas in some circumstances. News instances may allow crawlers, but other types of instances should block them.
+
+### No Local or Federated Timelines
+
+The local and federated timelines of other ActivityPub servers don't add much value (especially the federated one), and tend to pollute the default timeline with irrelevant posts from people that you don't follow.
+
+Especially on a small instance with a few users, the local timeline would not be significantly useful.
+
+### Notification handling is out of scope
+
+There are no notifications in the conventional sense. That is, there is no streaming API or linkage to browser notifications. Instead when significant events occur these create text files which can then be detected by other systems via polling.
+
+See *scripts/epicyon-notifications* for an example of a script which could be run in a cron job to then send notifications via XMPP or Matrix.
+
 
 ## High Level Architecture
 
@@ -24,28 +43,22 @@ All ActivityPub posts are stored as text files, and there is no database as such
 
 ![timeline and core modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Timeline_Core.png)
 
-## Themes Security
+
+## Security
+
+### Themes
 
 It is possible to include arbitrary CSS within a custom theme. To avoid security problems the CSS is sanitized before being used. Scripts or import references to other CSS files are not permitted.
 
 The way that the theming system was designed is in order to avoid problems similar to Wordpress, in which an adversary will create an attactive looking theme which contains an expolit. The discovery of exploits then leads to a centralizing dynamic where there is a single "official" themes website or app store. With Epicyon, *themes should always be safe to use no matter where they were downloaded from*. There should be nothing *Turing complete* within a theme.
 
-## C2S Security
+### C2S
 
 This currently uses basic auth, which is simple to implement. Oauth2 is conventional, but seems overly complex and the user interface for it within other comparable apps is clunky.
 
-## Support Accessibility
+## Accessibility
 
-In terms of trying to keep up with web accessibility standards, having configurable keyboard shortcuts, high contrast themes, text-to-speech client and also the ability to run in a shell browser such as Lynx.
+Trying to keep up with web accessibility standards. There should be configurable keyboard shortcuts for all of the main navigation actions. High contrast themes should be available. The desktop client should support text-to-speech. There should be the ability to run in a shell browser such as Lynx, without any significant loss of functionality.
 
 Avoid adding any features which would be hard to make accessible.
 
-## Block Crawlers
-
-Ordinarily web crawlers would not be a problem, but in the context of a social network even having crawlers index public posts can create ethical dilemmas in some circumstances. News instances may allow crawlers, but other types of instances should block them.
-
-## Notifications
-
-There are no notifications in the conventional sense. That is, there is no streaming API or linkage to browser notifications. Instead when significant events occur these create text files which can then be detected by other systems via polling.
-
-See *scripts/epicyon-notifications* for an example of a script which could be run in a cron job to then send notifications via XMPP or Matrix.
