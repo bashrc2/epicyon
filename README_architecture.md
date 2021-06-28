@@ -40,6 +40,10 @@ There are no notifications in the conventional sense. That is, there is no strea
 
 See *scripts/epicyon-notifications* for an example of a script which could be run in a cron job to then send notifications via XMPP or Matrix.
 
+### Limited Linked Data Support
+
+Where Json linked data signatures are supported there should not be arbitrary schema lookups via the web. Instead, recognized contexts should be added to *context.py*. This is in order to follow the principle of *no processing without full recognition*, in which the recognition step is not endlessly extendable by untrusted parties.
+
 
 ## High Level Architecture
 
