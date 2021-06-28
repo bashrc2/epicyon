@@ -4,7 +4,7 @@
 
 ### Open Standards Compliance
 
-Follow the standards for HTML, CSS and ActivityPub. Especially with ActivityPub there is always some room for interpreatation, so if in doubt about a protocol implementation detail then do whatever Mastodon does to maintain maximum compatibility.
+Follow the standards for HTML, CSS and ActivityPub. Especially with ActivityPub there is always some room for interpretation, so if in doubt about a protocol implementation detail then do whatever Mastodon does to maintain maximum compatibility.
 
 ### Multi-User
 
