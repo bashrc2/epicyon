@@ -1,6 +1,6 @@
 # Epicyon Software Architecture
 
-## Design Constrains
+## Design Constraints
 
 ### Open Standards Compliance
 
