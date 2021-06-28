@@ -34,6 +34,16 @@ The way that the theming system was designed is in order to avoid problems simil
 
 This currently uses basic auth, which is simple to implement. Oauth2 is conventional, but seems overly complex and the user interface for it within other comparable apps is clunky.
 
+## Support Accessibility
+
+In terms of trying to keep up with web accessibility standards, having configurable keyboard shortcuts, high contrast themes, text-to-speech client and also the ability to run in a shell browser such as Lynx.
+
+Avoid adding any features which would be hard to make accessible.
+
+## Block Crawlers
+
+Ordinarily web crawlers would not be a problem, but in the context of a social network even having crawlers index public posts can create ethical dilemmas in some circumstances. News instances may allow crawlers, but other types of instances should block them.
+
 ## Notifications
 
 There are no notifications in the conventional sense. That is, there is no streaming API or linkage to browser notifications. Instead when significant events occur these create text files which can then be detected by other systems via polling.
