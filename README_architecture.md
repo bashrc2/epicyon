@@ -2,6 +2,16 @@
 
 ## Design Constrains
 
+### Open Standards Compliance
+
+Follow the standards for HTML, CSS and ActivityPub. Especially with ActivityPub there is always some room for interpreatation, so if in doubt about a protocol implementation detail then do whatever Mastodon does to maintain maximum compatibility.
+
+### Multi-User
+
+It is assumed that an instance may have multiple users, although the maximum number of users is not expected to be very high. This system is for a "family and friends" or small club type of scenario.
+
+Although it can be single user, this is not strictly a single user system.
+
 ### Anti-scale Principle
 
 In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
