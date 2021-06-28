@@ -8,13 +8,17 @@ Being hostile towards the common notion of scaling means that this system will b
 
 This system should however be able to scale rhizomatically with the deployment of many small instances federated together.
 
+## No Javascript
+
+This is so that the system can be accessed and used normally with javascript in the web browser turned off. If you want to have good security then this is useful, since lack of javascript greatly reduces the attack surface and constrains adversaries to a limited number of vectors.
+
 ## High level architecture
 
 The main modules are *epicyon.py* and *daemon.py*. *epicyon.py* is the commandline interface and *daemon.py* is the http server.
 
 ![commandline and core modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Commandline-Interface_Core.png)
 
-The daemon runs the inbox queue in a separate thread (see *inbox.py*) and the inbox que processes incoming ActivityPub posts one at a time in a strictly serial fashion. Doing it this way means minimum potential for any parallelism/locking issues. It also means that the inbox queue is not highly scalable, but that's ok for a system which is only intended to have a few users per instance.
+The daemon runs the inbox queue in a separate thread (see *inbox.py*) and the inbox queue processes incoming ActivityPub posts one at a time in a strictly serial fashion. Doing it this way means minimum potential for any parallelism/locking issues. It also means that the inbox queue is not highly scalable, but that's ok for a system which is only intended to have a few users per instance.
 
 All ActivityPub posts are stored as text files, and there is no database as such other than the filesystem itself. Think of it as being like an email server. Each post is a json file stored in *accounts/nick@domain/inbox* or *accounts/nick@domain/outbox*. To avoid parsing problems slashes are replaced by hashes within the ActivityPub post filename. The filename for each post is the same as its ActivityPub id.
 
