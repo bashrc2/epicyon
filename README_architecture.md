@@ -50,6 +50,12 @@ There are no notifications in the conventional sense. That is, there is no strea
 
 See *scripts/epicyon-notifications* for an example of a script which could be run in a cron job to then send notifications via XMPP or Matrix.
 
+### Assume Network Hostility
+
+Many of the early web systems existed in a twee world in which it was assumed that everyone is nice, but in social networks this is rarely true.
+
+It is usually safe to assume that the federated network beyond your instance is to a lesser or greater degree hostile. So there should be effective controls for blocking adversaries or spam floods.
+
 ### Limited Linked Data Support
 
 Where Json linked data signatures are supported there should not be arbitrary schema lookups via the web. Instead, recognized contexts should be added to *context.py*. This is in order to follow the principle of *no processing without full recognition*, in which the recognition step is not endlessly extendable by untrusted parties.
