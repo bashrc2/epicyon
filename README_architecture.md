@@ -16,13 +16,19 @@ Although it can be single user, this is not strictly a single user system.
 
 The design of this system is opinionated, and to a large extent informed by years of past experience in the fediverse. There is no claim to neutrality of any sort. Automatic removal of hellthreads and other common griefing tactics is an example of this.
 
-### Anti-scale Principle
+### Resisting Centralization
+
+Centralization is characterized by the typical fixation upon "scale" within the software industry. Systems which scale, in the way which is commonly understood, mean that a few individuals can control the social lives of many, and extract value from them in often cynical and manipulative ways.
 
 In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
 
-Being hostile towards the common notion of scaling means that this system will be of no interest to "big tech" and can't easily be used within extractive economic models without needing a substantial rewrite.
+Being hostile towards the common notion of scaling means that this system will be of no interest to "big tech" and can't easily be used within extractive economic models without needing a substantial rewrite. This avoids the typical cooption strategies in which large companies eventually take over what was originally software developed by grassroots activists to address real community needs.
 
-This system should however be able to scale rhizomatically with the deployment of many small instances federated together.
+This system should however be able to scale rhizomatically with the deployment of many small instances federated together. Instead of scaling up, scale out. In a network of many small instances nobody has overall control and corporate capture is much more unlikely. Small instances also minimize the bureaucratic requirements for governance processes, which at medium to large scale eventually becomes tyrannical.
+
+### Roles
+
+The roles within an instance are comparable to the crew roles onboard a ship, with the admin being its captain. Delegation is minimal, with the admin assigning roles to particular user accounts. Avoiding delegation prevents a hierarchy of roles from forming. Social organization should be as horizontal as possible. Roles could be rotated - even including that of admin - although there is no technical mechanism requiring that.
 
 ### No Javascript
 
