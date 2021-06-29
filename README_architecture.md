@@ -16,9 +16,9 @@ Although it can be single user, this is not strictly a single user system.
 
 The design of this system is opinionated, and to a large extent informed by years of past experience in the fediverse. There is no claim to neutrality of any sort. Automatic removal of hellthreads and other common griefing tactics is an example of this.
 
-### Anti-scale Principle
+### Resisting Centralization
 
-In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
+Centralization is characterized by the typical fixation upon "scale" within the software industry. In general, methods have been preferred which do not vertically scale. This includes the decision not to use a database, and the way that the inbox is processed. Lack of scalability also simplifies the design.
 
 Being hostile towards the common notion of scaling means that this system will be of no interest to "big tech" and can't easily be used within extractive economic models without needing a substantial rewrite.
 
