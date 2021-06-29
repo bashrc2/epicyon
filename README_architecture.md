@@ -98,3 +98,10 @@ Trying to keep up with web accessibility standards. There should be configurable
 
 Avoid adding any features which would be hard to make accessible.
 
+![web interface and accessibility modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Web-Interface_Accessibility.png)
+
+The *webapp_post* module generates html for each post from its ActivityPub json representation. This also calls the speaker module in order to create a text-to-speech friendly version of the post content, which can then be spoken by the desktop client. Doing this allows common acronyms and other special language to be properly pronounced.
+
+The *daemon* module (http server) also calls *webapp_accesskeys* to display the key shortcuts screen.
+
+![core and accessibility modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Core_Accessibility.png)
