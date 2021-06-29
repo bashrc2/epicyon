@@ -3290,6 +3290,11 @@ def _testFunctions():
                    modules, modGroups, maxModuleCalls)
     _diagramGroups(['Timeline', 'Security'], ['utils'],
                    modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Web Interface', 'Accessibility'],
+                   ['utils', 'webapp_utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core', 'Accessibility'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
 
     callGraphStr = 'digraph Epicyon {\n\n'
     callGraphStr += '  size="8,6"; ratio=fill;\n'

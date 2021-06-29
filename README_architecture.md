@@ -86,9 +86,22 @@ The way that the theming system was designed is in order to avoid problems simil
 
 This currently uses basic auth, which is simple to implement. Oauth2 is conventional, but seems overly complex and the user interface for it within other comparable apps is clunky.
 
+### Interaction with Timeline
+
+![timeline and security modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Timeline_Security.png)
+
+The *inbox* queue makes calls to check http and linked data signatures. Various modules call *auth* typically because they're implementing the basic auth of the C2S interface.
+
 ## Accessibility
 
 Trying to keep up with web accessibility standards. There should be configurable keyboard shortcuts for all of the main navigation actions. High contrast themes should be available. The desktop client should support text-to-speech. There should be the ability to run in a shell browser such as Lynx, without any significant loss of functionality.
 
 Avoid adding any features which would be hard to make accessible.
 
+![web interface and accessibility modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Web-Interface_Accessibility.png)
+
+The *webapp_post* module generates html for each post from its ActivityPub json representation. This also calls the speaker module in order to create a text-to-speech friendly version of the post content, which can then be spoken by the desktop client. Doing this allows common acronyms and other special language to be properly pronounced.
+
+The *daemon* module (http server) also calls *webapp_accesskeys* to display the key shortcuts screen.
+
+![core and accessibility modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Core_Accessibility.png)
