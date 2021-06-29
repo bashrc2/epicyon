@@ -26,6 +26,10 @@ Being hostile towards the common notion of scaling means that this system will b
 
 This system should however be able to scale rhizomatically with the deployment of many small instances federated together. Instead of scaling up, scale out. In a network of many small instances nobody has overall control and corporate capture is much more unlikely. Small instances also minimize the bureaucratic requirements for governance processes, which at medium to large scale eventually becomes tyrannical.
 
+### Roles
+
+The roles within an instance are comparable to the crew roles onboard a ship, with the admin being its captain. Delegation is minimal, with the admin assigning roles to particular user accounts. Avoiding delegation prevents a hierarchy of roles from forming. Social organization should be as horizontal as possible. Roles could be rotated - even including that of admin - although there is no technical mechanism requiring that.
+
 ### No Javascript
 
 This is so that the system can be accessed and used normally with javascript in the web browser turned off. If you want to have good security then this is useful, since lack of javascript greatly reduces the attack surface and constrains adversaries to a limited number of vectors.
