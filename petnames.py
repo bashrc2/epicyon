@@ -75,6 +75,12 @@ def getPetName(baseDir: str, nickname: str, domain: str,
             for pet in petnamesList:
                 if pet.endswith(' ' + handle):
                     return pet.replace(' ' + handle, '').strip()
+        elif ' ' + handle.lower() + '\n' in petnamesStr.lower():
+            petnamesList = petnamesStr.split('\n')
+            handle = handle.lower()
+            for pet in petnamesList:
+                if pet.endswith(' ' + handle):
+                    return pet.replace(' ' + handle, '').strip()
     return ''
 
 

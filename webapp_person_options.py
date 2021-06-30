@@ -235,7 +235,7 @@ def htmlPersonOptions(defaultTimeline: str,
     if authorized:
         if originPathStr == '/users/' + nickname:
             if optionsNickname:
-                handle = optionsNickname + '@' + optionsDomainFull
+                # handle = optionsNickname + '@' + optionsDomainFull
                 petname = getPetName(baseDir, nickname, domain, handle)
                 optionsStr += \
                     '    ' + translate['Petname'] + ': \n' + \
