@@ -1825,7 +1825,7 @@ def createReportPost(baseDir: str,
                     if moderatorActor not in moderatorsList:
                         moderatorsList.append(moderatorActor)
                     continue
-                if line.startswith('http') or line.startswith('dat'):
+                if line.startswith('http') or line.startswith('hyper'):
                     # must be a local address - no remote moderators
                     if '://' + domainFull + '/' in line:
                         if line not in moderatorsList:

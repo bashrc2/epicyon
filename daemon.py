@@ -1724,7 +1724,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('moderationText: ' + moderationText)
                 nickname = moderationText
                 if nickname.startswith('http') or \
-                   nickname.startswith('dat'):
+                   nickname.startswith('hyper'):
                     nickname = getNicknameFromActor(nickname)
                 if '@' in nickname:
                     nickname = nickname.split('@')[0]
@@ -1739,7 +1739,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if moderationButton == 'block':
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
-                       moderationText.startswith('dat'):
+                       moderationText.startswith('hyper'):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
@@ -1757,7 +1757,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if moderationButton == 'unblock':
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
-                       moderationText.startswith('dat'):
+                       moderationText.startswith('hyper'):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)

@@ -1208,7 +1208,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if '/@' in handle or \
        '/users/' in handle or \
        handle.startswith('http') or \
-       handle.startswith('dat'):
+       handle.startswith('hyper'):
         # format: https://domain/@nick
         originalHandle = handle
         if not hasUsersPath(originalHandle):

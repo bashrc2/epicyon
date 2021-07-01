@@ -1602,9 +1602,7 @@ if args.proxyPort:
     setConfigParam(baseDir, 'proxyPort', proxyPort)
 if args.gnunet:
     httpPrefix = 'gnunet'
-if args.dat:
-    httpPrefix = 'dat'
-if args.hyper:
+if args.dat or args.hyper:
     httpPrefix = 'hyper'
 if args.i2p:
     httpPrefix = 'http'
@@ -1645,7 +1643,7 @@ if args.followers:
     if '/@' in args.followers or \
        '/users/' in args.followers or \
        args.followers.startswith('http') or \
-       args.followers.startswith('dat'):
+       args.followers.startswith('hyper'):
         # format: https://domain/@nick
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
