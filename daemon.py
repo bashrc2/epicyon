@@ -13546,13 +13546,17 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname,
                                       self.server.domain)
+                followersOnly = False
+                saveToFile = False
+                clientToServer = False
                 messageJson = \
                     createUnlistedPost(self.server.baseDir,
                                        nickname,
                                        self.server.domain, self.server.port,
                                        self.server.httpPrefix,
                                        mentionsStr + fields['message'],
-                                       False, False, False, commentsEnabled,
+                                       followersOnly, saveToFile,
+                                       clientToServer, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        city,
