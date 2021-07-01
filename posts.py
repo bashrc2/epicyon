@@ -1630,11 +1630,11 @@ def createFollowersOnlyPost(baseDir: str,
                             clientToServer: bool, commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, city: str,
-                            inReplyTo: str = None,
-                            inReplyToAtomUri: str = None,
-                            subject: str = None, schedulePost: bool = False,
-                            eventDate: str = None, eventTime: str = None,
-                            location: str = None) -> {}:
+                            inReplyTo: str,
+                            inReplyToAtomUri: str,
+                            subject: str, schedulePost: bool,
+                            eventDate: str, eventTime: str,
+                            location: str) -> {}:
     """Followers only post
     """
     domainFull = getFullDomain(domain, port)
