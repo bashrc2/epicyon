@@ -13687,6 +13687,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.baseDir,
                                           nickname,
                                           self.server.domain)
+                    followersOnly = True
+                    saveToFile = False
+                    clientToServer = False
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
@@ -13695,7 +13698,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.httpPrefix,
                                                 mentionsStr +
                                                 fields['message'],
-                                                True, False, False,
+                                                followersOnly, saveToFile,
+                                                clientToServer,
                                                 commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
@@ -13732,6 +13736,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname,
                                       self.server.domain)
+                followersOnly = True
+                saveToFile = False
+                clientToServer = False
+                commentsEnabled = False
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
@@ -13739,7 +13747,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port,
                                             self.server.httpPrefix,
                                             mentionsStr + fields['message'],
-                                            True, False, False, False,
+                                            followersOnly, saveToFile,
+                                            clientToServer, commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
                                             city,

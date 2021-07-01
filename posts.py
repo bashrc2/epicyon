@@ -1747,12 +1747,12 @@ def createDirectMessagePost(baseDir: str,
                             commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, city: str,
-                            inReplyTo: str = None,
-                            inReplyToAtomUri: str = None,
-                            subject: str = None, debug: bool = False,
-                            schedulePost: bool = False,
-                            eventDate: str = None, eventTime: str = None,
-                            location: str = None) -> {}:
+                            inReplyTo: str,
+                            inReplyToAtomUri: str,
+                            subject: str, debug: bool,
+                            schedulePost: bool,
+                            eventDate: str, eventTime: str,
+                            location: str) -> {}:
     """Direct Message post
     """
     content = resolvePetnames(baseDir, nickname, domain, content)
