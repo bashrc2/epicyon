@@ -256,6 +256,7 @@ from utils import saveJson
 from utils import isSuspended
 from utils import dangerousMarkup
 from utils import refreshNewswire
+from utils import isImageFile
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -13235,12 +13236,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: no media filename in POST')
 
             if filename:
-                if filename.endswith('.png') or \
-                   filename.endswith('.jpg') or \
-                   filename.endswith('.webp') or \
-                   filename.endswith('.avif') or \
-                   filename.endswith('.svg') or \
-                   filename.endswith('.gif'):
+                if isImageFile(filename):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
                     city = getSpoofedCity(self.server.city,

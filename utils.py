@@ -270,6 +270,15 @@ def getImageFormats() -> str:
     return imageFormats
 
 
+def isImageFile(filename: str) -> bool:
+    """Is the given filename an image?
+    """
+    for ext in getImageExtensions():
+        if filename.endswith('.' + ext):
+            return True
+    return False
+
+
 def getMediaFormats() -> str:
     """Returns a string of permissable media formats
     used when selecting an attachment for a new post
