@@ -338,7 +338,7 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
                not line.startswith('http'):
                 ctr += 1
             elif ((line.startswith('http') or
-                   line.startswith('dat')) and
+                   line.startswith('hyper')) and
                   hasUsersPath(line)):
                 ctr += 1
     return ctr
@@ -456,7 +456,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                             line2.split('@')[0]
                         following['orderedItems'].append(url)
                 elif ((line.startswith('http') or
-                       line.startswith('dat')) and
+                       line.startswith('hyper')) and
                       hasUsersPath(line)):
                     # https://domain/users/nickname
                     pageCtr += 1

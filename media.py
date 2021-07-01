@@ -9,6 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 import datetime
+import subprocess
 from random import randint
 from hashlib import sha1
 from auth import createPassword
@@ -245,6 +246,13 @@ def attachMedia(baseDir: str, httpPrefix: str,
     }
     if mediaType.startswith('image/'):
         attachmentJson['focialPoint'] = [0.0, 0.0]
+        # find the dimensions of the image and add them as metadata
+        attachImageWidth, attachImageHeight = \
+            getImageDimensions(imageFilename)
+        if attachImageWidth and attachImageHeight:
+            attachmentJson['width'] = attachImageWidth
+            attachmentJson['height'] = attachImageHeight
+
     postJson['attachment'] = [attachmentJson]
 
     if baseDir:
@@ -286,17 +294,6 @@ def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
         break
 
 
-def pathIsImage(path: str) -> bool:
-    if path.endswith('.png') or \
-       path.endswith('.jpg') or \
-       path.endswith('.gif') or \
-       path.endswith('.svg') or \
-       path.endswith('.avif') or \
-       path.endswith('.webp'):
-        return True
-    return False
-
-
 def pathIsVideo(path: str) -> bool:
     if path.endswith('.ogv') or \
        path.endswith('.mp4'):
@@ -309,3 +306,25 @@ def pathIsAudio(path: str) -> bool:
        path.endswith('.mp3'):
         return True
     return False
+
+
+def getImageDimensions(imageFilename: str) -> (int, int):
+    """Returns the dimensions of an image file
+    """
+    try:
+        result = subprocess.run(['identify', '-format', '"%wx%h"',
+                                 imageFilename], stdout=subprocess.PIPE)
+    except BaseException:
+        return None, None
+    if not result:
+        return None, None
+    dimensionsStr = result.stdout.decode('utf-8').replace('"', '')
+    if 'x' not in dimensionsStr:
+        return None, None
+    widthStr = dimensionsStr.split('x')[0]
+    if not widthStr.isdigit():
+        return None, None
+    heightStr = dimensionsStr.split('x')[1]
+    if not heightStr.isdigit():
+        return None, None
+    return int(widthStr), int(heightStr)

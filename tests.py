@@ -86,6 +86,7 @@ from announce import sendAnnounceViaServer
 from city import parseNogoString
 from city import spoofGeolocation
 from city import pointInNogo
+from media import getImageDimensions
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -476,6 +477,14 @@ def createServerAlice(path: str, domain: str, port: int,
         testMediaType = None
         testImageDescription = None
         testCity = 'London, England'
+        testInReplyTo = None
+        testInReplyToAtomUri = None
+        testSubject = None
+        testSchedulePost = False
+        testEventDate = None
+        testEventTime = None
+        testLocation = None
+        testIsArticle = False
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
@@ -484,7 +493,11 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription, testCity)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -493,7 +506,11 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription, testCity)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -503,7 +520,11 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription, testCity)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -581,6 +602,14 @@ def createServerBob(path: str, domain: str, port: int,
         testImageDescription = None
         testMediaType = None
         testCity = 'London, England'
+        testInReplyTo = None
+        testInReplyToAtomUri = None
+        testSubject = None
+        testSchedulePost = False
+        testEventDate = None
+        testEventTime = None
+        testLocation = None
+        testIsArticle = False
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -589,7 +618,11 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription, testCity)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -599,7 +632,11 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription, testCity)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -608,7 +645,11 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription, testCity)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -792,6 +833,10 @@ def testPostMessageBetweenServers():
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     attachedImageFilename = baseDir + '/img/logo.png'
+    testImageWidth, testImageHeight = \
+        getImageDimensions(attachedImageFilename)
+    assert testImageWidth
+    assert testImageHeight
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     isArticle = False
@@ -875,6 +920,20 @@ def testPostMessageBetweenServers():
         assert 'Why is a mouse when it spins?' in \
             receivedJson['object']['content']
         assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+        print('Check that message received from Alice contains an attachment')
+        assert receivedJson['object']['attachment']
+        assert len(receivedJson['object']['attachment']) == 1
+        attached = receivedJson['object']['attachment'][0]
+        pprint(attached)
+        assert attached.get('type')
+        assert attached.get('url')
+        assert attached['mediaType'] == 'image/png'
+        assert '/media/' in attached['url']
+        assert attached['url'].endswith('.png')
+        assert attached.get('width')
+        assert attached.get('height')
+        assert attached['width'] > 0
+        assert attached['height'] > 0
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
@@ -1416,10 +1475,28 @@ def _testCreatePerson():
     setBio(baseDir, nickname, domain, 'Randomly roaming in your backyard')
     archivePostsForPerson(nickname, domain, baseDir, 'inbox', None, {}, 4)
     archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
+    content = "G'day world!"
+    followersOnly = False
+    saveToFile = True
+    commentsEnabled = True
+    attachImageFilename = None
+    mediaType = None
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "G'day world!", False, True, clientToServer,
-                     True, None, None, None, None,
-                     'Not suitable for Vogons', 'London, England')
+                     content, followersOnly, saveToFile, clientToServer,
+                     commentsEnabled, attachImageFilename, mediaType,
+                     'Not suitable for Vogons', 'London, England',
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -2802,12 +2879,23 @@ def _testReplyToPublicPost() -> None:
     mediaType = None
     imageDescription = 'Some description'
     city = 'London, England'
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
     reply = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
-                         imageDescription, city, postId)
+                         imageDescription, city, postId,
+                         testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -3365,16 +3453,30 @@ def _testLinksWithinPost() -> None:
     saveToFile = False
     clientToServer = False
     commentsEnabled = True
+    attachImageFilename = None
     mediaType = None
     imageDescription = None
     city = 'London, England'
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
 
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
-                         mediaType, imageDescription, city,
-                         False, None)
+                         attachImageFilename, mediaType,
+                         imageDescription, city,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
+
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
         '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
@@ -3400,8 +3502,14 @@ def _testLinksWithinPost() -> None:
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content,
-                         False, False, False, True,
-                         None, None, False, None)
+                         False, False,
+                         False, True,
+                         None, None,
+                         False, None,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     assert postJsonObject['object']['content'] == content
 
 

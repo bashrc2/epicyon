@@ -168,7 +168,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     """
     pageNumber = -999
     avatarUrl = None
-    if boxname != 'tlevents' and boxname != 'outbox':
+    if boxname != 'outbox':
         boxname = 'inbox'
 
     individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
@@ -2504,9 +2504,6 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             if isBlogPost(postJsonObject):
                 # blogs index will be updated
                 updateIndexList.append('tlblogs')
-            elif isEventPost(postJsonObject):
-                # events index will be updated
-                updateIndexList.append('tlevents')
 
         # get the avatar for a reply/announce
         _obtainAvatarForReplyPost(session, baseDir,
