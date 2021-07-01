@@ -13420,14 +13420,20 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: blog posts must have content')
                     return -1
                 # submit button on newblog screen
+                followersOnly = False
+                saveToFile = False
+                clientToServer = False
+                city = None
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
                                    self.server.domain, self.server.port,
                                    self.server.httpPrefix,
                                    fields['message'],
-                                   False, False, False, commentsEnabled,
+                                   followersOnly, saveToFile,
+                                   clientToServer, commentsEnabled,
                                    filename, attachmentMediaType,
                                    fields['imageDescription'],
+                                   city,
                                    fields['replyTo'], fields['replyTo'],
                                    fields['subject'],
                                    fields['schedulePost'],
