@@ -1426,12 +1426,12 @@ def createPublicPost(baseDir: str,
                      clientToServer: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
-                     inReplyTo: str = None,
-                     inReplyToAtomUri: str = None, subject: str = None,
-                     schedulePost: bool = False,
-                     eventDate: str = None, eventTime: str = None,
-                     location: str = None,
-                     isArticle: bool = False) -> {}:
+                     inReplyTo: str,
+                     inReplyToAtomUri: str, subject: str,
+                     schedulePost: bool,
+                     eventDate: str, eventTime: str,
+                     location: str,
+                     isArticle: bool) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)

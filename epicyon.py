@@ -2310,6 +2310,14 @@ if args.testdata:
     testMediaType = None
     testImageDescription = None
     testCity = 'London, England'
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",
@@ -2318,7 +2326,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2326,7 +2338,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2334,7 +2350,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2343,7 +2363,10 @@ if args.testdata:
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription, testCity,
-                     'someone')
+                     'someone', testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -2352,7 +2375,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
-                     'Description of image', testCity)
+                     'Description of image', testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2360,7 +2387,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2368,7 +2399,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2376,8 +2411,11 @@ if args.testdata:
                      testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription, testCity)
-
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
