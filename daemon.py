@@ -114,7 +114,6 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
-from media import pathIsImage
 from media import pathIsVideo
 from media import pathIsAudio
 from blocking import updateBlockedCache
@@ -5927,7 +5926,7 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime, GETtimings: {}) -> None:
         """Returns a media file
         """
-        if pathIsImage(path) or \
+        if isImageFile(path) or \
            pathIsVideo(path) or \
            pathIsAudio(path):
             mediaStr = path.split('/media/')[1]
@@ -5957,7 +5956,7 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime, GETtimings: {}) -> None:
         """Returns an emoji image
         """
-        if pathIsImage(path):
+        if isImageFile(path):
             emojiStr = path.split('/emoji/')[1]
             emojiFilename = baseDir + '/emoji/' + emojiStr
             if os.path.isfile(emojiFilename):
@@ -10203,7 +10202,7 @@ class PubServer(BaseHTTPRequestHandler):
                         GETstartTime, GETtimings: {}) -> bool:
         """Show a shared item image
         """
-        if not pathIsImage(path):
+        if not isImageFile(path):
             self._404()
             return True
 
@@ -10253,7 +10252,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/accounts/avatars/' not in path:
                 if '/accounts/headers/' not in path:
                     return False
-        if not pathIsImage(path):
+        if not isImageFile(path):
             return False
         if '/accounts/avatars/' in path:
             avatarStr = path.split('/accounts/avatars/')[1]
@@ -11475,7 +11474,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not pathIsImage(self.path) and \
+           not isImageFile(self.path) and \
            self.path != '/' and \
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
@@ -13136,7 +13135,7 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if pathIsImage(self.path) or \
+            if isImageFile(self.path) or \
                pathIsVideo(self.path) or \
                pathIsAudio(self.path):
                 mediaStr = self.path.split('/media/')[1]

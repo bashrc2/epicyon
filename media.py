@@ -286,17 +286,6 @@ def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
         break
 
 
-def pathIsImage(path: str) -> bool:
-    if path.endswith('.png') or \
-       path.endswith('.jpg') or \
-       path.endswith('.gif') or \
-       path.endswith('.svg') or \
-       path.endswith('.avif') or \
-       path.endswith('.webp'):
-        return True
-    return False
-
-
 def pathIsVideo(path: str) -> bool:
     if path.endswith('.ogv') or \
        path.endswith('.mp4'):
