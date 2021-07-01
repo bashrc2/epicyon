@@ -81,7 +81,6 @@ from posts import createBlogPost
 from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
-from posts import createEventPost
 from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
@@ -160,7 +159,6 @@ from webapp_person_options import htmlPersonOptions
 from webapp_timeline import htmlShares
 from webapp_timeline import htmlInbox
 from webapp_timeline import htmlBookmarks
-from webapp_timeline import htmlEvents
 from webapp_timeline import htmlInboxDMs
 from webapp_timeline import htmlInboxReplies
 from webapp_timeline import htmlInboxMedia
@@ -9043,138 +9041,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
-    def _showEventsTimeline(self, authorized: bool,
-                            callingDomain: str, path: str,
-                            baseDir: str, httpPrefix: str,
-                            domain: str, domainFull: str, port: int,
-                            onionDomain: str, i2pDomain: str,
-                            GETstartTime, GETtimings: {},
-                            proxyType: str, cookie: str,
-                            debug: str) -> bool:
-        """Shows the events timeline
-        """
-        if '/users/' in path:
-            if authorized:
-                # convert /events to /tlevents
-                if path.endswith('/events') or \
-                   '/events?page=' in path:
-                    path = path.replace('/events', '/tlevents')
-                eventsFeed = \
-                    personBoxJson(self.server.recentPostsCache,
-                                  self.server.session,
-                                  baseDir,
-                                  domain,
-                                  port,
-                                  path,
-                                  httpPrefix,
-                                  maxPostsInFeed, 'tlevents',
-                                  authorized,
-                                  0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
-                print('eventsFeed: ' + str(eventsFeed))
-                if eventsFeed:
-                    if self._requestHTTP():
-                        nickname = path.replace('/users/', '')
-                        nickname = nickname.replace('/tlevents', '')
-                        pageNumber = 1
-                        if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
-                            nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
-                            else:
-                                pageNumber = 1
-                        if 'page=' not in path:
-                            # if no page was specified then show the first
-                            eventsFeed = \
-                                personBoxJson(self.server.recentPostsCache,
-                                              self.server.session,
-                                              baseDir,
-                                              domain,
-                                              port,
-                                              path + '?page=1',
-                                              httpPrefix,
-                                              maxPostsInFeed,
-                                              'tlevents',
-                                              authorized,
-                                              0, self.server.positiveVoting,
-                                              self.server.votingTimeMins)
-                        fullWidthTimelineButtonHeader = \
-                            self.server.fullWidthTimelineButtonHeader
-                        minimalNick = isMinimal(baseDir, domain, nickname)
-
-                        accessKeys = self.server.accessKeys
-                        if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
-                                self.server.keyShortcuts[nickname]
-
-                        msg = \
-                            htmlEvents(self.server.cssCache,
-                                       self.server.defaultTimeline,
-                                       self.server.recentPostsCache,
-                                       self.server.maxRecentPosts,
-                                       self.server.translate,
-                                       pageNumber, maxPostsInFeed,
-                                       self.server.session,
-                                       baseDir,
-                                       self.server.cachedWebfingers,
-                                       self.server.personCache,
-                                       nickname,
-                                       domain,
-                                       port,
-                                       eventsFeed,
-                                       self.server.allowDeletion,
-                                       httpPrefix,
-                                       self.server.projectVersion,
-                                       minimalNick,
-                                       self.server.YTReplacementDomain,
-                                       self.server.showPublishedDateOnly,
-                                       self.server.newswire,
-                                       self.server.positiveVoting,
-                                       self.server.showPublishAsIcon,
-                                       fullWidthTimelineButtonHeader,
-                                       self.server.iconsAsButtons,
-                                       self.server.rssIconAtTop,
-                                       self.server.publishButtonAtTop,
-                                       authorized,
-                                       self.server.themeName,
-                                       self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess,
-                                       self.server.textModeBanner,
-                                       accessKeys)
-                        msg = msg.encode('utf-8')
-                        msglen = len(msg)
-                        self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show bookmarks 2 done',
-                                                  'show events')
-                    else:
-                        # don't need authenticated fetch here because
-                        # there is already the authorization check
-                        msg = json.dumps(eventsFeed,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
-                        msglen = len(msg)
-                        self._set_headers('application/json', msglen,
-                                          None, callingDomain)
-                        self._write(msg)
-                    self.server.GETbusy = False
-                    return True
-            else:
-                if debug:
-                    nickname = path.replace('/users/', '')
-                    nickname = nickname.replace('/tlevents', '')
-                    print('DEBUG: ' + nickname +
-                          ' was not authorized to access ' + path)
-        if debug:
-            print('DEBUG: GET access to events is unauthorized')
-        self.send_response(405)
-        self.end_headers()
-        self.server.GETbusy = False
-        return True
-
     def _showOutboxTimeline(self, authorized: bool,
                             callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -10385,7 +10251,7 @@ class PubServer(BaseHTTPRequestHandler):
             # Various types of new post in the web interface
             newPostEnd = ('newpost', 'newblog', 'newunlisted',
                           'newfollowers', 'newdm', 'newreminder',
-                          'newevent', 'newreport', 'newquestion',
+                          'newreport', 'newquestion',
                           'newshare')
             for postType in newPostEnd:
                 if path.endswith('/' + postType):
@@ -10576,44 +10442,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
             self.server.GETbusy = False
             return True
-        return False
-
-    def _editEvent(self, callingDomain: str, path: str,
-                   httpPrefix: str, domain: str, domainFull: str,
-                   baseDir: str, translate: {},
-                   mediaInstance: bool,
-                   cookie: str) -> bool:
-        """Show edit event screen
-        """
-        messageId = path.split('?editeventpost=')[1]
-        if '?' in messageId:
-            messageId = messageId.split('?')[0]
-        actor = path.split('?actor=')[1]
-        if '?' in actor:
-            actor = actor.split('?')[0]
-        nickname = getNicknameFromActor(path)
-        if nickname == actor:
-            # postUrl = \
-            #     httpPrefix + '://' + \
-            #     domainFull + '/users/' + nickname + \
-            #     '/statuses/' + messageId
-            msg = None
-            # TODO
-            # htmlEditEvent(mediaInstance,
-            #               translate,
-            #               baseDir,
-            #               httpPrefix,
-            #               path,
-            #               nickname, domain,
-            #               postUrl)
-            if msg:
-                msg = msg.encode('utf-8')
-                msglen = len(msg)
-                self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                return True
         return False
 
     def _getFollowingJson(self, baseDir: str, path: str,
@@ -12498,21 +12326,6 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return
 
-            # Edit an event
-            if authorized and \
-               '/tlevents' in self.path and \
-               '?editeventpost=' in self.path and \
-               '?actor=' in self.path:
-                if self._editEvent(callingDomain, self.path,
-                                   self.server.httpPrefix,
-                                   self.server.domain,
-                                   self.server.domainFull,
-                                   self.server.baseDir,
-                                   self.server.translate,
-                                   self.server.mediaInstance,
-                                   cookie):
-                    return
-
             # edit profile in web interface
             if self._editProfile(callingDomain, self.path,
                                  self.server.translate,
@@ -12931,29 +12744,6 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show shares 2 done',
                                   'show bookmarks 2 done')
 
-        # get the events for a given person
-        if self.path.endswith('/tlevents') or \
-           '/tlevents?page=' in self.path or \
-           self.path.endswith('/events') or \
-           '/events?page=' in self.path:
-            if self._showEventsTimeline(authorized,
-                                        callingDomain, self.path,
-                                        self.server.baseDir,
-                                        self.server.httpPrefix,
-                                        self.server.domain,
-                                        self.server.domainFull,
-                                        self.server.port,
-                                        self.server.onionDomain,
-                                        self.server.i2pDomain,
-                                        GETstartTime, GETtimings,
-                                        self.server.proxyType,
-                                        cookie, self.server.debug):
-                return
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  'show bookmarks 2 done',
-                                  'show events done')
-
         # outbox timeline
         if self._showOutboxTimeline(authorized,
                                     callingDomain, self.path,
@@ -13333,11 +13123,6 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 commentsEnabled = True
 
-            if not fields.get('privateEvent'):
-                privateEvent = False
-            else:
-                privateEvent = True
-
             if postType == 'newpost':
                 if not fields.get('pinToProfile'):
                     pinToProfile = False
@@ -13618,64 +13403,6 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        return 1
-                    else:
-                        return -1
-            elif postType == 'newevent':
-                # A Mobilizon-type event is posted
-
-                # if there is no image dscription then make it the same
-                # as the event title
-                if not fields.get('imageDescription'):
-                    fields['imageDescription'] = fields['subject']
-                # Events are public by default, with opt-in
-                # followers only status
-                if not fields.get('followersOnlyEvent'):
-                    fields['followersOnlyEvent'] = False
-
-                if not fields.get('anonymousParticipationEnabled'):
-                    anonymousParticipationEnabled = False
-                else:
-                    anonymousParticipationEnabled = True
-                maximumAttendeeCapacity = 999999
-                if fields.get('maximumAttendeeCapacity'):
-                    maximumAttendeeCapacity = \
-                        int(fields['maximumAttendeeCapacity'])
-
-                city = getSpoofedCity(self.server.city,
-                                      self.server.baseDir,
-                                      nickname,
-                                      self.server.domain)
-                messageJson = \
-                    createEventPost(self.server.baseDir,
-                                    nickname,
-                                    self.server.domain,
-                                    self.server.port,
-                                    self.server.httpPrefix,
-                                    mentionsStr + fields['message'],
-                                    privateEvent,
-                                    False, False, commentsEnabled,
-                                    filename, attachmentMediaType,
-                                    fields['imageDescription'],
-                                    city,
-                                    fields['subject'],
-                                    fields['schedulePost'],
-                                    fields['eventDate'],
-                                    fields['eventTime'],
-                                    fields['location'],
-                                    fields['category'],
-                                    fields['joinMode'],
-                                    fields['endDate'],
-                                    fields['endTime'],
-                                    maximumAttendeeCapacity,
-                                    fields['repliesModerationOption'],
-                                    anonymousParticipationEnabled,
-                                    fields['eventStatus'],
-                                    fields['ticketUrl'])
-                if messageJson:
-                    if fields['schedulePost']:
-                        return 1
-                    if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
                     else:
                         return -1
@@ -14190,7 +13917,6 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.path.endswith('confirm'):
             self.path = self.path.replace('/outbox/', '/outbox')
             self.path = self.path.replace('/tlblogs/', '/tlblogs')
-            self.path = self.path.replace('/tlevents/', '/tlevents')
             self.path = self.path.replace('/inbox/', '/inbox')
             self.path = self.path.replace('/shares/', '/shares')
             self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
@@ -14528,7 +14254,7 @@ class PubServer(BaseHTTPRequestHandler):
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
                      "newdm", "newreport", "newshare", "newquestion",
-                     "editblogpost", "newreminder", "newevent")
+                     "editblogpost", "newreminder")
         for currPostType in postTypes:
             if not authorized:
                 if self.server.debug:
@@ -14538,8 +14264,6 @@ class PubServer(BaseHTTPRequestHandler):
             postRedirect = self.server.defaultTimeline
             if currPostType == 'newshare':
                 postRedirect = 'shares'
-            elif currPostType == 'newevent':
-                postRedirect = 'tlevents'
 
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,

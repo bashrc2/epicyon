@@ -337,8 +337,6 @@ def postMessageToOutbox(session, translate: {},
                 if messageJson['object'].get('type'):
                     if messageJson['object']['type'] == 'Article':
                         outboxName = 'tlblogs'
-                    elif messageJson['object']['type'] == 'Event':
-                        outboxName = 'tlevents'
 
         savedFilename = \
             savePostToBox(baseDir,

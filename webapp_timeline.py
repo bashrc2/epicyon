@@ -129,20 +129,6 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
                 '<a href="' + usersPath + '/newblog">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlevents':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newevent?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new event'] + '" alt="| ' + \
-                translate['Create a new event'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newevent?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
     elif boxName == 'tlshares':
         if not iconsAsButtons:
             newPostButtonStr += \
@@ -500,8 +486,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             sharesButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
-#    elif boxName == 'tlevents':
-#        eventsButton = 'buttonselected'
 
     # get the full domain, including any port number
     fullDomain = getFullDomain(domain, port)
@@ -559,11 +543,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
             '</span></button></a>'
-#
-#        eventsButtonStr = \
-#            '<a href="' + usersPath + '/tlevents"><button class="' + \
-#            eventsButton + '"><span>' + translate['Events'] + \
-#            '</span></button></a>'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -1042,51 +1021,6 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
-                        httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain,
-                        showPublishedDateOnly,
-                        newswire, False, False,
-                        positiveVoting, showPublishAsIcon,
-                        fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
-
-
-def htmlEvents(cssCache: {}, defaultTimeline: str,
-               recentPostsCache: {}, maxRecentPosts: int,
-               translate: {}, pageNumber: int, itemsPerPage: int,
-               session, baseDir: str,
-               cachedWebfingers: {}, personCache: {},
-               nickname: str, domain: str, port: int, bookmarksJson: {},
-               allowDeletion: bool,
-               httpPrefix: str, projectVersion: str,
-               minimal: bool, YTReplacementDomain: str,
-               showPublishedDateOnly: bool,
-               newswire: {}, positiveVoting: bool,
-               showPublishAsIcon: bool,
-               fullWidthTimelineButtonHeader: bool,
-               iconsAsButtons: bool,
-               rssIconAtTop: bool,
-               publishButtonAtTop: bool,
-               authorized: bool, theme: str,
-               peertubeInstances: [],
-               allowLocalNetworkAccess: bool,
-               textModeBanner: str,
-               accessKeys: {}) -> str:
-    """Show the events as html
-    """
-    manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-
-    return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
-                        translate, pageNumber,
-                        itemsPerPage, session, baseDir,
-                        cachedWebfingers, personCache,
-                        nickname, domain, port, bookmarksJson,
-                        'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,

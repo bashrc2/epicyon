@@ -14,7 +14,6 @@ import os
 import shutil
 import sys
 import time
-import uuid
 import random
 from socket import error as SocketError
 from time import gmtime, strftime
@@ -657,8 +656,7 @@ def deleteAllPosts(baseDir: str,
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
-       boxname != 'tlblogs' and boxname != 'tlnews' and \
-       boxname != 'tlevents':
+       boxname != 'tlblogs' and boxname != 'tlnews':
         return
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     for deleteFilename in os.scandir(boxDir):
@@ -681,7 +679,6 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
        boxname != 'tlblogs' and boxname != 'tlnews' and \
-       boxname != 'tlevents' and \
        boxname != 'scheduled':
         return None
     originalDomain = domain
@@ -1244,9 +1241,6 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         if isArticle:
             savePostToBox(baseDir, httpPrefix, newPostId,
                           nickname, domain, newPost, 'tlblogs')
-        elif eventUUID:
-            savePostToBox(baseDir, httpPrefix, newPostId,
-                          nickname, domain, newPost, 'tlevents')
         else:
             savePostToBox(baseDir, httpPrefix, newPostId,
                           nickname, domain, newPost, 'outbox')
@@ -1651,57 +1645,6 @@ def createFollowersOnlyPost(baseDir: str,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
                            None, None, None, None, None)
-
-
-def createEventPost(baseDir: str,
-                    nickname: str, domain: str, port: int,
-                    httpPrefix: str,
-                    content: str, followersOnly: bool,
-                    saveToFile: bool,
-                    clientToServer: bool, commentsEnabled: bool,
-                    attachImageFilename: str, mediaType: str,
-                    imageDescription: str, city: str,
-                    subject: str = None, schedulePost: str = False,
-                    eventDate: str = None, eventTime: str = None,
-                    location: str = None, category: str = None,
-                    joinMode: str = None,
-                    endDate: str = None, endTime: str = None,
-                    maximumAttendeeCapacity: int = None,
-                    repliesModerationOption: str = None,
-                    anonymousParticipationEnabled: bool = None,
-                    eventStatus: str = None, ticketUrl: str = None) -> {}:
-    """Mobilizon-type Event post
-    """
-    if not attachImageFilename:
-        print('Event has no attached image')
-        return None
-    if not category:
-        print('Event has no category')
-        return None
-    domainFull = getFullDomain(domain, port)
-
-    # create event uuid
-    eventUUID = str(uuid.uuid1())
-
-    toStr1 = 'https://www.w3.org/ns/activitystreams#Public'
-    toStr2 = httpPrefix + '://' + domainFull + '/users/' + \
-        nickname + '/followers',
-    if followersOnly:
-        toStr1 = toStr2
-        toStr2 = None
-    return _createPostBase(baseDir, nickname, domain, port,
-                           toStr1, toStr2,
-                           httpPrefix, content, followersOnly, saveToFile,
-                           clientToServer, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           False, False, None, None, subject,
-                           schedulePost, eventDate, eventTime, location,
-                           eventUUID, category, joinMode,
-                           endDate, endTime, maximumAttendeeCapacity,
-                           repliesModerationOption,
-                           anonymousParticipationEnabled,
-                           eventStatus, ticketUrl)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
@@ -2835,16 +2778,6 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                              True, 0, False, 0, pageNumber)
 
 
-def createEventsTimeline(recentPostsCache: {},
-                         session, baseDir: str, nickname: str, domain: str,
-                         port: int, httpPrefix: str, itemsPerPage: int,
-                         headerOnly: bool, pageNumber: int = None) -> {}:
-    return _createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
-                             nickname, domain,
-                             port, httpPrefix, itemsPerPage, headerOnly,
-                             True, 0, False, 0, pageNumber)
-
-
 def createDMTimeline(recentPostsCache: {},
                      session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
@@ -3179,8 +3112,7 @@ def _createBoxIndexed(recentPostsCache: {},
        boxname != 'tlblogs' and boxname != 'tlnews' and \
        boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
-       boxname != 'bookmarks' and \
-       boxname != 'tlevents':
+       boxname != 'bookmarks':
         return None
 
     # bookmarks and events timelines are like the inbox
