@@ -86,6 +86,7 @@ from announce import sendAnnounceViaServer
 from city import parseNogoString
 from city import spoofGeolocation
 from city import pointInNogo
+from media import getImageDimensions
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -792,6 +793,10 @@ def testPostMessageBetweenServers():
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     attachedImageFilename = baseDir + '/img/logo.png'
+    testImageWidth, testImageHeight = \
+        getImageDimensions(attachedImageFilename)
+    assert testImageWidth
+    assert testImageHeight
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     isArticle = False
@@ -875,6 +880,20 @@ def testPostMessageBetweenServers():
         assert 'Why is a mouse when it spins?' in \
             receivedJson['object']['content']
         assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+        print('Check that message received from Alice contains an attachment')
+        assert receivedJson['object']['attachment']
+        assert len(receivedJson['object']['attachment']) == 1
+        attached = receivedJson['object']['attachment'][0]
+        pprint(attached)
+        assert attached.get('type')
+        assert attached.get('url')
+        assert attached['mediaType'] == 'image/png'
+        assert '/media/' in attached['url']
+        assert attached['url'].endswith('.png')
+        assert attached.get('width')
+        assert attached.get('height')
+        assert attached['width'] > 0
+        assert attached['height'] > 0
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
