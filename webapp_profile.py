@@ -1582,8 +1582,10 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         allowedInstancesStr + '</textarea>\n'
 
     userAgentsBlockedStr = ''
-    if userAgentsBlocked:
-        userAgentsBlockedStr = userAgentsBlocked.replace(',', '\n')
+    for ua in userAgentsBlocked:
+        if userAgentsBlockedStr:
+            userAgentsBlockedStr += '\n'
+        userAgentsBlockedStr += ua
     editProfileForm += \
         '      <br><b><label class="labels">' + \
         translate['Blocked User Agents'] + '</label></b>\n'
