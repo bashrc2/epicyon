@@ -1414,7 +1414,7 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
 
 
 def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
-                              translate: {}) -> str:
+                              userAgentsBlocked: str, translate: {}) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filterStr = ''
@@ -1580,6 +1580,19 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         '      <textarea id="message" name="allowedInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
+
+    userAgentsBlockedStr = ''
+    for ua in userAgentsBlocked:
+        if userAgentsBlockedStr:
+            userAgentsBlockedStr += '\n'
+        userAgentsBlockedStr += ua
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Blocked User Agents'] + '</label></b>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="userAgentsBlockedStr" ' + \
+        'style="height:200px" spellcheck="false">' + \
+        userAgentsBlockedStr + '</textarea>\n'
 
     editProfileForm += '    </div></details>\n'
     return editProfileForm
@@ -1880,6 +1893,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
                     textModeBanner: str, city: str,
+                    userAgentsBlocked: str,
                     accessKeys: {}) -> str:
     """Shows the edit profile screen
     """
@@ -2056,7 +2070,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # Filtering and blocking section
     editProfileForm += \
-        _htmlEditProfileFiltering(baseDir, nickname, domain, translate)
+        _htmlEditProfileFiltering(baseDir, nickname, domain,
+                                  userAgentsBlocked, translate)
 
     # git projects section
     editProfileForm += \
