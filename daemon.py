@@ -5084,8 +5084,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorChanged = True
 
                     # grayscale theme
-                    if path.startswith('/users/' +
-                                       adminNickname + '/') or \
+                    if path.startswith('/users/' + adminNickname + '/') or \
                        isArtist(baseDir, nickname):
                         grayscale = False
                         if fields.get('grayscale'):
@@ -5181,15 +5180,30 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(allowedInstancesFilename):
                             os.remove(allowedInstancesFilename)
 
-                    # save peertube instances list
-                    peertubeInstancesFile = \
-                        baseDir + '/accounts/peertube.txt'
-                    if fields.get('ptInstances'):
-                        adminNickname = \
-                            getConfigParam(baseDir, 'admin')
-                        if adminNickname and \
-                           path.startswith('/users/' +
-                                           adminNickname + '/'):
+                    # save blocked user agents
+                    # This is admin lebel and global to the instance
+                    if path.startswith('/users/' + adminNickname + '/'):
+                        userAgentsBlocked = ''
+                        if fields.get('userAgentsBlockedStr'):
+                            userAgentsBlockedStr = \
+                                fields['userAgentsBlockedStr']
+                            userAgentsBlockedList = \
+                                userAgentsBlockedStr.split('\n')
+                            for ua in userAgentsBlockedList:
+                                if userAgentsBlocked:
+                                    userAgentsBlocked += ','
+                                userAgentsBlocked += ua.strip()
+                        else:
+                            userAgentsBlocked = ''
+                        if self.server.userAgentsBlocked != userAgentsBlocked:
+                            self.server.userAgentsBlocked = userAgentsBlocked
+                            setConfigParam(baseDir, 'userAgentsBlocked',
+                                           userAgentsBlocked)
+
+                        # save peertube instances list
+                        peertubeInstancesFile = \
+                            baseDir + '/accounts/peertube.txt'
+                        if fields.get('ptInstances'):
                             self.server.peertubeInstances.clear()
                             with open(peertubeInstancesFile, 'w+') as aFile:
                                 aFile.write(fields['ptInstances'])
@@ -5203,10 +5217,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     if url in self.server.peertubeInstances:
                                         continue
                                     self.server.peertubeInstances.append(url)
-                    else:
-                        if os.path.isfile(peertubeInstancesFile):
-                            os.remove(peertubeInstancesFile)
-                        self.server.peertubeInstances.clear()
+                        else:
+                            if os.path.isfile(peertubeInstancesFile):
+                                os.remove(peertubeInstancesFile)
+                            self.server.peertubeInstances.clear()
 
                     # save git project names list
                     gitProjectsFilename = \
@@ -10328,7 +10342,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.themeName,
                                   peertubeInstances,
                                   self.server.textModeBanner,
-                                  city, accessKeys).encode('utf-8')
+                                  city,
+                                  self.server.userAgentsBlocked,
+                                  accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
