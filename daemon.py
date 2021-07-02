@@ -5183,22 +5183,26 @@ class PubServer(BaseHTTPRequestHandler):
                     # save blocked user agents
                     # This is admin lebel and global to the instance
                     if path.startswith('/users/' + adminNickname + '/'):
-                        userAgentsBlocked = ''
+                        userAgentsBlocked = []
                         if fields.get('userAgentsBlockedStr'):
                             userAgentsBlockedStr = \
                                 fields['userAgentsBlockedStr']
                             userAgentsBlockedList = \
                                 userAgentsBlockedStr.split('\n')
                             for ua in userAgentsBlockedList:
-                                if userAgentsBlocked:
-                                    userAgentsBlocked += ','
-                                userAgentsBlocked += ua.strip()
-                        else:
-                            userAgentsBlocked = ''
-                        if self.server.userAgentsBlocked != userAgentsBlocked:
+                                if ua in userAgentsBlocked:
+                                    continue
+                                userAgentsBlocked.append(ua.strip())
+                        if str(self.server.userAgentsBlocked) != \
+                           str(userAgentsBlocked):
                             self.server.userAgentsBlocked = userAgentsBlocked
+                            userAgentsBlockedStr = ''
+                            for ua in userAgentsBlocked:
+                                if userAgentsBlockedStr:
+                                    userAgentsBlockedStr += ','
+                                userAgentsBlockedStr += ua
                             setConfigParam(baseDir, 'userAgentsBlocked',
-                                           userAgentsBlocked)
+                                           userAgentsBlockedStr)
 
                         # save peertube instances list
                         peertubeInstancesFile = \
