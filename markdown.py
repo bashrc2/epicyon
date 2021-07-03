@@ -140,29 +140,22 @@ def markdownToHtml(markdown: str) -> str:
     linesList = markdown.split('\n')
     htmlStr = ''
     ctr = 0
+    titles = {
+        "h5": '#####',
+        "h4": '####',
+        "h3": '###',
+        "h2": '##',
+        "h1": '#'
+    }
     for line in linesList:
         if ctr > 0:
             htmlStr += '<br>'
-        if line.startswith('#####'):
-            line = line.replace('#####', '').strip()
-            line = '<h5>' + line + '</h5>'
-            ctr = -1
-        elif line.startswith('####'):
-            line = line.replace('####', '').strip()
-            line = '<h4>' + line + '</h4>'
-            ctr = -1
-        elif line.startswith('###'):
-            line = line.replace('###', '').strip()
-            line = '<h3>' + line + '</h3>'
-            ctr = -1
-        elif line.startswith('##'):
-            line = line.replace('##', '').strip()
-            line = '<h2>' + line + '</h2>'
-            ctr = -1
-        elif line.startswith('#'):
-            line = line.replace('#', '').strip()
-            line = '<h1>' + line + '</h1>'
-            ctr = -1
+        for h, hashes in titles.items():
+            if line.startswith(hashes):
+                line = line.replace(hashes, '').strip()
+                line = '<' + h + '>' + line + '</' + h + '>'
+                ctr = -1
+                break
         htmlStr += line
         ctr += 1
     return htmlStr
