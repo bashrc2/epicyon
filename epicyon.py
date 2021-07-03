@@ -195,12 +195,6 @@ parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
 parser.add_argument('--path', dest='baseDir',
                     type=str, default=os.getcwd(),
                     help='Directory in which to store posts')
-parser.add_argument('--chroot', dest='chrootDir',
-                    type=str, default=None,
-                    help='Chroot directory in which to run the system')
-parser.add_argument('--setuid', dest='setuid',
-                    type=str, default=None,
-                    help='Set directory permissions uid:gid')
 parser.add_argument('--ytdomain', dest='YTReplacementDomain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
@@ -587,29 +581,6 @@ if args.debug:
 else:
     if os.path.isfile('debug'):
         debug = True
-
-if args.chrootDir:
-    # chroot to a directory
-    os.chdir(args.chrootDir)
-    os.chroot(args.chrootDir)
-    args.baseDir = ''
-    print('Changed root directory to ' + args.chrootDir)
-
-if args.setuid:
-    # set permissions for the directory within which this system will run
-    import pwd
-    import grp
-    if ':' in args.setuid:
-        setuid = args.setuid.split(':')[0]
-        setgid = args.setuid.split(':')[1]
-    else:
-        setuid = args.setuid
-        setgid = args.setuid
-    uid = pwd.getpwnam(setuid)
-    gid = grp.getgrnam(setgid)
-    os.setgid(gid)
-    os.setuid(uid)
-    print('Setting uid:gid to ' + setuid + ':' + setgid)
 
 if args.tests:
     runAllTests()
