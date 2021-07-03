@@ -132,12 +132,10 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     calendarNotificationFilename = \
         baseDir + '/accounts/' + handle + '/.newCalendar'
     with open(calendarNotificationFilename, 'w+') as calendarNotificationFile:
-        calendarNotificationFile.write('/calendar?year=' +
-                                       str(eventYear) +
-                                       '?month=' +
-                                       str(eventMonthNumber) +
-                                       '?day=' +
-                                       str(eventDayOfMonth))
+        notifyStr = \
+            '/calendar?year=' + str(eventYear) + '?month=' + \
+            str(eventMonthNumber) + '?day=' + str(eventDayOfMonth)
+        calendarNotificationFile.write(notifyStr)
     return True
 
 
