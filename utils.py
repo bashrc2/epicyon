@@ -842,7 +842,7 @@ def getNicknameFromActor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    usersPaths = ('/users/', '/profile/', '/channel/', '/accounts/', '/u/')
+    usersPaths = getUserPaths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
             nickStr = actor.split(possiblePath)[1].replace('@', '')
@@ -872,6 +872,12 @@ def getNicknameFromActor(actor: str) -> str:
     return None
 
 
+def getUserPaths() -> []:
+    """Returns possible user paths
+    """
+    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+
+
 def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
@@ -879,7 +885,7 @@ def getDomainFromActor(actor: str) -> (str, int):
         actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
-    usersPaths = ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+    usersPaths = getUserPaths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
             domain = actor.split(possiblePath)[0]

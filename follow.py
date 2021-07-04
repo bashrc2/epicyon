@@ -26,6 +26,7 @@ from posts import getPersonBox
 from utils import loadJson
 from utils import saveJson
 from utils import isAccountDir
+from utils import getUserPaths
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -221,7 +222,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     if handle in followersStr:
         alreadyFollowing = True
     else:
-        paths = ('/profile/', '/channel/', '/accounts/', '/u/')
+        paths = getUserPaths()
         for userPath in paths:
             url = '://' + followerDomain + userPath + followerNickname
             if url in followersStr:

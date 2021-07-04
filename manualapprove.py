@@ -14,6 +14,7 @@ from follow import removeFromFollowRequests
 from utils import loadJson
 from utils import removeDomainPort
 from utils import getPortFromDomain
+from utils import getUserPaths
 
 
 def manualDenyFollowRequest(session, baseDir: str,
@@ -111,7 +112,7 @@ def manualApproveFollowRequest(session, baseDir: str,
         reqNick = approveHandle.split('@')[0]
         reqDomain = approveHandle.split('@')[1].strip()
         reqPrefix = httpPrefix + '://' + reqDomain
-        paths = ('/profile/', '/channel/', '/accounts/', '/u/')
+        paths = getUserPaths()
         for userPath in paths:
             if reqPrefix + userPath + reqNick in approveFollowsStr:
                 exists = True
