@@ -27,6 +27,7 @@ from utils import saveJson
 from utils import isSuspended
 from utils import containsInvalidChars
 from utils import removeHtml
+from utils import isAccountDir
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
@@ -964,9 +965,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
     # go through each account
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
-                continue
-            if 'inbox@' in handle or 'news@' in handle:
+            if not isAccountDir(handle):
                 continue
 
             nickname = handle.split('@')[0]

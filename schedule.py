@@ -13,6 +13,7 @@ import datetime
 from utils import hasObjectDict
 from utils import getStatusNumber
 from utils import loadJson
+from utils import isAccountDir
 from outbox import postMessageToOutbox
 
 
@@ -116,8 +117,8 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                 continue
 
             # move to the outbox
-            outboxPostFilename = \
-                postFilename.replace('/scheduled/', '/outbox/')
+            outboxPostFilename = postFilename.replace('/scheduled/',
+                                                      '/outbox/')
             os.rename(postFilename, outboxPostFilename)
 
             print('Scheduled post sent ' + postId)
@@ -144,9 +145,7 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
             for account in dirs:
                 if '@' not in account:
                     continue
-                if account.startswith('inbox@'):
-                    continue
-                if account.startswith('news@'):
+                if not isAccountDir(account):
                     continue
                 # scheduled posts index for this account
                 scheduleIndexFilename = \
