@@ -83,17 +83,15 @@ def setActorSkillLevel(actorJson: {},
     if not actorJson:
         return True
     if not actorJson.get('hasOccupation'):
-        actorJson['hasOccupation'] = [
-            {
-                '@type': 'Occupation',
-                'name': '',
-                "occupationLocation": {
-                    "@type": "City",
-                    "name": "Fediverse"
-                },
-                'skills': []
-            }
-        ]
+        actorJson['hasOccupation'] = [{
+            '@type': 'Occupation',
+            'name': '',
+            "occupationLocation": {
+                "@type": "City",
+                "name": "Fediverse"
+            },
+            'skills': []
+        }]
     ocSkillsList = getOccupationSkills(actorJson)
     skillsDict = getSkillsFromList(ocSkillsList)
     if not skillsDict.get(skill):
