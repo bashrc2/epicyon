@@ -1220,6 +1220,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                 nickname = handle.split(userPath)[1]
                 nickname = nickname.replace('\n', '').replace('\r', '')
                 domain = handle.split(userPath)[0]
+                userPathFound = True
                 break
         if not userPathFound and '://' in originalHandle:
             domain = originalHandle.split('://')[1]
@@ -1245,6 +1246,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
+
     cachedWebfingers = {}
     proxyType = None
     if http or domain.endswith('.onion'):

@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import requests
 from utils import urlPermitted
+from utils import isImageFile
 import json
 from socket import error as SocketError
 import errno
@@ -257,12 +258,8 @@ def postImage(session, attachImageFilename: str, federationList: [],
         print('postJson: ' + inboxUrl + ' not permitted')
         return None
 
-    if not (attachImageFilename.endswith('.jpg') or
-            attachImageFilename.endswith('.jpeg') or
-            attachImageFilename.endswith('.png') or
-            attachImageFilename.endswith('.svg') or
-            attachImageFilename.endswith('.gif')):
-        print('Image must be png, jpg, gif or svg')
+    if not isImageFile(attachImageFilename):
+        print('Image must be png, jpg, webp, avif, gif or svg')
         return None
     if not os.path.isfile(attachImageFilename):
         print('Image not found: ' + attachImageFilename)
@@ -270,9 +267,13 @@ def postImage(session, attachImageFilename: str, federationList: [],
     contentType = 'image/jpeg'
     if attachImageFilename.endswith('.png'):
         contentType = 'image/png'
-    if attachImageFilename.endswith('.gif'):
+    elif attachImageFilename.endswith('.gif'):
         contentType = 'image/gif'
-    if attachImageFilename.endswith('.svg'):
+    elif attachImageFilename.endswith('.webp'):
+        contentType = 'image/webp'
+    elif attachImageFilename.endswith('.avif'):
+        contentType = 'image/avif'
+    elif attachImageFilename.endswith('.svg'):
         contentType = 'image/svg+xml'
     headers['Content-type'] = contentType
 

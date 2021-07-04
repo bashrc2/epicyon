@@ -21,6 +21,7 @@ from utils import saveJson
 from utils import getImageExtensions
 from utils import hasObjectDict
 from utils import removeDomainPort
+from utils import isAccountDir
 from media import processMetaData
 
 
@@ -136,15 +137,16 @@ def addShare(baseDir: str,
             itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
             formats = getImageExtensions()
             for ext in formats:
-                if imageFilename.endswith('.' + ext):
-                    processMetaData(baseDir, nickname, domain,
-                                    imageFilename, itemIDfile + '.' + ext,
-                                    city)
-                    if moveImage:
-                        os.remove(imageFilename)
-                    imageUrl = \
-                        httpPrefix + '://' + domainFull + \
-                        '/sharefiles/' + nickname + '/' + itemID + '.' + ext
+                if not imageFilename.endswith('.' + ext):
+                    continue
+                processMetaData(baseDir, nickname, domain,
+                                imageFilename, itemIDfile + '.' + ext,
+                                city)
+                if moveImage:
+                    os.remove(imageFilename)
+                imageUrl = \
+                    httpPrefix + '://' + domainFull + \
+                    '/sharefiles/' + nickname + '/' + itemID + '.' + ext
 
     sharesJson[itemID] = {
         "displayName": displayName,
@@ -162,7 +164,7 @@ def addShare(baseDir: str,
     # indicate that a new share is available
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
+            if not isAccountDir(handle):
                 continue
             accountDir = baseDir + '/accounts/' + handle
             newShareFile = accountDir + '/.newShare'
@@ -182,7 +184,7 @@ def expireShares(baseDir: str) -> None:
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' not in account:
+            if not isAccountDir(account):
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]

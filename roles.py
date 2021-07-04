@@ -91,10 +91,11 @@ def _addRole(baseDir: str, nickname: str, domain: str,
         with open(roleFile, 'w+') as f:
             for roleNickname in lines:
                 roleNickname = roleNickname.strip('\n').strip('\r')
-                if len(roleNickname) > 1:
-                    if os.path.isdir(baseDir + '/accounts/' +
-                                     roleNickname + '@' + domain):
-                        f.write(roleNickname + '\n')
+                if len(roleNickname) < 2:
+                    continue
+                if os.path.isdir(baseDir + '/accounts/' +
+                                 roleNickname + '@' + domain):
+                    f.write(roleNickname + '\n')
     else:
         with open(roleFile, "w+") as f:
             if os.path.isdir(baseDir + '/accounts/' +
@@ -126,6 +127,7 @@ def _setActorRole(actorJson: {}, roleName: str) -> bool:
     if not isinstance(actorJson['hasOccupation'], list):
         return False
 
+    # occupation category from www.onetonline.org
     category = None
     if 'admin' in roleName:
         category = '15-1299.01'
@@ -228,8 +230,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(role) > 128:
         return False
-    actorFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '.json'
+    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
     if not os.path.isfile(actorFilename):
         return False
 
