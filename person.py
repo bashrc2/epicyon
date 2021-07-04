@@ -1302,11 +1302,11 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if not personUrl:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
-        personUrl = personUrl.replace('/users/', '/actor/')
-        personUrl = personUrl.replace('/accounts/', '/actor/')
-        personUrl = personUrl.replace('/channel/', '/actor/')
-        personUrl = personUrl.replace('/profile/', '/actor/')
-        personUrl = personUrl.replace('/u/', '/actor/')
+        paths = (
+            '/users/', '/accounts/', '/channel/', '/profile/', '/u/'
+        )
+        for userPath in paths:
+            personUrl = personUrl.replace(userPath, '/actor/')
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain + '/' + nickname
