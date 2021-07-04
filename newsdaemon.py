@@ -277,6 +277,87 @@ def hashtagRuleTree(operators: [],
     return tree
 
 
+def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
+                postJsonObject: {},
+                actionStr: str, hashtags: []) -> None:
+    """Adds a hashtag via a hashtag rule
+    """
+    addHashtag = actionStr.split('add ', 1)[1].strip()
+    if not addHashtag.startswith('#'):
+        return
+
+    if addHashtag not in hashtags:
+        hashtags.append(addHashtag)
+    htId = addHashtag.replace('#', '')
+    if not validHashTag(htId):
+        return
+
+    hashtagUrl = httpPrefix + "://" + domainFull + "/tags/" + htId
+    newTag = {
+        'href': hashtagUrl,
+        'name': addHashtag,
+        'type': 'Hashtag'
+    }
+    # does the tag already exist?
+    addTagObject = None
+    for t in postJsonObject['object']['tag']:
+        if t.get('type') and t.get('name'):
+            if t['type'] == 'Hashtag' and \
+               t['name'] == addHashtag:
+                addTagObject = t
+                break
+    # append the tag if it wasn't found
+    if not addTagObject:
+        postJsonObject['object']['tag'].append(newTag)
+    # add corresponding html to the post content
+    hashtagHtml = \
+        " <a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
+        "rel=\"tag\">#<span>" + htId + "</span></a>"
+    content = postJsonObject['object']['content']
+    if hashtagHtml in content:
+        return
+
+    if content.endswith('</p>'):
+        content = \
+            content[:len(content) - len('</p>')] + \
+            hashtagHtml + '</p>'
+    else:
+        content += hashtagHtml
+    postJsonObject['object']['content'] = content
+    storeHashTags(baseDir, 'news', postJsonObject)
+
+
+def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
+                   actionStr: str, hashtags: []) -> None:
+    """Removes a hashtag via a hashtag rule
+    """
+    rmHashtag = actionStr.split('remove ', 1)[1].strip()
+    if not rmHashtag.startswith('#'):
+        return
+
+    if rmHashtag in hashtags:
+        hashtags.remove(rmHashtag)
+    htId = rmHashtag.replace('#', '')
+    hashtagUrl = httpPrefix + "://" + domainFull + "/tags/" + htId
+    # remove tag html from the post content
+    hashtagHtml = \
+        "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
+        "rel=\"tag\">#<span>" + htId + "</span></a>"
+    content = postJsonObject['object']['content']
+    if hashtagHtml in content:
+        content = content.replace(hashtagHtml, '').replace('  ', ' ')
+        postJsonObject['object']['content'] = content
+    rmTagObject = None
+    for t in postJsonObject['object']['tag']:
+        if t.get('type') and t.get('name'):
+            if t['type'] == 'Hashtag' and \
+               t['name'] == rmHashtag:
+                rmTagObject = t
+                break
+    if rmTagObject:
+        postJsonObject['object']['tag'].remove(rmTagObject)
+
+
 def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                                hashtags: [], httpPrefix: str,
                                domain: str, port: int,
@@ -325,83 +406,16 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         # the condition matches, so do something
         actionStr = ruleStr.split(' then ')[1].strip()
 
-        # add a hashtag
         if actionStr.startswith('add '):
-            addHashtag = actionStr.split('add ', 1)[1].strip()
-            if addHashtag.startswith('#'):
-                if addHashtag not in hashtags:
-                    hashtags.append(addHashtag)
-                htId = addHashtag.replace('#', '')
-                if validHashTag(htId):
-                    hashtagUrl = \
-                        httpPrefix + "://" + domainFull + "/tags/" + htId
-                    newTag = {
-                        'href': hashtagUrl,
-                        'name': addHashtag,
-                        'type': 'Hashtag'
-                    }
-                    # does the tag already exist?
-                    addTagObject = None
-                    for t in postJsonObject['object']['tag']:
-                        if t.get('type') and t.get('name'):
-                            if t['type'] == 'Hashtag' and \
-                               t['name'] == addHashtag:
-                                addTagObject = t
-                                break
-                    # append the tag if it wasn't found
-                    if not addTagObject:
-                        postJsonObject['object']['tag'].append(newTag)
-                    # add corresponding html to the post content
-                    hashtagHtml = \
-                        " <a href=\"" + hashtagUrl + \
-                        "\" class=\"addedHashtag\" " + \
-                        "rel=\"tag\">#<span>" + \
-                        htId + "</span></a>"
-                    content = postJsonObject['object']['content']
-                    if hashtagHtml not in content:
-                        if content.endswith('</p>'):
-                            content = \
-                                content[:len(content) - len('</p>')] + \
-                                hashtagHtml + '</p>'
-                        else:
-                            content += hashtagHtml
-                        postJsonObject['object']['content'] = content
-                        storeHashTags(baseDir, 'news', postJsonObject)
-                        # actionOccurred = True
-
-        # remove a hashtag
-        if actionStr.startswith('remove '):
-            rmHashtag = actionStr.split('remove ', 1)[1].strip()
-            if rmHashtag.startswith('#'):
-                if rmHashtag in hashtags:
-                    hashtags.remove(rmHashtag)
-                htId = rmHashtag.replace('#', '')
-                hashtagUrl = \
-                    httpPrefix + "://" + domainFull + "/tags/" + htId
-                # remove tag html from the post content
-                hashtagHtml = \
-                    "<a href=\"" + hashtagUrl + \
-                    "\" class=\"addedHashtag\" " + \
-                    "rel=\"tag\">#<span>" + \
-                    htId + "</span></a>"
-                content = postJsonObject['object']['content']
-                if hashtagHtml in content:
-                    content = \
-                        content.replace(hashtagHtml, '').replace('  ', ' ')
-                    postJsonObject['object']['content'] = content
-                rmTagObject = None
-                for t in postJsonObject['object']['tag']:
-                    if t.get('type') and t.get('name'):
-                        if t['type'] == 'Hashtag' and \
-                           t['name'] == rmHashtag:
-                            rmTagObject = t
-                            break
-                if rmTagObject:
-                    postJsonObject['object']['tag'].remove(rmTagObject)
-                    # actionOccurred = True
-
-        # Block this item
-        if actionStr.startswith('block') or actionStr.startswith('drop'):
+            # add a hashtag
+            _hashtagAdd(baseDir, httpPrefix, domainFull,
+                        postJsonObject, actionStr, hashtags)
+        elif actionStr.startswith('remove '):
+            # remove a hashtag
+            _hashtagRemove(httpPrefix, domainFull, postJsonObject,
+                           actionStr, hashtags)
+        elif actionStr.startswith('block') or actionStr.startswith('drop'):
+            # Block this item
             return False
     return True
 
