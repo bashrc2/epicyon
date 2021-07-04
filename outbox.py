@@ -368,14 +368,12 @@ def postMessageToOutbox(session, translate: {},
                 if os.path.isfile(citationsFilename):
                     os.remove(citationsFilename)
 
-        if messageJson['type'] == 'Create' or \
-           messageJson['type'] == 'Question' or \
-           messageJson['type'] == 'Note' or \
-           messageJson['type'] == 'EncryptedMessage' or \
-           messageJson['type'] == 'Article' or \
-           messageJson['type'] == 'Event' or \
-           messageJson['type'] == 'Patch' or \
-           messageJson['type'] == 'Announce':
+        # The following activity types get added to the index files
+        indexedActivities = (
+            'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
+            'Patch', 'Announce'
+        )
+        if messageJson['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
                 httpPrefix + '://' + domainFull + '/users/' + postToNickname
