@@ -74,6 +74,120 @@ def _removeControlCharacters(content: str) -> str:
     return content
 
 
+def _hashtagLogicalNot(tree: [], hashtags: [], moderated: bool,
+                       content: str, url: str) -> bool:
+    """ NOT
+    """
+    if len(tree) != 2:
+        return False
+    if isinstance(tree[1], str):
+        return tree[1] not in hashtags
+    elif isinstance(tree[1], list):
+        return not hashtagRuleResolve(tree[1], hashtags,
+                                      moderated, content, url)
+    return False
+
+
+def _hashtagLogicalContains(tree: [], hashtags: [], moderated: bool,
+                            content: str, url: str) -> bool:
+    """ Contains
+    """
+    if len(tree) != 2:
+        return False
+    matchStr = None
+    if isinstance(tree[1], str):
+        matchStr = tree[1]
+    elif isinstance(tree[1], list):
+        matchStr = tree[1][0]
+    if matchStr:
+        if matchStr.startswith('"') and matchStr.endswith('"'):
+            matchStr = matchStr[1:]
+            matchStr = matchStr[:len(matchStr) - 1]
+        matchStrLower = matchStr.lower()
+        contentWithoutTags = content.replace('#' + matchStrLower, '')
+        return matchStrLower in contentWithoutTags
+    return False
+
+
+def _hashtagLogicalFrom(tree: [], hashtags: [], moderated: bool,
+                        content: str, url: str) -> bool:
+    """ FROM
+    """
+    if len(tree) != 2:
+        return False
+    matchStr = None
+    if isinstance(tree[1], str):
+        matchStr = tree[1]
+    elif isinstance(tree[1], list):
+        matchStr = tree[1][0]
+    if matchStr:
+        if matchStr.startswith('"') and matchStr.endswith('"'):
+            matchStr = matchStr[1:]
+            matchStr = matchStr[:len(matchStr) - 1]
+        return matchStr.lower() in url
+    return False
+
+
+def _hashtagLogicalAnd(tree: [], hashtags: [], moderated: bool,
+                       content: str, url: str) -> bool:
+    """ AND
+    """
+    if len(tree) < 3:
+        return False
+    for argIndex in range(1, len(tree)):
+        argValue = False
+        if isinstance(tree[argIndex], str):
+            argValue = (tree[argIndex] in hashtags)
+        elif isinstance(tree[argIndex], list):
+            argValue = hashtagRuleResolve(tree[argIndex],
+                                          hashtags, moderated,
+                                          content, url)
+        if not argValue:
+            return False
+    return True
+
+
+def _hashtagLogicalOr(tree: [], hashtags: [], moderated: bool,
+                      content: str, url: str) -> bool:
+    """ OR
+    """
+    if len(tree) < 3:
+        return False
+    for argIndex in range(1, len(tree)):
+        argValue = False
+        if isinstance(tree[argIndex], str):
+            argValue = (tree[argIndex] in hashtags)
+        elif isinstance(tree[argIndex], list):
+            argValue = hashtagRuleResolve(tree[argIndex],
+                                          hashtags, moderated,
+                                          content, url)
+        if argValue:
+            return True
+    return False
+
+
+def _hashtagLogicalXor(tree: [], hashtags: [], moderated: bool,
+                       content: str, url: str) -> bool:
+    """ XOR
+    """
+    if len(tree) < 3:
+        return False
+    trueCtr = 0
+    for argIndex in range(1, len(tree)):
+        argValue = False
+        if isinstance(tree[argIndex], str):
+            argValue = (tree[argIndex] in hashtags)
+        elif isinstance(tree[argIndex], list):
+            argValue = hashtagRuleResolve(tree[argIndex],
+                                          hashtags, moderated,
+                                          content, url)
+        if argValue:
+            trueCtr += 1
+    if trueCtr == 1:
+        return True
+    return False
+
+
 def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                        content: str, url: str) -> bool:
     """Returns whether the tree for a hashtag rule evaluates to true or false
@@ -82,79 +196,17 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
         return False
 
     if tree[0] == 'not':
-        if len(tree) == 2:
-            if isinstance(tree[1], str):
-                return tree[1] not in hashtags
-            elif isinstance(tree[1], list):
-                return not hashtagRuleResolve(tree[1], hashtags, moderated,
-                                              content, url)
+        return _hashtagLogicalNot(tree, hashtags, moderated, content, url)
     elif tree[0] == 'contains':
-        if len(tree) == 2:
-            matchStr = None
-            if isinstance(tree[1], str):
-                matchStr = tree[1]
-            elif isinstance(tree[1], list):
-                matchStr = tree[1][0]
-            if matchStr:
-                if matchStr.startswith('"') and matchStr.endswith('"'):
-                    matchStr = matchStr[1:]
-                    matchStr = matchStr[:len(matchStr) - 1]
-                matchStrLower = matchStr.lower()
-                contentWithoutTags = content.replace('#' + matchStrLower, '')
-                return matchStrLower in contentWithoutTags
+        return _hashtagLogicalContains(tree, hashtags, moderated, content, url)
     elif tree[0] == 'from':
-        if len(tree) == 2:
-            matchStr = None
-            if isinstance(tree[1], str):
-                matchStr = tree[1]
-            elif isinstance(tree[1], list):
-                matchStr = tree[1][0]
-            if matchStr:
-                if matchStr.startswith('"') and matchStr.endswith('"'):
-                    matchStr = matchStr[1:]
-                    matchStr = matchStr[:len(matchStr) - 1]
-                return matchStr.lower() in url
+        return _hashtagLogicalFrom(tree, hashtags, moderated, content, url)
     elif tree[0] == 'and':
-        if len(tree) >= 3:
-            for argIndex in range(1, len(tree)):
-                argValue = False
-                if isinstance(tree[argIndex], str):
-                    argValue = (tree[argIndex] in hashtags)
-                elif isinstance(tree[argIndex], list):
-                    argValue = hashtagRuleResolve(tree[argIndex],
-                                                  hashtags, moderated,
-                                                  content, url)
-                if not argValue:
-                    return False
-            return True
+        return _hashtagLogicalAnd(tree, hashtags, moderated, content, url)
     elif tree[0] == 'or':
-        if len(tree) >= 3:
-            for argIndex in range(1, len(tree)):
-                argValue = False
-                if isinstance(tree[argIndex], str):
-                    argValue = (tree[argIndex] in hashtags)
-                elif isinstance(tree[argIndex], list):
-                    argValue = hashtagRuleResolve(tree[argIndex],
-                                                  hashtags, moderated,
-                                                  content, url)
-                if argValue:
-                    return True
-            return False
+        return _hashtagLogicalOr(tree, hashtags, moderated, content, url)
     elif tree[0] == 'xor':
-        if len(tree) >= 3:
-            trueCtr = 0
-            for argIndex in range(1, len(tree)):
-                argValue = False
-                if isinstance(tree[argIndex], str):
-                    argValue = (tree[argIndex] in hashtags)
-                elif isinstance(tree[argIndex], list):
-                    argValue = hashtagRuleResolve(tree[argIndex],
-                                                  hashtags, moderated,
-                                                  content, url)
-                if argValue:
-                    trueCtr += 1
-            if trueCtr == 1:
-                return True
+        return _hashtagLogicalXor(tree, hashtags, moderated, content, url)
     elif tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
     elif tree[0].startswith('moderated'):
