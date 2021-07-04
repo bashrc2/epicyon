@@ -47,21 +47,25 @@ def rss2Header(httpPrefix: str,
                title: str, translate: {}) -> str:
     """Header for an RSS 2.0 feed
     """
-    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-    rssStr += "<rss version=\"2.0\">"
-    rssStr += '<channel>'
+    rssStr = \
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + \
+        "<rss version=\"2.0\">" + \
+        '<channel>'
 
     if title.startswith('News'):
-        rssStr += '    <title>Newswire</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>Newswire</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/newswire.xml' + '</link>'
     elif title.startswith('Site'):
-        rssStr += '    <title>' + domainFull + '</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>' + domainFull + '</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/blog/rss.xml' + '</link>'
     else:
-        rssStr += '    <title>' + translate[title] + '</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>' + translate[title] + '</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/rss.xml' + '</link>'
     return rssStr
 
@@ -69,8 +73,7 @@ def rss2Header(httpPrefix: str,
 def rss2Footer() -> str:
     """Footer for an RSS 2.0 feed
     """
-    rssStr = '</channel>'
-    rssStr += '</rss>'
+    rssStr = '</channel></rss>'
     return rssStr
 
 
