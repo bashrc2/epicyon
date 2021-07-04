@@ -259,7 +259,7 @@ def postImage(session, attachImageFilename: str, federationList: [],
         return None
 
     if not isImageFile(attachImageFilename):
-        print('Image must be png, jpg, gif or svg')
+        print('Image must be png, jpg, webp, avif, gif or svg')
         return None
     if not os.path.isfile(attachImageFilename):
         print('Image not found: ' + attachImageFilename)
