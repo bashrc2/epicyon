@@ -116,10 +116,16 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
        imageFilename.endswith('.jpeg'):
         mediaType = 'image/jpeg'
         iconFilename = iconFilenameBase + '.jpg'
-    if imageFilename.endswith('.gif'):
+    elif imageFilename.endswith('.gif'):
         mediaType = 'image/gif'
         iconFilename = iconFilenameBase + '.gif'
-    if imageFilename.endswith('.svg'):
+    elif imageFilename.endswith('.webp'):
+        mediaType = 'image/webp'
+        iconFilename = iconFilenameBase + '.webp'
+    elif imageFilename.endswith('.avif'):
+        mediaType = 'image/avif'
+        iconFilename = iconFilenameBase + '.avif'
+    elif imageFilename.endswith('.svg'):
         mediaType = 'image/svg+xml'
         iconFilename = iconFilenameBase + '.svg'
     profileFilename = baseDir + '/accounts/' + handle + '/' + iconFilename
@@ -590,17 +596,15 @@ def personUpgradeActor(baseDir: str, personJson: {},
     # if the older skills format is being used then switch
     # to the new one
     if not personJson.get('hasOccupation'):
-        personJson['hasOccupation'] = [
-            {
-                '@type': 'Occupation',
-                'name': occupationName,
-                "occupationLocation": {
-                    "@type": "City",
-                    "name": "Fediverse"
-                },
-                'skills': []
-            }
-        ]
+        personJson['hasOccupation'] = [{
+            '@type': 'Occupation',
+            'name': occupationName,
+            "occupationLocation": {
+                "@type": "City",
+                "name": "Fediverse"
+            },
+            'skills': []
+        }]
         updateActor = True
 
     # remove the old skills format
@@ -615,17 +619,15 @@ def personUpgradeActor(baseDir: str, personJson: {},
         updateActor = True
 
     if not isinstance(personJson['hasOccupation'], list):
-        personJson['hasOccupation'] = [
-            {
-                '@type': 'Occupation',
-                'name': occupationName,
-                'occupationLocation': {
-                    '@type': 'City',
-                    'name': 'Fediverse'
-                },
-                'skills': []
-            }
-        ]
+        personJson['hasOccupation'] = [{
+            '@type': 'Occupation',
+            'name': occupationName,
+            'occupationLocation': {
+                '@type': 'City',
+                'name': 'Fediverse'
+            },
+            'skills': []
+        }]
         updateActor = True
     else:
         # add location if it is missing
@@ -1209,27 +1211,17 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
         handle = handle.replace('/@', '/users/')
-        if '/users/' in handle:
-            nickname = handle.split('/users/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = handle.split('/users/')[0]
-        elif '/profile/' in handle:
-            nickname = handle.split('/profile/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = handle.split('/profile/')[0]
-        elif '/channel/' in handle:
-            nickname = handle.split('/channel/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = handle.split('/channel/')[0]
-        elif '/accounts/' in handle:
-            nickname = handle.split('/accounts/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = handle.split('/accounts/')[0]
-        elif '/u/' in handle:
-            nickname = handle.split('/u/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = handle.split('/u/')[0]
-        elif '://' in originalHandle:
+        paths = (
+            '/users/', '/profile/', '/channel/', '/accounts/', '/u/'
+        )
+        userPathFound = False
+        for userPath in paths:
+            if userPath in handle:
+                nickname = handle.split(userPath)[1]
+                nickname = nickname.replace('\n', '').replace('\r', '')
+                domain = handle.split(userPath)[0]
+                break
+        if not userPathFound and '://' in originalHandle:
             domain = originalHandle.split('://')[1]
             if '/' in domain:
                 domain = domain.split('/')[0]
