@@ -13,9 +13,9 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from webfinger import webfingerHandle
 from blocking import isBlocked
-from session import getJson
 from posts import getUserUrl
 from follow import unfollowAccount
+from person import getActorJson
 
 
 def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
@@ -73,22 +73,16 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         print('wfRequest error: ' + str(wfRequest['errors']))
         return ctr
 
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
     if not personUrl:
         personUrl = getUserUrl(wfRequest, 0, debug)
         if not personUrl:
             return ctr
 
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
-    }
+    gnunet = False
+    if httpPrefix == 'gnunet':
+        gnunet = True
     personJson = \
-        getJson(session, personUrl, asHeader, None,
-                debug, __version__, httpPrefix, None)
+        getActorJson(domain, personUrl, httpPrefix, gnunet, debug)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):

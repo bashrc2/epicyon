@@ -111,18 +111,12 @@ def manualApproveFollowRequest(session, baseDir: str,
         reqNick = approveHandle.split('@')[0]
         reqDomain = approveHandle.split('@')[1].strip()
         reqPrefix = httpPrefix + '://' + reqDomain
-        if reqPrefix + '/profile/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/profile/' + reqNick
-        elif reqPrefix + '/channel/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/channel/' + reqNick
-        elif reqPrefix + '/accounts/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/accounts/' + reqNick
-        elif reqPrefix + '/u/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/u/' + reqNick
+        paths = ('/profile/', '/channel/', '/accounts/', '/u/')
+        for userPath in paths:
+            if reqPrefix + userPath + reqNick in approveFollowsStr:
+                exists = True
+                approveHandleFull = reqPrefix + userPath + reqNick
+                break
     if not exists:
         print('Manual follow accept: ' + approveHandleFull +
               ' not in requests file "' +

@@ -220,18 +220,13 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
 
     if handle in followersStr:
         alreadyFollowing = True
-    elif '://' + followerDomain + \
-         '/profile/' + followerNickname in followersStr:
-        alreadyFollowing = True
-    elif '://' + followerDomain + \
-         '/channel/' + followerNickname in followersStr:
-        alreadyFollowing = True
-    elif '://' + followerDomain + \
-         '/accounts/' + followerNickname in followersStr:
-        alreadyFollowing = True
-    elif '://' + followerDomain + \
-         '/u/' + followerNickname in followersStr:
-        alreadyFollowing = True
+    else:
+        paths = ('/profile/', '/channel/', '/accounts/', '/u/')
+        for userPath in paths:
+            url = '://' + followerDomain + userPath + followerNickname
+            if url in followersStr:
+                alreadyFollowing = True
+                break
 
     return alreadyFollowing
 
