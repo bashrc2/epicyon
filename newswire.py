@@ -818,8 +818,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
         except Exception as e:
             print('WARN: Unable to convert date ' + published + ' ' + str(e))
             continue
-        rssStr += '<item>\n'
-        rssStr += '  <title>' + fields[0] + '</title>\n'
+        rssStr += \
+            '<item>\n' + \
+            '  <title>' + fields[0] + '</title>\n'
         description = removeHtml(firstParagraphFromString(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
@@ -829,8 +830,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
         rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-        rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
-        rssStr += '</item>\n'
+        rssStr += \
+            '  <pubDate>' + rssDateStr + '</pubDate>\n' + \
+            '</item>\n'
     rssStr += rss2Footer()
     return rssStr
 
