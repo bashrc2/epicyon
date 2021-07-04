@@ -492,9 +492,9 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     that they appear
     """
     plainText = removeHtml(content)
-    plainText = plainText.replace('.', ' ')
-    plainText = plainText.replace(';', ' ')
-    plainText = plainText.replace('?', ' ')
+    removeChars = ('.', ';', '?')
+    for ch in removeChars:
+        plainText = plainText.replace(ch, ' ')
     wordsList = plainText.split(' ')
     commonWords = (
         'that', 'some', 'about', 'then', 'they', 'were',
@@ -1656,29 +1656,30 @@ def getMentionedPeople(baseDir: str, httpPrefix: str,
     mentions = []
     words = content.split(' ')
     for wrd in words:
-        if wrd.startswith('@'):
-            handle = wrd[1:]
-            if debug:
-                print('DEBUG: mentioned handle ' + handle)
-            if '@' not in handle:
-                handle = handle + '@' + domain
-                if not os.path.isdir(baseDir + '/accounts/' + handle):
-                    continue
-            else:
-                externalDomain = handle.split('@')[1]
-                if not ('.' in externalDomain or
-                        externalDomain == 'localhost'):
-                    continue
-            mentionedNickname = handle.split('@')[0]
-            mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
-            if ':' in mentionedDomain:
-                mentionedDomain = removeDomainPort(mentionedDomain)
-            if not validNickname(mentionedDomain, mentionedNickname):
+        if not wrd.startswith('@'):
+            continue
+        handle = wrd[1:]
+        if debug:
+            print('DEBUG: mentioned handle ' + handle)
+        if '@' not in handle:
+            handle = handle + '@' + domain
+            if not os.path.isdir(baseDir + '/accounts/' + handle):
                 continue
-            actor = \
-                httpPrefix + '://' + handle.split('@')[1] + \
-                '/users/' + mentionedNickname
-            mentions.append(actor)
+        else:
+            externalDomain = handle.split('@')[1]
+            if not ('.' in externalDomain or
+                    externalDomain == 'localhost'):
+                continue
+        mentionedNickname = handle.split('@')[0]
+        mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
+        if ':' in mentionedDomain:
+            mentionedDomain = removeDomainPort(mentionedDomain)
+        if not validNickname(mentionedDomain, mentionedNickname):
+            continue
+        actor = \
+            httpPrefix + '://' + handle.split('@')[1] + \
+            '/users/' + mentionedNickname
+        mentions.append(actor)
     return mentions
 
 
@@ -2140,14 +2141,15 @@ def groupFollowersByDomain(baseDir: str, nickname: str, domain: str) -> {}:
     grouped = {}
     with open(followersFilename, "r") as f:
         for followerHandle in f:
-            if '@' in followerHandle:
-                fHandle = \
-                    followerHandle.strip().replace('\n', '').replace('\r', '')
-                followerDomain = fHandle.split('@')[1]
-                if not grouped.get(followerDomain):
-                    grouped[followerDomain] = [fHandle]
-                else:
-                    grouped[followerDomain].append(fHandle)
+            if '@' not in followerHandle:
+                continue
+            fHandle = \
+                followerHandle.strip().replace('\n', '').replace('\r', '')
+            followerDomain = fHandle.split('@')[1]
+            if not grouped.get(followerDomain):
+                grouped[followerDomain] = [fHandle]
+            else:
+                grouped[followerDomain].append(fHandle)
     return grouped
 
 
@@ -2174,9 +2176,9 @@ def _addFollowersToPublicPost(postJsonObject: {}) -> None:
             return
         if len(postJsonObject['object']['to']) > 1:
             return
-        if len(postJsonObject['object']['to']) == 0:
+        elif len(postJsonObject['object']['to']) == 0:
             return
-        if not postJsonObject['object']['to'][0].endswith('#Public'):
+        elif not postJsonObject['object']['to'][0].endswith('#Public'):
             return
         if postJsonObject['object'].get('cc'):
             return
@@ -2403,6 +2405,20 @@ def addToField(activityType: str, postJsonObject: {},
     return postJsonObject, False
 
 
+def _isProfileUpdate(postJsonObject: {}) -> bool:
+    """Is the given post a profile update?
+    for actor updates there is no 'to' within the object
+    """
+    if postJsonObject['object'].get('type') and postJsonObject.get('type'):
+        if (postJsonObject['type'] == 'Update' and
+            (postJsonObject['object']['type'] == 'Person' or
+             postJsonObject['object']['type'] == 'Application' or
+             postJsonObject['object']['type'] == 'Group' or
+             postJsonObject['object']['type'] == 'Service')):
+            return True
+    return False
+
+
 def sendToNamedAddresses(session, baseDir: str,
                          nickname: str, domain: str,
                          onionDomain: str, i2pDomain: str, port: int,
@@ -2420,16 +2436,10 @@ def sendToNamedAddresses(session, baseDir: str,
         return
     isProfileUpdate = False
     if isinstance(postJsonObject['object'], dict):
-        # for actor updates there is no 'to' within the object
-        if postJsonObject['object'].get('type') and postJsonObject.get('type'):
-            if (postJsonObject['type'] == 'Update' and
-                (postJsonObject['object']['type'] == 'Person' or
-                 postJsonObject['object']['type'] == 'Application' or
-                 postJsonObject['object']['type'] == 'Group' or
-                 postJsonObject['object']['type'] == 'Service')):
-                # use the original object, which has a 'to'
-                recipientsObject = postJsonObject
-                isProfileUpdate = True
+        if _isProfileUpdate(postJsonObject):
+            # use the original object, which has a 'to'
+            recipientsObject = postJsonObject
+            isProfileUpdate = True
 
         if not isProfileUpdate:
             if not postJsonObject['object'].get('to'):
