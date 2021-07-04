@@ -49,6 +49,7 @@ from utils import refreshNewswire
 from utils import getProtocolPrefixes
 from utils import hasUsersPath
 from utils import getImageExtensions
+from utils import isImageFile
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -84,11 +85,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     image for the given person
     """
     imageFilename = imageFilename.replace('\n', '').replace('\r', '')
-    if not (imageFilename.endswith('.png') or
-            imageFilename.endswith('.jpg') or
-            imageFilename.endswith('.jpeg') or
-            imageFilename.endswith('.svg') or
-            imageFilename.endswith('.gif')):
+    if not isImageFile(imageFilename):
         print('Profile image must be png, jpg, gif or svg format')
         return False
 
