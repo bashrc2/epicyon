@@ -47,21 +47,25 @@ def rss2Header(httpPrefix: str,
                title: str, translate: {}) -> str:
     """Header for an RSS 2.0 feed
     """
-    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-    rssStr += "<rss version=\"2.0\">"
-    rssStr += '<channel>'
+    rssStr = \
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + \
+        "<rss version=\"2.0\">" + \
+        '<channel>'
 
     if title.startswith('News'):
-        rssStr += '    <title>Newswire</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>Newswire</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/newswire.xml' + '</link>'
     elif title.startswith('Site'):
-        rssStr += '    <title>' + domainFull + '</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>' + domainFull + '</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/blog/rss.xml' + '</link>'
     else:
-        rssStr += '    <title>' + translate[title] + '</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>' + translate[title] + '</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/rss.xml' + '</link>'
     return rssStr
 
@@ -69,8 +73,7 @@ def rss2Header(httpPrefix: str,
 def rss2Footer() -> str:
     """Footer for an RSS 2.0 feed
     """
-    rssStr = '</channel>'
-    rssStr += '</rss>'
+    rssStr = '</channel></rss>'
     return rssStr
 
 
@@ -815,8 +818,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
         except Exception as e:
             print('WARN: Unable to convert date ' + published + ' ' + str(e))
             continue
-        rssStr += '<item>\n'
-        rssStr += '  <title>' + fields[0] + '</title>\n'
+        rssStr += \
+            '<item>\n' + \
+            '  <title>' + fields[0] + '</title>\n'
         description = removeHtml(firstParagraphFromString(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
@@ -826,8 +830,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
         rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-        rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
-        rssStr += '</item>\n'
+        rssStr += \
+            '  <pubDate>' + rssDateStr + '</pubDate>\n' + \
+            '</item>\n'
     rssStr += rss2Footer()
     return rssStr
 
