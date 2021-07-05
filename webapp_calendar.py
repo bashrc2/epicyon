@@ -117,8 +117,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
@@ -369,20 +368,10 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<thead>\n'
     calendarStr += '<tr>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Sun'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Mon'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Tue'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Wed'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Thu'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Fri'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Sat'] + '</th>\n'
+    days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
+    for d in days:
+        calendarStr += '  <th scope="col" class="calendar__day__header">' + \
+            translate[d] + '</th>\n'
     calendarStr += '</tr>\n'
     calendarStr += '</thead>\n'
     calendarStr += '<tbody>\n'
