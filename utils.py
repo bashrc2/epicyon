@@ -1334,12 +1334,14 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
         newlines = ''
         for fileLine in lines:
             if postId in fileLine:
+                # skip over the deleted post
                 continue
             newlines += fileLine
         if not newlines.strip():
             # if there are no lines then remove the hashtag file
             os.remove(tagIndexFilename)
         else:
+            # write the new hashtag index without the given post in it
             with open(tagIndexFilename, "w+") as f:
                 f.write(newlines)
 
