@@ -1348,11 +1348,9 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
     pinnedPostJson = {}
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     if os.path.isfile(pinnedFilename):
-        pinFile = open(pinnedFilename, "r")
         pinnedContent = None
-        if pinFile:
+        with open(pinnedFilename, "r") as pinFile:
             pinnedContent = pinFile.read()
-            pinFile.close()
         if pinnedContent:
             pinnedPostJson = {
                 'atomUri': actor + '/pinned',
