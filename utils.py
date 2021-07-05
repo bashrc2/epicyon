@@ -1265,6 +1265,85 @@ def _isBookmarked(baseDir: str, nickname: str, domain: str,
     return False
 
 
+def _deleteFromRecentPosts(postJsonObject: {}, recentPostsCache: {}) -> None:
+    """Remove the given post from the recent posts cache
+    """
+    if not recentPostsCache:
+        return
+
+    postId = \
+        removeIdEnding(postJsonObject['id']).replace('/', '#')
+
+    if recentPostsCache.get('index'):
+        if postId in recentPostsCache['index']:
+            recentPostsCache['index'].remove(postId)
+
+    if recentPostsCache.get('json'):
+        if recentPostsCache['json'].get(postId):
+            del recentPostsCache['json'][postId]
+
+    if recentPostsCache.get('html'):
+        if recentPostsCache['html'].get(postId):
+            del recentPostsCache['html'][postId]
+
+
+def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
+                      postJsonObject: {}):
+    """Removes cached html file for the given post
+    """
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
+
+def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
+    """Removes hashtags when a post is deleted
+    """
+    removeHashtagIndex = False
+    if isinstance(postJsonObject['object'], dict):
+        if postJsonObject['object'].get('content'):
+            if '#' in postJsonObject['object']['content']:
+                removeHashtagIndex = True
+
+    if not removeHashtagIndex:
+        return
+
+    if not postJsonObject['object'].get('id') or \
+       not postJsonObject['object'].get('tag'):
+        return
+
+    # get the id of the post
+    postId = removeIdEnding(postJsonObject['object']['id'])
+    for tag in postJsonObject['object']['tag']:
+        if tag['type'] != 'Hashtag':
+            continue
+        if not tag.get('name'):
+            continue
+        # find the index file for this tag
+        tagIndexFilename = baseDir + '/tags/' + tag['name'][1:] + '.txt'
+        if not os.path.isfile(tagIndexFilename):
+            continue
+        # remove postId from the tag index file
+        lines = None
+        with open(tagIndexFilename, "r") as f:
+            lines = f.readlines()
+        if not lines:
+            continue
+        newlines = ''
+        for fileLine in lines:
+            if postId in fileLine:
+                continue
+            newlines += fileLine
+        if not newlines.strip():
+            # if there are no lines then remove the hashtag file
+            os.remove(tagIndexFilename)
+        else:
+            with open(tagIndexFilename, "w+") as f:
+                f.write(newlines)
+
+
 def deletePost(baseDir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool, recentPostsCache: {}) -> None:
@@ -1290,18 +1369,7 @@ def deletePost(baseDir: str, httpPrefix: str,
         return
 
     # remove from recent posts cache in memory
-    if recentPostsCache:
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if recentPostsCache.get('index'):
-            if postId in recentPostsCache['index']:
-                recentPostsCache['index'].remove(postId)
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
+    _deleteFromRecentPosts(postJsonObject, recentPostsCache)
 
     # remove any attachment
     _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
@@ -1313,12 +1381,7 @@ def deletePost(baseDir: str, httpPrefix: str,
             os.remove(extFilename)
 
     # remove cached html version of the post
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-    # removePostFromCache(postJsonObject,recentPostsCache)
+    _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
 
     hasObject = False
     if postJsonObject.get('object'):
@@ -1333,44 +1396,8 @@ def deletePost(baseDir: str, httpPrefix: str,
                     removeModerationPostFromIndex(baseDir, postId, debug)
 
     # remove any hashtags index entries
-    removeHashtagIndex = False
     if hasObject:
-        if hasObject and isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('content'):
-                if '#' in postJsonObject['object']['content']:
-                    removeHashtagIndex = True
-    if removeHashtagIndex:
-        if postJsonObject['object'].get('id') and \
-           postJsonObject['object'].get('tag'):
-            # get the id of the post
-            postId = removeIdEnding(postJsonObject['object']['id'])
-            for tag in postJsonObject['object']['tag']:
-                if tag['type'] != 'Hashtag':
-                    continue
-                if not tag.get('name'):
-                    continue
-                # find the index file for this tag
-                tagIndexFilename = \
-                    baseDir + '/tags/' + tag['name'][1:] + '.txt'
-                if not os.path.isfile(tagIndexFilename):
-                    continue
-                # remove postId from the tag index file
-                lines = None
-                with open(tagIndexFilename, "r") as f:
-                    lines = f.readlines()
-                if lines:
-                    newlines = ''
-                    for fileLine in lines:
-                        if postId in fileLine:
-                            continue
-                        newlines += fileLine
-                    if not newlines.strip():
-                        # if there are no lines then remove the
-                        # hashtag file
-                        os.remove(tagIndexFilename)
-                    else:
-                        with open(tagIndexFilename, "w+") as f:
-                            f.write(newlines)
+        _deleteHashtagsOnPost(baseDir, postJsonObject)
 
     # remove any replies
     _deletePostRemoveReplies(baseDir, nickname, domain,
