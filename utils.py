@@ -1265,14 +1265,24 @@ def _isBookmarked(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def _deleteFromRecentPosts(postJsonObject: {}, recentPostsCache: {}) -> None:
-    """Remove the given post from the recent posts cache
+def removePostFromCache(postJsonObject: {}, recentPostsCache: {}) -> None:
+    """ if the post exists in the recent posts cache then remove it
     """
     if not recentPostsCache:
         return
 
-    postId = \
-        removeIdEnding(postJsonObject['id']).replace('/', '#')
+    if not postJsonObject.get('id'):
+        return
+
+    if not recentPostsCache.get('index'):
+        return
+
+    postId = postJsonObject['id']
+    if '#' in postId:
+        postId = postId.split('#', 1)[0]
+    postId = removeIdEnding(postId).replace('/', '#')
+    if postId not in recentPostsCache['index']:
+        return
 
     if recentPostsCache.get('index'):
         if postId in recentPostsCache['index']:
@@ -1371,7 +1381,7 @@ def deletePost(baseDir: str, httpPrefix: str,
         return
 
     # remove from recent posts cache in memory
-    _deleteFromRecentPosts(postJsonObject, recentPostsCache)
+    removePostFromCache(postJsonObject, recentPostsCache)
 
     # remove any attachment
     _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
@@ -1605,29 +1615,6 @@ def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
     cachedPostId = removeIdEnding(postJsonObject['id'])
     cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
     return cachedPostFilename + '.html'
-
-
-def removePostFromCache(postJsonObject: {}, recentPostsCache: {}):
-    """ if the post exists in the recent posts cache then remove it
-    """
-    if not postJsonObject.get('id'):
-        return
-
-    if not recentPostsCache.get('index'):
-        return
-
-    postId = postJsonObject['id']
-    if '#' in postId:
-        postId = postId.split('#', 1)[0]
-    postId = removeIdEnding(postId).replace('/', '#')
-    if postId not in recentPostsCache['index']:
-        return
-
-    if recentPostsCache['json'].get(postId):
-        del recentPostsCache['json'][postId]
-    if recentPostsCache['html'].get(postId):
-        del recentPostsCache['html'][postId]
-    recentPostsCache['index'].remove(postId)
 
 
 def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
