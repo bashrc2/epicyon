@@ -50,6 +50,7 @@ from utils import getProtocolPrefixes
 from utils import hasUsersPath
 from utils import getImageExtensions
 from utils import isImageFile
+from utils import getUserPaths
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -1211,9 +1212,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
         handle = handle.replace('/@', '/users/')
-        paths = (
-            '/users/', '/profile/', '/channel/', '/accounts/', '/u/'
-        )
+        paths = getUserPaths()
         userPathFound = False
         for userPath in paths:
             if userPath in handle:
@@ -1302,11 +1301,9 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if not personUrl:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
-        personUrl = personUrl.replace('/users/', '/actor/')
-        personUrl = personUrl.replace('/accounts/', '/actor/')
-        personUrl = personUrl.replace('/channel/', '/actor/')
-        personUrl = personUrl.replace('/profile/', '/actor/')
-        personUrl = personUrl.replace('/u/', '/actor/')
+        paths = getUserPaths()
+        for userPath in paths:
+            personUrl = personUrl.replace(userPath, '/actor/')
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain + '/' + nickname

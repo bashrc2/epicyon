@@ -842,7 +842,7 @@ def getNicknameFromActor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    usersPaths = ('/users/', '/profile/', '/channel/', '/accounts/', '/u/')
+    usersPaths = getUserPaths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
             nickStr = actor.split(possiblePath)[1].replace('@', '')
@@ -872,6 +872,12 @@ def getNicknameFromActor(actor: str) -> str:
     return None
 
 
+def getUserPaths() -> []:
+    """Returns possible user paths
+    """
+    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+
+
 def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
@@ -879,7 +885,7 @@ def getDomainFromActor(actor: str) -> (str, int):
         actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
-    usersPaths = ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+    usersPaths = getUserPaths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
             domain = actor.split(possiblePath)[0]
@@ -1222,125 +1228,193 @@ def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
     return False
 
 
+def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
+                             httpPrefix: str, postFilename: str,
+                             recentPostsCache: {}, debug: bool) -> None:
+    """Removes replies when deleting a post
+    """
+    repliesFilename = postFilename.replace('.json', '.replies')
+    if not os.path.isfile(repliesFilename):
+        return
+    if debug:
+        print('DEBUG: removing replies to ' + postFilename)
+    with open(repliesFilename, 'r') as f:
+        for replyId in f:
+            replyFile = locatePost(baseDir, nickname, domain, replyId)
+            if not replyFile:
+                continue
+            if os.path.isfile(replyFile):
+                deletePost(baseDir, httpPrefix,
+                           nickname, domain, replyFile, debug,
+                           recentPostsCache)
+    # remove the replies file
+    os.remove(repliesFilename)
+
+
+def _isBookmarked(baseDir: str, nickname: str, domain: str,
+                  postFilename: str) -> bool:
+    """Returns True if the given post is bookmarked
+    """
+    bookmarksIndexFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/bookmarks.index'
+    if os.path.isfile(bookmarksIndexFilename):
+        bookmarkIndex = postFilename.split('/')[-1] + '\n'
+        if bookmarkIndex in open(bookmarksIndexFilename).read():
+            return True
+    return False
+
+
+def removePostFromCache(postJsonObject: {}, recentPostsCache: {}) -> None:
+    """ if the post exists in the recent posts cache then remove it
+    """
+    if not recentPostsCache:
+        return
+
+    if not postJsonObject.get('id'):
+        return
+
+    if not recentPostsCache.get('index'):
+        return
+
+    postId = postJsonObject['id']
+    if '#' in postId:
+        postId = postId.split('#', 1)[0]
+    postId = removeIdEnding(postId).replace('/', '#')
+    if postId not in recentPostsCache['index']:
+        return
+
+    if recentPostsCache.get('index'):
+        if postId in recentPostsCache['index']:
+            recentPostsCache['index'].remove(postId)
+
+    if recentPostsCache.get('json'):
+        if recentPostsCache['json'].get(postId):
+            del recentPostsCache['json'][postId]
+
+    if recentPostsCache.get('html'):
+        if recentPostsCache['html'].get(postId):
+            del recentPostsCache['html'][postId]
+
+
+def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
+                      postJsonObject: {}):
+    """Removes cached html file for the given post
+    """
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
+
+def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
+    """Removes hashtags when a post is deleted
+    """
+    removeHashtagIndex = False
+    if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('content'):
+            if '#' in postJsonObject['object']['content']:
+                removeHashtagIndex = True
+
+    if not removeHashtagIndex:
+        return
+
+    if not postJsonObject['object'].get('id') or \
+       not postJsonObject['object'].get('tag'):
+        return
+
+    # get the id of the post
+    postId = removeIdEnding(postJsonObject['object']['id'])
+    for tag in postJsonObject['object']['tag']:
+        if tag['type'] != 'Hashtag':
+            continue
+        if not tag.get('name'):
+            continue
+        # find the index file for this tag
+        tagIndexFilename = baseDir + '/tags/' + tag['name'][1:] + '.txt'
+        if not os.path.isfile(tagIndexFilename):
+            continue
+        # remove postId from the tag index file
+        lines = None
+        with open(tagIndexFilename, "r") as f:
+            lines = f.readlines()
+        if not lines:
+            continue
+        newlines = ''
+        for fileLine in lines:
+            if postId in fileLine:
+                # skip over the deleted post
+                continue
+            newlines += fileLine
+        if not newlines.strip():
+            # if there are no lines then remove the hashtag file
+            os.remove(tagIndexFilename)
+        else:
+            # write the new hashtag index without the given post in it
+            with open(tagIndexFilename, "w+") as f:
+                f.write(newlines)
+
+
 def deletePost(baseDir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool, recentPostsCache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
     postJsonObject = loadJson(postFilename, 1)
-    if postJsonObject:
-        # don't allow deletion of bookmarked posts
-        bookmarksIndexFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/bookmarks.index'
-        if os.path.isfile(bookmarksIndexFilename):
-            bookmarkIndex = postFilename.split('/')[-1] + '\n'
-            if bookmarkIndex in open(bookmarksIndexFilename).read():
-                return
+    if not postJsonObject:
+        # remove any replies
+        _deletePostRemoveReplies(baseDir, nickname, domain,
+                                 httpPrefix, postFilename,
+                                 recentPostsCache, debug)
+        # finally, remove the post itself
+        os.remove(postFilename)
+        return
 
-        # don't remove replies to blog posts
-        if _isReplyToBlogPost(baseDir, nickname, domain,
-                              postJsonObject):
-            return
+    # don't allow deletion of bookmarked posts
+    if _isBookmarked(baseDir, nickname, domain, postFilename):
+        return
 
-        # remove from recent posts cache in memory
-        if recentPostsCache:
-            postId = \
-                removeIdEnding(postJsonObject['id']).replace('/', '#')
-            if recentPostsCache.get('index'):
-                if postId in recentPostsCache['index']:
-                    recentPostsCache['index'].remove(postId)
-            if recentPostsCache.get('json'):
-                if recentPostsCache['json'].get(postId):
-                    del recentPostsCache['json'][postId]
-            if recentPostsCache.get('html'):
-                if recentPostsCache['html'].get(postId):
-                    del recentPostsCache['html'][postId]
+    # don't remove replies to blog posts
+    if _isReplyToBlogPost(baseDir, nickname, domain,
+                          postJsonObject):
+        return
 
-        # remove any attachment
-        _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
+    # remove from recent posts cache in memory
+    removePostFromCache(postJsonObject, recentPostsCache)
 
-        extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
-        for ext in extensions:
-            extFilename = postFilename + '.' + ext
-            if os.path.isfile(extFilename):
-                os.remove(extFilename)
+    # remove any attachment
+    _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
-        # remove cached html version of the post
-        cachedPostFilename = \
-            getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        # removePostFromCache(postJsonObject,recentPostsCache)
+    extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
+    for ext in extensions:
+        extFilename = postFilename + '.' + ext
+        if os.path.isfile(extFilename):
+            os.remove(extFilename)
 
-        hasObject = False
-        if postJsonObject.get('object'):
-            hasObject = True
+    # remove cached html version of the post
+    _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
 
-        # remove from moderation index file
-        if hasObject:
-            if isinstance(postJsonObject['object'], dict):
-                if postJsonObject['object'].get('moderationStatus'):
-                    if postJsonObject.get('id'):
-                        postId = removeIdEnding(postJsonObject['id'])
-                        removeModerationPostFromIndex(baseDir, postId, debug)
+    hasObject = False
+    if postJsonObject.get('object'):
+        hasObject = True
 
-        # remove any hashtags index entries
-        removeHashtagIndex = False
-        if hasObject:
-            if hasObject and isinstance(postJsonObject['object'], dict):
-                if postJsonObject['object'].get('content'):
-                    if '#' in postJsonObject['object']['content']:
-                        removeHashtagIndex = True
-        if removeHashtagIndex:
-            if postJsonObject['object'].get('id') and \
-               postJsonObject['object'].get('tag'):
-                # get the id of the post
-                postId = removeIdEnding(postJsonObject['object']['id'])
-                for tag in postJsonObject['object']['tag']:
-                    if tag['type'] != 'Hashtag':
-                        continue
-                    if not tag.get('name'):
-                        continue
-                    # find the index file for this tag
-                    tagIndexFilename = \
-                        baseDir + '/tags/' + tag['name'][1:] + '.txt'
-                    if not os.path.isfile(tagIndexFilename):
-                        continue
-                    # remove postId from the tag index file
-                    lines = None
-                    with open(tagIndexFilename, "r") as f:
-                        lines = f.readlines()
-                    if lines:
-                        newlines = ''
-                        for fileLine in lines:
-                            if postId in fileLine:
-                                continue
-                            newlines += fileLine
-                        if not newlines.strip():
-                            # if there are no lines then remove the
-                            # hashtag file
-                            os.remove(tagIndexFilename)
-                        else:
-                            with open(tagIndexFilename, "w+") as f:
-                                f.write(newlines)
+    # remove from moderation index file
+    if hasObject:
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('moderationStatus'):
+                if postJsonObject.get('id'):
+                    postId = removeIdEnding(postJsonObject['id'])
+                    removeModerationPostFromIndex(baseDir, postId, debug)
+
+    # remove any hashtags index entries
+    if hasObject:
+        _deleteHashtagsOnPost(baseDir, postJsonObject)
 
     # remove any replies
-    repliesFilename = postFilename.replace('.json', '.replies')
-    if os.path.isfile(repliesFilename):
-        if debug:
-            print('DEBUG: removing replies to ' + postFilename)
-        with open(repliesFilename, 'r') as f:
-            for replyId in f:
-                replyFile = locatePost(baseDir, nickname, domain, replyId)
-                if replyFile:
-                    if os.path.isfile(replyFile):
-                        deletePost(baseDir, httpPrefix,
-                                   nickname, domain, replyFile, debug,
-                                   recentPostsCache)
-        # remove the replies file
-        os.remove(repliesFilename)
+    _deletePostRemoveReplies(baseDir, nickname, domain,
+                             httpPrefix, postFilename,
+                             recentPostsCache, debug)
     # finally, remove the post itself
     os.remove(postFilename)
 
@@ -1541,29 +1615,6 @@ def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
     cachedPostId = removeIdEnding(postJsonObject['id'])
     cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
     return cachedPostFilename + '.html'
-
-
-def removePostFromCache(postJsonObject: {}, recentPostsCache: {}):
-    """ if the post exists in the recent posts cache then remove it
-    """
-    if not postJsonObject.get('id'):
-        return
-
-    if not recentPostsCache.get('index'):
-        return
-
-    postId = postJsonObject['id']
-    if '#' in postId:
-        postId = postId.split('#', 1)[0]
-    postId = removeIdEnding(postId).replace('/', '#')
-    if postId not in recentPostsCache['index']:
-        return
-
-    if recentPostsCache['json'].get(postId):
-        del recentPostsCache['json'][postId]
-    if recentPostsCache['html'].get(postId):
-        del recentPostsCache['html'][postId]
-    recentPostsCache['index'].remove(postId)
 
 
 def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
