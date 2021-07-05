@@ -1302,7 +1302,7 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
     """Removes hashtags when a post is deleted
     """
     removeHashtagIndex = False
-    if isinstance(postJsonObject['object'], dict):
+    if hasObjectDict(postJsonObject):
         if postJsonObject['object'].get('content'):
             if '#' in postJsonObject['object']['content']:
                 removeHashtagIndex = True
