@@ -128,22 +128,24 @@ def htmlFrontScreen(rssIconAtTop: bool,
     if loginButton:
         profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
-    profileHeaderStr += '<table class="timeline">\n'
-    profileHeaderStr += '  <colgroup>\n'
-    profileHeaderStr += '    <col span="1" class="column-left">\n'
-    profileHeaderStr += '    <col span="1" class="column-center">\n'
-    profileHeaderStr += '    <col span="1" class="column-right">\n'
-    profileHeaderStr += '  </colgroup>\n'
-    profileHeaderStr += '  <tbody>\n'
-    profileHeaderStr += '    <tr>\n'
-    profileHeaderStr += '      <td valign="top" class="col-left">\n'
+    profileHeaderStr += \
+        '<table class="timeline">\n' + \
+        '  <colgroup>\n' + \
+        '    <col span="1" class="column-left">\n' + \
+        '    <col span="1" class="column-center">\n' + \
+        '    <col span="1" class="column-right">\n' + \
+        '  </colgroup>\n' + \
+        '  <tbody>\n' + \
+        '    <tr>\n' + \
+        '      <td valign="top" class="col-left">\n'
     profileHeaderStr += \
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False, None, rssIconAtTop, True,
                              True, theme, accessKeys)
-    profileHeaderStr += '      </td>\n'
-    profileHeaderStr += '      <td valign="top" class="col-center">\n'
+    profileHeaderStr += \
+        '      </td>\n' + \
+        '      <td valign="top" class="col-center">\n'
 
     profileStr = profileHeaderStr
 
@@ -177,10 +179,11 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               False, None, False, False,
                               False, True, authorized, True, theme,
                               defaultTimeline, accessKeys)
-    profileFooterStr += '      </td>\n'
-    profileFooterStr += '  </tr>\n'
-    profileFooterStr += '  </tbody>\n'
-    profileFooterStr += '</table>\n'
+    profileFooterStr += \
+        '      </td>\n' + \
+        '  </tr>\n' + \
+        '  </tbody>\n' + \
+        '</table>\n'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
