@@ -1517,11 +1517,7 @@ def noOfAccounts(baseDir: str) -> bool:
     accountCtr = 0
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' in account:
-                if account.startswith('inbox@'):
-                    continue
-                elif account.startswith('news@'):
-                    continue
+            if isAccountDir(account):
                 accountCtr += 1
         break
     return accountCtr
@@ -1804,6 +1800,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     containing matching strings
     """
     path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
+    # is this a virtual box, such as direct messages?
     if not os.path.isdir(path):
         if os.path.isfile(path + '.index'):
             return _searchVirtualBoxPosts(baseDir, nickname, domain,
@@ -1858,54 +1855,56 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     """Undoes a like for a particular actor
     """
     postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this post so that the
-        # like icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                                   domain, postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        removePostFromCache(postJsonObject, recentPostsCache)
+    if not postJsonObject:
+        return
+    # remove any cached version of this post so that the
+    # like icon is changed
+    nickname = getNicknameFromActor(actor)
+    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+                                               domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+    removePostFromCache(postJsonObject, recentPostsCache)
 
-        if not postJsonObject.get('type'):
-            return
-        if postJsonObject['type'] != 'Create':
-            return
-        if not hasObjectDict(postJsonObject):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post ' + objectUrl + ' has no object')
-            return
-        if not postJsonObject['object'].get('likes'):
-            return
-        if not isinstance(postJsonObject['object']['likes'], dict):
-            return
-        if not postJsonObject['object']['likes'].get('items'):
-            return
-        totalItems = 0
-        if postJsonObject['object']['likes'].get('totalItems'):
-            totalItems = postJsonObject['object']['likes']['totalItems']
-        itemFound = False
-        for likeItem in postJsonObject['object']['likes']['items']:
-            if likeItem.get('actor'):
-                if likeItem['actor'] == actor:
-                    if debug:
-                        print('DEBUG: like was removed for ' + actor)
-                    postJsonObject['object']['likes']['items'].remove(likeItem)
-                    itemFound = True
-                    break
-        if itemFound:
-            if totalItems == 1:
+    if not postJsonObject.get('type'):
+        return
+    if postJsonObject['type'] != 'Create':
+        return
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            pprint(postJsonObject)
+            print('DEBUG: post ' + objectUrl + ' has no object')
+        return
+    if not postJsonObject['object'].get('likes'):
+        return
+    if not isinstance(postJsonObject['object']['likes'], dict):
+        return
+    if not postJsonObject['object']['likes'].get('items'):
+        return
+    totalItems = 0
+    if postJsonObject['object']['likes'].get('totalItems'):
+        totalItems = postJsonObject['object']['likes']['totalItems']
+    itemFound = False
+    for likeItem in postJsonObject['object']['likes']['items']:
+        if likeItem.get('actor'):
+            if likeItem['actor'] == actor:
                 if debug:
-                    print('DEBUG: likes was removed from post')
-                del postJsonObject['object']['likes']
-            else:
-                itlen = len(postJsonObject['object']['likes']['items'])
-                postJsonObject['object']['likes']['totalItems'] = itlen
+                    print('DEBUG: like was removed for ' + actor)
+                postJsonObject['object']['likes']['items'].remove(likeItem)
+                itemFound = True
+                break
+    if not itemFound:
+        return
+    if totalItems == 1:
+        if debug:
+            print('DEBUG: likes was removed from post')
+        del postJsonObject['object']['likes']
+    else:
+        itlen = len(postJsonObject['object']['likes']['items'])
+        postJsonObject['object']['likes']['totalItems'] = itlen
 
-            saveJson(postJsonObject, postFilename)
+    saveJson(postJsonObject, postFilename)
 
 
 def updateLikesCollection(recentPostsCache: {},
@@ -1978,54 +1977,56 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
     shares of posts, not shares of physical objects.
     """
     postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this announce so that the announce
-        # icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
-                                                   postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        removePostFromCache(postJsonObject, recentPostsCache)
+    if not postJsonObject:
+        return
+    # remove any cached version of this announce so that the announce
+    # icon is changed
+    nickname = getNicknameFromActor(actor)
+    cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
+                                               postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+    removePostFromCache(postJsonObject, recentPostsCache)
 
-        if not postJsonObject.get('type'):
-            return
-        if postJsonObject['type'] != 'Create':
-            return
-        if not hasObjectDict(postJsonObject):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post has no object')
-            return
-        if not postJsonObject['object'].get('shares'):
-            return
-        if not postJsonObject['object']['shares'].get('items'):
-            return
-        totalItems = 0
-        if postJsonObject['object']['shares'].get('totalItems'):
-            totalItems = postJsonObject['object']['shares']['totalItems']
-        itemFound = False
-        for announceItem in postJsonObject['object']['shares']['items']:
-            if announceItem.get('actor'):
-                if announceItem['actor'] == actor:
-                    if debug:
-                        print('DEBUG: Announce was removed for ' + actor)
-                    anIt = announceItem
-                    postJsonObject['object']['shares']['items'].remove(anIt)
-                    itemFound = True
-                    break
-        if itemFound:
-            if totalItems == 1:
+    if not postJsonObject.get('type'):
+        return
+    if postJsonObject['type'] != 'Create':
+        return
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            pprint(postJsonObject)
+            print('DEBUG: post has no object')
+        return
+    if not postJsonObject['object'].get('shares'):
+        return
+    if not postJsonObject['object']['shares'].get('items'):
+        return
+    totalItems = 0
+    if postJsonObject['object']['shares'].get('totalItems'):
+        totalItems = postJsonObject['object']['shares']['totalItems']
+    itemFound = False
+    for announceItem in postJsonObject['object']['shares']['items']:
+        if announceItem.get('actor'):
+            if announceItem['actor'] == actor:
                 if debug:
-                    print('DEBUG: shares (announcements) ' +
-                          'was removed from post')
-                del postJsonObject['object']['shares']
-            else:
-                itlen = len(postJsonObject['object']['shares']['items'])
-                postJsonObject['object']['shares']['totalItems'] = itlen
+                    print('DEBUG: Announce was removed for ' + actor)
+                anIt = announceItem
+                postJsonObject['object']['shares']['items'].remove(anIt)
+                itemFound = True
+                break
+    if not itemFound:
+        return
+    if totalItems == 1:
+        if debug:
+            print('DEBUG: shares (announcements) ' +
+                  'was removed from post')
+        del postJsonObject['object']['shares']
+    else:
+        itlen = len(postJsonObject['object']['shares']['items'])
+        postJsonObject['object']['shares']['totalItems'] = itlen
 
-            saveJson(postJsonObject, postFilename)
+    saveJson(postJsonObject, postFilename)
 
 
 def updateAnnounceCollection(recentPostsCache: {},
