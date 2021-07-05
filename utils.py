@@ -1517,11 +1517,7 @@ def noOfAccounts(baseDir: str) -> bool:
     accountCtr = 0
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' in account:
-                if account.startswith('inbox@'):
-                    continue
-                elif account.startswith('news@'):
-                    continue
+            if isAccountDir(account):
                 accountCtr += 1
         break
     return accountCtr
