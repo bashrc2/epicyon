@@ -271,6 +271,10 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         "tox": "toxId"
     }
 
+    aliasesNotFound = []
+    for name, _ in webfingerPropertyName.items():
+        aliasesNotFound.append(name)
+
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -278,6 +282,8 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         found = False
         for name, alias in webfingerPropertyName.items():
             if name == propertyName:
+                if name in aliasesNotFound:
+                    aliasesNotFound.remove(name)
                 found = True
                 break
         if not found:
@@ -308,6 +314,17 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         else:
             wfJson['aliases'].append(newAlias)
             changed = True
+
+    # remove any aliases which are no longer in the actor profile
+    removeAlias = []
+    for name in aliasesNotFound:
+        for alias in wfJson['aliases']:
+            if alias.startswith(name + ':'):
+                removeAlias.append(alias)
+    for alias in removeAlias:
+        wfJson['aliases'].remove(alias)
+        changed = True
+
     return changed
 
 
