@@ -1601,64 +1601,66 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
 def _htmlEditProfileChangePassword(translate: {}) -> str:
     """Change password section of edit profile screen
     """
-    editProfileForm = '    <details><summary class="cw">' + \
-        translate['Change Password'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
+    editProfileForm = \
+        '    <details><summary class="cw">' + \
+        translate['Change Password'] + '</summary>\n' + \
+        '    <div class="container">\n' + \
         '<label class="labels">' + translate['Change Password'] + \
-        '</label><br>\n'
-    editProfileForm += '      <input type="text" name="password" ' + \
-        'value=""><br>\n'
-    editProfileForm += \
+        '</label><br>\n' + \
+        '      <input type="text" name="password" ' + \
+        'value=""><br>\n' + \
         '<label class="labels">' + translate['Confirm Password'] + \
-        '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="passwordconfirm" value="">\n'
-    editProfileForm += '    </div></details>\n'
+        '</label><br>\n' + \
+        '      <input type="text" name="passwordconfirm" value="">\n' + \
+        '    </div></details>\n'
     return editProfileForm
 
 
 def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     """Background images section of edit profile screen
     """
-    editProfileForm = '    <details><summary class="cw">' + \
-        translate['Background Images'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
-    editProfileForm += \
+    editProfileForm = \
+        '    <details><summary class="cw">' + \
+        translate['Background Images'] + '</summary>\n' + \
+        '    <div class="container">\n' + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not newsInstance:
         imageFormats = getImageFormats()
         editProfileForm += \
             '      <label class="labels">' + \
-            translate['Background image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="image" name="image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
+            translate['Background image'] + '</label>\n' + \
+            '      <input type="file" id="image" name="image"' + \
+            '            accept="' + imageFormats + '">\n'
 
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Timeline banner image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="banner" name="banner"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += \
+            '      <br><label class="labels">' + \
+            translate['Timeline banner image'] + '</label>\n' + \
+            '      <input type="file" id="banner" name="banner"' + \
+            '            accept="' + imageFormats + '">\n'
 
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Search banner image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="search_banner" '
-        editProfileForm += 'name="search_banner"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += \
+            '      <br><label class="labels">' + \
+            translate['Search banner image'] + '</label>\n' + \
+            '      <input type="file" id="search_banner" ' + \
+            'name="search_banner"' + \
+            '            accept="' + imageFormats + '">\n'
 
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Left column image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="left_col_image" '
-        editProfileForm += 'name="left_col_image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += \
+            '      <br><label class="labels">' + \
+            translate['Left column image'] + '</label>\n' + \
+            '      <input type="file" id="left_col_image" ' + \
+            'name="left_col_image"' + \
+            '            accept="' + imageFormats + '">\n'
 
-        editProfileForm += '      <br><label class="labels">' + \
-            translate['Right column image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="right_col_image" '
-        editProfileForm += 'name="right_col_image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += \
+            '      <br><label class="labels">' + \
+            translate['Right column image'] + '</label>\n' + \
+            '      <input type="file" id="right_col_image" ' + \
+            'name="right_col_image"' + \
+            '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '    </div></details>\n'
     return editProfileForm
@@ -1696,48 +1698,45 @@ def _htmlEditProfileContactInfo(nickname: str,
         '      <input type="text" name="matrixAddress" value="' + \
         matrixAddress + '">\n'
 
-    editProfileForm += '<label class="labels">SSB</label><br>\n'
     editProfileForm += \
+        '<label class="labels">SSB</label><br>\n' + \
         '      <input type="text" name="ssbAddress" value="' + \
         ssbAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Tox</label><br>\n'
     editProfileForm += \
+        '<label class="labels">Tox</label><br>\n' + \
         '      <input type="text" name="toxAddress" value="' + \
         toxAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Briar</label><br>\n'
     editProfileForm += \
+        '<label class="labels">Briar</label><br>\n' + \
         '      <input type="text" name="briarAddress" value="' + \
         briarAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Jami</label><br>\n'
     editProfileForm += \
+        '<label class="labels">Jami</label><br>\n' + \
         '      <input type="text" name="jamiAddress" value="' + \
         jamiAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Cwtch</label><br>\n'
     editProfileForm += \
+        '<label class="labels">Cwtch</label><br>\n' + \
         '      <input type="text" name="cwtchAddress" value="' + \
         cwtchAddress + '">\n'
 
     editProfileForm += \
         '<label class="labels">' + \
-        translate['PGP Fingerprint'] + '</label><br>\n'
-    editProfileForm += \
+        translate['PGP Fingerprint'] + '</label><br>\n' + \
         '      <input type="text" name="openpgp" value="' + \
-        PGPfingerprint + '">\n'
-    editProfileForm += \
-        '<label class="labels">' + translate['PGP'] + '</label><br>\n'
-    editProfileForm += \
+        PGPfingerprint + '">\n' + \
+        '<label class="labels">' + translate['PGP'] + '</label><br>\n' + \
         '      <textarea id="message" placeholder=' + \
         '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
         'style="height:600px" spellcheck="false">' + \
-        PGPpubKey + '</textarea>\n'
-    editProfileForm += '<a href="/users/' + nickname + \
+        PGPpubKey + '</textarea>\n' + \
+        '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>\n'
-    editProfileForm += '    </div></details>\n'
+        translate['Following'] + '</label></a><br>\n' + \
+        '    </div></details>\n'
     return editProfileForm
 
 
@@ -1790,30 +1789,32 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
     imageFormats = getImageFormats()
 
     editProfileForm = '    <div class="container">\n'
-    editProfileForm += '      <label class="labels">' + \
-        translate['Nickname'] + '</label>\n'
+
     editProfileForm += \
+        '      <label class="labels">' + \
+        translate['Nickname'] + '</label>\n' + \
         '      <input type="text" name="displayNickname" value="' + \
         displayNickname + '"><br>\n'
+
     editProfileForm += \
-        '      <label class="labels">' + translate['Your bio'] + '</label>\n'
-    editProfileForm += \
+        '      <label class="labels">' + \
+        translate['Your bio'] + '</label>\n' + \
         '      <textarea id="message" name="bio" style="height:200px" ' + \
         'spellcheck="true">' + bioStr + '</textarea>\n'
+
     editProfileForm += \
         '      <label class="labels">' + translate['Avatar image'] + \
-        '</label>\n'
-    editProfileForm += \
-        '      <input type="file" id="avatar" name="avatar"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+        '</label>\n' + \
+        '      <input type="file" id="avatar" name="avatar"' + \
+        '            accept="' + imageFormats + '">\n'
 
     occupationName = ''
     if actorJson.get('hasOccupation'):
         occupationName = getOccupationName(actorJson)
 
-    editProfileForm += '<label class="labels">' + \
-        translate['Occupation'] + ':</label><br>\n'
     editProfileForm += \
+        '<label class="labels">' + \
+        translate['Occupation'] + ':</label><br>\n' + \
         '      <input type="text" ' + \
         'name="occupationName" value="' + occupationName + '">\n'
 
@@ -1827,27 +1828,29 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
             ctr += 1
             alsoKnownAsStr += altActor
 
-    editProfileForm += '<label class="labels">' + \
-        translate['Other accounts'] + ':</label><br>\n'
     editProfileForm += \
+        '<label class="labels">' + \
+        translate['Other accounts'] + ':</label><br>\n' + \
         '      <input type="text" placeholder="https://..." ' + \
         'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
 
-    editProfileForm += '<label class="labels">' + \
-        translate['Moved to new account address'] + ':</label><br>\n'
     editProfileForm += \
+        '<label class="labels">' + \
+        translate['Moved to new account address'] + ':</label><br>\n' + \
         '      <input type="text" placeholder="https://..." ' + \
         'name="movedTo" value="' + movedTo + '">\n'
-    editProfileForm += '<label class="labels">' + \
-        translate['Donations link'] + '</label><br>\n'
+
     editProfileForm += \
+        '<label class="labels">' + \
+        translate['Donations link'] + '</label><br>\n' + \
         '      <input type="text" placeholder="https://..." ' + \
         'name="donateUrl" value="' + donateUrl + '">\n'
-    editProfileForm += '<label class="labels">Blog</label><br>\n'
+
     editProfileForm += \
+        '<label class="labels">Blog</label><br>\n' + \
         '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">\n'
-    editProfileForm += '    </div>\n'
+        blogAddress + '">\n' + \
+        '    </div>\n'
     return editProfileForm
 
 
@@ -1858,8 +1861,8 @@ def _htmlEditProfileTopBanner(baseDir: str,
     """top banner on edit profile screen
     """
     editProfileForm = \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">'
-    editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
 
     editProfileForm += \
@@ -2157,7 +2160,7 @@ def _individualFollowAsHtml(translate: {},
                     '?options=' + followUrl + \
                     ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
                     translate['Block'] + '</button></a>\n'
-            if b == 'unfollow':
+            elif b == 'unfollow':
                 buttonsStr += \
                     '<a href="/users/' + actorNickname + \
                     '?options=' + followUrl + \
