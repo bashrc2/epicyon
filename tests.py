@@ -94,6 +94,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import switchWords
 from content import extractTextFieldsInPOST
 from content import validHashTag
 from content import htmlReplaceEmailQuote
@@ -4117,9 +4118,33 @@ def _testUserAgentDomain() -> None:
     assert userAgentDomain(userAgent, False) is None
 
 
+def _testSwitchWords() -> None:
+    print('testSwitchWords')
+    rules = [
+        "rock -> hamster",
+        "orange -> lemon"
+    ]
+    baseDir = os.getcwd()
+    nickname = 'testuser'
+    domain = 'testdomain.com'
+
+    content = 'This is a test'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == content
+
+    content = 'This is orange test'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == 'This is lemon test'
+
+    content = 'This is a test rock'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == 'This is a test hamster'
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testSwitchWords()
     _testFunctions()
     _testUserAgentDomain()
     _testRoles()
