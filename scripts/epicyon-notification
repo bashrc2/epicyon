@@ -219,12 +219,12 @@ function notifications {
         epicyonNotifyFile="$epicyonDir/.newNotifiedPost"
         if [ -f "$epicyonNotifyFile" ]; then
             if ! grep -q "##sent##" "$epicyonNotifyFile"; then
-                epicyonReplyMessage=$(notification_translate_text 'New post')
-                epicyonNotifyFileContent=$(echo "$epicyonReplyMessage")" "$(cat "$epicyonNotifyFile")
+                epicyonNotifyMessage=$(notification_translate_text 'New post')
+                epicyonNotifyFileContent=$(echo "$epicyonNotifyMessage")" "$(cat "$epicyonNotifyFile")
                 if [[ "$epicyonNotifyFileContent" == *':'* ]]; then
-                    epicyonReplyMessage="Epicyon: $epicyonNotifyFileContent"
+                    epicyonNotifyMessage="Epicyon: $epicyonNotifyFileContent"
                 fi
-                sendNotification "$USERNAME" "Epicyon" "$epicyonReplyMessage"
+                sendNotification "$USERNAME" "Epicyon" "$epicyonNotifyMessage"
                 echo "##sent##" > "$epicyonNotifyFile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonNotifyFile"
             fi

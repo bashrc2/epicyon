@@ -2526,8 +2526,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
+            # should we notify that a post from this person has arrived?
             if not postIsDM:
-                # should we notify that a post from this person has arrived?
                 handleNickname = handle.split('@')[0]
                 handleDomain = handle.split('@')[1]
                 if notifyWhenPersonPosts(baseDir, nickname, domain,

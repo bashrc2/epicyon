@@ -94,8 +94,8 @@ def notifyWhenPersonPosts(baseDir: str, nickname: str, domain: str,
     """
     if followingNickname == nickname and followingDomain == domain:
         return False
-    notifyOnPostFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/notifyOnPost.txt'
+    notifyOnPostFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/notifyOnPost.txt'
     handle = followingNickname + '@' + followingDomain
     if not os.path.isfile(notifyOnPostFilename):
         # create a new notifyOnPost file
