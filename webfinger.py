@@ -174,18 +174,19 @@ def webfingerNodeInfo(httpPrefix: str, domainFull: str) -> {}:
 def webfingerMeta(httpPrefix: str, domainFull: str) -> str:
     """Return /.well-known/host-meta
     """
-    metaStr = "<?xml version=’1.0' encoding=’UTF-8'?>"
-    metaStr += "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'"
-    metaStr += " xmlns:hm=’http://host-meta.net/xrd/1.0'>"
-    metaStr += ""
-    metaStr += "<hm:Host>" + domainFull + "</hm:Host>"
-    metaStr += ""
-    metaStr += "<Link rel=’lrdd’"
-    metaStr += " template=’" + httpPrefix + "://" + domainFull + \
-        "/describe?uri={uri}'>"
-    metaStr += " <Title>Resource Descriptor</Title>"
-    metaStr += " </Link>"
-    metaStr += "</XRD>"
+    metaStr = \
+        "<?xml version=’1.0' encoding=’UTF-8'?>" + \
+        "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" + \
+        " xmlns:hm=’http://host-meta.net/xrd/1.0'>" + \
+        "" + \
+        "<hm:Host>" + domainFull + "</hm:Host>" + \
+        "" + \
+        "<Link rel=’lrdd’" + \
+        " template=’" + httpPrefix + "://" + domainFull + \
+        "/describe?uri={uri}'>" + \
+        " <Title>Resource Descriptor</Title>" + \
+        " </Link>" + \
+        "</XRD>"
     return metaStr
 
 
@@ -271,11 +272,12 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         if not propertyValue.get('name'):
             continue
         propertyName = propertyValue['name'].lower()
-        if not (propertyName.startswith('ssb') or
-                propertyName.startswith('xmpp') or
-                propertyName.startswith('matrix') or
-                propertyName.startswith('email') or
-                propertyName.startswith('tox')):
+        found = False
+        for name, alias in webfingerPropertyName:
+            if name == propertyName:
+                found = True
+                break
+        if not found:
             continue
         if not propertyValue.get('type'):
             continue

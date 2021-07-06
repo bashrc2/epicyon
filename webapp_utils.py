@@ -452,17 +452,18 @@ def getRightImageFile(baseDir: str,
 
 def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
                                 lang='en') -> str:
-    htmlStr = '<!DOCTYPE html>\n'
-    htmlStr += '<html lang="' + lang + '">\n'
-    htmlStr += '  <head>\n'
-    htmlStr += '    <meta charset="utf-8">\n'
     cssFile = '/' + cssFilename.split('/')[-1]
-    htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">\n'
-    htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
-    htmlStr += '    <meta name="theme-color" content="grey">\n'
-    htmlStr += '    <title>' + instanceTitle + '</title>\n'
-    htmlStr += '  </head>\n'
-    htmlStr += '  <body>\n'
+    htmlStr = \
+        '<!DOCTYPE html>\n' + \
+        '<html lang="' + lang + '">\n' + \
+        '  <head>\n' + \
+        '    <meta charset="utf-8">\n' + \
+        '    <link rel="stylesheet" href="' + cssFile + '">\n' + \
+        '    <link rel="manifest" href="/manifest.json">\n' + \
+        '    <meta name="theme-color" content="grey">\n' + \
+        '    <title>' + instanceTitle + '</title>\n' + \
+        '  </head>\n' + \
+        '  <body>\n'
     return htmlStr
 
 
@@ -511,37 +512,32 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                         sk['occupationalCategory']['codeValue']
                     categoryUrl = \
                         'https://www.onetonline.org/link/summary/' + category
-                    skillsMarkup += '        {\n'
-                    skillsMarkup += '          "@type": "Role",\n'
-                    skillsMarkup += '          "hasOccupation": {\n'
-                    skillsMarkup += '            "@type": "Occupation",\n'
-                    skillsMarkup += '            "name": "' + roleName + '",\n'
-                    skillsMarkup += '            "description": ' + \
-                        '"Fediverse instance role",\n'
-                    skillsMarkup += '            "occupationLocation": {\n'
                     skillsMarkup += \
-                        '              "@type": "City",\n'
-                    skillsMarkup += \
-                        '              "name": "' + city + '"\n'
-                    skillsMarkup += '            },\n'
-                    skillsMarkup += '            "occupationalCategory": {\n'
-                    skillsMarkup += '              "@type": "CategoryCode",\n'
-                    skillsMarkup += '              "inCodeSet": {\n'
-                    skillsMarkup += \
-                        '                "@type": "CategoryCodeSet",\n'
-                    skillsMarkup += '                "name": "O*Net-SOC",\n'
-                    skillsMarkup += '                "dateModified": "2019",\n'
-                    skillsMarkup += \
+                        '        {\n' + \
+                        '          "@type": "Role",\n' + \
+                        '          "hasOccupation": {\n' + \
+                        '            "@type": "Occupation",\n' + \
+                        '            "name": "' + roleName + '",\n' + \
+                        '            "description": ' + \
+                        '"Fediverse instance role",\n' + \
+                        '            "occupationLocation": {\n' + \
+                        '              "@type": "City",\n' + \
+                        '              "name": "' + city + '"\n' + \
+                        '            },\n' + \
+                        '            "occupationalCategory": {\n' + \
+                        '              "@type": "CategoryCode",\n' + \
+                        '              "inCodeSet": {\n' + \
+                        '                "@type": "CategoryCodeSet",\n' + \
+                        '                "name": "O*Net-SOC",\n' + \
+                        '                "dateModified": "2019",\n' + \
                         '                ' + \
-                        '"url": "https://www.onetonline.org/"\n'
-                    skillsMarkup += '              },\n'
-                    skillsMarkup += \
-                        '              "codeValue": "' + category + '",\n'
-                    skillsMarkup += \
-                        '              "url": "' + categoryUrl + '"\n'
-                    skillsMarkup += '            }\n'
-                    skillsMarkup += '          }\n'
-                    skillsMarkup += '        }'
+                        '"url": "https://www.onetonline.org/"\n' + \
+                        '              },\n' + \
+                        '              "codeValue": "' + category + '",\n' + \
+                        '              "url": "' + categoryUrl + '"\n' + \
+                        '            }\n' + \
+                        '          }\n' + \
+                        '        }'
                 elif skillDict['@type'] == 'Occupation':
                     if not firstEntry:
                         skillsMarkup += ',\n'
@@ -555,19 +551,18 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                             skillsListStr += ', '
                         skillsListStr += '"' + skillStr + '"'
                     skillsListStr += ']'
-                    skillsMarkup += '        {\n'
-                    skillsMarkup += '          "@type": "Occupation",\n'
-                    skillsMarkup += '          "name": "' + ocName + '",\n'
-                    skillsMarkup += '          "description": ' + \
-                        '"Fediverse instance occupation",\n'
-                    skillsMarkup += '          "occupationLocation": {\n'
-                    skillsMarkup += '            "@type": "City",\n'
                     skillsMarkup += \
-                        '            "name": "' + city + '"\n'
-                    skillsMarkup += '          },\n'
-                    skillsMarkup += \
-                        '          "skills": ' + skillsListStr + '\n'
-                    skillsMarkup += '        }'
+                        '        {\n' + \
+                        '          "@type": "Occupation",\n' + \
+                        '          "name": "' + ocName + '",\n' + \
+                        '          "description": ' + \
+                        '"Fediverse instance occupation",\n' + \
+                        '          "occupationLocation": {\n' + \
+                        '            "@type": "City",\n' + \
+                        '            "name": "' + city + '"\n' + \
+                        '          },\n' + \
+                        '          "skills": ' + skillsListStr + '\n' + \
+                        '        }'
                 firstEntry = False
             skillsMarkup += '\n      ],\n'
 

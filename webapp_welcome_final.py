@@ -63,19 +63,17 @@ def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
 
     finalForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
-    finalForm += '<div class="container">' + finalText + '</div>\n'
     finalForm += \
+        '<div class="container">' + finalText + '</div>\n' + \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
-        'action="/users/' + nickname + '/profiledata">\n'
-    finalForm += '<div class="container next">\n'
-    finalForm += \
+        'action="/users/' + nickname + '/profiledata">\n' + \
+        '<div class="container next">\n' + \
         '    <button type="submit" class="button" ' + \
-        'name="previewAvatar">' + translate['Go Back'] + '</button>\n'
-    finalForm += \
+        'name="previewAvatar">' + translate['Go Back'] + '</button>\n' + \
         '    <button type="submit" class="button" ' + \
-        'name="welcomeCompleteButton">' + translate['Next'] + '</button>\n'
-    finalForm += '</div>\n'
+        'name="welcomeCompleteButton">' + translate['Next'] + '</button>\n' + \
+        '</div>\n'
 
     finalForm += '</form>\n'
     finalForm += htmlFooter()

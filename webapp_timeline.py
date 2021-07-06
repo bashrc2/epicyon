@@ -600,14 +600,15 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   iconsAsButtons, accessKeys)
 
     # start the timeline
-    tlStr += '<table class="timeline">\n'
-    tlStr += '  <colgroup>\n'
-    tlStr += '    <col span="1" class="column-left">\n'
-    tlStr += '    <col span="1" class="column-center">\n'
-    tlStr += '    <col span="1" class="column-right">\n'
-    tlStr += '  </colgroup>\n'
-    tlStr += '  <tbody>\n'
-    tlStr += '    <tr>\n'
+    tlStr += \
+        '<table class="timeline">\n' + \
+        '  <colgroup>\n' + \
+        '    <col span="1" class="column-left">\n' + \
+        '    <col span="1" class="column-center">\n' + \
+        '    <col span="1" class="column-right">\n' + \
+        '  </colgroup>\n' + \
+        '  <tbody>\n' + \
+        '    <tr>\n'
 
     domainFull = getFullDomain(domain, port)
 
