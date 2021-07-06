@@ -276,7 +276,7 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
             continue
         propertyName = propertyValue['name'].lower()
         found = False
-        for name, alias in webfingerPropertyName:
+        for name, alias in webfingerPropertyName.items():
             if name == propertyName:
                 found = True
                 break
