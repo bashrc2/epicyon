@@ -1296,7 +1296,7 @@ def _postIsAddressedToFollowers(baseDir: str,
     toList = []
     ccList = []
     if postJsonObject['type'] != 'Update' and \
-       isinstance(postJsonObject['object'], dict):
+       hasObjectDict(postJsonObject):
         if postJsonObject['object'].get('to'):
             toList = postJsonObject['object']['to']
         if postJsonObject['object'].get('cc'):
@@ -2169,7 +2169,7 @@ def _addFollowersToPublicPost(postJsonObject: {}) -> None:
         if postJsonObject.get('cc'):
             return
         postJsonObject['cc'] = postJsonObject['actor'] + '/followers'
-    elif isinstance(postJsonObject['object'], dict):
+    elif hasObjectDict(postJsonObject):
         if not postJsonObject['object'].get('to'):
             return
         if len(postJsonObject['object']['to']) > 1:
@@ -2433,7 +2433,7 @@ def sendToNamedAddresses(session, baseDir: str,
     if not postJsonObject.get('object'):
         return
     isProfileUpdate = False
-    if isinstance(postJsonObject['object'], dict):
+    if hasObjectDict(postJsonObject):
         if _isProfileUpdate(postJsonObject):
             # use the original object, which has a 'to'
             recipientsObject = postJsonObject

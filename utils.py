@@ -1401,7 +1401,7 @@ def deletePost(baseDir: str, httpPrefix: str,
 
     # remove from moderation index file
     if hasObject:
-        if isinstance(postJsonObject['object'], dict):
+        if hasObjectDict(postJsonObject):
             if postJsonObject['object'].get('moderationStatus'):
                 if postJsonObject.get('id'):
                     postId = removeIdEnding(postJsonObject['id'])

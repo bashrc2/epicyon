@@ -298,7 +298,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
         return False
 
     # object should be a dict or a string
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         if not isinstance(messageJson['object'], str):
             print('WARN: object from ' + str(messageJson['actor']) +
                   ' should be a dict or string, but is actually: ' +

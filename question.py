@@ -126,7 +126,7 @@ def isQuestion(postObjectJson: {}) -> bool:
     if postObjectJson['type'] != 'Create' and \
        postObjectJson['type'] != 'Update':
         return False
-    if not isinstance(postObjectJson['object'], dict):
+    if not hasObjectDict(postObjectJson):
         return False
     if not postObjectJson['object'].get('type'):
         return False

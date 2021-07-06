@@ -22,6 +22,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import hasObjectDict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
 from utils import isDM
@@ -840,8 +841,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
                                                         postJsonObject)
             else:
                 titleStr += \
-                    _announceUnattributedHtml(translate,
-                                              postJsonObject)
+                    _announceUnattributedHtml(translate, postJsonObject)
     else:
         titleStr += \
             _announceUnattributedHtml(translate, postJsonObject)
@@ -1339,7 +1339,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     _logPostTiming(enableTimingLog, postStartTime, '8')
 
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return ''
 
     # if this post should be public then check its recipients
@@ -1762,7 +1762,7 @@ def htmlIndividualPost(cssCache: {},
     messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
-    if isinstance(postJsonObject['object'], dict):
+    if hasObjectDict(postJsonObject):
         while postJsonObject['object'].get('inReplyTo'):
             postFilename = \
                 locatePost(baseDir, nickname, domain,
