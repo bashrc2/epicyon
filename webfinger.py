@@ -290,6 +290,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
             continue
 
         newValue = propertyValue['value'].strip()
+        if '://' in newValue:
+            newValue = newValue.split('://')[1]
+
         aliasIndex = 0
         found = False
         for alias in wfJson['aliases']:
