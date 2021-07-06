@@ -2527,8 +2527,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         if saveJson(postJsonObject, destinationFilename):
             # should we notify that a post from this person has arrived?
             if not postIsDM:
-                fromNickname = getNicknameFromActor(actor)
-                fromDomain, fromPort = getDomainFromActor(actor)
+                fromNickname = getNicknameFromActor(postJsonObject['actor'])
+                fromDomain, fromPort = \
+                    getDomainFromActor(postJsonObject['actor'])
                 fromDomainFull = getFullDomain(fromDomain, fromPort)
                 fromHandle = fromNickname + '@' + fromDomainFull
                 if notifyWhenPersonPosts(baseDir, nickname, domain,
