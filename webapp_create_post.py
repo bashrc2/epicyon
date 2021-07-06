@@ -26,35 +26,35 @@ def _htmlFollowingDataList(baseDir: str, nickname: str,
     listStr = '<datalist id="followingHandles">\n'
     followingFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    msg = None
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
             msg = followingFile.read()
             # add your own handle, so that you can send DMs
             # to yourself as reminders
             msg += nickname + '@' + domainFull + '\n'
-            # include petnames
-            petnamesFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/petnames.txt'
-            if os.path.isfile(petnamesFilename):
-                followingList = []
-                with open(petnamesFilename, 'r') as petnamesFile:
-                    petStr = petnamesFile.read()
-                    # extract each petname and append it
-                    petnamesList = petStr.split('\n')
-                    for pet in petnamesList:
-                        followingList.append(pet.split(' ')[0])
-                # add the following.txt entries
-                followingList += msg.split('\n')
-            else:
-                # no petnames list exists - just use following.txt
-                followingList = msg.split('\n')
-            followingList.sort()
-            if followingList:
-                for followingAddress in followingList:
-                    if followingAddress:
-                        listStr += \
-                            '<option>@' + followingAddress + '</option>\n'
+    if msg:
+        # include petnames
+        petnamesFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/petnames.txt'
+        if os.path.isfile(petnamesFilename):
+            followingList = []
+            with open(petnamesFilename, 'r') as petnamesFile:
+                petStr = petnamesFile.read()
+                # extract each petname and append it
+                petnamesList = petStr.split('\n')
+                for pet in petnamesList:
+                    followingList.append(pet.split(' ')[0])
+            # add the following.txt entries
+            followingList += msg.split('\n')
+        else:
+            # no petnames list exists - just use following.txt
+            followingList = msg.split('\n')
+        followingList.sort()
+        if followingList:
+            for followingAddress in followingList:
+                if followingAddress:
+                    listStr += '<option>@' + followingAddress + '</option>\n'
     listStr += '</datalist>\n'
     return listStr
 
@@ -84,8 +84,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     dropDownContent += '  <label for="my-newPostDropdown"\n'
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
-        'icons/' + scopeIcon + '"/><b>' + \
-        scopeDescription + '</b></label>\n'
+        'icons/' + scopeIcon + '"/><b>' + scopeDescription + '</b></label>\n'
 
     if noDropDown:
         dropDownContent += '</div></nav>\n'
@@ -144,12 +143,6 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
-    # dropDownContent += \
-    #    '<li><a href="' + pathBase + dropdownEventSuffix + \
-    #    '"><img loading="lazy" alt="" title="" src="/' + \
-    #    'icons/scope_event.png"/><b>' + \
-    #    translate['Event'] + '</b><br>' + \
-    #    translate['Create an event'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
         '" accesskey="' + accessKeys['reportButton'] + '">' + \
@@ -230,8 +223,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     showPublicOnDropdown = False
         else:
             newPostText = \
-                '<h1>' + \
-                translate['Write your report below.'] + '</h1>\n'
+                '<h1>' + translate['Write your report below.'] + '</h1>\n'
 
             # custom report header with any additional instructions
             if os.path.isfile(baseDir + '/accounts/report.txt'):
@@ -319,7 +311,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             translate['Subject or Content Warning (optional)'] + '...'
     placeholderMentions = ''
     if inReplyTo:
-        # mentionsAndContent = getMentionsString(content)
         placeholderMentions = \
             translate['Replying to'] + '...'
     placeholderMessage = translate['Write something'] + '...'
@@ -582,8 +573,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     newPostForm += \
@@ -711,16 +701,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         submitText + '" ' + \
         'accesskey="' + accessKeys['submitButton'] + '"></td>\n'
 
-    newPostForm += '      </tr>\n'
-    newPostForm += '</table>\n'
+    newPostForm += '      </tr>\n</table>\n'
     newPostForm += '    </div>\n'
 
     newPostForm += '    <div class="containerSubmitNewPost"><center>\n'
-
-    # newPostForm += \
-    #     '      <a href="' + pathBase + \
-    #     '/inbox"><button class="cancelbtn">' + \
-    #     translate['Go Back'] + '</button></a>\n'
 
     newPostForm += '    </center></div>\n'
 
@@ -777,14 +761,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
 
-    newPostForm += '    <div class="container">\n'
     newPostForm += \
+        '    <div class="container">\n' + \
         '      <input type="submit" name="submitPost" value="' + \
-        submitText + '">\n'
-    newPostForm += '    </div>\n'
-
-    newPostForm += '  </div>\n'
-    newPostForm += '</form>\n'
+        submitText + '">\n' + \
+        '    </div>\n' + \
+        '  </div>\n' + \
+        '</form>\n'
 
     if not reportUrl:
         newPostForm = \

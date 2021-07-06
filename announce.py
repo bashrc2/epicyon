@@ -77,7 +77,7 @@ def outboxAnnounce(recentPostsCache: {},
                                      nickname, domain, debug)
             return True
     elif messageJson['type'] == 'Undo':
-        if not isinstance(messageJson['object'], dict):
+        if not hasObjectDict(messageJson):
             return False
         if not messageJson['object'].get('type'):
             return False

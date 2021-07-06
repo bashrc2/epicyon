@@ -398,9 +398,10 @@ def htmlPersonOptions(defaultTimeline: str,
             'accesskey="' + accessKeys['enterNotes'] + '">' + \
             personNotes + '</textarea>\n'
 
-    optionsStr += '  </form>\n'
-    optionsStr += '</center>\n'
-    optionsStr += '</div>\n'
-    optionsStr += '</div>\n'
+    optionsStr += \
+        '  </form>\n' + \
+        '</center>\n' + \
+        '</div>\n' + \
+        '</div>\n'
     optionsStr += htmlFooter()
     return optionsStr

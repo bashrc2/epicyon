@@ -338,8 +338,7 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/search.css'):
         cssFilename = baseDir + '/search.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # show a banner above the search box

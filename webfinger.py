@@ -174,18 +174,19 @@ def webfingerNodeInfo(httpPrefix: str, domainFull: str) -> {}:
 def webfingerMeta(httpPrefix: str, domainFull: str) -> str:
     """Return /.well-known/host-meta
     """
-    metaStr = "<?xml version=’1.0' encoding=’UTF-8'?>"
-    metaStr += "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'"
-    metaStr += " xmlns:hm=’http://host-meta.net/xrd/1.0'>"
-    metaStr += ""
-    metaStr += "<hm:Host>" + domainFull + "</hm:Host>"
-    metaStr += ""
-    metaStr += "<Link rel=’lrdd’"
-    metaStr += " template=’" + httpPrefix + "://" + domainFull + \
-        "/describe?uri={uri}'>"
-    metaStr += " <Title>Resource Descriptor</Title>"
-    metaStr += " </Link>"
-    metaStr += "</XRD>"
+    metaStr = \
+        "<?xml version=’1.0' encoding=’UTF-8'?>" + \
+        "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" + \
+        " xmlns:hm=’http://host-meta.net/xrd/1.0'>" + \
+        "" + \
+        "<hm:Host>" + domainFull + "</hm:Host>" + \
+        "" + \
+        "<Link rel=’lrdd’" + \
+        " template=’" + httpPrefix + "://" + domainFull + \
+        "/describe?uri={uri}'>" + \
+        " <Title>Resource Descriptor</Title>" + \
+        " </Link>" + \
+        "</XRD>"
     return metaStr
 
 
@@ -264,18 +265,28 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         "matrix": "matrix",
         "email": "mailto",
         "ssb": "ssb",
+        "briar": "briar",
+        "cwtch": "cwtch",
+        "jami": "jami",
         "tox": "toxId"
     }
+
+    aliasesNotFound = []
+    for name, alias in webfingerPropertyName.items():
+        aliasesNotFound.append(alias)
 
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
         propertyName = propertyValue['name'].lower()
-        if not (propertyName.startswith('ssb') or
-                propertyName.startswith('xmpp') or
-                propertyName.startswith('matrix') or
-                propertyName.startswith('email') or
-                propertyName.startswith('tox')):
+        found = False
+        for name, alias in webfingerPropertyName.items():
+            if name == propertyName:
+                if alias in aliasesNotFound:
+                    aliasesNotFound.remove(alias)
+                found = True
+                break
+        if not found:
             continue
         if not propertyValue.get('type'):
             continue
@@ -285,6 +296,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
             continue
 
         newValue = propertyValue['value'].strip()
+        if '://' in newValue:
+            newValue = newValue.split('://')[1]
+
         aliasIndex = 0
         found = False
         for alias in wfJson['aliases']:
@@ -300,6 +314,17 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         else:
             wfJson['aliases'].append(newAlias)
             changed = True
+
+    # remove any aliases which are no longer in the actor profile
+    removeAlias = []
+    for alias in aliasesNotFound:
+        for fullAlias in wfJson['aliases']:
+            if fullAlias.startswith(alias + ':'):
+                removeAlias.append(fullAlias)
+    for fullAlias in removeAlias:
+        wfJson['aliases'].remove(fullAlias)
+        changed = True
+
     return changed
 
 

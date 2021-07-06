@@ -366,16 +366,12 @@ def _setThemeFromDict(baseDir: str, name: str,
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
-    if bgParams.get('login'):
-        _setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
-    if bgParams.get('follow'):
-        _setBackgroundFormat(baseDir, name, 'follow', bgParams['follow'])
-    if bgParams.get('options'):
-        _setBackgroundFormat(baseDir, name, 'options', bgParams['options'])
-    if bgParams.get('search'):
-        _setBackgroundFormat(baseDir, name, 'search', bgParams['search'])
-    if bgParams.get('welcome'):
-        _setBackgroundFormat(baseDir, name, 'welcome', bgParams['welcome'])
+    screenName = (
+        'login', 'follow', 'options', 'search', 'welcome'
+    )
+    for s in screenName:
+        if bgParams.get(s):
+            _setBackgroundFormat(baseDir, name, s, bgParams[s])
 
 
 def _setBackgroundFormat(baseDir: str, name: str,

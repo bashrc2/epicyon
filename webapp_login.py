@@ -36,18 +36,19 @@ def htmlGetLoginCredentials(loginParams: str,
     password = None
     register = False
     for arg in loginArgs:
-        if '=' in arg:
-            if arg.split('=', 1)[0] == 'username':
-                nickname = arg.split('=', 1)[1]
-                if nickname.startswith('@'):
-                    nickname = nickname[1:]
-                if '@' in nickname:
-                    # the full nickname@domain has been entered
-                    nickname = nickname.split('@')[0]
-            elif arg.split('=', 1)[0] == 'password':
-                password = arg.split('=', 1)[1]
-            elif arg.split('=', 1)[0] == 'register':
-                register = True
+        if '=' not in arg:
+            continue
+        if arg.split('=', 1)[0] == 'username':
+            nickname = arg.split('=', 1)[1]
+            if nickname.startswith('@'):
+                nickname = nickname[1:]
+            if '@' in nickname:
+                # the full nickname@domain has been entered
+                nickname = nickname.split('@')[0]
+        elif arg.split('=', 1)[0] == 'password':
+            password = arg.split('=', 1)[1]
+        elif arg.split('=', 1)[0] == 'register':
+            register = True
     return nickname, password, register
 
 
@@ -103,8 +104,7 @@ def htmlLogin(cssCache: {}, translate: {},
     else:
         loginText = \
             '<p class="login-text">' + \
-            translate['Please enter some credentials'] + '</p>'
-        loginText += \
+            translate['Please enter some credentials'] + '</p>' + \
             '<p class="login-text">' + \
             translate['You will become the admin of this site.'] + \
             '</p>'
@@ -132,8 +132,7 @@ def htmlLogin(cssCache: {}, translate: {},
 
     TOSstr = \
         '<p class="login-text"><a href="/about">' + \
-        translate['About this Instance'] + '</a></p>'
-    TOSstr += \
+        translate['About this Instance'] + '</a></p>' + \
         '<p class="login-text"><a href="/terms">' + \
         translate['Terms of Service'] + '</a></p>'
 
@@ -153,34 +152,32 @@ def htmlLogin(cssCache: {}, translate: {},
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     httpPrefix, domain,
                                     systemLanguage)
-    loginForm += '<br>\n'
-    loginForm += '<form method="POST" action="/login">\n'
-    loginForm += '  <div class="imgcontainer">\n'
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    loginForm += textModeLogoHtml + '\n'
     loginForm += \
+        '<br>\n' + \
+        '<form method="POST" action="/login">\n' + \
+        '  <div class="imgcontainer">\n' + \
+        textModeLogoHtml + '\n' + \
         '    <img loading="lazy" src="' + loginImage + \
-        '" alt="' + instanceTitle + '" class="loginimage">\n'
-    loginForm += loginText + TOSstr + '\n'
-    loginForm += '  </div>\n'
-    loginForm += '\n'
-    loginForm += '  <div class="container">\n'
-    loginForm += '    <label for="nickname"><b>' + \
-        translate['Nickname'] + '</b></label>\n'
-    loginForm += \
+        '" alt="' + instanceTitle + '" class="loginimage">\n' + \
+        loginText + TOSstr + '\n' + \
+        '  </div>\n' + \
+        '\n' + \
+        '  <div class="container">\n' + \
+        '    <label for="nickname"><b>' + \
+        translate['Nickname'] + '</b></label>\n' + \
         '    <input type="text" ' + autocompleteStr + ' placeholder="' + \
-        translate['Enter Nickname'] + '" name="username" required autofocus>\n'
-    loginForm += '\n'
-    loginForm += '    <label for="password"><b>' + \
-        translate['Password'] + '</b></label>\n'
-    loginForm += \
+        translate['Enter Nickname'] + \
+        '" name="username" required autofocus>\n' + \
+        '\n' + \
+        '    <label for="password"><b>' + \
+        translate['Password'] + '</b></label>\n' + \
         '    <input type="password" ' + autocompleteStr + \
         ' placeholder="' + translate['Enter Password'] + \
-        '" name="password" required>\n'
-    loginForm += loginButtonStr + registerButtonStr + '\n'
-    loginForm += '  </div>\n'
-    loginForm += '</form>\n'
-    loginForm += \
+        '" name="password" required>\n' + \
+        loginButtonStr + registerButtonStr + '\n' + \
+        '  </div>\n' + \
+        '</form>\n' + \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
         '<img loading="lazy" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \

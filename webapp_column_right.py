@@ -253,8 +253,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         if faviconUrl:
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
-                'alt="" ' + \
-                _getBrokenFavSubstitute() + '/>'
+                'alt="" ' + _getBrokenFavSubstitute() + '/>'
         moderatedItem = item[5]
         htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
@@ -270,8 +269,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
                 '<span class="newswireItemVotedOn">' + \
-                faviconLink + title + \
-                '</span></a>' + totalVotesStr
+                faviconLink + title + '</span></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
                     ' ' + dateShown + '<a href="/users/' + nickname + \
@@ -312,8 +310,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 htmlStr += '<p class="newswireItem">' + \
                     '<a href="' + url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
-                    faviconLink + title + '</a>' + \
-                    totalVotesStr
+                    faviconLink + title + '</a>' + totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'
 

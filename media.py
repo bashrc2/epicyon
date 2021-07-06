@@ -18,6 +18,7 @@ from utils import getImageExtensions
 from utils import getVideoExtensions
 from utils import getAudioExtensions
 from utils import getMediaExtensions
+from utils import hasObjectDict
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
@@ -30,7 +31,7 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
     """
     if not replacementDomain:
         return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('content'):
         return

@@ -137,8 +137,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
@@ -186,8 +185,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -232,8 +230,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -279,8 +276,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'

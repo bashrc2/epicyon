@@ -51,10 +51,8 @@ def _getLeftColumnShares(baseDir: str,
         if '<' in sharedesc or '?' in sharedesc:
             continue
         contactActor = item['actor']
-        shareLink = actor + \
-            '?replydm=sharedesc:' + \
-            sharedesc.replace(' ', '_') + \
-            '?mention=' + contactActor
+        shareLink = actor + '?replydm=sharedesc:' + \
+            sharedesc.replace(' ', '_') + '?mention=' + contactActor
         linksList.append(sharedesc + ' ' + shareLink)
         ctr += 1
         if ctr >= maxSharesInLeftColumn:
@@ -89,16 +87,14 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if os.path.isfile(leftColumnImageFilename):
             editImageClass = 'leftColEditImage'
             htmlStr += \
-                '\n      <center>\n' + \
-                '        <img class="leftColImg" ' + \
+                '\n      <center>\n        <img class="leftColImg" ' + \
                 'alt="" loading="lazy" src="/users/' + \
                 nickname + '/' + leftImageFile + '" />\n' + \
                 '      </center>\n'
 
     if showBackButton:
         htmlStr += \
-            '      <div>' + \
-            '      <a href="' + timelinePath + '">' + \
+            '      <div>      <a href="' + timelinePath + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
@@ -112,14 +108,11 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editor:
         # show the edit icon
         htmlStr += \
-            '      <a href="' + \
-            '/users/' + nickname + '/editlinks" ' + \
+            '      <a href="/users/' + nickname + '/editlinks" ' + \
             'accesskey="' + accessKeys['menuEdit'] + '">' + \
-            '<img class="' + editImageClass + \
-            '" loading="lazy" alt="' + \
+            '<img class="' + editImageClass + '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
-            translate['Edit Links'] + '" src="/' + \
-            'icons/edit.png" /></a>\n'
+            translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -134,10 +127,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         rssTitle = translate['RSS feed for this site']
     rssIconStr = \
-        '      <a href="' + rssUrl + '">' + \
-        '<img class="' + editImageClass + \
-        '" loading="lazy" alt="' + rssTitle + \
-        '" title="' + rssTitle + \
+        '      <a href="' + rssUrl + '"><img class="' + editImageClass + \
+        '" loading="lazy" alt="' + rssTitle + '" title="' + rssTitle + \
         '" src="/icons/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
@@ -326,8 +317,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  theme, accessKeys)
     else:
         if editor:
-            htmlStr += '<br><br><br>\n'
-            htmlStr += '<center>\n  '
+            htmlStr += '<br><br><br>\n<center>\n  '
             htmlStr += translate['Select the edit icon to add web links']
             htmlStr += '\n</center>\n'
 
@@ -376,7 +366,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">\n'
-    editLinksForm += '<img loading="lazy" class="timeline-banner" ' + \
+    editLinksForm += \
+        '<img loading="lazy" class="timeline-banner" ' + \
         'alt = "" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header>\n'
@@ -411,8 +402,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<br>'
     editLinksForm += \
         '  <textarea id="message" name="editedLinks" ' + \
-        'style="height:80vh" spellcheck="false">' + \
-        linksStr + '</textarea>'
+        'style="height:80vh" spellcheck="false">' + linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
 
