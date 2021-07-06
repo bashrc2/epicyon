@@ -2487,8 +2487,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             # get the actor being replied to
             domainFull = getFullDomain(domain, port)
-            actor = httpPrefix + '://' + domainFull + \
-                '/users/' + handle.split('@')[0]
+            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
 
             # create a reply notification file if needed
             if not postIsDM and isReply(postJsonObject, actor):
@@ -2528,12 +2527,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         if saveJson(postJsonObject, destinationFilename):
             # should we notify that a post from this person has arrived?
             if not postIsDM:
-                handleNickname = handle.split('@')[0]
-                handleDomain = handle.split('@')[1]
+                fromNickname = getNicknameFromActor(actor)
+                fromDomain, fromPort = getDomainFromActor(actor)
+                fromDomainFull = getFullDomain(fromDomain, fromPort)
+                fromHandle = fromNickname + '@' + fromDomainFull
                 if notifyWhenPersonPosts(baseDir, nickname, domain,
-                                         handleNickname, handleDomain):
+                                         fromNickname, fromDomainFull):
                     postId = removeIdEnding(postJsonObject['id'])
-                    _notifyPostArrival(baseDir, handle, postId)
+                    _notifyPostArrival(baseDir, fromHandle, postId)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
