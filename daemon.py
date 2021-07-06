@@ -286,6 +286,8 @@ from bookmarks import undoBookmark
 from petnames import setPetName
 from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
+from notifyOnPost import addNotifyOnPost
+from notifyOnPost import removeNotifyOnPost
 from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
@@ -2079,6 +2081,34 @@ class PubServer(BaseHTTPRequestHandler):
                                          domain,
                                          optionsNickname,
                                          optionsDomainFull)
+            usersPathStr = \
+                usersPath + '/' + self.server.defaultTimeline + \
+                '?page=' + str(pageNumber)
+            self._redirect_headers(usersPathStr, cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, on notify checkbox
+        # See htmlPersonOptions
+        if '&submitNotifyOnPost=' in optionsConfirmParams:
+            notify = None
+            if 'notifyOnPost=' in optionsConfirmParams:
+                notify = optionsConfirmParams.split('notifyOnPost=')[1]
+                if '&' in notify:
+                    notify = notify.split('&')[0]
+            if notify == 'on':
+                addNotifyOnPost(baseDir,
+                                chooserNickname,
+                                domain,
+                                optionsNickname,
+                                optionsDomainFull)
+            else:
+                removeNotifyOnPost(baseDir,
+                                   chooserNickname,
+                                   domain,
+                                   optionsNickname,
+                                   optionsDomainFull)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)

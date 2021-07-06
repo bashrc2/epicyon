@@ -449,5 +449,6 @@
     "Import Theme": "Import thème",
     "Export Theme": "Thème d'exportation",
     "Custom post submit button text": "Texte de bouton d'envoi postal personnalisé",
-    "Blocked User Agents": "Agents d'utilisateur bloqués"
+    "Blocked User Agents": "Agents d'utilisateur bloqués",
+    "Notify me when this account posts": "Avertissez-moi quand ce compte publie"
 }

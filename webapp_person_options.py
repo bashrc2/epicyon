@@ -23,6 +23,7 @@ from blocking import isBlocked
 from follow import isFollowerOfPerson
 from follow import isFollowingActor
 from followingCalendar import receivingCalendarEvents
+from notifyOnPost import notifyWhenPersonPosts
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBrokenLinkSubstitute
@@ -246,8 +247,21 @@ def htmlPersonOptions(defaultTimeline: str,
                     'name="submitPetname">' + \
                     translate['Submit'] + '</button><br>\n'
 
-            # checkbox for receiving calendar events
+            # Notify when a post arrives from this person
             if isFollowingActor(baseDir, nickname, domain, optionsActor):
+                checkboxStr = \
+                    '    <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="notifyOnPost" checked> 🔔' + \
+                    translate['Notify me when this account posts'] + \
+                    '\n    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitNotifyOnPost">' + \
+                    translate['Submit'] + '</button><br>\n'
+                if not notifyWhenPersonPosts(baseDir, nickname, domain,
+                                             optionsNickname,
+                                             optionsDomainFull):
+                    checkboxStr = checkboxStr.replace(' checked>', '>')
+                optionsStr += checkboxStr
+
                 checkboxStr = \
                     '    <input type="checkbox" ' + \
                     'class="profilecheckbox" name="onCalendar" checked> ' + \

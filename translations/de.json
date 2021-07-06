@@ -449,5 +449,6 @@
     "Import Theme": "Theme importieren",
     "Export Theme": "Theme exportieren",
     "Custom post submit button text": "Benutzerdefinierte Post-Senden Schaltfläche Text",
-    "Blocked User Agents": "Blockierte Benutzeragenten"
+    "Blocked User Agents": "Blockierte Benutzeragenten",
+    "Notify me when this account posts": "Benachrichtigen Sie mich, wenn dieses Konto postet"
 }
