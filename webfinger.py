@@ -265,6 +265,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         "matrix": "matrix",
         "email": "mailto",
         "ssb": "ssb",
+        "briar": "briar",
+        "cwtch": "cwtch",
+        "jami": "jami",
         "tox": "toxId"
     }
 
