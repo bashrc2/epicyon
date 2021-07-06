@@ -54,8 +54,7 @@ def headerButtonsTimeline(defaultTimeline: str,
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
-            '<a href="' + usersPath + \
-            '/tlmedia" tabindex="-1" ' + \
+            '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
             'accesskey="' + accessKeys['menuMedia'] + '"' + \
             '><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
@@ -105,8 +104,7 @@ def headerButtonsTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlmedia':
         if not minimal and not featuresHeader:
             tlStr += \
-                '<a href="' + usersPath + \
-                '/tlmedia" tabindex="-1" ' + \
+                '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
                 'accesskey="' + accessKeys['menuMedia'] + '">' + \
                 '<button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
@@ -206,10 +204,8 @@ def headerButtonsTimeline(defaultTimeline: str,
     if not featuresHeader:
         # button for the outbox
         tlStr += \
-            '<a href="' + usersPath + \
-            '/outbox"><button class="' + \
-            sentButton + '" tabindex="-1">' + \
-            '<span>' + translate['Sent'] + \
+            '<a href="' + usersPath + '/outbox"><button class="' + \
+            sentButton + '" tabindex="-1"><span>' + translate['Sent'] + \
             '</span></button></a>'
 
         # add other buttons

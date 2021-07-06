@@ -2536,3 +2536,15 @@ def getPortFromDomain(domain: str) -> int:
         if portStr.isdigit():
             return int(portStr)
     return None
+
+
+def validUrlPrefix(url: str) -> bool:
+    """Does the given url have a valid prefix?
+    """
+    if '/' not in url:
+        return False
+    prefixes = ('https:', 'http:', 'hyper:', 'i2p:', 'gnunet:')
+    for pre in prefixes:
+        if url.startswith(pre):
+            return True
+    return False

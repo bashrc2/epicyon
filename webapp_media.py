@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+from utils import validUrlPrefix
 
 
 def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
@@ -110,6 +111,8 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
 
     if '"https://' in content:
         if peertubeInstances:
+            # only create an embedded video for a limited set of
+            # peertube sites.
             peerTubeSites = peertubeInstances
         else:
             # A default selection of the current larger peertube sites,
@@ -160,19 +163,21 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
             else:
                 siteStr = 'https://' + site
             siteStr = '"' + siteStr
-            if siteStr in content:
-                url = content.split(siteStr)[1]
-                if '"' in url:
-                    url = url.split('"')[0].replace('/watch/', '/embed/')
-                    content = \
-                        content + "<center>\n<iframe loading=\"lazy\" " + \
-                        "sandbox=\"allow-same-origin " + \
-                        "allow-scripts\" src=\"https://" + \
-                        site + url + "\" width=\"" + str(width) + \
-                        "\" height=\"" + str(height) + \
-                        "\" frameborder=\"0\" allow=\"autoplay; " + \
-                        "fullscreen\" allowfullscreen></iframe>\n</center>\n"
-                    return content
+            if siteStr not in content:
+                continue
+            url = content.split(siteStr)[1]
+            if '"' not in url:
+                continue
+            url = url.split('"')[0].replace('/watch/', '/embed/')
+            content = \
+                content + "<center>\n<iframe loading=\"lazy\" " + \
+                "sandbox=\"allow-same-origin " + \
+                "allow-scripts\" src=\"https://" + \
+                site + url + "\" width=\"" + str(width) + \
+                "\" height=\"" + str(height) + \
+                "\" frameborder=\"0\" allow=\"autoplay; " + \
+                "fullscreen\" allowfullscreen></iframe>\n</center>\n"
+            return content
     return content
 
 
@@ -205,19 +210,14 @@ def _addEmbeddedAudio(translate: {}, content: str) -> str:
         if not w.endswith(extension):
             continue
 
-        if not (w.startswith('http') or w.startswith('dat:') or
-                w.startswith('hyper:') or w.startswith('i2p:') or
-                w.startswith('gnunet:') or
-                '/' in w):
+        if not validUrlPrefix(w):
             continue
-        url = w
-        content += '<center>\n<audio controls>\n'
         content += \
-            '<source src="' + url + '" type="audio/' + \
-            extension.replace('.', '') + '">'
-        content += \
-            translate['Your browser does not support the audio element.']
-        content += '</audio>\n</center>\n'
+            '<center>\n<audio controls>\n' + \
+            '<source src="' + w + '" type="audio/' + \
+            extension.replace('.', '') + '">' + \
+            translate['Your browser does not support the audio element.'] + \
+            '</audio>\n</center>\n'
     return content
 
 
@@ -251,23 +251,17 @@ def _addEmbeddedVideo(translate: {}, content: str) -> str:
             w = w[:-1]
         if not w.endswith(extension):
             continue
-        if not (w.startswith('http') or w.startswith('dat:') or
-                w.startswith('hyper:') or w.startswith('i2p:') or
-                w.startswith('gnunet:') or
-                '/' in w):
+        if not validUrlPrefix(w):
             continue
-        url = w
         content += \
             '<center><figure id="videoContainer" ' + \
             'data-fullscreen="false">\n' + \
             '    <video id="video" controls ' + \
-            'preload="metadata">\n'
-        content += \
-            '<source src="' + url + '" type="video/' + \
-            extension.replace('.', '') + '">\n'
-        content += \
-            translate['Your browser does not support the video element.']
-        content += '</video>\n</figure>\n</center>\n'
+            'preload="metadata">\n' + \
+            '<source src="' + w + '" type="video/' + \
+            extension.replace('.', '') + '">\n' + \
+            translate['Your browser does not support the video element.'] + \
+            '</video>\n</figure>\n</center>\n'
     return content
 
 
