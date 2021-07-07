@@ -2531,11 +2531,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 fromDomain, fromPort = \
                     getDomainFromActor(postJsonObject['actor'])
                 fromDomainFull = getFullDomain(fromDomain, fromPort)
-                fromHandle = fromNickname + '@' + fromDomainFull
                 if notifyWhenPersonPosts(baseDir, nickname, domain,
                                          fromNickname, fromDomainFull):
                     postId = removeIdEnding(postJsonObject['id'])
-                    _notifyPostArrival(baseDir, fromHandle, postId)
+                    _notifyPostArrival(baseDir, handle, postId)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
