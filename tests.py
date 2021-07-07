@@ -115,6 +115,7 @@ from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
 from newswire import getNewswireTags
 from newswire import parseFeedDate
+from newswire import limitWordLengths
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
@@ -4141,9 +4142,22 @@ def _testSwitchWords() -> None:
     assert result == 'This is a test hamster'
 
 
+def _testLimitWordLengths() -> None:
+    print('testLimitWordLengths')
+    maxWordLength = 13
+    text = "This is a test"
+    result = limitWordLengths(text, maxWordLength)
+    assert result == text
+
+    text = "This is an exceptionallylongword test"
+    result = limitWordLengths(text, maxWordLength)
+    assert result == "This is an exceptionally test"
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testLimitWordLengths()
     _testSwitchWords()
     _testFunctions()
     _testUserAgentDomain()

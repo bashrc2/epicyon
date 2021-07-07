@@ -93,13 +93,33 @@ def getNewswireTags(text: str, maxTags: int) -> []:
     words = textSimplified.split(' ')
     tags = []
     for wrd in words:
-        if wrd.startswith('#'):
-            if len(wrd) > 1:
-                if wrd not in tags:
-                    tags.append(wrd)
-                    if len(tags) >= maxTags:
-                        break
+        if not wrd.startswith('#'):
+            continue
+        if len(wrd) <= 1:
+            continue
+        if wrd in tags:
+            continue
+        tags.append(wrd)
+        if len(tags) >= maxTags:
+            break
     return tags
+
+
+def limitWordLengths(text: str, maxWordLength: int) -> str:
+    """Limits the maximum length of words so that the newswire
+    column cannot become too wide
+    """
+    if ' ' not in text:
+        return text
+    words = text.split(' ')
+    result = ''
+    for wrd in words:
+        if len(wrd) > maxWordLength:
+            wrd = wrd[:maxWordLength]
+        if result:
+            result += ' '
+        result += wrd
+    return result
 
 
 def _addNewswireDictEntry(baseDir: str, domain: str,
@@ -108,7 +128,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
                           votesStatus: str, postFilename: str,
                           description: str, moderated: bool,
                           mirrored: bool,
-                          tags=[], maxTags=32) -> None:
+                          tags: [] = [],
+                          maxTags: int = 32) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -121,6 +142,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     if isFiltered(baseDir, None, None, allText):
         return
 
+    title = limitWordLengths(title, 13)
+
     if tags is None:
         tags = []
 
@@ -129,9 +152,10 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
 
     # combine the tags into a single list
     for tag in tags:
-        if tag not in postTags:
-            if len(postTags) < maxTags:
-                postTags.append(tag)
+        if tag in postTags:
+            continue
+        if len(postTags) < maxTags:
+            postTags.append(tag)
 
     # check that no tags are blocked
     for tag in postTags:
