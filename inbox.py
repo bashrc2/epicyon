@@ -1858,9 +1858,14 @@ def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
     if not os.path.isdir(accountDir):
         return
     notifyFile = accountDir + '/.newNotifiedPost'
-    if not os.path.isfile(notifyFile):
-        with open(notifyFile, 'w+') as fp:
-            fp.write(url)
+    if os.path.isfile(notifyFile):
+        # check that the same notification is not repeatedly sent
+        with open(notifyFile, 'r') as fp:
+            existingNotificationMessage = fp.read()
+            if url in existingNotificationMessage:
+                return
+    with open(notifyFile, 'w+') as fp:
+        fp.write(url)
 
 
 def _replyNotify(baseDir: str, handle: str, url: str) -> None:
