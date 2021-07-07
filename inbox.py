@@ -2413,6 +2413,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         postJsonObject = messageJson
 
     nickname = handle.split('@')[0]
+    jsonObj = None
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
                          allowLocalNetworkAccess, debug):
@@ -2535,16 +2536,16 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             # should we notify that a post from this person has arrived?
             # This is for cases where the notify checkbox is enabled
             # on the person options screen
-            if not postIsDM and hasObjectDict(postJsonObject):
-                if postJsonObject['object'].get('attributedTo'):
-                    attributedTo = postJsonObject['object']['attributedTo']
+            if not postIsDM and jsonObj:
+                if jsonObj.get('attributedTo') and jsonObj.get('id'):
+                    attributedTo = jsonObj['attributedTo']
                     if isinstance(attributedTo, str):
                         fromNickname = getNicknameFromActor(attributedTo)
                         fromDomain, fromPort = getDomainFromActor(attributedTo)
                         fromDomainFull = getFullDomain(fromDomain, fromPort)
                         if notifyWhenPersonPosts(baseDir, nickname, domain,
                                                  fromNickname, fromDomainFull):
-                            postId = removeIdEnding(postJsonObject['id'])
+                            postId = removeIdEnding(jsonObj['id'])
                             _notifyPostArrival(baseDir, handle, postId)
 
             # If this is a reply to a muted post then also mute it.
