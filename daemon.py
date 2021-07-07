@@ -7714,103 +7714,26 @@ class PubServer(BaseHTTPRequestHandler):
             baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
             httpPrefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
-        if not os.path.isfile(postFilename):
-            self._404()
-            self.server.GETbusy = False
-            return True
 
-        postJsonObject = loadJson(postFilename)
-        loadedPost = False
-        if postJsonObject:
-            loadedPost = True
-        else:
-            postJsonObject = {}
-        if loadedPost:
-            # Only authorized viewers get to see likes
-            # on posts. Otherwize marketers could gain
-            # more social graph info
-            if not authorized:
-                pjo = postJsonObject
-                if not isPublicPost(pjo):
-                    self._404()
-                    self.server.GETbusy = False
-                    return True
-                removePostInteractions(pjo, True)
-            if self._requestHTTP():
-                msg = \
-                    htmlIndividualPost(self.server.cssCache,
-                                       self.server.recentPostsCache,
-                                       self.server.maxRecentPosts,
-                                       self.server.translate,
-                                       self.server.baseDir,
-                                       self.server.session,
-                                       self.server.cachedWebfingers,
-                                       self.server.personCache,
-                                       nickname, domain, port,
-                                       authorized,
-                                       postJsonObject,
-                                       httpPrefix,
-                                       self.server.projectVersion,
-                                       likedBy,
-                                       self.server.YTReplacementDomain,
-                                       self.server.showPublishedDateOnly,
-                                       self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess,
-                                       self.server.themeName)
-                msg = msg.encode('utf-8')
-                msglen = len(msg)
-                self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
-                self._write(msg)
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(postJsonObject,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
-                    msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen,
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-        self.server.GETbusy = False
-        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  'new post done',
-                                  'individual post shown')
-        return True
+        return self._showPostFromFile(postFilename, likedBy,
+                                      authorized, callingDomain, path,
+                                      baseDir, httpPrefix, nickname,
+                                      domain, domainFull, port,
+                                      onionDomain, i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      proxyType, cookie, debug)
 
-    def _showIndividualPost(self, authorized: bool,
-                            callingDomain: str, path: str,
-                            baseDir: str, httpPrefix: str,
-                            domain: str, domainFull: str, port: int,
-                            onionDomain: str, i2pDomain: str,
-                            GETstartTime, GETtimings: {},
-                            proxyType: str, cookie: str,
-                            debug: str) -> bool:
-        """Shows an individual post
+    def _showPostFromFile(self, postFilename: str, likedBy: str,
+                          authorized: bool,
+                          callingDomain: str, path: str,
+                          baseDir: str, httpPrefix: str, nickname: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          GETstartTime, GETtimings: {},
+                          proxyType: str, cookie: str,
+                          debug: str) -> bool:
+        """Shows an individual post from its filename
         """
-        likedBy = None
-        if '?likedBy=' in path:
-            likedBy = path.split('?likedBy=')[1].strip()
-            if '?' in likedBy:
-                likedBy = likedBy.split('?')[0]
-            path = path.split('?likedBy=')[0]
-        namedStatus = path.split('/users/')[1]
-        if '/' not in namedStatus:
-            return False
-        postSections = namedStatus.split('/')
-        if len(postSections) < 3:
-            return False
-        nickname = postSections[0]
-        statusNumber = postSections[2]
-        if len(statusNumber) <= 10 or (not statusNumber.isdigit()):
-            return False
-
-        postFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
-            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
-            '#statuses#' + statusNumber + '.json'
         if not os.path.isfile(postFilename):
             self._404()
             self.server.GETbusy = False
@@ -7879,6 +7802,46 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
         self.server.GETbusy = False
         return True
+
+    def _showIndividualPost(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows an individual post
+        """
+        likedBy = None
+        if '?likedBy=' in path:
+            likedBy = path.split('?likedBy=')[1].strip()
+            if '?' in likedBy:
+                likedBy = likedBy.split('?')[0]
+            path = path.split('?likedBy=')[0]
+        namedStatus = path.split('/users/')[1]
+        if '/' not in namedStatus:
+            return False
+        postSections = namedStatus.split('/')
+        if len(postSections) < 3:
+            return False
+        nickname = postSections[0]
+        statusNumber = postSections[2]
+        if len(statusNumber) <= 10 or (not statusNumber.isdigit()):
+            return False
+
+        postFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
+            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
+            '#statuses#' + statusNumber + '.json'
+
+        return self._showPostFromFile(postFilename, likedBy,
+                                      authorized, callingDomain, path,
+                                      baseDir, httpPrefix, nickname,
+                                      domain, domainFull, port,
+                                      onionDomain, i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      proxyType, cookie, debug)
 
     def _showInbox(self, authorized: bool,
                    callingDomain: str, path: str,
