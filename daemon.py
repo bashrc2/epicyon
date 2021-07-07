@@ -7746,10 +7746,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return True
 
-        # Only authorized viewers get to see likes
-        # on posts
-        # Otherwize marketers could gain more social
-        # graph info
+        # Only authorized viewers get to see likes on posts
+        # Otherwize marketers could gain more social graph info
         if not authorized:
             pjo = postJsonObject
             if not isPublicPost(pjo):
