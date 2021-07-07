@@ -286,6 +286,8 @@ from bookmarks import undoBookmark
 from petnames import setPetName
 from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
+from notifyOnPost import addNotifyOnPost
+from notifyOnPost import removeNotifyOnPost
 from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
@@ -2079,6 +2081,34 @@ class PubServer(BaseHTTPRequestHandler):
                                          domain,
                                          optionsNickname,
                                          optionsDomainFull)
+            usersPathStr = \
+                usersPath + '/' + self.server.defaultTimeline + \
+                '?page=' + str(pageNumber)
+            self._redirect_headers(usersPathStr, cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, on notify checkbox
+        # See htmlPersonOptions
+        if '&submitNotifyOnPost=' in optionsConfirmParams:
+            notify = None
+            if 'notifyOnPost=' in optionsConfirmParams:
+                notify = optionsConfirmParams.split('notifyOnPost=')[1]
+                if '&' in notify:
+                    notify = notify.split('&')[0]
+            if notify == 'on':
+                addNotifyOnPost(baseDir,
+                                chooserNickname,
+                                domain,
+                                optionsNickname,
+                                optionsDomainFull)
+            else:
+                removeNotifyOnPost(baseDir,
+                                   chooserNickname,
+                                   domain,
+                                   optionsNickname,
+                                   optionsDomainFull)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -7670,111 +7700,106 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' not in namedStatus:
             # show actor
             nickname = namedStatus
+            return False
+
+        postSections = namedStatus.split('/')
+        if len(postSections) != 2:
+            return False
+        nickname = postSections[0]
+        statusNumber = postSections[1]
+        if len(statusNumber) <= 10 or not statusNumber.isdigit():
+            return False
+
+        postFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
+            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
+            '#statuses#' + statusNumber + '.json'
+
+        return self._showPostFromFile(postFilename, likedBy,
+                                      authorized, callingDomain, path,
+                                      baseDir, httpPrefix, nickname,
+                                      domain, domainFull, port,
+                                      onionDomain, i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      proxyType, cookie, debug)
+
+    def _showPostFromFile(self, postFilename: str, likedBy: str,
+                          authorized: bool,
+                          callingDomain: str, path: str,
+                          baseDir: str, httpPrefix: str, nickname: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          GETstartTime, GETtimings: {},
+                          proxyType: str, cookie: str,
+                          debug: str) -> bool:
+        """Shows an individual post from its filename
+        """
+        if not os.path.isfile(postFilename):
+            self._404()
+            self.server.GETbusy = False
+            return True
+
+        postJsonObject = loadJson(postFilename)
+        if not postJsonObject:
+            self.send_response(429)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+
+        # Only authorized viewers get to see likes on posts
+        # Otherwize marketers could gain more social graph info
+        if not authorized:
+            pjo = postJsonObject
+            if not isPublicPost(pjo):
+                self._404()
+                self.server.GETbusy = False
+                return True
+            removePostInteractions(pjo, True)
+        if self._requestHTTP():
+            msg = \
+                htmlIndividualPost(self.server.cssCache,
+                                   self.server.recentPostsCache,
+                                   self.server.maxRecentPosts,
+                                   self.server.translate,
+                                   baseDir,
+                                   self.server.session,
+                                   self.server.cachedWebfingers,
+                                   self.server.personCache,
+                                   nickname, domain, port,
+                                   authorized,
+                                   postJsonObject,
+                                   httpPrefix,
+                                   self.server.projectVersion,
+                                   likedBy,
+                                   self.server.YTReplacementDomain,
+                                   self.server.showPublishedDateOnly,
+                                   self.server.peertubeInstances,
+                                   self.server.allowLocalNetworkAccess,
+                                   self.server.themeName)
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime,
+                                      GETtimings,
+                                      'show skills ' +
+                                      'done',
+                                      'show status')
         else:
-            postSections = namedStatus.split('/')
-            if len(postSections) == 2:
-                nickname = postSections[0]
-                statusNumber = postSections[1]
-                if len(statusNumber) > 10 and statusNumber.isdigit():
-                    postFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + \
-                        domain + '/outbox/' + \
-                        httpPrefix + ':##' + \
-                        domainFull + '#users#' + \
-                        nickname + '#statuses#' + \
-                        statusNumber + '.json'
-                    if os.path.isfile(postFilename):
-                        postJsonObject = loadJson(postFilename)
-                        loadedPost = False
-                        if postJsonObject:
-                            loadedPost = True
-                        else:
-                            postJsonObject = {}
-                        if loadedPost:
-                            # Only authorized viewers get to see likes
-                            # on posts. Otherwize marketers could gain
-                            # more social graph info
-                            if not authorized:
-                                pjo = postJsonObject
-                                if not isPublicPost(pjo):
-                                    self._404()
-                                    self.server.GETbusy = False
-                                    return True
-                                removePostInteractions(pjo, True)
-                            if self._requestHTTP():
-                                recentPostsCache = \
-                                    self.server.recentPostsCache
-                                maxRecentPosts = \
-                                    self.server.maxRecentPosts
-                                translate = \
-                                    self.server.translate
-                                cachedWebfingers = \
-                                    self.server.cachedWebfingers
-                                personCache = \
-                                    self.server.personCache
-                                projectVersion = \
-                                    self.server.projectVersion
-                                ytDomain = \
-                                    self.server.YTReplacementDomain
-                                showPublishedDateOnly = \
-                                    self.server.showPublishedDateOnly
-                                peertubeInstances = \
-                                    self.server.peertubeInstances
-                                cssCache = self.server.cssCache
-                                allowLocalNetworkAccess = \
-                                    self.server.allowLocalNetworkAccess
-                                themeName = \
-                                    self.server.themeName
-                                msg = \
-                                    htmlIndividualPost(cssCache,
-                                                       recentPostsCache,
-                                                       maxRecentPosts,
-                                                       translate,
-                                                       self.server.baseDir,
-                                                       self.server.session,
-                                                       cachedWebfingers,
-                                                       personCache,
-                                                       nickname,
-                                                       domain,
-                                                       port,
-                                                       authorized,
-                                                       postJsonObject,
-                                                       httpPrefix,
-                                                       projectVersion,
-                                                       likedBy,
-                                                       ytDomain,
-                                                       showPublishedDateOnly,
-                                                       peertubeInstances,
-                                                       allowLocalNetworkAccess,
-                                                       themeName)
-                                msg = msg.encode('utf-8')
-                                msglen = len(msg)
-                                self._set_headers('text/html', msglen,
-                                                  cookie, callingDomain)
-                                self._write(msg)
-                            else:
-                                if self._fetchAuthenticated():
-                                    msg = json.dumps(postJsonObject,
-                                                     ensure_ascii=False)
-                                    msg = msg.encode('utf-8')
-                                    msglen = len(msg)
-                                    self._set_headers('application/json',
-                                                      msglen,
-                                                      None, callingDomain)
-                                    self._write(msg)
-                                else:
-                                    self._404()
-                        self.server.GETbusy = False
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'new post done',
-                                                  'individual post shown')
-                        return True
-                    else:
-                        self._404()
-                        self.server.GETbusy = False
-                        return True
-        return False
+            if self._fetchAuthenticated():
+                msg = json.dumps(postJsonObject,
+                                 ensure_ascii=False)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/json',
+                                  msglen,
+                                  None, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+        self.server.GETbusy = False
+        return True
 
     def _showIndividualPost(self, authorized: bool,
                             callingDomain: str, path: str,
@@ -7802,108 +7827,51 @@ class PubServer(BaseHTTPRequestHandler):
         statusNumber = postSections[2]
         if len(statusNumber) <= 10 or (not statusNumber.isdigit()):
             return False
-        postFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + \
-            domain + '/outbox/' + \
-            httpPrefix + ':##' + \
-            domainFull + '#users#' + \
-            nickname + '#statuses#' + \
-            statusNumber + '.json'
-        if os.path.isfile(postFilename):
-            postJsonObject = loadJson(postFilename)
-            if not postJsonObject:
-                self.send_response(429)
-                self.end_headers()
-                self.server.GETbusy = False
-                return True
-            else:
-                # Only authorized viewers get to see likes
-                # on posts
-                # Otherwize marketers could gain more social
-                # graph info
-                if not authorized:
-                    pjo = postJsonObject
-                    if not isPublicPost(pjo):
-                        self._404()
-                        self.server.GETbusy = False
-                        return True
-                    removePostInteractions(pjo, True)
 
-                if self._requestHTTP():
-                    recentPostsCache = \
-                        self.server.recentPostsCache
-                    maxRecentPosts = \
-                        self.server.maxRecentPosts
-                    translate = \
-                        self.server.translate
-                    cachedWebfingers = \
-                        self.server.cachedWebfingers
-                    personCache = \
-                        self.server.personCache
-                    projectVersion = \
-                        self.server.projectVersion
-                    ytDomain = \
-                        self.server.YTReplacementDomain
-                    showPublishedDateOnly = \
-                        self.server.showPublishedDateOnly
-                    peertubeInstances = \
-                        self.server.peertubeInstances
-                    allowLocalNetworkAccess = \
-                        self.server.allowLocalNetworkAccess
-                    themeName = \
-                        self.server.themeName
-                    msg = \
-                        htmlIndividualPost(self.server.cssCache,
-                                           recentPostsCache,
-                                           maxRecentPosts,
-                                           translate,
-                                           baseDir,
-                                           self.server.session,
-                                           cachedWebfingers,
-                                           personCache,
-                                           nickname,
-                                           domain,
-                                           port,
-                                           authorized,
-                                           postJsonObject,
-                                           httpPrefix,
-                                           projectVersion,
-                                           likedBy,
-                                           ytDomain,
-                                           showPublishedDateOnly,
-                                           peertubeInstances,
-                                           allowLocalNetworkAccess,
-                                           themeName)
-                    msg = msg.encode('utf-8')
-                    msglen = len(msg)
-                    self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self._benchmarkGETtimings(GETstartTime,
-                                              GETtimings,
-                                              'show skills ' +
-                                              'done',
-                                              'show status')
-                else:
-                    if self._fetchAuthenticated():
-                        msg = json.dumps(postJsonObject,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
-                        msglen = len(msg)
-                        self._set_headers('application/json',
-                                          msglen,
-                                          None, callingDomain)
-                        self._write(msg)
-                    else:
-                        self._404()
-            self.server.GETbusy = False
-            return True
-        else:
-            self._404()
-            self.server.GETbusy = False
-            return True
-        return False
+        postFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
+            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
+            '#statuses#' + statusNumber + '.json'
+
+        return self._showPostFromFile(postFilename, likedBy,
+                                      authorized, callingDomain, path,
+                                      baseDir, httpPrefix, nickname,
+                                      domain, domainFull, port,
+                                      onionDomain, i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      proxyType, cookie, debug)
+
+    def _showNotifyPost(self, authorized: bool,
+                        callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str) -> bool:
+        """Shows an individual post from an account which you are following
+        and where you have the notify checkbox set on person options
+        """
+        likedBy = None
+        postId = path.split('?notifypost=')[1].strip()
+        postId = postId.replace('-', '/')
+        path = path.split('?notifypost=')[0]
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            return False
+        replies = False
+
+        postFilename = locatePost(baseDir, nickname, domain, postId, replies)
+        if not postFilename:
+            return False
+
+        return self._showPostFromFile(postFilename, likedBy,
+                                      authorized, callingDomain, path,
+                                      baseDir, httpPrefix, nickname,
+                                      domain, domainFull, port,
+                                      onionDomain, i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      proxyType, cookie, debug)
 
     def _showInbox(self, authorized: bool,
                    callingDomain: str, path: str,
@@ -12482,6 +12450,21 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'post roles done',
                                   'show skills done')
+
+        if '?notifypost=' in self.path and usersInPath and authorized:
+            if self._showNotifyPost(authorized,
+                                    callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    GETstartTime, GETtimings,
+                                    self.server.proxyType,
+                                    cookie, self.server.debug):
+                return
 
         # get an individual post from the path
         # /users/nickname/statuses/number

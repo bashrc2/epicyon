@@ -202,35 +202,35 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
     return False
 
 
-def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
+def switchWords(baseDir: str, nickname: str, domain: str, content: str,
+                rules: [] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
     if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
-    switchWordsFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/replacewords.txt'
-    if not os.path.isfile(switchWordsFilename):
-        return content
-    with open(switchWordsFilename, 'r') as fp:
-        for line in fp:
-            replaceStr = line.replace('\n', '').replace('\r', '')
-            wordTransform = None
-            if '->' in replaceStr:
-                wordTransform = replaceStr.split('->')
-            elif ':' in replaceStr:
-                wordTransform = replaceStr.split(':')
-            elif ',' in replaceStr:
-                wordTransform = replaceStr.split(',')
-            elif ';' in replaceStr:
-                wordTransform = replaceStr.split(';')
-            elif '-' in replaceStr:
-                wordTransform = replaceStr.split('-')
-            if not wordTransform:
-                continue
-            if len(wordTransform) == 2:
-                replaceStr1 = wordTransform[0].strip().replace('"', '')
-                replaceStr2 = wordTransform[1].strip().replace('"', '')
-                content = content.replace(replaceStr1, replaceStr2)
+
+    if not rules:
+        switchWordsFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/replacewords.txt'
+        if not os.path.isfile(switchWordsFilename):
+            return content
+        with open(switchWordsFilename, 'r') as fp:
+            rules = fp.readlines()
+
+    for line in rules:
+        replaceStr = line.replace('\n', '').replace('\r', '')
+        splitters = ('->', ':', ',', ';', '-')
+        wordTransform = None
+        for splitStr in splitters:
+            if splitStr in replaceStr:
+                wordTransform = replaceStr.split(splitStr)
+                break
+        if not wordTransform:
+            continue
+        if len(wordTransform) == 2:
+            replaceStr1 = wordTransform[0].strip().replace('"', '')
+            replaceStr2 = wordTransform[1].strip().replace('"', '')
+            content = content.replace(replaceStr1, replaceStr2)
     return content
 
 

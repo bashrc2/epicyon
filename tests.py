@@ -94,6 +94,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import switchWords
 from content import extractTextFieldsInPOST
 from content import validHashTag
 from content import htmlReplaceEmailQuote
@@ -3384,62 +3385,6 @@ def _testFunctions():
     _diagramGroups(['Core', 'Accessibility'], ['utils'],
                    modules, modGroups, maxModuleCalls)
 
-    callGraphStr = 'digraph Epicyon {\n\n'
-    callGraphStr += '  size="8,6"; ratio=fill;\n'
-    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
-    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
-
-    for modName, modProperties in modules.items():
-        callGraphStr += '  subgraph cluster_' + modName + ' {\n'
-        callGraphStr += '    label = "' + modName + '";\n'
-        callGraphStr += '    node [style=filled];\n'
-        moduleFunctionsStr = ''
-        for name in modProperties['functions']:
-            if name.startswith('test'):
-                continue
-            if name not in excludeFuncs:
-                if not functionProperties[name]['calls']:
-                    moduleFunctionsStr += \
-                        '  "' + name + '" [fillcolor=yellow style=filled];\n'
-                    continue
-                noOfCalls = len(functionProperties[name]['calls'])
-                if noOfCalls < int(maxFunctionCalls / 4):
-                    moduleFunctionsStr += '  "' + name + \
-                        '" [fillcolor=orange style=filled];\n'
-                else:
-                    moduleFunctionsStr += '  "' + name + \
-                        '" [fillcolor=red style=filled];\n'
-
-        if moduleFunctionsStr:
-            callGraphStr += moduleFunctionsStr + '\n'
-        callGraphStr += '    color=blue;\n'
-        callGraphStr += '  }\n\n'
-
-    for name, properties in functionProperties.items():
-        if not properties['calls']:
-            continue
-        noOfCalls = len(properties['calls'])
-        if noOfCalls <= int(maxFunctionCalls / 8):
-            modColor = 'blue'
-        elif noOfCalls < int(maxFunctionCalls / 4):
-            modColor = 'green'
-        else:
-            modColor = 'red'
-        for calledFunc in properties['calls']:
-            if calledFunc.startswith('test'):
-                continue
-            if calledFunc not in excludeFuncs:
-                callGraphStr += '  "' + name + '" -> "' + calledFunc + \
-                    '" [color=' + modColor + '];\n'
-
-    callGraphStr += '\n}\n'
-    with open('epicyon.dot', 'w+') as fp:
-        fp.write(callGraphStr)
-        print('Call graph saved to epicyon.dot')
-        print('Plot using: ' +
-              'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
-              '-Gsep=+120 -Tx11 epicyon.dot')
-
 
 def _testLinksWithinPost() -> None:
     baseDir = os.getcwd()
@@ -4173,9 +4118,33 @@ def _testUserAgentDomain() -> None:
     assert userAgentDomain(userAgent, False) is None
 
 
+def _testSwitchWords() -> None:
+    print('testSwitchWords')
+    rules = [
+        "rock -> hamster",
+        "orange -> lemon"
+    ]
+    baseDir = os.getcwd()
+    nickname = 'testuser'
+    domain = 'testdomain.com'
+
+    content = 'This is a test'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == content
+
+    content = 'This is orange test'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == 'This is lemon test'
+
+    content = 'This is a test rock'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == 'This is a test hamster'
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testSwitchWords()
     _testFunctions()
     _testUserAgentDomain()
     _testRoles()

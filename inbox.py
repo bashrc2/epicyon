@@ -86,6 +86,7 @@ from categories import guessHashtagCategory
 from context import hasValidContext
 from speaker import updateSpeaker
 from announce import isSelfAnnounce
+from notifyOnPost import notifyWhenPersonPosts
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1850,6 +1851,25 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
             pass
 
 
+def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
+    """Creates a notification that a new post has arrived.
+    This is for followed accounts with the notify checkbox enabled
+    on the person options screen
+    """
+    accountDir = baseDir + '/accounts/' + handle
+    if not os.path.isdir(accountDir):
+        return
+    notifyFile = accountDir + '/.newNotifiedPost'
+    if os.path.isfile(notifyFile):
+        # check that the same notification is not repeatedly sent
+        with open(notifyFile, 'r') as fp:
+            existingNotificationMessage = fp.read()
+            if url in existingNotificationMessage:
+                return
+    with open(notifyFile, 'w+') as fp:
+        fp.write(url)
+
+
 def _replyNotify(baseDir: str, handle: str, url: str) -> None:
     """Creates a notification that a new reply has arrived
     """
@@ -2275,6 +2295,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     _updateLastSeen(baseDir, handle, actor)
 
+    postIsDM = False
     isGroup = _groupHandle(baseDir, handle)
 
     if _receiveLike(recentPostsCache,
@@ -2392,6 +2413,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         postJsonObject = messageJson
 
     nickname = handle.split('@')[0]
+    jsonObj = None
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
                          allowLocalNetworkAccess, debug):
@@ -2473,8 +2495,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             # get the actor being replied to
             domainFull = getFullDomain(domain, port)
-            actor = httpPrefix + '://' + domainFull + \
-                '/users/' + handle.split('@')[0]
+            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
 
             # create a reply notification file if needed
             if not postIsDM and isReply(postJsonObject, actor):
@@ -2512,6 +2533,26 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
+            # should we notify that a post from this person has arrived?
+            # This is for cases where the notify checkbox is enabled
+            # on the person options screen
+            if not postIsDM and jsonObj:
+                if jsonObj.get('attributedTo') and jsonObj.get('id'):
+                    attributedTo = jsonObj['attributedTo']
+                    if isinstance(attributedTo, str):
+                        fromNickname = getNicknameFromActor(attributedTo)
+                        fromDomain, fromPort = getDomainFromActor(attributedTo)
+                        fromDomainFull = getFullDomain(fromDomain, fromPort)
+                        if notifyWhenPersonPosts(baseDir, nickname, domain,
+                                                 fromNickname, fromDomainFull):
+                            postId = removeIdEnding(jsonObj['id'])
+                            postLink = \
+                                httpPrefix + '://' + \
+                                getFullDomain(domain, port) + \
+                                '/users/' + nickname + \
+                                '?notifypost=' + postId.replace('/', '-')
+                            _notifyPostArrival(baseDir, handle, postLink)
+
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
             if isReplyToMutedPost:
