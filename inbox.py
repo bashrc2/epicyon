@@ -2533,15 +2533,18 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
             # should we notify that a post from this person has arrived?
-            if not postIsDM:
-                fromNickname = getNicknameFromActor(postJsonObject['actor'])
-                fromDomain, fromPort = \
-                    getDomainFromActor(postJsonObject['actor'])
-                fromDomainFull = getFullDomain(fromDomain, fromPort)
-                if notifyWhenPersonPosts(baseDir, nickname, domain,
-                                         fromNickname, fromDomainFull):
-                    postId = removeIdEnding(postJsonObject['id'])
-                    _notifyPostArrival(baseDir, handle, postId)
+            # This is for cases where the notify checkbox is enabled
+            # on the person options screen
+            if not postIsDM and postJsonObject.get('attributedTo'):
+                attributedTo = postJsonObject['attributedTo']
+                if isinstance(attributedTo, str):
+                    fromNickname = getNicknameFromActor(attributedTo)
+                    fromDomain, fromPort = getDomainFromActor(attributedTo)
+                    fromDomainFull = getFullDomain(fromDomain, fromPort)
+                    if notifyWhenPersonPosts(baseDir, nickname, domain,
+                                             fromNickname, fromDomainFull):
+                        postId = removeIdEnding(postJsonObject['id'])
+                        _notifyPostArrival(baseDir, handle, postId)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
