@@ -2546,7 +2546,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         if notifyWhenPersonPosts(baseDir, nickname, domain,
                                                  fromNickname, fromDomainFull):
                             postId = removeIdEnding(jsonObj['id'])
-                            _notifyPostArrival(baseDir, handle, postId)
+                            postLink = \
+                                httpPrefix + '://' + \
+                                getFullDomain(domain, port) + \
+                                '/users/' + nickname + \
+                                '?notifypost=' + postId.replace('/', '-')
+                            _notifyPostArrival(baseDir, handle, postLink)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring

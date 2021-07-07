@@ -7841,6 +7841,38 @@ class PubServer(BaseHTTPRequestHandler):
                                       GETstartTime, GETtimings,
                                       proxyType, cookie, debug)
 
+    def _showNotifyPost(self, authorized: bool,
+                        callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str) -> bool:
+        """Shows an individual post from an account which you are following
+        and where you have the notify checkbox set on person options
+        """
+        likedBy = None
+        postId = path.split('?notifypost=')[1].strip()
+        postId = postId.replace('-', '/')
+        path = path.split('?notifypost=')[0]
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            return False
+        replies = False
+
+        postFilename = locatePost(baseDir, nickname, domain, postId, replies)
+        if not postFilename:
+            return False
+
+        return self._showPostFromFile(postFilename, likedBy,
+                                      authorized, callingDomain, path,
+                                      baseDir, httpPrefix, nickname,
+                                      domain, domainFull, port,
+                                      onionDomain, i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      proxyType, cookie, debug)
+
     def _showInbox(self, authorized: bool,
                    callingDomain: str, path: str,
                    baseDir: str, httpPrefix: str,
@@ -12418,6 +12450,21 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'post roles done',
                                   'show skills done')
+
+        if '?notifypost=' in self.path and usersInPath and authorized:
+            if self._showNotifyPost(authorized,
+                                    callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    GETstartTime, GETtimings,
+                                    self.server.proxyType,
+                                    cookie, self.server.debug):
+                return
 
         # get an individual post from the path
         # /users/nickname/statuses/number
