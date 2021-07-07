@@ -1852,7 +1852,9 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
 
 
 def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
-    """Creates a notification that a new post has arrived
+    """Creates a notification that a new post has arrived.
+    This is for followed accounts with the notify checkbox enabled
+    on the person options screen
     """
     accountDir = baseDir + '/accounts/' + handle
     if not os.path.isdir(accountDir):
