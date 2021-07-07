@@ -7700,111 +7700,85 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' not in namedStatus:
             # show actor
             nickname = namedStatus
+            return False
+
+        postSections = namedStatus.split('/')
+        if len(postSections) != 2:
+            return False
+        nickname = postSections[0]
+        statusNumber = postSections[1]
+        if len(statusNumber) <= 10 or not statusNumber.isdigit():
+            return False
+
+        postFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
+            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
+            '#statuses#' + statusNumber + '.json'
+        if not os.path.isfile(postFilename):
+            self._404()
+            self.server.GETbusy = False
+            return True
+
+        postJsonObject = loadJson(postFilename)
+        loadedPost = False
+        if postJsonObject:
+            loadedPost = True
         else:
-            postSections = namedStatus.split('/')
-            if len(postSections) == 2:
-                nickname = postSections[0]
-                statusNumber = postSections[1]
-                if len(statusNumber) > 10 and statusNumber.isdigit():
-                    postFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + \
-                        domain + '/outbox/' + \
-                        httpPrefix + ':##' + \
-                        domainFull + '#users#' + \
-                        nickname + '#statuses#' + \
-                        statusNumber + '.json'
-                    if os.path.isfile(postFilename):
-                        postJsonObject = loadJson(postFilename)
-                        loadedPost = False
-                        if postJsonObject:
-                            loadedPost = True
-                        else:
-                            postJsonObject = {}
-                        if loadedPost:
-                            # Only authorized viewers get to see likes
-                            # on posts. Otherwize marketers could gain
-                            # more social graph info
-                            if not authorized:
-                                pjo = postJsonObject
-                                if not isPublicPost(pjo):
-                                    self._404()
-                                    self.server.GETbusy = False
-                                    return True
-                                removePostInteractions(pjo, True)
-                            if self._requestHTTP():
-                                recentPostsCache = \
-                                    self.server.recentPostsCache
-                                maxRecentPosts = \
-                                    self.server.maxRecentPosts
-                                translate = \
-                                    self.server.translate
-                                cachedWebfingers = \
-                                    self.server.cachedWebfingers
-                                personCache = \
-                                    self.server.personCache
-                                projectVersion = \
-                                    self.server.projectVersion
-                                ytDomain = \
-                                    self.server.YTReplacementDomain
-                                showPublishedDateOnly = \
-                                    self.server.showPublishedDateOnly
-                                peertubeInstances = \
-                                    self.server.peertubeInstances
-                                cssCache = self.server.cssCache
-                                allowLocalNetworkAccess = \
-                                    self.server.allowLocalNetworkAccess
-                                themeName = \
-                                    self.server.themeName
-                                msg = \
-                                    htmlIndividualPost(cssCache,
-                                                       recentPostsCache,
-                                                       maxRecentPosts,
-                                                       translate,
-                                                       self.server.baseDir,
-                                                       self.server.session,
-                                                       cachedWebfingers,
-                                                       personCache,
-                                                       nickname,
-                                                       domain,
-                                                       port,
-                                                       authorized,
-                                                       postJsonObject,
-                                                       httpPrefix,
-                                                       projectVersion,
-                                                       likedBy,
-                                                       ytDomain,
-                                                       showPublishedDateOnly,
-                                                       peertubeInstances,
-                                                       allowLocalNetworkAccess,
-                                                       themeName)
-                                msg = msg.encode('utf-8')
-                                msglen = len(msg)
-                                self._set_headers('text/html', msglen,
-                                                  cookie, callingDomain)
-                                self._write(msg)
-                            else:
-                                if self._fetchAuthenticated():
-                                    msg = json.dumps(postJsonObject,
-                                                     ensure_ascii=False)
-                                    msg = msg.encode('utf-8')
-                                    msglen = len(msg)
-                                    self._set_headers('application/json',
-                                                      msglen,
-                                                      None, callingDomain)
-                                    self._write(msg)
-                                else:
-                                    self._404()
-                        self.server.GETbusy = False
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'new post done',
-                                                  'individual post shown')
-                        return True
-                    else:
-                        self._404()
-                        self.server.GETbusy = False
-                        return True
-        return False
+            postJsonObject = {}
+        if loadedPost:
+            # Only authorized viewers get to see likes
+            # on posts. Otherwize marketers could gain
+            # more social graph info
+            if not authorized:
+                pjo = postJsonObject
+                if not isPublicPost(pjo):
+                    self._404()
+                    self.server.GETbusy = False
+                    return True
+                removePostInteractions(pjo, True)
+            if self._requestHTTP():
+                msg = \
+                    htmlIndividualPost(self.server.cssCache,
+                                       self.server.recentPostsCache,
+                                       self.server.maxRecentPosts,
+                                       self.server.translate,
+                                       self.server.baseDir,
+                                       self.server.session,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       nickname, domain, port,
+                                       authorized,
+                                       postJsonObject,
+                                       httpPrefix,
+                                       self.server.projectVersion,
+                                       likedBy,
+                                       self.server.YTReplacementDomain,
+                                       self.server.showPublishedDateOnly,
+                                       self.server.peertubeInstances,
+                                       self.server.allowLocalNetworkAccess,
+                                       self.server.themeName)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(postJsonObject,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json',
+                                      msglen,
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'new post done',
+                                  'individual post shown')
+        return True
 
     def _showIndividualPost(self, authorized: bool,
                             callingDomain: str, path: str,
