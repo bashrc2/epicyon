@@ -3235,16 +3235,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         mediaFilenameBase = accountsDir + '/upload'
         mediaFilename = mediaFilenameBase + '.png'
-        if self.headers['Content-type'].endswith('jpeg'):
-            mediaFilename = mediaFilenameBase + '.jpg'
-        if self.headers['Content-type'].endswith('gif'):
-            mediaFilename = mediaFilenameBase + '.gif'
-        if self.headers['Content-type'].endswith('svg+xml'):
-            mediaFilename = mediaFilenameBase + '.svg'
-        if self.headers['Content-type'].endswith('webp'):
-            mediaFilename = mediaFilenameBase + '.webp'
-        if self.headers['Content-type'].endswith('avif'):
-            mediaFilename = mediaFilenameBase + '.avif'
+        imageMedia = {
+            'jpeg': 'jpg',
+            'gif': 'gif',
+            'svg+xml': 'svg',
+            'webp': 'webp',
+            'avif': 'avif'
+        }
+        for mimeExt, ext in imageMedia:
+            if self.headers['Content-type'].endswith(mimeExt):
+                mediaFilename = mediaFilenameBase + '.' + ext
         with open(mediaFilename, 'wb') as avFile:
             avFile.write(mediaBytes)
         if debug:
