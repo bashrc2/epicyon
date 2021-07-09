@@ -208,6 +208,8 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getImageExtensionFromMimeType
+from utils import getImageMimeType
 from utils import hasObjectDict
 from utils import userAgentDomain
 from utils import isLocalNetworkAddress
@@ -3234,18 +3236,9 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         mediaFilenameBase = accountsDir + '/upload'
-        mediaFilename = mediaFilenameBase + '.png'
-        imageMedia = {
-            'jpeg': 'jpg',
-            'gif': 'gif',
-            'svg+xml': 'svg',
-            'webp': 'webp',
-            'avif': 'avif'
-        }
-        for mimeExt, ext in imageMedia.items():
-            if self.headers['Content-type'].endswith(mimeExt):
-                mediaFilename = mediaFilenameBase + '.' + ext
-                break
+        mediaFilename = \
+            mediaFilenameBase + '.' + \
+            getImageExtensionFromMimeType(self.headers['Content-type'])
         with open(mediaFilename, 'wb') as avFile:
             avFile.write(mediaBytes)
         if debug:
@@ -6004,23 +5997,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._304()
                     return
 
-                mediaImageType = 'png'
-                if emojiFilename.endswith('.png'):
-                    mediaImageType = 'png'
-                elif emojiFilename.endswith('.jpg'):
-                    mediaImageType = 'jpeg'
-                elif emojiFilename.endswith('.webp'):
-                    mediaImageType = 'webp'
-                elif emojiFilename.endswith('.avif'):
-                    mediaImageType = 'avif'
-                elif emojiFilename.endswith('.svg'):
-                    mediaImageType = 'svg+xml'
-                else:
-                    mediaImageType = 'gif'
+                mediaImageType = getImageMimeType(emojiFilename)
                 with open(emojiFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self._set_headers_etag(emojiFilename,
-                                           'image/' + mediaImageType,
+                                           mediaImageType,
                                            mediaBinary, None,
                                            self.server.domainFull)
                     self._write(mediaBinary)
@@ -10059,23 +10040,11 @@ class PubServer(BaseHTTPRequestHandler):
             self._304()
             return True
 
-        mediaFileType = 'png'
-        if mediaFilename.endswith('.png'):
-            mediaFileType = 'png'
-        elif mediaFilename.endswith('.jpg'):
-            mediaFileType = 'jpeg'
-        elif mediaFilename.endswith('.webp'):
-            mediaFileType = 'webp'
-        elif mediaFilename.endswith('.avif'):
-            mediaFileType = 'avif'
-        elif mediaFilename.endswith('.svg'):
-            mediaFileType = 'svg+xml'
-        else:
-            mediaFileType = 'gif'
+        mediaFileType = getImageMimeType(mediaFilename)
         with open(mediaFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
             self._set_headers_etag(mediaFilename,
-                                   'image/' + mediaFileType,
+                                   mediaFileType,
                                    mediaBinary, None,
                                    self.server.domainFull)
             self._write(mediaBinary)
@@ -10128,18 +10097,7 @@ class PubServer(BaseHTTPRequestHandler):
             # The file has not changed
             self._304()
             return True
-        mediaImageType = 'image/png'
-        extensionsToMime = {
-            'jpg': 'jpeg',
-            'gif': 'gif',
-            'avif': 'avif',
-            'svg': 'svg+xml',
-            'webp': 'webp'
-        }
-        for ext, mimeExt in extensionsToMime.items():
-            if avatarFile.endswith('.' + ext):
-                mediaImageType = 'image/' + mimeExt
-                break
+        mediaImageType = getImageMimeType(avatarFile)
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
             self._set_headers_etag(avatarFilename,
