@@ -10128,7 +10128,7 @@ class PubServer(BaseHTTPRequestHandler):
             # The file has not changed
             self._304()
             return True
-        mediaImageType = 'png'
+        mediaImageType = 'image/png'
         extensionsToMime = {
             'jpg': 'jpeg',
             'gif': 'gif',
@@ -10138,12 +10138,12 @@ class PubServer(BaseHTTPRequestHandler):
         }
         for ext, mimeExt in extensionsToMime.items():
             if avatarFile.endswith('.' + ext):
-                mediaImageType = mimeExt
+                mediaImageType = 'image/' + mimeExt
                 break
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
             self._set_headers_etag(avatarFilename,
-                                   'image/' + mediaImageType,
+                                   mediaImageType,
                                    mediaBinary, None,
                                    self.server.domainFull)
             self._write(mediaBinary)
