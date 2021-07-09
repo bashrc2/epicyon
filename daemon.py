@@ -3242,9 +3242,10 @@ class PubServer(BaseHTTPRequestHandler):
             'webp': 'webp',
             'avif': 'avif'
         }
-        for mimeExt, ext in imageMedia:
+        for mimeExt, ext in imageMedia.items():
             if self.headers['Content-type'].endswith(mimeExt):
                 mediaFilename = mediaFilenameBase + '.' + ext
+                break
         with open(mediaFilename, 'wb') as avFile:
             avFile.write(mediaBytes)
         if debug:
@@ -10128,18 +10129,17 @@ class PubServer(BaseHTTPRequestHandler):
             self._304()
             return True
         mediaImageType = 'png'
-        if avatarFile.endswith('.png'):
-            mediaImageType = 'png'
-        elif avatarFile.endswith('.jpg'):
-            mediaImageType = 'jpeg'
-        elif avatarFile.endswith('.gif'):
-            mediaImageType = 'gif'
-        elif avatarFile.endswith('.avif'):
-            mediaImageType = 'avif'
-        elif avatarFile.endswith('.svg'):
-            mediaImageType = 'svg+xml'
-        else:
-            mediaImageType = 'webp'
+        extensionsToMime = {
+            'jpg': 'jpeg',
+            'gif': 'gif',
+            'avif': 'avif',
+            'svg': 'svg+xml',
+            'webp': 'webp'
+        }
+        for ext, mimeExt in extensionsToMime.items():
+            if avatarFile.endswith('.' + ext):
+                mediaImageType = mimeExt
+                break
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
             self._set_headers_etag(avatarFilename,
