@@ -208,6 +208,8 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getImageExtensionFromMimeType
+from utils import getImageMimeType
 from utils import hasObjectDict
 from utils import userAgentDomain
 from utils import isLocalNetworkAddress
@@ -733,10 +735,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
-        # self.send_header('X-Robots-Tag',
-        #                  'noindex, nofollow, noarchive, nosnippet')
-        # self.send_header('Cache-Control', 'public')
-        # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str,
@@ -756,10 +754,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         msgLenStr = str(len(msg))
         self.send_header('Content-Length', msgLenStr)
-        # self.send_header('X-Robots-Tag',
-        #                  'noindex, nofollow, noarchive, nosnippet')
-        # self.send_header('Cache-Control', 'public')
-        # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
         if not self._write(msg):
             print('Error when showing ' + str(httpCode))
@@ -3242,17 +3236,9 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         mediaFilenameBase = accountsDir + '/upload'
-        mediaFilename = mediaFilenameBase + '.png'
-        if self.headers['Content-type'].endswith('jpeg'):
-            mediaFilename = mediaFilenameBase + '.jpg'
-        if self.headers['Content-type'].endswith('gif'):
-            mediaFilename = mediaFilenameBase + '.gif'
-        if self.headers['Content-type'].endswith('svg+xml'):
-            mediaFilename = mediaFilenameBase + '.svg'
-        if self.headers['Content-type'].endswith('webp'):
-            mediaFilename = mediaFilenameBase + '.webp'
-        if self.headers['Content-type'].endswith('avif'):
-            mediaFilename = mediaFilenameBase + '.avif'
+        mediaFilename = \
+            mediaFilenameBase + '.' + \
+            getImageExtensionFromMimeType(self.headers['Content-type'])
         with open(mediaFilename, 'wb') as avFile:
             avFile.write(mediaBytes)
         if debug:
@@ -6011,23 +5997,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._304()
                     return
 
-                mediaImageType = 'png'
-                if emojiFilename.endswith('.png'):
-                    mediaImageType = 'png'
-                elif emojiFilename.endswith('.jpg'):
-                    mediaImageType = 'jpeg'
-                elif emojiFilename.endswith('.webp'):
-                    mediaImageType = 'webp'
-                elif emojiFilename.endswith('.avif'):
-                    mediaImageType = 'avif'
-                elif emojiFilename.endswith('.svg'):
-                    mediaImageType = 'svg+xml'
-                else:
-                    mediaImageType = 'gif'
+                mediaImageType = getImageMimeType(emojiFilename)
                 with open(emojiFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self._set_headers_etag(emojiFilename,
-                                           'image/' + mediaImageType,
+                                           mediaImageType,
                                            mediaBinary, None,
                                            self.server.domainFull)
                     self._write(mediaBinary)
@@ -6090,11 +6064,7 @@ class PubServer(BaseHTTPRequestHandler):
                              GETstartTime, GETtimings: {}) -> None:
         """Shows a help screen image
         """
-        if not path.endswith('.jpg') and \
-           not path.endswith('.png') and \
-           not path.endswith('.webp') and \
-           not path.endswith('.avif') and \
-           not path.endswith('.gif'):
+        if not isImageFile(path):
             return
         mediaStr = path.split('/helpimages/')[1]
         if '/' not in mediaStr:
@@ -10070,23 +10040,11 @@ class PubServer(BaseHTTPRequestHandler):
             self._304()
             return True
 
-        mediaFileType = 'png'
-        if mediaFilename.endswith('.png'):
-            mediaFileType = 'png'
-        elif mediaFilename.endswith('.jpg'):
-            mediaFileType = 'jpeg'
-        elif mediaFilename.endswith('.webp'):
-            mediaFileType = 'webp'
-        elif mediaFilename.endswith('.avif'):
-            mediaFileType = 'avif'
-        elif mediaFilename.endswith('.svg'):
-            mediaFileType = 'svg+xml'
-        else:
-            mediaFileType = 'gif'
+        mediaFileType = getImageMimeType(mediaFilename)
         with open(mediaFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
             self._set_headers_etag(mediaFilename,
-                                   'image/' + mediaFileType,
+                                   mediaFileType,
                                    mediaBinary, None,
                                    self.server.domainFull)
             self._write(mediaBinary)
@@ -10139,23 +10097,11 @@ class PubServer(BaseHTTPRequestHandler):
             # The file has not changed
             self._304()
             return True
-        mediaImageType = 'png'
-        if avatarFile.endswith('.png'):
-            mediaImageType = 'png'
-        elif avatarFile.endswith('.jpg'):
-            mediaImageType = 'jpeg'
-        elif avatarFile.endswith('.gif'):
-            mediaImageType = 'gif'
-        elif avatarFile.endswith('.avif'):
-            mediaImageType = 'avif'
-        elif avatarFile.endswith('.svg'):
-            mediaImageType = 'svg+xml'
-        else:
-            mediaImageType = 'webp'
+        mediaImageType = getImageMimeType(avatarFile)
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
             self._set_headers_etag(avatarFilename,
-                                   'image/' + mediaImageType,
+                                   mediaImageType,
                                    mediaBinary, None,
                                    self.server.domainFull)
             self._write(mediaBinary)
@@ -11397,14 +11343,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show screenshot done')
 
         # image on login screen or qrcode
-        if self.path == '/login.png' or \
-           self.path == '/login.gif' or \
-           self.path == '/login.svg' or \
-           self.path == '/login.webp' or \
-           self.path == '/login.avif' or \
-           self.path == '/login.jpeg' or \
-           self.path == '/login.jpg' or \
-           self.path == '/qrcode.png':
+        if (isImageFile(self.path) and
+            (self.path.startswith('/login.') or
+             self.path.startswith('/qrcode.png'))):
             iconFilename = \
                 self.server.baseDir + '/accounts' + self.path
             if os.path.isfile(iconFilename):

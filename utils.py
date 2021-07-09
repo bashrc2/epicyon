@@ -238,6 +238,40 @@ def getImageExtensions() -> []:
     return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg')
 
 
+def getImageMimeType(imageFilename: str) -> str:
+    """Returns the mime type for the given image
+    """
+    extensionsToMime = {
+        'png': 'png',
+        'jpg': 'jpeg',
+        'gif': 'gif',
+        'avif': 'avif',
+        'svg': 'svg+xml',
+        'webp': 'webp'
+    }
+    for ext, mimeExt in extensionsToMime.items():
+        if imageFilename.endswith('.' + ext):
+            return 'image/' + mimeExt
+    return 'image/png'
+
+
+def getImageExtensionFromMimeType(contentType: str) -> str:
+    """Returns the image extension from a mime type, such as image/jpeg
+    """
+    imageMedia = {
+        'png': 'png',
+        'jpeg': 'jpg',
+        'gif': 'gif',
+        'svg+xml': 'svg',
+        'webp': 'webp',
+        'avif': 'avif'
+    }
+    for mimeExt, ext in imageMedia.items():
+        if contentType.endswith(mimeExt):
+            return ext
+    return 'png'
+
+
 def getVideoExtensions() -> []:
     """Returns a list of the possible video file extensions
     """
