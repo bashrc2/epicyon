@@ -692,29 +692,40 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
             if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
                    postJsonObject2['object'].get('content'):
-                    actor = postJsonObject2['object']['attributedTo']
-                    nameStr += ' ' + translate['announces'] + ' ' + \
-                        getNicknameFromActor(actor)
-                    sayStr = nameStr
-                    _sayCommand(sayStr, sayStr, screenreader,
-                                systemLanguage, espeak)
-                    print('')
-                    if screenreader:
-                        time.sleep(2)
-                    content = \
-                        _textOnlyContent(postJsonObject2['object']['content'])
-                    content += _getImageDescription(postJsonObject2)
-                    messageStr, detectedLinks = \
-                        speakableText(baseDir, content, translate)
-                    sayStr = content
-                    _sayCommand(sayStr, messageStr, screenreader,
-                                systemLanguage, espeak)
-                    return postJsonObject2
+                    attributedTo = postJsonObject2['object']['attributedTo']
+                    content = postJsonObject2['object']['content']
+                    if isinstance(attributedTo, str) and \
+                       isinstance(content, str):
+                        actor = attributedTo
+                        nameStr += ' ' + translate['announces'] + ' ' + \
+                            getNicknameFromActor(actor)
+                        sayStr = nameStr
+                        _sayCommand(sayStr, sayStr, screenreader,
+                                    systemLanguage, espeak)
+                        print('')
+                        if screenreader:
+                            time.sleep(2)
+                        content = \
+                            _textOnlyContent(content)
+                        content += _getImageDescription(postJsonObject2)
+                        messageStr, detectedLinks = \
+                            speakableText(baseDir, content, translate)
+                        sayStr = content
+                        _sayCommand(sayStr, messageStr, screenreader,
+                                    systemLanguage, espeak)
+                        return postJsonObject2
         return {}
 
-    actor = postJsonObject['object']['attributedTo']
+    attributedTo = postJsonObject['object']['attributedTo']
+    if not attributedTo:
+        return {}
+    content = postJsonObject['object']['content']
+    if not isinstance(attributedTo, str) or \
+       not isinstance(content, str):
+        return {}
+    actor = attributedTo
     nameStr = getNicknameFromActor(actor)
-    content = _textOnlyContent(postJsonObject['object']['content'])
+    content = _textOnlyContent(content)
     content += _getImageDescription(postJsonObject)
 
     if isPGPEncrypted(content):

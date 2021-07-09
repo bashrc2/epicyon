@@ -733,10 +733,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
-        # self.send_header('X-Robots-Tag',
-        #                  'noindex, nofollow, noarchive, nosnippet')
-        # self.send_header('Cache-Control', 'public')
-        # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str,
@@ -756,10 +752,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         msgLenStr = str(len(msg))
         self.send_header('Content-Length', msgLenStr)
-        # self.send_header('X-Robots-Tag',
-        #                  'noindex, nofollow, noarchive, nosnippet')
-        # self.send_header('Cache-Control', 'public')
-        # self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
         if not self._write(msg):
             print('Error when showing ' + str(httpCode))
