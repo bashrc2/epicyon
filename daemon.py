@@ -6082,11 +6082,7 @@ class PubServer(BaseHTTPRequestHandler):
                              GETstartTime, GETtimings: {}) -> None:
         """Shows a help screen image
         """
-        if not path.endswith('.jpg') and \
-           not path.endswith('.png') and \
-           not path.endswith('.webp') and \
-           not path.endswith('.avif') and \
-           not path.endswith('.gif'):
+        if not isImageFile(path):
             return
         mediaStr = path.split('/helpimages/')[1]
         if '/' not in mediaStr:
@@ -11389,14 +11385,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show screenshot done')
 
         # image on login screen or qrcode
-        if self.path == '/login.png' or \
-           self.path == '/login.gif' or \
-           self.path == '/login.svg' or \
-           self.path == '/login.webp' or \
-           self.path == '/login.avif' or \
-           self.path == '/login.jpeg' or \
-           self.path == '/login.jpg' or \
-           self.path == '/qrcode.png':
+        if (isImageFile(self.path) and
+            (self.path.startswith('/login.') or
+             self.path.startswith('/qrcode.png'))):
             iconFilename = \
                 self.server.baseDir + '/accounts' + self.path
             if os.path.isfile(iconFilename):
