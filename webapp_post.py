@@ -45,6 +45,7 @@ from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isEventPost
+from content import limitRepeatedWords
 from content import replaceEmojiFromTags
 from content import htmlReplaceQuoteMarks
 from content import htmlReplaceEmailQuote
@@ -1601,6 +1602,7 @@ def individualPostAsHtml(allowDownloads: bool,
             objectContent = \
                 removeLongWords(postJsonObject['object']['content'], 40, [])
             objectContent = removeTextFormatting(objectContent)
+            objectContent = limitRepeatedWords(objectContent, 6)
             objectContent = \
                 switchWords(baseDir, nickname, domain, objectContent)
             objectContent = htmlReplaceEmailQuote(objectContent)
