@@ -866,6 +866,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     content = addWebLinks(content)
     if longWordsList:
         content = removeLongWords(content, maxWordLength, longWordsList)
+    content = limitRepeatedWords(content, 6)
     content = content.replace(' --linebreak-- ', '</p><p>')
     content = htmlReplaceEmailQuote(content)
     return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
@@ -1053,3 +1054,35 @@ def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
                 postValue += postLines[line]
         fields[postKey] = urllib.parse.unquote(postValue)
     return fields
+
+
+def limitRepeatedWords(text: str, maxRepeats: int) -> str:
+    """Removes words which are repeated many times
+    """
+    words = text.replace('\n', ' ').split(' ')
+    repeatCtr = 0
+    repeatedText = ''
+    replacements = {}
+    prevWord = ''
+    for word in words:
+        if word == prevWord:
+            repeatCtr += 1
+            if repeatedText:
+                repeatedText += ' ' + word
+            else:
+                repeatedText = word + ' ' + word
+        else:
+            if repeatCtr > maxRepeats:
+                newText = ((prevWord + ' ') * maxRepeats).strip()
+                replacements[prevWord] = [repeatedText, newText]
+            repeatCtr = 0
+            repeatedText = ''
+        prevWord = word
+
+    if repeatCtr > maxRepeats:
+        newText = ((prevWord + ' ') * maxRepeats).strip()
+        replacements[prevWord] = [repeatedText, newText]
+
+    for word, item in replacements.items():
+        text = text.replace(item[0], item[1])
+    return text

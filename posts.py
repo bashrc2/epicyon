@@ -61,6 +61,7 @@ from utils import removeHtml
 from utils import dangerousMarkup
 from media import attachMedia
 from media import replaceYouTube
+from content import limitRepeatedWords
 from content import tagExists
 from content import removeLongWords
 from content import addHtmlTags
@@ -4030,6 +4031,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
 
         # remove any long words
         contentStr = removeLongWords(contentStr, 40, [])
+
+        # Prevent the same word from being repeated many times
+        contentStr = limitRepeatedWords(contentStr, 6)
 
         # remove text formatting, such as bold/italics
         contentStr = removeTextFormatting(contentStr)

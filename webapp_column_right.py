@@ -10,6 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 from datetime import datetime
 from content import removeLongWords
+from content import limitRepeatedWords
 from utils import removeHtml
 from utils import locatePost
 from utils import loadJson
@@ -265,6 +266,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     _votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            title = limitRepeatedWords(title, 6)
             htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
@@ -293,6 +295,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                         _votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            title = limitRepeatedWords(title, 6)
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + url + '" target="_blank" ' + \
@@ -417,6 +420,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            title = limitRepeatedWords(title, 6)
             link = item[1]
 
             citationValue = \

@@ -94,6 +94,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import limitRepeatedWords
 from content import switchWords
 from content import extractTextFieldsInPOST
 from content import validHashTag
@@ -4154,9 +4155,47 @@ def _testLimitWordLengths() -> None:
     assert result == "This is an exceptionally test"
 
 
+def _testLimitRepetedWords() -> None:
+    print('limitRepeatedWords')
+    text = \
+        "This is a preamble.\n\n" + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same\n\n" + \
+        "Some other text."
+    expected = \
+        "This is a preamble.\n\n" + \
+        "Same Same Same Same Same Same\n\n" + \
+        "Some other text."
+    result = limitRepeatedWords(text, 6)
+    assert result == expected
+
+    text = \
+        "This is other preamble.\n\n" + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same"
+    expected = \
+        "This is other preamble.\n\n" + \
+        "Same Same Same Same Same Same"
+    result = limitRepeatedWords(text, 6)
+    assert result == expected
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testLimitRepetedWords()
     _testLimitWordLengths()
     _testSwitchWords()
     _testFunctions()
