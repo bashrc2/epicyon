@@ -713,7 +713,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
         return False
 
-    def _quotedRedirect(redirect: str) -> str:
+    def _quotedRedirect(self, redirect: str) -> str:
         """URL encodes any non-ascii characters for url redirects
         """
         if '/' not in redirect:
