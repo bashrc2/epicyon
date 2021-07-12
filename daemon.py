@@ -629,7 +629,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self.send_response(303)
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Location', redirect)
+        self.send_header('Location', self._quotedRedirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
@@ -713,6 +713,15 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
         return False
 
+    def _quotedRedirect(redirect: str) -> str:
+        """URL encodes any non-ascii characters for url redirects
+        """
+        if '/' not in redirect:
+            return urllib.parse.quote_plus(redirect)
+        lastStr = redirect.split('/')[-1]
+        return redirect.replace('/' + lastStr, '/' +
+                                urllib.parse.quote_plus(lastStr))
+
     def _redirect_headers(self, redirect: str, cookie: str,
                           callingDomain: str) -> None:
         if '://' not in redirect:
@@ -731,23 +740,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Cookie', cookieStr)
             else:
                 self.send_header('Set-Cookie', cookieStr)
-
-        if '://' in redirect:
-            fallbackLocation = redirect.split('://')[1]
-            if '/' in fallbackLocation:
-                fallbackLocation = fallbackLocation.split('/')[0]
-            fallbackLocation = \
-                redirect.split('://')[0] + '://' + fallbackLocation
-        else:
-            fallbackLocation = \
-                self.server.httpPrefix + '://' + self.server.domainFull
-        try:
-            self.send_header('Location', redirect)
-        except BaseException:
-            print('WARN: fallback redirect for ' + str(redirect))
-            self.send_header('Location', fallbackLocation)
-            pass
-
+        self.send_header('Location', self._quotedRedirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
