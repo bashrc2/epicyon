@@ -621,6 +621,16 @@ class PubServer(BaseHTTPRequestHandler):
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
 
+    def _quoted_redirect(self, redirect: str) -> str:
+        """hashtags sometimes contain non-ascii characters which
+        need to be url encoded
+        """
+        if '/tags/' not in redirect:
+            return redirect
+        lastStr = redirect.split('/')[-1]
+        return redirect.replace('/' + lastStr, '/' +
+                                urllib.parse.quote_plus(lastStr))
+
     def _logout_redirect(self, redirect: str, cookie: str,
                          callingDomain: str) -> None:
         if '://' not in redirect:
@@ -712,15 +722,6 @@ class PubServer(BaseHTTPRequestHandler):
                     # The file has not changed
                     return True
         return False
-
-    def _quoted_redirect(self, redirect: str) -> str:
-        """URL encodes any non-ascii characters for url redirects
-        """
-        if '/tags/' not in redirect:
-            return redirect
-        lastStr = redirect.split('/')[-1]
-        return redirect.replace('/' + lastStr, '/' +
-                                urllib.parse.quote_plus(lastStr))
 
     def _redirect_headers(self, redirect: str, cookie: str,
                           callingDomain: str) -> None:
