@@ -731,7 +731,23 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Cookie', cookieStr)
             else:
                 self.send_header('Set-Cookie', cookieStr)
-        self.send_header('Location', redirect)
+
+        if '://' in redirect:
+            fallbackLocation = redirect.split('://')[1]
+            if '/' in fallbackLocation:
+                fallbackLocation = fallbackLocation.split('/')[0]
+            fallbackLocation = \
+                redirect.split('://')[0] + '://' + fallbackLocation
+        else:
+            fallbackLocation = \
+                self.server.httpPrefix + '://' + self.server.domainFull
+        try:
+            self.send_header('Location', redirect)
+        except BaseException:
+            print('WARN: fallback redirect for ' + str(redirect))
+            self.send_header('Location', fallbackLocation)
+            pass
+
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
