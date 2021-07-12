@@ -731,7 +731,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Cookie', cookieStr)
             else:
                 self.send_header('Set-Cookie', cookieStr)
-        self.send_header('Location', redirect)
+        self.send_header('Location', redirect.encode('utf-8'))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
