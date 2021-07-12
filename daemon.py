@@ -716,8 +716,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _quotedRedirect(self, redirect: str) -> str:
         """URL encodes any non-ascii characters for url redirects
         """
-        if '/' not in redirect:
-            return urllib.parse.quote_plus(redirect)
+        if '/tags/' not in redirect:
+            return redirect
         lastStr = redirect.split('/')[-1]
         return redirect.replace('/' + lastStr, '/' +
                                 urllib.parse.quote_plus(lastStr))
