@@ -622,7 +622,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _quoted_redirect(self, redirect: str) -> str:
-        """hashtags sometimes contain non-ascii characters which
+        """hashtag screen urls sometimes contain non-ascii characters which
         need to be url encoded
         """
         if '/tags/' not in redirect:
