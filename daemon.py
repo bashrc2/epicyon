@@ -629,7 +629,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self.send_response(303)
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Location', self._quotedRedirect(redirect))
+        self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
@@ -713,7 +713,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
         return False
 
-    def _quotedRedirect(self, redirect: str) -> str:
+    def _quoted_redirect(self, redirect: str) -> str:
         """URL encodes any non-ascii characters for url redirects
         """
         if '/tags/' not in redirect:
@@ -740,7 +740,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Cookie', cookieStr)
             else:
                 self.send_header('Set-Cookie', cookieStr)
-        self.send_header('Location', self._quotedRedirect(redirect))
+        self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
