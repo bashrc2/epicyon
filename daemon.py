@@ -621,6 +621,16 @@ class PubServer(BaseHTTPRequestHandler):
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
 
+    def _quoted_redirect(self, redirect: str) -> str:
+        """hashtag screen urls sometimes contain non-ascii characters which
+        need to be url encoded
+        """
+        if '/tags/' not in redirect:
+            return redirect
+        lastStr = redirect.split('/')[-1]
+        return redirect.replace('/' + lastStr, '/' +
+                                urllib.parse.quote_plus(lastStr))
+
     def _logout_redirect(self, redirect: str, cookie: str,
                          callingDomain: str) -> None:
         if '://' not in redirect:
@@ -629,7 +639,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self.send_response(303)
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Location', redirect)
+        self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
@@ -731,7 +741,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Cookie', cookieStr)
             else:
                 self.send_header('Set-Cookie', cookieStr)
-        self.send_header('Location', redirect)
+        self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
