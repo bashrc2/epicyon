@@ -11,6 +11,7 @@ import os
 from utils import isAccountDir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import acctDir
 from webfinger import webfingerHandle
 from blocking import isBlocked
 from posts import getUserUrl
@@ -25,8 +26,7 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
-    followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         return ctr
     with open(followingFilename, 'r') as f:
@@ -111,8 +111,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                         'following.txt', debug)
         return ctr
 
-    followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as f:
             followingHandles = f.readlines()
@@ -121,8 +120,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
             handleLower = handle.lower()
 
             refollowFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/refollow.txt'
+                acctDir(baseDir, nickname, domain) + '/refollow.txt'
 
             # unfollow the old handle
             with open(followingFilename, 'w+') as f:
@@ -150,7 +148,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                                 f.write(movedToHandle + '\n')
 
     followersFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/followers.txt'
+        acctDir(baseDir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followersFilename):
         with open(followersFilename, 'r') as f:
             followerHandles = f.readlines()

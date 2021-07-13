@@ -25,6 +25,7 @@ from utils import dangerousMarkup
 from utils import isFeaturedWriter
 from utils import loadJson
 from utils import saveJson
+from utils import acctDir
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -106,7 +107,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         return
     updatedActorJson = messageJson['object']
     # load actor from file
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         print('actorFilename not found: ' + actorFilename)
         return
@@ -127,30 +128,31 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                 continue
             if newPropertyValue['type'] != 'PropertyValue':
                 continue
-            if 'attachment' in actorJson:
-                found = False
-                for attachIdx in range(len(actorJson['attachment'])):
-                    if actorJson['attachment'][attachIdx]['type'] != \
-                       'PropertyValue':
-                        continue
-                    if actorJson['attachment'][attachIdx]['name'] != \
-                       newPropertyValue['name']:
-                        continue
-                    else:
-                        if actorJson['attachment'][attachIdx]['value'] != \
-                           newPropertyValue['value']:
-                            actorJson['attachment'][attachIdx]['value'] = \
-                                newPropertyValue['value']
-                            actorChanged = True
-                        found = True
-                        break
-                if not found:
-                    actorJson['attachment'].append({
-                        "name": newPropertyValue['name'],
-                        "type": "PropertyValue",
-                        "value": newPropertyValue['value']
-                    })
-                    actorChanged = True
+            if 'attachment' not in actorJson:
+                continue
+            found = False
+            for attachIdx in range(len(actorJson['attachment'])):
+                if actorJson['attachment'][attachIdx]['type'] != \
+                   'PropertyValue':
+                    continue
+                if actorJson['attachment'][attachIdx]['name'] != \
+                   newPropertyValue['name']:
+                    continue
+                else:
+                    if actorJson['attachment'][attachIdx]['value'] != \
+                       newPropertyValue['value']:
+                        actorJson['attachment'][attachIdx]['value'] = \
+                            newPropertyValue['value']
+                        actorChanged = True
+                    found = True
+                    break
+            if not found:
+                actorJson['attachment'].append({
+                    "name": newPropertyValue['name'],
+                    "type": "PropertyValue",
+                    "value": newPropertyValue['value']
+                })
+                actorChanged = True
     # save actor to file
     if actorChanged:
         saveJson(actorJson, actorFilename)

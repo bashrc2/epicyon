@@ -13,6 +13,7 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
+from utils import acctDir
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import hasObjectDict
@@ -190,7 +191,7 @@ def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
     """
     domain = removeDomainPort(domain)
-    inboxDir = baseDir + '/accounts/' + nickname + '@' + domain + '/inbox'
+    inboxDir = acctDir(baseDir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
     for subdir, dirs, files in os.walk(inboxDir):
@@ -212,7 +213,7 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
     domain names within saved post filenames
     """
     domain = removeDomainPort(domain)
-    inboxDir = baseDir + '/accounts/' + nickname + '@' + domain + '/inbox'
+    inboxDir = acctDir(baseDir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
     expectedStr = expectedDomain + ':' + str(expectedPort)
@@ -2078,7 +2079,7 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
     nickname = handle.split('@')[0]
     domain = handle.split('@')[1]
     domain = removeDomainPort(domain)
-    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    accountPath = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
     if not isFollowingActor(baseDir, nickname, domain, actor):
@@ -2191,8 +2192,7 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
 
     # check for the flag file which indicates to
     # only receive DMs from people you are following
-    followDMsFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/.followDMs'
+    followDMsFilename = acctDir(baseDir, nickname, domain) + '/.followDMs'
     if not os.path.isfile(followDMsFilename):
         # dm index will be updated
         updateIndexList.append('dm')
@@ -2201,9 +2201,7 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
         return True
 
     # get the file containing following handles
-    followingFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/following.txt'
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
     # who is sending a DM?
     if not postJsonObject.get('actor'):
         return False

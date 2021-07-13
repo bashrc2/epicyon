@@ -527,8 +527,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         os.mkdir(basePath)
 
     # oldest items first
-    newswireReverse = \
-        OrderedDict(sorted(newswire.items(), reverse=False))
+    newswireReverse = OrderedDict(sorted(newswire.items(), reverse=False))
 
     for dateStr, item in newswireReverse.items():
         originalDateStr = dateStr

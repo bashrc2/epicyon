@@ -23,6 +23,7 @@ from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
 from utils import getAltPath
+from utils import acctDir
 from skills import noOfActorSkills
 from skills import getSkillsFromList
 from categories import getHashtagCategory
@@ -658,7 +659,8 @@ def htmlHashtagSearch(cssCache: {},
 
     # check that the directory for the nickname exists
     if nickname:
-        if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+        accountDir = acctDir(baseDir, nickname, domain)
+        if not os.path.isdir(accountDir):
             nickname = None
 
     # read the index
@@ -835,8 +837,8 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
 
     # check that the directory for the nickname exists
     if nickname:
-        if not os.path.isdir(baseDir + '/accounts/' +
-                             nickname + '@' + domain):
+        accountDir = acctDir(baseDir, nickname, domain)
+        if not os.path.isdir(accountDir):
             nickname = None
 
     # read the index

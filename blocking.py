@@ -27,6 +27,7 @@ from utils import locatePost
 from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
+from utils import acctDir
 
 
 def addGlobalBlock(baseDir: str,
@@ -60,8 +61,7 @@ def addBlock(baseDir: str, nickname: str, domain: str,
     """Block the given account
     """
     domain = removeDomainPort(domain)
-    blockingFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/blocking.txt'
+    blockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
     blockHandle = blockNickname + '@' + blockDomain
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
@@ -112,8 +112,7 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
     """Unblock the given account
     """
     domain = removeDomainPort(domain)
-    unblockingFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/blocking.txt'
+    unblockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
     unblockHandle = unblockNickname + '@' + unblockDomain
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
@@ -287,7 +286,7 @@ def isBlocked(baseDir: str, nickname: str, domain: str,
                 return True
 
     # account level allow list
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     allowFilename = accountDir + '/allowedinstances.txt'
     if os.path.isfile(allowFilename):
         if blockDomain not in open(allowFilename).read():

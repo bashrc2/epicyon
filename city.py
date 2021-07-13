@@ -12,6 +12,7 @@ import datetime
 import random
 import math
 from random import randint
+from utils import acctDir
 
 # states which the simulated city dweller can be in
 PERSON_SLEEP = 0
@@ -291,8 +292,7 @@ def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
     """Returns the name of the city to use as a GPS spoofing location for
     image metadata
     """
-    cityFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/city.txt'
+    cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
             city = fp.read().replace('\n', '')

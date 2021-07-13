@@ -72,6 +72,7 @@ from utils import getNicknameFromActor
 from utils import followPerson
 from utils import validNickname
 from utils import getProtocolPrefixes
+from utils import acctDir
 from media import archiveMedia
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -1040,7 +1041,7 @@ if args.followerspending:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    accountsDir = baseDir + '/accounts/' + args.nickname + '@' + domain
+    accountsDir = acctDir(baseDir, args.nickname, domain)
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     approveCtr = 0
     if os.path.isfile(approveFollowsFilename):
@@ -1788,7 +1789,8 @@ if args.addaccount:
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if os.path.isdir(accountDir):
         print('Account already exists')
         sys.exit()
     if os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain):
@@ -1800,7 +1802,7 @@ if args.addaccount:
         httpPrefix = 'http'
     createPerson(baseDir, nickname, domain, port, httpPrefix,
                  True, not args.noapproval, args.password.strip())
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    if os.path.isdir(accountDir):
         print('Account created for ' + nickname + '@' + domain)
     else:
         print('Account creation failed')
@@ -1827,12 +1829,13 @@ if args.addgroup:
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if os.path.isdir(accountDir):
         print('Group already exists')
         sys.exit()
     createGroup(baseDir, nickname, domain, port, httpPrefix,
                 True, args.password.strip())
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    if os.path.isdir(accountDir):
         print('Group created for ' + nickname + '@' + domain)
     else:
         print('Group creation failed')
@@ -1910,7 +1913,8 @@ if args.changepassword:
     if len(newPassword) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if not os.path.isdir(accountDir):
         print('Account ' + nickname + '@' + domain + ' not found')
         sys.exit()
     passwordFile = baseDir + '/accounts/passwords'

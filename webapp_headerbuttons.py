@@ -10,6 +10,7 @@ __module_group__ = "Timeline"
 
 import os
 import time
+from utils import acctDir
 from datetime import datetime
 from datetime import timedelta
 from happening import dayEventsCheck
@@ -91,8 +92,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '</span></button></a>'
 
         repliesIndexFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/tlreplies.index'
+            acctDir(baseDir, nickname, domain) + '/tlreplies.index'
         if os.path.isfile(repliesIndexFilename):
             tlStr += \
                 '<a href="' + usersPath + '/tlreplies" tabindex="-1">' + \

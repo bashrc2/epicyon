@@ -20,6 +20,7 @@ from utils import loadJson
 from utils import weekDayOfMonthStart
 from utils import getAltPath
 from utils import removeDomainPort
+from utils import acctDir
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -104,7 +105,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                      monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
         os.remove(calendarFile)

@@ -8,14 +8,14 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+from utils import acctDir
 
 
 def isMinimal(baseDir: str, domain: str, nickname: str) -> bool:
     """Returns true if minimal buttons should be shown
        for the given account
     """
-    accountDir = baseDir + '/accounts/' + \
-        nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountDir):
         return True
     minimalFilename = accountDir + '/.notminimal'
@@ -28,7 +28,7 @@ def setMinimal(baseDir: str, domain: str, nickname: str,
                minimal: bool) -> None:
     """Sets whether an account should display minimal buttons
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountDir):
         return
     minimalFilename = accountDir + '/.notminimal'

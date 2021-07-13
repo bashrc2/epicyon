@@ -10,6 +10,9 @@ __module_group__ = "Calendar"
 import os
 
 
+def _dirAcct(baseDir: str, nickname: str, domain: str) -> str:
+    return baseDir + '/accounts/' + nickname + '@' + domain
+
 def _portDomainRemove(domain: str) -> str:
     """If the domain has a port appended then remove it
     eg. mydomain.com:80 becomes mydomain.com
@@ -31,12 +34,12 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
     if followingNickname == nickname and followingDomain == domain:
         # reminder post
         return True
-    calendarFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/followingCalendar.txt'
+    calendarFilename = \
+        _dirAcct(baseDir, nickname, domain) + '/followingCalendar.txt'
     handle = followingNickname + '@' + followingDomain
     if not os.path.isfile(calendarFilename):
-        followingFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/following.txt'
+        followingFilename = \
+            _dirAcct(baseDir, nickname, domain) + '/following.txt'
         if not os.path.isfile(followingFilename):
             return False
         # create a new calendar file from the following file
@@ -56,8 +59,7 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     """
     # check that a following file exists
     domain = _portDomainRemove(domain)
-    followingFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/following.txt'
+    followingFilename = _dirAcct(baseDir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
@@ -69,8 +71,8 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
         print('WARN: ' + handle + ' is not in ' + followingFilename)
         return
 
-    calendarFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/followingCalendar.txt'
+    calendarFilename = \
+        _dirAcct(baseDir, nickname, domain) + '/followingCalendar.txt'
 
     # get the contents of the calendar file, which is
     # a set of handles

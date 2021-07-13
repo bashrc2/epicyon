@@ -16,6 +16,7 @@ from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
 from utils import getConfigParam
+from utils import acctDir
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -321,7 +322,7 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
     scheduleIndexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/schedule.index'
+        acctDir(baseDir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(scheduleIndexFilename):
         return False
     if '#users#' in open(scheduleIndexFilename).read():
@@ -424,30 +425,30 @@ def _getImageFile(baseDir: str, name: str, directory: str,
 
 def getBannerFile(baseDir: str,
                   nickname: str, domain: str, theme: str) -> (str, str):
-    return _getImageFile(baseDir, 'banner',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
+    accountDir = acctDir(baseDir, nickname, domain)
+    return _getImageFile(baseDir, 'banner', accountDir,
                          nickname, domain, theme)
 
 
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
-    return _getImageFile(baseDir, 'search_banner',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
+    accountDir = acctDir(baseDir, nickname, domain)
+    return _getImageFile(baseDir, 'search_banner', accountDir,
                          nickname, domain, theme)
 
 
 def getLeftImageFile(baseDir: str,
                      nickname: str, domain: str, theme: str) -> (str, str):
-    return _getImageFile(baseDir, 'left_col_image',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
+    accountDir = acctDir(baseDir, nickname, domain)
+    return _getImageFile(baseDir, 'left_col_image', accountDir,
                          nickname, domain, theme)
 
 
 def getRightImageFile(baseDir: str,
                       nickname: str, domain: str, theme: str) -> (str, str):
+    accountDir = acctDir(baseDir, nickname, domain)
     return _getImageFile(baseDir, 'right_col_image',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
-                         nickname, domain, theme)
+                         accountDir, nickname, domain, theme)
 
 
 def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,

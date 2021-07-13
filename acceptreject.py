@@ -16,6 +16,7 @@ from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
 from utils import hasObjectDict
+from utils import acctDir
 
 
 def _createAcceptReject(baseDir: str, federationList: [],
@@ -147,8 +148,8 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
         acceptedDomainFull = acceptedDomain + ':' + str(acceptedPort)
 
     # has this person already been unfollowed?
-    unfollowedFilename = baseDir + '/accounts/' + \
-        nickname + '@' + acceptedDomainFull + '/unfollowed.txt'
+    unfollowedFilename = \
+        acctDir(baseDir, nickname, acceptedDomainFull) + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if followedNickname + '@' + followedDomainFull in \
            open(unfollowedFilename).read():
