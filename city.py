@@ -195,7 +195,7 @@ def spoofGeolocation(baseDir: str,
                     default_latdirection, default_longdirection,
                     "", "", 0)
         cities = []
-        with open(locationsFilename, "r") as f:
+        with open(locationsFilename, 'r') as f:
             cities = f.readlines()
 
     nogo = []
@@ -203,7 +203,7 @@ def spoofGeolocation(baseDir: str,
         nogo = nogoList
     else:
         if os.path.isfile(nogoFilename):
-            with open(nogoFilename, "r") as f:
+            with open(nogoFilename, 'r') as f:
                 nogoList = f.readlines()
                 for line in nogoList:
                     if line.startswith(city + ':'):

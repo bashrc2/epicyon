@@ -89,7 +89,7 @@ def isModerator(baseDir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(moderatorsFile, "r") as f:
+    with open(moderatorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
             adminName = getConfigParam(baseDir, 'admin')
@@ -113,7 +113,7 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
         return 0
 
     ctr = 0
-    with open(filename, "r") as followersFilename:
+    with open(filename, 'r') as followersFilename:
         for followerHandle in followersFilename:
             if '@' in followerHandle:
                 followerDomain = followerHandle.split('@')[1]
@@ -135,7 +135,7 @@ def _getPersonKey(nickname: str, domain: str, baseDir: str,
             print('DEBUG: private key file not found: ' + keyFilename)
         return ''
     keyPem = ''
-    with open(keyFilename, "r") as pemFile:
+    with open(keyFilename, 'r') as pemFile:
         keyPem = pemFile.read()
     if len(keyPem) < 20:
         if debug:
@@ -779,7 +779,7 @@ def _loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
         nickname + '@' + domain + '/autocw.txt'
     if not os.path.isfile(filename):
         return []
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         return f.readlines()
     return []
 
@@ -1350,7 +1350,7 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     if os.path.isfile(pinnedFilename):
         pinnedContent = None
-        with open(pinnedFilename, "r") as pinFile:
+        with open(pinnedFilename, 'r') as pinFile:
             pinnedContent = pinFile.read()
         if pinnedContent:
             pinnedPostJson = {
@@ -1469,7 +1469,7 @@ def _appendCitationsToBlogPost(baseDir: str,
     if not os.path.isfile(citationsFilename):
         return
     citationsSeparator = '#####'
-    with open(citationsFilename, "r") as f:
+    with open(citationsFilename, 'r') as f:
         citations = f.readlines()
         for line in citations:
             if citationsSeparator not in line:
@@ -1753,7 +1753,7 @@ def createReportPost(baseDir: str,
     moderatorsList = []
     moderatorsFile = baseDir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, "r") as fileHandler:
+        with open(moderatorsFile, 'r') as fileHandler:
             for line in fileHandler:
                 line = line.strip('\n').strip('\r')
                 if line.startswith('#'):
@@ -1865,7 +1865,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         if debug:
             # save the log file
             postLogFilename = baseDir + '/post.log'
-            with open(postLogFilename, "a+") as logFile:
+            with open(postLogFilename, 'a+') as logFile:
                 logFile.write(logStr + '\n')
 
         if postResult:
@@ -2138,7 +2138,7 @@ def groupFollowersByDomain(baseDir: str, nickname: str, domain: str) -> {}:
     if not os.path.isfile(followersFilename):
         return None
     grouped = {}
-    with open(followersFilename, "r") as f:
+    with open(followersFilename, 'r') as f:
         for followerHandle in f:
             if '@' not in followerHandle:
                 continue
@@ -2889,7 +2889,7 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
     if isModerator(baseDir, nickname):
         moderationIndexFile = baseDir + '/accounts/moderation.txt'
         if os.path.isfile(moderationIndexFile):
-            with open(moderationIndexFile, "r") as f:
+            with open(moderationIndexFile, 'r') as f:
                 lines = f.readlines()
             boxHeader['totalItems'] = len(lines)
             if headerOnly:

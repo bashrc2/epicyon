@@ -1406,7 +1406,7 @@ def _testFollows():
                  federationList, False)
 
     f = open(baseDir + '/accounts/' + nickname + '@' + domain +
-             '/following.txt', "r")
+             '/following.txt', 'r')
     domainFound = False
     for followingDomain in f:
         testDomain = followingDomain.split('@')[1]
@@ -1441,7 +1441,7 @@ def _testFollows():
                      federationList, False)
 
     f = open(baseDir + '/accounts/' + nickname + '@' + domain +
-             '/followers.txt', "r")
+             '/followers.txt', 'r')
     for followerDomain in f:
         testDomain = followerDomain.split('@')[1]
         testDomain = testDomain.replace('\n', '').replace('\r', '')
@@ -3083,10 +3083,10 @@ def _testFunctions():
                 'functions': []
             }
             sourceStr = ''
-            with open(sourceFile, "r") as f:
+            with open(sourceFile, 'r') as f:
                 sourceStr = f.read()
                 modules[modName]['source'] = sourceStr
-            with open(sourceFile, "r") as f:
+            with open(sourceFile, 'r') as f:
                 lines = f.readlines()
                 modules[modName]['lines'] = lines
                 lineCount = 0

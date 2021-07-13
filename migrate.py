@@ -29,7 +29,7 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
         baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
     if not os.path.isfile(followingFilename):
         return ctr
-    with open(followingFilename, "r") as f:
+    with open(followingFilename, 'r') as f:
         followingHandles = f.readlines()
         for followHandle in followingHandles:
             followHandle = followHandle.strip("\n").strip("\r")
@@ -114,7 +114,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
     followingFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
     if os.path.isfile(followingFilename):
-        with open(followingFilename, "r") as f:
+        with open(followingFilename, 'r') as f:
             followingHandles = f.readlines()
 
             movedToHandle = movedToNickname + '@' + movedToDomainFull
@@ -152,7 +152,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
     followersFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/followers.txt'
     if os.path.isfile(followersFilename):
-        with open(followersFilename, "r") as f:
+        with open(followersFilename, 'r') as f:
             followerHandles = f.readlines()
 
             handleLower = handle.lower()

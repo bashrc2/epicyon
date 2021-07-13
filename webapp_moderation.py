@@ -329,7 +329,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, "r") as f:
+        with open(suspendedFilename, 'r') as f:
             suspendedStr = f.read()
             infoForm += '<div class="container">\n'
             infoForm += '  <br><b>' + \
@@ -345,7 +345,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
 
     blockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(blockingFilename):
-        with open(blockingFilename, "r") as f:
+        with open(blockingFilename, 'r') as f:
             blockedStr = f.read()
             infoForm += '<div class="container">\n'
             infoForm += \
@@ -363,7 +363,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
 
     filtersFilename = baseDir + '/accounts/filters.txt'
     if os.path.isfile(filtersFilename):
-        with open(filtersFilename, "r") as f:
+        with open(filtersFilename, 'r') as f:
             filteredStr = f.read()
             infoForm += '<div class="container">\n'
             infoForm += \

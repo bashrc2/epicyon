@@ -709,7 +709,7 @@ def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
         nickname + '@' + domain + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         return f.readlines()
     return []
 
@@ -784,7 +784,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     petnames = None
     if '@' in words:
         if os.path.isfile(followingFilename):
-            with open(followingFilename, "r") as f:
+            with open(followingFilename, 'r') as f:
                 following = f.readlines()
                 for handle in following:
                     pet = getPetName(baseDir, nickname, domain, handle)

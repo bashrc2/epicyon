@@ -77,7 +77,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
                                  foundAnswer + '\n')
         else:
             # change an entry in the voters file
-            with open(votersFilename, "r") as votersFile:
+            with open(votersFilename, 'r') as votersFile:
                 lines = votersFile.readlines()
                 newlines = []
                 saveVotersFile = False
@@ -104,7 +104,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
         if not possibleAnswer.get('name'):
             continue
         totalItems = 0
-        with open(votersFilename, "r") as votersFile:
+        with open(votersFilename, 'r') as votersFile:
             lines = votersFile.readlines()
             for voteLine in lines:
                 if voteLine.endswith(votersFileSeparator +

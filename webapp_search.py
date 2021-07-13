@@ -662,7 +662,7 @@ def htmlHashtagSearch(cssCache: {},
             nickname = None
 
     # read the index
-    with open(hashtagIndexFile, "r") as f:
+    with open(hashtagIndexFile, 'r') as f:
         lines = f.readlines()
 
     # read the css
@@ -841,7 +841,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
 
     # read the index
     lines = []
-    with open(hashtagIndexFile, "r") as f:
+    with open(hashtagIndexFile, 'r') as f:
         lines = f.readlines()
     if not lines:
         return None

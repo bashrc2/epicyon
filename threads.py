@@ -141,7 +141,7 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
     if debug:
         sendLogFilename = baseDir + '/send.csv'
         try:
-            with open(sendLogFilename, "a+") as logFile:
+            with open(sendLogFilename, 'a+') as logFile:
                 logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ") +
                               ',' + str(noOfActiveThreads) +
                               ',' + str(len(threadsList)) + '\n')

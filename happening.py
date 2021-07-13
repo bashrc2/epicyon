@@ -441,11 +441,11 @@ def removeCalendarEvent(baseDir: str, nickname: str, domain: str,
     if messageId not in open(calendarFilename).read():
         return
     lines = None
-    with open(calendarFilename, "r") as f:
+    with open(calendarFilename, 'r') as f:
         lines = f.readlines()
     if not lines:
         return
-    with open(calendarFilename, "w+") as f:
+    with open(calendarFilename, 'w+') as f:
         for line in lines:
             if messageId not in line:
                 f.write(line)

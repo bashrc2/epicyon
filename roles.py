@@ -81,7 +81,7 @@ def _addRole(baseDir: str, nickname: str, domain: str,
     roleFile = baseDir + '/accounts/' + roleFilename
     if os.path.isfile(roleFile):
         # is this nickname already in the file?
-        with open(roleFile, "r") as f:
+        with open(roleFile, 'r') as f:
             lines = f.readlines()
         for roleNickname in lines:
             roleNickname = roleNickname.strip('\n').strip('\r')
@@ -97,7 +97,7 @@ def _addRole(baseDir: str, nickname: str, domain: str,
                                  roleNickname + '@' + domain):
                     f.write(roleNickname + '\n')
     else:
-        with open(roleFile, "w+") as f:
+        with open(roleFile, 'w+') as f:
             if os.path.isdir(baseDir + '/accounts/' +
                              nickname + '@' + domain):
                 f.write(nickname + '\n')
@@ -110,7 +110,7 @@ def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
     roleFile = baseDir + '/accounts/' + roleFilename
     if not os.path.isfile(roleFile):
         return
-    with open(roleFile, "r") as f:
+    with open(roleFile, 'r') as f:
         lines = f.readlines()
     with open(roleFile, 'w+') as f:
         for roleNickname in lines:
