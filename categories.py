@@ -170,7 +170,7 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
 
     for categoryStr, hashtagList in hashtagCategories.items():
         for hashtag in hashtagList:
-            if len(hashtag) < 3:
+            if len(hashtag) < 4:
                 # avoid matching very small strings which often
                 # lead to spurious categories
                 continue
