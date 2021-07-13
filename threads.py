@@ -71,7 +71,7 @@ class threadWithTrace(threading.Thread):
 
 
 def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
-                         timeoutMins=30) -> None:
+                         timeoutMins: int = 30) -> None:
     """Removes threads whose execution has completed
     """
     if len(threadsList) == 0:

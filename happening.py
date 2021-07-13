@@ -19,7 +19,7 @@ from utils import locatePost
 from utils import hasObjectDict
 
 
-def _validUuid(testUuid: str, version=4):
+def _validUuid(testUuid: str, version: int = 4):
     """Check if uuid_to_test is a valid UUID
     """
     try:

@@ -153,7 +153,7 @@ def getFullDomain(domain: str, port: int) -> str:
 
 
 def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
-              dormantMonths=3) -> bool:
+              dormantMonths: int = 3) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
@@ -544,7 +544,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
     return False
 
 
-def loadJson(filename: str, delaySec=2, maxTries=5) -> {}:
+def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject = None
@@ -564,7 +564,7 @@ def loadJson(filename: str, delaySec=2, maxTries=5) -> {}:
 
 
 def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
-                     delaySec=2) -> {}:
+                     delaySec: int = 2) -> {}:
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
@@ -2163,7 +2163,7 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def isRecentPost(postJsonObject: {}, maxDays=3) -> bool:
+def isRecentPost(postJsonObject: {}, maxDays: int = 3) -> bool:
     """ Is the given post recent?
     """
     if not hasObjectDict(postJsonObject):
