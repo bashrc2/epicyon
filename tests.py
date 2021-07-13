@@ -2843,12 +2843,12 @@ def _testGuessHashtagCategory() -> None:
     print('testGuessHashtagCategory')
     hashtagCategories = {
         "foo": ["swan", "goose"],
-        "bar": ["cat", "mouse"]
+        "bar": ["cats", "mouse"]
     }
     guess = guessHashtagCategory("unspecifiedgoose", hashtagCategories)
     assert guess == "foo"
 
-    guess = guessHashtagCategory("catpic", hashtagCategories)
+    guess = guessHashtagCategory("mastocats", hashtagCategories)
     assert guess == "bar"
 
 
