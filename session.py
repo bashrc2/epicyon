@@ -53,8 +53,8 @@ def createSession(proxyType: str):
     return session
 
 
-def urlExists(session, url: str, timeoutSec=3,
-              httpPrefix='https', domain='testdomain') -> bool:
+def urlExists(session, url: str, timeoutSec: int = 3,
+              httpPrefix: str = 'https', domain: str = 'testdomain') -> bool:
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: urlExists failed, url should be a string')

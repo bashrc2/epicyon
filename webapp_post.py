@@ -45,6 +45,7 @@ from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isEventPost
+from utils import acctDir
 from content import limitRepeatedWords
 from content import replaceEmojiFromTags
 from content import htmlReplaceQuoteMarks
@@ -1439,7 +1440,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # whether to show a like button
     hideLikeButtonFile = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/.hideLikeButton'
+        acctDir(baseDir, nickname, domain) + '/.hideLikeButton'
     showLikeButton = True
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False

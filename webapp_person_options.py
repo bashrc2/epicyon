@@ -19,6 +19,7 @@ from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import isFeaturedWriter
+from utils import acctDir
 from blocking import isBlocked
 from follow import isFollowerOfPerson
 from follow import isFollowingActor
@@ -395,7 +396,7 @@ def htmlPersonOptions(defaultTimeline: str,
         personNotes = ''
         if originPathStr == '/users/' + nickname:
             personNotesFilename = \
-                baseDir + '/accounts/' + nickname + '@' + domain + \
+                acctDir(baseDir, nickname, domain) + \
                 '/notes/' + handle + '.txt'
             if os.path.isfile(personNotesFilename):
                 with open(personNotesFilename, 'r') as fp:

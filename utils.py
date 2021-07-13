@@ -28,13 +28,16 @@ invalidCharacters = (
 )
 
 
+def acctDir(baseDir: str, nickname: str, domain: str) -> str:
+    return baseDir + '/accounts/' + nickname + '@' + domain
+
+
 def isFeaturedWriter(baseDir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
     """
     featuresBlockedFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.nofeatures'
+        acctDir(baseDir, nickname, domain) + '/.nofeatures'
     return not os.path.isfile(featuresBlockedFilename)
 
 
@@ -153,12 +156,11 @@ def getFullDomain(domain: str, port: int) -> str:
 
 
 def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
-              dormantMonths=3) -> bool:
+              dormantMonths: int = 3) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
-    lastSeenFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+    lastSeenFilename = acctDir(baseDir, nickname, domain) + \
         '/lastseen/' + actor.replace('/', '#') + '.txt'
 
     if not os.path.isfile(lastSeenFilename):
@@ -440,8 +442,7 @@ def getFollowersList(baseDir: str,
                      followFile='following.txt') -> []:
     """Returns a list of followers for the given account
     """
-    filename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/' + followFile
+    filename = acctDir(baseDir, nickname, domain) + '/' + followFile
 
     if not os.path.isfile(filename):
         return []
@@ -544,7 +545,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
     return False
 
 
-def loadJson(filename: str, delaySec=2, maxTries=5) -> {}:
+def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject = None
@@ -564,7 +565,7 @@ def loadJson(filename: str, delaySec=2, maxTries=5) -> {}:
 
 
 def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
-                     delaySec=2) -> {}:
+                     delaySec: int = 2) -> {}:
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
@@ -950,7 +951,7 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
     This helps especially when using onion or i2p address
     """
     domain = removeDomainPort(domain)
-    userPath = baseDir + '/accounts/' + nickname + '@' + domain
+    userPath = acctDir(baseDir, nickname, domain)
     petnamesFilename = userPath + '/petnames.txt'
 
     petnameLookupEntry = followNickname + ' ' + \
@@ -1180,7 +1181,7 @@ def locatePost(baseDir: str, nickname: str, domain: str,
 
     # search boxes
     boxes = ('inbox', 'outbox', 'tlblogs')
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain + '/'
+    accountDir = acctDir(baseDir, nickname, domain) + '/'
     for boxName in boxes:
         postFilename = accountDir + boxName + '/' + postUrl
         if os.path.isfile(postFilename):
@@ -1251,8 +1252,7 @@ def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
         return False
     if not isinstance(postJsonObject['object']['inReplyTo'], str):
         return False
-    blogsIndexFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/tlblogs.index'
+    blogsIndexFilename = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndexFilename):
         return False
     postId = removeIdEnding(postJsonObject['object']['inReplyTo'])
@@ -1290,8 +1290,7 @@ def _isBookmarked(baseDir: str, nickname: str, domain: str,
     """Returns True if the given post is bookmarked
     """
     bookmarksIndexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/bookmarks.index'
+        acctDir(baseDir, nickname, domain) + '/bookmarks.index'
     if os.path.isfile(bookmarksIndexFilename):
         bookmarkIndex = postFilename.split('/')[-1] + '\n'
         if bookmarkIndex in open(bookmarksIndexFilename).read():
@@ -1626,8 +1625,7 @@ def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
 def getCachedPostDirectory(baseDir: str, nickname: str, domain: str) -> str:
     """Returns the directory where the html post cache exists
     """
-    htmlPostCacheDir = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/postcache'
+    htmlPostCacheDir = acctDir(baseDir, nickname, domain) + '/postcache'
     return htmlPostCacheDir
 
 
@@ -1780,11 +1778,10 @@ def _searchVirtualBoxPosts(baseDir: str, nickname: str, domain: str,
     """Searches through a virtual box, which is typically an index on the inbox
     """
     indexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/' + \
-        boxName + '.index'
+        acctDir(baseDir, nickname, domain) + '/' + boxName + '.index'
     if boxName == 'bookmarks':
         boxName = 'inbox'
-    path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
+    path = acctDir(baseDir, nickname, domain) + '/' + boxName
     if not os.path.isdir(path):
         return []
 
@@ -1833,7 +1830,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     """Search your posts and return a list of the filenames
     containing matching strings
     """
-    path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
+    path = acctDir(baseDir, nickname, domain) + '/' + boxName
     # is this a virtual box, such as direct messages?
     if not os.path.isdir(path):
         if os.path.isfile(path + '.index'):
@@ -2163,7 +2160,7 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def isRecentPost(postJsonObject: {}, maxDays=3) -> bool:
+def isRecentPost(postJsonObject: {}, maxDays: int = 3) -> bool:
     """ Is the given post recent?
     """
     if not hasObjectDict(postJsonObject):
@@ -2349,8 +2346,7 @@ def dmAllowedFromDomain(baseDir: str,
     a few particular instances that you trust
     """
     dmAllowedInstancesFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/dmAllowedInstances.txt'
+        acctDir(baseDir, nickname, domain) + '/dmAllowedInstances.txt'
     if not os.path.isfile(dmAllowedInstancesFilename):
         return False
     if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():

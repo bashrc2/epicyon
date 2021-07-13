@@ -208,6 +208,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import acctDir
 from utils import getImageExtensionFromMimeType
 from utils import getImageMimeType
 from utils import hasObjectDict
@@ -378,8 +379,9 @@ class PubServer(BaseHTTPRequestHandler):
                              answer: str) -> None:
         """Sends a reply to a question
         """
-        votesFilename = self.server.baseDir + '/accounts/' + \
-            nickname + '@' + self.server.domain + '/questions.txt'
+        votesFilename = \
+            acctDir(self.server.baseDir, nickname, self.server.domain) + \
+            '/questions.txt'
 
         if os.path.isfile(votesFilename):
             # have we already voted on this?
@@ -1545,8 +1547,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # This produces a deterministic token based
                 # on nick+password+salt
                 saltFilename = \
-                    baseDir + '/accounts/' + \
-                    loginNickname + '@' + domain + '/.salt'
+                    acctDir(baseDir, loginNickname, domain) + '/.salt'
                 salt = createPassword(32)
                 if os.path.isfile(saltFilename):
                     try:
@@ -1885,8 +1886,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if saveKeys:
             accessKeysFilename = \
-                baseDir + '/accounts/' + nickname + '@' + domain + \
-                '/accessKeys.json'
+                acctDir(baseDir, nickname, domain) + '/accessKeys.json'
             saveJson(accessKeys, accessKeysFilename)
             if not self.server.keyShortcuts.get(nickname):
                 self.server.keyShortcuts[nickname] = accessKeys.copy()
@@ -2134,8 +2134,8 @@ class PubServer(BaseHTTPRequestHandler):
                     postsToNews = optionsConfirmParams.split('postsToNews=')[1]
                     if '&' in postsToNews:
                         postsToNews = postsToNews.split('&')[0]
-                accountDir = self.server.baseDir + '/accounts/' + \
-                    optionsNickname + '@' + optionsDomain
+                accountDir = acctDir(self.server.baseDir,
+                                     optionsNickname, optionsDomain)
                 newswireBlockedFilename = accountDir + '/.nonewswire'
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
@@ -2169,8 +2169,8 @@ class PubServer(BaseHTTPRequestHandler):
                         optionsConfirmParams.split('postsToFeatures=')[1]
                     if '&' in postsToFeatures:
                         postsToFeatures = postsToFeatures.split('&')[0]
-                accountDir = self.server.baseDir + '/accounts/' + \
-                    optionsNickname + '@' + optionsDomain
+                accountDir = acctDir(self.server.baseDir,
+                                     optionsNickname, optionsDomain)
                 featuresBlockedFilename = accountDir + '/.nofeatures'
                 if postsToFeatures == 'on':
                     if os.path.isfile(featuresBlockedFilename):
@@ -2204,8 +2204,8 @@ class PubServer(BaseHTTPRequestHandler):
                         optionsConfirmParams.split('modNewsPosts=')[1]
                     if '&' in modPostsToNews:
                         modPostsToNews = modPostsToNews.split('&')[0]
-                accountDir = self.server.baseDir + '/accounts/' + \
-                    optionsNickname + '@' + optionsDomain
+                accountDir = acctDir(self.server.baseDir,
+                                     optionsNickname, optionsDomain)
                 newswireModFilename = accountDir + '/.newswiremoderated'
                 if modPostsToNews != 'on':
                     if os.path.isfile(newswireModFilename):
@@ -3218,9 +3218,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
         self.postFromNickname = pathUsersSection.split('/')[0]
-        accountsDir = \
-            baseDir + '/accounts/' + \
-            self.postFromNickname + '@' + domain
+        accountsDir = acctDir(baseDir, self.postFromNickname, domain)
         if not os.path.isdir(accountsDir):
             self._404()
             self.server.POSTbusy = False
@@ -3744,8 +3742,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = getNicknameFromActor(actorStr)
 
         citationsFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/.citations.txt'
+            acctDir(baseDir, nickname, domain) + '/.citations.txt'
         # remove any existing citations file
         if os.path.isfile(citationsFilename):
             os.remove(citationsFilename)
@@ -4051,8 +4048,7 @@ class PubServer(BaseHTTPRequestHandler):
                         os.remove(filenameBase)
                 else:
                     filenameBase = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/' + mType + '.temp'
 
                 filename, attachmentMediaType = \
@@ -4148,8 +4144,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # load the json for the actor for this user
             actorFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '.json'
+                acctDir(baseDir, nickname, domain) + '.json'
             if os.path.isfile(actorFilename):
                 actorJson = loadJson(actorFilename)
                 if actorJson:
@@ -4240,8 +4235,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change city
                     if fields.get('cityDropdown'):
-                        cityFilename = baseDir + '/accounts/' + \
-                            nickname + '@' + domain + '/city.txt'
+                        cityFilename = \
+                            acctDir(baseDir, nickname, domain) + '/city.txt'
                         with open(cityFilename, 'w+') as fp:
                             fp.write(fields['cityDropdown'])
 
@@ -5015,8 +5010,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + '/.followDMs'
+                        acctDir(baseDir, nickname, domain) + '/.followDMs'
                     if onFinalWelcomeScreen:
                         # initial default setting created via
                         # the welcome screen
@@ -5036,8 +5030,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # remove Twitter retweets
                     removeTwitterFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/.removeTwitter'
                     removeTwitterActive = False
                     if fields.get('removeTwitter'):
@@ -5052,12 +5045,10 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # hide Like button
                     hideLikeButtonFile = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/.hideLikeButton'
                     notifyLikesFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/.notifyLikes'
                     hideLikeButtonActive = False
                     if fields.get('hideLikeButton'):
@@ -5123,8 +5114,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # save filtered words list
                     filterFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/filters.txt'
                     if fields.get('filteredWords'):
                         with open(filterFilename, 'w+') as filterfile:
@@ -5135,8 +5125,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # word replacements
                     switchFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/replacewords.txt'
                     if fields.get('switchWords'):
                         with open(switchFilename, 'w+') as switchfile:
@@ -5147,8 +5136,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # autogenerated tags
                     autoTagsFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/autotags.txt'
                     if fields.get('autoTags'):
                         with open(autoTagsFilename, 'w+') as autoTagsFile:
@@ -5159,8 +5147,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # autogenerated content warnings
                     autoCWFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/autocw.txt'
                     if fields.get('autoCW'):
                         with open(autoCWFilename, 'w+') as autoCWFile:
@@ -5171,8 +5158,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # save blocked accounts list
                     blockedFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/blocking.txt'
                     if fields.get('blocked'):
                         with open(blockedFilename, 'w+') as blockedfile:
@@ -5185,8 +5171,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # The allow list for incoming DMs,
                     # if the .followDMs flag file exists
                     dmAllowedInstancesFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + '/dmAllowedinstances.txt'
+                        acctDir(baseDir, nickname, domain) + \
+                        '/dmAllowedinstances.txt'
                     if fields.get('dmAllowedInstances'):
                         with open(dmAllowedInstancesFilename, 'w+') as aFile:
                             aFile.write(fields['dmAllowedInstances'])
@@ -5197,8 +5183,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # save allowed instances list
                     # This is the account level allow list
                     allowedInstancesFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + '/allowedinstances.txt'
+                        acctDir(baseDir, nickname, domain) + \
+                        '/allowedinstances.txt'
                     if fields.get('allowedInstances'):
                         with open(allowedInstancesFilename, 'w+') as aFile:
                             aFile.write(fields['allowedInstances'])
@@ -5254,8 +5240,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # save git project names list
                     gitProjectsFilename = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        acctDir(baseDir, nickname, domain) + \
                         '/gitprojects.txt'
                     if fields.get('gitProjects'):
                         with open(gitProjectsFilename, 'w+') as aFile:
@@ -5506,7 +5491,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         speakerFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
+            acctDir(baseDir, nickname, domain) + '/speaker.json'
         if not os.path.isfile(speakerFilename):
             self._404()
             return
@@ -5607,8 +5592,8 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if not nickname.startswith('rss.'):
-            if os.path.isdir(self.server.baseDir +
-                             '/accounts/' + nickname + '@' + domain):
+            accountDir = acctDir(self.server.baseDir, nickname, domain)
+            if os.path.isdir(accountDir):
                 if not self.server.session:
                     print('Starting new session during RSS request')
                     self.server.session = \
@@ -5793,8 +5778,8 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if not nickname.startswith('rss.'):
-            if os.path.isdir(baseDir +
-                             '/accounts/' + nickname + '@' + domain):
+            accountDir = acctDir(baseDir, nickname, domain)
+            if os.path.isdir(accountDir):
                 if not self.server.session:
                     print('Starting new session during RSS3 request')
                     self.server.session = \
@@ -7265,7 +7250,7 @@ class PubServer(BaseHTTPRequestHandler):
         boxname = 'outbox'
         # get the replies file
         postDir = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxname
+            acctDir(baseDir, nickname, domain) + '/' + boxname
         postRepliesFilename = \
             postDir + '/' + \
             httpPrefix + ':##' + domainFull + '#users#' + \
@@ -7465,8 +7450,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         postSections = namedStatus.split('/')
         nickname = postSections[0]
-        actorFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+        actorFilename = acctDir(baseDir, nickname, domain) + '.json'
         if not os.path.isfile(actorFilename):
             return False
 
@@ -7562,9 +7546,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in namedStatus:
             postSections = namedStatus.split('/')
             nickname = postSections[0]
-            actorFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '.json'
+            actorFilename = acctDir(baseDir, nickname, domain) + '.json'
             if os.path.isfile(actorFilename):
                 actorJson = loadJson(actorFilename)
                 if actorJson:
@@ -7691,7 +7673,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         postFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
+            acctDir(baseDir, nickname, domain) + '/outbox/' + \
             httpPrefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
 
@@ -7809,7 +7791,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         postFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/outbox/' + \
+            acctDir(baseDir, nickname, domain) + '/outbox/' + \
             httpPrefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
 
@@ -9868,7 +9850,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = getNicknameFromActor(path)
         savePersonQrcode(baseDir, nickname, domain, port)
         qrFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/qrcode.png'
+            acctDir(baseDir, nickname, domain) + '/qrcode.png'
         if os.path.isfile(qrFilename):
             if self._etag_exists(qrFilename):
                 # The file has not changed
@@ -9906,8 +9888,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         nickname = getNicknameFromActor(path)
         bannerFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/search_banner.png'
+            acctDir(baseDir, nickname, domain) + '/search_banner.png'
         if os.path.isfile(bannerFilename):
             if self._etag_exists(bannerFilename):
                 # The file has not changed
@@ -9949,8 +9930,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return True
         bannerFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + side + '_col_image.png'
+            acctDir(baseDir, nickname, domain) + '/' + side + '_col_image.png'
         if os.path.isfile(bannerFilename):
             if self._etag_exists(bannerFilename):
                 # The file has not changed
@@ -10099,8 +10079,7 @@ class PubServer(BaseHTTPRequestHandler):
         elif avatarFile.startswith('right_col_image'):
             avatarFile = 'right_col_image.' + avatarFileExt
         avatarFilename = \
-            baseDir + '/accounts/' + \
-            avatarNickname + '@' + domain + '/' + avatarFile
+            acctDir(baseDir, avatarNickname, domain) + '/' + avatarFile
         if not os.path.isfile(avatarFilename):
             return False
         if self._etag_exists(avatarFilename):
@@ -11071,8 +11050,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/followingaccounts'):
             nickname = getNicknameFromActor(self.path)
             followingFilename = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/following.txt'
+                acctDir(self.server.baseDir,
+                        nickname, self.server.domain) + '/following.txt'
             if not os.path.isfile(followingFilename):
                 self._404()
                 return
@@ -12966,8 +12945,8 @@ class PubServer(BaseHTTPRequestHandler):
             # Note: a .temp extension is used here so that at no time is
             # an image with metadata publicly exposed, even for a few mS
             filenameBase = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/upload.temp'
+                acctDir(self.server.baseDir,
+                        nickname, self.server.domain) + '/upload.temp'
 
             filename, attachmentMediaType = \
                 saveMediaInFormPOST(mediaBytes, self.server.debug,
@@ -13061,8 +13040,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # since epoch when an attempt to post something was made.
                 # This is then used for active monthly users counts
                 lastUsedFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    nickname + '@' + self.server.domain + '/.lastUsed'
+                    acctDir(self.server.baseDir,
+                            nickname, self.server.domain) + '/.lastUsed'
                 try:
                     with open(lastUsedFilename, 'w+') as lastUsedFile:
                         lastUsedFile.write(str(int(time.time())))
@@ -13203,8 +13182,8 @@ class PubServer(BaseHTTPRequestHandler):
                     postJsonObject = loadJson(postFilename)
                     if postJsonObject:
                         cachedFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
+                            acctDir(self.server.baseDir,
+                                    nickname, self.server.domain) + \
                             '/postcache/' + \
                             fields['postUrl'].replace('/', '#') + '.html'
                         if os.path.isfile(cachedFilename):

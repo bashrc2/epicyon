@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from question import isQuestion
 from utils import removeIdEnding
+from utils import acctDir
 
 
 def insertQuestion(baseDir: str, translate: {},
@@ -30,7 +31,7 @@ def insertQuestion(baseDir: str, translate: {},
         pageNumberStr = '?page=' + str(pageNumber)
 
     votesFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/questions.txt'
+        acctDir(baseDir, nickname, domain) + '/questions.txt'
 
     showQuestionResults = False
     if os.path.isfile(votesFilename):

@@ -13,6 +13,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
 from utils import copytree
+from utils import acctDir
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -721,9 +722,8 @@ def setNewsAvatar(baseDir: str, name: str,
         os.remove(filename)
     if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
-    copyfile(newFilename,
-             baseDir + '/accounts/' +
-             nickname + '@' + domain + '/avatar.png')
+    accountDir = acctDir(baseDir, nickname, domain)
+    copyfile(newFilename, accountDir + '/avatar.png')
 
 
 def _setClearCacheFlag(baseDir: str) -> None:

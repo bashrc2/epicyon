@@ -24,6 +24,7 @@ from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
 from utils import hasObjectDict
+from utils import acctDir
 from posts import getPersonBox
 from session import postJson
 
@@ -49,8 +50,8 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     removePostFromCache(postJsonObject, recentPostsCache)
 
     # remove from the index
-    bookmarksIndexFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/bookmarks.index'
+    bookmarksIndexFilename = \
+        acctDir(baseDir, nickname, domain) + '/bookmarks.index'
     if not os.path.isfile(bookmarksIndexFilename):
         return
     if '/' in postFilename:
@@ -198,8 +199,8 @@ def updateBookmarksCollection(recentPostsCache: {},
         saveJson(postJsonObject, postFilename)
 
         # prepend to the index
-        bookmarksIndexFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/bookmarks.index'
+        bookmarksIndexFilename = \
+            acctDir(baseDir, nickname, domain) + '/bookmarks.index'
         bookmarkIndex = postFilename.split('/')[-1]
         if os.path.isfile(bookmarksIndexFilename):
             if bookmarkIndex not in open(bookmarksIndexFilename).read():

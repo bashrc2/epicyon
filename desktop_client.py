@@ -340,7 +340,7 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
     os.system(speakerCmd)
 
 
-def _playNotificationSound(soundFilename: str, player='ffplay') -> None:
+def _playNotificationSound(soundFilename: str, player: str = 'ffplay') -> None:
     """Plays a sound
     """
     if not os.path.isfile(soundFilename):

@@ -15,6 +15,7 @@ from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
+from utils import acctDir
 from follow import followerApprovalActive
 from person import isPersonSnoozed
 from markdown import markdownToHtml
@@ -364,7 +365,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     timelineStartTime = time.time()
 
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
 
     # should the calendar icon be highlighted?
     newCalendarEvent = False
@@ -498,8 +499,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show an icon for new follow approvals
     followApprovals = ''
     followRequestsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/followrequests.txt'
+        acctDir(baseDir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(followRequestsFilename):
         with open(followRequestsFilename, 'r') as f:
             for line in f:

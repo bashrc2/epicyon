@@ -19,6 +19,7 @@ from utils import getVideoExtensions
 from utils import getAudioExtensions
 from utils import getMediaExtensions
 from utils import hasObjectDict
+from utils import acctDir
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
@@ -67,8 +68,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         return
 
     # get the random seed used to generate a unique pattern for this account
-    decoySeedFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/decoyseed'
+    decoySeedFilename = acctDir(baseDir, nickname, domain) + '/decoyseed'
     decoySeed = 63725
     if os.path.isfile(decoySeedFilename):
         with open(decoySeedFilename, 'r') as fp:
@@ -267,7 +267,8 @@ def attachMedia(baseDir: str, httpPrefix: str,
     return postJson
 
 
-def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
+def archiveMedia(baseDir: str, archiveDirectory: str,
+                 maxWeeks: int = 4) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:

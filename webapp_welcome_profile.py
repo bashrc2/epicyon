@@ -14,6 +14,7 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import getImageExtensions
 from utils import getImageFormats
+from utils import acctDir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from markdown import markdownToHtml
@@ -69,7 +70,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     # get the url of the avatar
     for ext in getImageExtensions():
         avatarFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/avatar.' + ext
+            acctDir(baseDir, nickname, domain) + '/avatar.' + ext
         if os.path.isfile(avatarFilename):
             break
     avatarUrl = \
@@ -97,7 +98,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         'name="previewAvatar">' + translate['Preview'] + '</button> '
     profileForm += '</center>\n'
 
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     actorJson = loadJson(actorFilename)
     displayNickname = actorJson['name']
     profileForm += '<div class="container">\n'

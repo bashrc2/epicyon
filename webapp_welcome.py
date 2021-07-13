@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from utils import getConfigParam
 from utils import removeHtml
+from utils import acctDir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from markdown import markdownToHtml
@@ -19,7 +20,7 @@ from markdown import markdownToHtml
 def isWelcomeScreenComplete(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the welcome screen is complete for the given account
     """
-    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    accountPath = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
     completeFilename = accountPath + '/.welcome_complete'
@@ -30,7 +31,7 @@ def welcomeScreenIsComplete(baseDir: str,
                             nickname: str, domain: str) -> None:
     """Indicates that the welcome screen has been shown for a given account
     """
-    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    accountPath = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
     completeFilename = accountPath + '/.welcome_complete'

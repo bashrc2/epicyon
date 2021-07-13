@@ -28,6 +28,7 @@ from utils import isSuspended
 from utils import containsInvalidChars
 from utils import removeHtml
 from utils import isAccountDir
+from utils import acctDir
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
@@ -918,8 +919,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
     # local blogs can potentially be moderated
     moderatedFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/.newswiremoderated'
+        acctDir(baseDir, nickname, domain) + '/.newswiremoderated'
     if os.path.isfile(moderatedFilename):
         moderated = True
 

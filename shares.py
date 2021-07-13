@@ -22,6 +22,7 @@ from utils import getImageExtensions
 from utils import hasObjectDict
 from utils import removeDomainPort
 from utils import isAccountDir
+from utils import acctDir
 from media import processMetaData
 
 
@@ -44,8 +45,7 @@ def removeShare(baseDir: str, nickname: str, domain: str,
                 displayName: str) -> None:
     """Removes a share for a person
     """
-    sharesFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/shares.json'
+    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     if not os.path.isfile(sharesFilename):
         print('ERROR: missing shares.json ' + sharesFilename)
         return
@@ -101,8 +101,7 @@ def addShare(baseDir: str,
              duration: str, debug: bool, city: str) -> None:
     """Adds a new share
     """
-    sharesFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/shares.json'
+    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
         sharesJson = loadJson(sharesFilename)
@@ -118,7 +117,7 @@ def addShare(baseDir: str,
     moveImage = False
     if not imageFilename:
         sharesImageFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/upload'
+            acctDir(baseDir, nickname, domain) + '/upload'
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
@@ -257,8 +256,7 @@ def getSharesFeedForPerson(baseDir: str,
     domain = getFullDomain(domain, port)
 
     handleDomain = removeDomainPort(domain)
-    handle = nickname + '@' + handleDomain
-    sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
+    sharesFilename = acctDir(baseDir, nickname, handleDomain) + '/shares.json'
 
     if headerOnly:
         noOfShares = 0

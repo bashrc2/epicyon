@@ -32,7 +32,7 @@ def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
 
 def _addEmbeddedVideoFromSites(translate: {}, content: str,
                                peertubeInstances: [],
-                               width=400, height=300) -> str:
+                               width: int = 400, height: int = 300) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:

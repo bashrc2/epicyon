@@ -17,6 +17,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
+from utils import acctDir
 
 
 def setAvailability(baseDir: str, nickname: str, domain: str,
@@ -26,7 +27,7 @@ def setAvailability(baseDir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(status) > 128:
         return False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
     actorJson = loadJson(actorFilename)
@@ -39,7 +40,7 @@ def setAvailability(baseDir: str, nickname: str, domain: str,
 def getAvailability(baseDir: str, nickname: str, domain: str) -> str:
     """Returns the availability for a given person
     """
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
     actorJson = loadJson(actorFilename)

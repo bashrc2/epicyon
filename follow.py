@@ -27,6 +27,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isAccountDir
 from utils import getUserPaths
+from utils import acctDir
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -207,8 +208,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     """is the given nickname a follower of followerNickname?
     """
     domain = removeDomainPort(domain)
-    followersFile = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/followers.txt'
+    followersFile = acctDir(baseDir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return False
     handle = followerNickname + '@' + followerDomain
@@ -806,8 +806,8 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
     if removeFollowActivity:
         # remove the follow request json
         followActivityfilename = \
-            baseDir + '/accounts/' + \
-            nicknameToFollow + '@' + domainToFollow + '/requests/' + \
+            acctDir(baseDir, nicknameToFollow, domainToFollow) + \
+            '/requests/' + \
             nickname + '@' + domain + '.follow'
         if os.path.isfile(followActivityfilename):
             try:
@@ -844,8 +844,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
 
     # get the json for the original follow request
     followActivityfilename = \
-        baseDir + '/accounts/' + \
-        nicknameToFollow + '@' + domainToFollow + '/requests/' + \
+        acctDir(baseDir, nicknameToFollow, domainToFollow) + '/requests/' + \
         nickname + '@' + domain + '.follow'
     followJson = loadJson(followActivityfilename)
     if not followJson:
@@ -1433,7 +1432,7 @@ def followerApprovalActive(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account requires follower approval
     """
     manuallyApprovesFollowers = False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if os.path.isfile(actorFilename):
         actorJson = loadJson(actorFilename)
         if actorJson:

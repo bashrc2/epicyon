@@ -17,9 +17,10 @@ from utils import loadJson
 from utils import saveJson
 from utils import locatePost
 from utils import hasObjectDict
+from utils import acctDir
 
 
-def _validUuid(testUuid: str, version=4):
+def _validUuid(testUuid: str, version: int = 4):
     """Check if uuid_to_test is a valid UUID
     """
     try:
@@ -182,7 +183,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
         dayNumber = currDayOfMonth
 
     calendarFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        acctDir(baseDir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     events = {}
     if not os.path.isfile(calendarFilename):
@@ -255,7 +256,7 @@ def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
     dayNumber = currDate.day
 
     calendarFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        acctDir(baseDir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     if not os.path.isfile(calendarFilename):
         return False
@@ -308,7 +309,7 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     monthNumber = now.month
 
     calendarFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        acctDir(baseDir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
 
     events = {}
@@ -370,7 +371,7 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
     Event and Place activities
     """
     calendarFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        acctDir(baseDir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
 
     events = {}
@@ -432,7 +433,7 @@ def removeCalendarEvent(baseDir: str, nickname: str, domain: str,
     """Removes a calendar event
     """
     calendarFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        acctDir(baseDir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     if not os.path.isfile(calendarFilename):
         return

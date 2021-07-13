@@ -18,6 +18,7 @@ from utils import getDomainFromActor
 from utils import loadJson
 from utils import getOccupationSkills
 from utils import setOccupationSkillsList
+from utils import acctDir
 
 
 def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> []:
@@ -115,7 +116,7 @@ def setSkillLevel(baseDir: str, nickname: str, domain: str,
     """
     if skillLevelPercent < 0 or skillLevelPercent > 100:
         return False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
 
@@ -127,7 +128,7 @@ def setSkillLevel(baseDir: str, nickname: str, domain: str,
 def getSkills(baseDir: str, nickname: str, domain: str) -> []:
     """Returns the skills for a given person
     """
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
 

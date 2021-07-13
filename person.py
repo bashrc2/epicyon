@@ -51,6 +51,7 @@ from utils import hasUsersPath
 from utils import getImageExtensions
 from utils import isImageFile
 from utils import getUserPaths
+from utils import acctDir
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -153,7 +154,8 @@ def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
     domain = removeDomainPort(domain)
-    return os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain) or \
+    accountDir = acctDir(baseDir, nickname, domain)
+    return os.path.isdir(accountDir) or \
         os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain)
 
 
@@ -443,8 +445,7 @@ def savePersonQrcode(baseDir: str,
     """Saves a qrcode image for the handle of the person
     This helps to transfer onion or i2p handles to a mobile device
     """
-    qrcodeFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/qrcode.png'
+    qrcodeFilename = acctDir(baseDir, nickname, domain) + '/qrcode.png'
     if os.path.isfile(qrcodeFilename):
         return
     handle = getFullDomain('@' + nickname + '@' + domain, port)
@@ -492,19 +493,19 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
-    if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
-        os.mkdir(baseDir + '/accounts/' + nickname + '@' + domain)
+    accountDir = acctDir(baseDir, nickname, domain)
+    if not os.path.isdir(accountDir):
+        os.mkdir(accountDir)
 
     if manualFollowerApproval:
-        followDMsFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/.followDMs'
+        followDMsFilename = acctDir(baseDir, nickname, domain) + '/.followDMs'
         with open(followDMsFilename, 'w+') as fFile:
             fFile.write('\n')
 
     # notify when posts are liked
     if nickname != 'news':
-        notifyLikesFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/.notifyLikes'
+        notifyLikesFilename = \
+            acctDir(baseDir, nickname, domain) + '/.notifyLikes'
         with open(notifyLikesFilename, 'w+') as nFile:
             nFile.write('\n')
 
@@ -514,15 +515,14 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
 
     if nickname != 'news':
         if os.path.isfile(baseDir + '/img/default-avatar.png'):
+            accountDir = acctDir(baseDir, nickname, domain)
             copyfile(baseDir + '/img/default-avatar.png',
-                     baseDir + '/accounts/' + nickname + '@' + domain +
-                     '/avatar.png')
+                     accountDir + '/avatar.png')
     else:
         newsAvatar = baseDir + '/theme/' + theme + '/icons/avatar_news.png'
         if os.path.isfile(newsAvatar):
-            copyfile(newsAvatar,
-                     baseDir + '/accounts/' + nickname + '@' + domain +
-                     '/avatar.png')
+            accountDir = acctDir(baseDir, nickname, domain)
+            copyfile(newsAvatar, accountDir + '/avatar.png')
 
     defaultProfileImageFilename = baseDir + '/theme/default/image.png'
     if theme:
@@ -530,15 +530,15 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
             defaultProfileImageFilename = \
                 baseDir + '/theme/' + theme + '/image.png'
     if os.path.isfile(defaultProfileImageFilename):
-        copyfile(defaultProfileImageFilename, baseDir +
-                 '/accounts/' + nickname + '@' + domain + '/image.png')
+        accountDir = acctDir(baseDir, nickname, domain)
+        copyfile(defaultProfileImageFilename, accountDir + '/image.png')
     defaultBannerFilename = baseDir + '/theme/default/banner.png'
     if theme:
         if os.path.isfile(baseDir + '/theme/' + theme + '/banner.png'):
             defaultBannerFilename = baseDir + '/theme/' + theme + '/banner.png'
     if os.path.isfile(defaultBannerFilename):
-        copyfile(defaultBannerFilename, baseDir + '/accounts/' +
-                 nickname + '@' + domain + '/banner.png')
+        accountDir = acctDir(baseDir, nickname, domain)
+        copyfile(defaultBannerFilename, accountDir + '/banner.png')
     if nickname != 'news' and remainingConfigExists:
         registrationsRemaining -= 1
         setConfigParam(baseDir, 'registrationsRemaining',
@@ -899,12 +899,10 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
             if moderator.strip('\n').strip('\r') == nickname:
                 return
 
-    saltFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.salt'
+    saltFilename = acctDir(baseDir, nickname, domain) + '/.salt'
     if os.path.isfile(saltFilename):
         os.remove(saltFilename)
-    tokenFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.token'
+    tokenFilename = acctDir(baseDir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
         os.remove(tokenFilename)
 
@@ -1090,8 +1088,7 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
                     snoozeActor: str) -> bool:
     """Returns true if the given actor is snoozed
     """
-    snoozedFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/snoozed.txt'
+    snoozedFilename = acctDir(baseDir, nickname, domain) + '/snoozed.txt'
     if not os.path.isfile(snoozedFilename):
         return False
     if snoozeActor + ' ' not in open(snoozedFilename).read():
@@ -1131,7 +1128,7 @@ def personSnooze(baseDir: str, nickname: str, domain: str,
                  snoozeActor: str) -> None:
     """Temporarily ignores the given actor
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountDir):
         print('ERROR: unknown account ' + accountDir)
         return
@@ -1148,7 +1145,7 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
                    snoozeActor: str) -> None:
     """Undoes a temporarily ignore of the given actor
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(accountDir):
         print('ERROR: unknown account ' + accountDir)
         return
@@ -1180,8 +1177,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
         return False
     if handle.startswith('@'):
         handle = handle[1:]
-    notesDir = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/notes'
+    notesDir = acctDir(baseDir, nickname, domain) + '/notes'
     if not os.path.isdir(notesDir):
         os.mkdir(notesDir)
     notesFilename = notesDir + '/' + handle + '.txt'

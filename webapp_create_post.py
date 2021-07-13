@@ -14,6 +14,7 @@ from utils import getDomainFromActor
 from utils import getImageFormats
 from utils import getMediaFormats
 from utils import getConfigParam
+from utils import acctDir
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -25,7 +26,7 @@ def _htmlFollowingDataList(baseDir: str, nickname: str,
     """
     listStr = '<datalist id="followingHandles">\n'
     followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+        acctDir(baseDir, nickname, domain) + '/following.txt'
     msg = None
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
@@ -36,7 +37,7 @@ def _htmlFollowingDataList(baseDir: str, nickname: str,
     if msg:
         # include petnames
         petnamesFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/petnames.txt'
+            acctDir(baseDir, nickname, domain) + '/petnames.txt'
         if os.path.isfile(petnamesFilename):
             followingList = []
             with open(petnamesFilename, 'r') as petnamesFile:
@@ -403,8 +404,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     citationsStr = ''
     if endpoint == 'newblog':
         citationsFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/.citations.txt'
+            acctDir(baseDir, nickname, domain) + '/.citations.txt'
         if os.path.isfile(citationsFilename):
             citationsStr = '<div class="container">\n'
             citationsStr += '<p><label class="labels">' + \

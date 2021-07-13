@@ -15,6 +15,7 @@ from utils import loadJson
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import getUserPaths
+from utils import acctDir
 
 
 def manualDenyFollowRequest(session, baseDir: str,
@@ -28,8 +29,7 @@ def manualDenyFollowRequest(session, baseDir: str,
                             projectVersion: str) -> None:
     """Manually deny a follow request
     """
-    handle = nickname + '@' + domain
-    accountsDir = baseDir + '/accounts/' + handle
+    accountsDir = acctDir(baseDir, nickname, domain)
 
     # has this handle already been rejected?
     rejectedFollowsFilename = accountsDir + '/followrejects.txt'

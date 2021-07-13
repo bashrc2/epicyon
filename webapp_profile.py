@@ -22,6 +22,7 @@ from utils import removeHtml
 from utils import loadJson
 from utils import getConfigParam
 from utils import getImageFormats
+from utils import acctDir
 from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson
@@ -592,8 +593,7 @@ def htmlProfile(rssIconAtTop: bool,
 
         # are there any follow requests?
         followRequestsFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/followrequests.txt'
+            acctDir(baseDir, nickname, domain) + '/followrequests.txt'
         if os.path.isfile(followRequestsFilename):
             with open(followRequestsFilename, 'r') as f:
                 for line in f:
@@ -679,7 +679,7 @@ def htmlProfile(rssIconAtTop: bool,
                               '://' + domainFull + '/users/')
 
     # get pinned post content
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedContent = None
     if os.path.isfile(pinnedFilename):
@@ -1392,8 +1392,7 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
     """
     gitProjectsStr = ''
     gitProjectsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/gitprojects.txt'
+        acctDir(baseDir, nickname, domain) + '/gitprojects.txt'
     if os.path.isfile(gitProjectsFilename):
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
@@ -1419,55 +1418,49 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
     """
     filterStr = ''
     filterFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/filters.txt'
+        acctDir(baseDir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filterFilename):
         with open(filterFilename, 'r') as filterfile:
             filterStr = filterfile.read()
 
     switchStr = ''
     switchFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/replacewords.txt'
+        acctDir(baseDir, nickname, domain) + '/replacewords.txt'
     if os.path.isfile(switchFilename):
         with open(switchFilename, 'r') as switchfile:
             switchStr = switchfile.read()
 
     autoTags = ''
     autoTagsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/autotags.txt'
+        acctDir(baseDir, nickname, domain) + '/autotags.txt'
     if os.path.isfile(autoTagsFilename):
         with open(autoTagsFilename, 'r') as autoTagsFile:
             autoTags = autoTagsFile.read()
 
     autoCW = ''
     autoCWFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/autocw.txt'
+        acctDir(baseDir, nickname, domain) + '/autocw.txt'
     if os.path.isfile(autoCWFilename):
         with open(autoCWFilename, 'r') as autoCWFile:
             autoCW = autoCWFile.read()
 
     blockedStr = ''
     blockedFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/blocking.txt'
+        acctDir(baseDir, nickname, domain) + '/blocking.txt'
     if os.path.isfile(blockedFilename):
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr = blockedfile.read()
 
     dmAllowedInstancesStr = ''
     dmAllowedInstancesFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/dmAllowedInstances.txt'
+        acctDir(baseDir, nickname, domain) + '/dmAllowedInstances.txt'
     if os.path.isfile(dmAllowedInstancesFilename):
         with open(dmAllowedInstancesFilename, 'r') as dmAllowedInstancesFile:
             dmAllowedInstancesStr = dmAllowedInstancesFile.read()
 
     allowedInstancesStr = ''
     allowedInstancesFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/allowedinstances.txt'
+        acctDir(baseDir, nickname, domain) + '/allowedinstances.txt'
     if os.path.isfile(allowedInstancesFilename):
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
@@ -1481,8 +1474,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         translate['City for spoofed GPS image metadata'] + \
         '</label><br>\n'
 
-    cityFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/city.txt'
+    cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
             city = fp.read().replace('\n', '')
@@ -1907,8 +1899,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
     domainFull = getFullDomain(domain, port)
 
-    actorFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return ''
 
@@ -1961,17 +1952,14 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             elif actorJson['type'] == 'Group':
                 isGroup = 'checked'
                 isBot = ''
-    if os.path.isfile(baseDir + '/accounts/' +
-                      nickname + '@' + domain + '/.followDMs'):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if os.path.isfile(accountDir + '/.followDMs'):
         followDMs = 'checked'
-    if os.path.isfile(baseDir + '/accounts/' +
-                      nickname + '@' + domain + '/.removeTwitter'):
+    if os.path.isfile(accountDir + '/.removeTwitter'):
         removeTwitter = 'checked'
-    if os.path.isfile(baseDir + '/accounts/' +
-                      nickname + '@' + domain + '/.notifyLikes'):
+    if os.path.isfile(accountDir + '/.notifyLikes'):
         notifyLikes = 'checked'
-    if os.path.isfile(baseDir + '/accounts/' +
-                      nickname + '@' + domain + '/.hideLikeButton'):
+    if os.path.isfile(accountDir + '/.hideLikeButton'):
         hideLikeButton = 'checked'
 
     mediaInstance = getConfigParam(baseDir, "mediaInstance")

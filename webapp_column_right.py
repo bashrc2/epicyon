@@ -19,6 +19,7 @@ from utils import getNicknameFromActor
 from utils import isEditor
 from utils import getConfigParam
 from utils import removeDomainPort
+from utils import acctDir
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -337,8 +338,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     # create a list of dates for citations
     # these can then be used to re-select checkboxes later
     citationsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.citations.txt'
+        acctDir(baseDir, nickname, domain) + '/.citations.txt'
     citationsSelected = []
     if os.path.isfile(citationsFilename):
         citationsSeparator = '#####'

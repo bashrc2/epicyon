@@ -59,6 +59,7 @@ from utils import locateNewsArrival
 from utils import votesOnNewswireItem
 from utils import removeHtml
 from utils import dangerousMarkup
+from utils import acctDir
 from media import attachMedia
 from media import replaceYouTube
 from content import limitRepeatedWords
@@ -775,8 +776,7 @@ def _loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
     """Loads automatic CWs file and returns a list containing
     the lines of the file
     """
-    filename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/autocw.txt'
+    filename = acctDir(baseDir, nickname, domain) + '/autocw.txt'
     if not os.path.isfile(filename):
         return []
     with open(filename, 'r') as f:
@@ -1324,7 +1324,7 @@ def pinPost(baseDir: str, nickname: str, domain: str,
             pinnedContent: str) -> None:
     """Pins the given post Id to the profile of then given account
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     with open(pinnedFilename, 'w+') as pinFile:
         pinFile.write(pinnedContent)
@@ -1333,7 +1333,7 @@ def pinPost(baseDir: str, nickname: str, domain: str,
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     if os.path.isfile(pinnedFilename):
         os.remove(pinnedFilename)
@@ -1344,7 +1344,7 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
                         domainFull: str) -> {}:
     """Returns the pinned profile post as json
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedPostJson = {}
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
@@ -1464,8 +1464,7 @@ def _appendCitationsToBlogPost(baseDir: str,
     """
     # append citations tags, stored in a file
     citationsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.citations.txt'
+        acctDir(baseDir, nickname, domain) + '/.citations.txt'
     if not os.path.isfile(citationsFilename):
         return
     citationsSeparator = '#####'
@@ -3815,9 +3814,7 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
             for boxname in repliesBoxes:
                 messageId2 = messageId.replace('\n', '').replace('\r', '')
                 searchFilename = \
-                    baseDir + \
-                    '/accounts/' + nickname + '@' + \
-                    domain + '/' + \
+                    acctDir(baseDir, nickname, domain) + '/' + \
                     boxname + '/' + \
                     messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
@@ -4419,7 +4416,7 @@ def postIsMuted(baseDir: str, nickname: str, domain: str,
     isMuted = postJsonObject.get('muted')
     if isMuted is True or isMuted is False:
         return isMuted
-    postDir = baseDir + '/accounts/' + nickname + '@' + domain
+    postDir = acctDir(baseDir, nickname, domain)
     muteFilename = \
         postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
     if os.path.isfile(muteFilename):
