@@ -65,7 +65,7 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     removals = []
     replies = 0
     lines = []
-    with open(postFilename, "r") as f:
+    with open(postFilename, 'r') as f:
         lines = f.readlines()
         for replyPostId in lines:
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
@@ -124,11 +124,11 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                     '/postcache/' + \
                     postId.replace('/', '#') + '.html'
                 if os.path.isfile(postFilename):
-                    with open(postFilename, "r") as postFile:
+                    with open(postFilename, 'r') as postFile:
                         return postFile.read() + '\n'
         return ''
 
-    with open(postFilename, "r") as f:
+    with open(postFilename, 'r') as f:
         lines = f.readlines()
         repliesStr = ''
         for replyPostId in lines:
@@ -141,7 +141,7 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                 replyPostId.replace('/', '#') + '.html'
             if not os.path.isfile(postFilename):
                 continue
-            with open(postFilename, "r") as postFile:
+            with open(postFilename, 'r') as postFile:
                 repliesStr += postFile.read() + '\n'
             rply = _getBlogReplies(baseDir, httpPrefix, translate,
                                    nickname, domain, domainFull,

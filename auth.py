@@ -132,7 +132,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
             print('DEBUG: passwords file missing')
         return False
     providedPassword = plain.split(':')[1]
-    passfile = open(passwordFile, "r")
+    passfile = open(passwordFile, 'r')
     for line in passfile:
         if line.startswith(nickname + ':'):
             storedPassword = \
@@ -162,7 +162,7 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     storeStr = nickname + ':' + _hashPassword(password)
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
-            with open(passwordFile, "r") as fin:
+            with open(passwordFile, 'r') as fin:
                 with open(passwordFile + '.new', 'w+') as fout:
                     for line in fin:
                         if not line.startswith(nickname + ':'):
@@ -186,7 +186,7 @@ def removePassword(baseDir: str, nickname: str) -> None:
     """
     passwordFile = baseDir + '/accounts/passwords'
     if os.path.isfile(passwordFile):
-        with open(passwordFile, "r") as fin:
+        with open(passwordFile, 'r') as fin:
             with open(passwordFile + '.new', 'w+') as fout:
                 for line in fin:
                     if not line.startswith(nickname + ':'):

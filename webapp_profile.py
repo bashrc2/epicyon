@@ -1231,7 +1231,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     moderators = ''
     moderatorsFile = baseDir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, "r") as f:
+        with open(moderatorsFile, 'r') as f:
             moderators = f.read()
     # site moderators
     roleAssignStr = '<details><summary class="cw">' + \
@@ -1251,7 +1251,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     editors = ''
     editorsFile = baseDir + '/accounts/editors.txt'
     if os.path.isfile(editorsFile):
-        with open(editorsFile, "r") as f:
+        with open(editorsFile, 'r') as f:
             editors = f.read()
     roleAssignStr += '  <b><label class="labels">' + \
         translate['Site Editors'] + '</label></b><br>\n'
@@ -1266,7 +1266,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     counselors = ''
     counselorsFile = baseDir + '/accounts/counselors.txt'
     if os.path.isfile(counselorsFile):
-        with open(counselorsFile, "r") as f:
+        with open(counselorsFile, 'r') as f:
             counselors = f.read()
     roleAssignStr += '  <b><label class="labels">' + \
         translate['Counselors'] + '</label></b><br>\n'
@@ -1280,7 +1280,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     artists = ''
     artistsFile = baseDir + '/accounts/artists.txt'
     if os.path.isfile(artistsFile):
-        with open(artistsFile, "r") as f:
+        with open(artistsFile, 'r') as f:
             artists = f.read()
     roleAssignStr += '  <b><label class="labels">' + \
         translate['Artists'] + '</label></b><br>\n'
@@ -1490,7 +1490,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(locationsFilename):
         locationsFilename = baseDir + '/locations.txt'
     cities = []
-    with open(locationsFilename, "r") as f:
+    with open(locationsFilename, 'r') as f:
         cities = f.readlines()
         cities.sort()
     editProfileForm += '  <select id="cityDropdown" ' + \

@@ -189,7 +189,7 @@ def isEditor(baseDir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(editorsFile, "r") as f:
+    with open(editorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
             adminName = getConfigParam(baseDir, 'admin')
@@ -217,7 +217,7 @@ def isArtist(baseDir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(artistsFile, "r") as f:
+    with open(artistsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
             adminName = getConfigParam(baseDir, 'admin')
@@ -427,7 +427,7 @@ def isSuspended(baseDir: str, nickname: str) -> bool:
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, "r") as f:
+        with open(suspendedFilename, 'r') as f:
             lines = f.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
@@ -446,7 +446,7 @@ def getFollowersList(baseDir: str,
     if not os.path.isfile(filename):
         return []
 
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         lines = f.readlines()
         for i in range(len(lines)):
             lines[i] = lines[i].strip()
@@ -1012,7 +1012,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         if handleToFollow in open(unfollowedFilename).read():
             # remove them from the unfollowed file
             newLines = ''
-            with open(unfollowedFilename, "r") as f:
+            with open(unfollowedFilename, 'r') as f:
                 lines = f.readlines()
                 for line in lines:
                     if handleToFollow not in line:
@@ -1229,9 +1229,9 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
         return
     postId = removeIdEnding(postUrl)
     if postId in open(moderationIndexFile).read():
-        with open(moderationIndexFile, "r") as f:
+        with open(moderationIndexFile, 'r') as f:
             lines = f.readlines()
-            with open(moderationIndexFile, "w+") as f:
+            with open(moderationIndexFile, 'w+') as f:
                 for line in lines:
                     if line.strip("\n").strip("\r") != postId:
                         f.write(line)
@@ -1371,7 +1371,7 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             continue
         # remove postId from the tag index file
         lines = None
-        with open(tagIndexFilename, "r") as f:
+        with open(tagIndexFilename, 'r') as f:
             lines = f.readlines()
         if not lines:
             continue
@@ -1386,7 +1386,7 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             os.remove(tagIndexFilename)
         else:
             # write the new hashtag index without the given post in it
-            with open(tagIndexFilename, "w+") as f:
+            with open(tagIndexFilename, 'w+') as f:
                 f.write(newlines)
 
 

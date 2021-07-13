@@ -150,7 +150,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     linksFileContainsEntries = False
     linksList = None
     if os.path.isfile(linksFilename):
-        with open(linksFilename, "r") as f:
+        with open(linksFilename, 'r') as f:
             linksList = f.readlines()
 
     if not frontPage:

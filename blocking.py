@@ -720,7 +720,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
                     followingFilename = accountDir + '/' + followFileType
                     if not os.path.isfile(followingFilename):
                         continue
-                    with open(followingFilename, "r") as f:
+                    with open(followingFilename, 'r') as f:
                         followList = f.readlines()
                         for handle in followList:
                             if '@' not in handle:

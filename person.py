@@ -872,7 +872,7 @@ def reenableAccount(baseDir: str, nickname: str) -> None:
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         lines = []
-        with open(suspendedFilename, "r") as f:
+        with open(suspendedFilename, 'r') as f:
             lines = f.readlines()
         with open(suspendedFilename, 'w+') as suspendedFile:
             for suspended in lines:
@@ -893,7 +893,7 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
     # Don't suspend moderators
     moderatorsFile = baseDir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, "r") as f:
+        with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
         for moderator in lines:
             if moderator.strip('\n').strip('\r') == nickname:
@@ -910,7 +910,7 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, "r") as f:
+        with open(suspendedFilename, 'r') as f:
             lines = f.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
@@ -941,7 +941,7 @@ def canRemovePost(baseDir: str, nickname: str,
     # is the post by a moderator?
     moderatorsFile = baseDir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, "r") as f:
+        with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
         for moderator in lines:
             if domainFull + '/users/' + moderator.strip('\n') + '/' in postId:
@@ -972,7 +972,7 @@ def _removeTagsForNickname(baseDir: str, nickname: str,
         if matchStr not in open(tagFilename).read():
             continue
         lines = []
-        with open(tagFilename, "r") as f:
+        with open(tagFilename, 'r') as f:
             lines = f.readlines()
         with open(tagFilename, 'w+') as tagFile:
             for tagline in lines:
@@ -994,7 +994,7 @@ def removeAccount(baseDir: str, nickname: str,
     # Don't remove moderators
     moderatorsFile = baseDir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, "r") as f:
+        with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
         for moderator in lines:
             if moderator.strip('\n') == nickname:

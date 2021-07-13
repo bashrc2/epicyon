@@ -411,7 +411,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 translate['Citations'] + ':</label></p>\n'
             citationsStr += '  <ul>\n'
             citationsSeparator = '#####'
-            with open(citationsFilename, "r") as f:
+            with open(citationsFilename, 'r') as f:
                 citations = f.readlines()
                 for line in citations:
                     if citationsSeparator not in line:

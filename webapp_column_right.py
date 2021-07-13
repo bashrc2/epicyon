@@ -342,7 +342,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     citationsSelected = []
     if os.path.isfile(citationsFilename):
         citationsSeparator = '#####'
-        with open(citationsFilename, "r") as f:
+        with open(citationsFilename, 'r') as f:
             citations = f.readlines()
             for line in citations:
                 if citationsSeparator not in line:

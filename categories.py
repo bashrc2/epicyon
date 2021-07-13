@@ -165,12 +165,15 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
     """Tries to guess a category for the given hashtag.
     This works by trying to find the longest similar hashtag
     """
+    if len(tagName) < 4:
+        return ''
+
     categoryMatched = ''
     tagMatchedLen = 0
 
     for categoryStr, hashtagList in hashtagCategories.items():
         for hashtag in hashtagList:
-            if len(hashtag) < 3:
+            if len(hashtag) < 4:
                 # avoid matching very small strings which often
                 # lead to spurious categories
                 continue
@@ -185,5 +188,5 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
                 if len(hashtag) > tagMatchedLen:
                     categoryMatched = categoryStr
     if not categoryMatched:
-        return
+        return ''
     return categoryMatched

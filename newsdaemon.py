@@ -374,7 +374,7 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     if not os.path.isfile(rulesFilename):
         return True
     rules = []
-    with open(rulesFilename, "r") as f:
+    with open(rulesFilename, 'r') as f:
         rules = f.readlines()
 
     domainFull = getFullDomain(domain, port)
@@ -471,7 +471,7 @@ def _createNewsMirror(baseDir: str, domain: str,
                 for removePostId in removals:
                     indexContent = \
                         indexContent.replace(removePostId + '\n', '')
-            with open(mirrorIndexFilename, "w+") as indexFile:
+            with open(mirrorIndexFilename, 'w+') as indexFile:
                 indexFile.write(indexContent)
 
     mirrorArticleDir = mirrorDir + '/' + postIdNumber

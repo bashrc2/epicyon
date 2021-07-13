@@ -257,7 +257,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
             print('DEBUG: handle to unfollow ' + handleToUnfollow +
                   ' is not in ' + filename)
         return
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         lines = f.readlines()
         with open(filename, 'w+') as f:
             for line in lines:
@@ -271,10 +271,10 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(unfollowedFilename):
         if handleToUnfollowLower not in \
            open(unfollowedFilename).read().lower():
-            with open(unfollowedFilename, "a+") as f:
+            with open(unfollowedFilename, 'a+') as f:
                 f.write(handleToUnfollow + '\n')
     else:
-        with open(unfollowedFilename, "w+") as f:
+        with open(unfollowedFilename, 'w+') as f:
             f.write(handleToUnfollow + '\n')
 
     return True
@@ -324,7 +324,7 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(filename):
         return 0
     ctr = 0
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         lines = f.readlines()
         for line in lines:
             if '#' in line:
@@ -435,7 +435,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     currPage = 1
     pageCtr = 0
     totalCtr = 0
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         lines = f.readlines()
         for line in lines:
             if '#' not in line:
@@ -516,7 +516,7 @@ def _noOfFollowRequests(baseDir: str,
     if not os.path.isfile(approveFollowsFilename):
         return 0
     ctr = 0
-    with open(approveFollowsFilename, "r") as f:
+    with open(approveFollowsFilename, 'r') as f:
         lines = f.readlines()
         if followType == "onion":
             for fileLine in lines:
@@ -600,7 +600,7 @@ def _storeFollowRequest(baseDir: str,
                 print('DEBUG: ' + approveHandleStored +
                       ' is already awaiting approval')
     else:
-        with open(approveFollowsFilename, "w+") as fp:
+        with open(approveFollowsFilename, 'w+') as fp:
             fp.write(approveHandleStored + '\n')
 
     # store the follow request in its own directory
