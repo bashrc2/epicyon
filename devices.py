@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Security"
 
 # REST API overview
 #
@@ -32,13 +33,14 @@ __status__ = "Production"
 import os
 from utils import loadJson
 from utils import saveJson
+from utils import acctDir
 
 
 def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
                      deviceId: str) -> bool:
     """Unregisters a device for e2ee
     """
-    personDir = baseDir + '/accounts/' + nickname + '@' + domain
+    personDir = acctDir(baseDir, nickname, domain)
     deviceFilename = personDir + '/devices/' + deviceId + '.json'
     if os.path.isfile(deviceFilename):
         os.remove(deviceFilename)
@@ -110,7 +112,7 @@ def E2EEaddDevice(baseDir: str, nickname: str, domain: str,
        '?' in deviceId or '#' in deviceId or \
        '.' in deviceId:
         return False
-    personDir = baseDir + '/accounts/' + nickname + '@' + domain
+    personDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(personDir):
         return False
     if not os.path.isdir(personDir + '/devices'):
@@ -137,7 +139,7 @@ def E2EEdevicesCollection(baseDir: str, nickname: str, domain: str,
                           domainFull: str, httpPrefix: str) -> {}:
     """Returns a list of registered devices
     """
-    personDir = baseDir + '/accounts/' + nickname + '@' + domain
+    personDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(personDir):
         return {}
     personId = httpPrefix + '://' + domainFull + '/users/' + nickname

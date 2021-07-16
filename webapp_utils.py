@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from collections import OrderedDict
@@ -15,10 +16,11 @@ from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
 from utils import getConfigParam
-from cache import getPersonFromCache
+from utils import acctDir
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
+from person import getPersonAvatarUrl
 
 
 def getBrokenLinkSubstitute() -> str:
@@ -149,20 +151,6 @@ def headerButtonsFrontScreen(translate: {},
     return headerStr
 
 
-def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
-    """Returns alternate path from the actor
-    eg. https://clearnetdomain/path becomes http://oniondomain/path
-    """
-    postActor = actor
-    if callingDomain not in actor and domainFull in actor:
-        if callingDomain.endswith('.onion') or \
-           callingDomain.endswith('.i2p'):
-            postActor = \
-                'http://' + callingDomain + actor.split(domainFull)[1]
-            print('Changed POST domain from ' + actor + ' to ' + postActor)
-    return postActor
-
-
 def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
@@ -171,48 +159,6 @@ def getContentWarningButton(postID: str, translate: {},
         translate['SHOW MORE'] + '</summary>' + \
         '<div id="' + postID + '">' + content + \
         '</div></details>\n'
-
-
-def _getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
-    """Returns a url property from an actor
-    """
-    if not actorJson.get('attachment'):
-        return ''
-    propertyName = propertyName.lower()
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
-            continue
-        if not propertyValue['name'].lower().startswith(propertyName):
-            continue
-        if not propertyValue.get('type'):
-            continue
-        if not propertyValue.get('value'):
-            continue
-        if propertyValue['type'] != 'PropertyValue':
-            continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        prefixes = getProtocolPrefixes()
-        prefixFound = False
-        for prefix in prefixes:
-            if propertyValue['value'].startswith(prefix):
-                prefixFound = True
-                break
-        if not prefixFound:
-            continue
-        if '.' not in propertyValue['value']:
-            continue
-        if ' ' in propertyValue['value']:
-            continue
-        if ',' in propertyValue['value']:
-            continue
-        return propertyValue['value']
-    return ''
-
-
-def getBlogAddress(actorJson: {}) -> str:
-    """Returns blog address for the given actor
-    """
-    return _getActorPropertyUrl(actorJson, 'Blog')
 
 
 def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
@@ -281,7 +227,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
-                           force=False) -> str:
+                           force: bool = False, debug: bool = False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -313,25 +259,28 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
 
     if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:
         try:
-            print('avatar image url: ' + avatarUrl)
+            if debug:
+                print('avatar image url: ' + avatarUrl)
             result = session.get(avatarUrl,
                                  headers=sessionHeaders,
                                  params=None)
             if result.status_code < 200 or \
                result.status_code > 202:
-                print('Avatar image download failed with status ' +
-                      str(result.status_code))
+                if debug:
+                    print('Avatar image download failed with status ' +
+                          str(result.status_code))
                 # remove partial download
                 if os.path.isfile(avatarImageFilename):
                     os.remove(avatarImageFilename)
             else:
                 with open(avatarImageFilename, 'wb') as f:
                     f.write(result.content)
-                    print('avatar image downloaded for ' + actor)
+                    if debug:
+                        print('avatar image downloaded for ' + actor)
                     return avatarImageFilename.replace(baseDir + '/cache', '')
         except Exception as e:
-            print('Failed to download avatar image: ' + str(avatarUrl))
-            print(e)
+            print('WARN: Failed to download avatar image: ' +
+                  str(avatarUrl) + ' ' + str(e))
         prof = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
             sessionHeaders = {
@@ -342,8 +291,8 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
         personJson = \
-            getJson(session, actor, sessionHeaders, None, __version__,
-                    httpPrefix, None)
+            getJson(session, actor, sessionHeaders, None,
+                    debug, __version__, httpPrefix, None)
         if personJson:
             if not personJson.get('id'):
                 return None
@@ -369,37 +318,11 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
     return avatarImageFilename.replace(baseDir + '/cache', '')
 
 
-def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
-                       allowDownloads: bool) -> str:
-    """Returns the avatar url for the person
-    """
-    personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
-    if not personJson:
-        return None
-
-    # get from locally stored image
-    actorStr = personJson['id'].replace('/', '-')
-    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
-
-    imageExtension = getImageExtensions()
-    for ext in imageExtension:
-        if os.path.isfile(avatarImagePath + '.' + ext):
-            return '/avatars/' + actorStr + '.' + ext
-        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
-            return '/avatars/' + actorStr.lower() + '.' + ext
-
-    if personJson.get('icon'):
-        if personJson['icon'].get('url'):
-            return personJson['icon']['url']
-    return None
-
-
 def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
     scheduleIndexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/schedule.index'
+        acctDir(baseDir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(scheduleIndexFilename):
         return False
     if '#users#' in open(scheduleIndexFilename).read():
@@ -502,45 +425,249 @@ def _getImageFile(baseDir: str, name: str, directory: str,
 
 def getBannerFile(baseDir: str,
                   nickname: str, domain: str, theme: str) -> (str, str):
-    return _getImageFile(baseDir, 'banner',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
+    accountDir = acctDir(baseDir, nickname, domain)
+    return _getImageFile(baseDir, 'banner', accountDir,
                          nickname, domain, theme)
 
 
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
-    return _getImageFile(baseDir, 'search_banner',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
+    accountDir = acctDir(baseDir, nickname, domain)
+    return _getImageFile(baseDir, 'search_banner', accountDir,
                          nickname, domain, theme)
 
 
 def getLeftImageFile(baseDir: str,
                      nickname: str, domain: str, theme: str) -> (str, str):
-    return _getImageFile(baseDir, 'left_col_image',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
+    accountDir = acctDir(baseDir, nickname, domain)
+    return _getImageFile(baseDir, 'left_col_image', accountDir,
                          nickname, domain, theme)
 
 
 def getRightImageFile(baseDir: str,
                       nickname: str, domain: str, theme: str) -> (str, str):
+    accountDir = acctDir(baseDir, nickname, domain)
     return _getImageFile(baseDir, 'right_col_image',
-                         baseDir + '/accounts/' + nickname + '@' + domain,
-                         nickname, domain, theme)
+                         accountDir, nickname, domain, theme)
 
 
 def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
                                 lang='en') -> str:
-    htmlStr = '<!DOCTYPE html>\n'
-    htmlStr += '<html lang="' + lang + '">\n'
-    htmlStr += '  <head>\n'
-    htmlStr += '    <meta charset="utf-8">\n'
     cssFile = '/' + cssFilename.split('/')[-1]
-    htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">\n'
-    htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
-    htmlStr += '    <meta name="theme-color" content="grey">\n'
-    htmlStr += '    <title>' + instanceTitle + '</title>\n'
-    htmlStr += '  </head>\n'
-    htmlStr += '  <body>\n'
+    htmlStr = \
+        '<!DOCTYPE html>\n' + \
+        '<html lang="' + lang + '">\n' + \
+        '  <head>\n' + \
+        '    <meta charset="utf-8">\n' + \
+        '    <link rel="stylesheet" href="' + cssFile + '">\n' + \
+        '    <link rel="manifest" href="/manifest.json">\n' + \
+        '    <meta name="theme-color" content="grey">\n' + \
+        '    <title>' + instanceTitle + '</title>\n' + \
+        '  </head>\n' + \
+        '  <body>\n'
+    return htmlStr
+
+
+def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
+                               actorJson: {}, city: str,
+                               lang='en') -> str:
+    """html header which includes person markup
+    https://schema.org/Person
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, lang)
+    if not actorJson:
+        return htmlStr
+
+    cityMarkup = ''
+    if city:
+        city = city.lower().title()
+        addComma = ''
+        countryMarkup = ''
+        if ',' in city:
+            country = city.split(',', 1)[1].strip().title()
+            city = city.split(',', 1)[0]
+            countryMarkup = \
+                '        "addressCountry": "' + country + '"\n'
+            addComma = ','
+        cityMarkup = \
+            '      "address": {\n' + \
+            '        "@type": "PostalAddress",\n' + \
+            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            countryMarkup + \
+            '      },\n'
+
+    skillsMarkup = ''
+    if actorJson.get('hasOccupation'):
+        if isinstance(actorJson['hasOccupation'], list):
+            skillsMarkup = '      "hasOccupation": [\n'
+            firstEntry = True
+            for skillDict in actorJson['hasOccupation']:
+                if skillDict['@type'] == 'Role':
+                    if not firstEntry:
+                        skillsMarkup += ',\n'
+                    sk = skillDict['hasOccupation']
+                    roleName = sk['name']
+                    if not roleName:
+                        roleName = 'member'
+                    category = \
+                        sk['occupationalCategory']['codeValue']
+                    categoryUrl = \
+                        'https://www.onetonline.org/link/summary/' + category
+                    skillsMarkup += \
+                        '        {\n' + \
+                        '          "@type": "Role",\n' + \
+                        '          "hasOccupation": {\n' + \
+                        '            "@type": "Occupation",\n' + \
+                        '            "name": "' + roleName + '",\n' + \
+                        '            "description": ' + \
+                        '"Fediverse instance role",\n' + \
+                        '            "occupationLocation": {\n' + \
+                        '              "@type": "City",\n' + \
+                        '              "name": "' + city + '"\n' + \
+                        '            },\n' + \
+                        '            "occupationalCategory": {\n' + \
+                        '              "@type": "CategoryCode",\n' + \
+                        '              "inCodeSet": {\n' + \
+                        '                "@type": "CategoryCodeSet",\n' + \
+                        '                "name": "O*Net-SOC",\n' + \
+                        '                "dateModified": "2019",\n' + \
+                        '                ' + \
+                        '"url": "https://www.onetonline.org/"\n' + \
+                        '              },\n' + \
+                        '              "codeValue": "' + category + '",\n' + \
+                        '              "url": "' + categoryUrl + '"\n' + \
+                        '            }\n' + \
+                        '          }\n' + \
+                        '        }'
+                elif skillDict['@type'] == 'Occupation':
+                    if not firstEntry:
+                        skillsMarkup += ',\n'
+                    ocName = skillDict['name']
+                    if not ocName:
+                        ocName = 'member'
+                    skillsList = skillDict['skills']
+                    skillsListStr = '['
+                    for skillStr in skillsList:
+                        if skillsListStr != '[':
+                            skillsListStr += ', '
+                        skillsListStr += '"' + skillStr + '"'
+                    skillsListStr += ']'
+                    skillsMarkup += \
+                        '        {\n' + \
+                        '          "@type": "Occupation",\n' + \
+                        '          "name": "' + ocName + '",\n' + \
+                        '          "description": ' + \
+                        '"Fediverse instance occupation",\n' + \
+                        '          "occupationLocation": {\n' + \
+                        '            "@type": "City",\n' + \
+                        '            "name": "' + city + '"\n' + \
+                        '          },\n' + \
+                        '          "skills": ' + skillsListStr + '\n' + \
+                        '        }'
+                firstEntry = False
+            skillsMarkup += '\n      ],\n'
+
+    description = removeHtml(actorJson['summary'])
+    nameStr = removeHtml(actorJson['name'])
+    personMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "Person",\n' + \
+        '      "name": "' + nameStr + '",\n' + \
+        '      "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '      "description": "' + description + '",\n' + \
+        cityMarkup + skillsMarkup + \
+        '      "url": "' + actorJson['id'] + '"\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
+    return htmlStr
+
+
+def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
+                                httpPrefix: str, domain: str,
+                                systemLanguage: str) -> str:
+    """html header which includes website markup
+    https://schema.org/WebSite
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                          systemLanguage)
+
+    licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
+
+    # social networking category
+    genreUrl = 'http://vocab.getty.edu/aat/300312270'
+
+    websiteMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "WebSite",\n' + \
+        '      "name": "' + instanceTitle + '",\n' + \
+        '      "url": "' + httpPrefix + '://' + domain + '",\n' + \
+        '      "license": "' + licenseUrl + '",\n' + \
+        '      "inLanguage": "' + systemLanguage + '",\n' + \
+        '      "isAccessibleForFree": true,\n' + \
+        '      "genre": "' + genreUrl + '",\n' + \
+        '      "accessMode": ["textual", "visual"],\n' + \
+        '      "accessModeSufficient": ["textual"],\n' + \
+        '      "accessibilityAPI" : ["ARIA"],\n' + \
+        '      "accessibilityControl" : [\n' + \
+        '        "fullKeyboardControl",\n' + \
+        '        "fullTouchControl",\n' + \
+        '        "fullMouseControl"\n' + \
+        '      ],\n' + \
+        '      "encodingFormat" : [\n' + \
+        '        "text/html", "image/png", "image/webp",\n' + \
+        '        "image/jpeg", "image/gif", "text/css"\n' + \
+        '      ]\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
+    return htmlStr
+
+
+def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
+                             httpPrefix: str, domain: str, nickname: str,
+                             systemLanguage: str, published: str,
+                             title: str, snippet: str) -> str:
+    """html header which includes blog post markup
+    https://schema.org/BlogPosting
+    """
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                          systemLanguage)
+
+    authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    aboutUrl = httpPrefix + '://' + domain + '/about.html'
+
+    # license for content on the site may be different from
+    # the software license
+    contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
+
+    blogMarkup = \
+        '    <script type="application/ld+json">\n' + \
+        '    {\n' + \
+        '      "@context" : "http://schema.org",\n' + \
+        '      "@type" : "BlogPosting",\n' + \
+        '      "headline": "' + title + '",\n' + \
+        '      "datePublished": "' + published + '",\n' + \
+        '      "dateModified": "' + published + '",\n' + \
+        '      "author": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nickname + '",\n' + \
+        '        "sameAs": "' + authorUrl + '"\n' + \
+        '      },\n' + \
+        '      "publisher": {\n' + \
+        '        "@type": "WebSite",\n' + \
+        '        "name": "' + instanceTitle + '",\n' + \
+        '        "sameAs": "' + aboutUrl + '"\n' + \
+        '      },\n' + \
+        '      "license": "' + contentLicenseUrl + '",\n' + \
+        '      "description": "' + snippet + '"\n' + \
+        '    }\n' + \
+        '    </script>\n'
+    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + blogMarkup)
     return htmlStr
 
 
@@ -574,7 +701,8 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
                 postHtml = file.read()
                 break
         except Exception as e:
-            print(e)
+            print('ERROR: loadIndividualPostAsHtmlFromCache ' +
+                  str(tries) + ' ' + str(e))
             # no sleep
             tries += 1
     if postHtml:
@@ -625,6 +753,75 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
     return displayName
 
 
+def _isImageMimeType(mimeType: str) -> bool:
+    """Is the given mime type an image?
+    """
+    imageMimeTypes = (
+        'image/png',
+        'image/jpeg',
+        'image/webp',
+        'image/avif',
+        'image/svg+xml',
+        'image/gif'
+    )
+    if mimeType in imageMimeTypes:
+        return True
+    return False
+
+
+def _isVideoMimeType(mimeType: str) -> bool:
+    """Is the given mime type a video?
+    """
+    videoMimeTypes = (
+        'video/mp4',
+        'video/webm',
+        'video/ogv'
+    )
+    if mimeType in videoMimeTypes:
+        return True
+    return False
+
+
+def _isAudioMimeType(mimeType: str) -> bool:
+    """Is the given mime type an audio file?
+    """
+    audioMimeTypes = (
+        'audio/mpeg',
+        'audio/ogg'
+    )
+    if mimeType in audioMimeTypes:
+        return True
+    return False
+
+
+def _isAttachedImage(attachmentFilename: str) -> bool:
+    """Is the given attachment filename an image?
+    """
+    if '.' not in attachmentFilename:
+        return False
+    imageExt = (
+        'png', 'jpg', 'jpeg', 'webp', 'avif', 'svg', 'gif'
+    )
+    ext = attachmentFilename.split('.')[-1]
+    if ext in imageExt:
+        return True
+    return False
+
+
+def _isAttachedVideo(attachmentFilename: str) -> bool:
+    """Is the given attachment filename a video?
+    """
+    if '.' not in attachmentFilename:
+        return False
+    videoExt = (
+        'mp4', 'webm', 'ogv'
+    )
+    ext = attachmentFilename.split('.')[-1]
+    if ext in videoExt:
+        return True
+    return False
+
+
 def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                              isMuted: bool, avatarLink: str,
                              replyStr: str, announceStr: str, likeStr: str,
@@ -641,7 +838,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         return attachmentStr, galleryStr
 
     attachmentCtr = 0
-    attachmentStr += '<div class="media">\n'
+    attachmentStr = ''
+    mediaStyleAdded = False
     for attach in postJsonObject['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
@@ -650,19 +848,12 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         imageDescription = ''
         if attach.get('name'):
             imageDescription = attach['name'].replace('"', "'")
-        if mediaType == 'image/png' or \
-           mediaType == 'image/jpeg' or \
-           mediaType == 'image/webp' or \
-           mediaType == 'image/avif' or \
-           mediaType == 'image/svg+xml' or \
-           mediaType == 'image/gif':
-            if attach['url'].endswith('.png') or \
-               attach['url'].endswith('.jpg') or \
-               attach['url'].endswith('.jpeg') or \
-               attach['url'].endswith('.webp') or \
-               attach['url'].endswith('.avif') or \
-               attach['url'].endswith('.svg') or \
-               attach['url'].endswith('.gif'):
+        if _isImageMimeType(mediaType):
+            if _isAttachedImage(attach['url']):
+                if not attachmentStr:
+                    attachmentStr += '<div class="media">\n'
+                    mediaStyleAdded = True
+
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
@@ -702,15 +893,9 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     '" alt="' + imageDescription + '" title="' + \
                     imageDescription + '" class="attachment"></a>\n'
                 attachmentCtr += 1
-        elif (mediaType == 'video/mp4' or
-              mediaType == 'video/webm' or
-              mediaType == 'video/ogv'):
-            extension = '.mp4'
-            if attach['url'].endswith('.webm'):
-                extension = '.webm'
-            elif attach['url'].endswith('.ogv'):
-                extension = '.ogv'
-            if attach['url'].endswith(extension):
+        elif _isVideoMimeType(mediaType):
+            if _isAttachedVideo(attach['url']):
+                extension = attach['url'].split('.')[-1]
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
@@ -718,16 +903,20 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     if not isMuted:
                         galleryStr += '  <a href="' + attach['url'] + '">\n'
                         galleryStr += \
-                            '    <video width="600" height="400" controls>\n'
+                            '    <figure id="videoContainer" ' + \
+                            'data-fullscreen="false">\n' + \
+                            '    <video id="video" controls ' + \
+                            'preload="metadata">\n'
                         galleryStr += \
                             '      <source src="' + attach['url'] + \
                             '" alt="' + imageDescription + \
                             '" title="' + imageDescription + \
                             '" class="attachment" type="video/' + \
-                            extension.replace('.', '') + '">'
+                            extension + '">'
                         idx = 'Your browser does not support the video tag.'
                         galleryStr += translate[idx]
                         galleryStr += '    </video>\n'
+                        galleryStr += '    </figure>\n'
                         galleryStr += '  </a>\n'
                     if postJsonObject['object'].get('url'):
                         videoPostUrl = postJsonObject['object']['url']
@@ -753,18 +942,20 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     galleryStr += '</div>\n'
 
                 attachmentStr += \
-                    '<center><video width="400" height="300" controls>'
+                    '<center><figure id="videoContainer" ' + \
+                    'data-fullscreen="false">\n' + \
+                    '    <video id="video" controls ' + \
+                    'preload="metadata">\n'
                 attachmentStr += \
                     '<source src="' + attach['url'] + '" alt="' + \
                     imageDescription + '" title="' + imageDescription + \
                     '" class="attachment" type="video/' + \
-                    extension.replace('.', '') + '">'
+                    extension + '">'
                 attachmentStr += \
                     translate['Your browser does not support the video tag.']
-                attachmentStr += '</video></center>'
+                attachmentStr += '</video></figure></center>'
                 attachmentCtr += 1
-        elif (mediaType == 'audio/mpeg' or
-              mediaType == 'audio/ogg'):
+        elif _isAudioMimeType(mediaType):
             extension = '.mp3'
             if attach['url'].endswith('.ogg'):
                 extension = '.ogg'
@@ -803,7 +994,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     galleryStr += \
                         '    ' + replyStr + announceStr + \
                         likeStr + bookmarkStr + \
-                        deleteStr + muteStr+'\n'
+                        deleteStr + muteStr + '\n'
                     galleryStr += '  </div>\n'
                     galleryStr += '  <div class="mediaavatar">\n'
                     galleryStr += '    ' + avatarLink + '\n'
@@ -820,7 +1011,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     translate['Your browser does not support the audio tag.']
                 attachmentStr += '</audio>\n</center>\n'
                 attachmentCtr += 1
-    attachmentStr += '</div>'
+    if mediaStyleAdded:
+        attachmentStr += '</div>'
     return attachmentStr, galleryStr
 
 
@@ -886,10 +1078,10 @@ def htmlHideFromScreenReader(htmlStr: str) -> str:
     return '<span aria-hidden="true">' + htmlStr + '</span>'
 
 
-def htmlKeyboardNavigation(banner: str, links: {},
-                           subHeading=None,
-                           usersPath=None, translate=None,
-                           followApprovals=False) -> str:
+def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
+                           subHeading: str = None,
+                           usersPath: str = None, translate: {} = None,
+                           followApprovals: bool = False) -> str:
     """Given a set of links return the html for keyboard navigation
     """
     htmlStr = '<div class="transparent"><ul>\n'
@@ -910,8 +1102,12 @@ def htmlKeyboardNavigation(banner: str, links: {},
 
     # show the list of links
     for title, url in links.items():
+        accessKeyStr = ''
+        if accessKeys.get(title):
+            accessKeyStr = 'accesskey="' + accessKeys[title] + '"'
+
         htmlStr += '<li><label class="transparent">' + \
-            '<a href="' + str(url) + '">' + \
+            '<a href="' + str(url) + '" ' + accessKeyStr + '>' + \
             str(title) + '</a></label></li>\n'
     htmlStr += '</ul></div>\n'
     return htmlStr

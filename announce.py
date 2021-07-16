@@ -5,7 +5,11 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
+from utils import removeDomainPort
+from utils import hasObjectDict
+from utils import removeIdEnding
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import getStatusNumber
@@ -24,12 +28,32 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
 
+def isSelfAnnounce(postJsonObject: {}) -> bool:
+    """Is the given post a self announce?
+    """
+    if not postJsonObject.get('actor'):
+        return False
+    if not postJsonObject.get('type'):
+        return False
+    if postJsonObject['type'] != 'Announce':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['actor'], str):
+        return False
+    if not isinstance(postJsonObject['object'], str):
+        return False
+    return postJsonObject['actor'] in postJsonObject['object']
+
+
 def outboxAnnounce(recentPostsCache: {},
                    baseDir: str, messageJson: {}, debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
     within a given post
     """
     if not messageJson.get('actor'):
+        return False
+    if not isinstance(messageJson['actor'], str):
         return False
     if not messageJson.get('type'):
         return False
@@ -38,19 +62,22 @@ def outboxAnnounce(recentPostsCache: {},
     if messageJson['type'] == 'Announce':
         if not isinstance(messageJson['object'], str):
             return False
+        if isSelfAnnounce(messageJson):
+            return False
         nickname = getNicknameFromActor(messageJson['actor'])
         if not nickname:
-            print('WARN: no nickname found in '+messageJson['actor'])
+            print('WARN: no nickname found in ' + messageJson['actor'])
             return False
         domain, port = getDomainFromActor(messageJson['actor'])
         postFilename = locatePost(baseDir, nickname, domain,
                                   messageJson['object'])
         if postFilename:
             updateAnnounceCollection(recentPostsCache, baseDir, postFilename,
-                                     messageJson['actor'], domain, debug)
+                                     messageJson['actor'],
+                                     nickname, domain, debug)
             return True
-    if messageJson['type'] == 'Undo':
-        if not isinstance(messageJson['object'], dict):
+    elif messageJson['type'] == 'Undo':
+        if not hasObjectDict(messageJson):
             return False
         if not messageJson['object'].get('type'):
             return False
@@ -73,26 +100,15 @@ def outboxAnnounce(recentPostsCache: {},
     return False
 
 
-def announcedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
+def announcedByPerson(isAnnounced: bool, postActor: str,
+                      nickname: str, domainFull: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
-    if not postJsonObject.get('object'):
+    if not postActor:
         return False
-    if not isinstance(postJsonObject['object'], dict):
-        return False
-    # not to be confused with shared items
-    if not postJsonObject['object'].get('shares'):
-        return False
-    if not isinstance(postJsonObject['object']['shares'], dict):
-        return False
-    if not postJsonObject['object']['shares'].get('items'):
-        return False
-    if not isinstance(postJsonObject['object']['shares']['items'], list):
-        return False
-    actorMatch = domain + '/users/' + nickname
-    for item in postJsonObject['object']['shares']['items']:
-        if item['actor'].endswith(actorMatch):
-            return True
+    if isAnnounced and \
+       postActor.endswith(domainFull + '/users/' + nickname):
+        return True
     return False
 
 
@@ -113,8 +129,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
     if not urlPermitted(objectUrl, federationList):
         return None
 
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     fullDomain = getFullDomain(domain, port)
 
     statusNumber, published = getStatusNumber()
@@ -124,7 +139,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
         '/statuses/' + statusNumber
     newAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'atomUri': atomUriStr,
         'cc': [],
         'id': newAnnounceId + '/activity',
@@ -202,9 +217,10 @@ def sendAnnounceViaServer(baseDir: str, session,
     statusNumber, published = getStatusNumber()
     newAnnounceId = httpPrefix + '://' + fromDomainFull + '/users/' + \
         fromNickname + '/statuses/' + statusNumber
+    actorStr = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
     newAnnounceJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
+        'actor': actorStr,
         'atomUri': newAnnounceId,
         'cc': [ccUrl],
         'id': newAnnounceId + '/activity',
@@ -219,14 +235,14 @@ def sendAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: announce webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -242,11 +258,12 @@ def sendAnnounceViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: announce no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: announce no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -256,11 +273,140 @@ def sendAnnounceViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newAnnounceJson, [], inboxUrl, headers)
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newAnnounceJson, [], inboxUrl,
+                          headers, 3, True)
     if not postResult:
-        print('WARN: Announce not posted')
+        print('WARN: announce not posted')
 
     if debug:
         print('DEBUG: c2s POST announce success')
 
     return newAnnounceJson
+
+
+def sendUndoAnnounceViaServer(baseDir: str, session,
+                              undoPostJsonObject: {},
+                              nickname: str, password: str,
+                              domain: str, port: int,
+                              httpPrefix: str, repeatObjectUrl: str,
+                              cachedWebfingers: {}, personCache: {},
+                              debug: bool, projectVersion: str) -> {}:
+    """Undo an announce message via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUndoAnnounceViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, port)
+
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    handle = actor.replace('/users/', '/@')
+
+    statusNumber, published = getStatusNumber()
+    unAnnounceJson = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': actor + '/statuses/' + str(statusNumber) + '/undo',
+        'type': 'Undo',
+        'actor': actor,
+        'object': undoPostJsonObject['object']
+    }
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: undo announce webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: undo announce webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey, fromPersonId,
+     sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix,
+                                 nickname, domain,
+                                 postToBox, 73528)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: undo announce no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: undo announce no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(httpPrefix, domainFull,
+                          session, unAnnounceJson, [], inboxUrl,
+                          headers, 3, True)
+    if not postResult:
+        print('WARN: undo announce not posted')
+
+    if debug:
+        print('DEBUG: c2s POST undo announce success')
+
+    return unAnnounceJson
+
+
+def outboxUndoAnnounce(recentPostsCache: {},
+                       baseDir: str, httpPrefix: str,
+                       nickname: str, domain: str, port: int,
+                       messageJson: {}, debug: bool) -> None:
+    """ When an undo announce is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson['type'] == 'Undo':
+        return
+    if not hasObjectDict(messageJson):
+        if debug:
+            print('DEBUG: undo like object is not dict')
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: undo like - no type')
+        return
+    if not messageJson['object']['type'] == 'Announce':
+        if debug:
+            print('DEBUG: not a undo announce')
+        return
+    if not messageJson['object'].get('object'):
+        if debug:
+            print('DEBUG: no object in undo announce')
+        return
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: undo announce object is not string')
+        return
+    if debug:
+        print('DEBUG: c2s undo announce request arrived in outbox')
+
+    messageId = removeIdEnding(messageJson['object']['object'])
+    domain = removeDomainPort(domain)
+    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s undo announce post not found in inbox or outbox')
+            print(messageId)
+        return True
+    undoAnnounceCollectionEntry(recentPostsCache, baseDir, postFilename,
+                                messageJson['actor'], domain, debug)
+    if debug:
+        print('DEBUG: post undo announce via c2s - ' + postFilename)

@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <meta charset="utf-8">
+  <script type="application/ld+json">
+    {
+        "@context" : "http://schema.org",
+        "@type" : "SoftwareApplication",
+        "name" : "Epicyon",
+        "image" : "https://epicyon.net/images/logo.png",
+        "url" : "https://epicyon.net",
+        "author" : {
+            "@type" : "Person",
+            "name" : "Bob Mottram",
+	    "email": "bob@freedombone.net",
+	    "url": "https://epicyon.freedombone.net/users/bob"
+        },
+        "applicationCategory" : ["server", "software", "bash", "debian", "linux", "self-hosting"],
+        "downloadUrl" : "https://epicyon.net/epicyon.tar.gz"
+    }
+  </script>    
   <meta name="description" content="ActivityPub server written in Python, HTML and CSS, and suitable for self-hosting on single board computers">
   <meta name="keywords" content="ActivityPub, Fediverse, Python, HTML, CSS">
   <meta name="author" content="Bob Mottram">
@@ -1326,7 +1343,7 @@
       User=epicyon<br>
       Group=epicyon<br>
       WorkingDirectory=/opt/epicyon<br>
-      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug<br>
+      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug --logLoginFailures<br>
       Environment=USER=epicyon<br>
       Environment=PYTHONUNBUFFERED=true<br>
       Restart=always<br>
@@ -1357,101 +1374,82 @@
                        inactive=60m use_temp_path=off;
 
       server {<br>
-      listen 80;<br>
-      listen [::]:80;<br>
-      server_name YOUR_DOMAIN;<br>
-      access_log /dev/null;<br>
-      error_log /dev/null;<br>
-      client_max_body_size 31m;<br>
-      client_body_buffer_size 128k;<br>
-      <br>
-      limit_conn conn_limit_per_ip 10;<br>
-      limit_req zone=req_limit_per_ip burst=10 nodelay;<br>
-      <br>
-      index index.html;<br>
-      rewrite ^ https://$server_name$request_uri? permanent;<br>
+        listen 80;<br>
+        listen [::]:80;<br>
+        server_name YOUR_DOMAIN;<br>
+        access_log /dev/null;<br>
+        error_log /dev/null;<br>
+        client_max_body_size 31m;<br>
+        client_body_buffer_size 128k;<br>
+        <br>
+        limit_conn conn_limit_per_ip 10;<br>
+        limit_req zone=req_limit_per_ip burst=10 nodelay;<br>
+        <br>
+        index index.html;<br>
+        rewrite ^ https://$server_name$request_uri? permanent;<br>
       }<br>
       <br>
       server {<br>
-      listen 443 ssl;<br>
-      server_name YOUR_DOMAIN;<br>
-      <br>
-      ssl_stapling off;<br>
-      ssl_stapling_verify off;<br>
-      ssl on;<br>
-      ssl_certificate /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;<br>
-      ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;<br>
-      #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;<br>
-      <br>
-      ssl_session_cache  builtin:1000  shared:SSL:10m;<br>
-      ssl_session_timeout 60m;<br>
-      ssl_prefer_server_ciphers on;<br>
-      ssl_protocols TLSv1.2 TLSv1.3;<br>
-      ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';<br>
-      add_header X-Frame-Options DENY;<br>
-      add_header X-Content-Type-Options nosniff;<br>
-      add_header X-XSS-Protection "1; mode=block";<br>
-      add_header X-Download-Options noopen;<br>
-      add_header X-Permitted-Cross-Domain-Policies none;<br>
-      <br>
-      add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";<br>
-      add_header Strict-Transport-Security max-age=15768000;<br>
-      <br>
-      access_log /dev/null;<br>
-      error_log /dev/null;<br>
-      <br>
-      index index.html;<br>
-      <br>
-      location /newsmirror {<br>
-        root /var/www/YOUR_DOMAIN;<br>
-        try_files $uri =404;<br>
-      }<br>
-      <br>
-      location / {<br>
-      proxy_http_version 1.1;<br>
-      client_max_body_size 31M;<br>
-      proxy_set_header Upgrade $http_upgrade;<br>
-      proxy_set_header Connection "upgrade";<br>
-      proxy_set_header Host $http_host;<br>
-      proxy_set_header X-Real-IP $remote_addr;<br>
-      proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;<br>
-      proxy_set_header X-Forward-Proto http;<br>
-      proxy_set_header X-Nginx-Proxy true;<br>
-      expires epoch;<br>
-      proxy_no_cache 1;<br>
-      proxy_temp_file_write_size 64k;<br>
-      proxy_connect_timeout 10080s;<br>
-      proxy_send_timeout 10080;<br>
-      proxy_read_timeout 10080;<br>
-      proxy_buffer_size 64k;<br>
-      proxy_buffers 16 32k;<br>
-      proxy_busy_buffers_size 64k;<br>
-      proxy_redirect off;<br>
-      proxy_request_buffering on;<br>
-      proxy_buffering on;<br>
-      proxy_cache my_cache;<br>
-      proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;<br>
-      location ~ ^/(icons|images|media|emoji)/(.*)/(.*).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {<br>
-          expires 7d;<br>
+        listen 443 ssl;<br>
+        server_name YOUR_DOMAIN;<br>
+        <br>
+        ssl_stapling off;<br>
+        ssl_stapling_verify off;<br>
+        ssl on;<br>
+        ssl_certificate /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;<br>
+        ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;<br>
+        #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;<br>
+        <br>
+        ssl_session_cache  builtin:1000  shared:SSL:10m;<br>
+        ssl_session_timeout 60m;<br>
+        ssl_prefer_server_ciphers on;<br>
+        ssl_protocols TLSv1.2 TLSv1.3;<br>
+        ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';<br>
+        add_header X-Frame-Options DENY;<br>
+        add_header X-Content-Type-Options nosniff;<br>
+        add_header X-XSS-Protection "1; mode=block";<br>
+        add_header X-Download-Options noopen;<br>
+        add_header X-Permitted-Cross-Domain-Policies none;<br>
+        <br>
+        add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";<br>
+        add_header Strict-Transport-Security max-age=15768000;<br>
+        <br>
+        access_log /dev/null;<br>
+        error_log /dev/null;<br>
+        <br>
+        index index.html;<br>
+        <br>
+        location /newsmirror {<br>
+          root /var/www/YOUR_DOMAIN;<br>
+          try_files $uri =404;<br>
+        }<br>
+        <br>
+        location / {<br>
+          proxy_http_version 1.1;<br>
+          client_max_body_size 31M;<br>
+          proxy_set_header Upgrade $http_upgrade;<br>
+          proxy_set_header Connection "upgrade";<br>
+          proxy_set_header Host $http_host;<br>
+          proxy_set_header X-Real-IP $remote_addr;<br>
+          proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;<br>
+          proxy_set_header X-Forward-Proto http;<br>
+          proxy_set_header X-Nginx-Proxy true;<br>
+          proxy_temp_file_write_size 64k;<br>
+          proxy_connect_timeout 10080s;<br>
+          proxy_send_timeout 10080;<br>
+          proxy_read_timeout 10080;<br>
+          proxy_buffer_size 64k;<br>
+          proxy_buffers 16 32k;<br>
+          proxy_busy_buffers_size 64k;<br>
+          proxy_redirect off;<br>
+          proxy_request_buffering off;<br>
+          proxy_buffering off;<br>
+          location ~ ^/accounts/(avatars|headers)/(.*).(png|jpg|gif|webp|svg) {<br>
+            expires 1d;<br>
+            proxy_pass http://localhost:7156;<br>
+          }<br>
           proxy_pass http://localhost:7156;<br>
-      }<br>
-      location ~ ^/icons/(.*)/(like|repeat|calendar)(.*).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {<br>
-          expires epoch;<br>
-          proxy_no_cache 1;<br>
-          proxy_pass http://localhost:7156;<br>
-      }<br>
-      location ~ ^/icons/(like|repeat|calendar)(.*).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {<br>
-          expires epoch;<br>
-          proxy_no_cache 1;<br>
-          proxy_pass http://localhost:7156;<br>
-      }<br>
-      location ~ ^/users/(.*)/(image|banner).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {<br>
-          expires epoch;<br>
-          proxy_no_cache 1;<br>
-          proxy_pass http://localhost:7156;<br>
-      }<br>
-      proxy_pass http://localhost:7156;<br>
-      }<br>
+        }<br>
       }
     </div>
 
@@ -1475,6 +1473,9 @@
     <div class="shell">
       systemctl restart nginx
     </div>
+    <p class="intro">
+      If you need to use <a href="https://www.fail2ban.org">fail2ban</a> then failed login attempts can be found in <b>accounts/loginfailures.log</b>.
+    </p>
     <p class="intro">
       If you are using the <a href="https://caddyserver.com">Caddy web server</a> then see <a href="https://code.freedombone.net/bashrc/epicyon/raw/main/caddy.example.conf">caddy.example.conf</a>
     </p>

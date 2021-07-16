@@ -5,22 +5,26 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Calendar"
 
 import os
 from datetime import datetime
 from datetime import date
 from shutil import copyfile
+from utils import getDisplayName
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import weekDayOfMonthStart
+from utils import getAltPath
+from utils import removeDomainPort
+from utils import acctDir
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from webapp_utils import getAltPath
 from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlKeyboardNavigation
 
@@ -94,14 +98,14 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     return deletePostStr
 
 
-def _htmlCalendarDay(cssCache: {}, translate: {},
+def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                      baseDir: str, path: str,
                      year: int, monthNumber: int, dayNumber: int,
                      nickname: str, domain: str, dayEvents: [],
                      monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
         os.remove(calendarFile)
@@ -114,8 +118,7 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
@@ -134,6 +137,9 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
             eventDescription = None
             eventPlace = None
             postId = None
+            senderName = ''
+            senderActor = None
+            eventIsPublic = False
             # get the time place and description
             for ev in eventPost:
                 if ev['type'] == 'Event':
@@ -144,11 +150,37 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
                             datetime.strptime(ev['startTime'],
                                               "%Y-%m-%dT%H:%M:%S%z")
                         eventTime = eventDate.strftime("%H:%M").strip()
+                    if 'public' in ev:
+                        if ev['public'] is True:
+                            eventIsPublic = True
+                    if ev.get('sender'):
+                        # get display name from sending actor
+                        if ev.get('sender'):
+                            senderActor = ev['sender']
+                            dispName = \
+                                getDisplayName(baseDir, senderActor,
+                                               personCache)
+                            if dispName:
+                                senderName = \
+                                    '<a href="' + senderActor + '">' + \
+                                    dispName + '</a>: '
                     if ev.get('name'):
                         eventDescription = ev['name'].strip()
                 elif ev['type'] == 'Place':
                     if ev.get('name'):
                         eventPlace = ev['name']
+
+            # prepend a link to the sender of the calendar item
+            if senderName and eventDescription:
+                # if the sender is also mentioned within the event
+                # description then this is a reminder
+                senderActor2 = senderActor.replace('/users/', '/@')
+                if senderActor not in eventDescription and \
+                   senderActor2 not in eventDescription:
+                    eventDescription = senderName + eventDescription
+                else:
+                    eventDescription = \
+                        translate['Reminder'] + ': ' + eventDescription
 
             deleteButtonStr = ''
             if postId:
@@ -162,33 +194,43 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
                     translate['Delete this event'] + '" src="/' + \
                     'icons/delete.png" /></a></td>\n'
 
+            eventClass = 'calendar__day__event'
+            calItemClass = 'calItem'
+            if eventIsPublic:
+                eventClass = 'calendar__day__event__public'
+                calItemClass = 'calItemPublic'
             if eventTime and eventDescription and eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"><b>' + eventTime + \
-                    '</b></td><td class="calendar__day__event">' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"><b>' + eventTime + \
+                    '</b></td><td class="' + eventClass + '">' + \
                     '<span class="place">' + \
                     eventPlace + '</span><br>' + eventDescription + \
                     '</td>' + deleteButtonStr + '</tr>\n'
             elif eventTime and eventDescription and not eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"><b>' + eventTime + \
-                    '</b></td><td class="calendar__day__event">' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"><b>' + eventTime + \
+                    '</b></td><td class="' + eventClass + '">' + \
                     eventDescription + '</td>' + deleteButtonStr + '</tr>\n'
             elif not eventTime and eventDescription and not eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time">' + \
-                    '</td><td class="calendar__day__event">' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time">' + \
+                    '</td><td class="' + eventClass + '">' + \
                     eventDescription + '</td>' + deleteButtonStr + '</tr>\n'
             elif not eventTime and eventDescription and eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"></td>' + \
-                    '<td class="calendar__day__event"><span class="place">' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"></td>' + \
+                    '<td class="' + eventClass + '"><span class="place">' + \
                     eventPlace + '</span><br>' + eventDescription + \
                     '</td>' + deleteButtonStr + '</tr>\n'
             elif eventTime and not eventDescription and eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"><b>' + eventTime + \
-                    '</b></td><td class="calendar__day__event">' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"><b>' + eventTime + \
+                    '</b></td><td class="' + eventClass + '">' + \
                     '<span class="place">' + \
                     eventPlace + '</span></td>' + \
                     deleteButtonStr + '</tr>\n'
@@ -200,15 +242,13 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
     return calendarStr
 
 
-def htmlCalendar(cssCache: {}, translate: {},
+def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
                  baseDir: str, path: str,
                  httpPrefix: str, domainFull: str,
-                 textModeBanner: str) -> str:
+                 textModeBanner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
-    domain = domainFull
-    if ':' in domainFull:
-        domain = domainFull.split(':')[0]
+    domain = removeDomainPort(domainFull)
 
     monthNumber = 0
     dayNumber = None
@@ -259,7 +299,8 @@ def htmlCalendar(cssCache: {}, translate: {},
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return _htmlCalendarDay(cssCache, translate, baseDir, path,
+        return _htmlCalendarDay(personCache, cssCache,
+                                translate, baseDir, path,
                                 year, monthNumber, dayNumber,
                                 nickname, domain, dayEvents,
                                 monthName, actor)
@@ -307,17 +348,20 @@ def htmlCalendar(cssCache: {}, translate: {},
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
-        '?month=' + str(prevMonthNumber) + '">'
+        '?month=' + str(prevMonthNumber) + '" ' + \
+        'accesskey="' + accessKeys['Page up'] + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendarStr += '  <a href="' + calActor + '/inbox" title="'
-    calendarStr += translate['Switch to timeline view'] + '">'
+    calendarStr += translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
-        '?month=' + str(nextMonthNumber) + '">'
+        '?month=' + str(nextMonthNumber) + '" ' + \
+        'accesskey="' + accessKeys['Page down'] + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
@@ -325,20 +369,10 @@ def htmlCalendar(cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<thead>\n'
     calendarStr += '<tr>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Sun'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Mon'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Tue'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Wed'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Thu'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Fri'] + '</th>\n'
-    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
-        translate['Sat'] + '</th>\n'
+    days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
+    for d in days:
+        calendarStr += '  <th scope="col" class="calendar__day__header">' + \
+            translate[d] + '</th>\n'
     calendarStr += '</tr>\n'
     calendarStr += '</thead>\n'
     calendarStr += '<tbody>\n'
@@ -415,7 +449,10 @@ def htmlCalendar(cssCache: {}, translate: {},
         htmlHideFromScreenReader('←') + ' ' + translate['Previous month']
     navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber)
+    navAccessKeys = {
+    }
     screenReaderCal = \
-        htmlKeyboardNavigation(textModeBanner, navLinks, monthName)
+        htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+                               monthName)
 
     return headerStr + screenReaderCal + calendarStr + htmlFooter()

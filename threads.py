@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Core"
 
 import threading
 import sys
@@ -70,7 +71,7 @@ class threadWithTrace(threading.Thread):
 
 
 def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
-                         timeoutMins=30) -> None:
+                         timeoutMins: int = 30) -> None:
     """Removes threads whose execution has completed
     """
     if len(threadsList) == 0:
@@ -140,7 +141,7 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
     if debug:
         sendLogFilename = baseDir + '/send.csv'
         try:
-            with open(sendLogFilename, "a+") as logFile:
+            with open(sendLogFilename, 'a+') as logFile:
                 logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ") +
                               ',' + str(noOfActiveThreads) +
                               ',' + str(len(threadsList)) + '\n')

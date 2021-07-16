@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Moderation"
 
 from session import createSession
 from webfinger import webfingerHandle
@@ -52,7 +53,7 @@ def instancesGraph(baseDir: str, handles: str,
         wfRequest = \
             webfingerHandle(session, handle, httpPrefix,
                             cachedWebfingers,
-                            domain, projectVersion)
+                            domain, projectVersion, debug)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):

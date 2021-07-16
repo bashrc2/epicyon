@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Profile Metadata"
 
 import os
 from webfinger import webfingerHandle
@@ -16,6 +17,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
+from utils import acctDir
 
 
 def setAvailability(baseDir: str, nickname: str, domain: str,
@@ -25,7 +27,7 @@ def setAvailability(baseDir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(status) > 128:
         return False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
     actorJson = loadJson(actorFilename)
@@ -38,7 +40,7 @@ def setAvailability(baseDir: str, nickname: str, domain: str,
 def getAvailability(baseDir: str, nickname: str, domain: str) -> str:
     """Returns the availability for a given person
     """
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
     actorJson = loadJson(actorFilename)
@@ -94,8 +96,8 @@ def sendAvailabilityViaServer(baseDir: str, session,
 
     newAvailabilityJson = {
         'type': 'Availability',
-        'actor': httpPrefix+'://'+domainFull+'/users/'+nickname,
-        'object': '"'+status+'"',
+        'actor': httpPrefix + '://' + domainFull + '/users/' + nickname,
+        'object': '"' + status + '"',
         'to': [toUrl],
         'cc': [ccUrl]
     }
@@ -105,14 +107,14 @@ def sendAvailabilityViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion)
+                                domain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: availability webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: availability webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -127,11 +129,12 @@ def sendAvailabilityViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: availability no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: availability no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -141,10 +144,11 @@ def sendAvailabilityViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newAvailabilityJson, [],
-                          inboxUrl, headers)
+    postResult = postJson(httpPrefix, domainFull,
+                          session, newAvailabilityJson, [],
+                          inboxUrl, headers, 30, True)
     if not postResult:
-        print('WARN: failed to post availability')
+        print('WARN: availability failed to post')
 
     if debug:
         print('DEBUG: c2s POST availability success')

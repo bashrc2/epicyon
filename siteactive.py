@@ -6,6 +6,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Core"
 
 import http.client
 from urllib.parse import urlparse
@@ -92,7 +93,7 @@ def _siteActiveHttpRequest(loc, timeout: int):
     return result
 
 
-def siteIsActive(url: str, timeout=10) -> bool:
+def siteIsActive(url: str, timeout: int = 10) -> bool:
     """Returns true if the current url is resolvable.
     This can be used to check that an instance is online before
     trying to send posts to it.

@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from utils import isPublicPostFromUrl
@@ -13,6 +14,7 @@ from utils import getDomainFromActor
 from utils import getImageFormats
 from utils import getMediaFormats
 from utils import getConfigParam
+from utils import acctDir
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -24,36 +26,36 @@ def _htmlFollowingDataList(baseDir: str, nickname: str,
     """
     listStr = '<datalist id="followingHandles">\n'
     followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+        acctDir(baseDir, nickname, domain) + '/following.txt'
+    msg = None
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
             msg = followingFile.read()
             # add your own handle, so that you can send DMs
             # to yourself as reminders
             msg += nickname + '@' + domainFull + '\n'
-            # include petnames
-            petnamesFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/petnames.txt'
-            if os.path.isfile(petnamesFilename):
-                followingList = []
-                with open(petnamesFilename, 'r') as petnamesFile:
-                    petStr = petnamesFile.read()
-                    # extract each petname and append it
-                    petnamesList = petStr.split('\n')
-                    for pet in petnamesList:
-                        followingList.append(pet.split(' ')[0])
-                # add the following.txt entries
-                followingList += msg.split('\n')
-            else:
-                # no petnames list exists - just use following.txt
-                followingList = msg.split('\n')
-            followingList.sort()
-            if followingList:
-                for followingAddress in followingList:
-                    if followingAddress:
-                        listStr += \
-                            '<option>@' + followingAddress + '</option>\n'
+    if msg:
+        # include petnames
+        petnamesFilename = \
+            acctDir(baseDir, nickname, domain) + '/petnames.txt'
+        if os.path.isfile(petnamesFilename):
+            followingList = []
+            with open(petnamesFilename, 'r') as petnamesFile:
+                petStr = petnamesFile.read()
+                # extract each petname and append it
+                petnamesList = petStr.split('\n')
+                for pet in petnamesList:
+                    followingList.append(pet.split(' ')[0])
+            # add the following.txt entries
+            followingList += msg.split('\n')
+        else:
+            # no petnames list exists - just use following.txt
+            followingList = msg.split('\n')
+        followingList.sort()
+        if followingList:
+            for followingAddress in followingList:
+                if followingAddress:
+                    listStr += '<option>@' + followingAddress + '</option>\n'
     listStr += '</datalist>\n'
     return listStr
 
@@ -72,7 +74,8 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
                          dropdownReminderSuffix: str,
                          dropdownEventSuffix: str,
                          dropdownReportSuffix: str,
-                         noDropDown: bool) -> str:
+                         noDropDown: bool,
+                         accessKeys: {}) -> str:
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<nav><div class="newPostDropdown">\n'
@@ -82,8 +85,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     dropDownContent += '  <label for="my-newPostDropdown"\n'
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
-        'icons/' + scopeIcon + '"/><b>' + \
-        scopeDescription + '</b></label>\n'
+        'icons/' + scopeIcon + '"/><b>' + scopeDescription + '</b></label>\n'
 
     if noDropDown:
         dropDownContent += '</div></nav>\n'
@@ -93,21 +95,24 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     if showPublicOnDropdown:
         dropDownContent += \
             '<li><a href="' + pathBase + dropdownNewPostSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
+            '" accesskey="' + accessKeys['Public'] + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
         if defaultTimeline == 'tlfeatures':
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
+                '<img loading="lazy" alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Article'] + '</b><br>' + \
                 translate['Create an article'] + '</a></li>\n'
         else:
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
+                '<img loading="lazy" alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
                 translate['Publicly visible post'] + '</a></li>\n'
@@ -119,32 +124,30 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             translate['Not on public timeline'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownFollowersSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['menuFollowers'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_followers.png"/><b>' + \
         translate['Followers'] + '</b><br>' + \
         translate['Only to followers'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownDMSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['menuDM'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_dm.png"/><b>' + \
         translate['DM'] + '</b><br>' + \
         translate['Only to mentioned people'] + '</a></li>\n'
 
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReminderSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['Reminder'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
-    # dropDownContent += \
-    #    '<li><a href="' + pathBase + dropdownEventSuffix + \
-    #    '"><img loading="lazy" alt="" title="" src="/' + \
-    #    'icons/scope_event.png"/><b>' + \
-    #    translate['Event'] + '</b><br>' + \
-    #    translate['Create an event'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
+        '" accesskey="' + accessKeys['reportButton'] + '">' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_report.png"/><b>' + \
         translate['Report'] + '</b><br>' + \
         translate['Send to moderators'] + '</a></li>\n'
@@ -152,7 +155,8 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     if not replyStr:
         dropDownContent += \
             '<li><a href="' + pathBase + \
-            '/newshare"><img loading="lazy" alt="" title="" src="/' + \
+            '/newshare" accesskey="' + accessKeys['menuShares'] + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_share.png"/><b>' + \
             translate['Shares'] + '</b><br>' + \
             translate['Describe a shared item'] + '</a></li>\n'
@@ -177,7 +181,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 nickname: str, domain: str,
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
-                theme: str, noDropDown: bool) -> str:
+                theme: str, noDropDown: bool,
+                accessKeys: {}, customSubmitText: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -219,8 +224,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     showPublicOnDropdown = False
         else:
             newPostText = \
-                '<h1>' + \
-                translate['Write your report below.'] + '</h1>\n'
+                '<h1>' + translate['Write your report below.'] + '</h1>\n'
 
             # custom report header with any additional instructions
             if os.path.isfile(baseDir + '/accounts/report.txt'):
@@ -308,7 +312,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             translate['Subject or Content Warning (optional)'] + '...'
     placeholderMentions = ''
     if inReplyTo:
-        # mentionsAndContent = getMentionsString(content)
         placeholderMentions = \
             translate['Replying to'] + '...'
     placeholderMessage = translate['Write something'] + '...'
@@ -401,15 +404,14 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     citationsStr = ''
     if endpoint == 'newblog':
         citationsFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/.citations.txt'
+            acctDir(baseDir, nickname, domain) + '/.citations.txt'
         if os.path.isfile(citationsFilename):
             citationsStr = '<div class="container">\n'
             citationsStr += '<p><label class="labels">' + \
                 translate['Citations'] + ':</label></p>\n'
             citationsStr += '  <ul>\n'
             citationsSeparator = '#####'
-            with open(citationsFilename, "r") as f:
+            with open(citationsFilename, 'r') as f:
                 citations = f.readlines()
                 for line in citations:
                     if citationsSeparator not in line:
@@ -555,7 +557,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '    <textarea id="message" ' + \
                 'name="repliesModerationOption" style="height:' + \
-                str(messageBoxHeight) + 'px"></textarea>\n'
+                str(messageBoxHeight) + 'px" spellcheck="true" ' + \
+                'autocomplete="on"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<label class="labels">' + \
@@ -570,15 +573,15 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     newPostForm += \
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n' + \
         '</header>\n'
@@ -650,7 +653,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                  dropdownReminderSuffix,
                                  dropdownEventSuffix,
                                  dropdownReportSuffix,
-                                 noDropDown)
+                                 noDropDown, accessKeys)
     else:
         if not shareDescription:
             # reporting a post to moderator
@@ -690,20 +693,18 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             '      <td><input type="submit" name="submitCitations" value="' + \
             translate['Citations'] + '"></td>\n'
 
+    submitText = translate['Submit']
+    if customSubmitText:
+        submitText = customSubmitText
     newPostForm += \
         '      <td><input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '"></td>\n'
+        submitText + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '"></td>\n'
 
-    newPostForm += '      </tr>\n'
-    newPostForm += '</table>\n'
+    newPostForm += '      </tr>\n</table>\n'
     newPostForm += '    </div>\n'
 
     newPostForm += '    <div class="containerSubmitNewPost"><center>\n'
-
-    # newPostForm += \
-    #     '      <a href="' + pathBase + \
-    #     '/inbox"><button class="cancelbtn">' + \
-    #     translate['Go Back'] + '</button></a>\n'
 
     newPostForm += '    </center></div>\n'
 
@@ -753,12 +754,20 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px"' + selectedStr + '></textarea>\n'
+        str(messageBoxHeight) + 'px"' + selectedStr + \
+        ' spellcheck="true" autocomplete="on">' + \
+        '</textarea>\n'
     newPostForm += extraFields + citationsStr + dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
-    newPostForm += '  </div>\n'
-    newPostForm += '</form>\n'
+
+    newPostForm += \
+        '    <div class="container">\n' + \
+        '      <input type="submit" name="submitPost" value="' + \
+        submitText + '">\n' + \
+        '    </div>\n' + \
+        '  </div>\n' + \
+        '</form>\n'
 
     if not reportUrl:
         newPostForm = \

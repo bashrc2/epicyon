@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface Columns"
 
 import os
 import json
@@ -17,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
 from categories import setHashtagCategory
+from utils import hasObjectDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
@@ -25,6 +27,8 @@ from utils import saveJson
 from utils import isSuspended
 from utils import containsInvalidChars
 from utils import removeHtml
+from utils import isAccountDir
+from utils import acctDir
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
@@ -45,21 +49,25 @@ def rss2Header(httpPrefix: str,
                title: str, translate: {}) -> str:
     """Header for an RSS 2.0 feed
     """
-    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-    rssStr += "<rss version=\"2.0\">"
-    rssStr += '<channel>'
+    rssStr = \
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + \
+        "<rss version=\"2.0\">" + \
+        '<channel>'
 
     if title.startswith('News'):
-        rssStr += '    <title>Newswire</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>Newswire</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/newswire.xml' + '</link>'
     elif title.startswith('Site'):
-        rssStr += '    <title>' + domainFull + '</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>' + domainFull + '</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/blog/rss.xml' + '</link>'
     else:
-        rssStr += '    <title>' + translate[title] + '</title>'
-        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        rssStr += \
+            '    <title>' + translate[title] + '</title>' + \
+            '    <link>' + httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/rss.xml' + '</link>'
     return rssStr
 
@@ -67,8 +75,7 @@ def rss2Header(httpPrefix: str,
 def rss2Footer() -> str:
     """Footer for an RSS 2.0 feed
     """
-    rssStr = '</channel>'
-    rssStr += '</rss>'
+    rssStr = '</channel></rss>'
     return rssStr
 
 
@@ -87,13 +94,33 @@ def getNewswireTags(text: str, maxTags: int) -> []:
     words = textSimplified.split(' ')
     tags = []
     for wrd in words:
-        if wrd.startswith('#'):
-            if len(wrd) > 1:
-                if wrd not in tags:
-                    tags.append(wrd)
-                    if len(tags) >= maxTags:
-                        break
+        if not wrd.startswith('#'):
+            continue
+        if len(wrd) <= 1:
+            continue
+        if wrd in tags:
+            continue
+        tags.append(wrd)
+        if len(tags) >= maxTags:
+            break
     return tags
+
+
+def limitWordLengths(text: str, maxWordLength: int) -> str:
+    """Limits the maximum length of words so that the newswire
+    column cannot become too wide
+    """
+    if ' ' not in text:
+        return text
+    words = text.split(' ')
+    result = ''
+    for wrd in words:
+        if len(wrd) > maxWordLength:
+            wrd = wrd[:maxWordLength]
+        if result:
+            result += ' '
+        result += wrd
+    return result
 
 
 def _addNewswireDictEntry(baseDir: str, domain: str,
@@ -102,7 +129,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
                           votesStatus: str, postFilename: str,
                           description: str, moderated: bool,
                           mirrored: bool,
-                          tags=[], maxTags=32) -> None:
+                          tags: [] = [],
+                          maxTags: int = 32) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -115,6 +143,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     if isFiltered(baseDir, None, None, allText):
         return
 
+    title = limitWordLengths(title, 13)
+
     if tags is None:
         tags = []
 
@@ -123,9 +153,10 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
 
     # combine the tags into a single list
     for tag in tags:
-        if tag not in postTags:
-            if len(postTags) < maxTags:
-                postTags.append(tag)
+        if tag in postTags:
+            continue
+        if len(postTags) < maxTags:
+            postTags.append(tag)
 
     # check that no tags are blocked
     for tag in postTags:
@@ -144,11 +175,11 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     ]
 
 
-def _validFeedDate(pubDate: str) -> bool:
+def _validFeedDate(pubDate: str, debug: bool = False) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
     postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
-    return validPostDate(postDate, 30)
+    return validPostDate(postDate, 90, debug)
 
 
 def parseFeedDate(pubDate: str) -> str:
@@ -225,7 +256,7 @@ def loadHashtagCategories(baseDir: str, language: str) -> None:
 
 def _xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
                                 maxCategoriesFeedItemSizeKb: int,
-                                force=False) -> None:
+                                force: bool = False) -> None:
     """Updates hashtag categories based upon an rss feed
     """
     rssItems = xmlStr.split('<item>')
@@ -774,19 +805,18 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         else:
             print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as e:
-        print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
-              'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams) + '\n')
-        print(e)
+        print('WARN: getRSS failed\nurl: ' + str(url) + ', ' +
+              'headers: ' + str(sessionHeaders) + ', ' +
+              'params: ' + str(sessionParams) + ', ' + str(e))
     except ValueError as e:
-        print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
-              'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams) + '\n')
-        print(e)
+        print('WARN: getRSS failed\nurl: ' + str(url) + ', ' +
+              'headers: ' + str(sessionHeaders) + ', ' +
+              'params: ' + str(sessionParams) + ', ' + str(e))
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during getRSS')
-        print(e)
+            print('WARN: connection was reset during getRSS ' + str(e))
+        else:
+            print('WARN: getRSS, ' + str(e))
     return None
 
 
@@ -814,8 +844,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
         except Exception as e:
             print('WARN: Unable to convert date ' + published + ' ' + str(e))
             continue
-        rssStr += '<item>\n'
-        rssStr += '  <title>' + fields[0] + '</title>\n'
+        rssStr += \
+            '<item>\n' + \
+            '  <title>' + fields[0] + '</title>\n'
         description = removeHtml(firstParagraphFromString(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
@@ -825,8 +856,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
         rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-        rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
-        rssStr += '</item>\n'
+        rssStr += \
+            '  <pubDate>' + rssDateStr + '</pubDate>\n' + \
+            '</item>\n'
     rssStr += rss2Footer()
     return rssStr
 
@@ -839,9 +871,7 @@ def _isNewswireBlogPost(postJsonObject: {}) -> bool:
     """
     if not postJsonObject:
         return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if postJsonObject['object'].get('summary') and \
        postJsonObject['object'].get('url') and \
@@ -854,9 +884,7 @@ def _isNewswireBlogPost(postJsonObject: {}) -> bool:
 def _getHashtagsFromPost(postJsonObject: {}) -> []:
     """Returns a list of any hashtags within a post
     """
-    if not postJsonObject.get('object'):
-        return []
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return []
     if not postJsonObject['object'].get('tag'):
         return []
@@ -891,8 +919,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
     # local blogs can potentially be moderated
     moderatedFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/.newswiremoderated'
+        acctDir(baseDir, nickname, domain) + '/.newswiremoderated'
     if os.path.isfile(moderatedFilename):
         moderated = True
 
@@ -962,9 +989,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
     # go through each account
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
-                continue
-            if 'inbox@' in handle or 'news@' in handle:
+            if not isAccountDir(handle):
                 continue
 
             nickname = handle.split('@')[0]

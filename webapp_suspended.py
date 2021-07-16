@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from utils import getConfigParam
@@ -23,9 +24,10 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     suspendedForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    suspendedForm += '<div><center>\n'
-    suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
-    suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>\n'
-    suspendedForm += '</center></div>\n'
+    suspendedForm += \
+        '<div><center>\n' + \
+        '  <p class="screentitle">Account Suspended</p>\n' + \
+        '  <p>See <a href="/terms">Terms of Service</a></p>\n' + \
+        '</center></div>\n'
     suspendedForm += htmlFooter()
     return suspendedForm

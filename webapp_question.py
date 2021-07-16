@@ -5,10 +5,12 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from question import isQuestion
 from utils import removeIdEnding
+from utils import acctDir
 
 
 def insertQuestion(baseDir: str, translate: {},
@@ -29,7 +31,7 @@ def insertQuestion(baseDir: str, translate: {},
         pageNumberStr = '?page=' + str(pageNumber)
 
     votesFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/questions.txt'
+        acctDir(baseDir, nickname, domain) + '/questions.txt'
 
     showQuestionResults = False
     if os.path.isfile(votesFilename):

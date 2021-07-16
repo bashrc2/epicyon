@@ -5,12 +5,17 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
 import os
 from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
 from utils import loadJson
+from utils import removeDomainPort
+from utils import getPortFromDomain
+from utils import getUserPaths
+from utils import acctDir
 
 
 def manualDenyFollowRequest(session, baseDir: str,
@@ -24,8 +29,7 @@ def manualDenyFollowRequest(session, baseDir: str,
                             projectVersion: str) -> None:
     """Manually deny a follow request
     """
-    handle = nickname + '@' + domain
-    accountsDir = baseDir + '/accounts/' + handle
+    accountsDir = acctDir(baseDir, nickname, domain)
 
     # has this handle already been rejected?
     rejectedFollowsFilename = accountsDir + '/followrejects.txt'
@@ -40,17 +44,16 @@ def manualDenyFollowRequest(session, baseDir: str,
     removeFromFollowRequests(baseDir, nickname, domain, denyHandle, debug)
 
     # Store rejected follows
-    rejectsFile = open(rejectedFollowsFilename, "a+")
-    rejectsFile.write(denyHandle + '\n')
-    rejectsFile.close()
+    with open(rejectedFollowsFilename, 'a+') as rejectsFile:
+        rejectsFile.write(denyHandle + '\n')
 
     denyNickname = denyHandle.split('@')[0]
     denyDomain = \
         denyHandle.split('@')[1].replace('\n', '').replace('\r', '')
     denyPort = port
     if ':' in denyDomain:
-        denyPort = denyDomain.split(':')[1]
-        denyDomain = denyDomain.split(':')[0]
+        denyPort = getPortFromDomain(denyDomain)
+        denyDomain = removeDomainPort(denyDomain)
     followedAccountRejects(session, baseDir, httpPrefix,
                            nickname, domain, port,
                            denyNickname, denyDomain, denyPort,
@@ -69,13 +72,11 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
     approvedFilename = accountDir + '/approved.txt'
     if os.path.isfile(approvedFilename):
         if approveHandle not in open(approvedFilename).read():
-            approvedFile = open(approvedFilename, "a+")
-            approvedFile.write(approveHandle + '\n')
-            approvedFile.close()
+            with open(approvedFilename, 'a+') as approvedFile:
+                approvedFile.write(approveHandle + '\n')
     else:
-        approvedFile = open(approvedFilename, "w+")
-        approvedFile.write(approveHandle + '\n')
-        approvedFile.close()
+        with open(approvedFilename, 'w+') as approvedFile:
+            approvedFile.write(approveHandle + '\n')
 
 
 def manualApproveFollowRequest(session, baseDir: str,
@@ -111,18 +112,12 @@ def manualApproveFollowRequest(session, baseDir: str,
         reqNick = approveHandle.split('@')[0]
         reqDomain = approveHandle.split('@')[1].strip()
         reqPrefix = httpPrefix + '://' + reqDomain
-        if reqPrefix + '/profile/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/profile/' + reqNick
-        elif reqPrefix + '/channel/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/channel/' + reqNick
-        elif reqPrefix + '/accounts/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/accounts/' + reqNick
-        elif reqPrefix + '/u/' + reqNick in approveFollowsStr:
-            exists = True
-            approveHandleFull = reqPrefix + '/u/' + reqNick
+        paths = getUserPaths()
+        for userPath in paths:
+            if reqPrefix + userPath + reqNick in approveFollowsStr:
+                exists = True
+                approveHandleFull = reqPrefix + userPath + reqNick
+                break
     if not exists:
         print('Manual follow accept: ' + approveHandleFull +
               ' not in requests file "' +
@@ -130,53 +125,58 @@ def manualApproveFollowRequest(session, baseDir: str,
               '" ' + approveFollowsFilename)
         return
 
-    approvefilenew = open(approveFollowsFilename + '.new', 'w+')
-    updateApprovedFollowers = False
-    followActivityfilename = None
-    with open(approveFollowsFilename, 'r') as approvefile:
-        for handleOfFollowRequester in approvefile:
-            # is this the approved follow?
-            if handleOfFollowRequester.startswith(approveHandleFull):
-                handleOfFollowRequester = \
-                    handleOfFollowRequester.replace('\n', '').replace('\r', '')
-                port2 = port
-                if ':' in handleOfFollowRequester:
-                    port2Str = handleOfFollowRequester.split(':')[1]
-                    if port2Str.isdigit():
-                        port2 = int(port2Str)
-                requestsDir = accountDir + '/requests'
-                followActivityfilename = \
-                    requestsDir + '/' + handleOfFollowRequester + '.follow'
-                if os.path.isfile(followActivityfilename):
-                    followJson = loadJson(followActivityfilename)
-                    if followJson:
-                        approveNickname = approveHandle.split('@')[0]
-                        approveDomain = approveHandle.split('@')[1]
-                        approveDomain = \
-                            approveDomain.replace('\n', '').replace('\r', '')
-                        approvePort = port2
-                        if ':' in approveDomain:
-                            approvePort = approveDomain.split(':')[1]
-                            approveDomain = approveDomain.split(':')[0]
-                        print('Manual follow accept: Sending Accept for ' +
-                              handle + ' follow request from ' +
-                              approveNickname + '@' + approveDomain)
-                        followedAccountAccepts(session, baseDir, httpPrefix,
-                                               nickname, domain, port,
-                                               approveNickname, approveDomain,
-                                               approvePort,
-                                               followJson['actor'],
-                                               federationList,
-                                               followJson,
-                                               sendThreads, postLog,
-                                               cachedWebfingers, personCache,
-                                               debug, projectVersion, False)
-                updateApprovedFollowers = True
-            else:
-                # this isn't the approved follow so it will remain
-                # in the requests file
-                approvefilenew.write(handleOfFollowRequester)
-    approvefilenew.close()
+    with open(approveFollowsFilename + '.new', 'w+') as approvefilenew:
+        updateApprovedFollowers = False
+        followActivityfilename = None
+        with open(approveFollowsFilename, 'r') as approvefile:
+            for handleOfFollowRequester in approvefile:
+                # is this the approved follow?
+                if handleOfFollowRequester.startswith(approveHandleFull):
+                    handleOfFollowRequester = \
+                        handleOfFollowRequester.replace('\n', '')
+                    handleOfFollowRequester = \
+                        handleOfFollowRequester.replace('\r', '')
+                    port2 = port
+                    if ':' in handleOfFollowRequester:
+                        port2 = getPortFromDomain(handleOfFollowRequester)
+                    requestsDir = accountDir + '/requests'
+                    followActivityfilename = \
+                        requestsDir + '/' + handleOfFollowRequester + '.follow'
+                    if os.path.isfile(followActivityfilename):
+                        followJson = loadJson(followActivityfilename)
+                        if followJson:
+                            approveNickname = approveHandle.split('@')[0]
+                            approveDomain = approveHandle.split('@')[1]
+                            approveDomain = \
+                                approveDomain.replace('\n', '')
+                            approveDomain = \
+                                approveDomain.replace('\r', '')
+                            approvePort = port2
+                            if ':' in approveDomain:
+                                approvePort = getPortFromDomain(approveDomain)
+                                approveDomain = removeDomainPort(approveDomain)
+                            print('Manual follow accept: Sending Accept for ' +
+                                  handle + ' follow request from ' +
+                                  approveNickname + '@' + approveDomain)
+                            followedAccountAccepts(session, baseDir,
+                                                   httpPrefix,
+                                                   nickname, domain, port,
+                                                   approveNickname,
+                                                   approveDomain,
+                                                   approvePort,
+                                                   followJson['actor'],
+                                                   federationList,
+                                                   followJson,
+                                                   sendThreads, postLog,
+                                                   cachedWebfingers,
+                                                   personCache,
+                                                   debug,
+                                                   projectVersion, False)
+                    updateApprovedFollowers = True
+                else:
+                    # this isn't the approved follow so it will remain
+                    # in the requests file
+                    approvefilenew.write(handleOfFollowRequester)
 
     followersFilename = accountDir + '/followers.txt'
     if updateApprovedFollowers:
@@ -200,9 +200,8 @@ def manualApproveFollowRequest(session, baseDir: str,
         else:
             print('Manual follow accept: first follower accepted for ' +
                   handle + ' is ' + approveHandleFull)
-            followersFile = open(followersFilename, "w+")
-            followersFile.write(approveHandleFull + '\n')
-            followersFile.close()
+            with open(followersFilename, 'w+') as followersFile:
+                followersFile.write(approveHandleFull + '\n')
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt

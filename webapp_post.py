@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 import time
@@ -19,9 +20,14 @@ from like import noOfLikes
 from follow import isFollowingActor
 from posts import postIsMuted
 from posts import getPersonBox
-from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import hasObjectDict
+from utils import updateAnnounceCollection
+from utils import isPGPEncrypted
+from utils import isDM
+from utils import rejectPostId
+from utils import isRecentPost
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
@@ -39,6 +45,8 @@ from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isEventPost
+from utils import acctDir
+from content import limitRepeatedWords
 from content import replaceEmojiFromTags
 from content import htmlReplaceQuoteMarks
 from content import htmlReplaceEmailQuote
@@ -47,9 +55,9 @@ from content import removeLongWords
 from content import getMentionsFromHtml
 from content import switchWords
 from person import isPersonSnoozed
+from person import getPersonAvatarUrl
 from announce import announcedByPerson
 from webapp_utils import getAvatarImageUrl
-from webapp_utils import getPersonAvatarUrl
 from webapp_utils import updateAvatarImageCache
 from webapp_utils import loadIndividualPostAsHtmlFromCache
 from webapp_utils import addEmojiToDisplayName
@@ -63,6 +71,7 @@ from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
+from speaker import updateSpeaker
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -155,7 +164,7 @@ def _saveIndividualPostAsHtmlToCache(baseDir: str,
             fp.write(postHtml)
             return True
     except Exception as e:
-        print('ERROR: saving post to cache ' + str(e))
+        print('ERROR: saving post to cache, ' + str(e))
     return False
 
 
@@ -380,7 +389,10 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     return editStr
 
 
-def _getAnnounceIconHtml(nickname: str, domainFull: str,
+def _getAnnounceIconHtml(isAnnounced: bool,
+                         postActor: str,
+                         nickname: str, domainFull: str,
+                         announceJsonObject: {},
                          postJsonObject: {},
                          isPublicRepeat: bool,
                          isModerationPost: bool,
@@ -392,35 +404,48 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
     """Returns html for announce icon/button
     """
     announceStr = ''
-    if not isModerationPost and showRepeatIcon:
-        # don't allow announce/repeat of your own posts
-        announceIcon = 'repeat_inactive.png'
-        announceLink = 'repeat'
-        announceEmoji = ''
+
+    if not showRepeatIcon:
+        return announceStr
+
+    if isModerationPost:
+        return announceStr
+
+    # don't allow announce/repeat of your own posts
+    announceIcon = 'repeat_inactive.png'
+    announceLink = 'repeat'
+    announceEmoji = ''
+    if not isPublicRepeat:
+        announceLink = 'repeatprivate'
+    announceTitle = translate['Repeat this post']
+    unannounceLinkStr = ''
+
+    if announcedByPerson(isAnnounced,
+                         postActor, nickname, domainFull):
+        announceIcon = 'repeat.png'
+        announceEmoji = '🔁 '
+        announceLink = 'unrepeat'
         if not isPublicRepeat:
-            announceLink = 'repeatprivate'
-        announceTitle = translate['Repeat this post']
+            announceLink = 'unrepeatprivate'
+        announceTitle = translate['Undo the repeat']
+        if announceJsonObject:
+            unannounceLinkStr = '?unannounce=' + \
+                removeIdEnding(announceJsonObject['id'])
 
-        if announcedByPerson(postJsonObject, nickname, domainFull):
-            announceIcon = 'repeat.png'
-            announceEmoji = '🔁 '
-            if not isPublicRepeat:
-                announceLink = 'unrepeatprivate'
-            announceTitle = translate['Undo the repeat']
+    announceLinkStr = '?' + \
+        announceLink + '=' + postJsonObject['object']['id'] + pageNumberParam
+    announceStr = \
+        '        <a class="imageAnchor" href="/users/' + \
+        nickname + announceLinkStr + unannounceLinkStr + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostBookmark + \
+        '?tl=' + boxName + '" title="' + announceTitle + '">\n'
 
-        announceStr = \
-            '        <a class="imageAnchor" href="/users/' + \
-            nickname + '?' + announceLink + \
-            '=' + postJsonObject['object']['id'] + pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + announceTitle + '">\n'
-
-        announceStr += \
-            '          ' + \
-            '<img loading="lazy" title="' + translate['Repeat this post'] + \
-            '" alt="' + announceEmoji + translate['Repeat this post'] + \
-            ' |" src="/icons/' + announceIcon + '"/></a>\n'
+    announceStr += \
+        '          ' + \
+        '<img loading="lazy" title="' + announceTitle + \
+        '" alt="' + announceEmoji + announceTitle + \
+        ' |" src="/icons/' + announceIcon + '"/></a>\n'
     return announceStr
 
 
@@ -818,8 +843,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
                                                         postJsonObject)
             else:
                 titleStr += \
-                    _announceUnattributedHtml(translate,
-                                              postJsonObject)
+                    _announceUnattributedHtml(translate, postJsonObject)
     else:
         titleStr += \
             _announceUnattributedHtml(translate, postJsonObject)
@@ -1136,11 +1160,12 @@ def individualPostAsHtml(allowDownloads: bool,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
-                         showRepeats=True,
-                         showIcons=False,
-                         manuallyApprovesFollowers=False,
-                         showPublicOnly=False,
-                         storeToCache=True) -> str:
+                         themeName: str,
+                         showRepeats: bool = True,
+                         showIcons: bool = False,
+                         manuallyApprovesFollowers: bool = False,
+                         showPublicOnly: bool = False,
+                         storeToCache: bool = True) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:
@@ -1218,7 +1243,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorWf = \
             webfingerHandle(session, postActorHandle, httpPrefix,
                             cachedWebfingers,
-                            domain, __version__)
+                            domain, __version__, False)
 
         avatarUrl2 = None
         displayName = None
@@ -1257,11 +1282,6 @@ def individualPostAsHtml(allowDownloads: bool,
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
 
-    # don't create new html within the bookmarks timeline
-    # it should already have been created for the inbox
-    if boxName == 'tlbookmarks' or boxName == 'bookmarks':
-        return ''
-
     timelinePostBookmark = removeIdEnding(postJsonObject['id'])
     timelinePostBookmark = timelinePostBookmark.replace('://', '-')
     timelinePostBookmark = timelinePostBookmark.replace('/', '-')
@@ -1269,10 +1289,9 @@ def individualPostAsHtml(allowDownloads: bool,
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon = showRepeats
     isPublicRepeat = False
-    showDMicon = False
+    postIsDM = isDM(postJsonObject)
     if showRepeats:
-        if isDM(postJsonObject):
-            showDMicon = True
+        if postIsDM:
             showRepeatIcon = False
         else:
             if not isPublicPost(postJsonObject):
@@ -1281,21 +1300,48 @@ def individualPostAsHtml(allowDownloads: bool,
     titleStr = ''
     galleryStr = ''
     isAnnounced = False
+    announceJsonObject = None
     if postJsonObject['type'] == 'Announce':
+        announceJsonObject = postJsonObject.copy()
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
                              YTReplacementDomain,
-                             allowLocalNetworkAccess)
+                             allowLocalNetworkAccess,
+                             recentPostsCache, False)
         if not postJsonAnnounce:
+            # if the announce could not be downloaded then mark it as rejected
+            rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
+                         recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce
+
+        announceFilename = \
+            locatePost(baseDir, nickname, domain,
+                       postJsonObject['id'])
+        if announceFilename:
+            updateAnnounceCollection(recentPostsCache,
+                                     baseDir, announceFilename,
+                                     postActor, nickname, domainFull, False)
+
+            # create a file for use by text-to-speech
+            if isRecentPost(postJsonObject):
+                if postJsonObject.get('actor'):
+                    if not os.path.isfile(announceFilename + '.tts'):
+                        updateSpeaker(baseDir, httpPrefix,
+                                      nickname, domain, domainFull,
+                                      postJsonObject, personCache,
+                                      translate, postJsonObject['actor'],
+                                      themeName)
+                        with open(announceFilename + '.tts', 'w+') as ttsFile:
+                            ttsFile.write('\n')
+
         isAnnounced = True
 
     _logPostTiming(enableTimingLog, postStartTime, '8')
 
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return ''
 
     # if this post should be public then check its recipients
@@ -1347,7 +1393,7 @@ def individualPostAsHtml(allowDownloads: bool,
     _logPostTiming(enableTimingLog, postStartTime, '9')
 
     # Show a DM icon for DMs in the inbox timeline
-    if showDMicon:
+    if postIsDM:
         titleStr = \
             titleStr + ' <img loading="lazy" src="/' + \
             'icons/dm.png" class="DMicon"/>\n'
@@ -1357,6 +1403,9 @@ def individualPostAsHtml(allowDownloads: bool,
     if 'commentsEnabled' in postJsonObject['object']:
         if postJsonObject['object']['commentsEnabled'] is False:
             commentsEnabled = False
+        elif 'rejectReplies' in postJsonObject['object']:
+            if postJsonObject['object']['rejectReplies']:
+                commentsEnabled = False
 
     replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
                                  showIcons, commentsEnabled,
@@ -1374,7 +1423,10 @@ def individualPostAsHtml(allowDownloads: bool,
                                translate, isEvent)
 
     announceStr = \
-        _getAnnounceIconHtml(nickname, domainFull,
+        _getAnnounceIconHtml(isAnnounced,
+                             postActor,
+                             nickname, domainFull,
+                             announceJsonObject,
                              postJsonObject,
                              isPublicRepeat,
                              isModerationPost,
@@ -1388,7 +1440,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # whether to show a like button
     hideLikeButtonFile = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/.hideLikeButton'
+        acctDir(baseDir, nickname, domain) + '/.hideLikeButton'
     showLikeButton = True
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False
@@ -1501,7 +1553,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '" class="' + timeClass + '">' + publishedStr + '</a>\n'
 
     # change the background color for DMs in inbox timeline
-    if showDMicon:
+    if postIsDM:
         containerClassIcons = 'containericons dm'
         containerClass = 'container dm'
 
@@ -1546,17 +1598,21 @@ def individualPostAsHtml(allowDownloads: bool,
 
     _logPostTiming(enableTimingLog, postStartTime, '16')
 
-    if not isPatch:
-        objectContent = \
-            removeLongWords(postJsonObject['object']['content'], 40, [])
-        objectContent = removeTextFormatting(objectContent)
-        objectContent = \
-            switchWords(baseDir, nickname, domain, objectContent)
-        objectContent = htmlReplaceEmailQuote(objectContent)
-        objectContent = htmlReplaceQuoteMarks(objectContent)
+    if not isPGPEncrypted(postJsonObject['object']['content']):
+        if not isPatch:
+            objectContent = \
+                removeLongWords(postJsonObject['object']['content'], 40, [])
+            objectContent = removeTextFormatting(objectContent)
+            objectContent = limitRepeatedWords(objectContent, 6)
+            objectContent = \
+                switchWords(baseDir, nickname, domain, objectContent)
+            objectContent = htmlReplaceEmailQuote(objectContent)
+            objectContent = htmlReplaceQuoteMarks(objectContent)
+        else:
+            objectContent = \
+                postJsonObject['object']['content']
     else:
-        objectContent = \
-            postJsonObject['object']['content']
+        objectContent = '🔒 ' + translate['Encrypted']
 
     objectContent = '<article>' + objectContent + '</article>'
 
@@ -1662,7 +1718,8 @@ def htmlIndividualPost(cssCache: {},
                        YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
                        peertubeInstances: [],
-                       allowLocalNetworkAccess: bool) -> str:
+                       allowLocalNetworkAccess: bool,
+                       themeName: str) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1703,12 +1760,12 @@ def htmlIndividualPost(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances,
-                             allowLocalNetworkAccess,
+                             allowLocalNetworkAccess, themeName,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
-    if isinstance(postJsonObject['object'], dict):
+    if hasObjectDict(postJsonObject):
         while postJsonObject['object'].get('inReplyTo'):
             postFilename = \
                 locatePost(baseDir, nickname, domain,
@@ -1731,6 +1788,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1761,6 +1819,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1782,7 +1841,8 @@ def htmlPostReplies(cssCache: {},
                     YTReplacementDomain: str,
                     showPublishedDateOnly: bool,
                     peertubeInstances: [],
-                    allowLocalNetworkAccess: bool) -> str:
+                    allowLocalNetworkAccess: bool,
+                    themeName: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1801,6 +1861,7 @@ def htmlPostReplies(cssCache: {},
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
+                                     themeName,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
@@ -20,7 +21,7 @@ from webapp_utils import htmlFooter
 
 
 def getHashtagCategoriesFeed(baseDir: str,
-                             hashtagCategories=None) -> str:
+                             hashtagCategories: {} = None) -> str:
     """Returns an rss feed for hashtag categories
     """
     if not hashtagCategories:
@@ -28,87 +29,36 @@ def getHashtagCategoriesFeed(baseDir: str,
     if not hashtagCategories:
         return None
 
-    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
-    rssStr += "<rss version=\"2.0\">\n"
-    rssStr += '<channel>\n'
-    rssStr += '    <title>#categories</title>\n'
+    rssStr = \
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + \
+        "<rss version=\"2.0\">\n" + \
+        '<channel>\n' + \
+        '    <title>#categories</title>\n'
 
     rssDateStr = \
         datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UT")
 
     for categoryStr, hashtagList in hashtagCategories.items():
-        rssStr += '<item>\n'
-        rssStr += '  <title>' + categoryStr + '</title>\n'
+        rssStr += \
+            '<item>\n' + \
+            '  <title>' + categoryStr + '</title>\n'
         listStr = ''
         for hashtag in hashtagList:
+            if ':' in hashtag:
+                continue
+            if '&' in hashtag:
+                continue
             listStr += hashtag + ' '
-        rssStr += '  <description>' + listStr.strip() + '</description>\n'
-        rssStr += '  <link/>\n'
-        rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
-        rssStr += '</item>\n'
+        rssStr += \
+            '  <description>' + listStr.strip() + '</description>\n' + \
+            '  <link/>\n' + \
+            '  <pubDate>' + rssDateStr + '</pubDate>\n' + \
+            '</item>\n'
 
-    rssStr += '</channel>\n'
-    rssStr += '</rss>\n'
+    rssStr += \
+        '</channel>\n' + \
+        '</rss>\n'
     return rssStr
-
-
-def _getHashtagDomainMax(domainHistogram: {}) -> str:
-    """Returns the domain with the maximum number of hashtags
-    """
-    maxCount = 1
-    maxDomain = None
-    for domain, count in domainHistogram.items():
-        if count > maxCount:
-            maxDomain = domain
-            maxCount = count
-    return maxDomain
-
-
-def _getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
-    """Returns the html for a histogram of domains
-    from which hashtags are coming
-    """
-    totalCount = 0
-    for domain, count in domainHistogram.items():
-        totalCount += count
-    if totalCount == 0:
-        return ''
-
-    htmlStr = ''
-    histogramHeaderStr = '<br><br><center>\n'
-    histogramHeaderStr += '  <h1>' + translate['Hashtag origins'] + '</h1>\n'
-    histogramHeaderStr += '  <table class="domainHistogram">\n'
-    histogramHeaderStr += '    <colgroup>\n'
-    histogramHeaderStr += '      <col span="1" class="domainHistogramLeft">\n'
-    histogramHeaderStr += '      <col span="1" class="domainHistogramRight">\n'
-    histogramHeaderStr += '    </colgroup>\n'
-    histogramHeaderStr += '    <tbody>\n'
-    histogramHeaderStr += '      <tr>\n'
-
-    leftColStr = ''
-    rightColStr = ''
-
-    for i in range(len(domainHistogram)):
-        domain = _getHashtagDomainMax(domainHistogram)
-        if not domain:
-            break
-        percent = int(domainHistogram[domain] * 100 / totalCount)
-        if histogramHeaderStr:
-            htmlStr += histogramHeaderStr
-            histogramHeaderStr = None
-        leftColStr += str(percent) + '%<br>'
-        rightColStr += domain + '<br>'
-        del domainHistogram[domain]
-
-    if htmlStr:
-        htmlStr += '        <td>' + leftColStr + '</td>\n'
-        htmlStr += '        <td>' + rightColStr + '</td>\n'
-        htmlStr += '      </tr>\n'
-        htmlStr += '    </tbody>\n'
-        htmlStr += '  </table>\n'
-        htmlStr += '</center>\n'
-
-    return htmlStr
 
 
 def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
@@ -239,7 +189,6 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
             getContentWarningButton('alltags', translate, tagSwarmStr)
 
     tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
-    # tagSwarmHtml += _getHashtagDomainHistogram(domainHistogram, translate)
     return tagSwarmHtml
 
 
@@ -274,10 +223,11 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
         htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
             actor + '/' + searchBannerFile + '" alt="" /></a>\n'
 
-    htmlStr += '<div class="follow">'
-    htmlStr += '<center><br><br><br>'
-    htmlStr += '<h1><a href="' + actor + '/search"><b>'
-    htmlStr += translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
+    htmlStr += \
+        '<div class="follow">' + \
+        '<center><br><br><br>' + \
+        '<h1><a href="' + actor + '/search"><b>' + \
+        translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
 
     hashtagsDict = getHashtagCategories(baseDir, True, categoryStr)
     if hashtagsDict:
@@ -288,7 +238,8 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
                     '<a href="' + actor + '/tags/' + tagName + \
                     '" class="hashtagswarm">' + tagName + '</a>\n'
 
-    htmlStr += '</center>'
-    htmlStr += '</div>'
+    htmlStr += \
+        '</center>' + \
+        '</div>'
     htmlStr += htmlFooter()
     return htmlStr

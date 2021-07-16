@@ -5,11 +5,13 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
 import os
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
+from utils import hasObjectDict
 
 
 def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
@@ -17,9 +19,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     """ For a given reply update the votes on a question
     Returns the question json object if the vote totals were changed
     """
-    if not replyJson.get('object'):
-        return None
-    if not isinstance(replyJson['object'], dict):
+    if not hasObjectDict(replyJson):
         return None
     if not replyJson['object'].get('inReplyTo'):
         return None
@@ -36,9 +36,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     questionJson = loadJson(questionPostFilename)
     if not questionJson:
         return None
-    if not questionJson.get('object'):
-        return None
-    if not isinstance(questionJson['object'], dict):
+    if not hasObjectDict(questionJson):
         return None
     if not questionJson['object'].get('type'):
         return None
@@ -66,24 +64,20 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     votersFilename = questionPostFilename.replace('.json', '.voters')
     if not os.path.isfile(votersFilename):
         # create a new voters file
-        votersFile = open(votersFilename, 'w+')
-        if votersFile:
+        with open(votersFilename, 'w+') as votersFile:
             votersFile.write(replyJson['actor'] +
                              votersFileSeparator +
                              foundAnswer + '\n')
-            votersFile.close()
     else:
         if replyJson['actor'] not in open(votersFilename).read():
             # append to the voters file
-            votersFile = open(votersFilename, "a+")
-            if votersFile:
+            with open(votersFilename, 'a+') as votersFile:
                 votersFile.write(replyJson['actor'] +
                                  votersFileSeparator +
                                  foundAnswer + '\n')
-                votersFile.close()
         else:
             # change an entry in the voters file
-            with open(votersFilename, "r") as votersFile:
+            with open(votersFilename, 'r') as votersFile:
                 lines = votersFile.readlines()
                 newlines = []
                 saveVotersFile = False
@@ -110,7 +104,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
         if not possibleAnswer.get('name'):
             continue
         totalItems = 0
-        with open(votersFilename, "r") as votersFile:
+        with open(votersFilename, 'r') as votersFile:
             lines = votersFile.readlines()
             for voteLine in lines:
                 if voteLine.endswith(votersFileSeparator +
@@ -132,7 +126,7 @@ def isQuestion(postObjectJson: {}) -> bool:
     if postObjectJson['type'] != 'Create' and \
        postObjectJson['type'] != 'Update':
         return False
-    if not isinstance(postObjectJson['object'], dict):
+    if not hasObjectDict(postObjectJson):
         return False
     if not postObjectJson['object'].get('type'):
         return False

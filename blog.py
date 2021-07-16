@@ -5,15 +5,19 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
 
 from content import replaceEmojiFromTags
 from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithBlogMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_media import addEmbeddedElements
+from utils import isAccountDir
+from utils import removeHtml
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import getMediaFormats
@@ -22,6 +26,8 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import firstParagraphFromString
+from utils import getActorPropertyUrl
+from utils import acctDir
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
@@ -41,8 +47,8 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     tryPostBox = ('tlblogs', 'inbox', 'outbox')
     boxFound = False
     for postBox in tryPostBox:
-        postFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + postBox + '/' + \
+        postFilename = \
+            acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
             postId.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
@@ -50,8 +56,8 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     if not boxFound:
         # post may exist but has no replies
         for postBox in tryPostBox:
-            postFilename = baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/' + postBox + '/' + \
+            postFilename = \
+                acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
                 postId.replace('/', '#')
             if os.path.isfile(postFilename):
                 return 1
@@ -60,7 +66,7 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     removals = []
     replies = 0
     lines = []
-    with open(postFilename, "r") as f:
+    with open(postFilename, 'r') as f:
         lines = f.readlines()
         for replyPostId in lines:
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
@@ -101,8 +107,8 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     tryPostBox = ('tlblogs', 'inbox', 'outbox')
     boxFound = False
     for postBox in tryPostBox:
-        postFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + postBox + '/' + \
+        postFilename = \
+            acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
             postId.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
@@ -110,33 +116,31 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     if not boxFound:
         # post may exist but has no replies
         for postBox in tryPostBox:
-            postFilename = baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/' + postBox + '/' + \
+            postFilename = \
+                acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
                 postId.replace('/', '#') + '.json'
             if os.path.isfile(postFilename):
-                postFilename = baseDir + '/accounts/' + \
-                    nickname + '@' + domain + \
+                postFilename = acctDir(baseDir, nickname, domain) + \
                     '/postcache/' + \
                     postId.replace('/', '#') + '.html'
                 if os.path.isfile(postFilename):
-                    with open(postFilename, "r") as postFile:
+                    with open(postFilename, 'r') as postFile:
                         return postFile.read() + '\n'
         return ''
 
-    with open(postFilename, "r") as f:
+    with open(postFilename, 'r') as f:
         lines = f.readlines()
         repliesStr = ''
         for replyPostId in lines:
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
             replyPostId = replyPostId.replace('.json', '')
             replyPostId = replyPostId.replace('.replies', '')
-            postFilename = baseDir + '/accounts/' + \
-                nickname + '@' + domain + \
+            postFilename = acctDir(baseDir, nickname, domain) + \
                 '/postcache/' + \
                 replyPostId.replace('/', '#') + '.html'
             if not os.path.isfile(postFilename):
                 continue
-            with open(postFilename, "r") as postFile:
+            with open(postFilename, 'r') as postFile:
                 repliesStr += postFile.read() + '\n'
             rply = _getBlogReplies(baseDir, httpPrefix, translate,
                                    nickname, domain, domainFull,
@@ -375,11 +379,28 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
     return blogStr
 
 
+def _getSnippetFromBlogContent(postJsonObject: {}) -> str:
+    """Returns a snippet of text from the blog post as a preview
+    """
+    content = postJsonObject['object']['content']
+    if '<p>' in content:
+        content = content.split('<p>', 1)[1]
+        if '</p>' in content:
+            content = content.split('</p>', 1)[0]
+    content = removeHtml(content)
+    if '\n' in content:
+        content = content.split('\n')[0]
+    if len(content) >= 256:
+        content = content[:252] + '...'
+    return content
+
+
 def htmlBlogPost(authorized: bool,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
                  postJsonObject: {},
-                 peertubeInstances: []) -> str:
+                 peertubeInstances: [],
+                 systemLanguage: str) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -389,7 +410,13 @@ def htmlBlogPost(authorized: bool,
         cssFilename = baseDir + '/blog.css'
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    published = postJsonObject['object']['published']
+    title = postJsonObject['object']['summary']
+    snippet = _getSnippetFromBlogContent(postJsonObject)
+    blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
+                                       httpPrefix, domainFull, nickname,
+                                       systemLanguage, published,
+                                       title, snippet)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogStr += _htmlBlogPostContent(authorized, baseDir,
@@ -441,8 +468,7 @@ def htmlBlogPage(authorized: bool, session,
     blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogsIndex = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/tlblogs.index'
+    blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         return blogStr + htmlFooter()
 
@@ -530,8 +556,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
         blogRSS2 = rss2Header(httpPrefix, nickname, domainFull,
                               'Blog', translate)
 
-    blogsIndex = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/tlblogs.index'
+    blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         if includeHeader:
             return blogRSS2 + rss2Footer()
@@ -582,8 +607,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
 
     blogRSS3 = ''
 
-    blogsIndex = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/tlblogs.index'
+    blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         return blogRSS3
 
@@ -617,9 +641,7 @@ def _noOfBlogAccounts(baseDir: str) -> int:
     ctr = 0
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct:
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -634,9 +656,7 @@ def _singleBlogAccountNickname(baseDir: str) -> str:
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct:
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -674,9 +694,7 @@ def htmlBlogView(authorized: bool,
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct:
+            if not isAccountDir(acct):
                 continue
             accountDir = os.path.join(baseDir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -819,7 +837,8 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     editBlogForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px">' + contentStr + '</textarea>'
+        str(messageBoxHeight) + 'px" spellcheck="true">' + \
+        contentStr + '</textarea>'
     editBlogForm += dateAndLocation
     if not mediaInstance:
         editBlogForm += editBlogImageSection
@@ -831,3 +850,39 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     editBlogForm += htmlFooter()
     return editBlogForm
+
+
+def pathContainsBlogLink(baseDir: str,
+                         httpPrefix: str, domain: str,
+                         domainFull: str, path: str) -> (str, str):
+    """If the path contains a blog entry then return its filename
+    """
+    if '/users/' not in path:
+        return None, None
+    userEnding = path.split('/users/', 1)[1]
+    if '/' not in userEnding:
+        return None, None
+    userEnding2 = userEnding.split('/')
+    nickname = userEnding2[0]
+    if len(userEnding2) != 2:
+        return None, None
+    if len(userEnding2[1]) < 14:
+        return None, None
+    userEnding2[1] = userEnding2[1].strip()
+    if not userEnding2[1].isdigit():
+        return None, None
+    # check for blog posts
+    blogIndexFilename = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
+    if not os.path.isfile(blogIndexFilename):
+        return None, None
+    if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
+        return None, None
+    messageId = httpPrefix + '://' + domainFull + \
+        '/users/' + nickname + '/statuses/' + userEnding2[1]
+    return locatePost(baseDir, nickname, domain, messageId), nickname
+
+
+def getBlogAddress(actorJson: {}) -> str:
+    """Returns blog address for the given actor
+    """
+    return getActorPropertyUrl(actorJson, 'Blog')

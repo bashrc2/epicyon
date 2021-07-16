@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
 import os
 from utils import hasUsersPath
@@ -14,6 +15,8 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
+from utils import hasObjectDict
+from utils import acctDir
 
 
 def _createAcceptReject(baseDir: str, federationList: [],
@@ -37,7 +40,7 @@ def _createAcceptReject(baseDir: str, federationList: [],
     newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
-        'actor': httpPrefix+'://' + domain + '/users/' + nickname,
+        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
         'to': [toUrl],
         'cc': [],
         'object': objectJson
@@ -72,7 +75,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
                   federationList: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
-    if not messageJson.get('object'):
+    if not hasObjectDict(messageJson):
         return
     if not messageJson['object'].get('type'):
         return
@@ -119,9 +122,9 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
                 print('DEBUG: unrecognized actor ' + thisActor)
             return
     else:
-        if not '/' + acceptedDomain+'/users/' + nickname in thisActor:
+        if not '/' + acceptedDomain + '/users/' + nickname in thisActor:
             if debug:
-                print('Expected: /' + acceptedDomain+'/users/' + nickname)
+                print('Expected: /' + acceptedDomain + '/users/' + nickname)
                 print('Actual:   ' + thisActor)
                 print('DEBUG: unrecognized actor ' + thisActor)
             return
@@ -133,7 +136,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
         return
     followedDomainFull = followedDomain
     if port:
-        followedDomainFull = followedDomain+':' + str(port)
+        followedDomainFull = followedDomain + ':' + str(port)
     followedNickname = getNicknameFromActor(followedActor)
     if not followedNickname:
         print('DEBUG: no nickname found within Follow activity object ' +
@@ -145,8 +148,8 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
         acceptedDomainFull = acceptedDomain + ':' + str(acceptedPort)
 
     # has this person already been unfollowed?
-    unfollowedFilename = baseDir + '/accounts/' + \
-        nickname + '@' + acceptedDomainFull + '/unfollowed.txt'
+    unfollowedFilename = \
+        acctDir(baseDir, nickname, acceptedDomainFull) + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if followedNickname + '@' + followedDomainFull in \
            open(unfollowedFilename).read():
@@ -167,7 +170,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
     else:
         if debug:
             print('DEBUG: Unable to create follow - ' +
-                  nickname + '@' + acceptedDomain+' -> ' +
+                  nickname + '@' + acceptedDomain + ' -> ' +
                   followedNickname + '@' + followedDomain)
 
 

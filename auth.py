@@ -5,12 +5,14 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Security"
 
 import base64
 import hashlib
 import binascii
 import os
 import secrets
+import datetime
 from utils import isSystemAccount
 from utils import hasUsersPath
 
@@ -124,15 +126,15 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
         return False
-    passwordFile = baseDir+'/accounts/passwords'
+    passwordFile = baseDir + '/accounts/passwords'
     if not os.path.isfile(passwordFile):
         if debug:
             print('DEBUG: passwords file missing')
         return False
     providedPassword = plain.split(':')[1]
-    passfile = open(passwordFile, "r")
+    passfile = open(passwordFile, 'r')
     for line in passfile:
-        if line.startswith(nickname+':'):
+        if line.startswith(nickname + ':'):
             storedPassword = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
             success = _verifyPassword(storedPassword, providedPassword)
@@ -160,7 +162,7 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     storeStr = nickname + ':' + _hashPassword(password)
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
-            with open(passwordFile, "r") as fin:
+            with open(passwordFile, 'r') as fin:
                 with open(passwordFile + '.new', 'w+') as fout:
                     for line in fin:
                         if not line.startswith(nickname + ':'):
@@ -184,7 +186,7 @@ def removePassword(baseDir: str, nickname: str) -> None:
     """
     passwordFile = baseDir + '/accounts/passwords'
     if os.path.isfile(passwordFile):
-        with open(passwordFile, "r") as fin:
+        with open(passwordFile, 'r') as fin:
             with open(passwordFile + '.new', 'w+') as fout:
                 for line in fin:
                     if not line.startswith(nickname + ':'):
@@ -200,7 +202,56 @@ def authorize(baseDir: str, path: str, authHeader: str, debug: bool) -> bool:
     return False
 
 
-def createPassword(length=10):
+def createPassword(length: int = 10):
     validChars = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return ''.join((secrets.choice(validChars) for i in range(length)))
+
+
+def recordLoginFailure(baseDir: str, ipAddress: str,
+                       countDict: {}, failTime: int,
+                       logToFile: bool) -> None:
+    """Keeps ip addresses and the number of times login failures
+    occured for them in a dict
+    """
+    if not countDict.get(ipAddress):
+        while len(countDict.items()) > 100:
+            oldestTime = 0
+            oldestIP = None
+            for ipAddr, ipItem in countDict.items():
+                if oldestTime == 0 or ipItem['time'] < oldestTime:
+                    oldestTime = ipItem['time']
+                    oldestIP = ipAddr
+            if oldestIP:
+                del countDict[oldestIP]
+        countDict[ipAddress] = {
+            "count": 1,
+            "time": failTime
+        }
+    else:
+        countDict[ipAddress]['count'] += 1
+        countDict[ipAddress]['time'] = failTime
+        failCount = countDict[ipAddress]['count']
+        if failCount > 4:
+            print('WARN: ' + str(ipAddress) + ' failed to log in ' +
+                  str(failCount) + ' times')
+
+    if not logToFile:
+        return
+
+    failureLog = baseDir + '/accounts/loginfailures.log'
+    writeType = 'a+'
+    if not os.path.isfile(failureLog):
+        writeType = 'w+'
+    currTime = datetime.datetime.utcnow()
+    try:
+        with open(failureLog, writeType) as fp:
+            # here we use a similar format to an ssh log, so that
+            # systems such as fail2ban can parse it
+            fp.write(currTime.strftime("%Y-%m-%d %H:%M:%SZ") + ' ' +
+                     'ip-127-0-0-1 sshd[20710]: ' +
+                     'Disconnecting invalid user epicyon ' +
+                     ipAddress + ' port 443: ' +
+                     'Too many authentication failures [preauth]\n')
+    except BaseException:
+        pass

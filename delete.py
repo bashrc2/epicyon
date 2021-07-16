@@ -5,9 +5,11 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
+from utils import removeDomainPort
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -55,14 +57,14 @@ def sendDeleteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion)
+                        fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: delete webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: delete webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -76,11 +78,12 @@ def sendDeleteViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: delete no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: delete no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -91,10 +94,11 @@ def sendDeleteViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newDeleteJson, [], inboxUrl, headers)
+        postJson(httpPrefix, fromDomainFull,
+                 session, newDeleteJson, [], inboxUrl, headers, 3, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST delete failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
@@ -151,8 +155,7 @@ def outboxDelete(baseDir: str, httpPrefix: str,
                   "wasn't created by you (nickname does not match)")
         return
     deleteDomain, deletePort = getDomainFromActor(messageId)
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     if deleteDomain != domain:
         if debug:
             print("DEBUG: you can't delete a post which " +

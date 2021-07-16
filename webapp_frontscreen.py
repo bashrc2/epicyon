@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Timeline"
 
 import os
 from utils import isSystemAccount
@@ -30,7 +31,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           YTReplacementDomain: str,
                           showPublishedDateOnly: bool,
                           peertubeInstances: [],
-                          allowLocalNetworkAccess: bool) -> str:
+                          allowLocalNetworkAccess: bool,
+                          themeName: str) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -71,6 +73,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -94,8 +97,10 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     newswire: {}, theme: str,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
-                    extraJson=None,
-                    pageNumber=None, maxItemsPerPage=None) -> str:
+                    accessKeys: {},
+                    extraJson: {} = None,
+                    pageNumber: int = None,
+                    maxItemsPerPage: int = None) -> str:
     """Show the news instance front screen
     """
     nickname = profileJson['preferredUsername']
@@ -123,22 +128,24 @@ def htmlFrontScreen(rssIconAtTop: bool,
     if loginButton:
         profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
-    profileHeaderStr += '<table class="timeline">\n'
-    profileHeaderStr += '  <colgroup>\n'
-    profileHeaderStr += '    <col span="1" class="column-left">\n'
-    profileHeaderStr += '    <col span="1" class="column-center">\n'
-    profileHeaderStr += '    <col span="1" class="column-right">\n'
-    profileHeaderStr += '  </colgroup>\n'
-    profileHeaderStr += '  <tbody>\n'
-    profileHeaderStr += '    <tr>\n'
-    profileHeaderStr += '      <td valign="top" class="col-left">\n'
+    profileHeaderStr += \
+        '<table class="timeline">\n' + \
+        '  <colgroup>\n' + \
+        '    <col span="1" class="column-left">\n' + \
+        '    <col span="1" class="column-center">\n' + \
+        '    <col span="1" class="column-right">\n' + \
+        '  </colgroup>\n' + \
+        '  <tbody>\n' + \
+        '    <tr>\n' + \
+        '      <td valign="top" class="col-left">\n'
     profileHeaderStr += \
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False, None, rssIconAtTop, True,
-                             True, theme)
-    profileHeaderStr += '      </td>\n'
-    profileHeaderStr += '      <td valign="top" class="col-center">\n'
+                             True, theme, accessKeys)
+    profileHeaderStr += \
+        '      </td>\n' + \
+        '      <td valign="top" class="col-center">\n'
 
     profileStr = profileHeaderStr
 
@@ -159,7 +166,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               YTReplacementDomain,
                               showPublishedDateOnly,
                               peertubeInstances,
-                              allowLocalNetworkAccess) + licenseStr
+                              allowLocalNetworkAccess,
+                              theme) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'
@@ -170,11 +178,12 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               False, False, newswire, False,
                               False, None, False, False,
                               False, True, authorized, True, theme,
-                              defaultTimeline)
-    profileFooterStr += '      </td>\n'
-    profileFooterStr += '  </tr>\n'
-    profileFooterStr += '  </tbody>\n'
-    profileFooterStr += '</table>\n'
+                              defaultTimeline, accessKeys)
+    profileFooterStr += \
+        '      </td>\n' + \
+        '  </tr>\n' + \
+        '  </tbody>\n' + \
+        '</table>\n'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')

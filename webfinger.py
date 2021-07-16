@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
 import os
 import urllib.parse
@@ -16,6 +17,7 @@ from utils import loadJson
 from utils import loadJsonOnionify
 from utils import saveJson
 from utils import getProtocolPrefixes
+from utils import removeDomainPort
 
 
 def _parseHandle(handle: str) -> (str, str):
@@ -40,27 +42,25 @@ def _parseHandle(handle: str) -> (str, str):
 
 def webfingerHandle(session, handle: str, httpPrefix: str,
                     cachedWebfingers: {},
-                    fromDomain: str, projectVersion: str) -> {}:
+                    fromDomain: str, projectVersion: str,
+                    debug: bool) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
-        print('WARN: No session specified for webfingerHandle')
+        if debug:
+            print('WARN: No session specified for webfingerHandle')
         return None
 
     nickname, domain = _parseHandle(handle)
     if not nickname:
         return None
-    wfDomain = domain
-    if ':' in wfDomain:
-        # wfPortStr=wfDomain.split(':')[1]
-        # if wfPortStr.isdigit():
-        #     wfPort=int(wfPortStr)
-        # if wfPort==80 or wfPort==443:
-        wfDomain = wfDomain.split(':')[0]
+    wfDomain = removeDomainPort(domain)
+
     wf = getWebfingerFromCache(nickname + '@' + wfDomain,
                                cachedWebfingers)
     if wf:
-        print('Webfinger from cache: ' + str(wf))
+        if debug:
+            print('Webfinger from cache: ' + str(wf))
         return wf
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix, domain)
     par = {
@@ -71,21 +71,23 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     }
     try:
         result = \
-            getJson(session, url, hdr, par, projectVersion,
+            getJson(session, url, hdr, par,
+                    debug, projectVersion,
                     httpPrefix, fromDomain)
     except Exception as e:
-        print(e)
+        print('ERROR: webfingerHandle ' + str(e))
         return None
 
     if result:
         storeWebfingerInCache(nickname + '@' + wfDomain,
                               result, cachedWebfingers)
     else:
-        print("WARN: Unable to webfinger " + url + ' ' +
-              'nickname: ' + str(nickname) + ' ' +
-              'domain: ' + str(wfDomain) + ' ' +
-              'headers: ' + str(hdr) + ' ' +
-              'params: ' + str(par))
+        if debug:
+            print("WARN: Unable to webfinger " + url + ' ' +
+                  'nickname: ' + str(nickname) + ' ' +
+                  'domain: ' + str(wfDomain) + ' ' +
+                  'headers: ' + str(hdr) + ' ' +
+                  'params: ' + str(par))
 
     return result
 
@@ -172,18 +174,19 @@ def webfingerNodeInfo(httpPrefix: str, domainFull: str) -> {}:
 def webfingerMeta(httpPrefix: str, domainFull: str) -> str:
     """Return /.well-known/host-meta
     """
-    metaStr = "<?xml version=’1.0' encoding=’UTF-8'?>"
-    metaStr += "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'"
-    metaStr += " xmlns:hm=’http://host-meta.net/xrd/1.0'>"
-    metaStr += ""
-    metaStr += "<hm:Host>" + domainFull + "</hm:Host>"
-    metaStr += ""
-    metaStr += "<Link rel=’lrdd’"
-    metaStr += " template=’" + httpPrefix + "://" + domainFull + \
-        "/describe?uri={uri}'>"
-    metaStr += " <Title>Resource Descriptor</Title>"
-    metaStr += " </Link>"
-    metaStr += "</XRD>"
+    metaStr = \
+        "<?xml version=’1.0' encoding=’UTF-8'?>" + \
+        "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" + \
+        " xmlns:hm=’http://host-meta.net/xrd/1.0'>" + \
+        "" + \
+        "<hm:Host>" + domainFull + "</hm:Host>" + \
+        "" + \
+        "<Link rel=’lrdd’" + \
+        " template=’" + httpPrefix + "://" + domainFull + \
+        "/describe?uri={uri}'>" + \
+        " <Title>Resource Descriptor</Title>" + \
+        " </Link>" + \
+        "</XRD>"
     return metaStr
 
 
@@ -262,18 +265,28 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         "matrix": "matrix",
         "email": "mailto",
         "ssb": "ssb",
+        "briar": "briar",
+        "cwtch": "cwtch",
+        "jami": "jami",
         "tox": "toxId"
     }
+
+    aliasesNotFound = []
+    for name, alias in webfingerPropertyName.items():
+        aliasesNotFound.append(alias)
 
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
         propertyName = propertyValue['name'].lower()
-        if not (propertyName.startswith('ssb') or
-                propertyName.startswith('xmpp') or
-                propertyName.startswith('matrix') or
-                propertyName.startswith('email') or
-                propertyName.startswith('tox')):
+        found = False
+        for name, alias in webfingerPropertyName.items():
+            if name == propertyName:
+                if alias in aliasesNotFound:
+                    aliasesNotFound.remove(alias)
+                found = True
+                break
+        if not found:
             continue
         if not propertyValue.get('type'):
             continue
@@ -283,6 +296,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
             continue
 
         newValue = propertyValue['value'].strip()
+        if '://' in newValue:
+            newValue = newValue.split('://')[1]
+
         aliasIndex = 0
         found = False
         for alias in wfJson['aliases']:
@@ -298,6 +314,17 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         else:
             wfJson['aliases'].append(newAlias)
             changed = True
+
+    # remove any aliases which are no longer in the actor profile
+    removeAlias = []
+    for alias in aliasesNotFound:
+        for fullAlias in wfJson['aliases']:
+            if fullAlias.startswith(alias + ':'):
+                removeAlias.append(fullAlias)
+    for fullAlias in removeAlias:
+        wfJson['aliases'].remove(fullAlias)
+        changed = True
+
     return changed
 
 

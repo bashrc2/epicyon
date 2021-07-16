@@ -5,8 +5,10 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Moderation"
 
 import os
+from utils import isAccountDir
 from utils import getFullDomain
 from utils import isEditor
 from utils import loadJson
@@ -44,7 +46,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    authorized: bool, moderationActionStr: str,
                    theme: str, peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
-                   textModeBanner: str) -> str:
+                   textModeBanner: str,
+                   accessKeys: {}) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -60,7 +63,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allowLocalNetworkAccess,
-                        textModeBanner)
+                        textModeBanner, accessKeys)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},
@@ -268,9 +271,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     accounts = []
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct or 'news@' in acct:
+            if not isAccountDir(acct):
                 continue
             accounts.append(acct)
         break
@@ -328,7 +329,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, "r") as f:
+        with open(suspendedFilename, 'r') as f:
             suspendedStr = f.read()
             infoForm += '<div class="container">\n'
             infoForm += '  <br><b>' + \
@@ -337,14 +338,14 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 translate['These are currently suspended']
             infoForm += \
                 '  <textarea id="message" ' + \
-                'name="suspended" style="height:200px">' + \
+                'name="suspended" style="height:200px" spellcheck="false">' + \
                 suspendedStr + '</textarea>\n'
             infoForm += '</div>\n'
             infoShown = True
 
     blockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(blockingFilename):
-        with open(blockingFilename, "r") as f:
+        with open(blockingFilename, 'r') as f:
             blockedStr = f.read()
             infoForm += '<div class="container">\n'
             infoForm += \
@@ -355,14 +356,14 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 translate[msgStr1]
             infoForm += \
                 '  <textarea id="message" ' + \
-                'name="blocked" style="height:700px">' + \
+                'name="blocked" style="height:700px" spellcheck="false">' + \
                 blockedStr + '</textarea>\n'
             infoForm += '</div>\n'
             infoShown = True
 
     filtersFilename = baseDir + '/accounts/filters.txt'
     if os.path.isfile(filtersFilename):
-        with open(filtersFilename, "r") as f:
+        with open(filtersFilename, 'r') as f:
             filteredStr = f.read()
             infoForm += '<div class="container">\n'
             infoForm += \
@@ -370,7 +371,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 translate['Filtered words'] + '</b>'
             infoForm += \
                 '  <textarea id="message" ' + \
-                'name="filtered" style="height:700px">' + \
+                'name="filtered" style="height:700px" spellcheck="true">' + \
                 filteredStr + '</textarea>\n'
             infoForm += '</div>\n'
             infoShown = True

@@ -15,6 +15,7 @@ JSON-LD.
 __copyright__ = 'Copyright (c) 2011-2014 Digital Bazaar, Inc.'
 __license__ = 'New BSD license'
 __version__ = '0.6.8'
+__module_group__ = "Security"
 
 __all__ = [
     'compact', 'expand', 'flatten', 'frame', 'link', 'from_rdf', 'to_rdf',
@@ -370,7 +371,7 @@ def load_document(url):
         # validate URL
         pieces = urllib_parse.urlparse(url)
         if (not all([pieces.scheme, pieces.netloc]) or
-            pieces.scheme not in ['http', 'https', 'dat'] or
+            pieces.scheme not in ['http', 'https', 'hyper'] or
             set(pieces.netloc) > set(
                 string.ascii_letters + string.digits + '-.:')):
             raise JsonLdError(
@@ -2378,8 +2379,13 @@ class JsonLdProcessor(object):
                 # hash bnode paths
                 path_namer = UniqueNamer('_:b')
                 path_namer.get_name(bnode)
-                results.append(self._hash_paths(
-                    bnode, bnodes, namer, path_namer))
+                try:
+                    bnode_path = self._hash_paths(
+                        bnode, bnodes, namer, path_namer)
+                    results.append(bnode_path)
+                except BaseException:
+                    print('WARN: jsonld bnode_path failed')
+                    pass
 
             # name bnodes in hash order
             cmp_hashes = cmp_to_key(lambda x, y: cmp(x['hash'], y['hash']))
@@ -4292,7 +4298,8 @@ class JsonLdProcessor(object):
                     elif v not in urls:
                         urls[v] = False
 
-    def _retrieve_context_urls(self, input_, cycles, load_document, base=''):
+    def _retrieve_context_urls(self, input_, cycles, load_document,
+                               base: str = ''):
         """
         Retrieves external @context URLs using the given document loader. Each
         instance of @context in the input that refers to a URL will be
@@ -4854,7 +4861,7 @@ class ActiveContextCache(object):
     the overhead of recomputing them.
     """
 
-    def __init__(self, size=100):
+    def __init__(self, size: int = 100):
         self.order = deque()
         self.cache = {}
         self.size = size

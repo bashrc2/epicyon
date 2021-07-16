@@ -5,12 +5,16 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Calendar"
 
 import os
 import time
 import datetime
+from utils import hasObjectDict
 from utils import getStatusNumber
 from utils import loadJson
+from utils import isAccountDir
+from utils import acctDir
 from outbox import postMessageToOutbox
 
 
@@ -76,16 +80,17 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
             statusNumber, published = getStatusNumber()
             if postJsonObject.get('published'):
                 postJsonObject['published'] = published
-            if postJsonObject.get('object'):
-                if isinstance(postJsonObject['object'], dict):
-                    if postJsonObject['object'].get('published'):
-                        postJsonObject['published'] = published
+            if hasObjectDict(postJsonObject):
+                if postJsonObject['object'].get('published'):
+                    postJsonObject['published'] = published
 
             print('Sending scheduled post ' + postId)
 
             if nickname:
                 httpd.postToNickname = nickname
-            if not postMessageToOutbox(postJsonObject, nickname,
+            if not postMessageToOutbox(httpd.session,
+                                       httpd.translate,
+                                       postJsonObject, nickname,
                                        httpd, baseDir,
                                        httpd.httpPrefix,
                                        httpd.domain,
@@ -106,14 +111,15 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.debug,
                                        httpd.YTReplacementDomain,
                                        httpd.showPublishedDateOnly,
-                                       httpd.allowLocalNetworkAccess):
+                                       httpd.allowLocalNetworkAccess,
+                                       httpd.city):
                 indexLines.remove(line)
                 os.remove(postFilename)
                 continue
 
             # move to the outbox
-            outboxPostFilename = \
-                postFilename.replace('/scheduled/', '/outbox/')
+            outboxPostFilename = postFilename.replace('/scheduled/',
+                                                      '/outbox/')
             os.rename(postFilename, outboxPostFilename)
 
             print('Scheduled post sent ' + postId)
@@ -125,11 +131,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
     # write the new schedule index file
     scheduleIndexFile = \
         baseDir + '/accounts/' + handle + '/schedule.index'
-    scheduleFile = open(scheduleIndexFile, "w+")
-    if scheduleFile:
+    with open(scheduleIndexFile, 'w+') as scheduleFile:
         for line in indexLines:
             scheduleFile.write(line)
-        scheduleFile.close()
 
 
 def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
@@ -142,9 +146,7 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
             for account in dirs:
                 if '@' not in account:
                     continue
-                if account.startswith('inbox@'):
-                    continue
-                if account.startswith('news@'):
+                if not isAccountDir(account):
                     continue
                 # scheduled posts index for this account
                 scheduleIndexFilename = \
@@ -152,7 +154,7 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
                 if not os.path.isfile(scheduleIndexFilename):
                     continue
                 _updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
-        break
+            break
 
 
 def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
@@ -164,12 +166,13 @@ def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrPostSchedule.start()
     while True:
         time.sleep(20)
-        if not httpd.thrPostSchedule.is_alive():
-            httpd.thrPostSchedule.kill()
-            httpd.thrPostSchedule = \
-                postScheduleOriginal.clone(runPostSchedule)
-            httpd.thrPostSchedule.start()
-            print('Restarting scheduled posts...')
+        if httpd.thrPostSchedule.is_alive():
+            continue
+        httpd.thrPostSchedule.kill()
+        httpd.thrPostSchedule = \
+            postScheduleOriginal.clone(runPostSchedule)
+        httpd.thrPostSchedule.start()
+        print('Restarting scheduled posts...')
 
 
 def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
@@ -177,12 +180,11 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
     """
     # remove the index
     scheduleIndexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/schedule.index'
+        acctDir(baseDir, nickname, domain) + '/schedule.index'
     if os.path.isfile(scheduleIndexFilename):
         os.remove(scheduleIndexFilename)
     # remove the scheduled posts
-    scheduledDir = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/scheduled'
+    scheduledDir = acctDir(baseDir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduledDir):
         return
     for scheduledPostFilename in os.listdir(scheduledDir):

@@ -5,11 +5,13 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface Columns"
 
 import os
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
+from utils import removeDomainPort
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
@@ -49,10 +51,8 @@ def _getLeftColumnShares(baseDir: str,
         if '<' in sharedesc or '?' in sharedesc:
             continue
         contactActor = item['actor']
-        shareLink = actor + \
-            '?replydm=sharedesc:' + \
-            sharedesc.replace(' ', '_') + \
-            '?mention=' + contactActor
+        shareLink = actor + '?replydm=sharedesc:' + \
+            sharedesc.replace(' ', '_') + '?mention=' + contactActor
         linksList.append(sharedesc + ' ' + shareLink)
         ctr += 1
         if ctr >= maxSharesInLeftColumn:
@@ -68,15 +68,14 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
-                         frontPage: bool, theme: str) -> str:
+                         frontPage: bool, theme: str,
+                         accessKeys: {}) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
 
     separatorStr = htmlPostSeparator(baseDir, 'left')
-    domain = domainFull
-    if ':' in domain:
-        domain = domain.split(':')
+    domain = removeDomainPort(domainFull)
 
     editImageClass = ''
     if showHeaderImage:
@@ -88,16 +87,14 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if os.path.isfile(leftColumnImageFilename):
             editImageClass = 'leftColEditImage'
             htmlStr += \
-                '\n      <center>\n' + \
-                '        <img class="leftColImg" ' + \
+                '\n      <center>\n        <img class="leftColImg" ' + \
                 'alt="" loading="lazy" src="/users/' + \
                 nickname + '/' + leftImageFile + '" />\n' + \
                 '      </center>\n'
 
     if showBackButton:
         htmlStr += \
-            '      <div>' + \
-            '      <a href="' + timelinePath + '">' + \
+            '      <div>      <a href="' + timelinePath + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
@@ -111,13 +108,11 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editor:
         # show the edit icon
         htmlStr += \
-            '      <a href="' + \
-            '/users/' + nickname + '/editlinks">' + \
-            '<img class="' + editImageClass + \
-            '" loading="lazy" alt="' + \
+            '      <a href="/users/' + nickname + '/editlinks" ' + \
+            'accesskey="' + accessKeys['menuEdit'] + '">' + \
+            '<img class="' + editImageClass + '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
-            translate['Edit Links'] + '" src="/' + \
-            'icons/edit.png" /></a>\n'
+            translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -132,10 +127,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         rssTitle = translate['RSS feed for this site']
     rssIconStr = \
-        '      <a href="' + rssUrl + '">' + \
-        '<img class="' + editImageClass + \
-        '" loading="lazy" alt="' + rssTitle + \
-        '" title="' + rssTitle + \
+        '      <a href="' + rssUrl + '"><img class="' + editImageClass + \
+        '" loading="lazy" alt="' + rssTitle + '" title="' + rssTitle + \
         '" src="/icons/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
@@ -157,7 +150,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     linksFileContainsEntries = False
     linksList = None
     if os.path.isfile(linksFilename):
-        with open(linksFilename, "r") as f:
+        with open(linksFilename, 'r') as f:
             linksList = f.readlines()
 
     if not frontPage:
@@ -176,19 +169,42 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             if ' ' not in lineStr:
                 if '#' not in lineStr:
                     if '*' not in lineStr:
-                        continue
+                        if not lineStr.startswith('['):
+                            if not lineStr.startswith('=> '):
+                                continue
             lineStr = lineStr.strip()
-            words = lineStr.split(' ')
-            # get the link
             linkStr = None
-            for word in words:
-                if word == '#':
+            if not lineStr.startswith('['):
+                words = lineStr.split(' ')
+                # get the link
+                for word in words:
+                    if word == '#':
+                        continue
+                    if word == '*':
+                        continue
+                    if word == '=>':
+                        continue
+                    if '://' in word:
+                        linkStr = word
+                        break
+            else:
+                # markdown link
+                if ']' not in lineStr:
                     continue
-                if word == '*':
+                if '(' not in lineStr:
                     continue
-                if '://' in word:
-                    linkStr = word
-                    break
+                if ')' not in lineStr:
+                    continue
+                linkStr = lineStr.split('(')[1]
+                if ')' not in linkStr:
+                    continue
+                linkStr = linkStr.split(')')[0]
+                if '://' not in linkStr:
+                    continue
+                lineStr = lineStr.split('[')[1]
+                if ']' not in lineStr:
+                    continue
+                lineStr = lineStr.split(']')[0]
             if linkStr:
                 lineStr = lineStr.replace(linkStr, '').strip()
                 # avoid any dubious scripts being added
@@ -202,6 +218,17 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                         '" target="_blank" ' + \
                         'rel="nofollow noopener noreferrer">' + \
                         lineStr + '</a></p>\n'
+                    linksFileContainsEntries = True
+                elif lineStr.startswith('=> '):
+                    # gemini style link
+                    lineStr = lineStr.replace('=> ', '')
+                    lineStr = lineStr.replace(linkStr, '')
+                    # add link to the returned html
+                    htmlStr += \
+                        '      <p><a href="' + linkStr + \
+                        '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
+                        lineStr.strip() + '</a></p>\n'
                     linksFileContainsEntries = True
             else:
                 if lineStr.startswith('#') or lineStr.startswith('*'):
@@ -220,6 +247,11 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if firstSeparatorAdded:
         htmlStr += separatorStr
+    htmlStr += \
+        '<p class="login-text"><a href="/users/' + \
+        nickname + '/accesskeys" accesskey="' + \
+        accessKeys['menuKeys'] + '">' + \
+        translate['Key Shortcuts'] + '</a></p>'
     htmlStr += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
@@ -240,7 +272,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     rssIconAtTop: bool,
                     iconsAsButtons: bool,
                     defaultTimeline: str,
-                    theme: str) -> str:
+                    theme: str, accessKeys: {}) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -256,9 +288,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     else:
         editor = isEditor(baseDir, nickname)
 
-    domain = domainFull
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domainFull)
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -266,7 +296,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
@@ -283,11 +314,10 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False,
-                                 theme)
+                                 theme, accessKeys)
     else:
         if editor:
-            htmlStr += '<br><br><br>\n'
-            htmlStr += '<center>\n  '
+            htmlStr += '<br><br><br>\n<center>\n  '
             htmlStr += translate['Select the edit icon to add web links']
             htmlStr += '\n</center>\n'
 
@@ -300,7 +330,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
 def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                   domain: str, port: int, httpPrefix: str,
-                  defaultTimeline: str, theme: str) -> str:
+                  defaultTimeline: str, theme: str,
+                  accessKeys: {}) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
@@ -333,8 +364,10 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
-    editLinksForm += '<img loading="lazy" class="timeline-banner" ' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
+    editLinksForm += \
+        '<img loading="lazy" class="timeline-banner" ' + \
         'alt = "" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header>\n'
@@ -350,7 +383,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <h1>' + translate['Edit Links'] + '</h1>'
     editLinksForm += \
         '      <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '">\n'
     editLinksForm += \
         '    </div>\n'
 
@@ -367,8 +401,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     editLinksForm += \
-        '  <textarea id="message" name="editedLinks" style="height:80vh">' + \
-        linksStr + '</textarea>'
+        '  <textarea id="message" name="editedLinks" ' + \
+        'style="height:80vh" spellcheck="false">' + linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
 
@@ -376,7 +410,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
         if nickname == adminNickname:
-            aboutFilename = baseDir + '/accounts/about.txt'
+            aboutFilename = baseDir + '/accounts/about.md'
             aboutStr = ''
             if os.path.isfile(aboutFilename):
                 with open(aboutFilename, 'r') as fp:
@@ -390,11 +424,12 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '<br>'
             editLinksForm += \
                 '  <textarea id="message" name="editedAbout" ' + \
-                'style="height:100vh">' + aboutStr + '</textarea>'
+                'style="height:100vh" spellcheck="true" autocomplete="on">' + \
+                aboutStr + '</textarea>'
             editLinksForm += \
                 '</div>'
 
-            TOSFilename = baseDir + '/accounts/tos.txt'
+            TOSFilename = baseDir + '/accounts/tos.md'
             TOSStr = ''
             if os.path.isfile(TOSFilename):
                 with open(TOSFilename, 'r') as fp:
@@ -408,7 +443,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '<br>'
             editLinksForm += \
                 '  <textarea id="message" name="editedTOS" ' + \
-                'style="height:100vh">' + TOSStr + '</textarea>'
+                'style="height:100vh" spellcheck="true" autocomplete="on">' + \
+                TOSStr + '</textarea>'
             editLinksForm += \
                 '</div>'
 

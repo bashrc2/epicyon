@@ -5,7 +5,10 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "ActivityPub"
 
+from utils import removeDomainPort
+from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -37,9 +40,7 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
 def noOfLikes(postJsonObject: {}) -> int:
     """Returns the number of likes ona  given post
     """
-    if not postJsonObject.get('object'):
-        return 0
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return 0
     if not postJsonObject['object'].get('likes'):
         return 0
@@ -103,7 +104,8 @@ def _like(recentPostsCache: {},
 
         updateLikesCollection(recentPostsCache,
                               baseDir, postFilename, objectUrl,
-                              newLikeJson['actor'], domain, debug)
+                              newLikeJson['actor'],
+                              nickname, domain, debug)
 
         sendSignedJson(newLikeJson, session, baseDir,
                        nickname, domain, port,
@@ -167,14 +169,14 @@ def sendLikeViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: like webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: like webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -189,11 +191,11 @@ def sendLikeViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: like no ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: like no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -203,9 +205,12 @@ def sendLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newLikeJson, [], inboxUrl, headers)
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newLikeJson, [], inboxUrl,
+                          headers, 3, True)
     if not postResult:
-        print('WARN: POST announce failed for c2s to ' + inboxUrl)
+        if debug:
+            print('WARN: POST like failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
@@ -246,14 +251,15 @@ def sendUndoLikeViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unlike webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        if debug:
+            print('WARN: unlike webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -268,11 +274,11 @@ def sendUndoLikeViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: unlike no ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unlike no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -282,13 +288,16 @@ def sendUndoLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newUndoLikeJson, [], inboxUrl, headers)
+    postResult = postJson(httpPrefix, fromDomainFull,
+                          session, newUndoLikeJson, [], inboxUrl,
+                          headers, 3, True)
     if not postResult:
-        print('WARN: POST announce failed for c2s to ' + inboxUrl)
+        if debug:
+            print('WARN: POST unlike failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
-        print('DEBUG: c2s POST undo like success')
+        print('DEBUG: c2s POST unlike success')
 
     return newUndoLikeJson
 
@@ -319,8 +328,7 @@ def outboxLike(recentPostsCache: {},
         print('DEBUG: c2s like request arrived in outbox')
 
     messageId = removeIdEnding(messageJson['object'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
@@ -329,7 +337,8 @@ def outboxLike(recentPostsCache: {},
         return True
     updateLikesCollection(recentPostsCache,
                           baseDir, postFilename, messageId,
-                          messageJson['actor'], domain, debug)
+                          messageJson['actor'],
+                          nickname, domain, debug)
     if debug:
         print('DEBUG: post liked via c2s - ' + postFilename)
 
@@ -344,9 +353,7 @@ def outboxUndoLike(recentPostsCache: {},
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         if debug:
             print('DEBUG: undo like object is not dict')
         return
@@ -370,8 +377,7 @@ def outboxUndoLike(recentPostsCache: {},
         print('DEBUG: c2s undo like request arrived in outbox')
 
     messageId = removeIdEnding(messageJson['object']['object'])
-    if ':' in domain:
-        domain = domain.split(':')[0]
+    domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:

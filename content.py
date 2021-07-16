@@ -5,17 +5,22 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Core"
 
 import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import getImageExtensions
 from utils import loadJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
 from utils import dangerousMarkup
+from utils import isPGPEncrypted
+from utils import containsPGPPublicKey
+from utils import acctDir
 from petnames import getPetName
 
 
@@ -65,6 +70,8 @@ def _removeQuotesWithinQuotes(content: str) -> str:
 def htmlReplaceEmailQuote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+        return content
     # replace quote paragraph
     if '<p>&quot;' in content:
         if '&quot;</p>' in content:
@@ -106,6 +113,8 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
     """
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+        return content
     if '"' not in content:
         if '&quot;' not in content:
             return content
@@ -194,33 +203,35 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
     return False
 
 
-def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
+def switchWords(baseDir: str, nickname: str, domain: str, content: str,
+                rules: [] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
-    switchWordsFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/replacewords.txt'
-    if not os.path.isfile(switchWordsFilename):
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
-    with open(switchWordsFilename, 'r') as fp:
-        for line in fp:
-            replaceStr = line.replace('\n', '').replace('\r', '')
-            wordTransform = None
-            if '->' in replaceStr:
-                wordTransform = replaceStr.split('->')
-            elif ':' in replaceStr:
-                wordTransform = replaceStr.split(':')
-            elif ',' in replaceStr:
-                wordTransform = replaceStr.split(',')
-            elif ';' in replaceStr:
-                wordTransform = replaceStr.split(';')
-            elif '-' in replaceStr:
-                wordTransform = replaceStr.split('-')
-            if not wordTransform:
-                continue
-            if len(wordTransform) == 2:
-                replaceStr1 = wordTransform[0].strip().replace('"', '')
-                replaceStr2 = wordTransform[1].strip().replace('"', '')
-                content = content.replace(replaceStr1, replaceStr2)
+
+    if not rules:
+        switchWordsFilename = \
+            acctDir(baseDir, nickname, domain) + '/replacewords.txt'
+        if not os.path.isfile(switchWordsFilename):
+            return content
+        with open(switchWordsFilename, 'r') as fp:
+            rules = fp.readlines()
+
+    for line in rules:
+        replaceStr = line.replace('\n', '').replace('\r', '')
+        splitters = ('->', ':', ',', ';', '-')
+        wordTransform = None
+        for splitStr in splitters:
+            if splitStr in replaceStr:
+                wordTransform = replaceStr.split(splitStr)
+                break
+        if not wordTransform:
+            continue
+        if len(wordTransform) == 2:
+            replaceStr1 = wordTransform[0].strip().replace('"', '')
+            replaceStr2 = wordTransform[1].strip().replace('"', '')
+            content = content.replace(replaceStr1, replaceStr2)
     return content
 
 
@@ -298,7 +309,7 @@ def _addMusicTag(content: str, tag: str) -> str:
     musicSites = ('soundcloud.com', 'bandcamp.com')
     musicSiteFound = False
     for site in musicSites:
-        if site+'/' in content:
+        if site + '/' in content:
             musicSiteFound = True
             break
     if not musicSiteFound:
@@ -450,7 +461,7 @@ def _addEmoji(baseDir: str, wordStr: str,
             'type': 'Image',
             'url': emojiUrl
         },
-        'name': ':'+emoji+':',
+        'name': ':' + emoji + ':',
         "updated": fileLastModified(emojiFilename),
         "id": emojiUrl.replace('.png', ''),
         'type': 'Emoji'
@@ -582,6 +593,8 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
 def replaceContentDuplicates(content: str) -> str:
     """Replaces invalid duplicates within content
     """
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+        return content
     while '<<' in content:
         content = content.replace('<<', '<')
     while '>>' in content:
@@ -593,6 +606,8 @@ def replaceContentDuplicates(content: str) -> str:
 def removeTextFormatting(content: str) -> str:
     """Removes markup for bold, italics, etc
     """
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+        return content
     if '<' not in content:
         return content
     removeMarkup = ('b', 'i', 'ul', 'ol', 'li', 'em', 'strong',
@@ -610,6 +625,8 @@ def removeLongWords(content: str, maxWordLength: int,
     """Breaks up long words so that on mobile screens this doesn't
     disrupt the layout
     """
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+        return content
     content = replaceContentDuplicates(content)
     if ' ' not in content:
         # handle a single very long string with no spaces
@@ -629,6 +646,8 @@ def removeLongWords(content: str, maxWordLength: int,
                 if wordStr not in longWordsList:
                     longWordsList.append(wordStr)
     for wordStr in longWordsList:
+        if wordStr.startswith('<p>'):
+            wordStr = wordStr.replace('<p>', '')
         if wordStr.startswith('<'):
             continue
         if len(wordStr) == 76:
@@ -664,6 +683,8 @@ def removeLongWords(content: str, maxWordLength: int,
             continue
         if '<' in wordStr:
             replaceWord = wordStr.split('<', 1)[0]
+            # if len(replaceWord) > maxWordLength:
+            #     replaceWord = replaceWord[:maxWordLength]
             content = content.replace(wordStr, replaceWord)
             wordStr = replaceWord
         if '/' in wordStr:
@@ -685,11 +706,10 @@ def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
     """Loads automatic tags file and returns a list containing
     the lines of the file
     """
-    filename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/autotags.txt'
+    filename = acctDir(baseDir, nickname, domain) + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
-    with open(filename, "r") as f:
+    with open(filename, 'r') as f:
         return f.readlines()
     return []
 
@@ -718,7 +738,8 @@ def _autoTag(baseDir: str, nickname: str, domain: str,
 
 def addHtmlTags(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, content: str,
-                recipients: [], hashtags: {}, isJsonContent=False) -> str:
+                recipients: [], hashtags: {},
+                isJsonContent: bool = False) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
@@ -753,10 +774,8 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     replaceEmoji = {}
     emojiDict = {}
     originalDomain = domain
-    if ':' in domain:
-        domain = domain.split(':')[0]
-    followingFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/following.txt'
+    domain = removeDomainPort(domain)
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
 
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
@@ -764,7 +783,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     petnames = None
     if '@' in words:
         if os.path.isfile(followingFilename):
-            with open(followingFilename, "r") as f:
+            with open(followingFilename, 'r') as f:
                 following = f.readlines()
                 for handle in following:
                     pet = getPetName(baseDir, nickname, domain, handle)
@@ -801,7 +820,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                     continue
             elif ':' in wordStr:
                 wordStr2 = wordStr.split(':')[1]
-#                print('TAG: emoji located - '+wordStr)
+#                print('TAG: emoji located - ' + wordStr)
                 if not emojiDict:
                     # emoji.json is generated so that it can be customized and
                     # the changes will be retained even if default_emoji.json
@@ -811,7 +830,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                                  baseDir + '/emoji/emoji.json')
                 emojiDict = loadJson(baseDir + '/emoji/emoji.json')
 
-#                print('TAG: looking up emoji for :'+wordStr2+':')
+#                print('TAG: looking up emoji for :' + wordStr2 + ':')
                 _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
                           originalDomain, replaceEmoji, hashtags,
                           emojiDict)
@@ -846,6 +865,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     content = addWebLinks(content)
     if longWordsList:
         content = removeLongWords(content, maxWordLength, longWordsList)
+    content = limitRepeatedWords(content, 6)
     content = content.replace(' --linebreak-- ', '</p><p>')
     content = htmlReplaceEmailQuote(content)
     return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
@@ -905,7 +925,7 @@ def extractMediaInFormPOST(postBytes, boundary, name: str):
 
 
 def saveMediaInFormPOST(mediaBytes, debug: bool,
-                        filenameBase=None) -> (str, str):
+                        filenameBase: str = None) -> (str, str):
     """Saves the given media bytes extracted from http form POST
     Returns the filename and attachment type
     """
@@ -930,7 +950,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'mp4': 'video/mp4',
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
-        'ogg': 'audio/ogg'
+        'ogg': 'audio/ogg',
+        'zip': 'application/zip'
     }
     detectedExtension = None
     for extension, contentType in extensionList.items():
@@ -942,7 +963,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 extension = 'jpg'
             elif extension == 'mpeg':
                 extension = 'mp3'
-            filename = filenameBase + '.' + extension
+            if filenameBase:
+                filename = filenameBase + '.' + extension
             attachmentMediaType = \
                 searchStr.decode().split('/')[0].replace('Content-Type: ', '')
             detectedExtension = extension
@@ -961,35 +983,50 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 break
 
     # remove any existing image files with a different format
-    extensionTypes = getImageExtensions()
-    for ex in extensionTypes:
-        if ex == detectedExtension:
-            continue
-        possibleOtherFormat = \
-            filename.replace('.temp', '').replace('.' +
-                                                  detectedExtension, '.' +
-                                                  ex)
-        if os.path.isfile(possibleOtherFormat):
-            os.remove(possibleOtherFormat)
+    if detectedExtension != 'zip':
+        extensionTypes = getImageExtensions()
+        for ex in extensionTypes:
+            if ex == detectedExtension:
+                continue
+            possibleOtherFormat = \
+                filename.replace('.temp', '').replace('.' +
+                                                      detectedExtension, '.' +
+                                                      ex)
+            if os.path.isfile(possibleOtherFormat):
+                os.remove(possibleOtherFormat)
 
-    fd = open(filename, 'wb')
-    fd.write(mediaBytes[startPos:])
-    fd.close()
+    with open(filename, 'wb') as fp:
+        fp.write(mediaBytes[startPos:])
+
+    if not os.path.isfile(filename):
+        print('WARN: Media file could not be written to file: ' + filename)
+        return None, None
+    print('Uploaded media file written: ' + filename)
 
     return filename, attachmentMediaType
 
 
-def extractTextFieldsInPOST(postBytes, boundary, debug: bool) -> {}:
+def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
+                            unitTestData: str = None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
-    msg = email.parser.BytesParser().parsebytes(postBytes)
+    if not unitTestData:
+        msgBytes = email.parser.BytesParser().parsebytes(postBytes)
+        messageFields = msgBytes.get_payload(decode=True).decode('utf-8')
+    else:
+        messageFields = unitTestData
+
     if debug:
-        print('DEBUG: POST arriving ' +
-              msg.get_payload(decode=True).decode('utf-8'))
-    messageFields = msg.get_payload(decode=True)
-    messageFields = messageFields.decode('utf-8').split(boundary)
+        print('DEBUG: POST arriving ' + messageFields)
+
+    messageFields = messageFields.split(boundary)
     fields = {}
+    fieldsWithSemicolonAllowed = (
+        'message', 'bio', 'autoCW', 'password', 'passwordconfirm',
+        'instanceDescription', 'instanceDescriptionShort',
+        'subject', 'location', 'imageDescription'
+    )
     # examine each section of the POST, separated by the boundary
     for f in messageFields:
         if f == '--':
@@ -1002,7 +1039,9 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool) -> {}:
         postKey = postStr.split('"', 1)[0]
         postValueStr = postStr.split('"', 1)[1]
         if ';' in postValueStr:
-            continue
+            if postKey not in fieldsWithSemicolonAllowed and \
+               not postKey.startswith('edited'):
+                continue
         if '\r\n' not in postValueStr:
             continue
         postLines = postValueStr.split('\r\n')
@@ -1012,5 +1051,37 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool) -> {}:
                 if line > 2:
                     postValue += '\n'
                 postValue += postLines[line]
-        fields[postKey] = urllib.parse.unquote_plus(postValue)
+        fields[postKey] = urllib.parse.unquote(postValue)
     return fields
+
+
+def limitRepeatedWords(text: str, maxRepeats: int) -> str:
+    """Removes words which are repeated many times
+    """
+    words = text.replace('\n', ' ').split(' ')
+    repeatCtr = 0
+    repeatedText = ''
+    replacements = {}
+    prevWord = ''
+    for word in words:
+        if word == prevWord:
+            repeatCtr += 1
+            if repeatedText:
+                repeatedText += ' ' + word
+            else:
+                repeatedText = word + ' ' + word
+        else:
+            if repeatCtr > maxRepeats:
+                newText = ((prevWord + ' ') * maxRepeats).strip()
+                replacements[prevWord] = [repeatedText, newText]
+            repeatCtr = 0
+            repeatedText = ''
+        prevWord = word
+
+    if repeatCtr > maxRepeats:
+        newText = ((prevWord + ' ') * maxRepeats).strip()
+        replacements[prevWord] = [repeatedText, newText]
+
+    for word, item in replacements.items():
+        text = text.replace(item[0], item[1])
+    return text

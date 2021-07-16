@@ -5,13 +5,90 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
+from utils import isAccountDir
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
+from utils import copytree
+from utils import acctDir
 from shutil import copyfile
+from shutil import make_archive
+from shutil import unpack_archive
+from shutil import rmtree
 from content import dangerousCSS
+
+
+def importTheme(baseDir: str, filename: str) -> bool:
+    """Imports a theme
+    """
+    if not os.path.isfile(filename):
+        return False
+    tempThemeDir = baseDir + '/imports/files'
+    if os.path.isdir(tempThemeDir):
+        rmtree(tempThemeDir)
+    os.mkdir(tempThemeDir)
+    unpack_archive(filename, tempThemeDir, 'zip')
+    essentialThemeFiles = ('name.txt', 'theme.json')
+    for themeFile in essentialThemeFiles:
+        if not os.path.isfile(tempThemeDir + '/' + themeFile):
+            print('WARN: ' + themeFile +
+                  ' missing from imported theme')
+            return False
+    newThemeName = None
+    with open(tempThemeDir + '/name.txt', 'r') as fp:
+        newThemeName = fp.read().replace('\n', '').replace('\r', '')
+        if len(newThemeName) > 20:
+            print('WARN: Imported theme name is too long')
+            return False
+        if len(newThemeName) < 2:
+            print('WARN: Imported theme name is too short')
+            return False
+        newThemeName = newThemeName.lower()
+        forbiddenChars = (
+            ' ', ';', '/', '\\', '?', '!', '#', '@',
+            ':', '%', '&', '"', '+', '<', '>', '$'
+        )
+        for ch in forbiddenChars:
+            if ch in newThemeName:
+                print('WARN: theme name contains forbidden character')
+                return False
+    if not newThemeName:
+        return False
+
+    # if the theme name in the default themes list?
+    defaultThemesFilename = baseDir + '/defaultthemes.txt'
+    if os.path.isfile(defaultThemesFilename):
+        if newThemeName.title() + '\n' in open(defaultThemesFilename).read():
+            newThemeName = newThemeName + '2'
+
+    themeDir = baseDir + '/theme/' + newThemeName
+    if not os.path.isdir(themeDir):
+        os.mkdir(themeDir)
+    copytree(tempThemeDir, themeDir)
+    if os.path.isdir(tempThemeDir):
+        rmtree(tempThemeDir)
+    return os.path.isfile(themeDir + '/theme.json')
+
+
+def exportTheme(baseDir: str, theme: str) -> bool:
+    """Exports a theme as a zip file
+    """
+    themeDir = baseDir + '/theme/' + theme
+    if not os.path.isfile(themeDir + '/theme.json'):
+        return False
+    if not os.path.isdir(baseDir + '/exports'):
+        os.mkdir(baseDir + '/exports')
+    exportFilename = baseDir + '/exports/' + theme + '.zip'
+    if os.path.isfile(exportFilename):
+        os.remove(exportFilename)
+    try:
+        make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
+    except BaseException:
+        pass
+    return os.path.isfile(exportFilename)
 
 
 def _getThemeFiles() -> []:
@@ -19,7 +96,17 @@ def _getThemeFiles() -> []:
     """
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
-            'options.css', 'search.css', 'links.css')
+            'options.css', 'search.css', 'links.css',
+            'welcome.css')
+
+
+def isNewsThemeName(baseDir: str, themeName: str) -> bool:
+    """Returns true if the given theme is a news instance
+    """
+    themeDir = baseDir + '/theme/' + themeName
+    if os.path.isfile(themeDir + '/is_news_instance'):
+        return True
+    return False
 
 
 def getThemesList(baseDir: str) -> []:
@@ -38,6 +125,30 @@ def getThemesList(baseDir: str) -> []:
     themes.sort()
     print('Themes available: ' + str(themes))
     return themes
+
+
+def _copyThemeHelpFiles(baseDir: str, themeName: str,
+                        systemLanguage: str) -> None:
+    """Copies any theme specific help files from the welcome subdirectory
+    """
+    if not systemLanguage:
+        systemLanguage = 'en'
+    themeDir = baseDir + '/theme/' + themeName + '/welcome'
+    if not os.path.isdir(themeDir):
+        themeDir = baseDir + '/defaultwelcome'
+    for subdir, dirs, files in os.walk(themeDir):
+        for helpMarkdownFile in files:
+            if not helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
+                continue
+            destHelpMarkdownFile = \
+                helpMarkdownFile.replace('_' + systemLanguage + '.md', '.md')
+            if destHelpMarkdownFile == 'profile.md' or \
+               destHelpMarkdownFile == 'final.md':
+                destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
+            if os.path.isdir(baseDir + '/accounts'):
+                copyfile(themeDir + '/' + helpMarkdownFile,
+                         baseDir + '/accounts/' + destHelpMarkdownFile)
+        break
 
 
 def _setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -256,14 +367,12 @@ def _setThemeFromDict(baseDir: str, name: str,
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
-    if bgParams.get('login'):
-        _setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
-    if bgParams.get('follow'):
-        _setBackgroundFormat(baseDir, name, 'follow', bgParams['follow'])
-    if bgParams.get('options'):
-        _setBackgroundFormat(baseDir, name, 'options', bgParams['options'])
-    if bgParams.get('search'):
-        _setBackgroundFormat(baseDir, name, 'search', bgParams['search'])
+    screenName = (
+        'login', 'follow', 'options', 'search', 'welcome'
+    )
+    for s in screenName:
+        if bgParams.get(s):
+            _setBackgroundFormat(baseDir, name, s, bgParams[s])
 
 
 def _setBackgroundFormat(baseDir: str, name: str,
@@ -507,14 +616,13 @@ def _setThemeImages(baseDir: str, name: str) -> None:
     _setTextModeTheme(baseDir, themeNameLower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
-                       'options', 'block', 'search', 'calendar')
+                       'options', 'block', 'search', 'calendar',
+                       'welcome')
     extensions = getImageExtensions()
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct:
+            if not isAccountDir(acct):
                 continue
             accountDir = \
                 os.path.join(baseDir + '/accounts', acct)
@@ -614,13 +722,23 @@ def setNewsAvatar(baseDir: str, name: str,
         os.remove(filename)
     if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
-    copyfile(newFilename,
-             baseDir + '/accounts/' +
-             nickname + '@' + domain + '/avatar.png')
+    accountDir = acctDir(baseDir, nickname, domain)
+    copyfile(newFilename, accountDir + '/avatar.png')
+
+
+def _setClearCacheFlag(baseDir: str) -> None:
+    """Sets a flag which can be used by an external system
+    (eg. a script in a cron job) to clear the browser cache
+    """
+    if not os.path.isdir(baseDir + '/accounts'):
+        return
+    flagFilename = baseDir + '/accounts/.clear_cache'
+    with open(flagFilename, 'w+') as flagFile:
+        flagFile.write('\n')
 
 
 def setTheme(baseDir: str, name: str, domain: str,
-             allowLocalNetworkAccess: bool) -> bool:
+             allowLocalNetworkAccess: bool, systemLanguage: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -673,5 +791,17 @@ def setTheme(baseDir: str, name: str, domain: str,
     else:
         disableGrayscale(baseDir)
 
+    _copyThemeHelpFiles(baseDir, name, systemLanguage)
     _setThemeInConfig(baseDir, name)
+    _setClearCacheFlag(baseDir)
     return result
+
+
+def updateDefaultThemesList(baseDir: str) -> None:
+    """Recreates the list of default themes
+    """
+    themeNames = getThemesList(baseDir)
+    defaultThemesFilename = baseDir + '/defaultthemes.txt'
+    with open(defaultThemesFilename, 'w+') as defaultThemesFile:
+        for name in themeNames:
+            defaultThemesFile.write(name + '\n')

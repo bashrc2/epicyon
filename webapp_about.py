@@ -5,22 +5,25 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
 from utils import getConfigParam
-from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
+from markdown import markdownToHtml
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
-              domainFull: str, onionDomain: str, translate: {}) -> str:
+              domainFull: str, onionDomain: str, translate: {},
+              systemLanguage: str) -> str:
     """Show the about screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/about.txt'):
-        copyfile(baseDir + '/default_about.txt',
-                 baseDir + '/accounts/about.txt')
+    if not os.path.isfile(baseDir + '/accounts/about.md'):
+        copyfile(baseDir + '/default_about.md',
+                 baseDir + '/accounts/about.md')
 
     if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
@@ -28,9 +31,9 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
                      baseDir + '/accounts/login-background.jpg')
 
     aboutText = 'Information about this instance goes here.'
-    if os.path.isfile(baseDir + '/accounts/about.txt'):
-        with open(baseDir + '/accounts/about.txt', 'r') as aboutFile:
-            aboutText = aboutFile.read()
+    if os.path.isfile(baseDir + '/accounts/about.md'):
+        with open(baseDir + '/accounts/about.md', 'r') as aboutFile:
+            aboutText = markdownToHtml(aboutFile.read())
 
     aboutForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -39,7 +42,10 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    aboutForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    aboutForm = \
+        htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
+                                    httpPrefix, domainFull,
+                                    systemLanguage)
     aboutForm += '<div class="container">' + aboutText + '</div>'
     if onionDomain:
         aboutForm += \

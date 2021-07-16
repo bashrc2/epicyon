@@ -5,12 +5,14 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from markdown import markdownToHtml
 
 
 def htmlTermsOfService(cssCache: {}, baseDir: str,
@@ -18,9 +20,9 @@ def htmlTermsOfService(cssCache: {}, baseDir: str,
     """Show the terms of service screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/tos.txt'):
-        copyfile(baseDir + '/default_tos.txt',
-                 baseDir + '/accounts/tos.txt')
+    if not os.path.isfile(baseDir + '/accounts/tos.md'):
+        copyfile(baseDir + '/default_tos.md',
+                 baseDir + '/accounts/tos.md')
 
     if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
@@ -28,9 +30,9 @@ def htmlTermsOfService(cssCache: {}, baseDir: str,
                      baseDir + '/accounts/login-background.jpg')
 
     TOSText = 'Terms of Service go here.'
-    if os.path.isfile(baseDir + '/accounts/tos.txt'):
-        with open(baseDir + '/accounts/tos.txt', 'r') as file:
-            TOSText = file.read()
+    if os.path.isfile(baseDir + '/accounts/tos.md'):
+        with open(baseDir + '/accounts/tos.md', 'r') as file:
+            TOSText = markdownToHtml(file.read())
 
     TOSForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'

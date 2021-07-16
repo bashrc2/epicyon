@@ -5,13 +5,15 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Timeline"
 
 
 import os
 import time
+from utils import acctDir
 from datetime import datetime
-from happening import todaysEventsCheck
-from happening import thisWeeksEventsCheck
+from datetime import timedelta
+from happening import dayEventsCheck
 from webapp_utils import htmlHighlightLabel
 
 
@@ -43,7 +45,8 @@ def headerButtonsTimeline(defaultTimeline: str,
                           calendarPath: str,
                           calendarImage: str,
                           followApprovals: str,
-                          iconsAsButtons: bool) -> str:
+                          iconsAsButtons: bool,
+                          accessKeys: {}) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
@@ -52,8 +55,9 @@ def headerButtonsTimeline(defaultTimeline: str,
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
-            '<a href="' + usersPath + \
-            '/tlmedia" tabindex="-1"><button class="' + \
+            '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
+            'accesskey="' + accessKeys['menuMedia'] + '"' + \
+            '><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>'
     elif defaultTimeline == 'tlblogs':
@@ -88,8 +92,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '</span></button></a>'
 
         repliesIndexFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/tlreplies.index'
+            acctDir(baseDir, nickname, domain) + '/tlreplies.index'
         if os.path.isfile(repliesIndexFilename):
             tlStr += \
                 '<a href="' + usersPath + '/tlreplies" tabindex="-1">' + \
@@ -101,8 +104,9 @@ def headerButtonsTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlmedia':
         if not minimal and not featuresHeader:
             tlStr += \
-                '<a href="' + usersPath + \
-                '/tlmedia" tabindex="-1"><button class="' + \
+                '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
+                'accesskey="' + accessKeys['menuMedia'] + '">' + \
+                '<button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
     else:
@@ -110,7 +114,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '<a href="' + usersPath + \
                 '/inbox" tabindex="-1"><button class="' + \
-                inboxButton+'"><span>' + translate['Inbox'] + \
+                inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
     if not featuresHeader:
@@ -147,9 +151,10 @@ def headerButtonsTimeline(defaultTimeline: str,
     # show todays events buttons on the first inbox page
     happeningStr = ''
     if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
+        now = datetime.now()
+        tomorrow = datetime.now() + timedelta(1)
+        twodays = datetime.now() + timedelta(2)
+        if dayEventsCheck(baseDir, nickname, domain, now):
             # happening today button
             if not iconsAsButtons:
                 happeningStr += \
@@ -166,43 +171,41 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '<button class="button">' + \
                     translate['Happening Today'] + '</button></a>'
 
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    happeningStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar" tabindex="-1">' + \
-                        '<button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
+        elif dayEventsCheck(baseDir, nickname, domain, tomorrow):
+            # happening tomorrow button
+            if not iconsAsButtons:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
+                    '?day=' + str(tomorrow.day) + '" tabindex="-1">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening Tomorrow'] + '</button></a>'
+            else:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
+                    '?day=' + str(tomorrow.day) + '" tabindex="-1">' + \
+                    '<button class="button">' + \
+                    translate['Happening Tomorrow'] + '</button></a>'
+        elif dayEventsCheck(baseDir, nickname, domain, twodays):
+            if not iconsAsButtons:
+                happeningStr += \
+                    '<a href="' + usersPath + \
+                    '/calendar" tabindex="-1">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>'
+            else:
+                happeningStr += \
+                    '<a href="' + usersPath + \
+                    '/calendar" tabindex="-1">' + \
+                    '<button class="button">' + \
+                    translate['Happening This Week'] + '</button></a>'
 
     if not featuresHeader:
         # button for the outbox
         tlStr += \
-            '<a href="' + usersPath + \
-            '/outbox"><button class="' + \
-            sentButton + '" tabindex="-1">' + \
-            '<span>' + translate['Outbox'] + \
+            '<a href="' + usersPath + '/outbox"><button class="' + \
+            sentButton + '" tabindex="-1"><span>' + translate['Sent'] + \
             '</span></button></a>'
 
         # add other buttons

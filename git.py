@@ -5,9 +5,12 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Profile Metadata"
 
 import os
 import html
+from utils import hasObjectDict
+from utils import acctDir
 
 
 def _gitFormatContent(content: str) -> str:
@@ -30,7 +33,7 @@ def _getGitProjectName(baseDir: str, nickname: str, domain: str,
     holder wants to receive
     """
     gitProjectsFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/gitprojects.txt'
+        acctDir(baseDir, nickname, domain) + '/gitprojects.txt'
     if not os.path.isfile(gitProjectsFilename):
         return None
     subjectLineWords = subject.lower().split(' ')
@@ -43,7 +46,7 @@ def _getGitProjectName(baseDir: str, nickname: str, domain: str,
 def isGitPatch(baseDir: str, nickname: str, domain: str,
                messageType: str,
                subject: str, content: str,
-               checkProjectName=True) -> bool:
+               checkProjectName: bool = True) -> bool:
     """Is the given post content a git patch?
     """
     if messageType != 'Note' and \
@@ -112,9 +115,7 @@ def convertPostToPatch(baseDir: str, nickname: str, domain: str,
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return False
     if not postJsonObject['object'].get('type'):
         return False
@@ -186,9 +187,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     patchLines = patchStr.split('\n')
     patchFilename = None
     projectDir = None
-    patchesDir = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/patches'
+    patchesDir = acctDir(baseDir, nickname, domain) + '/patches'
     # get the subject line and turn it into a filename
     for line in patchLines:
         if line.startswith('Subject:'):
@@ -213,8 +212,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     with open(patchFilename, 'w+') as patchFile:
         patchFile.write(patchStr)
         patchNotifyFilename = \
-            baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/.newPatchContent'
+            acctDir(baseDir, nickname, domain) + '/.newPatchContent'
         with open(patchNotifyFilename, 'w+') as patchFile:
             patchFile.write(patchStr)
             return True

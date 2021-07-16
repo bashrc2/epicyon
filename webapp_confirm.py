@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
@@ -14,7 +15,8 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from utils import getConfigParam
-from webapp_utils import getAltPath
+from utils import getAltPath
+from utils import acctDir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
@@ -31,7 +33,8 @@ def htmlConfirmDelete(cssCache: {},
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      themeName: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -72,6 +75,7 @@ def htmlConfirmDelete(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances, allowLocalNetworkAccess,
+                             themeName,
                              False, False, False, False, False)
     deletePostStr += '<center>'
     deletePostStr += \
@@ -108,8 +112,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
-    sharesFile = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/shares.json'
+    sharesFile = acctDir(baseDir, nickname, domain) + '/shares.json'
     if not os.path.isfile(sharesFile):
         print('ERROR: no shares file ' + sharesFile)
         return None
@@ -134,8 +137,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
@@ -183,8 +185,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -229,8 +230,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -276,8 +276,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'

@@ -8,9 +8,9 @@ Add issues on https://gitlab.com/bashrc2/epicyon/-/issues
 
 <img src="https://epicyon.net/img/mobile.jpg" width="30%"/>
 
-Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions, news feed and perimeter defense against adversaries. It contains *no javascript* and uses HTML+CSS with a Python backend.
+Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and suitable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions, news feed and perimeter defense against adversaries. It contains *no JavaScript* and uses HTML+CSS with a Python backend.
 
-[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Code of Conduct](code-of-conduct.md)
+[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md)
 
 Matrix room: **#epicyon:matrix.freedombone.net**
 
@@ -82,7 +82,7 @@ Type=simple
 User=epicyon
 Group=epicyon
 WorkingDirectory=/opt/epicyon
-ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open
+ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --logLoginFailures
 Environment=USER=epicyon
 Environment=PYTHONUNBUFFERED=true
 Restart=always
@@ -183,8 +183,12 @@ server {
         proxy_buffers 16 32k;
         proxy_busy_buffers_size 64k;
         proxy_redirect off;
-        proxy_request_buffering on;
-        proxy_buffering on;
+        proxy_request_buffering off;
+        proxy_buffering off;
+        location ~ ^/accounts/(avatars|headers)/(.*).(png|jpg|gif|webp|svg) {
+          expires 1d;
+          proxy_pass http://localhost:7156;
+        }
         proxy_pass http://localhost:7156;
     }
 }
@@ -207,6 +211,8 @@ And restart the web server:
 ``` bash
 systemctl restart nginx
 ```
+
+If you need to use **fail2ban** then failed login attempts can be found in *accounts/loginfailures.log*.
 
 If you are using the [Caddy web server](https://caddyserver.com) then see *caddy.example.conf*
 
@@ -238,7 +244,7 @@ Please be aware that such installations will not federate with ordinary fedivers
 
 ## Custom Fonts
 
-If you want to use a particular font then copy it into the *fonts* directory, rename it as *custom.ttf/woff/woff2/otf* and then restart the epicyon daemon.
+If you want to use a particular font then copy it into the *fonts* directory, rename it as *custom.ttf/woff/woff2/otf* and then restart the Epicyon daemon.
 
 ``` bash
 systemctl restart epicyon

@@ -5,31 +5,39 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Timeline"
 
 import os
 from shutil import copyfile
 from session import createSession
 from auth import createPassword
+from posts import isImageMedia
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import hasObjectDict
 from utils import getLocalNetworkAddresses
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getDomainFromActor
 from utils import dangerousMarkup
 from utils import isFeaturedWriter
+from utils import loadJson
+from utils import saveJson
+from utils import acctDir
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
+from blocking import outboxMute
+from blocking import outboxUndoMute
 from media import replaceYouTube
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
 from announce import outboxAnnounce
+from announce import outboxUndoAnnounce
 from follow import outboxUndoFollow
-from roles import outboxDelegate
 from skills import outboxSkills
 from availability import outboxAvailability
 from like import outboxLike
@@ -41,7 +49,124 @@ from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
 
 
-def postMessageToOutbox(messageJson: {}, postToNickname: str,
+def _outboxPersonReceiveUpdate(recentPostsCache: {},
+                               baseDir: str, httpPrefix: str,
+                               nickname: str, domain: str, port: int,
+                               messageJson: {}, debug: bool) -> None:
+    """ Receive an actor update from c2s
+    For example, setting the PGP key from the desktop client
+    """
+    # these attachments are updatable via c2s
+    updatableAttachments = ('PGP', 'OpenPGP', 'Email')
+
+    if not messageJson.get('type'):
+        return
+    print("messageJson['type'] " + messageJson['type'])
+    if messageJson['type'] != 'Update':
+        return
+    if not hasObjectDict(messageJson):
+        if debug:
+            print('DEBUG: c2s actor update object is not dict')
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: c2s actor update - no type')
+        return
+    if messageJson['object']['type'] != 'Person':
+        if debug:
+            print('DEBUG: not a c2s actor update')
+        return
+    if not messageJson.get('to'):
+        if debug:
+            print('DEBUG: c2s actor update has no "to" field')
+        return
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: c2s actor update has no actor field')
+        return
+    if not messageJson.get('id'):
+        if debug:
+            print('DEBUG: c2s actor update has no id field')
+        return
+    actor = \
+        httpPrefix + '://' + getFullDomain(domain, port) + '/users/' + nickname
+    if len(messageJson['to']) != 1:
+        if debug:
+            print('DEBUG: c2s actor update - to does not contain one actor ' +
+                  messageJson['to'])
+        return
+    if messageJson['to'][0] != actor:
+        if debug:
+            print('DEBUG: c2s actor update - to does not contain actor ' +
+                  messageJson['to'] + ' ' + actor)
+        return
+    if not messageJson['id'].startswith(actor + '#updates/'):
+        if debug:
+            print('DEBUG: c2s actor update - unexpected id ' +
+                  messageJson['id'])
+        return
+    updatedActorJson = messageJson['object']
+    # load actor from file
+    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    if not os.path.isfile(actorFilename):
+        print('actorFilename not found: ' + actorFilename)
+        return
+    actorJson = loadJson(actorFilename)
+    if not actorJson:
+        return
+    actorChanged = False
+    # update fields within actor
+    if 'attachment' in updatedActorJson:
+        for newPropertyValue in updatedActorJson['attachment']:
+            if not newPropertyValue.get('name'):
+                continue
+            if newPropertyValue['name'] not in updatableAttachments:
+                continue
+            if not newPropertyValue.get('type'):
+                continue
+            if not newPropertyValue.get('value'):
+                continue
+            if newPropertyValue['type'] != 'PropertyValue':
+                continue
+            if 'attachment' not in actorJson:
+                continue
+            found = False
+            for attachIdx in range(len(actorJson['attachment'])):
+                if actorJson['attachment'][attachIdx]['type'] != \
+                   'PropertyValue':
+                    continue
+                if actorJson['attachment'][attachIdx]['name'] != \
+                   newPropertyValue['name']:
+                    continue
+                else:
+                    if actorJson['attachment'][attachIdx]['value'] != \
+                       newPropertyValue['value']:
+                        actorJson['attachment'][attachIdx]['value'] = \
+                            newPropertyValue['value']
+                        actorChanged = True
+                    found = True
+                    break
+            if not found:
+                actorJson['attachment'].append({
+                    "name": newPropertyValue['name'],
+                    "type": "PropertyValue",
+                    "value": newPropertyValue['value']
+                })
+                actorChanged = True
+    # save actor to file
+    if actorChanged:
+        saveJson(actorJson, actorFilename)
+        if debug:
+            print('actor saved: ' + actorFilename)
+    if debug:
+        print('New attachment: ' + str(actorJson['attachment']))
+    messageJson['object'] = actorJson
+    if debug:
+        print('DEBUG: actor update via c2s - ' + nickname + '@' + domain)
+
+
+def postMessageToOutbox(session, translate: {},
+                        messageJson: {}, postToNickname: str,
                         server, baseDir: str, httpPrefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str, port: int,
@@ -52,7 +177,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                         proxyType: str, version: str, debug: bool,
                         YTReplacementDomain: str,
                         showPublishedDateOnly: bool,
-                        allowLocalNetworkAccess: bool) -> bool:
+                        allowLocalNetworkAccess: bool,
+                        city: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -74,14 +200,13 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
-    if messageJson.get('object'):
-        if isinstance(messageJson['object'], dict):
-            if messageJson['object'].get('content'):
-                if dangerousMarkup(messageJson['object']['content'],
-                                   allowLocalNetworkAccess):
-                    print('POST to outbox contains dangerous markup: ' +
-                          str(messageJson))
-                    return False
+    if hasObjectDict(messageJson):
+        if messageJson['object'].get('content'):
+            if dangerousMarkup(messageJson['object']['content'],
+                               allowLocalNetworkAccess):
+                print('POST to outbox contains dangerous markup: ' +
+                      str(messageJson))
+                return False
 
     if messageJson['type'] == 'Create':
         if not (messageJson.get('id') and
@@ -188,7 +313,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
     permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
                             'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Delegate', 'Skill', 'Bookmark', 'Event')
+                            'Skill', 'Ignore')
     if messageJson['type'] not in permittedOutboxTypes:
         if debug:
             print('DEBUG: POST to outbox - ' + messageJson['type'] +
@@ -209,13 +334,10 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
         # if this is a blog post or an event then save to its own box
         if messageJson['type'] == 'Create':
-            if messageJson.get('object'):
-                if isinstance(messageJson['object'], dict):
-                    if messageJson['object'].get('type'):
-                        if messageJson['object']['type'] == 'Article':
-                            outboxName = 'tlblogs'
-                        elif messageJson['object']['type'] == 'Event':
-                            outboxName = 'tlevents'
+            if hasObjectDict(messageJson):
+                if messageJson['object'].get('type'):
+                    if messageJson['object']['type'] == 'Article':
+                        outboxName = 'tlblogs'
 
         savedFilename = \
             savePostToBox(baseDir,
@@ -248,22 +370,34 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                 if os.path.isfile(citationsFilename):
                     os.remove(citationsFilename)
 
-        if messageJson['type'] == 'Create' or \
-           messageJson['type'] == 'Question' or \
-           messageJson['type'] == 'Note' or \
-           messageJson['type'] == 'EncryptedMessage' or \
-           messageJson['type'] == 'Article' or \
-           messageJson['type'] == 'Event' or \
-           messageJson['type'] == 'Patch' or \
-           messageJson['type'] == 'Announce':
+        # The following activity types get added to the index files
+        indexedActivities = (
+            'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
+            'Patch', 'Announce'
+        )
+        if messageJson['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
                 httpPrefix + '://' + domainFull + '/users/' + postToNickname
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue
+
+                # should this also go to the media timeline?
+                if boxNameIndex == 'inbox':
+                    if isImageMedia(session, baseDir, httpPrefix,
+                                    postToNickname, domain,
+                                    messageJson,
+                                    translate, YTReplacementDomain,
+                                    allowLocalNetworkAccess,
+                                    recentPostsCache, debug):
+                        inboxUpdateIndex('tlmedia', baseDir,
+                                         postToNickname + '@' + domain,
+                                         savedFilename, debug)
+
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
+
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
                 if selfActor not in messageJson['to']:
@@ -323,10 +457,6 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     outboxUndoFollow(baseDir, messageJson, debug)
 
     if debug:
-        print('DEBUG: handle delegation requests')
-    outboxDelegate(baseDir, postToNickname, messageJson, debug)
-
-    if debug:
         print('DEBUG: handle skills changes requests')
     outboxSkills(baseDir, postToNickname, messageJson, debug)
 
@@ -346,6 +476,12 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                    baseDir, httpPrefix,
                    postToNickname, domain, port,
                    messageJson, debug)
+    if debug:
+        print('DEBUG: handle any undo announce requests')
+    outboxUndoAnnounce(recentPostsCache,
+                       baseDir, httpPrefix,
+                       postToNickname, domain, port,
+                       messageJson, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
@@ -382,16 +518,39 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                     port, messageJson, debug)
 
     if debug:
+        print('DEBUG: handle mute requests')
+    outboxMute(baseDir, httpPrefix,
+               postToNickname, domain,
+               port,
+               messageJson, debug,
+               recentPostsCache)
+
+    if debug:
+        print('DEBUG: handle undo mute requests')
+    outboxUndoMute(baseDir, httpPrefix,
+                   postToNickname, domain,
+                   port,
+                   messageJson, debug,
+                   recentPostsCache)
+
+    if debug:
         print('DEBUG: handle share uploads')
     outboxShareUpload(baseDir, httpPrefix,
                       postToNickname, domain,
-                      port, messageJson, debug)
+                      port, messageJson, debug, city)
 
     if debug:
         print('DEBUG: handle undo share uploads')
     outboxUndoShareUpload(baseDir, httpPrefix,
                           postToNickname, domain,
                           port, messageJson, debug)
+
+    if debug:
+        print('DEBUG: handle actor updates from c2s')
+    _outboxPersonReceiveUpdate(recentPostsCache,
+                               baseDir, httpPrefix,
+                               postToNickname, domain, port,
+                               messageJson, debug)
 
     if debug:
         print('DEBUG: sending c2s post to named addresses')

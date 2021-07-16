@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Timeline"
 
 import os
 import time
@@ -18,7 +19,11 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
-from media import removeMetaData
+from utils import hasObjectDict
+from utils import removeDomainPort
+from utils import isAccountDir
+from utils import acctDir
+from media import processMetaData
 
 
 def getValidSharedItemID(displayName: str) -> str:
@@ -40,8 +45,7 @@ def removeShare(baseDir: str, nickname: str, domain: str,
                 displayName: str) -> None:
     """Removes a share for a person
     """
-    sharesFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/shares.json'
+    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     if not os.path.isfile(sharesFilename):
         print('ERROR: missing shares.json ' + sharesFilename)
         return
@@ -69,38 +73,42 @@ def removeShare(baseDir: str, nickname: str, domain: str,
               '" does not exist in ' + sharesFilename)
 
 
+def _addShareDurationSec(duration: str, published: str) -> int:
+    """Returns the duration for the shared item in seconds
+    """
+    if ' ' not in duration:
+        return 0
+    durationList = duration.split(' ')
+    if not durationList[0].isdigit():
+        return 0
+    if 'hour' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60)
+    if 'day' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24)
+    if 'week' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24 * 7)
+    if 'month' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24 * 30)
+    if 'year' in durationList[1]:
+        return published + (int(durationList[0]) * 60 * 60 * 24 * 365)
+    return 0
+
+
 def addShare(baseDir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
              itemType: str, itemCategory: str, location: str,
-             duration: str, debug: bool) -> None:
+             duration: str, debug: bool, city: str) -> None:
     """Adds a new share
     """
-    sharesFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/shares.json'
+    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
         sharesJson = loadJson(sharesFilename)
 
     duration = duration.lower()
-    durationSec = 0
     published = int(time.time())
-    if ' ' in duration:
-        durationList = duration.split(' ')
-        if durationList[0].isdigit():
-            if 'hour' in durationList[1]:
-                durationSec = published + (int(durationList[0]) * 60 * 60)
-            if 'day' in durationList[1]:
-                durationSec = published + (int(durationList[0]) * 60 * 60 * 24)
-            if 'week' in durationList[1]:
-                durationSec = \
-                    published + (int(durationList[0]) * 60 * 60 * 24 * 7)
-            if 'month' in durationList[1]:
-                durationSec = \
-                    published + (int(durationList[0]) * 60 * 60 * 24 * 30)
-            if 'year' in durationList[1]:
-                durationSec = \
-                    published + (int(durationList[0]) * 60 * 60 * 24 * 365)
+    durationSec = _addShareDurationSec(duration, published)
 
     itemID = getValidSharedItemID(displayName)
 
@@ -109,7 +117,7 @@ def addShare(baseDir: str,
     moveImage = False
     if not imageFilename:
         sharesImageFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/upload'
+            acctDir(baseDir, nickname, domain) + '/upload'
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
@@ -128,13 +136,16 @@ def addShare(baseDir: str,
             itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
             formats = getImageExtensions()
             for ext in formats:
-                if imageFilename.endswith('.' + ext):
-                    removeMetaData(imageFilename, itemIDfile + '.' + ext)
-                    if moveImage:
-                        os.remove(imageFilename)
-                    imageUrl = \
-                        httpPrefix + '://' + domainFull + \
-                        '/sharefiles/' + nickname + '/' + itemID + '.' + ext
+                if not imageFilename.endswith('.' + ext):
+                    continue
+                processMetaData(baseDir, nickname, domain,
+                                imageFilename, itemIDfile + '.' + ext,
+                                city)
+                if moveImage:
+                    os.remove(imageFilename)
+                imageUrl = \
+                    httpPrefix + '://' + domainFull + \
+                    '/sharefiles/' + nickname + '/' + itemID + '.' + ext
 
     sharesJson[itemID] = {
         "displayName": displayName,
@@ -152,7 +163,7 @@ def addShare(baseDir: str,
     # indicate that a new share is available
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
+            if not isAccountDir(handle):
                 continue
             accountDir = baseDir + '/accounts/' + handle
             newShareFile = accountDir + '/.newShare'
@@ -172,7 +183,7 @@ def expireShares(baseDir: str) -> None:
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
-            if '@' not in account:
+            if not isAccountDir(account):
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
@@ -183,9 +194,7 @@ def expireShares(baseDir: str) -> None:
 def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
     """Removes expired items from shares for a particular account
     """
-    handleDomain = domain
-    if ':' in handleDomain:
-        handleDomain = domain.split(':')[0]
+    handleDomain = removeDomainPort(domain)
     handle = nickname + '@' + handleDomain
     sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
     if os.path.isfile(sharesFilename):
@@ -246,11 +255,8 @@ def getSharesFeedForPerson(baseDir: str,
 
     domain = getFullDomain(domain, port)
 
-    handleDomain = domain
-    if ':' in handleDomain:
-        handleDomain = domain.split(':')[0]
-    handle = nickname + '@' + handleDomain
-    sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
+    handleDomain = removeDomainPort(domain)
+    sharesFilename = acctDir(baseDir, nickname, handleDomain) + '/shares.json'
 
     if headerOnly:
         noOfShares = 0
@@ -261,8 +267,8 @@ def getSharesFeedForPerson(baseDir: str,
         idStr = httpPrefix + '://' + domain + '/users/' + nickname
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': idStr+'/shares?page=1',
-            'id': idStr+'/shares',
+            'first': idStr + '/shares?page=1',
+            'id': idStr + '/shares',
             'totalItems': str(noOfShares),
             'type': 'OrderedCollection'
         }
@@ -275,9 +281,9 @@ def getSharesFeedForPerson(baseDir: str,
     idStr = httpPrefix + '://' + domain + '/users/' + nickname
     shares = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': idStr+'/shares?page='+str(pageNumber),
+        'id': idStr + '/shares?page=' + str(pageNumber),
         'orderedItems': [],
-        'partOf': idStr+'/shares',
+        'partOf': idStr + '/shares',
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
@@ -336,7 +342,7 @@ def sendShareViaServer(baseDir, session,
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Add',
         'actor': actor,
-        'target': actor+'/shares',
+        'target': actor + '/shares',
         'object': {
             "type": "Offer",
             "displayName": displayName,
@@ -358,14 +364,14 @@ def sendShareViaServer(baseDir, session,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion)
+                        fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: share webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: share webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -381,11 +387,12 @@ def sendShareViaServer(baseDir, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: share no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: share no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -406,10 +413,11 @@ def sendShareViaServer(baseDir, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newShareJson, [], inboxUrl, headers)
+        postJson(httpPrefix, fromDomainFull,
+                 session, newShareJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST share failed for c2s to ' + inboxUrl)
 #        return 5
 
     if debug:
@@ -457,14 +465,14 @@ def sendUndoShareViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion)
+                        fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unshare webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: unshare webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -480,11 +488,12 @@ def sendUndoShareViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No '+postToBox+' was found for ' + handle)
+            print('DEBUG: unshare no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unshare no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -495,30 +504,30 @@ def sendUndoShareViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, undoShareJson, [], inboxUrl, headers)
+        postJson(httpPrefix, fromDomainFull,
+                 session, undoShareJson, [], inboxUrl,
+                 headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unshare failed for c2s to ' + inboxUrl)
 #        return 5
 
     if debug:
-        print('DEBUG: c2s POST undo share success')
+        print('DEBUG: c2s POST unshare success')
 
     return undoShareJson
 
 
 def outboxShareUpload(baseDir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
-                      messageJson: {}, debug: bool) -> None:
+                      messageJson: {}, debug: bool, city: str) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not messageJson.get('type'):
         return
     if not messageJson['type'] == 'Add':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return
     if not messageJson['object'].get('type'):
         if debug:
@@ -561,7 +570,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],
              messageJson['object']['duration'],
-             debug)
+             debug, city)
     if debug:
         print('DEBUG: shared item received via c2s')
 
@@ -575,9 +584,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Remove':
         return
-    if not messageJson.get('object'):
-        return
-    if not isinstance(messageJson['object'], dict):
+    if not hasObjectDict(messageJson):
         return
     if not messageJson['object'].get('type'):
         if debug:

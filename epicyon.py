@@ -5,7 +5,15 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Commandline Interface"
 
+import os
+import shutil
+import sys
+import time
+import argparse
+import getpass
+from person import getActorJson
 from person import createPerson
 from person import createGroup
 from person import setProfileImage
@@ -15,6 +23,11 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from bookmarks import sendBookmarkViaServer
+from bookmarks import sendUndoBookmarkViaServer
+from posts import sendMuteViaServer
+from posts import sendUndoMuteViaServer
+from posts import c2sBoxJson
 from posts import downloadFollowCollection
 from posts import getPublicPostDomains
 from posts import getPublicPostDomainsBlocked
@@ -32,12 +45,11 @@ from session import getJson
 from newswire import getRSS
 from filters import addFilter
 from filters import removeFilter
-import os
-import shutil
-import sys
-import time
 from pprint import pprint
 from daemon import runDaemon
+from follow import getFollowRequestsViaServer
+from follow import getFollowingViaServer
+from follow import getFollowersViaServer
 from follow import clearFollows
 from follow import followerOfPerson
 from follow import sendFollowRequestViaServer
@@ -45,9 +57,12 @@ from follow import sendUnfollowRequestViaServer
 from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
+from tests import testUpdateActor
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
+from utils import removeDomainPort
+from utils import getPortFromDomain
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import setConfigParam
@@ -57,12 +72,12 @@ from utils import getNicknameFromActor
 from utils import followPerson
 from utils import validNickname
 from utils import getProtocolPrefixes
+from utils import acctDir
 from media import archiveMedia
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
-from roles import sendRoleViaServer
 from skills import sendSkillViaServer
 from availability import setAvailability
 from availability import sendAvailabilityViaServer
@@ -75,7 +90,7 @@ from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
-import argparse
+from desktop_client import runDesktopClient
 
 
 def str2bool(v) -> bool:
@@ -92,9 +107,15 @@ def str2bool(v) -> bool:
 
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('--userAgentBlocks', type=str,
+                    default=None,
+                    help='List of blocked user agents, separated by commas')
 parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
                     help='Nickname of the account to use')
+parser.add_argument('--screenreader', dest='screenreader', type=str,
+                    default=None,
+                    help='Name of the screen reader: espeak/picospeaker')
 parser.add_argument('--fol', '--follow', dest='follow', type=str,
                     default=None,
                     help='Handle of account to follow. eg. nickname@domain')
@@ -105,6 +126,11 @@ parser.add_argument('--unfol', '--unfollow', dest='unfollow', type=str,
 parser.add_argument('-d', '--domain', dest='domain', type=str,
                     default=None,
                     help='Domain name of the server')
+parser.add_argument('--notificationType', '--notifyType',
+                    dest='notificationType', type=str,
+                    default='notify-send',
+                    help='Type of desktop notification command: ' +
+                    'notify-send/zenity/osascript/New-BurntToastNotification')
 parser.add_argument('-o', '--onion', dest='onion', type=str,
                     default=None,
                     help='Onion domain name of the server if ' +
@@ -231,6 +257,24 @@ parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
+parser.add_argument("--following", "--followingList",
+                    dest='followingList',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Get the following list. Use nickname and " +
+                    "domain options to specify the account")
+parser.add_argument("--followersList",
+                    dest='followersList',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Get the followers list. Use nickname and " +
+                    "domain options to specify the account")
+parser.add_argument("--followRequestsList",
+                    dest='followRequestsList',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Get the follow requests list. Use nickname and " +
+                    "domain options to specify the account")
 parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     dest='commentsEnabled',
                     type=str2bool, nargs='?',
@@ -254,6 +298,11 @@ parser.add_argument("--iconsAsButtons",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show header icons as buttons")
+parser.add_argument("--logLoginFailures",
+                    dest='logLoginFailures',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to log longin failures")
 parser.add_argument("--rssIconAtTop",
                     dest='rssIconAtTop',
                     type=str2bool, nargs='?',
@@ -284,6 +333,27 @@ parser.add_argument("--brochMode",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
+parser.add_argument("--nodeinfoaccounts",
+                    dest='showNodeInfoAccounts',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Show numbers of accounts within nodeinfo metadata")
+parser.add_argument("--nodeinfoversion",
+                    dest='showNodeInfoVersion',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Show version number within nodeinfo metadata")
+parser.add_argument("--noKeyPress",
+                    dest='noKeyPress',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Notification daemon does not wait for keypresses")
+parser.add_argument("--notifyShowNewPosts",
+                    dest='notifyShowNewPosts',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Desktop client shows/speaks new posts " +
+                    "as they arrive")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -306,6 +376,9 @@ parser.add_argument("--positivevoting", type=str2bool, nargs='?',
 parser.add_argument("--debug", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show debug messages")
+parser.add_argument("--notificationSounds", type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Play notification sounds")
 parser.add_argument("--authenticatedFetch", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable authentication on GET requests" +
@@ -379,16 +452,32 @@ parser.add_argument("--allowdeletion", type=str2bool, nargs='?',
 parser.add_argument('--repeat', '--announce', dest='announce', type=str,
                     default=None,
                     help='Announce/repeat a url')
+parser.add_argument('--box', type=str,
+                    default=None,
+                    help='Returns the json for a given timeline, ' +
+                    'with authentication')
+parser.add_argument('--page', '--pageNumber', dest='pageNumber', type=int,
+                    default=1,
+                    help='Page number when using the --box option')
 parser.add_argument('--favorite', '--like', dest='like', type=str,
                     default=None, help='Like a url')
 parser.add_argument('--undolike', '--unlike', dest='undolike', type=str,
                     default=None, help='Undo a like of a url')
+parser.add_argument('--bookmark', '--bm', dest='bookmark', type=str,
+                    default=None,
+                    help='Bookmark the url of a post')
+parser.add_argument('--unbookmark', '--unbm', dest='unbookmark', type=str,
+                    default=None,
+                    help='Undo a bookmark given the url of a post')
 parser.add_argument('--sendto', dest='sendto', type=str,
                     default=None, help='Address to send a post to')
 parser.add_argument('--attach', dest='attach', type=str,
                     default=None, help='File to attach to a post')
 parser.add_argument('--imagedescription', dest='imageDescription', type=str,
                     default=None, help='Description of an attached image')
+parser.add_argument('--city', dest='city', type=str,
+                    default='London, England',
+                    help='Spoofed city for image metadata misdirection')
 parser.add_argument('--warning', '--warn', '--cwsubject', '--subject',
                     dest='subject', type=str, default=None,
                     help='Subject of content warning')
@@ -417,9 +506,6 @@ parser.add_argument('--maxEmoji', '--maxemoji', dest='maxEmoji',
                     help='Maximum number of emoji within a post')
 parser.add_argument('--role', dest='role', type=str, default=None,
                     help='Set a role for a person')
-parser.add_argument('--organization', '--project', dest='project',
-                    type=str, default=None,
-                    help='Set a project for a person')
 parser.add_argument('--skill', dest='skill', type=str, default=None,
                     help='Set a skill for a person')
 parser.add_argument('--level', dest='skillLevelPercent', type=int,
@@ -429,15 +515,17 @@ parser.add_argument('--level', dest='skillLevelPercent', type=int,
 parser.add_argument('--status', '--availability', dest='availability',
                     type=str, default=None,
                     help='Set an availability status')
+parser.add_argument('--desktop', dest='desktop',
+                    type=str, default=None,
+                    help='Run desktop client')
 parser.add_argument('--block', dest='block', type=str, default=None,
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str, default=None,
                     help='Remove a block on a particular address')
-parser.add_argument('--delegate', dest='delegate', type=str, default=None,
-                    help='Address of an account to delegate a role to')
-parser.add_argument('--undodelegate', '--undelegate', dest='undelegate',
-                    type=str, default=None,
-                    help='Removes a delegated role for the given address')
+parser.add_argument('--mute', dest='mute', type=str, default=None,
+                    help='Mute a particular post URL')
+parser.add_argument('--unmute', dest='unmute', type=str, default=None,
+                    help='Unmute a particular post URL')
 parser.add_argument('--filter', dest='filterStr', type=str, default=None,
                     help='Adds a word or phrase which if present will ' +
                     'cause a message to be ignored')
@@ -474,13 +562,13 @@ parser.add_argument('--location', dest='location', type=str, default=None,
 parser.add_argument('--duration', dest='duration', type=str, default=None,
                     help='Duration for which to share an item')
 parser.add_argument('--registration', dest='registration', type=str,
-                    default=None,
+                    default='open',
                     help='Whether new registrations are open or closed')
 parser.add_argument("--nosharedinbox", type=str2bool, nargs='?',
                     const=True, default=False,
                     help='Disable shared inbox')
 parser.add_argument('--maxregistrations', dest='maxRegistrations',
-                    type=int, default=None,
+                    type=int, default=10,
                     help='The maximum number of new registrations')
 parser.add_argument("--resetregistrations", type=str2bool, nargs='?',
                     const=True, default=False,
@@ -491,6 +579,9 @@ args = parser.parse_args()
 debug = False
 if args.debug:
     debug = True
+else:
+    if os.path.isfile('debug'):
+        debug = True
 
 if args.tests:
     runAllTests()
@@ -500,6 +591,7 @@ if args.testsnetwork:
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
+    testUpdateActor()
     print('All tests succeeded')
     sys.exit()
 
@@ -705,7 +797,7 @@ if args.json:
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     testJson = getJson(session, args.json, asHeader, None,
-                       __version__, httpPrefix, None)
+                       debug, __version__, httpPrefix, None)
     pprint(testJson)
     sys.exit()
 
@@ -815,30 +907,15 @@ else:
 
 # if this is the initial run then allow new registrations
 if not getConfigParam(baseDir, 'registration'):
-    setConfigParam(baseDir, 'registration', 'open')
-    setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
-    setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
+    if args.registration.lower() == 'open':
+        setConfigParam(baseDir, 'registration', 'open')
+        setConfigParam(baseDir, 'maxRegistrations', str(maxRegistrations))
+        setConfigParam(baseDir, 'registrationsRemaining',
+                       str(maxRegistrations))
 
 if args.resetregistrations:
     setConfigParam(baseDir, 'registrationsRemaining', str(maxRegistrations))
     print('Number of new registrations reset to ' + str(maxRegistrations))
-
-# whether new registrations are open or closed
-if args.registration:
-    if args.registration.lower() == 'open':
-        registration = getConfigParam(baseDir, 'registration')
-        if not registration:
-            setConfigParam(baseDir, 'registrationsRemaining',
-                           str(maxRegistrations))
-        else:
-            if registration != 'open':
-                setConfigParam(baseDir, 'registrationsRemaining',
-                               str(maxRegistrations))
-        setConfigParam(baseDir, 'registration', 'open')
-        print('New registrations open')
-    else:
-        setConfigParam(baseDir, 'registration', 'closed')
-        print('New registrations closed')
 
 # unique ID for the instance
 instanceId = getConfigParam(baseDir, 'instanceId')
@@ -964,7 +1041,7 @@ if args.followerspending:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    accountsDir = baseDir + '/accounts/' + args.nickname + '@' + domain
+    accountsDir = acctDir(baseDir, args.nickname, domain)
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     approveCtr = 0
     if os.path.isfile(approveFollowsFilename):
@@ -983,8 +1060,11 @@ if args.message:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     if not args.sendto:
@@ -1003,8 +1083,8 @@ if args.message:
         toDomain = toDomain.replace('\n', '').replace('\r', '')
         toPort = 443
         if ':' in toDomain:
-            toPort = toDomain.split(':')[1]
-            toDomain = toDomain.split(':')[0]
+            toPort = getPortFromDomain(toDomain)
+            toDomain = removeDomainPort(toDomain)
     else:
         if args.sendto.endswith('followers'):
             toNickname = None
@@ -1015,12 +1095,13 @@ if args.message:
             toDomain = 'public'
             toPort = port
 
-    # ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
+    # ccUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/followers'
     ccUrl = None
     sendMessage = args.message
     followersOnly = args.followersonly
     clientToServer = args.client
     attachedImageDescription = args.imageDescription
+    city = 'London, England'
     sendThreads = []
     postLog = []
     personCache = {}
@@ -1041,7 +1122,7 @@ if args.message:
                       toNickname, toDomain, toPort, ccUrl,
                       httpPrefix, sendMessage, followersOnly,
                       args.commentsEnabled, attach, mediaType,
-                      attachedImageDescription,
+                      attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
                       args.debug, replyTo, replyTo, subject)
     for i in range(10):
@@ -1055,8 +1136,11 @@ if args.announce:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1073,10 +1157,53 @@ if args.announce:
         time.sleep(1)
     sys.exit()
 
+if args.box:
+    if not domain:
+        print('Specify a domain with the --domain option')
+        sys.exit()
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+
+    session = createSession(proxyType)
+    boxJson = c2sBoxJson(baseDir, session,
+                         args.nickname, args.password,
+                         domain, port, httpPrefix,
+                         args.box, args.pageNumber,
+                         args.debug)
+    if boxJson:
+        pprint(boxJson)
+    else:
+        print('Box not found: ' + args.box)
+    sys.exit()
+
 if args.itemName:
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
@@ -1131,8 +1258,11 @@ if args.itemName:
 
 if args.undoItemName:
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
@@ -1161,8 +1291,11 @@ if args.like:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1186,8 +1319,11 @@ if args.undolike:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1205,14 +1341,73 @@ if args.undolike:
         time.sleep(1)
     sys.exit()
 
+if args.bookmark:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending bookmark of ' + args.bookmark)
+
+    sendBookmarkViaServer(baseDir, session,
+                          args.nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.bookmark,
+                          cachedWebfingers, personCache,
+                          True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.unbookmark:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo bookmark of ' + args.unbookmark)
+
+    sendUndoBookmarkViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.unbookmark,
+                              cachedWebfingers, personCache,
+                              True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
 if args.delete:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1239,9 +1434,11 @@ if args.follow:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
-        print('Please specify the password for ' + args.nickname +
-              ' on ' + domain)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     followNickname = getNicknameFromActor(args.follow)
     if not followNickname:
@@ -1278,8 +1475,11 @@ if args.unfollow:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
-        print('Please specify the password for '+args.nickname+' on '+domain)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     followNickname = getNicknameFromActor(args.unfollow)
     if not followNickname:
@@ -1307,6 +1507,90 @@ if args.unfollow:
     print('Ok')
     sys.exit()
 
+if args.followingList:
+    # following list via c2s protocol
+    if not args.nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    followHttpPrefix = httpPrefix
+
+    followingJson = \
+        getFollowingViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.pageNumber,
+                              cachedWebfingers, personCache,
+                              debug, __version__)
+    if followingJson:
+        pprint(followingJson)
+    sys.exit()
+
+if args.followersList:
+    # following list via c2s protocol
+    if not args.nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    followHttpPrefix = httpPrefix
+
+    followersJson = \
+        getFollowersViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.pageNumber,
+                              cachedWebfingers, personCache,
+                              debug, __version__)
+    if followersJson:
+        pprint(followersJson)
+    sys.exit()
+
+if args.followRequestsList:
+    # follow requests list via c2s protocol
+    if not args.nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    followHttpPrefix = httpPrefix
+
+    followRequestsJson = \
+        getFollowRequestsViaServer(baseDir, session,
+                                   args.nickname, args.password,
+                                   domain, port,
+                                   httpPrefix, args.pageNumber,
+                                   cachedWebfingers, personCache,
+                                   debug, __version__)
+    if followRequestsJson:
+        pprint(followRequestsJson)
+    sys.exit()
+
 nickname = 'admin'
 if args.domain:
     domain = args.domain
@@ -1319,9 +1603,7 @@ if args.proxyPort:
     setConfigParam(baseDir, 'proxyPort', proxyPort)
 if args.gnunet:
     httpPrefix = 'gnunet'
-if args.dat:
-    httpPrefix = 'dat'
-if args.hyper:
+if args.dat or args.hyper:
     httpPrefix = 'hyper'
 if args.i2p:
     httpPrefix = 'http'
@@ -1354,137 +1636,7 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    originalActor = args.actor
-    if '/@' in args.actor or \
-       '/users/' in args.actor or \
-       args.actor.startswith('http') or \
-       args.actor.startswith('dat'):
-        # format: https://domain/@nick
-        prefixes = getProtocolPrefixes()
-        for prefix in prefixes:
-            args.actor = args.actor.replace(prefix, '')
-        args.actor = args.actor.replace('/@', '/users/')
-        if not hasUsersPath(args.actor):
-            print('Expected actor format: ' +
-                  'https://domain/@nick or https://domain/users/nick')
-            sys.exit()
-        if '/users/' in args.actor:
-            nickname = args.actor.split('/users/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/users/')[0]
-        elif '/profile/' in args.actor:
-            nickname = args.actor.split('/profile/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/profile/')[0]
-        elif '/channel/' in args.actor:
-            nickname = args.actor.split('/channel/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/channel/')[0]
-        elif '/accounts/' in args.actor:
-            nickname = args.actor.split('/accounts/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/accounts/')[0]
-        elif '/u/' in args.actor:
-            nickname = args.actor.split('/u/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/u/')[0]
-    else:
-        # format: @nick@domain
-        if '@' not in args.actor:
-            print('Syntax: --actor nickname@domain')
-            sys.exit()
-        if args.actor.startswith('@'):
-            args.actor = args.actor[1:]
-        if '@' not in args.actor:
-            print('Syntax: --actor nickname@domain')
-            sys.exit()
-        nickname = args.actor.split('@')[0]
-        domain = args.actor.split('@')[1]
-        domain = domain.replace('\n', '').replace('\r', '')
-    cachedWebfingers = {}
-    if args.http or domain.endswith('.onion'):
-        httpPrefix = 'http'
-        port = 80
-        proxyType = 'tor'
-    elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
-        port = 80
-        proxyType = 'i2p'
-    elif args.gnunet:
-        httpPrefix = 'gnunet'
-        port = 80
-        proxyType = 'gnunet'
-    else:
-        httpPrefix = 'https'
-        port = 443
-    session = createSession(proxyType)
-    if nickname == 'inbox':
-        nickname = domain
-
-    handle = nickname + '@' + domain
-    wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
-                                None, __version__)
-    if not wfRequest:
-        print('Unable to webfinger ' + handle)
-        sys.exit()
-    if not isinstance(wfRequest, dict):
-        print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
-        sys.exit()
-
-    pprint(wfRequest)
-
-    personUrl = None
-    if wfRequest.get('errors'):
-        print('wfRequest error: ' + str(wfRequest['errors']))
-        if hasUsersPath(args.actor):
-            personUrl = originalActor
-        else:
-            sys.exit()
-
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
-    if not personUrl:
-        personUrl = getUserUrl(wfRequest)
-    if nickname == domain:
-        personUrl = personUrl.replace('/users/', '/actor/')
-        personUrl = personUrl.replace('/accounts/', '/actor/')
-        personUrl = personUrl.replace('/channel/', '/actor/')
-        personUrl = personUrl.replace('/profile/', '/actor/')
-        personUrl = personUrl.replace('/u/', '/actor/')
-    if not personUrl:
-        # try single user instance
-        personUrl = httpPrefix + '://' + domain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-    if '/channel/' in personUrl or '/accounts/' in personUrl:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-
-    personJson = \
-        getJson(session, personUrl, asHeader, None, __version__,
-                httpPrefix, None)
-    if personJson:
-        pprint(personJson)
-    else:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/jrd+json; profile="' + profileStr + '"'
-        }
-        personJson = \
-            getJson(session, personUrl, asHeader, None,
-                    __version__, httpPrefix, None)
-        if personJson:
-            pprint(personJson)
-        else:
-            print('Failed to get ' + personUrl)
+    getActorJson(args.domain, args.actor, args.http, args.gnunet, debug)
     sys.exit()
 
 if args.followers:
@@ -1492,7 +1644,7 @@ if args.followers:
     if '/@' in args.followers or \
        '/users/' in args.followers or \
        args.followers.startswith('http') or \
-       args.followers.startswith('dat'):
+       args.followers.startswith('hyper'):
         # format: https://domain/@nick
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
@@ -1558,7 +1710,7 @@ if args.followers:
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
@@ -1617,16 +1769,28 @@ if args.addaccount:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+
+    configuredDomain = getConfigParam(baseDir, 'domain')
+    if configuredDomain:
+        if domain != configuredDomain:
+            print('The account domain is expected to be ' + configuredDomain)
+            sys.exit()
+
     if not validNickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
+
     if not args.password:
-        print('Use the --password option to set the password for ' + nickname)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if os.path.isdir(accountDir):
         print('Account already exists')
         sys.exit()
     if os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain):
@@ -1638,7 +1802,7 @@ if args.addaccount:
         httpPrefix = 'http'
     createPerson(baseDir, nickname, domain, port, httpPrefix,
                  True, not args.noapproval, args.password.strip())
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    if os.path.isdir(accountDir):
         print('Account created for ' + nickname + '@' + domain)
     else:
         print('Account creation failed')
@@ -1657,17 +1821,21 @@ if args.addgroup:
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
     if not args.password:
-        print('Use the --password option to set the password for ' + nickname)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if os.path.isdir(accountDir):
         print('Group already exists')
         sys.exit()
     createGroup(baseDir, nickname, domain, port, httpPrefix,
                 True, args.password.strip())
-    if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    if os.path.isdir(accountDir):
         print('Group created for ' + nickname + '@' + domain)
     else:
         print('Group creation failed')
@@ -1688,6 +1856,17 @@ if args.rmaccount:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+        if args.domain:
+            domain = args.domain
+        else:
+            domain = getConfigParam(baseDir, 'domain')
+
+    configuredDomain = getConfigParam(baseDir, 'domain')
+    if configuredDomain:
+        if domain != configuredDomain:
+            print('The account domain is expected to be ' + configuredDomain)
+            sys.exit()
+
     if args.deactivate:
         if deactivateAccount(baseDir, nickname, domain):
             print('Account for ' + nickname + '@' + domain +
@@ -1734,7 +1913,8 @@ if args.changepassword:
     if len(newPassword) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+    accountDir = acctDir(baseDir, nickname, domain)
+    if not os.path.isdir(accountDir):
         print('Account ' + nickname + '@' + domain + ' not found')
         sys.exit()
     passwordFile = baseDir + '/accounts/passwords'
@@ -1772,8 +1952,9 @@ if args.avatar:
     if not args.nickname:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
+    city = 'London, England'
     if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
-                       port, args.avatar, 'avatar', '128x128'):
+                       port, args.avatar, 'avatar', '128x128', city):
         print('Avatar added for ' + args.nickname)
     else:
         print('Avatar was not added for ' + args.nickname)
@@ -1786,30 +1967,14 @@ if args.backgroundImage:
     if not args.nickname:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
+    city = 'London, England'
     if setProfileImage(baseDir, httpPrefix, args.nickname, domain,
-                       port, args.backgroundImage, 'background', '256x256'):
+                       port, args.backgroundImage, 'background',
+                       '256x256', city):
         print('Background image added for ' + args.nickname)
     else:
         print('Background image was not added for ' + args.nickname)
     sys.exit()
-
-if args.project:
-    if not args.delegate and not args.undelegate:
-        if not nickname:
-            print('No nickname given')
-            sys.exit()
-
-        if args.role.lower() == 'none' or \
-           args.role.lower() == 'remove' or \
-           args.role.lower() == 'delete':
-            args.role = None
-        if args.role:
-            if setRole(baseDir, nickname, domain, args.project, args.role):
-                print('Role within ' + args.project + ' set to ' + args.role)
-        else:
-            if setRole(baseDir, nickname, domain, args.project, None):
-                print('Left ' + args.project)
-        sys.exit()
 
 if args.skill:
     if not nickname:
@@ -1817,8 +1982,11 @@ if args.skill:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.skillLevelPercent:
         print('Specify a skill level in the range 0-100')
@@ -1853,8 +2021,11 @@ if args.availability:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1873,6 +2044,55 @@ if args.availability:
         time.sleep(1)
     sys.exit()
 
+if args.desktop:
+    # Announce posts as they arrive in your inbox using text-to-speech
+    if args.desktop.startswith('@'):
+        args.desktop = args.desktop[1:]
+    if '@' not in args.desktop:
+        print('Specify the handle to notify: nickname@domain')
+        sys.exit()
+    nickname = args.desktop.split('@')[0]
+    domain = args.desktop.split('@')[1]
+
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+
+    args.password = args.password.replace('\n', '')
+
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+
+    # only store inbox posts if we are not running as a daemon
+    storeInboxPosts = not args.noKeyPress
+
+    runDesktopClient(baseDir, proxyType, httpPrefix,
+                     nickname, domain, port, args.password,
+                     args.screenreader, args.language,
+                     args.notificationSounds,
+                     args.notificationType,
+                     args.noKeyPress,
+                     storeInboxPosts,
+                     args.notifyShowNewPosts,
+                     args.language,
+                     args.debug)
+    sys.exit()
+
 if federationList:
     print('Federating with: ' + str(federationList))
 
@@ -1882,8 +2102,11 @@ if args.block:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if '@' in args.block:
         blockedDomain = args.block.split('@')[1]
@@ -1912,38 +2135,26 @@ if args.block:
         time.sleep(1)
     sys.exit()
 
-if args.delegate:
+if args.mute:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
-
-    if not args.project:
-        print('Specify a project with the --project option')
-        sys.exit()
-
-    if not args.role:
-        print('Specify a role with the --role option')
-        sys.exit()
-
-    if '@' in args.delegate:
-        delegatedNickname = args.delegate.split('@')[0]
-        args.delegate = blockedActor
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    print('Sending delegation for ' + args.delegate +
-          ' with role ' + args.role + ' in project ' + args.project)
+    print('Sending mute of ' + args.mute)
 
-    sendRoleViaServer(baseDir, session,
-                      nickname, args.password,
+    sendMuteViaServer(baseDir, session, nickname, args.password,
                       domain, port,
-                      httpPrefix, args.delegate,
-                      args.project, args.role,
+                      httpPrefix, args.mute,
                       cachedWebfingers, personCache,
                       True, __version__)
     for i in range(10):
@@ -1951,36 +2162,28 @@ if args.delegate:
         time.sleep(1)
     sys.exit()
 
-if args.undelegate:
+if args.unmute:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
-
-    if not args.project:
-        print('Specify a project with the --project option')
-        sys.exit()
-
-    if '@' in args.undelegate:
-        delegatedNickname = args.undelegate.split('@')[0]
-        args.undelegate = blockedActor
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    print('Sending delegation removal for ' + args.undelegate +
-          ' from role ' + args.role + ' in project ' + args.project)
+    print('Sending undo mute of ' + args.unmute)
 
-    sendRoleViaServer(baseDir, session,
-                      nickname, args.password,
-                      domain, port,
-                      httpPrefix, args.delegate,
-                      args.project, None,
-                      cachedWebfingers, personCache,
-                      True, __version__)
+    sendUndoMuteViaServer(baseDir, session, nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.unmute,
+                          cachedWebfingers, personCache,
+                          True, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1992,8 +2195,11 @@ if args.unblock:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if '@' in args.unblock:
         blockedDomain = args.unblock.split('@')[1]
@@ -2039,6 +2245,7 @@ if args.unfilterStr:
     sys.exit()
 
 if args.testdata:
+    city = 'London, England'
     nickname = 'testuser567'
     password = 'boringpassword'
     print('Generating some test data for user: ' + nickname)
@@ -2072,9 +2279,7 @@ if args.testdata:
                  True, False, 'likewhateveryouwantscoob')
     setSkillLevel(baseDir, nickname, domain, 'testing', 60)
     setSkillLevel(baseDir, nickname, domain, 'typing', 50)
-    setRole(baseDir, nickname, domain, 'instance', 'admin')
-    setRole(baseDir, nickname, domain, 'epicyon', 'hacker')
-    setRole(baseDir, nickname, domain, 'someproject', 'assistant')
+    setRole(baseDir, nickname, domain, 'admin')
     setAvailability(baseDir, nickname, domain, 'busy')
 
     addShare(baseDir,
@@ -2086,7 +2291,7 @@ if args.testdata:
              "mechanical",
              "City",
              "2 months",
-             debug)
+             debug, city)
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              "witch hat",
@@ -2096,86 +2301,125 @@ if args.testdata:
              "clothing",
              "City",
              "3 months",
-             debug)
+             debug, city)
 
     deleteAllPosts(baseDir, nickname, domain, 'inbox')
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
 
     testFollowersOnly = False
     testSaveToFile = True
-    testClientToServer = False
+    testC2S = False
     testCommentsEnabled = True
     testAttachImageFilename = None
     testMediaType = None
     testImageDescription = None
+    testCity = 'London, England'
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     'someone')
+                     testMediaType, testImageDescription, testCity,
+                     'someone', testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
-                     'Description of image')
+                     'Description of image', testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription)
-
+                     testMediaType, testImageDescription, testCity,
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
@@ -2302,6 +2546,38 @@ brochMode = \
 if brochMode is not None:
     args.brochMode = bool(brochMode)
 
+logLoginFailures = \
+    getConfigParam(baseDir, 'logLoginFailures')
+if logLoginFailures is not None:
+    args.logLoginFailures = bool(logLoginFailures)
+
+showNodeInfoAccounts = \
+    getConfigParam(baseDir, 'showNodeInfoAccounts')
+if showNodeInfoAccounts is not None:
+    args.showNodeInfoAccounts = bool(showNodeInfoAccounts)
+
+showNodeInfoVersion = \
+    getConfigParam(baseDir, 'showNodeInfoVersion')
+if showNodeInfoVersion is not None:
+    args.showNodeInfoVersion = bool(showNodeInfoVersion)
+
+userAgentsBlocked = []
+if args.userAgentBlocks:
+    userAgentsBlockedStr = args.userAgentBlocks
+    setConfigParam(baseDir, 'userAgentsBlocked', userAgentsBlockedStr)
+else:
+    userAgentsBlockedStr = \
+        getConfigParam(baseDir, 'userAgentsBlocked')
+if userAgentsBlockedStr:
+    agentBlocksList = userAgentsBlockedStr.split(',')
+    for agentBlockStr in agentBlocksList:
+        userAgentsBlocked.append(agentBlockStr.strip())
+
+city = \
+    getConfigParam(baseDir, 'city')
+if city is not None:
+    args.city = city
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2311,11 +2587,34 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
-if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
+if setTheme(baseDir, themeName, domain,
+            args.allowLocalNetworkAccess, args.language):
     print('Theme set to ' + themeName)
 
+# whether new registrations are open or closed
+if args.registration:
+    if args.registration.lower() == 'open':
+        registration = getConfigParam(baseDir, 'registration')
+        if not registration:
+            setConfigParam(baseDir, 'registrationsRemaining',
+                           str(maxRegistrations))
+        else:
+            if registration != 'open':
+                setConfigParam(baseDir, 'registrationsRemaining',
+                               str(maxRegistrations))
+        setConfigParam(baseDir, 'registration', 'open')
+        print('New registrations open')
+    else:
+        setConfigParam(baseDir, 'registration', 'closed')
+        print('New registrations closed')
+
 if __name__ == "__main__":
-    runDaemon(args.brochMode,
+    runDaemon(userAgentsBlocked,
+              args.logLoginFailures,
+              args.city,
+              args.showNodeInfoAccounts,
+              args.showNodeInfoVersion,
+              args.brochMode,
               args.verifyAllSignatures,
               args.sendThreadsTimeoutMins,
               args.dormantMonths,

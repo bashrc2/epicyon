@@ -5,11 +5,13 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import isAccountDir
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
@@ -20,11 +22,14 @@ from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
+from utils import getAltPath
+from utils import acctDir
+from skills import noOfActorSkills
+from skills import getSkillsFromList
 from categories import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import htmlKeyboardNavigation
-from webapp_utils import getAltPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile
@@ -319,7 +324,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 def htmlSearch(cssCache: {}, translate: {},
                baseDir: str, path: str, domain: str,
                defaultTimeline: str, theme: str,
-               textModeBanner: str) -> str:
+               textModeBanner: str, accessKeys: {}) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -334,25 +339,26 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/search.css'):
         cssFilename = baseDir + '/search.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
         getSearchBannerFile(baseDir, searchNickname, domain, theme)
 
-    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {})
+    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {}, {})
     if textModeBannerStr is None:
         textModeBannerStr = ''
 
     if os.path.isfile(searchBannerFilename):
+        timelineKey = accessKeys['menuTimeline']
         usersPath = '/users/' + searchNickname
         followStr += \
             '<header>\n' + textModeBannerStr + \
             '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
-            translate['Switch to timeline view'] + '">\n'
+            translate['Switch to timeline view'] + '" ' + \
+            'accesskey="' + timelineKey + '">\n'
         followStr += '<img loading="lazy" class="timeline-banner" src="' + \
             usersPath + '/' + searchBannerFile + '" alt="" /></a>\n' + \
             '</header>\n'
@@ -370,8 +376,10 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
+    submitKey = accessKeys['submitButton']
     followStr += '    <button type="submit" class="button" ' + \
-        'name="submitSearch">' + translate['Submit'] + '</button>\n'
+        'name="submitSearch" accesskey="' + submitKey + '">' + \
+        translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
     followStr += '  <p class="hashtagswarm">' + \
         htmlHashTagSwarm(baseDir, actor, translate) + '</p>\n'
@@ -400,19 +408,19 @@ def htmlSkillsSearch(actor: str,
         for f in files:
             if not f.endswith('.json'):
                 continue
-            if '@' not in f:
-                continue
-            if f.startswith('inbox@'):
+            if not isAccountDir(f):
                 continue
             actorFilename = os.path.join(subdir, f)
             actorJson = loadJson(actorFilename)
             if actorJson:
                 if actorJson.get('id') and \
-                   actorJson.get('skills') and \
+                   noOfActorSkills(actorJson) > 0 and \
                    actorJson.get('name') and \
                    actorJson.get('icon'):
                     actor = actorJson['id']
-                    for skillName, skillLevel in actorJson['skills'].items():
+                    actorSkillsList = actorJson['hasOccupation']['skills']
+                    skills = getSkillsFromList(actorSkillsList)
+                    for skillName, skillLevel in skills.items():
                         skillName = skillName.lower()
                         if not (skillName in skillsearch or
                                 skillsearch in skillName):
@@ -435,9 +443,7 @@ def htmlSkillsSearch(actor: str,
             for f in files:
                 if not f.endswith('.json'):
                     continue
-                if '@' not in f:
-                    continue
-                if f.startswith('inbox@'):
+                if not isAccountDir(f):
                     continue
                 actorFilename = os.path.join(subdir, f)
                 cachedActorJson = loadJson(actorFilename)
@@ -445,12 +451,14 @@ def htmlSkillsSearch(actor: str,
                     if cachedActorJson.get('actor'):
                         actorJson = cachedActorJson['actor']
                         if actorJson.get('id') and \
-                           actorJson.get('skills') and \
+                           noOfActorSkills(actorJson) > 0 and \
                            actorJson.get('name') and \
                            actorJson.get('icon'):
                             actor = actorJson['id']
-                            for skillName, skillLevel in \
-                                    actorJson['skills'].items():
+                            actorSkillsList = \
+                                actorJson['hasOccupation']['skills']
+                            skills = getSkillsFromList(actorSkillsList)
+                            for skillName, skillLevel in skills.items():
                                 skillName = skillName.lower()
                                 if not (skillName in skillsearch or
                                         skillsearch in skillName):
@@ -527,7 +535,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      themeName: str, boxName: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith('!'):
@@ -537,7 +546,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
 
     boxFilenames = \
         searchBoxPosts(baseDir, nickname, domain,
-                       historysearch, postsPerPage)
+                       historysearch, postsPerPage, boxName)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -551,10 +560,13 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     # add the page title
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    historySearchTitle = '🔍 ' + translate['Your Posts']
+    if boxName == 'bookmarks':
+        historySearchTitle = '🔍 ' + translate['Bookmarks']
+
     historySearchForm += \
         '<center><h1><a href="' + actor + '/search">' + \
-        translate['Your Posts'] + \
-        '</a></h1></center>'
+        historySearchTitle + '</a></h1></center>'
 
     if len(boxFilenames) == 0:
         historySearchForm += \
@@ -604,6 +616,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
+                                 themeName,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -626,7 +639,8 @@ def htmlHashtagSearch(cssCache: {},
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      themeName: str) -> str:
     """Show a page containing search results for a hashtag
     """
     if hashtag.startswith('#'):
@@ -645,12 +659,12 @@ def htmlHashtagSearch(cssCache: {},
 
     # check that the directory for the nickname exists
     if nickname:
-        if not os.path.isdir(baseDir + '/accounts/' +
-                             nickname + '@' + domain):
+        accountDir = acctDir(baseDir, nickname, domain)
+        if not os.path.isdir(accountDir):
             nickname = None
 
     # read the index
-    with open(hashtagIndexFile, "r") as f:
+    with open(hashtagIndexFile, 'r') as f:
         lines = f.readlines()
 
     # read the css
@@ -776,6 +790,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
+                                 themeName,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
@@ -822,13 +837,13 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
 
     # check that the directory for the nickname exists
     if nickname:
-        if not os.path.isdir(baseDir + '/accounts/' +
-                             nickname + '@' + domain):
+        accountDir = acctDir(baseDir, nickname, domain)
+        if not os.path.isdir(accountDir):
             nickname = None
 
     # read the index
     lines = []
-    with open(hashtagIndexFile, "r") as f:
+    with open(hashtagIndexFile, 'r') as f:
         lines = f.readlines()
     if not lines:
         return None

@@ -5,6 +5,7 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "RSS Feeds"
 
 import os
 import datetime
@@ -29,7 +30,8 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     return ''
 
 
-def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
+def getHashtagCategories(baseDir: str,
+                         recent: bool = False, category: str = None) -> None:
     """Returns a dictionary containing hashtag categories
     """
     maxTagLength = 42
@@ -127,7 +129,7 @@ def _validHashtagCategory(category: str) -> bool:
 
 
 def setHashtagCategory(baseDir: str, hashtag: str, category: str,
-                       force=False) -> bool:
+                       force: bool = False) -> bool:
     """Sets the category for the hashtag
     """
     if not _validHashtagCategory(category):
@@ -163,12 +165,15 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
     """Tries to guess a category for the given hashtag.
     This works by trying to find the longest similar hashtag
     """
+    if len(tagName) < 4:
+        return ''
+
     categoryMatched = ''
     tagMatchedLen = 0
 
     for categoryStr, hashtagList in hashtagCategories.items():
         for hashtag in hashtagList:
-            if len(hashtag) < 3:
+            if len(hashtag) < 4:
                 # avoid matching very small strings which often
                 # lead to spurious categories
                 continue
@@ -183,5 +188,5 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
                 if len(hashtag) > tagMatchedLen:
                     categoryMatched = categoryStr
     if not categoryMatched:
-        return
+        return ''
     return categoryMatched

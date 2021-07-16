@@ -5,14 +5,18 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Testing"
 
 import time
 import os
 import shutil
 import json
+import datetime
+from random import randint
 from time import gmtime, strftime
 from pprint import pprint
 from httpsig import signPostHeaders
+from httpsig import signPostHeadersNew
 from httpsig import verifyPostHeaders
 from httpsig import messageContentDigest
 from cache import storePersonInCache
@@ -20,6 +24,7 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from posts import removePostInteractions
 from posts import getMentionedPeople
 from posts import validContentWarning
 from posts import deleteAllPosts
@@ -33,12 +38,14 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from siteactive import siteIsActive
+from utils import userAgentDomain
+from utils import camelCaseSplit
 from utils import decodedHost
 from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
-from siteactive import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
@@ -50,6 +57,10 @@ from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
 from utils import dangerousMarkup
+from utils import acctDir
+from pgp import extractPGPPublicKey
+from pgp import pgpPublicKeyUpload
+from utils import containsPGPPublicKey
 from follow import followerOfPerson
 from follow import unfollowAccount
 from follow import unfollowerOfAccount
@@ -59,8 +70,12 @@ from person import setDisplayNickname
 from person import setBio
 # from person import generateRSAKey
 from skills import setSkillLevel
+from skills import actorSkillValue
+from skills import setSkillsFromDict
+from skills import actorHasSkill
+from roles import setRolesFromList
 from roles import setRole
-from roles import outboxDelegate
+from roles import actorHasRole
 from auth import constantTimeStringCheck
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
@@ -69,6 +84,10 @@ from like import likePost
 from like import sendLikeViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
+from city import parseNogoString
+from city import spoofGeolocation
+from city import pointInNogo
+from media import getImageDimensions
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -76,6 +95,9 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import limitRepeatedWords
+from content import switchWords
+from content import extractTextFieldsInPOST
 from content import validHashTag
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
@@ -87,6 +109,7 @@ from content import removeLongWords
 from content import replaceContentDuplicates
 from content import removeTextFormatting
 from content import removeHtmlTag
+from theme import updateDefaultThemesList
 from theme import setCSSparam
 from linked_data_sig import generateJsonSignature
 from linked_data_sig import verifyJsonSignature
@@ -94,9 +117,12 @@ from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
 from newswire import getNewswireTags
 from newswire import parseFeedDate
+from newswire import limitWordLengths
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
+from speaker import speakerReplaceLinks
+from markdown import markdownToHtml
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -104,6 +130,175 @@ testServerEveRunning = False
 thrAlice = None
 thrBob = None
 thrEve = None
+
+
+def _testHttpSigNew():
+    print('testHttpSigNew')
+    messageBodyJson = {"hello": "world"}
+    messageBodyJsonStr = json.dumps(messageBodyJson)
+    publicKeyPem = \
+        '-----BEGIN RSA PUBLIC KEY-----\n' + \
+        'MIIBCgKCAQEAhAKYdtoeoy8zcAcR874L8' + \
+        'cnZxKzAGwd7v36APp7Pv6Q2jdsPBRrw\n' + \
+        'WEBnez6d0UDKDwGbc6nxfEXAy5mbhgajz' + \
+        'rw3MOEt8uA5txSKobBpKDeBLOsdJKFq\n' + \
+        'MGmXCQvEG7YemcxDTRPxAleIAgYYRjTSd' + \
+        '/QBwVW9OwNFhekro3RtlinV0a75jfZg\n' + \
+        'kne/YiktSvLG34lw2zqXBDTC5NHROUqGT' + \
+        'lML4PlNZS5Ri2U4aCNx2rUPRcKIlE0P\n' + \
+        'uKxI4T+HIaFpv8+rdV6eUgOrB2xeI1dSF' + \
+        'Fn/nnv5OoZJEIB+VmuKn3DCUcCZSFlQ\n' + \
+        'PSXSfBDiUGhwOw76WuSSsf1D4b/vLoJ10wIDAQAB\n' + \
+        '-----END RSA PUBLIC KEY-----\n'
+
+    privateKeyPem = \
+        '-----BEGIN RSA PRIVATE KEY-----\n' + \
+        'MIIEqAIBAAKCAQEAhAKYdtoeoy8zcAcR8' + \
+        '74L8cnZxKzAGwd7v36APp7Pv6Q2jdsP\n' + \
+        'BRrwWEBnez6d0UDKDwGbc6nxfEXAy5mbh' + \
+        'gajzrw3MOEt8uA5txSKobBpKDeBLOsd\n' + \
+        'JKFqMGmXCQvEG7YemcxDTRPxAleIAgYYR' + \
+        'jTSd/QBwVW9OwNFhekro3RtlinV0a75\n' + \
+        'jfZgkne/YiktSvLG34lw2zqXBDTC5NHRO' + \
+        'UqGTlML4PlNZS5Ri2U4aCNx2rUPRcKI\n' + \
+        'lE0PuKxI4T+HIaFpv8+rdV6eUgOrB2xeI' + \
+        '1dSFFn/nnv5OoZJEIB+VmuKn3DCUcCZ\n' + \
+        'SFlQPSXSfBDiUGhwOw76WuSSsf1D4b/vL' + \
+        'oJ10wIDAQABAoIBAG/JZuSWdoVHbi56\n' + \
+        'vjgCgkjg3lkO1KrO3nrdm6nrgA9P9qaPj' + \
+        'xuKoWaKO1cBQlE1pSWp/cKncYgD5WxE\n' + \
+        'CpAnRUXG2pG4zdkzCYzAh1i+c34L6oZoH' + \
+        'sirK6oNcEnHveydfzJL5934egm6p8DW\n' + \
+        '+m1RQ70yUt4uRc0YSor+q1LGJvGQHReF0' + \
+        'WmJBZHrhz5e63Pq7lE0gIwuBqL8SMaA\n' + \
+        'yRXtK+JGxZpImTq+NHvEWWCu09SCq0r83' + \
+        '8ceQI55SvzmTkwqtC+8AT2zFviMZkKR\n' + \
+        'Qo6SPsrqItxZWRty2izawTF0Bf5S2VAx7' + \
+        'O+6t3wBsQ1sLptoSgX3QblELY5asI0J\n' + \
+        'YFz7LJECgYkAsqeUJmqXE3LP8tYoIjMIA' + \
+        'KiTm9o6psPlc8CrLI9CH0UbuaA2JCOM\n' + \
+        'cCNq8SyYbTqgnWlB9ZfcAm/cFpA8tYci9' + \
+        'm5vYK8HNxQr+8FS3Qo8N9RJ8d0U5Csw\n' + \
+        'DzMYfRghAfUGwmlWj5hp1pQzAuhwbOXFt' + \
+        'xKHVsMPhz1IBtF9Y8jvgqgYHLbmyiu1\n' + \
+        'mwJ5AL0pYF0G7x81prlARURwHo0Yf52kE' + \
+        'w1dxpx+JXER7hQRWQki5/NsUEtv+8RT\n' + \
+        'qn2m6qte5DXLyn83b1qRscSdnCCwKtKWU' + \
+        'ug5q2ZbwVOCJCtmRwmnP131lWRYfj67\n' + \
+        'B/xJ1ZA6X3GEf4sNReNAtaucPEelgR2ns' + \
+        'N0gKQKBiGoqHWbK1qYvBxX2X3kbPDkv\n' + \
+        '9C+celgZd2PW7aGYLCHq7nPbmfDV0yHcW' + \
+        'jOhXZ8jRMjmANVR/eLQ2EfsRLdW69bn\n' + \
+        'f3ZD7JS1fwGnO3exGmHO3HZG+6AvberKY' + \
+        'VYNHahNFEw5TsAcQWDLRpkGybBcxqZo\n' + \
+        '81YCqlqidwfeO5YtlO7etx1xLyqa2NsCe' + \
+        'G9A86UjG+aeNnXEIDk1PDK+EuiThIUa\n' + \
+        '/2IxKzJKWl1BKr2d4xAfR0ZnEYuRrbeDQ' + \
+        'YgTImOlfW6/GuYIxKYgEKCFHFqJATAG\n' + \
+        'IxHrq1PDOiSwXd2GmVVYyEmhZnbcp8Cxa' + \
+        'EMQoevxAta0ssMK3w6UsDtvUvYvF22m\n' + \
+        'qQKBiD5GwESzsFPy3Ga0MvZpn3D6EJQLg' + \
+        'snrtUPZx+z2Ep2x0xc5orneB5fGyF1P\n' + \
+        'WtP+fG5Q6Dpdz3LRfm+KwBCWFKQjg7uTx' + \
+        'cjerhBWEYPmEMKYwTJF5PBG9/ddvHLQ\n' + \
+        'EQeNC8fHGg4UXU8mhHnSBt3EA10qQJfRD' + \
+        's15M38eG2cYwB1PZpDHScDnDA0=\n' + \
+        '-----END RSA PRIVATE KEY-----'
+    sigInput = \
+        'sig1=(date); alg=rsa-sha256; keyId="test-key-b"'
+    sig = \
+        'sig1=:HtXycCl97RBVkZi66ADKnC9c5eSSlb57GnQ4KFqNZplOpNfxqk62' + \
+        'JzZ484jXgLvoOTRaKfR4hwyxlcyb+BWkVasApQovBSdit9Ml/YmN2IvJDPncrlhPD' + \
+        'VDv36Z9/DiSO+RNHD7iLXugdXo1+MGRimW1RmYdenl/ITeb7rjfLZ4b9VNnLFtVWw' + \
+        'rjhAiwIqeLjodVImzVc5srrk19HMZNuUejK6I3/MyN3+3U8tIRW4LWzx6ZgGZUaEE' + \
+        'P0aBlBkt7Fj0Tt5/P5HNW/Sa/m8smxbOHnwzAJDa10PyjzdIbywlnWIIWtZKPPsoV' + \
+        'oKVopUWEU3TNhpWmaVhFrUL/O6SN3w==:'
+    # "hs2019", using RSASSA-PSS [RFC8017] and SHA-512 [RFC6234]
+    # sigInput = \
+    #     'sig1=(*request-target, *created, host, date, ' + \
+    #     'cache-control, x-empty-header, x-example); keyId="test-key-a"; ' + \
+    #     'alg=hs2019; created=1402170695; expires=1402170995'
+    # sig = \
+    #  'sig1=:K2qGT5srn2OGbOIDzQ6kYT+ruaycnDAAUpKv+ePFfD0RAxn/1BUe' + \
+    #  'Zx/Kdrq32DrfakQ6bPsvB9aqZqognNT6be4olHROIkeV879RrsrObury8L9SCEibe' + \
+    #  'oHyqU/yCjphSmEdd7WD+zrchK57quskKwRefy2iEC5S2uAH0EPyOZKWlvbKmKu5q4' + \
+    #  'CaB8X/I5/+HLZLGvDiezqi6/7p2Gngf5hwZ0lSdy39vyNMaaAT0tKo6nuVw0S1MVg' + \
+    #  '1Q7MpWYZs0soHjttq0uLIA3DIbQfLiIvK6/l0BdWTU7+2uQj7lBkQAsFZHoA96ZZg' + \
+    #  'FquQrXRlmYOh+Hx5D9fJkXcXe5tmAg==:'
+    nickname = 'foo'
+    boxpath = '/' + nickname
+    # headers = {
+    #     "*request-target": "get " + boxpath,
+    #     "*created": "1402170695",
+    #     "host": "example.org",
+    #     "date": "Tue, 07 Jun 2014 20:51:35 GMT",
+    #     "cache-control": "max-age=60, must-revalidate",
+    #     "x-emptyheader": "",
+    #     "x-example": "Example header with some whitespace.",
+    #     "x-dictionary": "b=2",
+    #     "x-dictionary": "a=1",
+    #     "x-list": "(a, b, c)",
+    #     "Signature-Input": sigInput,
+    #     "Signature": sig
+    # }
+    dateStr = "Tue, 07 Jun 2014 20:51:35 GMT"
+    secondsSinceEpoch = 1402174295
+    domain = "example.com"
+    port = 443
+    headers = {
+        "*created": str(secondsSinceEpoch),
+        "*request-target": "post /foo?param=value&pet=dog",
+        "host": domain,
+        "date": dateStr,
+        "content-type": "application/json",
+        "digest": "SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=",
+        "content-length": "18",
+        "Signature-Input": sigInput,
+        "Signature": sig
+    }
+    httpPrefix = 'https'
+    debug = False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             boxpath, False, None,
+                             messageBodyJsonStr, debug, True)
+    # make a deliberate mistake
+    headers['Signature'] = headers['Signature'].replace('V', 'B')
+    assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                                 boxpath, False, None,
+                                 messageBodyJsonStr, debug, True)
+    # test signing
+    bodyDigest = messageContentDigest(messageBodyJsonStr)
+    contentLength = len(messageBodyJsonStr)
+    headers = {
+        "host": domain,
+        "date": dateStr,
+        "digest": f'SHA-256={bodyDigest}',
+        "content-type": "application/json",
+        "content-length": str(contentLength)
+    }
+    signatureIndexHeader, signatureHeader = \
+        signPostHeadersNew(dateStr, privateKeyPem, nickname,
+                           domain, port,
+                           domain, port,
+                           boxpath, httpPrefix, messageBodyJsonStr,
+                           'rsa-sha256')
+    expectedIndexHeader = \
+        'keyId="https://example.com/users/foo#main-key"; ' + \
+        'alg=hs2019; created=' + str(secondsSinceEpoch) + '; ' + \
+        'sig1=(*request-target, *created, host, date, ' + \
+        'digest, content-type, content-length)'
+    if signatureIndexHeader != expectedIndexHeader:
+        print('Unexpected new http header: ' + signatureIndexHeader)
+        print('Should be:                  ' + expectedIndexHeader)
+    assert signatureIndexHeader == expectedIndexHeader
+    assert signatureHeader == \
+        'sig1=:euX3O1KSTYXN9/oR2qFezswWm9FbrjtRymK7xBpXNQvTs' + \
+        'XehtrNdD8nELZKzPXMvMz7PaJd6V+fjzpHoZ9upTdqqQLK2Iwml' + \
+        'p4BlHqW6Aopd7sZFCWFq7/Amm5oaizpp3e0jb5XISS5m3cRKuoi' + \
+        'LM0x+OudmAoYGi0TEEJk8bpnJAXfVCDfmOyL3XNqQeShQHeOANG' + \
+        'okiKktj8ff+KLYLaPTAJkob1k/EhoPIkbw/YzAY8IZjWQNMkf+F' + \
+        'JChApQ5HnDCQPwD5xV9eGzBpAf6D0G19xiTmQye4Hn6tAs3fy3V' + \
+        '/aYa/GhW2pSrctDnAKIi4imj9joppr3CB8gqgXZOPQ==:'
 
 
 def _testHttpsigBase(withDigest):
@@ -210,12 +405,12 @@ def _testHttpsigBase(withDigest):
     shutil.rmtree(path)
 
 
-def testHttpsig():
+def _testHttpsig():
     _testHttpsigBase(True)
     _testHttpsigBase(False)
 
 
-def testCache():
+def _testCache():
     print('testCache')
     personUrl = "cat@cardboard.box"
     personJson = {
@@ -229,15 +424,15 @@ def testCache():
     assert result['test'] == 'This is a test'
 
 
-def testThreadsFunction(param: str):
+def _testThreadsFunction(param: str):
     for i in range(10000):
         time.sleep(2)
 
 
-def testThreads():
+def _testThreads():
     print('testThreads')
     thr = \
-        threadWithTrace(target=testThreadsFunction,
+        threadWithTrace(target=_testThreadsFunction,
                         args=('test',),
                         daemon=True)
     thr.start()
@@ -271,7 +466,7 @@ def createServerAlice(path: str, domain: str, port: int,
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     assert setSkillLevel(path, nickname, domain, 'hacking', 90)
-    assert setRole(path, nickname, domain, 'someproject', 'guru')
+    assert setRole(path, nickname, domain, 'guru')
     if hasFollows:
         followPerson(path, nickname, domain, 'bob', bobAddress,
                      federationList, False)
@@ -285,6 +480,15 @@ def createServerAlice(path: str, domain: str, port: int,
         testAttachImageFilename = None
         testMediaType = None
         testImageDescription = None
+        testCity = 'London, England'
+        testInReplyTo = None
+        testInReplyToAtomUri = None
+        testSubject = None
+        testSchedulePost = False
+        testEventDate = None
+        testEventTime = None
+        testLocation = None
+        testIsArticle = False
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
@@ -293,7 +497,11 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -302,7 +510,11 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -312,7 +524,11 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -326,8 +542,17 @@ def createServerAlice(path: str, domain: str, port: int,
     maxFollowers = 10
     verifyAllSignatures = True
     brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
+    city = 'London, England'
+    logLoginFailures = False
+    userAgentsBlocked = []
     print('Server running: Alice')
-    runDaemon(brochMode,
+    runDaemon(userAgentsBlocked,
+              logLoginFailures, city,
+              showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -368,8 +593,6 @@ def createServerBob(path: str, domain: str, port: int,
                      False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
-    assert setRole(path, nickname, domain, 'bandname', 'bass player')
-    assert setRole(path, nickname, domain, 'bandname', 'publicist')
     if hasFollows:
         followPerson(path, nickname, domain,
                      'alice', aliceAddress, federationList, False)
@@ -382,6 +605,15 @@ def createServerBob(path: str, domain: str, port: int,
         testAttachImageFilename = None
         testImageDescription = None
         testMediaType = None
+        testCity = 'London, England'
+        testInReplyTo = None
+        testInReplyToAtomUri = None
+        testSubject = None
+        testSchedulePost = False
+        testEventDate = None
+        testEventTime = None
+        testLocation = None
+        testIsArticle = False
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -390,7 +622,11 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -400,7 +636,11 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -409,7 +649,11 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription)
+                         testImageDescription, testCity,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -423,8 +667,17 @@ def createServerBob(path: str, domain: str, port: int,
     maxFollowers = 10
     verifyAllSignatures = True
     brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
+    city = 'London, England'
+    logLoginFailures = False
+    userAgentsBlocked = []
     print('Server running: Bob')
-    runDaemon(brochMode,
+    runDaemon(userAgentsBlocked,
+              logLoginFailures, city,
+              showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -474,8 +727,17 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxFollowers = 10
     verifyAllSignatures = True
     brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
+    city = 'London, England'
+    logLoginFailures = False
+    userAgentsBlocked = []
     print('Server running: Eve')
-    runDaemon(brochMode,
+    runDaemon(userAgentsBlocked,
+              logLoginFailures, city,
+              showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -575,9 +837,14 @@ def testPostMessageBetweenServers():
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     attachedImageFilename = baseDir + '/img/logo.png'
+    testImageWidth, testImageHeight = \
+        getImageDimensions(attachedImageFilename)
+    assert testImageWidth
+    assert testImageHeight
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     isArticle = False
+    city = 'London, England'
     # nothing in Alice's outbox
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
     assert len([name for name in os.listdir(outboxPath)
@@ -592,7 +859,7 @@ def testPostMessageBetweenServers():
                  followersOnly,
                  saveToFile, clientToServer, True,
                  attachedImageFilename, mediaType,
-                 attachedImageDescription, federationList,
+                 attachedImageDescription, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -657,6 +924,20 @@ def testPostMessageBetweenServers():
         assert 'Why is a mouse when it spins?' in \
             receivedJson['object']['content']
         assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+        print('Check that message received from Alice contains an attachment')
+        assert receivedJson['object']['attachment']
+        assert len(receivedJson['object']['attachment']) == 1
+        attached = receivedJson['object']['attachment'][0]
+        pprint(attached)
+        assert attached.get('type')
+        assert attached.get('url')
+        assert attached['mediaType'] == 'image/png'
+        assert '/media/' in attached['url']
+        assert attached['url'].endswith('.png')
+        assert attached.get('width')
+        assert attached.get('height')
+        assert attached['width'] > 0
+        assert attached['height'] > 0
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
@@ -895,13 +1176,14 @@ def testFollowBetweenServers():
     aliceCachedWebfingers = {}
     alicePostLog = []
     isArticle = False
+    city = 'London, England'
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
                  clientToServer, True,
-                 None, None, None, federationList,
+                 None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -940,7 +1222,7 @@ def testFollowBetweenServers():
     shutil.rmtree(baseDir + '/.tests')
 
 
-def testFollowersOfPerson():
+def _testFollowersOfPerson():
     print('testFollowersOfPerson')
     currDir = os.getcwd()
     nickname = 'mxpop'
@@ -989,7 +1271,7 @@ def testFollowersOfPerson():
     shutil.rmtree(baseDir)
 
 
-def testNoOfFollowersOnDomain():
+def _testNoOfFollowersOnDomain():
     print('testNoOfFollowersOnDomain')
     currDir = os.getcwd()
     nickname = 'mxpop'
@@ -1050,7 +1332,7 @@ def testNoOfFollowersOnDomain():
     shutil.rmtree(baseDir)
 
 
-def testGroupFollowers():
+def _testGroupFollowers():
     print('testGroupFollowers')
 
     currDir = os.getcwd()
@@ -1095,7 +1377,7 @@ def testGroupFollowers():
     shutil.rmtree(baseDir)
 
 
-def testFollows():
+def _testFollows():
     print('testFollows')
     currDir = os.getcwd()
     nickname = 'test529'
@@ -1124,8 +1406,8 @@ def testFollows():
     followPerson(baseDir, nickname, domain, 'giraffe', 'trees.com',
                  federationList, False)
 
-    f = open(baseDir + '/accounts/' + nickname + '@' + domain +
-             '/following.txt', "r")
+    accountDir = acctDir(baseDir, nickname, domain)
+    f = open(accountDir + '/following.txt', 'r')
     domainFound = False
     for followingDomain in f:
         testDomain = followingDomain.split('@')[1]
@@ -1159,8 +1441,8 @@ def testFollows():
     followerOfPerson(baseDir, nickname, domain, 'giraffe', 'trees.com',
                      federationList, False)
 
-    f = open(baseDir + '/accounts/' + nickname + '@' + domain +
-             '/followers.txt', "r")
+    accountDir = acctDir(baseDir, nickname, domain)
+    f = open(accountDir + '/followers.txt', 'r')
     for followerDomain in f:
         testDomain = followerDomain.split('@')[1]
         testDomain = testDomain.replace('\n', '').replace('\r', '')
@@ -1172,7 +1454,7 @@ def testFollows():
     shutil.rmtree(baseDir)
 
 
-def testCreatePerson():
+def _testCreatePerson():
     print('testCreatePerson')
     currDir = os.getcwd()
     nickname = 'test382'
@@ -1197,90 +1479,34 @@ def testCreatePerson():
     setBio(baseDir, nickname, domain, 'Randomly roaming in your backyard')
     archivePostsForPerson(nickname, domain, baseDir, 'inbox', None, {}, 4)
     archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
+    content = "G'day world!"
+    followersOnly = False
+    saveToFile = True
+    commentsEnabled = True
+    attachImageFilename = None
+    mediaType = None
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "G'day world!", False, True, clientToServer,
-                     True, None, None, None, None,
-                     'Not suitable for Vogons')
+                     content, followersOnly, saveToFile, clientToServer,
+                     commentsEnabled, attachImageFilename, mediaType,
+                     'Not suitable for Vogons', 'London, England',
+                     testInReplyTo, testInReplyToAtomUri,
+                     testSubject, testSchedulePost,
+                     testEventDate, testEventTime, testLocation,
+                     testIsArticle)
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
 
-def testDelegateRoles():
-    print('testDelegateRoles')
-    currDir = os.getcwd()
-    nickname = 'test382'
-    nicknameDelegated = 'test383'
-    domain = 'badgerdomain.com'
-    password = 'mypass'
-    port = 80
-    httpPrefix = 'https'
-    baseDir = currDir + '/.tests_delegaterole'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
-
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(baseDir, nickname, domain, port,
-                     httpPrefix, True, False, password)
-    privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(baseDir, nicknameDelegated, domain, port,
-                     httpPrefix, True, False, 'insecure')
-
-    httpPrefix = 'http'
-    project = 'artechoke'
-    role = 'delegator'
-    actorDelegated = \
-        httpPrefix + '://' + domain + '/users/' + nicknameDelegated
-    newRoleJson = {
-        'type': 'Delegate',
-        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
-        'object': {
-            'type': 'Role',
-            'actor': actorDelegated,
-            'object': project + ';' + role,
-            'to': [],
-            'cc': []
-        },
-        'to': [],
-        'cc': []
-    }
-
-    assert outboxDelegate(baseDir, nickname, newRoleJson, False)
-    # second time delegation has already happened so should return false
-    assert outboxDelegate(baseDir, nickname, newRoleJson, False) is False
-
-    assert '"delegator"' in open(baseDir + '/accounts/' + nickname +
-                                 '@' + domain + '.json').read()
-    assert '"delegator"' in open(baseDir + '/accounts/' + nicknameDelegated +
-                                 '@' + domain + '.json').read()
-
-    newRoleJson = {
-        'type': 'Delegate',
-        'actor': httpPrefix + '://' + domain + '/users/' + nicknameDelegated,
-        'object': {
-            'type': 'Role',
-            'actor': httpPrefix + '://' + domain + '/users/' + nickname,
-            'object': 'otherproject;otherrole',
-            'to': [],
-            'cc': []
-        },
-        'to': [],
-        'cc': []
-    }
-
-    # non-delegators cannot assign roles
-    assert outboxDelegate(baseDir, nicknameDelegated,
-                          newRoleJson, False) is False
-    assert '"otherrole"' not in open(baseDir + '/accounts/' +
-                                     nickname + '@' + domain + '.json').read()
-
-    os.chdir(currDir)
-    shutil.rmtree(baseDir)
-
-
-def testAuthentication():
+def _testAuthentication():
     print('testAuthentication')
     currDir = os.getcwd()
     nickname = 'test8743'
@@ -1400,9 +1626,10 @@ def testClientToServer():
 
     sessionAlice = createSession(proxyType)
     followersOnly = False
-    attachedImageFilename = baseDir+'/img/logo.png'
+    attachedImageFilename = baseDir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
+    city = 'London, England'
     isArticle = False
     cachedWebfingers = {}
     personCache = {}
@@ -1421,7 +1648,7 @@ def testClientToServer():
                           httpPrefix, 'Sent from my ActivityPub client',
                           followersOnly, True,
                           attachedImageFilename, mediaType,
-                          attachedImageDescription,
+                          attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
                           True, None, None, None)
     print('sendResult: ' + str(sendResult))
@@ -1686,7 +1913,7 @@ def testClientToServer():
     # shutil.rmtree(bobDir)
 
 
-def testActorParsing():
+def _testActorParsing():
     print('testActorParsing')
     actor = 'https://mydomain:72/users/mynick'
     domain, port = getDomainFromActor(actor)
@@ -1733,8 +1960,24 @@ def testActorParsing():
     assert nickname == 'othernick'
 
 
-def testWebLinks():
+def _testWebLinks():
     print('testWebLinks')
+
+    exampleText = \
+        "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        " <a href=\"https://domain.ugh/tags/turbot\" class=\"mention " + \
+        "hashtag\" rel=\"tag\">#<span>turbot</span></a> <a href=\"" + \
+        "https://domain.ugh/tags/haddock\" class=\"mention hashtag\"" + \
+        " rel=\"tag\">#<span>haddock</span></a></p>"
+    resultText = removeLongWords(exampleText, 40, [])
+    assert resultText == "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        " <a href=\"https://domain.ugh/tags/turbot\" class=\"mention " + \
+        "hashtag\" rel=\"tag\">#<span>turbot</span></a> " + \
+        "<a href=\"https://domain.ugh/tags/haddock\" " + \
+        "class=\"mention hashtag\" rel=\"tag\">#<span>haddock</span></a></p>"
 
     exampleText = \
         '<p><span class=\"h-card\"><a href=\"https://something/@orother' + \
@@ -1844,7 +2087,7 @@ def testWebLinks():
     assert resultText == exampleText
 
 
-def testAddEmoji():
+def _testAddEmoji():
     print('testAddEmoji')
     content = "Emoji :lemon: :strawberry: :banana:"
     httpPrefix = 'http'
@@ -1884,14 +2127,14 @@ def testAddEmoji():
         tags.append(tag)
     content = contentModified
     contentModified = replaceEmojiFromTags(content, tags, 'content')
-    # print('contentModified: '+contentModified)
+    # print('contentModified: ' + contentModified)
     assert contentModified == '<p>Emoji 🍋 🍓 🍌</p>'
 
     os.chdir(baseDirOriginal)
     shutil.rmtree(baseDirOriginal + '/.tests')
 
 
-def testGetStatusNumber():
+def _testGetStatusNumber():
     print('testGetStatusNumber')
     prevStatusNumber = None
     for i in range(1, 20):
@@ -1902,7 +2145,7 @@ def testGetStatusNumber():
         prevStatusNumber = int(statusNumber)
 
 
-def testJsonString() -> None:
+def _testJsonString() -> None:
     print('testJsonString')
     filename = '.epicyon_tests_testJsonString.json'
     messageStr = "Crème brûlée यह एक परीक्षण ह"
@@ -1918,7 +2161,7 @@ def testJsonString() -> None:
     os.remove(filename)
 
 
-def testSaveLoadJson():
+def _testSaveLoadJson():
     print('testSaveLoadJson')
     testJson = {
         "param1": 3,
@@ -1938,7 +2181,7 @@ def testSaveLoadJson():
     os.remove(testFilename)
 
 
-def testTheme():
+def _testTheme():
     print('testTheme')
     css = 'somestring --background-value: 24px; --foreground-value: 24px;'
     result = setCSSparam(css, 'background-value', '32px')
@@ -1956,14 +2199,14 @@ def testTheme():
     assert result == '--background-value: 32px; --foreground-value: 24px;'
 
 
-def testRecentPostsCache():
+def _testRecentPostsCache():
     print('testRecentPostsCache')
     recentPostsCache = {}
     maxRecentPosts = 3
     htmlStr = '<html></html>'
     for i in range(5):
         postJsonObject = {
-            "id": "https://somesite.whatever/users/someuser/statuses/"+str(i)
+            "id": "https://somesite.whatever/users/someuser/statuses/" + str(i)
         }
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                postJsonObject, htmlStr)
@@ -1972,7 +2215,7 @@ def testRecentPostsCache():
     assert len(recentPostsCache['html'].items()) == maxRecentPosts
 
 
-def testRemoveTextFormatting():
+def _testRemoveTextFormatting():
     print('testRemoveTextFormatting')
     testStr = '<p>Text without formatting</p>'
     resultStr = removeTextFormatting(testStr)
@@ -1982,7 +2225,7 @@ def testRemoveTextFormatting():
     assert(resultStr == '<p>Text with formatting</p>')
 
 
-def testJsonld():
+def _testJsonld():
     print("testJsonld")
 
     jldDocument = {
@@ -2071,22 +2314,31 @@ def testJsonld():
            signedDocument2['signature']['signatureValue'])
 
 
-def testSiteIsActive():
+def _testSiteIsActive():
     print('testSiteIsActive')
     assert(siteIsActive('https://archive.org'))
     assert(siteIsActive('https://mastodon.social'))
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
 
-def testRemoveHtml():
+def _testRemoveHtml():
     print('testRemoveHtml')
     testStr = 'This string has no html.'
     assert(removeHtml(testStr) == testStr)
     testStr = 'This string <a href="1234.567">has html</a>.'
     assert(removeHtml(testStr) == 'This string has html.')
+    testStr = '<label>This string has.</label><label>Two labels.</label>'
+    assert(removeHtml(testStr) == 'This string has. Two labels.')
+    testStr = '<p>This string has.</p><p>Two paragraphs.</p>'
+    assert(removeHtml(testStr) == 'This string has.\n\nTwo paragraphs.')
+    testStr = 'This string has.<br>A new line.'
+    assert(removeHtml(testStr) == 'This string has.\nA new line.')
+    testStr = '<p>This string contains a url http://somesite.or.other</p>'
+    assert(removeHtml(testStr) ==
+           'This string contains a url http://somesite.or.other')
 
 
-def testDangerousCSS():
+def _testDangerousCSS():
     print('testDangerousCSS')
     baseDir = os.getcwd()
     for subdir, dirs, files in os.walk(baseDir):
@@ -2097,7 +2349,7 @@ def testDangerousCSS():
         break
 
 
-def testDangerousMarkup():
+def _testDangerousMarkup():
     print('testDangerousMarkup')
     allowLocalNetworkAccess = False
     content = '<p>This is a valid message</p>'
@@ -2109,6 +2361,11 @@ def testDangerousMarkup():
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+
+    content = '<p>This is a valid-looking message. But wait... ' + \
+        '&lt;script&gt;document.getElementById("concentrated")' + \
+        '.innerHTML = "evil";&lt;/script&gt;</p>'
     assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This html contains more than you expected... ' + \
@@ -2154,7 +2411,7 @@ def testDangerousMarkup():
     assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
 
-def runHtmlReplaceQuoteMarks():
+def _runHtmlReplaceQuoteMarks():
     print('htmlReplaceQuoteMarks')
     testStr = 'The "cat" "sat" on the mat'
     result = htmlReplaceQuoteMarks(testStr)
@@ -2173,7 +2430,7 @@ def runHtmlReplaceQuoteMarks():
     assert result == '“hello” <a href="somesite.html">“test” html</a>'
 
 
-def testJsonPostAllowsComments():
+def _testJsonPostAllowsComments():
     print('testJsonPostAllowsComments')
     postJsonObject = {
         "id": "123"
@@ -2182,6 +2439,16 @@ def testJsonPostAllowsComments():
     postJsonObject = {
         "id": "123",
         "commentsEnabled": False
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "rejectReplies": False
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "rejectReplies": True
     }
     assert not jsonPostAllowsComments(postJsonObject)
     postJsonObject = {
@@ -2205,7 +2472,7 @@ def testJsonPostAllowsComments():
     assert not jsonPostAllowsComments(postJsonObject)
 
 
-def testRemoveIdEnding():
+def _testRemoveIdEnding():
     print('testRemoveIdEnding')
     testStr = 'https://activitypub.somedomain.net'
     resultStr = removeIdEnding(testStr)
@@ -2231,7 +2498,7 @@ def testRemoveIdEnding():
         'https://event.somedomain.net/users/foo/statuses/34544814814'
 
 
-def testValidContentWarning():
+def _testValidContentWarning():
     print('testValidContentWarning')
     resultStr = validContentWarning('Valid content warning')
     assert resultStr == 'Valid content warning'
@@ -2244,7 +2511,7 @@ def testValidContentWarning():
     assert resultStr == 'Invalid content warning'
 
 
-def testTranslations():
+def _testTranslations():
     print('testTranslations')
     languagesStr = ('ar', 'ca', 'cy', 'de', 'es', 'fr', 'ga',
                     'hi', 'it', 'ja', 'oc', 'pt', 'ru', 'zh')
@@ -2270,7 +2537,7 @@ def testTranslations():
             assert langJson.get(englishStr)
 
 
-def testConstantTimeStringCheck():
+def _testConstantTimeStringCheck():
     print('testConstantTimeStringCheck')
     assert constantTimeStringCheck('testing', 'testing')
     assert not constantTimeStringCheck('testing', '1234')
@@ -2308,7 +2575,7 @@ def testConstantTimeStringCheck():
     assert int(timeDiffMicroseconds) < 10
 
 
-def testReplaceEmailQuote():
+def _testReplaceEmailQuote():
     print('testReplaceEmailQuote')
     testStr = '<p>This content has no quote.</p>'
     assert htmlReplaceEmailQuote(testStr) == testStr
@@ -2366,7 +2633,7 @@ def testReplaceEmailQuote():
     assert resultStr == expectedStr
 
 
-def testRemoveHtmlTag():
+def _testRemoveHtmlTag():
     print('testRemoveHtmlTag')
     testStr = "<p><img width=\"864\" height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
@@ -2375,7 +2642,7 @@ def testRemoveHtmlTag():
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
 
-def testHashtagRuleTree():
+def _testHashtagRuleTree():
     print('testHashtagRuleTree')
     operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
 
@@ -2507,7 +2774,7 @@ def testHashtagRuleTree():
     assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
 
-def testGetNewswireTags():
+def _testGetNewswireTags():
     print('testGetNewswireTags')
     rssDescription = '<img src="https://somesite/someimage.jpg" ' + \
         'class="misc-stuff" alt="#ExcitingHashtag" ' + \
@@ -2521,12 +2788,14 @@ def testGetNewswireTags():
     assert '#ExcitingHashtag' in tags
 
 
-def testFirstParagraphFromString():
+def _testFirstParagraphFromString():
     print('testFirstParagraphFromString')
     testStr = \
         '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
         '<p>This is another paragraph</p>'
     resultStr = firstParagraphFromString(testStr)
+    if resultStr != 'This is a test':
+        print(resultStr)
     assert resultStr == 'This is a test'
 
     testStr = 'Testing without html'
@@ -2534,7 +2803,7 @@ def testFirstParagraphFromString():
     assert resultStr == testStr
 
 
-def testParseFeedDate():
+def _testParseFeedDate():
     print('testParseFeedDate')
 
     pubDate = "2020-12-14T00:08:06+00:00"
@@ -2554,7 +2823,7 @@ def testParseFeedDate():
     assert publishedDate == "2020-11-22 18:51:33+00:00"
 
 
-def testValidNickname():
+def _testValidNickname():
     print('testValidNickname')
     domain = 'somedomain.net'
 
@@ -2571,20 +2840,20 @@ def testValidNickname():
     assert not validNickname(domain, nickname)
 
 
-def testGuessHashtagCategory() -> None:
+def _testGuessHashtagCategory() -> None:
     print('testGuessHashtagCategory')
     hashtagCategories = {
         "foo": ["swan", "goose"],
-        "bar": ["cat", "mouse"]
+        "bar": ["cats", "mouse"]
     }
     guess = guessHashtagCategory("unspecifiedgoose", hashtagCategories)
     assert guess == "foo"
 
-    guess = guessHashtagCategory("catpic", hashtagCategories)
+    guess = guessHashtagCategory("mastocats", hashtagCategories)
     assert guess == "bar"
 
 
-def testGetMentionedPeople() -> None:
+def _testGetMentionedPeople() -> None:
     print('testGetMentionedPeople')
     baseDir = os.getcwd()
 
@@ -2598,18 +2867,39 @@ def testGetMentionedPeople() -> None:
     assert actors[1] == "https://cave.site/users/bat"
 
 
-def testReplyToPublicPost() -> None:
+def _testReplyToPublicPost() -> None:
     baseDir = os.getcwd()
     nickname = 'test7492362'
     domain = 'other.site'
     port = 443
     httpPrefix = 'https'
     postId = httpPrefix + '://rat.site/users/ninjarodent/statuses/63746173435'
+    content = "@ninjarodent@rat.site This is a test."
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = True
+    attachImageFilename = None
+    mediaType = None
+    imageDescription = 'Some description'
+    city = 'London, England'
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
     reply = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                         "@ninjarodent@rat.site This is a test.",
-                         False, False, False, True,
-                         None, None, False, postId)
+                         content, followersOnly, saveToFile,
+                         clientToServer, commentsEnabled,
+                         attachImageFilename, mediaType,
+                         imageDescription, city, postId,
+                         testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -2630,7 +2920,7 @@ def testReplyToPublicPost() -> None:
         httpPrefix + '://rat.site/users/ninjarodent'
 
 
-def getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
+def _getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
     """Returns the arguments of a function call given lines
     of source code and a starting line number
     """
@@ -2668,7 +2958,7 @@ def getFunctionCalls(name: str, lines: [], startLineCtr: int,
     return callsFunctions
 
 
-def functionArgsMatch(callArgs: [], funcArgs: []):
+def _functionArgsMatch(callArgs: [], funcArgs: []):
     """Do the function artuments match the function call arguments
     """
     if len(callArgs) == len(funcArgs):
@@ -2692,11 +2982,98 @@ def functionArgsMatch(callArgs: [], funcArgs: []):
     return callArgsCtr >= funcArgsCtr
 
 
-def testFunctions():
+def _moduleInGroups(modName: str, includeGroups: [], modGroups: {}) -> bool:
+    """Is the given module within the included groups list?
+    """
+    for groupName in includeGroups:
+        if modName in modGroups[groupName]:
+            return True
+    return False
+
+
+def _diagramGroups(includeGroups: [],
+                   excludeExtraModules: [],
+                   modules: {}, modGroups: {},
+                   maxModuleCalls: int) -> None:
+    """Draws a dot diagram containing only the given module groups
+    """
+    callGraphStr = 'digraph EpicyonGroups {\n\n'
+    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    callGraphStr += '  node [fontsize=10 fontname="Verdana"];\n\n'
+    excludeModulesFromDiagram = [
+        'setup', 'tests', '__init__', 'pyjsonld'
+    ]
+    excludeModulesFromDiagram += excludeExtraModules
+    # colors of modules nodes
+    for modName, modProperties in modules.items():
+        if modName in excludeModulesFromDiagram:
+            continue
+        if not _moduleInGroups(modName, includeGroups, modGroups):
+            continue
+        if not modProperties.get('calls'):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=yellow style=filled];\n'
+            continue
+        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=green style=filled];\n'
+        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=orange style=filled];\n'
+        else:
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=red style=filled];\n'
+    callGraphStr += '\n'
+    # connections between modules
+    for modName, modProperties in modules.items():
+        if modName in excludeModulesFromDiagram:
+            continue
+        if not _moduleInGroups(modName, includeGroups, modGroups):
+            continue
+        if not modProperties.get('calls'):
+            continue
+        for modCall in modProperties['calls']:
+            if modCall in excludeModulesFromDiagram:
+                continue
+            if not _moduleInGroups(modCall, includeGroups, modGroups):
+                continue
+            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
+    # module groups/clusters
+    clusterCtr = 1
+    for groupName, groupModules in modGroups.items():
+        if groupName not in includeGroups:
+            continue
+        callGraphStr += '\n'
+        callGraphStr += \
+            '  subgraph cluster_' + str(clusterCtr) + ' {\n'
+        callGraphStr += '    node [style=filled];\n'
+        for modName in groupModules:
+            if modName not in excludeModulesFromDiagram:
+                callGraphStr += '    ' + modName + ';\n'
+        callGraphStr += '    label = "' + groupName + '";\n'
+        callGraphStr += '    color = blue;\n'
+        callGraphStr += '  }\n'
+        clusterCtr += 1
+    callGraphStr += '\n}\n'
+    filename = 'epicyon_groups'
+    for groupName in includeGroups:
+        filename += '_' + groupName.replace(' ', '-')
+    filename += '.dot'
+    with open(filename, 'w+') as fp:
+        fp.write(callGraphStr)
+        print('Graph saved to ' + filename)
+        print('Plot using: ' +
+              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
+              '-Gsep=+100 -Tx11 epicyon_modules.dot')
+
+
+def _testFunctions():
     print('testFunctions')
     function = {}
     functionProperties = {}
     modules = {}
+    modGroups = {}
+    methodLOC = []
 
     for subdir, dirs, files in os.walk('.'):
         for sourceFile in files:
@@ -2707,15 +3084,50 @@ def testFunctions():
                 'functions': []
             }
             sourceStr = ''
-            with open(sourceFile, "r") as f:
+            with open(sourceFile, 'r') as f:
                 sourceStr = f.read()
                 modules[modName]['source'] = sourceStr
-            with open(sourceFile, "r") as f:
+            with open(sourceFile, 'r') as f:
                 lines = f.readlines()
                 modules[modName]['lines'] = lines
+                lineCount = 0
+                prevLine = 'start'
+                methodName = ''
                 for line in lines:
+                    if '__module_group__' in line:
+                        if '=' in line:
+                            groupName = line.split('=')[1].strip()
+                            groupName = groupName.replace('"', '')
+                            groupName = groupName.replace("'", '')
+                            modules[modName]['group'] = groupName
+                            if not modGroups.get(groupName):
+                                modGroups[groupName] = [modName]
+                            else:
+                                if modName not in modGroups[groupName]:
+                                    modGroups[groupName].append(modName)
                     if not line.strip().startswith('def '):
+                        if lineCount > 0:
+                            lineCount += 1
+                        # add LOC count for this function
+                        if len(prevLine.strip()) == 0 and \
+                           len(line.strip()) == 0 and \
+                           lineCount > 2:
+                            lineCount -= 2
+                            if lineCount > 80:
+                                locStr = str(lineCount) + ';' + methodName
+                                if lineCount < 1000:
+                                    locStr = '0' + locStr
+                                if lineCount < 100:
+                                    locStr = '0' + locStr
+                                if lineCount < 10:
+                                    locStr = '0' + locStr
+                                if locStr not in methodLOC:
+                                    methodLOC.append(locStr)
+                                    lineCount = 0
+                        prevLine = line
                         continue
+                    prevLine = line
+                    lineCount = 1
                     methodName = line.split('def ', 1)[1].split('(')[0]
                     methodArgs = \
                         sourceStr.split('def ' + methodName + '(')[1]
@@ -2732,7 +3144,25 @@ def testFunctions():
                         "module": modName,
                         "calledInModule": []
                     }
+                # LOC count for the last function
+                if lineCount > 2:
+                    lineCount -= 2
+                    if lineCount > 80:
+                        locStr = str(lineCount) + ';' + methodName
+                        if lineCount < 1000:
+                            locStr = '0' + locStr
+                        if lineCount < 100:
+                            locStr = '0' + locStr
+                        if lineCount < 10:
+                            locStr = '0' + locStr
+                        if locStr not in methodLOC:
+                            methodLOC.append(locStr)
         break
+
+    print('LOC counts:')
+    methodLOC.sort()
+    for locStr in methodLOC:
+        print(locStr.split(';')[0] + ' ' + locStr.split(';')[1])
 
     excludeFuncArgs = [
         'pyjsonld'
@@ -2767,11 +3197,11 @@ def testFunctions():
                         lineCtr += 1
                         continue
                     callArgs = \
-                        getFunctionCallArgs(name,
-                                            modules[modName]['lines'],
-                                            lineCtr)
-                    if not functionArgsMatch(callArgs,
-                                             functionProperties[name]['args']):
+                        _getFunctionCallArgs(name,
+                                             modules[modName]['lines'],
+                                             lineCtr)
+                    funcArgs = functionProperties[name]['args']
+                    if not _functionArgsMatch(callArgs, funcArgs):
                         print('Call to function ' + name +
                               ' does not match its arguments')
                         print('def args: ' +
@@ -2820,13 +3250,14 @@ def testFunctions():
         'runSharesExpireWatchdog',
         'getThisWeeksEvents',
         'getAvailability',
-        'testThreadsFunction',
+        '_testThreadsFunction',
         'createServerAlice',
         'createServerBob',
         'createServerEve',
         'E2EEremoveDevice',
         'setOrganizationScheme',
-        'fill_headers'
+        'fill_headers',
+        '_nothing'
     ]
     excludeImports = [
         'link',
@@ -2928,97 +3359,37 @@ def testFunctions():
                         else:
                             modules[modName]['calls'] = [modCall]
             lineCtr += 1
-    callGraphStr = 'digraph EpicyonModules {\n\n'
-    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
-    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
-    # colors of modules nodes
-    for modName, modProperties in modules.items():
-        if not modProperties.get('calls'):
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=yellow style=filled];\n'
-            continue
-        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=green style=filled];\n'
-        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=orange style=filled];\n'
-        else:
-            callGraphStr += '  "' + modName + \
-                '" [fillcolor=red style=filled];\n'
-    callGraphStr += '\n'
-    # connections between modules
-    for modName, modProperties in modules.items():
-        if not modProperties.get('calls'):
-            continue
-        for modCall in modProperties['calls']:
-            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
-    callGraphStr += '\n}\n'
-    with open('epicyon_modules.dot', 'w+') as fp:
-        fp.write(callGraphStr)
-        print('Modules call graph saved to epicyon_modules.dot')
-        print('Plot using: ' +
-              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
-              '-Gsep=+100 -Tx11 epicyon_modules.dot')
 
-    callGraphStr = 'digraph Epicyon {\n\n'
-    callGraphStr += '  size="8,6"; ratio=fill;\n'
-    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
-    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
-
-    for modName, modProperties in modules.items():
-        callGraphStr += '  subgraph cluster_' + modName + ' {\n'
-        callGraphStr += '    label = "' + modName + '";\n'
-        callGraphStr += '    node [style=filled];\n'
-        moduleFunctionsStr = ''
-        for name in modProperties['functions']:
-            if name.startswith('test'):
-                continue
-            if name not in excludeFuncs:
-                if not functionProperties[name]['calls']:
-                    moduleFunctionsStr += \
-                        '  "' + name + '" [fillcolor=yellow style=filled];\n'
-                    continue
-                noOfCalls = len(functionProperties[name]['calls'])
-                if noOfCalls < int(maxFunctionCalls / 4):
-                    moduleFunctionsStr += '  "' + name + \
-                        '" [fillcolor=orange style=filled];\n'
-                else:
-                    moduleFunctionsStr += '  "' + name + \
-                        '" [fillcolor=red style=filled];\n'
-
-        if moduleFunctionsStr:
-            callGraphStr += moduleFunctionsStr + '\n'
-        callGraphStr += '    color=blue;\n'
-        callGraphStr += '  }\n\n'
-
-    for name, properties in functionProperties.items():
-        if not properties['calls']:
-            continue
-        noOfCalls = len(properties['calls'])
-        if noOfCalls <= int(maxFunctionCalls / 8):
-            modColor = 'blue'
-        elif noOfCalls < int(maxFunctionCalls / 4):
-            modColor = 'green'
-        else:
-            modColor = 'red'
-        for calledFunc in properties['calls']:
-            if calledFunc.startswith('test'):
-                continue
-            if calledFunc not in excludeFuncs:
-                callGraphStr += '  "' + name + '" -> "' + calledFunc + \
-                    '" [color=' + modColor + '];\n'
-
-    callGraphStr += '\n}\n'
-    with open('epicyon.dot', 'w+') as fp:
-        fp.write(callGraphStr)
-        print('Call graph saved to epicyon.dot')
-        print('Plot using: ' +
-              'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
-              '-Gsep=+120 -Tx11 epicyon.dot')
+    _diagramGroups(['Commandline Interface', 'ActivityPub'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Commandline Interface', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Timeline', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Web Interface', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Web Interface Columns', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core'], [],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub'], [],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub', 'Core'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['ActivityPub', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Timeline', 'Security'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Web Interface', 'Accessibility'],
+                   ['utils', 'webapp_utils'],
+                   modules, modGroups, maxModuleCalls)
+    _diagramGroups(['Core', 'Accessibility'], ['utils'],
+                   modules, modGroups, maxModuleCalls)
 
 
-def testLinksWithinPost() -> None:
+def _testLinksWithinPost() -> None:
     baseDir = os.getcwd()
     nickname = 'test27636'
     domain = 'rando.site'
@@ -3026,11 +3397,34 @@ def testLinksWithinPost() -> None:
     httpPrefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = True
+    attachImageFilename = None
+    mediaType = None
+    imageDescription = None
+    city = 'London, England'
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
+
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                         content,
-                         False, False, False, True,
-                         None, None, False, None)
+                         content, followersOnly, saveToFile,
+                         clientToServer, commentsEnabled,
+                         attachImageFilename, mediaType,
+                         imageDescription, city,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
+
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
         '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
@@ -3056,12 +3450,18 @@ def testLinksWithinPost() -> None:
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content,
-                         False, False, False, True,
-                         None, None, False, None)
+                         False, False,
+                         False, True,
+                         None, None,
+                         False, None,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle)
     assert postJsonObject['object']['content'] == content
 
 
-def testMastoApi():
+def _testMastoApi():
     print('testMastoApi')
     nickname = 'ThisIsATestNickname'
     mastoId = getMastoApiV1IdFromNickname(nickname)
@@ -3072,7 +3472,7 @@ def testMastoApi():
     assert nickname2 == nickname
 
 
-def testDomainHandling():
+def _testDomainHandling():
     print('testDomainHandling')
     testDomain = 'localhost'
     assert decodedHost(testDomain) == testDomain
@@ -3084,7 +3484,7 @@ def testDomainHandling():
     assert decodedHost(testDomain) == "españa.icom.museum"
 
 
-def testPrepareHtmlPostNickname():
+def _testPrepareHtmlPostNickname():
     print('testPrepareHtmlPostNickname')
     postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
     postHtml += '<a class="imageAnchor" href="/users/bob?repeatprivate='
@@ -3099,7 +3499,7 @@ def testPrepareHtmlPostNickname():
     assert result == expectedHtml
 
 
-def testValidHashTag():
+def _testValidHashTag():
     print('testValidHashTag')
     assert validHashTag('ThisIsValid')
     assert validHashTag('ThisIsValid12345')
@@ -3114,52 +3514,746 @@ def testValidHashTag():
     assert not validHashTag('This=IsAlsoNotValid"')
 
 
+def _testMarkdownToHtml():
+    print('testMarkdownToHtml')
+    markdown = 'This is just plain text'
+    assert markdownToHtml(markdown) == markdown
+
+    markdown = 'This is a quotation:\n' + \
+        '> Some quote or other'
+    assert markdownToHtml(markdown) == 'This is a quotation:<br>' + \
+        '<blockquote><i>Some quote or other</i></blockquote>'
+
+    markdown = 'This is a multi-line quotation:\n' + \
+        '> The first line\n' + \
+        '> The second line'
+    assert markdownToHtml(markdown) == \
+        'This is a multi-line quotation:<br>' + \
+        '<blockquote><i>The first line The second line</i></blockquote>'
+
+    markdown = 'This is **bold**'
+    assert markdownToHtml(markdown) == 'This is <b>bold</b>'
+
+    markdown = 'This is *italic*'
+    assert markdownToHtml(markdown) == 'This is <i>italic</i>'
+
+    markdown = 'This is _underlined_'
+    assert markdownToHtml(markdown) == 'This is <ul>underlined</ul>'
+
+    markdown = 'This is **just** plain text'
+    assert markdownToHtml(markdown) == 'This is <b>just</b> plain text'
+
+    markdown = '# Title1\n### Title3\n## Title2\n'
+    assert markdownToHtml(markdown) == \
+        '<h1>Title1</h1><h3>Title3</h3><h2>Title2</h2>'
+
+    markdown = \
+        'This is [a link](https://something.somewhere) to something.\n' + \
+        'And [something else](https://cat.pic).\n' + \
+        'Or ![pounce](/cat.jpg).'
+    assert markdownToHtml(markdown) == \
+        'This is <a href="https://something.somewhere" ' + \
+        'target="_blank" rel="nofollow noopener noreferrer">' + \
+        'a link</a> to something.<br>' + \
+        'And <a href="https://cat.pic" ' + \
+        'target="_blank" rel="nofollow noopener noreferrer">' + \
+        'something else</a>.<br>' + \
+        'Or <img class="markdownImage" src="/cat.jpg" alt="pounce" />.'
+
+
+def _testExtractTextFieldsInPOST():
+    print('testExtractTextFieldsInPOST')
+    boundary = '-----------------------------116202748023898664511855843036'
+    formData = '-----------------------------116202748023898664511855' + \
+        '843036\r\nContent-Disposition: form-data; name="submitPost"' + \
+        '\r\n\r\nSubmit\r\n-----------------------------116202748023' + \
+        '898664511855843036\r\nContent-Disposition: form-data; name=' + \
+        '"subject"\r\n\r\n\r\n-----------------------------116202748' + \
+        '023898664511855843036\r\nContent-Disposition: form-data; na' + \
+        'me="message"\r\n\r\nThis is a ; test\r\n-------------------' + \
+        '----------116202748023898664511855843036\r\nContent-Disposi' + \
+        'tion: form-data; name="commentsEnabled"\r\n\r\non\r\n------' + \
+        '-----------------------116202748023898664511855843036\r\nCo' + \
+        'ntent-Disposition: form-data; name="eventDate"\r\n\r\n\r\n' + \
+        '-----------------------------116202748023898664511855843036' + \
+        '\r\nContent-Disposition: form-data; name="eventTime"\r\n\r' + \
+        '\n\r\n-----------------------------116202748023898664511855' + \
+        '843036\r\nContent-Disposition: form-data; name="location"' + \
+        '\r\n\r\n\r\n-----------------------------116202748023898664' + \
+        '511855843036\r\nContent-Disposition: form-data; name=' + \
+        '"imageDescription"\r\n\r\n\r\n-----------------------------' + \
+        '116202748023898664511855843036\r\nContent-Disposition: ' + \
+        'form-data; name="attachpic"; filename=""\r\nContent-Type: ' + \
+        'application/octet-stream\r\n\r\n\r\n----------------------' + \
+        '-------116202748023898664511855843036--\r\n'
+    debug = False
+    fields = extractTextFieldsInPOST(None, boundary, debug, formData)
+    assert fields['submitPost'] == 'Submit'
+    assert fields['subject'] == ''
+    assert fields['commentsEnabled'] == 'on'
+    assert fields['eventDate'] == ''
+    assert fields['eventTime'] == ''
+    assert fields['location'] == ''
+    assert fields['imageDescription'] == ''
+    assert fields['message'] == 'This is a ; test'
+
+
+def _testSpeakerReplaceLinks():
+    print('testSpeakerReplaceLinks')
+    text = 'The Tor Project: For Snowflake volunteers: If you use ' + \
+        'Firefox, Brave, or Chrome, our Snowflake extension turns ' + \
+        'your browser into a proxy that connects Tor users in ' + \
+        'censored regions to the Tor network. Note: you should ' + \
+        'not run more than one snowflake in the same ' + \
+        'network.https://support.torproject.org/censorship/' + \
+        'how-to-help-running-snowflake/'
+    detectedLinks = []
+    result = speakerReplaceLinks(text, {'Linked': 'Web link'}, detectedLinks)
+    assert len(detectedLinks) == 1
+    assert detectedLinks[0] == \
+        'https://support.torproject.org/censorship/' + \
+        'how-to-help-running-snowflake/'
+    assert 'Web link support.torproject.org' in result
+
+
+def _testCamelCaseSplit():
+    print('testCamelCaseSplit')
+    testStr = 'ThisIsCamelCase'
+    assert camelCaseSplit(testStr) == 'This Is Camel Case'
+
+    testStr = 'Notcamelcase test'
+    assert camelCaseSplit(testStr) == 'Notcamelcase test'
+
+
+def _testEmojiImages():
+    print('testEmojiImages')
+    emojiFilename = 'emoji/default_emoji.json'
+    assert os.path.isfile(emojiFilename)
+    emojiJson = loadJson(emojiFilename)
+    assert emojiJson
+    for emojiName, emojiImage in emojiJson.items():
+        emojiImageFilename = 'emoji/' + emojiImage + '.png'
+        if not os.path.isfile(emojiImageFilename):
+            print('Missing emoji image ' + emojiName + ' ' +
+                  emojiImage + '.png')
+        assert os.path.isfile(emojiImageFilename)
+
+
+def _testExtractPGPPublicKey():
+    print('testExtractPGPPublicKey')
+    pubKey = \
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
+        'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
+        'IBjngMbVJJ3Wg/3UW73/PV\n' + \
+        'I47xKTS0IUJvYiBNb3R0cmFtIDxib2JAZnJlZWRvb' + \
+        'WJvbmUubmV0PoiQBBMWCAA4\n' + \
+        'FiEEmruCwAq/OfgmgEh9zCU2GR+nwz8FAlmQbngCG' + \
+        'wMFCwkIBwMFFQoJCAsFFgID\n' + \
+        'AQACHgECF4AACgkQzCU2GR+nwz/9sAD/YgsHnVszH' + \
+        'Nz1zlVc5EgY1ByDupiJpHj0\n' + \
+        'XsLYk3AbNRgBALn45RqgD4eWHpmOriH09H5Rc5V9i' + \
+        'N4+OiGUn2AzJ6oHuDgEWZBu\n' + \
+        'eBIKKwYBBAGXVQEFAQEHQPRBG2ZQJce475S3e0Dxe' + \
+        'b0Fz5WdEu2q3GYLo4QG+4Ry\n' + \
+        'AwEIB4h4BBgWCAAgFiEEmruCwAq/OfgmgEh9zCU2G' + \
+        'R+nwz8FAlmQbngCGwwACgkQ\n' + \
+        'zCU2GR+nwz+OswD+JOoyBku9FzuWoVoOevU2HH+bP' + \
+        'OMDgY2OLnST9ZSyHkMBAMcK\n' + \
+        'fnaZ2Wi050483Sj2RmQRpb99Dod7rVZTDtCqXk0J\n' + \
+        '=gv5G\n' + \
+        '-----END PGP PUBLIC KEY BLOCK-----'
+    testStr = "Some introduction\n\n" + pubKey + "\n\nSome message."
+    assert containsPGPPublicKey(testStr)
+    assert not containsPGPPublicKey('String without a pgp key')
+    result = extractPGPPublicKey(testStr)
+    assert result
+    assert result == pubKey
+
+
+def testUpdateActor():
+    print('Testing update of actor properties')
+
+    global testServerAliceRunning
+    testServerAliceRunning = False
+
+    httpPrefix = 'http'
+    proxyType = None
+    federationList = []
+
+    baseDir = os.getcwd()
+    if os.path.isdir(baseDir + '/.tests'):
+        shutil.rmtree(baseDir + '/.tests')
+    os.mkdir(baseDir + '/.tests')
+
+    # create the server
+    aliceDir = baseDir + '/.tests/alice'
+    aliceDomain = '127.0.0.11'
+    alicePort = 61792
+    aliceSendThreads = []
+    bobAddress = '127.0.0.84:6384'
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.is_alive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
+    thrAlice = \
+        threadWithTrace(target=createServerAlice,
+                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                              federationList, False, False,
+                              aliceSendThreads),
+                        daemon=True)
+
+    thrAlice.start()
+    assert thrAlice.is_alive() is True
+
+    # wait for server to be running
+    ctr = 0
+    while not testServerAliceRunning:
+        time.sleep(1)
+        ctr += 1
+        if ctr > 60:
+            break
+    print('Alice online: ' + str(testServerAliceRunning))
+
+    print('\n\n*******************************************************')
+    print('Alice updates her PGP key')
+
+    sessionAlice = createSession(proxyType)
+    cachedWebfingers = {}
+    personCache = {}
+    password = 'alicepass'
+    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
+    actorFilename = aliceDir + '/accounts/' + 'alice@' + aliceDomain + '.json'
+    assert os.path.isfile(actorFilename)
+    assert len([name for name in os.listdir(outboxPath)
+                if os.path.isfile(os.path.join(outboxPath, name))]) == 0
+    pubKey = \
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
+        'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
+        'IBjngMbVJJ3Wg/3UW73/PV\n' + \
+        'I47xKTS0IUJvYiBNb3R0cmFtIDxib2JAZnJlZWRvb' + \
+        'WJvbmUubmV0PoiQBBMWCAA4\n' + \
+        'FiEEmruCwAq/OfgmgEh9zCU2GR+nwz8FAlmQbngCG' + \
+        'wMFCwkIBwMFFQoJCAsFFgID\n' + \
+        'AQACHgECF4AACgkQzCU2GR+nwz/9sAD/YgsHnVszH' + \
+        'Nz1zlVc5EgY1ByDupiJpHj0\n' + \
+        'XsLYk3AbNRgBALn45RqgD4eWHpmOriH09H5Rc5V9i' + \
+        'N4+OiGUn2AzJ6oHuDgEWZBu\n' + \
+        'eBIKKwYBBAGXVQEFAQEHQPRBG2ZQJce475S3e0Dxe' + \
+        'b0Fz5WdEu2q3GYLo4QG+4Ry\n' + \
+        'AwEIB4h4BBgWCAAgFiEEmruCwAq/OfgmgEh9zCU2G' + \
+        'R+nwz8FAlmQbngCGwwACgkQ\n' + \
+        'zCU2GR+nwz+OswD+JOoyBku9FzuWoVoOevU2HH+bP' + \
+        'OMDgY2OLnST9ZSyHkMBAMcK\n' + \
+        'fnaZ2Wi050483Sj2RmQRpb99Dod7rVZTDtCqXk0J\n' + \
+        '=gv5G\n' + \
+        '-----END PGP PUBLIC KEY BLOCK-----'
+    actorUpdate = \
+        pgpPublicKeyUpload(aliceDir, sessionAlice,
+                           'alice', password,
+                           aliceDomain, alicePort,
+                           httpPrefix,
+                           cachedWebfingers, personCache,
+                           True, pubKey)
+    print('actor update result: ' + str(actorUpdate))
+    assert actorUpdate
+
+    # load alice actor
+    print('Loading actor: ' + actorFilename)
+    actorJson = loadJson(actorFilename)
+    assert actorJson
+    if len(actorJson['attachment']) == 0:
+        print("actorJson['attachment'] has no contents")
+    assert len(actorJson['attachment']) > 0
+    propertyFound = False
+    for propertyValue in actorJson['attachment']:
+        if propertyValue['name'] == 'PGP':
+            print('PGP property set within attachment')
+            assert pubKey in propertyValue['value']
+            propertyFound = True
+    assert propertyFound
+
+    # stop the server
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.is_alive() is False
+
+    os.chdir(baseDir)
+    if os.path.isdir(baseDir + '/.tests'):
+        shutil.rmtree(baseDir + '/.tests')
+
+
+def _testRemovePostInteractions() -> None:
+    print('testRemovePostInteractions')
+    postJsonObject = {
+        "type": "Create",
+        "object": {
+            "to": ["#Public"],
+            "likes": {
+                "items": ["a", "b", "c"]
+            },
+            "replies": {
+                "replyStuff": ["a", "b", "c"]
+            },
+            "shares": {
+                "sharesStuff": ["a", "b", "c"]
+            },
+            "bookmarks": {
+                "bookmarksStuff": ["a", "b", "c"]
+            },
+            "ignores": {
+                "ignoresStuff": ["a", "b", "c"]
+            }
+        }
+    }
+    removePostInteractions(postJsonObject, True)
+    assert postJsonObject['object']['likes']['items'] == []
+    assert postJsonObject['object']['replies'] == {}
+    assert postJsonObject['object']['shares'] == {}
+    assert postJsonObject['object']['bookmarks'] == {}
+    assert postJsonObject['object']['ignores'] == {}
+    assert not removePostInteractions(postJsonObject, False)
+
+
+def _testSpoofGeolocation() -> None:
+    print('testSpoofGeolocation')
+    nogoLine = \
+        'NEW YORK, USA: 73.951W,40.879,  73.974W,40.83,  ' + \
+        '74.029W,40.756,  74.038W,40.713,  74.056W,40.713,  ' + \
+        '74.127W,40.647,  74.038W,40.629,  73.995W,40.667,  ' + \
+        '74.014W,40.676,  73.994W,40.702,  73.967W,40.699,  ' + \
+        '73.958W,40.729,  73.956W,40.745,  73.918W,40.781,  ' + \
+        '73.937W,40.793,  73.946W,40.782,  73.977W,40.738,  ' + \
+        '73.98W,40.713,  74.012W,40.705,  74.006W,40.752,  ' + \
+        '73.955W,40.824'
+    polygon = parseNogoString(nogoLine)
+    assert len(polygon) > 0
+    assert polygon[0][1] == -73.951
+    assert polygon[0][0] == 40.879
+    citiesList = [
+        'NEW YORK, USA:40.7127281:W74.0060152:784',
+        'LOS ANGELES, USA:34.0536909:W118.242766:1214',
+        'SAN FRANCISCO, USA:37.74594738515095:W122.44299445520019:121',
+        'HOUSTON, USA:29.6072:W95.1586:1553',
+        'MANCHESTER, ENGLAND:53.4794892:W2.2451148:1276',
+        'BERLIN, GERMANY:52.5170365:13.3888599:891',
+        'ANKARA, TURKEY:39.93:32.85:24521',
+        'LONDON, ENGLAND:51.5073219:W0.1276474:1738',
+        'SEATTLE, USA:47.59840153253106:W122.31143714060059:217'
+    ]
+    testSquare = [
+        [[0.03, 0.01], [0.02, 10], [10.01, 10.02], [10.03, 0.02]]
+    ]
+    assert pointInNogo(testSquare, 5, 5)
+    assert pointInNogo(testSquare, 2, 3)
+    assert not pointInNogo(testSquare, 20, 5)
+    assert not pointInNogo(testSquare, 11, 6)
+    assert not pointInNogo(testSquare, 5, -5)
+    assert not pointInNogo(testSquare, 5, 11)
+    assert not pointInNogo(testSquare, -5, -5)
+    assert not pointInNogo(testSquare, -5, 5)
+    nogoList = []
+    currTime = datetime.datetime.utcnow()
+    decoySeed = 7634681
+    cityRadius = 0.1
+    coords = spoofGeolocation('', 'los angeles', currTime,
+                              decoySeed, citiesList, nogoList)
+    assert coords[0] >= 34.0536909 - cityRadius
+    assert coords[0] <= 34.0536909 + cityRadius
+    assert coords[1] >= 118.242766 - cityRadius
+    assert coords[1] <= 118.242766 + cityRadius
+    assert coords[2] == 'N'
+    assert coords[3] == 'W'
+    assert len(coords[4]) > 4
+    assert len(coords[5]) > 4
+    assert coords[6] > 0
+    nogoList = []
+    coords = spoofGeolocation('', 'unknown', currTime,
+                              decoySeed, citiesList, nogoList)
+    assert coords[0] >= 51.8744 - cityRadius
+    assert coords[0] <= 51.8744 + cityRadius
+    assert coords[1] >= 0.368333 - cityRadius
+    assert coords[1] <= 0.368333 + cityRadius
+    assert coords[2] == 'N'
+    assert coords[3] == 'W'
+    assert len(coords[4]) == 0
+    assert len(coords[5]) == 0
+    assert coords[6] == 0
+    kmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    kmlStr += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+    kmlStr += '<Document>\n'
+    nogoLine2 = \
+        'NEW YORK, USA: 74.115W,40.663,  74.065W,40.602,  ' + \
+        '74.118W,40.555,  74.047W,40.516,  73.882W,40.547,  ' + \
+        '73.909W,40.618,  73.978W,40.579,  74.009W,40.602,  ' + \
+        '74.033W,40.61,  74.039W,40.623,  74.032W,40.641,  ' + \
+        '73.996W,40.665'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoList = [polygon, polygon2]
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
+        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'new york, usa', currTime,
+                                  decoySeed, citiesList, nogoList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+
+    nogoLine = \
+        'LONDON, ENGLAND: 0.23888E,51.459,  0.1216E,51.5,  ' + \
+        '0.016E,51.479,  0.097W,51.502,  0.126W,51.482,  ' + \
+        '0.196W,51.457,  0.292W,51.465,  0.309W,51.49,  ' + \
+        '0.226W,51.495,  0.198W,51.47,  0.174W,51.488,  ' + \
+        '0.136W,51.489,  0.1189W,51.515,  0.038E,51.513,  ' + \
+        '0.0692E,51.51,  0.12833E,51.526,  0.3289E,51.475'
+    polygon = parseNogoString(nogoLine)
+    nogoLine2 = \
+        'LONDON, ENGLAND: 0.054W,51.535,  0.044W,51.53,  ' + \
+        '0.008W,51.55,  0.0429W,51.57,  0.038W,51.6,  ' + \
+        '0.0209W,51.603,  0.032W,51.613,  0.00191E,51.66,  ' + \
+        '0.024W,51.666,  0.0313W,51.659,  0.0639W,51.579,  ' + \
+        '0.059W,51.568,  0.0329W,51.552'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoList = [polygon, polygon2]
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
+        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'london, england', currTime,
+                                  decoySeed, citiesList, nogoList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+
+    nogoLine = \
+        'SAN FRANCISCO, USA: 121.988W,37.408,  121.924W,37.452,  ' + \
+        '121.951W,37.498,  121.992W,37.505,  122.056W,37.54,  ' + \
+        '122.077W,37.578,  122.098W,37.618,  122.131W,37.637,  ' + \
+        '122.189W,37.706,  122.227W,37.775,  122.279W,37.798,  ' + \
+        '122.315W,37.802,  122.291W,37.832,  122.309W,37.902,  ' + \
+        '122.382W,37.915,  122.368W,37.927,  122.514W,37.882,  ' + \
+        '122.473W,37.83,  122.481W,37.788,  122.394W,37.796,  ' + \
+        '122.384W,37.729,  122.4W,37.688,  122.382W,37.654,  ' + \
+        '122.406W,37.637,  122.392W,37.612,  122.356W,37.586,  ' + \
+        '122.332W,37.586,  122.275W,37.529,  122.228W,37.488,  ' + \
+        '122.181W,37.482,  122.134W,37.48,  122.128W,37.471,  ' + \
+        '122.122W,37.448,  122.095W,37.428,  122.07W,37.413,  ' + \
+        '122.036W,37.402,  122.035W,37.421'
+    polygon = parseNogoString(nogoLine)
+    nogoLine2 = \
+        'SAN FRANCISCO, USA: 122.446W,37.794,  122.511W,37.778,  ' + \
+        '122.51W,37.771,  122.454W,37.775,  122.452W,37.766,  ' + \
+        '122.510W,37.763,  122.506W,37.735,  122.498W,37.733,  ' + \
+        '122.496W,37.729,  122.491W,37.729,  122.475W,37.73,  ' + \
+        '122.474W,37.72,  122.484W,37.72,  122.485W,37.703,  ' + \
+        '122.495W,37.702,  122.493W,37.679,  122.486W,37.667,  ' + \
+        '122.492W,37.664,  122.493W,37.629,  122.456W,37.625,  ' + \
+        '122.450W,37.617,  122.455W,37.621,  122.41W,37.586,  ' + \
+        '122.383W,37.561,  122.335W,37.509,  122.655W,37.48,  ' + \
+        '122.67W,37.9,  122.272W,37.93,  122.294W,37.801,  ' + \
+        '122.448W,37.804'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoList = [polygon, polygon2]
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
+        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'SAN FRANCISCO, USA', currTime,
+                                  decoySeed, citiesList, nogoList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+
+    nogoLine = \
+        'SEATTLE, USA: 122.247W,47.918,  122.39W,47.802,  ' + \
+        '122.389W,47.769,  122.377W,47.758,  122.371W,47.726,  ' + \
+        '122.379W,47.706,  122.4W,47.696,  122.405W,47.673,  ' + \
+        '122.416W,47.65,  122.414W,47.642,  122.391W,47.632,  ' + \
+        '122.373W,47.633,  122.336W,47.602,  122.288W,47.501,  ' + \
+        '122.299W,47.503,  122.386W,47.592,  122.412W,47.574,  ' + \
+        '122.394W,47.549,  122.388W,47.507,  122.35W,47.481,  ' + \
+        '122.365W,47.459,  122.33W,47.406,  122.323W,47.392,  ' + \
+        '122.321W,47.346,  122.441W,47.302,  122.696W,47.085,  ' + \
+        '122.926W,47.066,  122.929W,48.383'
+    polygon = parseNogoString(nogoLine)
+    nogoLine2 = \
+        'SEATTLE, USA: 122.267W,47.758,  122.29W,47.471,  ' + \
+        '122.272W,47.693,  122.256W,47.672,  122.278W,47.652,  ' + \
+        '122.29W,47.583,  122.262W,47.548,  122.265W,47.52,  ' + \
+        '122.218W,47.498,  122.194W,47.501,  122.193W,47.55,  ' + \
+        '122.173W,47.58,  122.22W,47.617,  122.238W,47.617,  ' + \
+        '122.239W,47.637,  122.2W,47.644,  122.207W,47.703,  ' + \
+        '122.22W,47.705,  122.231W,47.699,  122.255W,47.751'
+    polygon2 = parseNogoString(nogoLine2)
+    nogoLine3 = \
+        'SEATTLE, USA: 122.347W,47.675,  122.344W,47.681,  ' + \
+        '122.337W,47.685,  122.324W,47.679,  122.331W,47.677,  ' + \
+        '122.34W,47.669,  122.34W,47.664,  122.348W,47.665'
+    polygon3 = parseNogoString(nogoLine3)
+    nogoLine4 = \
+        'SEATTLE, USA: 122.423W,47.669,  122.345W,47.641,  ' + \
+        '122.34W,47.625,  122.327W,47.626,  122.274W,47.64,  ' + \
+        '122.268W,47.654,  122.327W,47.654,  122.336W,47.647,  ' + \
+        '122.429W,47.684'
+    polygon4 = parseNogoString(nogoLine4)
+    nogoList = [polygon, polygon2, polygon3, polygon4]
+    for i in range(1000):
+        dayNumber = randint(10, 30)
+        hour = randint(1, 23)
+        hourStr = str(hour)
+        if hour < 10:
+            hourStr = '0' + hourStr
+        dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
+        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'SEATTLE, USA', currTime,
+                                  decoySeed, citiesList, nogoList)
+        longitude = coords[1]
+        if coords[3] == 'W':
+            longitude = -coords[1]
+        kmlStr += '<Placemark id="' + str(i) + '">\n'
+        kmlStr += '  <name>' + str(i) + '</name>\n'
+        kmlStr += '  <Point>\n'
+        kmlStr += '    <coordinates>' + str(longitude) + ',' + \
+            str(coords[0]) + ',0</coordinates>\n'
+        kmlStr += '  </Point>\n'
+        kmlStr += '</Placemark>\n'
+
+    kmlStr += '</Document>\n'
+    kmlStr += '</kml>'
+    with open('unittest_decoy.kml', 'w+') as kmlFile:
+        kmlFile.write(kmlStr)
+
+
+def _testSkills() -> None:
+    print('testSkills')
+    actorJson = {
+        'hasOccupation': [
+            {
+                '@type': 'Occupation',
+                'name': "Sysop",
+                "occupationLocation": {
+                    "@type": "City",
+                    "name": "Fediverse"
+                },
+                'skills': []
+            }
+        ]
+    }
+    skillsDict = {
+        'bakery': 40,
+        'gardening': 70
+    }
+    setSkillsFromDict(actorJson, skillsDict)
+    assert actorHasSkill(actorJson, 'bakery')
+    assert actorHasSkill(actorJson, 'gardening')
+    assert actorSkillValue(actorJson, 'bakery') == 40
+    assert actorSkillValue(actorJson, 'gardening') == 70
+
+
+def _testRoles() -> None:
+    print('testRoles')
+    actorJson = {
+        'hasOccupation': [
+            {
+                '@type': 'Occupation',
+                'name': "Sysop",
+                'occupationLocation': {
+                    '@type': 'City',
+                    'name': 'Fediverse'
+                },
+                'skills': []
+            }
+        ]
+    }
+    testRolesList = ["admin", "moderator"]
+    setRolesFromList(actorJson, testRolesList)
+    assert actorHasRole(actorJson, "admin")
+    assert actorHasRole(actorJson, "moderator")
+    assert not actorHasRole(actorJson, "editor")
+    assert not actorHasRole(actorJson, "counselor")
+    assert not actorHasRole(actorJson, "artist")
+
+
+def _testUserAgentDomain() -> None:
+    print('testUserAgentDomain')
+    userAgent = \
+        'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
+    assert userAgentDomain(userAgent, False) == 'mastodon.something'
+    userAgent = \
+        'Mozilla/70.0 (X11; Linux x86_64; rv:1.0) Gecko/20450101 Firefox/1.0'
+    assert userAgentDomain(userAgent, False) is None
+
+
+def _testSwitchWords() -> None:
+    print('testSwitchWords')
+    rules = [
+        "rock -> hamster",
+        "orange -> lemon"
+    ]
+    baseDir = os.getcwd()
+    nickname = 'testuser'
+    domain = 'testdomain.com'
+
+    content = 'This is a test'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == content
+
+    content = 'This is orange test'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == 'This is lemon test'
+
+    content = 'This is a test rock'
+    result = switchWords(baseDir, nickname, domain, content, rules)
+    assert result == 'This is a test hamster'
+
+
+def _testLimitWordLengths() -> None:
+    print('testLimitWordLengths')
+    maxWordLength = 13
+    text = "This is a test"
+    result = limitWordLengths(text, maxWordLength)
+    assert result == text
+
+    text = "This is an exceptionallylongword test"
+    result = limitWordLengths(text, maxWordLength)
+    assert result == "This is an exceptionally test"
+
+
+def _testLimitRepetedWords() -> None:
+    print('limitRepeatedWords')
+    text = \
+        "This is a preamble.\n\n" + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same\n\n" + \
+        "Some other text."
+    expected = \
+        "This is a preamble.\n\n" + \
+        "Same Same Same Same Same Same\n\n" + \
+        "Some other text."
+    result = limitRepeatedWords(text, 6)
+    assert result == expected
+
+    text = \
+        "This is other preamble.\n\n" + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same " + \
+        "Same Same Same Same Same Same Same Same Same Same"
+    expected = \
+        "This is other preamble.\n\n" + \
+        "Same Same Same Same Same Same"
+    result = limitRepeatedWords(text, 6)
+    assert result == expected
+
+
 def runAllTests():
     print('Running tests...')
-    testFunctions()
-    testValidHashTag()
-    testPrepareHtmlPostNickname()
-    testDomainHandling()
-    testMastoApi()
-    testLinksWithinPost()
-    testReplyToPublicPost()
-    testGetMentionedPeople()
-    testGuessHashtagCategory()
-    testValidNickname()
-    testParseFeedDate()
-    testFirstParagraphFromString()
-    testGetNewswireTags()
-    testHashtagRuleTree()
-    testRemoveHtmlTag()
-    testReplaceEmailQuote()
-    testConstantTimeStringCheck()
-    testTranslations()
-    testValidContentWarning()
-    testRemoveIdEnding()
-    testJsonPostAllowsComments()
-    runHtmlReplaceQuoteMarks()
-    testDangerousCSS()
-    testDangerousMarkup()
-    testRemoveHtml()
-    testSiteIsActive()
-    testJsonld()
-    testRemoveTextFormatting()
-    testWebLinks()
-    testRecentPostsCache()
-    testTheme()
-    testSaveLoadJson()
-    testJsonString()
-    testGetStatusNumber()
-    testAddEmoji()
-    testActorParsing()
-    testHttpsig()
-    testCache()
-    testThreads()
-    testCreatePerson()
-    testAuthentication()
-    testFollowersOfPerson()
-    testNoOfFollowersOnDomain()
-    testFollows()
-    testGroupFollowers()
-    testDelegateRoles()
+    updateDefaultThemesList(os.getcwd())
+    _testLimitRepetedWords()
+    _testLimitWordLengths()
+    _testSwitchWords()
+    _testFunctions()
+    _testUserAgentDomain()
+    _testRoles()
+    _testSkills()
+    _testSpoofGeolocation()
+    _testRemovePostInteractions()
+    _testExtractPGPPublicKey()
+    _testEmojiImages()
+    _testCamelCaseSplit()
+    _testSpeakerReplaceLinks()
+    _testExtractTextFieldsInPOST()
+    _testMarkdownToHtml()
+    _testValidHashTag()
+    _testPrepareHtmlPostNickname()
+    _testDomainHandling()
+    _testMastoApi()
+    _testLinksWithinPost()
+    _testReplyToPublicPost()
+    _testGetMentionedPeople()
+    _testGuessHashtagCategory()
+    _testValidNickname()
+    _testParseFeedDate()
+    _testFirstParagraphFromString()
+    _testGetNewswireTags()
+    _testHashtagRuleTree()
+    _testRemoveHtmlTag()
+    _testReplaceEmailQuote()
+    _testConstantTimeStringCheck()
+    _testTranslations()
+    _testValidContentWarning()
+    _testRemoveIdEnding()
+    _testJsonPostAllowsComments()
+    _runHtmlReplaceQuoteMarks()
+    _testDangerousCSS()
+    _testDangerousMarkup()
+    _testRemoveHtml()
+    _testSiteIsActive()
+    _testJsonld()
+    _testRemoveTextFormatting()
+    _testWebLinks()
+    _testRecentPostsCache()
+    _testTheme()
+    _testSaveLoadJson()
+    _testJsonString()
+    _testGetStatusNumber()
+    _testAddEmoji()
+    _testActorParsing()
+    _testHttpsig()
+    _testHttpSigNew()
+    _testCache()
+    _testThreads()
+    _testCreatePerson()
+    _testAuthentication()
+    _testFollowersOfPerson()
+    _testNoOfFollowersOnDomain()
+    _testFollows()
+    _testGroupFollowers()
     print('Tests succeeded\n')

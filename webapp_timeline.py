@@ -5,15 +5,20 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Timeline"
 
 import os
 import time
+from shutil import copyfile
+from utils import dangerousMarkup
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
+from utils import acctDir
 from follow import followerApprovalActive
 from person import isPersonSnoozed
+from markdown import markdownToHtml
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlPostSeparator
@@ -28,6 +33,7 @@ from webapp_column_left import getLeftColumnContent
 from webapp_column_right import getRightColumnContent
 from webapp_headerbuttons import headerButtonsTimeline
 from posts import isModerator
+from announce import isSelfAnnounce
 
 
 def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
@@ -40,6 +46,290 @@ def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
     if timeDiff > 100:
         print('TIMELINE TIMING ' +
               boxName + ' ' + debugId + ' = ' + str(timeDiff))
+
+
+def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
+    """Shows help text for the given timeline
+    """
+    # get the filename for help for this timeline
+    helpFilename = baseDir + '/accounts/help_' + boxName + '.md'
+    if not os.path.isfile(helpFilename):
+        language = \
+            getConfigParam(baseDir, 'language')
+        if not language:
+            language = 'en'
+        themeName = \
+            getConfigParam(baseDir, 'theme')
+        defaultFilename = None
+        if themeName:
+            defaultFilename = \
+                baseDir + '/theme/' + themeName + '/welcome/' + \
+                'help_' + boxName + '_' + language + '.md'
+            if not os.path.isfile(defaultFilename):
+                defaultFilename = None
+        if not defaultFilename:
+            defaultFilename = \
+                baseDir + '/defaultwelcome/' + \
+                'help_' + boxName + '_' + language + '.md'
+        if not os.path.isfile(defaultFilename):
+            defaultFilename = \
+                baseDir + '/defaultwelcome/help_' + boxName + '_en.md'
+        if os.path.isfile(defaultFilename):
+            copyfile(defaultFilename, helpFilename)
+
+    # show help text
+    if os.path.isfile(helpFilename):
+        instanceTitle = \
+            getConfigParam(baseDir, 'instanceTitle')
+        if not instanceTitle:
+            instanceTitle = 'Epicyon'
+        with open(helpFilename, 'r') as helpFile:
+            helpText = helpFile.read()
+            if dangerousMarkup(helpText, False):
+                return ''
+            helpText = helpText.replace('INSTANCE', instanceTitle)
+            return '<div class="container">\n' + \
+                markdownToHtml(helpText) + '\n' + \
+                '</div>\n'
+    return ''
+
+
+def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
+                         boxName: str, iconsAsButtons: bool,
+                         usersPath: str, translate: {}) -> str:
+    """Returns html for the new post button
+    """
+    newPostButtonStr = ''
+    if boxName == 'dm':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newdm?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new DM'] + \
+                '" alt="| ' + translate['Create a new DM'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newdm?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + ' </span></button></a>'
+    elif (boxName == 'tlblogs' or
+          boxName == 'tlnews' or
+          boxName == 'tlfeatures'):
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newblog"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new post'] + '" alt="| ' + \
+                translate['Create a new post'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newblog">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlshares':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newshare?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new shared item'] + '" alt="| ' + \
+                translate['Create a new shared item'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newshare?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
+    else:
+        if not manuallyApproveFollowers:
+            if not iconsAsButtons:
+                newPostButtonStr += \
+                    '<a class="imageAnchor" href="' + usersPath + \
+                    '/newpost"><img loading="lazy" src="/' + \
+                    'icons/newpost.png" title="' + \
+                    translate['Create a new post'] + '" alt="| ' + \
+                    translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr += \
+                    '<a href="' + usersPath + '/newpost">' + \
+                    '<button class="button"><span>' + \
+                    translate['Post'] + '</span></button></a>'
+        else:
+            if not iconsAsButtons:
+                newPostButtonStr += \
+                    '<a class="imageAnchor" href="' + usersPath + \
+                    '/newfollowers"><img loading="lazy" src="/' + \
+                    'icons/newpost.png" title="' + \
+                    translate['Create a new post'] + \
+                    '" alt="| ' + translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr += \
+                    '<a href="' + usersPath + '/newfollowers">' + \
+                    '<button class="button"><span>' + \
+                    translate['Post'] + '</span></button></a>'
+    return newPostButtonStr
+
+
+def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
+                                   nickname: str, moderationActionStr: str,
+                                   translate: {}) -> str:
+    """Returns html for the moderation screen buttons
+    """
+    tlStr = ''
+    if moderator and boxName == 'moderation':
+        tlStr += \
+            '<form id="modtimeline" method="POST" action="/users/' + \
+            nickname + '/moderationaction">'
+        tlStr += '<div class="container">\n'
+        idx = 'Nickname or URL. Block using *@domain or nickname@domain'
+        tlStr += \
+            '    <b>' + translate[idx] + '</b><br>\n'
+        if moderationActionStr:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="' + \
+                moderationActionStr + '" autofocus><br>\n'
+        else:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="" autofocus><br>\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Information about current blocks/suspensions'] + \
+            '" alt="' + \
+            translate['Information about current blocks/suspensions'] + \
+            ' | " ' + \
+            'name="submitInfo" value="' + translate['Info'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Remove the above item'] + '" ' + \
+            'alt="' + translate['Remove the above item'] + ' | " ' + \
+            'name="submitRemove" value="' + \
+            translate['Remove'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Suspend the above account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Suspend the above account nickname'] + ' | " ' + \
+            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Remove a suspension for an account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Remove a suspension for an account nickname'] + \
+            ' | " ' + \
+            'name="submitUnsuspend" value="' + \
+            translate['Unsuspend'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Block an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Block an account on another instance'] + ' | " ' + \
+            'name="submitBlock" value="' + translate['Block'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unblock an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Unblock an account on another instance'] + ' | " ' + \
+            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Filter out words'] + '" ' + \
+            'alt="' + \
+            translate['Filter out words'] + ' | " ' + \
+            'name="submitFilter" value="' + translate['Filter'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unfilter words'] + '" ' + \
+            'alt="' + \
+            translate['Unfilter words'] + ' | " ' + \
+            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+
+        tlStr += '</div>\n</form>\n'
+    return tlStr
+
+
+def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
+                          nickname: str, newCalendarEvent: bool,
+                          newDM: bool, newReply: bool, newShare: bool,
+                          followApprovals: bool,
+                          accessKeys: {}, translate: {}) -> str:
+    """Returns html for timeline keyboard navigation
+    """
+    calendarStr = translate['Calendar']
+    if newCalendarEvent:
+        calendarStr = '<strong>' + calendarStr + '</strong>'
+    dmStr = translate['DM']
+    if newDM:
+        dmStr = '<strong>' + dmStr + '</strong>'
+    repliesStr = translate['Replies']
+    if newReply:
+        repliesStr = '<strong>' + repliesStr + '</strong>'
+    sharesStr = translate['Shares']
+    if newShare:
+        sharesStr = '<strong>' + sharesStr + '</strong>'
+    menuProfile = \
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
+    menuInbox = \
+        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
+    menuOutbox = \
+        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
+    menuSearch = \
+        htmlHideFromScreenReader('🔍') + ' ' + \
+        translate['Search and follow']
+    menuCalendar = \
+        htmlHideFromScreenReader('📅') + ' ' + calendarStr
+    menuDM = \
+        htmlHideFromScreenReader('📩') + ' ' + dmStr
+    menuReplies = \
+        htmlHideFromScreenReader('📨') + ' ' + repliesStr
+    menuBookmarks = \
+        htmlHideFromScreenReader('🔖') + ' ' + translate['Bookmarks']
+    menuShares = \
+        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
+    menuBlogs = \
+        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
+    menuNewswire = \
+        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
+    menuLinks = \
+        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
+    menuNewPost = \
+        htmlHideFromScreenReader('➕') + ' ' + translate['Create a new post']
+    menuModeration = \
+        htmlHideFromScreenReader('⚡️') + ' ' + translate['Mod']
+    navLinks = {
+        menuProfile: '/users/' + nickname,
+        menuInbox: usersPath + '/inbox#timelineposts',
+        menuSearch: usersPath + '/search',
+        menuNewPost: usersPath + '/newpost',
+        menuCalendar: usersPath + '/calendar',
+        menuDM: usersPath + '/dm#timelineposts',
+        menuReplies: usersPath + '/tlreplies#timelineposts',
+        menuOutbox: usersPath + '/outbox#timelineposts',
+        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
+        menuShares: usersPath + '/tlshares#timelineposts',
+        menuBlogs: usersPath + '/tlblogs#timelineposts',
+        menuNewswire: usersPath + '/newswiremobile',
+        menuLinks: usersPath + '/linksmobile'
+    }
+    navAccessKeys = {}
+    for variableName, key in accessKeys.items():
+        if not locals().get(variableName):
+            continue
+        navAccessKeys[locals()[variableName]] = key
+    if moderator:
+        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
+    return htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+                                  None, usersPath, translate, followApprovals)
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
@@ -67,14 +357,15 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  theme: str,
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
-                 textModeBanner: str) -> str:
+                 textModeBanner: str,
+                 accessKeys: {}) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
 
     timelineStartTime = time.time()
 
-    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    accountDir = acctDir(baseDir, nickname, domain)
 
     # should the calendar icon be highlighted?
     newCalendarEvent = False
@@ -196,8 +487,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             sharesButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
-#    elif boxName == 'tlevents':
-#        eventsButton = 'buttonselected'
 
     # get the full domain, including any port number
     fullDomain = getFullDomain(domain, port)
@@ -210,8 +499,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show an icon for new follow approvals
     followApprovals = ''
     followRequestsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/followrequests.txt'
+        acctDir(baseDir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(followRequestsFilename):
         with open(followRequestsFilename, 'r') as f:
             for line in f:
@@ -219,7 +507,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     # show follow approvals icon
                     followApprovals = \
                         '<a href="' + usersPath + \
-                        '/followers#buttonheader">' + \
+                        '/followers#buttonheader" ' + \
+                        'accesskey="' + accessKeys['followButton'] + '">' + \
                         '<img loading="lazy" ' + \
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
@@ -254,11 +543,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
             '</span></button></a>'
-#
-#        eventsButtonStr = \
-#            '<a href="' + usersPath + '/tlevents"><button class="' + \
-#            eventsButton + '"><span>' + translate['Events'] + \
-#            '</span></button></a>'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -278,162 +562,15 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += '<div class="headericons">'
 
     # what screen to go to when a new post is created
-    if boxName == 'dm':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newdm?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new DM'] + \
-                '" alt="| ' + translate['Create a new DM'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newdm?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>'
-    elif (boxName == 'tlblogs' or
-          boxName == 'tlnews' or
-          boxName == 'tlfeatures'):
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newblog"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new post'] + '" alt="| ' + \
-                translate['Create a new post'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newblog">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlevents':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newevent?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new event'] + '" alt="| ' + \
-                translate['Create a new event'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newevent?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlshares':
-        if not iconsAsButtons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newshare?nodropdown"><img loading="lazy" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new shared item'] + '" alt="| ' + \
-                translate['Create a new shared item'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newshare?nodropdown">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    else:
-        if not manuallyApproveFollowers:
-            if not iconsAsButtons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newpost"><img loading="lazy" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + '" alt="| ' + \
-                    translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newpost">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
-        else:
-            if not iconsAsButtons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newfollowers"><img loading="lazy" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + \
-                    '" alt="| ' + translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newfollowers">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
+    newPostButtonStr += \
+        _htmlTimelineNewPost(manuallyApproveFollowers, boxName,
+                             iconsAsButtons, usersPath, translate)
 
     # keyboard navigation
-    calendarStr = translate['Calendar']
-    if newCalendarEvent:
-        calendarStr = '<strong>' + calendarStr + '</strong>'
-    dmStr = translate['DM']
-    if newDM:
-        dmStr = '<strong>' + dmStr + '</strong>'
-    repliesStr = translate['Replies']
-    if newReply:
-        repliesStr = '<strong>' + repliesStr + '</strong>'
-    sharesStr = translate['Shares']
-    if newShare:
-        sharesStr = '<strong>' + sharesStr + '</strong>'
-    menuProfile = \
-        htmlHideFromScreenReader('👤') + ' ' + \
-        translate['Switch to profile view']
-    menuInbox = \
-        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
-    menuOutbox = \
-        htmlHideFromScreenReader('📤') + ' ' + translate['Outbox']
-    menuSearch = \
-        htmlHideFromScreenReader('🔍') + ' ' + \
-        translate['Search and follow']
-    menuCalendar = \
-        htmlHideFromScreenReader('📅') + ' ' + calendarStr
-    menuDM = \
-        htmlHideFromScreenReader('📩') + ' ' + dmStr
-    menuReplies = \
-        htmlHideFromScreenReader('📨') + ' ' + repliesStr
-    menuBookmarks = \
-        htmlHideFromScreenReader('🔖') + ' ' + \
-        translate['Bookmarks']
-    menuShares = \
-        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
-#    menuEvents = \
-#        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
-    menuBlogs = \
-        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
-    menuNewswire = \
-        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
-    menuLinks = \
-        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
-    menuNewPost = \
-        htmlHideFromScreenReader('➕') + ' ' + \
-        translate['Create a new post']
-    menuModeration = \
-        htmlHideFromScreenReader('⚡️') + ' ' + \
-        translate['Mod']
-    navLinks = {
-        menuProfile: '/users/' + nickname,
-        menuInbox: usersPath + '/inbox#timelineposts',
-        menuSearch: usersPath + '/search',
-        menuNewPost: usersPath + '/newpost',
-        menuCalendar: usersPath + '/calendar',
-        menuDM: usersPath + '/dm#timelineposts',
-        menuReplies: usersPath + '/tlreplies#timelineposts',
-        menuOutbox: usersPath + '/inbox#timelineposts',
-        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
-        menuShares: usersPath + '/tlshares#timelineposts',
-        menuBlogs: usersPath + '/tlblogs#timelineposts',
-        # menuEvents: usersPath + '/tlevents#timelineposts',
-        menuNewswire: usersPath + '/newswiremobile',
-        menuLinks: usersPath + '/linksmobile'
-    }
-    if moderator:
-        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, None,
-                                    usersPath, translate, followApprovals)
+    tlStr += \
+        _htmlTimelineKeyboard(moderator, textModeBanner, usersPath, nickname,
+                              newCalendarEvent, newDM, newReply, newShare,
+                              followApprovals, accessKeys, translate)
 
     # banner and row of buttons
     tlStr += \
@@ -460,17 +597,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
-                                  iconsAsButtons)
+                                  iconsAsButtons, accessKeys)
 
     # start the timeline
-    tlStr += '<table class="timeline">\n'
-    tlStr += '  <colgroup>\n'
-    tlStr += '    <col span="1" class="column-left">\n'
-    tlStr += '    <col span="1" class="column-center">\n'
-    tlStr += '    <col span="1" class="column-right">\n'
-    tlStr += '  </colgroup>\n'
-    tlStr += '  <tbody>\n'
-    tlStr += '    <tr>\n'
+    tlStr += \
+        '<table class="timeline">\n' + \
+        '  <colgroup>\n' + \
+        '    <col span="1" class="column-left">\n' + \
+        '    <col span="1" class="column-center">\n' + \
+        '    <col span="1" class="column-right">\n' + \
+        '  </colgroup>\n' + \
+        '  <tbody>\n' + \
+        '    <tr>\n'
 
     domainFull = getFullDomain(domain, port)
 
@@ -479,7 +617,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
-                             True, False, theme)
+                             True, False, theme, accessKeys)
     tlStr += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
@@ -500,83 +638,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
-                                  iconsAsButtons)
+                                  iconsAsButtons, accessKeys)
 
     tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
-    if moderator and boxName == 'moderation':
-        tlStr += \
-            '<form id="modtimeline" method="POST" action="/users/' + \
-            nickname + '/moderationaction">'
-        tlStr += '<div class="container">\n'
-        idx = 'Nickname or URL. Block using *@domain or nickname@domain'
-        tlStr += \
-            '    <b>' + translate[idx] + '</b><br>\n'
-        if moderationActionStr:
-            tlStr += '    <input type="text" ' + \
-                'name="moderationAction" value="' + \
-                moderationActionStr + '" autofocus><br>\n'
-        else:
-            tlStr += '    <input type="text" ' + \
-                'name="moderationAction" value="" autofocus><br>\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Information about current blocks/suspensions'] + \
-            '" alt="' + \
-            translate['Information about current blocks/suspensions'] + \
-            ' | " ' + \
-            'name="submitInfo" value="' + translate['Info'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Remove the above item'] + '" ' + \
-            'alt="' + translate['Remove the above item'] + ' | " ' + \
-            'name="submitRemove" value="' + \
-            translate['Remove'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Suspend the above account nickname'] + '" ' + \
-            'alt="' + \
-            translate['Suspend the above account nickname'] + ' | " ' + \
-            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Remove a suspension for an account nickname'] + '" ' + \
-            'alt="' + \
-            translate['Remove a suspension for an account nickname'] + \
-            ' | " ' + \
-            'name="submitUnsuspend" value="' + \
-            translate['Unsuspend'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Block an account on another instance'] + '" ' + \
-            'alt="' + \
-            translate['Block an account on another instance'] + ' | " ' + \
-            'name="submitBlock" value="' + translate['Block'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Unblock an account on another instance'] + '" ' + \
-            'alt="' + \
-            translate['Unblock an account on another instance'] + ' | " ' + \
-            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
-
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Filter out words'] + '" ' + \
-            'alt="' + \
-            translate['Filter out words'] + ' | " ' + \
-            'name="submitFilter" value="' + translate['Filter'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Unfilter words'] + '" ' + \
-            'alt="' + \
-            translate['Unfilter words'] + ' | " ' + \
-            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
-
-        tlStr += '</div>\n</form>\n'
+    tlStr += \
+        _htmlTimelineModerationButtons(moderator, boxName, nickname,
+                                       moderationActionStr, translate)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
 
@@ -605,7 +674,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
             '?page=' + str(pageNumber - 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '" accesskey="' + accessKeys['Page up'] + '">' + \
+            '<img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
@@ -623,10 +693,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         # show each post in the timeline
         for item in timelineJson['orderedItems']:
             if item['type'] == 'Create' or \
-               item['type'] == 'Announce' or \
-               item['type'] == 'Update':
+               item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
                 if isPersonSnoozed(baseDir, nickname, domain, item['actor']):
+                    continue
+                if isSelfAnnounce(item):
                     continue
 
                 # is the post in the memory cache of recent ones?
@@ -647,6 +718,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                 _logTimelineTiming(enableTimingLog,
                                                    timelineStartTime,
                                                    boxName, '10')
+                        else:
+                            print('Muted post in timeline ' + boxName)
 
                 if not currTlStr:
                     _logTimelineTiming(enableTimingLog,
@@ -670,6 +743,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showPublishedDateOnly,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
+                                             theme,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -685,19 +759,26 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    if itemCtr < 3:
+        print('Items added to html timeline ' + boxName + ': ' +
+              str(itemCtr) + ' ' + str(timelineJson['orderedItems']))
+
     # page down arrow
-    if itemCtr > 2:
+    if itemCtr > 0:
         tlStr += textModeSeparator
         tlStr += \
             '      <center>\n' + \
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
+            '" accesskey="' + accessKeys['Page down'] + '">' + \
+            '<img loading="lazy" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
         tlStr += textModeSeparator
+    elif itemCtr == 0:
+        tlStr += _getHelpForTimeline(baseDir, boxName)
 
     # end of timeline-posts
     tlStr += '  </div>\n'
@@ -714,7 +795,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
                                            authorized, True, theme,
-                                           defaultTimeline)
+                                           defaultTimeline, accessKeys)
     tlStr += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">' + \
         rightColumnStr + '  </td>\n'
@@ -788,6 +869,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '  </center>\n'
 
     separatorStr = htmlPostSeparator(baseDir, None)
+    ctr = 0
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
@@ -799,6 +881,10 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             htmlIndividualShare(actor, item, translate,
                                 showContactButton, showRemoveButton)
         timelineStr += separatorStr
+        ctr += 1
+
+    if ctr == 0:
+        timelineStr += _getHelpForTimeline(baseDir, 'tlshares')
 
     if not lastPage:
         timelineStr += \
@@ -832,7 +918,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                authorized: bool, theme: str,
                peertubeInstances: [],
                allowLocalNetworkAccess: bool,
-               textModeBanner: str) -> str:
+               textModeBanner: str,
+               accessKeys: {}) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -853,7 +940,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -875,7 +963,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               authorized: bool, theme: str,
               peertubeInstances: [],
               allowLocalNetworkAccess: bool,
-              textModeBanner: str) -> str:
+              textModeBanner: str,
+              accessKeys: {}) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -896,7 +985,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -918,7 +1008,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   authorized: bool, theme: str,
                   peertubeInstances: [],
                   allowLocalNetworkAccess: bool,
-                  textModeBanner: str) -> str:
+                  textModeBanner: str,
+                  accessKeys: {}) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -939,50 +1030,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
-
-
-def htmlEvents(cssCache: {}, defaultTimeline: str,
-               recentPostsCache: {}, maxRecentPosts: int,
-               translate: {}, pageNumber: int, itemsPerPage: int,
-               session, baseDir: str,
-               cachedWebfingers: {}, personCache: {},
-               nickname: str, domain: str, port: int, bookmarksJson: {},
-               allowDeletion: bool,
-               httpPrefix: str, projectVersion: str,
-               minimal: bool, YTReplacementDomain: str,
-               showPublishedDateOnly: bool,
-               newswire: {}, positiveVoting: bool,
-               showPublishAsIcon: bool,
-               fullWidthTimelineButtonHeader: bool,
-               iconsAsButtons: bool,
-               rssIconAtTop: bool,
-               publishButtonAtTop: bool,
-               authorized: bool, theme: str,
-               peertubeInstances: [],
-               allowLocalNetworkAccess: bool,
-               textModeBanner: str) -> str:
-    """Show the events as html
-    """
-    manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-
-    return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
-                        translate, pageNumber,
-                        itemsPerPage, session, baseDir,
-                        cachedWebfingers, personCache,
-                        nickname, domain, port, bookmarksJson,
-                        'tlevents', allowDeletion,
-                        httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain,
-                        showPublishedDateOnly,
-                        newswire, False, False,
-                        positiveVoting, showPublishAsIcon,
-                        fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -1004,7 +1053,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  authorized: bool, theme: str,
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
-                 textModeBanner: str) -> str:
+                 textModeBanner: str,
+                 accessKeys: {}) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1020,7 +1070,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -1042,7 +1093,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      authorized: bool, theme: str,
                      peertubeInstances: [],
                      allowLocalNetworkAccess: bool,
-                     textModeBanner: str) -> str:
+                     textModeBanner: str,
+                     accessKeys: {}) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1059,7 +1111,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -1081,7 +1134,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    authorized: bool, theme: str,
                    peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
-                   textModeBanner: str) -> str:
+                   textModeBanner: str,
+                   accessKeys: {}) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1098,7 +1152,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1120,7 +1175,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    authorized: bool, theme: str,
                    peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
-                   textModeBanner: str) -> str:
+                   textModeBanner: str,
+                   accessKeys: {}) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1137,7 +1193,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1160,7 +1217,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       theme: str,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      textModeBanner: str) -> str:
+                      textModeBanner: str,
+                      accessKeys: {}) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1177,7 +1235,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1199,7 +1258,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   authorized: bool, theme: str,
                   peertubeInstances: [],
                   allowLocalNetworkAccess: bool,
-                  textModeBanner: str) -> str:
+                  textModeBanner: str,
+                  accessKeys: {}) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1216,7 +1276,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1238,7 +1299,8 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                authorized: bool, theme: str,
                peertubeInstances: [],
                allowLocalNetworkAccess: bool,
-               textModeBanner: str) -> str:
+               textModeBanner: str,
+               accessKeys: {}) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1256,4 +1318,5 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess, textModeBanner)
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys)

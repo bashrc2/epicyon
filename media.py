@@ -5,9 +5,12 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Timeline"
 
 import os
 import datetime
+import subprocess
+from random import randint
 from hashlib import sha1
 from auth import createPassword
 from utils import getFullDomain
@@ -15,9 +18,12 @@ from utils import getImageExtensions
 from utils import getVideoExtensions
 from utils import getAudioExtensions
 from utils import getMediaExtensions
+from utils import hasObjectDict
+from utils import acctDir
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
+from city import spoofGeolocation
 
 
 def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
@@ -26,7 +32,7 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
     """
     if not replacementDomain:
         return
-    if not isinstance(postJsonObject['object'], dict):
+    if not hasObjectDict(postJsonObject):
         return
     if not postJsonObject['object'].get('content'):
         return
@@ -37,7 +43,7 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
                                                     replacementDomain)
 
 
-def removeMetaData(imageFilename: str, outputFilename: str) -> None:
+def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
     """
@@ -53,7 +59,76 @@ def removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
+def _spoofMetaData(baseDir: str, nickname: str, domain: str,
+                   outputFilename: str, spoofCity: str) -> None:
+    """Spoof image metadata using a decoy model for a given city
+    """
+    if not os.path.isfile(outputFilename):
+        print('ERROR: unable to spoof metadata within ' + outputFilename)
+        return
+
+    # get the random seed used to generate a unique pattern for this account
+    decoySeedFilename = acctDir(baseDir, nickname, domain) + '/decoyseed'
+    decoySeed = 63725
+    if os.path.isfile(decoySeedFilename):
+        with open(decoySeedFilename, 'r') as fp:
+            decoySeed = int(fp.read())
+    else:
+        decoySeed = randint(10000, 10000000000000000)
+        try:
+            with open(decoySeedFilename, 'w+') as fp:
+                fp.write(str(decoySeed))
+        except BaseException:
+            pass
+
+    if os.path.isfile('/usr/bin/exiftool'):
+        print('Spoofing metadata in ' + outputFilename + ' using exiftool')
+        currTimeAdjusted = \
+            datetime.datetime.utcnow() - \
+            datetime.timedelta(minutes=randint(2, 120))
+        published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
+        (latitude, longitude, latitudeRef, longitudeRef,
+         camMake, camModel, camSerialNumber) = \
+            spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
+                             decoySeed, None, None)
+        os.system('exiftool -artist="' + nickname + '" ' +
+                  '-Make="' + camMake + '" ' +
+                  '-Model="' + camModel + '" ' +
+                  '-Comment="' + str(camSerialNumber) + '" ' +
+                  '-DateTimeOriginal="' + published + '" ' +
+                  '-FileModifyDate="' + published + '" ' +
+                  '-CreateDate="' + published + '" ' +
+                  '-GPSLongitudeRef=' + longitudeRef + ' ' +
+                  '-GPSAltitude=0 ' +
+                  '-GPSLongitude=' + str(longitude) + ' ' +
+                  '-GPSLatitudeRef=' + latitudeRef + ' ' +
+                  '-GPSLatitude=' + str(latitude) + ' ' +
+                  '-Comment="" ' +
+                  outputFilename)  # nosec
+    else:
+        print('ERROR: exiftool is not installed')
+        return
+
+
+def processMetaData(baseDir: str, nickname: str, domain: str,
+                    imageFilename: str, outputFilename: str,
+                    city: str) -> None:
+    """Handles image metadata. This tries to spoof the metadata
+    if possible, but otherwise just removes it
+    """
+    # first remove the metadata
+    _removeMetaData(imageFilename, outputFilename)
+
+    # now add some spoofed data to misdirect surveillance capitalists
+    _spoofMetaData(baseDir, nickname, domain, outputFilename, city)
+
+
 def _isMedia(imageFilename: str) -> bool:
+    """Is the given file a media file?
+    """
+    if not os.path.isfile(imageFilename):
+        print('WARN: Media file does not exist ' + imageFilename)
+        return False
     permittedMedia = getMediaExtensions()
     for m in permittedMedia:
         if imageFilename.endswith('.' + m):
@@ -126,9 +201,11 @@ def _updateEtag(mediaFilename: str) -> None:
         pass
 
 
-def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
+def attachMedia(baseDir: str, httpPrefix: str,
+                nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
-                mediaType: str, description: str) -> {}:
+                mediaType: str, description: str,
+                city: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -170,11 +247,19 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
     }
     if mediaType.startswith('image/'):
         attachmentJson['focialPoint'] = [0.0, 0.0]
+        # find the dimensions of the image and add them as metadata
+        attachImageWidth, attachImageHeight = \
+            getImageDimensions(imageFilename)
+        if attachImageWidth and attachImageHeight:
+            attachmentJson['width'] = attachImageWidth
+            attachmentJson['height'] = attachImageHeight
+
     postJson['attachment'] = [attachmentJson]
 
     if baseDir:
         if mediaType.startswith('image/'):
-            removeMetaData(imageFilename, mediaFilename)
+            processMetaData(baseDir, nickname, domain,
+                            imageFilename, mediaFilename, city)
         else:
             copyfile(imageFilename, mediaFilename)
         _updateEtag(mediaFilename)
@@ -182,7 +267,8 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
     return postJson
 
 
-def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
+def archiveMedia(baseDir: str, archiveDirectory: str,
+                 maxWeeks: int = 4) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:
@@ -208,3 +294,39 @@ def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
                     # archive to /dev/null
                     rmtree(os.path.join(baseDir + '/media', weekDir))
         break
+
+
+def pathIsVideo(path: str) -> bool:
+    if path.endswith('.ogv') or \
+       path.endswith('.mp4'):
+        return True
+    return False
+
+
+def pathIsAudio(path: str) -> bool:
+    if path.endswith('.ogg') or \
+       path.endswith('.mp3'):
+        return True
+    return False
+
+
+def getImageDimensions(imageFilename: str) -> (int, int):
+    """Returns the dimensions of an image file
+    """
+    try:
+        result = subprocess.run(['identify', '-format', '"%wx%h"',
+                                 imageFilename], stdout=subprocess.PIPE)
+    except BaseException:
+        return None, None
+    if not result:
+        return None, None
+    dimensionsStr = result.stdout.decode('utf-8').replace('"', '')
+    if 'x' not in dimensionsStr:
+        return None, None
+    widthStr = dimensionsStr.split('x')[0]
+    if not widthStr.isdigit():
+        return None, None
+    heightStr = dimensionsStr.split('x')[1]
+    if not heightStr.isdigit():
+        return None, None
+    return int(widthStr), int(heightStr)

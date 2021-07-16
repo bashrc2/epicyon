@@ -5,10 +5,12 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Web Interface Columns"
 
 import os
 from datetime import datetime
 from content import removeLongWords
+from content import limitRepeatedWords
 from utils import removeHtml
 from utils import locatePost
 from utils import loadJson
@@ -16,6 +18,8 @@ from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import isEditor
 from utils import getConfigParam
+from utils import removeDomainPort
+from utils import acctDir
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -51,14 +55,13 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           authorized: bool,
                           showHeaderImage: bool,
                           theme: str,
-                          defaultTimeline: str) -> str:
+                          defaultTimeline: str,
+                          accessKeys: {}) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
 
-    domain = domainFull
-    if ':' in domain:
-        domain = domain.split(':')
+    domain = removeDomainPort(domainFull)
 
     if authorized:
         # only show the publish button if logged in, otherwise replace it with
@@ -69,7 +72,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         publishButtonStr = \
             '        <a href="' + \
             '/users/' + nickname + '/newblog?nodropdown" ' + \
-            'title="' + titleStr + '">' + \
+            'title="' + titleStr + '" ' + \
+            'accesskey="' + accessKeys['menuNewPost'] + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
     else:
@@ -124,7 +128,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             # show the edit icon highlighted
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/editnewswire">' + \
+                '/users/' + nickname + '/editnewswire" ' + \
+                'accesskey="' + accessKeys['menuEdit'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -134,7 +139,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             # show the edit icon
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/editnewswire">' + \
+                '/users/' + nickname + '/editnewswire" ' + \
+                'accesskey="' + accessKeys['menuEdit'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -167,7 +173,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 titleStr = translate['Publish a news article']
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/newblog?nodropdown">' + \
+                '/users/' + nickname + '/newblog?nodropdown" ' + \
+                'accesskey="' + accessKeys['menuNewPost'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 titleStr + '" title="' + \
@@ -248,8 +255,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         if faviconUrl:
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
-                'alt="" ' + \
-                _getBrokenFavSubstitute() + '/>'
+                'alt="" ' + _getBrokenFavSubstitute() + '/>'
         moderatedItem = item[5]
         htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
@@ -261,12 +267,12 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     _votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            title = limitRepeatedWords(title, 6)
             htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
                 '<span class="newswireItemVotedOn">' + \
-                faviconLink + title + \
-                '</span></a>' + totalVotesStr
+                faviconLink + title + '</span></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
                     ' ' + dateShown + '<a href="/users/' + nickname + \
@@ -290,6 +296,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                         _votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            title = limitRepeatedWords(title, 6)
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + url + '" target="_blank" ' + \
@@ -307,8 +314,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 htmlStr += '<p class="newswireItem">' + \
                     '<a href="' + url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
-                    faviconLink + title + '</a>' + \
-                    totalVotesStr
+                    faviconLink + title + '</a>' + totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'
 
@@ -332,12 +338,11 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     # create a list of dates for citations
     # these can then be used to re-select checkboxes later
     citationsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.citations.txt'
+        acctDir(baseDir, nickname, domain) + '/.citations.txt'
     citationsSelected = []
     if os.path.isfile(citationsFilename):
         citationsSeparator = '#####'
-        with open(citationsFilename, "r") as f:
+        with open(citationsFilename, 'r') as f:
             citations = f.readlines()
             for line in citations:
                 if citationsSeparator not in line:
@@ -415,6 +420,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            title = limitRepeatedWords(title, 6)
             link = item[1]
 
             citationValue = \
@@ -444,7 +450,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        rssIconAtTop: bool,
                        iconsAsButtons: bool,
                        defaultTimeline: str,
-                       theme: str) -> str:
+                       theme: str,
+                       accessKeys: {}) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -473,7 +480,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
@@ -493,7 +501,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                                   False, timelinePath, showPublishButton,
                                   showPublishAsIcon, rssIconAtTop, False,
                                   authorized, False, theme,
-                                  defaultTimeline)
+                                  defaultTimeline, accessKeys)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'
@@ -509,7 +517,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
 def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int, httpPrefix: str,
-                     defaultTimeline: str, theme: str) -> str:
+                     defaultTimeline: str, theme: str,
+                     accessKeys: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -542,7 +551,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<header>' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" ' + \
         'alt="" /></a>\n</header>'
@@ -558,7 +568,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <div class="containerSubmitNewPost">\n'
     editNewswireForm += \
         '      <input type="submit" name="submitNewswire" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '" ' + \
+        'accesskey="' + accessKeys['submitButton'] + '">\n'
     editNewswireForm += \
         '    </div>\n'
 
@@ -577,7 +588,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<br>'
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
-        'style="height:80vh">' + newswireStr + '</textarea>'
+        'style="height:80vh" spellcheck="false">' + \
+        newswireStr + '</textarea>'
 
     filterStr = ''
     filterFilename = \
@@ -592,8 +604,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="filteredWordsNewswire" style="height:50vh">' + \
-        filterStr + '</textarea>\n'
+        'name="filteredWordsNewswire" style="height:50vh" ' + \
+        'spellcheck="true">' + filterStr + '</textarea>\n'
 
     hashtagRulesStr = ''
     hashtagRulesFilename = \
@@ -612,7 +624,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="hashtagRulesList" style="height:80vh">' + \
+        'name="hashtagRulesList" style="height:80vh" spellcheck="false">' + \
         hashtagRulesStr + '</textarea>\n'
 
     editNewswireForm += \
@@ -687,7 +699,8 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     newsPostContent = postJsonObject['object']['content']
     editNewsPostForm += \
         '  <textarea id="message" name="editedNewsPost" ' + \
-        'style="height:600px">' + newsPostContent + '</textarea>'
+        'style="height:600px" spellcheck="true">' + \
+        newsPostContent + '</textarea>'
 
     editNewsPostForm += \
         '</div>'

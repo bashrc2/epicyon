@@ -5,15 +5,18 @@ __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
+__module_group__ = "Core"
 
 import os
+from utils import isAccountDir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import acctDir
 from webfinger import webfingerHandle
 from blocking import isBlocked
-from session import getJson
 from posts import getUserUrl
 from follow import unfollowAccount
+from person import getActorJson
 
 
 def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
@@ -23,11 +26,10 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
-    followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         return ctr
-    with open(followingFilename, "r") as f:
+    with open(followingFilename, 'r') as f:
         followingHandles = f.readlines()
         for followHandle in followingHandles:
             followHandle = followHandle.strip("\n").strip("\r")
@@ -56,7 +58,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -71,22 +73,16 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         print('wfRequest error: ' + str(wfRequest['errors']))
         return ctr
 
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, 0, debug)
         if not personUrl:
             return ctr
 
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
-    }
+    gnunet = False
+    if httpPrefix == 'gnunet':
+        gnunet = True
     personJson = \
-        getJson(session, personUrl, asHeader, None, __version__,
-                httpPrefix, None)
+        getActorJson(domain, personUrl, httpPrefix, gnunet, debug)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):
@@ -115,18 +111,16 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                         'following.txt', debug)
         return ctr
 
-    followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
     if os.path.isfile(followingFilename):
-        with open(followingFilename, "r") as f:
+        with open(followingFilename, 'r') as f:
             followingHandles = f.readlines()
 
             movedToHandle = movedToNickname + '@' + movedToDomainFull
             handleLower = handle.lower()
 
             refollowFilename = \
-                baseDir + '/accounts/' + \
-                nickname + '@' + domain + '/refollow.txt'
+                acctDir(baseDir, nickname, domain) + '/refollow.txt'
 
             # unfollow the old handle
             with open(followingFilename, 'w+') as f:
@@ -154,9 +148,9 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                                 f.write(movedToHandle + '\n')
 
     followersFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/followers.txt'
+        acctDir(baseDir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followersFilename):
-        with open(followersFilename, "r") as f:
+        with open(followersFilename, 'r') as f:
             followerHandles = f.readlines()
 
             handleLower = handle.lower()
@@ -185,11 +179,7 @@ def migrateAccounts(baseDir: str, session,
     ctr = 0
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
-                continue
-            if handle.startswith('inbox@'):
-                continue
-            if handle.startswith('news@'):
+            if not isAccountDir(handle):
                 continue
             nickname = handle.split('@')[0]
             domain = handle.split('@')[1]
