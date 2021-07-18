@@ -1864,8 +1864,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm += \
         '<label class="labels">Blog</label><br>\n' + \
         '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">\n' + \
-        '    </div>\n'
+        blogAddress + '">\n'
 
     languagesListStr = _getSupportedLanguages(baseDir)
     showLanguages = getActorLanguages(actorJson)
@@ -1874,8 +1873,8 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
         translate['Languages'] + '</label><br>\n' + \
         '<label class="labels">' + languagesListStr + '</label><br>\n' + \
         '      <input type="text" name="showLanguages" value="' + \
-        showLanguages + '">\n' + \
-        '    </div>\n'
+        showLanguages + '">\n'
+    editProfileForm += '    </div>\n'
     return editProfileForm
 
 
