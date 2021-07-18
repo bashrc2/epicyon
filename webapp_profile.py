@@ -25,6 +25,7 @@ from utils import getImageFormats
 from utils import acctDir
 from skills import getSkills
 from theme import getThemesList
+from person import getActorLanguages
 from person import personBoxJson
 from person import getActorJson
 from person import getPersonAvatarUrl
@@ -1775,7 +1776,26 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     return editProfileForm
 
 
-def _htmlEditProfileMain(displayNickname: str, bioStr: str,
+def _getSupportedLanguages(baseDir: str) -> str:
+    """Returns a list of supported languages
+    """
+    languagesStr = ''
+    for subdir, dirs, files in os.walk(baseDir + '/translations'):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            langStr = f.split('.')[0]
+            if len(langStr) != 2:
+                continue
+            if languagesStr:
+                languagesStr += ' / ' + langStr
+            else:
+                languagesStr = langStr
+        break
+    return languagesStr
+
+
+def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
                          movedTo: str, donateUrl: str,
                          blogAddress: str, actorJson: {},
                          translate: {}) -> str:
@@ -1845,6 +1865,16 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
         '<label class="labels">Blog</label><br>\n' + \
         '      <input type="text" name="blogAddress" value="' + \
         blogAddress + '">\n' + \
+        '    </div>\n'
+
+    languagesListStr = _getSupportedLanguages(baseDir)
+    showLanguages = getActorLanguages(actorJson)
+    editProfileForm += \
+        '<label class="labels">' + \
+        translate['Languages'] + '</label><br>\n' + \
+        '<label class="labels">' + languagesListStr + '</label><br>\n' + \
+        '      <input type="text" name="showLanguages" value="' + \
+        showLanguages + '">\n' + \
         '    </div>\n'
     return editProfileForm
 
@@ -2038,7 +2068,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # main info
     editProfileForm += \
-        _htmlEditProfileMain(displayNickname, bioStr, movedTo, donateUrl,
+        _htmlEditProfileMain(baseDir, displayNickname, bioStr,
+                             movedTo, donateUrl,
                              blogAddress, actorJson, translate)
 
     # Option checkboxes

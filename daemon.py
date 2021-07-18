@@ -50,6 +50,8 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import getActorLanguages
+from person import setActorLanguages
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
@@ -4513,6 +4515,18 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if currentBlogAddress:
                             setBlogAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change Languages address
+                    currentShowLanguages = getActorLanguages(actorJson)
+                    if fields.get('showLanguages'):
+                        if fields['showLanguages'] != currentShowLanguages:
+                            setActorLanguages(baseDir, actorJson,
+                                              fields['showLanguages'])
+                            actorChanged = True
+                    else:
+                        if currentShowLanguages:
+                            setActorLanguages(baseDir, actorJson, '')
                             actorChanged = True
 
                     # change tox address

@@ -450,5 +450,6 @@
     "Export Theme": "テーマをエクスポートします",
     "Custom post submit button text": "カスタムポスト送信ボタンテキスト",
     "Blocked User Agents": "ブロックされたユーザーエージェント",
-    "Notify me when this account posts": "この口座投稿を通知する"
+    "Notify me when this account posts": "この口座投稿を通知する",
+    "Languages": "言語"
 }
