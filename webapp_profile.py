@@ -1871,8 +1871,9 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm += \
         '<label class="labels">' + \
         translate['Languages'] + '</label><br>\n' + \
-        '<label class="labels">' + languagesListStr + '</label><br>\n' + \
-        '      <input type="text" name="showLanguages" value="' + \
+        '      <input type="text" ' + \
+        'placeholder="' + languagesListStr + \
+        '" name="showLanguages" value="' + \
         showLanguages + '">\n'
     editProfileForm += '    </div>\n'
     return editProfileForm
