@@ -2579,7 +2579,7 @@ def getActorLanguagesList(actorJson: {}) -> []:
         if not isinstance(propertyValue['value'], list):
             continue
         if propertyValue['type'] != 'PropertyValue':
-            continue        
+            continue
         return propertyValue['value']
     return []
 
