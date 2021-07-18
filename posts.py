@@ -1342,7 +1342,7 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
 
 def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
                         nickname: str, domain: str,
-                        domainFull: str) -> {}:
+                        domainFull: str, systemLanguage: str) -> {}:
     """Returns the pinned profile post as json
     """
     accountDir = acctDir(baseDir, nickname, domain)
@@ -1363,7 +1363,7 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
                 ],
                 'content': pinnedContent,
                 'contentMap': {
-                    'en': pinnedContent
+                    systemLanguage: pinnedContent
                 },
                 'id': actor + '/pinned',
                 'inReplyTo': None,
@@ -1382,13 +1382,13 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
 
 def jsonPinPost(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str,
-                domainFull: str) -> {}:
+                domainFull: str, systemLanguage: str) -> {}:
     """Returns a pinned post as json
     """
     pinnedPostJson = \
         getPinnedPostAsJson(baseDir, httpPrefix,
                             nickname, domain,
-                            domainFull)
+                            domainFull, systemLanguage)
     itemsList = []
     if pinnedPostJson:
         itemsList = [pinnedPostJson]

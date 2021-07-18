@@ -9569,13 +9569,13 @@ class PubServer(BaseHTTPRequestHandler):
                                path: str,
                                httpPrefix: str,
                                nickname: str, domain: str,
-                               domainFull: str):
+                               domainFull: str, systemLanguage: str):
         """Returns the featured posts collections in
         actor/collections/featured
         """
         featuredCollection = \
             jsonPinPost(baseDir, httpPrefix,
-                        nickname, domain, domainFull)
+                        nickname, domain, domainFull, systemLanguage)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -10795,7 +10795,8 @@ class PubServer(BaseHTTPRequestHandler):
                 getPinnedPostAsJson(self.server.baseDir,
                                     self.server.httpPrefix,
                                     nickname, self.server.domain,
-                                    self.server.domainFull)
+                                    self.server.domainFull,
+                                    self.server.systemLanguage)
             messageJson = {}
             if pinnedPostJson:
                 postId = pinnedPostJson['id']
@@ -10827,7 +10828,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.path,
                                         self.server.httpPrefix,
                                         nickname, self.server.domain,
-                                        self.server.domainFull)
+                                        self.server.domainFull,
+                                        self.server.systemLanguage)
             return
 
         if not htmlGET and \
