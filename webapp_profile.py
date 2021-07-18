@@ -1779,7 +1779,7 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
 def _getSupportedLanguages(baseDir: str) -> str:
     """Returns a list of supported languages
     """
-    languagesStr = ''
+    langList = []
     for subdir, dirs, files in os.walk(baseDir + '/translations'):
         for f in files:
             if not f.endswith('.json'):
@@ -1787,11 +1787,17 @@ def _getSupportedLanguages(baseDir: str) -> str:
             langStr = f.split('.')[0]
             if len(langStr) != 2:
                 continue
-            if languagesStr:
-                languagesStr += ' / ' + langStr
-            else:
-                languagesStr = langStr
+            langList.append(langStr)
         break
+    if not langList:
+        return ''
+    langList.sort()
+    languagesStr = ''
+    for lang in langList:
+        if languagesStr:
+            languagesStr += ' / ' + lang
+        else:
+            languagesStr = lang
     return languagesStr
 
 
