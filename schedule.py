@@ -112,7 +112,7 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.YTReplacementDomain,
                                        httpd.showPublishedDateOnly,
                                        httpd.allowLocalNetworkAccess,
-                                       httpd.city):
+                                       httpd.city, httpd.systemLanguage):
                 indexLines.remove(line)
                 os.remove(postFilename)
                 continue

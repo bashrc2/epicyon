@@ -31,6 +31,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from utils import getContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import hasObjectDict
@@ -322,7 +323,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               personCache: {}, raw: bool,
               simple: bool, debug: bool,
               projectVersion: str, httpPrefix: str,
-              domain: str) -> {}:
+              domain: str, systemLanguage: str) -> {}:
     """Gets public posts from an outbox
     """
     personPosts = {}
@@ -385,8 +386,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                 if not isPublic:
                     continue
 
-            content = \
-                item['object']['content'].replace('&apos;', "'")
+            content = getContentFromPost(item, systemLanguage)
+            content = content.replace('&apos;', "'")
 
             mentions = []
             emoji = {}
@@ -538,7 +539,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    projectVersion: str, httpPrefix: str,
                    domain: str,
                    wordFrequency: {},
-                   domainList=[]) -> []:
+                   domainList: [], systemLanguage: str) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -563,9 +564,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             break
         if not hasObjectDict(item):
             continue
-        if item['object'].get('content'):
-            _updateWordFrequency(item['object']['content'],
-                                 wordFrequency)
+        contentStr = getContentFromPost(item, systemLanguage)
+        if contentStr:
+            _updateWordFrequency(contentStr, wordFrequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
@@ -2932,7 +2933,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
-                 recentPostsCache: {}, debug: bool) -> bool:
+                 recentPostsCache: {}, debug: bool,
+                 systemLanguage: str) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2942,7 +2944,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              __version__, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache, debug)
+                             recentPostsCache, debug,
+                             systemLanguage)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3500,7 +3503,8 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
 def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                            raw: bool, simple: bool, proxyType: str,
                            port: int, httpPrefix: str,
-                           debug: bool, projectVersion: str) -> None:
+                           debug: bool, projectVersion: str,
+                           systemLanguage: str) -> None:
     """ This is really just for test purposes
     """
     print('Starting new session for getting public posts')
@@ -3536,13 +3540,14 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     _getPosts(session, personUrl, 30, maxMentions, maxEmoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
-              projectVersion, httpPrefix, domain)
+              projectVersion, httpPrefix, domain, systemLanguage)
 
 
 def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
-                         wordFrequency: {}, domainList=[]) -> []:
+                         wordFrequency: {}, domainList: [],
+                         systemLanguage: str) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -3580,7 +3585,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                        maxAttachments, federationList,
                        personCache, debug,
                        projectVersion, httpPrefix, domain,
-                       wordFrequency, domainList)
+                       wordFrequency, domainList, systemLanguage)
     postDomains.sort()
     return postDomains
 
@@ -3622,7 +3627,7 @@ def downloadFollowCollection(followType: str,
 def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                       proxyType: str, port: int, httpPrefix: str,
                       debug: bool, projectVersion: str,
-                      wordFrequency: {}) -> []:
+                      wordFrequency: {}, systemLanguage: str) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -3661,7 +3666,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                        maxAttachments, federationList,
                        personCache, debug,
                        projectVersion, httpPrefix, domain,
-                       wordFrequency, [])
+                       wordFrequency, [], systemLanguage)
     postDomains.sort()
     domainsInfo = {}
     for d in postDomains:
@@ -3687,7 +3692,8 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
                                 nickname: str, domain: str,
                                 proxyType: str, port: int, httpPrefix: str,
                                 debug: bool, projectVersion: str,
-                                wordFrequency: {}, domainList=[]) -> []:
+                                wordFrequency: {}, domainList: [],
+                                systemLanguage: str) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
@@ -3695,7 +3701,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
         getPublicPostDomains(session, baseDir, nickname, domain,
                              proxyType, port, httpPrefix,
                              debug, projectVersion,
-                             wordFrequency, domainList)
+                             wordFrequency, domainList, systemLanguage)
     if not postDomains:
         return []
 
@@ -3743,7 +3749,8 @@ def checkDomains(session, baseDir: str,
                  nickname: str, domain: str,
                  proxyType: str, port: int, httpPrefix: str,
                  debug: bool, projectVersion: str,
-                 maxBlockedDomains: int, singleCheck: bool) -> None:
+                 maxBlockedDomains: int, singleCheck: bool,
+                 systemLanguage: str) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
     wordFrequency = {}
@@ -3771,7 +3778,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
                                             debug, projectVersion,
-                                            wordFrequency, [])
+                                            wordFrequency, [],
+                                            systemLanguage)
             if blockedDomains:
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += handle + '\n'
@@ -3791,7 +3799,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
                                             debug, projectVersion,
-                                            wordFrequency, [])
+                                            wordFrequency, [],
+                                            systemLanguage)
             if blockedDomains:
                 print(handle)
                 for d in blockedDomains:
@@ -3889,7 +3898,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {}, YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     recentPostsCache: {}, debug: bool) -> {}:
+                     recentPostsCache: {}, debug: bool,
+                     systemLanguage: str) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -4074,7 +4084,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                                 recentPostsCache)
                 return None
         postJsonObject = announcedJson
-        replaceYouTube(postJsonObject, YTReplacementDomain)
+        replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
         if saveJson(postJsonObject, announceFilename):
             return postJsonObject
     return None

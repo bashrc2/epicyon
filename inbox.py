@@ -13,6 +13,7 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
+from utils import getContentFromPost
 from utils import acctDir
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -23,7 +24,6 @@ from utils import getConfigParam
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
-from utils import isEventPost
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import isBlogPost
@@ -351,7 +351,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          messageBytes: str,
                          httpHeaders: {},
                          postPath: str, debug: bool,
-                         blockedCache: []) -> str:
+                         blockedCache: [], systemLanguage: str) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -415,9 +415,9 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                                       replyNickname + '@' + replyDomain)
                             return None
         if postJsonObject['object'].get('content'):
-            if isinstance(postJsonObject['object']['content'], str):
-                if isFiltered(baseDir, nickname, domain,
-                              postJsonObject['object']['content']):
+            contentStr = getContentFromPost(postJsonObject, systemLanguage)
+            if contentStr:
+                if isFiltered(baseDir, nickname, domain, contentStr):
                     if debug:
                         print('WARN: post was filtered out due to content')
                     return None
@@ -728,25 +728,6 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
                                   port, messageJson,
                                   federationList, debug)
     return False
-
-
-def _receiveEventPost(recentPostsCache: {}, session, baseDir: str,
-                      httpPrefix: str, domain: str, port: int,
-                      sendThreads: [], postLog: [], cachedWebfingers: {},
-                      personCache: {}, messageJson: {}, federationList: [],
-                      nickname: str, debug: bool) -> bool:
-    """Receive a mobilizon-type event activity
-    See https://framagit.org/framasoft/mobilizon/-/blob/
-    master/lib/federation/activity_stream/converter/event.ex
-    """
-    if not isEventPost(messageJson):
-        return
-    print('Receiving event: ' + str(messageJson['object']))
-    handle = getFullDomain(nickname + '@' + domain, port)
-
-    postId = removeIdEnding(messageJson['id']).replace('/', '#')
-
-    saveEventPost(baseDir, handle, postId, messageJson['object'])
 
 
 def _personReceiveUpdate(baseDir: str,
@@ -1305,7 +1286,7 @@ def _receiveAnnounce(recentPostsCache: {},
                      debug: bool, translate: {},
                      YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     themeName: str) -> bool:
+                     themeName: str, systemLanguage: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1392,7 +1373,8 @@ def _receiveAnnounce(recentPostsCache: {},
                                       __version__, translate,
                                       YTReplacementDomain,
                                       allowLocalNetworkAccess,
-                                      recentPostsCache, debug)
+                                      recentPostsCache, debug,
+                                      systemLanguage)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1616,7 +1598,8 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
-                      allowLocalNetworkAccess: bool, debug: bool) -> bool:
+                      allowLocalNetworkAccess: bool, debug: bool,
+                      systemLanguage: str) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1651,27 +1634,27 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         return True
 
-    if dangerousMarkup(messageJson['object']['content'],
-                       allowLocalNetworkAccess):
+    contentStr = getContentFromPost(messageJson, systemLanguage)
+    if dangerousMarkup(contentStr, allowLocalNetworkAccess):
         if messageJson['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
         print('REJECT ARBITRARY HTML: bad string in post - ' +
-              messageJson['object']['content'])
+              contentStr)
         return False
 
     # check (rough) number of mentions
-    mentionsEst = _estimateNumberOfMentions(messageJson['object']['content'])
+    mentionsEst = _estimateNumberOfMentions(contentStr)
     if mentionsEst > maxMentions:
         if messageJson['object'].get('id'):
             print('REJECT HELLTHREAD: ' + messageJson['object']['id'])
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
-              messageJson['object']['content'])
+              contentStr)
         return False
-    if _estimateNumberOfEmoji(messageJson['object']['content']) > maxEmoji:
+    if _estimateNumberOfEmoji(contentStr) > maxEmoji:
         if messageJson['object'].get('id'):
             print('REJECT EMOJI OVERLOAD: ' + messageJson['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
-              messageJson['object']['content'])
+              contentStr)
         return False
     # check number of tags
     if messageJson['object'].get('tag'):
@@ -1685,8 +1668,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson['object']['tag'])
                 return False
     # check for filtered content
-    if isFiltered(baseDir, nickname, domain,
-                  messageJson['object']['content']):
+    if isFiltered(baseDir, nickname, domain, contentStr):
         print('REJECT: content filtered')
         return False
     if messageJson['object'].get('inReplyTo'):
@@ -1926,7 +1908,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         postJsonObject: {},
                         httpPrefix: str, federationList: [],
                         sendThreads: [], postLog: [], cachedWebfingers: {},
-                        personCache: {}, debug: bool) -> None:
+                        personCache: {}, debug: bool,
+                        systemLanguage: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
     followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
@@ -1947,9 +1930,12 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     sendingActorDomainFull = \
         getFullDomain(sendingActorDomain, sendingActorPort)
     senderStr = '@' + sendingActorNickname + '@' + sendingActorDomainFull
-    if not postJsonObject['object']['content'].startswith(senderStr):
+    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    if not contentStr.startswith(senderStr):
         postJsonObject['object']['content'] = \
-            senderStr + ' ' + postJsonObject['object']['content']
+            senderStr + ' ' + contentStr
+        postJsonObject['object']['contentMap'][systemLanguage] = \
+            senderStr + ' ' + contentStr
         # add mention to tag list
         if not postJsonObject['object']['tag']:
             postJsonObject['object']['tag'] = []
@@ -2367,7 +2353,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         debug, translate,
                         YTReplacementDomain,
                         allowLocalNetworkAccess,
-                        themeName):
+                        themeName, systemLanguage):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2416,7 +2402,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
     jsonObj = None
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
-                         allowLocalNetworkAccess, debug):
+                         allowLocalNetworkAccess, debug,
+                         systemLanguage):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -2449,7 +2436,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(postJsonObject, YTReplacementDomain)
+        replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
@@ -2519,7 +2506,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             nickname, domain, postJsonObject,
                             translate, YTReplacementDomain,
                             allowLocalNetworkAccess,
-                            recentPostsCache, debug):
+                            recentPostsCache, debug, systemLanguage):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
@@ -2613,7 +2600,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                     postJsonObject,
                                     httpPrefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
-                                    debug)
+                                    debug, systemLanguage)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
@@ -3143,23 +3130,6 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                queueJson['post'],
                                federationList, debug):
             print('Queue: Accept/Reject received from ' + keyId)
-            if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
-            if len(queue) > 0:
-                queue.pop(0)
-            continue
-
-        if _receiveEventPost(recentPostsCache, session,
-                             baseDir, httpPrefix,
-                             domain, port,
-                             sendThreads, postLog,
-                             cachedWebfingers,
-                             personCache,
-                             queueJson['post'],
-                             federationList,
-                             queueJson['postNickname'],
-                             debug):
-            print('Queue: Event activity accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:

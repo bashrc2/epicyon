@@ -45,7 +45,6 @@ from utils import updateRecentPostsCache
 from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import isEventPost
 from utils import acctDir
 from content import limitRepeatedWords
 from content import replaceEmojiFromTags
@@ -1310,7 +1309,8 @@ def individualPostAsHtml(allowDownloads: bool,
                              projectVersion, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache, False)
+                             recentPostsCache, False,
+                             systemLanguage)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
@@ -1415,13 +1415,11 @@ def individualPostAsHtml(allowDownloads: bool,
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
 
-    isEvent = isEventPost(postJsonObject)
-
-    _logPostTiming(enableTimingLog, postStartTime, '11')
-
     editStr = _getEditIconHtml(baseDir, nickname, domainFull,
                                postJsonObject, actorNickname,
-                               translate, isEvent)
+                               translate, False)
+
+    _logPostTiming(enableTimingLog, postStartTime, '11')
 
     announceStr = \
         _getAnnounceIconHtml(isAnnounced,
@@ -1588,6 +1586,8 @@ def individualPostAsHtml(allowDownloads: bool,
     if postJsonObject['object'].get('cipherText'):
         postJsonObject['object']['content'] = \
             E2EEdecryptMessageFromDevice(postJsonObject['object'])
+        postJsonObject['object']['contentMap'][systemLanguage] = \
+            postJsonObject['object']['content']
 
     contentStr = getContentFromPost(postJsonObject, systemLanguage)
     if not contentStr:

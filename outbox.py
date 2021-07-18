@@ -16,6 +16,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import getLocalNetworkAddresses
 from utils import getFullDomain
@@ -178,7 +179,7 @@ def postMessageToOutbox(session, translate: {},
                         YTReplacementDomain: str,
                         showPublishedDateOnly: bool,
                         allowLocalNetworkAccess: bool,
-                        city: str) -> bool:
+                        city: str, systemLanguage: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -201,9 +202,9 @@ def postMessageToOutbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if hasObjectDict(messageJson):
-        if messageJson['object'].get('content'):
-            if dangerousMarkup(messageJson['object']['content'],
-                               allowLocalNetworkAccess):
+        contentStr = getContentFromPost(messageJson, systemLanguage)
+        if contentStr:
+            if dangerousMarkup(contentStr, allowLocalNetworkAccess):
                 print('POST to outbox contains dangerous markup: ' +
                       str(messageJson))
                 return False
@@ -264,7 +265,7 @@ def postMessageToOutbox(session, translate: {},
                 print('DEBUG: domain is blocked: ' + messageJson['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(messageJson, YTReplacementDomain)
+        replaceYouTube(messageJson, YTReplacementDomain, systemLanguage)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):
@@ -390,7 +391,7 @@ def postMessageToOutbox(session, translate: {},
                                     messageJson,
                                     translate, YTReplacementDomain,
                                     allowLocalNetworkAccess,
-                                    recentPostsCache, debug):
+                                    recentPostsCache, debug, systemLanguage):
                         inboxUpdateIndex('tlmedia', baseDir,
                                          postToNickname + '@' + domain,
                                          savedFilename, debug)

@@ -18,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
 from categories import setHashtagCategory
+from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -909,7 +910,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                                newswire: {},
                                maxBlogsPerAccount: int,
                                indexFilename: str,
-                               maxTags: int) -> None:
+                               maxTags: int, systemLanguage: str) -> None:
     """Adds blogs for the given account to the newswire
     """
     if not os.path.isfile(indexFilename):
@@ -961,7 +962,8 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     votes = []
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
-                    content = postJsonObject['object']['content']
+                    content = \
+                        getContentFromPost(postJsonObject, systemLanguage)
                     description = firstParagraphFromString(content)
                     description = removeHtml(description)
                     tagsFromPost = _getHashtagsFromPost(postJsonObject)
@@ -981,7 +983,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
 def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                         maxBlogsPerAccount: int,
-                        maxTags: int) -> None:
+                        maxTags: int, systemLanguage: str) -> None:
     """Adds blogs from each user account into the newswire
     """
     moderationDict = {}
@@ -1009,7 +1011,8 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                 domain = handle.split('@')[1]
                 _addAccountBlogsToNewswire(baseDir, nickname, domain,
                                            newswire, maxBlogsPerAccount,
-                                           blogsIndex, maxTags)
+                                           blogsIndex, maxTags,
+                                           systemLanguage)
         break
 
     # sort the moderation dict into chronological order, latest first
@@ -1029,7 +1032,8 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
                         maxTags: int, maxFeedItemSizeKb: int,
                         maxNewswirePosts: int,
-                        maxCategoriesFeedItemSizeKb: int) -> {}:
+                        maxCategoriesFeedItemSizeKb: int,
+                        systemLanguage: str) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -1077,7 +1081,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
 
     # add blogs from each user account
     _addBlogsToNewswire(baseDir, domain, result,
-                        maxPostsPerSource, maxTags)
+                        maxPostsPerSource, maxTags, systemLanguage)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))

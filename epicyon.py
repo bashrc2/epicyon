@@ -631,9 +631,11 @@ if args.posts:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
+    if not args.language:
+        args.language = 'en'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__)
+                           __version__, args.language)
     sys.exit()
 
 if args.postDomains:
@@ -663,12 +665,15 @@ if args.postDomains:
         proxyType = 'gnunet'
     wordFrequency = {}
     domainList = []
+    if not args.language:
+        args.language = 'en'
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__,
-                                      wordFrequency, domainList)
+                                      wordFrequency, domainList,
+                                      args.language)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -703,12 +708,15 @@ if args.postDomainsBlocked:
         proxyType = 'gnunet'
     wordFrequency = {}
     domainList = []
+    if not args.language:
+        args.language = 'en'
     domainList = getPublicPostDomainsBlocked(None,
                                              baseDir, nickname, domain,
                                              proxyType, args.port,
                                              httpPrefix, debug,
                                              __version__,
-                                             wordFrequency, domainList)
+                                             wordFrequency, domainList,
+                                             args.language)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -741,12 +749,14 @@ if args.checkDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     maxBlockedDomains = 0
+    if not args.language:
+        args.language = 'en'
     checkDomains(None,
                  baseDir, nickname, domain,
                  proxyType, args.port,
                  httpPrefix, debug,
                  __version__,
-                 maxBlockedDomains, False)
+                 maxBlockedDomains, False, args.language)
     sys.exit()
 
 if args.socnet:
@@ -758,10 +768,12 @@ if args.socnet:
     if not args.http:
         args.port = 443
     proxyType = 'tor'
+    if not args.language:
+        args.language = 'en'
     dotGraph = instancesGraph(baseDir, args.socnet,
                               proxyType, args.port,
                               httpPrefix, debug,
-                              __version__)
+                              __version__, args.language)
     try:
         with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
@@ -785,9 +797,11 @@ if args.postsraw:
         proxyType = 'i2p'
     elif args.gnunet:
         proxyType = 'gnunet'
+    if not args.language:
+        args.language = 'en'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__)
+                           __version__, args.language)
     sys.exit()
 
 if args.json:

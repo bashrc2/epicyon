@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import getContentFromPost
 from utils import isAccountDir
 from utils import getConfigParam
 from utils import getFullDomain
@@ -821,7 +822,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                      postsPerPage: int,
                      session, cachedWebfingers: {}, personCache: {},
                      httpPrefix: str, projectVersion: str,
-                     YTReplacementDomain: str) -> str:
+                     YTReplacementDomain: str, systemLanguage: str) -> str:
     """Show an rss feed for a hashtag
     """
     if hashtag.startswith('#'):
@@ -902,7 +903,8 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                         '         <title>' + \
                         postJsonObject['object']['summary'] + \
                         '</title>'
-                description = postJsonObject['object']['content']
+                description = \
+                    getContentFromPost(postJsonObject, systemLanguage)
                 description = firstParagraphFromString(description)
                 hashtagFeed += \
                     '         <description>' + description + '</description>'

@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import getFullDomain
 from utils import isDM
@@ -689,15 +690,16 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              __version__, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache, False)
+                             recentPostsCache, False,
+                             systemLanguage)
         if postJsonObject2:
             if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
                    postJsonObject2['object'].get('content'):
                     attributedTo = postJsonObject2['object']['attributedTo']
-                    content = postJsonObject2['object']['content']
-                    if isinstance(attributedTo, str) and \
-                       isinstance(content, str):
+                    content = \
+                        getContentFromPost(postJsonObject2, systemLanguage)
+                    if isinstance(attributedTo, str) and content:
                         actor = attributedTo
                         nameStr += ' ' + translate['announces'] + ' ' + \
                             getNicknameFromActor(actor)
@@ -721,7 +723,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     attributedTo = postJsonObject['object']['attributedTo']
     if not attributedTo:
         return {}
-    content = postJsonObject['object']['content']
+    content = getContentFromPost(postJsonObject, systemLanguage)
     if not isinstance(attributedTo, str) or \
        not isinstance(content, str):
         return {}
@@ -1044,7 +1046,8 @@ def _desktopShowBox(indent: str,
 
         published = _formatPublished(postJsonObject['published'])
 
-        content = _textOnlyContent(postJsonObject['object']['content'])
+        contentStr = getContentFromPost(postJsonObject, systemLanguage)
+        content = _textOnlyContent(contentStr)
         if boxName != 'dm':
             if isDM(postJsonObject):
                 content = '📧' + content
@@ -2321,11 +2324,13 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              __version__, translate,
                                              YTReplacementDomain,
                                              allowLocalNetworkAccess,
-                                             recentPostsCache, False)
+                                             recentPostsCache, False,
+                                             systemLanguage)
                         if postJsonObject2:
                             postJsonObject = postJsonObject2
                 if postJsonObject:
-                    content = postJsonObject['object']['content']
+                    content = \
+                        getContentFromPost(postJsonObject, systemLanguage)
                     messageStr, detectedLinks = \
                         speakableText(baseDir, content, translate)
                     linkOpened = False
@@ -2381,7 +2386,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                             print('')
                             if postJsonObject['object'].get('summary'):
                                 print(postJsonObject['object']['summary'])
-                            print(postJsonObject['object']['content'])
+                            contentStr = getContentFromPost(postJsonObject,
+                                                            systemLanguage)
+                            print(contentStr)
                             print('')
                             sayStr = 'Confirm delete, yes or no?'
                             _sayCommand(sayStr, sayStr, screenreader,

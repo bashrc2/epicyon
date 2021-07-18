@@ -208,6 +208,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
 from utils import getImageMimeType
@@ -1110,7 +1111,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.YTReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.allowLocalNetworkAccess,
-                                   city)
+                                   city, self.server.systemLanguage)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -1308,7 +1309,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  headersDict,
                                  self.path,
                                  self.server.debug,
-                                 self.server.blockedCache)
+                                 self.server.blockedCache,
+                                 self.server.systemLanguage)
         if queueFilename:
             # add json to the queue
             if queueFilename not in self.server.inboxQueue:
@@ -1696,7 +1698,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain,
                                             self.server.port,
                                             searchHandle,
-                                            self.server.debug)
+                                            self.server.debug,
+                                            self.server.systemLanguage)
                     else:
                         msg = \
                             htmlModerationInfo(self.server.cssCache,
@@ -2344,7 +2347,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     domain,
                                     self.server.port,
                                     optionsActor,
-                                    self.server.debug).encode('utf-8')
+                                    self.server.debug,
+                                    self.server.systemLanguage).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain)
@@ -3910,6 +3914,8 @@ class PubServer(BaseHTTPRequestHandler):
                         newsPostTitle
                     postJsonObject['object']['content'] = \
                         newsPostContent
+                    contentMap = postJsonObject['object']['contentMap']
+                    contentMap[self.server.systemLanguage] = newsPostContent
                     # update newswire
                     pubDate = postJsonObject['object']['published']
                     publishedDate = \
@@ -5619,7 +5625,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      domain,
                                      port,
                                      maxPostsInRSSFeed, 1,
-                                     True)
+                                     True,
+                                     self.server.systemLanguage)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -5674,7 +5681,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      domain,
                                      port,
                                      maxPostsInRSSFeed, 1,
-                                     False)
+                                     False,
+                                     self.server.systemLanguage)
             break
         if msg:
             msg = rss2Header(httpPrefix,
@@ -5776,7 +5784,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, port: int, proxyType: str,
                      GETstartTime, GETtimings: {},
-                     debug: bool) -> None:
+                     debug: bool, systemLanguage: str) -> None:
         """Returns an RSS3 feed
         """
         nickname = path.split('/blog/')[1]
@@ -5800,7 +5808,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      baseDir, httpPrefix,
                                      self.server.translate,
                                      nickname, domain, port,
-                                     maxPostsInRSSFeed, 1)
+                                     maxPostsInRSSFeed, 1,
+                                     systemLanguage)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -6233,7 +6242,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.personCache,
                              httpPrefix,
                              self.server.projectVersion,
-                             self.server.YTReplacementDomain)
+                             self.server.YTReplacementDomain,
+                             self.server.systemLanguage)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -9767,7 +9777,8 @@ class PubServer(BaseHTTPRequestHandler):
                            nickname,
                            domain, port,
                            maxPostsInBlogsFeed, pageNumber,
-                           self.server.peertubeInstances)
+                           self.server.peertubeInstances,
+                           self.server.systemLanguage)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -10384,7 +10395,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    translate, baseDir,
                                    path, domain, port,
                                    httpPrefix,
-                                   postUrl).encode('utf-8')
+                                   postUrl,
+                                   self.server.systemLanguage).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -10732,7 +10744,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               self.server.proxyType,
                               GETstartTime, GETtimings,
-                              self.server.debug)
+                              self.server.debug,
+                              self.server.systemLanguage)
             return
 
         usersInPath = False
@@ -10894,7 +10907,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain,
                                    self.server.port,
                                    maxPostsInBlogsFeed,
-                                   self.server.peertubeInstances)
+                                   self.server.peertubeInstances,
+                                   self.server.systemLanguage)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -12265,7 +12279,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.path,
                                        replyPageNumber,
                                        nickname, self.server.domain,
-                                       postUrl)
+                                       postUrl, self.server.systemLanguage)
                     if msg:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -12643,7 +12657,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.port,
                                 searchHandle,
-                                self.server.debug)
+                                self.server.debug,
+                                self.server.systemLanguage)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -12677,7 +12692,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.port,
                                 searchHandle,
-                                self.server.debug)
+                                self.server.debug,
+                                self.server.systemLanguage)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -13122,9 +13138,11 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if pinToProfile:
+                        contentStr = \
+                            getContentFromPost(messageJson,
+                                               self.server.systemLanguage)
                         pinPost(self.server.baseDir,
-                                nickname, self.server.domain,
-                                messageJson['object']['content'])
+                                nickname, self.server.domain, contentStr)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -13251,6 +13269,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                  tags, 'content')
 
                         postJsonObject['object']['content'] = fields['message']
+                        contentMap = postJsonObject['object']['contentMap']
+                        contentMap[self.server.systemLanguage] = \
+                            fields['message']
 
                         imgDescription = ''
                         if fields.get('imageDescription'):
@@ -13274,7 +13295,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             city)
 
                         replaceYouTube(postJsonObject,
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.systemLanguage)
                         saveJson(postJsonObject, postFilename)
                         # also save to the news actor
                         if nickname != 'news':

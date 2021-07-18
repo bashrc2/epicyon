@@ -926,6 +926,8 @@ def testPostMessageBetweenServers():
         assert receivedJson
         assert 'Why is a mouse when it spins?' in \
             receivedJson['object']['content']
+        assert 'Why is a mouse when it spins?' in \
+            receivedJson['object']['contentMap'][systemLanguage]
         assert 'यह एक परीक्षण है' in receivedJson['object']['content']
         print('Check that message received from Alice contains an attachment')
         assert receivedJson['object']['attachment']
@@ -2913,6 +2915,7 @@ def _testReplyToPublicPost() -> None:
         '<a href=\"https://rat.site/@ninjarodent\" ' + \
         'class=\"u-url mention\">@<span>ninjarodent</span>' + \
         '</a></span> This is a test.</p>'
+    reply['object']['contentMap'][systemLanguage] = reply['object']['content']
     assert reply['object']['tag'][0]['type'] == 'Mention'
     assert reply['object']['tag'][0]['name'] == '@ninjarodent@rat.site'
     assert reply['object']['tag'][0]['href'] == \
@@ -3444,6 +3447,8 @@ def _testLinksWithinPost() -> None:
         'rel="nofollow noopener noreferrer" target="_blank">' + \
         '<span class="invisible">https://</span>' + \
         '<span class="ellipsis">freedombone.net</span></a></p>'
+    assert postJsonObject['object']['content'] == \
+        postJsonObject['object']['contentMap'][systemLanguage]
 
     content = "<p>Some text</p><p>Other text</p><p>More text</p>" + \
         "<pre><code>Errno::EOHNOES (No such file or rodent @ " + \
@@ -3467,6 +3472,7 @@ def _testLinksWithinPost() -> None:
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage)
     assert postJsonObject['object']['content'] == content
+    assert postJsonObject['object']['contentMap'][systemLanguage] == content
 
 
 def _testMastoApi():

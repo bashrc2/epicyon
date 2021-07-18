@@ -42,6 +42,8 @@ def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
             if thisPostJson['contentMap'].get(systemLanguage):
                 if isinstance(thisPostJson['contentMap'][systemLanguage], str):
                     return thisPostJson['contentMap'][systemLanguage]
+    if not isinstance(content, str):
+        return ''
     return content
 
 
@@ -1730,41 +1732,6 @@ def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
         return css
 
     return None
-
-
-def isEventPost(messageJson: {}) -> bool:
-    """Is the given post a mobilizon-type event activity?
-    See https://framagit.org/framasoft/mobilizon/-/blob/
-    master/lib/federation/activity_stream/converter/event.ex
-    """
-    if not messageJson.get('id'):
-        return False
-    if not messageJson.get('actor'):
-        return False
-    if not hasObjectDict(messageJson):
-        return False
-    if not messageJson['object'].get('type'):
-        return False
-    if messageJson['object']['type'] != 'Event':
-        return False
-    print('Event arriving')
-    if not messageJson['object'].get('startTime'):
-        print('No event start time')
-        return False
-    if not messageJson['object'].get('actor'):
-        print('No event actor')
-        return False
-    if not messageJson['object'].get('content'):
-        print('No event content')
-        return False
-    if not messageJson['object'].get('name'):
-        print('No event name')
-        return False
-    if not messageJson['object'].get('uuid'):
-        print('No event UUID')
-        return False
-    print('Event detected')
-    return True
 
 
 def isBlogPost(postJsonObject: {}) -> bool:

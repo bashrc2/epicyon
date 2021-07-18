@@ -69,7 +69,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
 def htmlAccountInfo(cssCache: {}, translate: {},
                     baseDir: str, httpPrefix: str,
                     nickname: str, domain: str, port: int,
-                    searchHandle: str, debug: bool) -> str:
+                    searchHandle: str, debug: bool,
+                    systemLanguage: str) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
@@ -111,7 +112,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                                    baseDir, searchNickname, searchDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
-                                   __version__, wordFrequency)
+                                   __version__, wordFrequency, systemLanguage)
 
     # get a list of any blocked followers
     followersList = \

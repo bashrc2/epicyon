@@ -13,6 +13,7 @@ import subprocess
 from random import randint
 from hashlib import sha1
 from auth import createPassword
+from utils import getContentFromPost
 from utils import getFullDomain
 from utils import getImageExtensions
 from utils import getVideoExtensions
@@ -26,7 +27,8 @@ from shutil import move
 from city import spoofGeolocation
 
 
-def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
+def replaceYouTube(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
@@ -36,11 +38,12 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
         return
     if not postJsonObject['object'].get('content'):
         return
-    if 'www.youtube.com' not in postJsonObject['object']['content']:
+    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    if 'www.youtube.com' not in contentStr:
         return
-    postJsonObject['object']['content'] = \
-        postJsonObject['object']['content'].replace('www.youtube.com',
-                                                    replacementDomain)
+    contentStr = contentStr.replace('www.youtube.com', replacementDomain)
+    postJsonObject['object']['content'] = contentStr
+    postJsonObject['object']['contentMap'][systemLanguage] = contentStr
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
