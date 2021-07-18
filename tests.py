@@ -452,6 +452,7 @@ def createServerAlice(path: str, domain: str, port: int,
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
+    systemLanguage = 'en'
     nickname = 'alice'
     httpPrefix = 'http'
     proxyType = None
@@ -501,7 +502,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -514,7 +515,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -528,7 +529,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -579,6 +580,7 @@ def createServerBob(path: str, domain: str, port: int,
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
+    systemLanguage = 'en'
     nickname = 'bob'
     httpPrefix = 'http'
     proxyType = None
@@ -626,7 +628,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -640,7 +642,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -653,7 +655,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -761,6 +763,7 @@ def testPostMessageBetweenServers():
     testServerAliceRunning = False
     testServerBobRunning = False
 
+    systemLanguage = 'en'
     httpPrefix = 'http'
     proxyType = None
 
@@ -861,7 +864,7 @@ def testPostMessageBetweenServers():
                  attachedImageFilename, mediaType,
                  attachedImageDescription, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                 alicePersonCache, isArticle, inReplyTo,
+                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
                  inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -1052,6 +1055,7 @@ def testFollowBetweenServers():
     testServerAliceRunning = False
     testServerBobRunning = False
 
+    systemLanguage = 'en'
     httpPrefix = 'http'
     proxyType = None
     federationList = []
@@ -1185,7 +1189,7 @@ def testFollowBetweenServers():
                  clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                 alicePersonCache, isArticle, inReplyTo,
+                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
                  inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -1456,6 +1460,7 @@ def _testFollows():
 
 def _testCreatePerson():
     print('testCreatePerson')
+    systemLanguage = 'en'
     currDir = os.getcwd()
     nickname = 'test382'
     domain = 'badgerdomain.com'
@@ -1500,7 +1505,7 @@ def _testCreatePerson():
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, systemLanguage)
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -1554,6 +1559,7 @@ def testClientToServer():
     testServerAliceRunning = False
     testServerBobRunning = False
 
+    systemLanguage = 'en'
     httpPrefix = 'http'
     proxyType = None
     federationList = []
@@ -1650,7 +1656,7 @@ def testClientToServer():
                           attachedImageFilename, mediaType,
                           attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
-                          True, None, None, None)
+                          systemLanguage, True, None, None, None)
     print('sendResult: ' + str(sendResult))
 
     for i in range(30):
@@ -2869,6 +2875,7 @@ def _testGetMentionedPeople() -> None:
 
 def _testReplyToPublicPost() -> None:
     baseDir = os.getcwd()
+    systemLanguage = 'en'
     nickname = 'test7492362'
     domain = 'other.site'
     port = 443
@@ -2899,7 +2906,7 @@ def _testReplyToPublicPost() -> None:
                          testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -3391,6 +3398,7 @@ def _testFunctions():
 
 def _testLinksWithinPost() -> None:
     baseDir = os.getcwd()
+    systemLanguage = 'en'
     nickname = 'test27636'
     domain = 'rando.site'
     port = 443
@@ -3423,7 +3431,7 @@ def _testLinksWithinPost() -> None:
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
 
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -3457,7 +3465,7 @@ def _testLinksWithinPost() -> None:
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle)
+                         testIsArticle, systemLanguage)
     assert postJsonObject['object']['content'] == content
 
 

@@ -421,7 +421,8 @@ class PubServer(BaseHTTPRequestHandler):
                              schedulePost,
                              eventDate,
                              eventTime,
-                             location, False)
+                             location, False,
+                             self.server.systemLanguage)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -13085,7 +13086,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
-                                     fields['location'], False)
+                                     fields['location'], False,
+                                     self.server.systemLanguage)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13157,7 +13159,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['schedulePost'],
                                    fields['eventDate'],
                                    fields['eventTime'],
-                                   fields['location'])
+                                   fields['location'],
+                                   self.server.systemLanguage)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13284,7 +13287,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['schedulePost'],
                                        fields['eventDate'],
                                        fields['eventTime'],
-                                       fields['location'])
+                                       fields['location'],
+                                       self.server.systemLanguage)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13325,7 +13329,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['schedulePost'],
                                             fields['eventDate'],
                                             fields['eventTime'],
-                                            fields['location'])
+                                            fields['location'],
+                                            self.server.systemLanguage)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13370,7 +13375,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 True, fields['schedulePost'],
                                                 fields['eventDate'],
                                                 fields['eventTime'],
-                                                fields['location'])
+                                                fields['location'],
+                                                self.server.systemLanguage)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13417,7 +13423,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             True, fields['schedulePost'],
                                             fields['eventDate'],
                                             fields['eventTime'],
-                                            fields['location'])
+                                            fields['location'],
+                                            self.server.systemLanguage)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13449,7 +13456,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
                                      city,
-                                     self.server.debug, fields['subject'])
+                                     self.server.debug, fields['subject'],
+                                     self.server.systemLanguage)
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
@@ -13472,6 +13480,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname,
                                       self.server.domain)
+                intDuration = int(fields['duration'])
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
                                        nickname,
@@ -13485,7 +13494,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['imageDescription'],
                                        city,
                                        fields['subject'],
-                                       int(fields['duration']))
+                                       intDuration,
+                                       self.server.systemLanguage)
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -15013,7 +15023,8 @@ def runDaemon(userAgentsBlocked: [],
                               httpd.allowLocalNetworkAccess,
                               httpd.peertubeInstances,
                               verifyAllSignatures,
-                              httpd.themeName), daemon=True)
+                              httpd.themeName,
+                              httpd.systemLanguage), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

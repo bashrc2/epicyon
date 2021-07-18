@@ -468,7 +468,8 @@ def _desktopReplyToPost(session, postId: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         debug, postId, postId, subject) == 0:
+                         systemLanguage, debug, postId, postId,
+                         subject) == 0:
         sayStr = 'Reply sent'
     else:
         sayStr = 'Reply failed'
@@ -529,7 +530,8 @@ def _desktopNewPost(session,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         debug, None, None, subject) == 0:
+                         systemLanguage, debug, None, None,
+                         subject) == 0:
         sayStr = 'Post sent'
     else:
         sayStr = 'Post failed'
@@ -1217,7 +1219,8 @@ def _desktopNewDMbase(session, toHandle: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         debug, None, None, subject) == 0:
+                         systemLanguage, debug, None, None,
+                         subject) == 0:
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'

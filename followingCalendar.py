@@ -13,6 +13,7 @@ import os
 def _dirAcct(baseDir: str, nickname: str, domain: str) -> str:
     return baseDir + '/accounts/' + nickname + '@' + domain
 
+
 def _portDomainRemove(domain: str) -> str:
     """If the domain has a port appended then remove it
     eg. mydomain.com:80 becomes mydomain.com

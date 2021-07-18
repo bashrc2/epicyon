@@ -2107,7 +2107,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
               sendThreads: [], postLog: [],
               cachedWebfingers: {}, personCache: {},
               translate: {}, debug: bool,
-              lastBounceMessage: []) -> bool:
+              lastBounceMessage: [], systemLanguage: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2159,7 +2159,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                                 imageDescription, city,
                                 inReplyTo, inReplyToAtomUri,
                                 subject, debug, schedulePost,
-                                eventDate, eventTime, location)
+                                eventDate, eventTime, location,
+                                systemLanguage)
     if not postJsonObject:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False
@@ -2183,7 +2184,7 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                personCache: {},
                translate: {}, debug: bool,
                lastBounceMessage: [],
-               handle: str) -> bool:
+               handle: str, systemLanguage: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2258,7 +2259,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                                       cachedWebfingers,
                                       personCache,
                                       translate, debug,
-                                      lastBounceMessage)
+                                      lastBounceMessage,
+                                      systemLanguage)
                 return False
 
     # dm index will be updated
@@ -2284,7 +2286,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        allowLocalNetworkAccess: bool,
                        peertubeInstances: [],
                        lastBounceMessage: [],
-                       themeName: str) -> bool:
+                       themeName: str, systemLanguage: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2488,7 +2490,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   personCache,
                                   translate, debug,
                                   lastBounceMessage,
-                                  handle):
+                                  handle, systemLanguage):
                     return False
 
             # get the actor being replied to
@@ -2850,7 +2852,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   maxFollowers: int, allowLocalNetworkAccess: bool,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
-                  themeName: str) -> None:
+                  themeName: str, systemLanguage: str) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -3255,7 +3257,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                allowLocalNetworkAccess,
                                peertubeInstances,
                                lastBounceMessage,
-                               themeName)
+                               themeName, systemLanguage)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')
