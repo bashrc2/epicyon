@@ -50,8 +50,6 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
-from person import getActorLanguages
-from person import setActorLanguages
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
@@ -210,6 +208,8 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getActorLanguages
+from utils import setActorLanguages
 from utils import getContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType

@@ -23,9 +23,9 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import getImageFormats
 from utils import acctDir
+from utils import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
-from person import getActorLanguages
 from person import personBoxJson
 from person import getActorJson
 from person import getPersonAvatarUrl

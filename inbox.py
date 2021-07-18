@@ -67,6 +67,7 @@ from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
 from utils import isDM
 from utils import isReply
+from utils import getActorLanguagesList
 from httpsig import messageContentDigest
 from posts import createDirectMessagePost
 from posts import validContentWarning
@@ -1596,6 +1597,33 @@ def _estimateNumberOfEmoji(content: str) -> int:
     return int(content.count(':') / 2)
 
 
+def _understoodPostLanguage(baseDir: str, nickname: str, domain: str,
+                            messageJson: {}, systemLanguage: str) -> bool:
+    """Returns true if the post is written in a language
+    understood by this account
+    """
+    if not messageJson['object'].get('contentMap'):
+        return True
+    if not isinstance(messageJson['object']['contentMap'], dict):
+        return True
+    if messageJson['object']['contentMap'].get(systemLanguage):
+        return True
+    actorFilename = acctDir(baseDir, nickname, domain)
+    if not os.path.isfile(actorFilename):
+        return False
+    actorJson = loadJson(actorFilename)
+    if not actorJson:
+        print('WARN: unable to load actor to check languages ' + actorFilename)
+        return False
+    languagesUnderstood = getActorLanguagesList(actorJson)
+    if not languagesUnderstood:
+        return True
+    for lang in languagesUnderstood:
+        if messageJson['object']['contentMap'].get(lang):
+            return True
+    return False
+
+
 def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
                       allowLocalNetworkAccess: bool, debug: bool,
@@ -1667,6 +1695,10 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                 print('REJECT: Too many tags in post - ' +
                       messageJson['object']['tag'])
                 return False
+    # check that the post is in a language suitable for this account
+    if not _understoodPostLanguage(baseDir, nickname, domain,
+                                   messageJson, systemLanguage):
+        return False
     # check for filtered content
     if isFiltered(baseDir, nickname, domain, contentStr):
         print('REJECT: content filtered')
