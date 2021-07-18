@@ -2567,6 +2567,8 @@ def validUrlPrefix(url: str) -> bool:
 def getActorLanguagesList(actorJson: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
+    if not actorJson.get('attachment'):
+        return []
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -2591,7 +2593,7 @@ def getActorLanguages(actorJson: {}) -> str:
     if not langList:
         return ''
     languagesStr = ''
-    for lang in languagesStr:
+    for lang in langList:
         if languagesStr:
             languagesStr += ' / ' + lang
         else:
