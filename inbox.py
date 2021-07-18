@@ -164,7 +164,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                showPublishedDateOnly: bool,
                                peertubeInstances: [],
                                allowLocalNetworkAccess: bool,
-                               themeName: str) -> None:
+                               themeName: str, systemLanguage: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -182,7 +182,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
-                         themeName,
+                         themeName, systemLanguage,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -2593,7 +2593,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    showPublishedDateOnly,
                                                    peertubeInstances,
                                                    allowLocalNetworkAccess,
-                                                   themeName)
+                                                   themeName, systemLanguage)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *

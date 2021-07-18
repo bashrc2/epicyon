@@ -358,7 +358,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
                  textModeBanner: str,
-                 accessKeys: {}) -> str:
+                 accessKeys: {}, systemLanguage: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -743,7 +743,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showPublishedDateOnly,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
-                                             theme,
+                                             theme, systemLanguage,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -919,7 +919,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allowLocalNetworkAccess: bool,
                textModeBanner: str,
-               accessKeys: {}) -> str:
+               accessKeys: {}, systemLanguage: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -941,7 +941,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -964,7 +964,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               peertubeInstances: [],
               allowLocalNetworkAccess: bool,
               textModeBanner: str,
-              accessKeys: {}) -> str:
+              accessKeys: {}, systemLanguage: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -986,7 +986,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -1009,7 +1009,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   peertubeInstances: [],
                   allowLocalNetworkAccess: bool,
                   textModeBanner: str,
-                  accessKeys: {}) -> str:
+                  accessKeys: {}, systemLanguage: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -1031,7 +1031,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -1054,7 +1054,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
                  textModeBanner: str,
-                 accessKeys: {}) -> str:
+                 accessKeys: {}, systemLanguage: str) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1071,7 +1071,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -1094,7 +1094,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      peertubeInstances: [],
                      allowLocalNetworkAccess: bool,
                      textModeBanner: str,
-                     accessKeys: {}) -> str:
+                     accessKeys: {}, systemLanguage: str) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1112,7 +1112,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -1135,7 +1135,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
-                   accessKeys: {}) -> str:
+                   accessKeys: {}, systemLanguage: str) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1153,7 +1153,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1176,7 +1176,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
-                   accessKeys: {}) -> str:
+                   accessKeys: {}, systemLanguage: str) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1194,7 +1194,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1218,7 +1218,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       textModeBanner: str,
-                      accessKeys: {}) -> str:
+                      accessKeys: {}, systemLanguage: str) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1236,7 +1236,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1259,7 +1259,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   peertubeInstances: [],
                   allowLocalNetworkAccess: bool,
                   textModeBanner: str,
-                  accessKeys: {}) -> str:
+                  accessKeys: {}, systemLanguage: str) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1277,7 +1277,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1300,7 +1300,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allowLocalNetworkAccess: bool,
                textModeBanner: str,
-               accessKeys: {}) -> str:
+               accessKeys: {}, systemLanguage: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1319,4 +1319,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage)

@@ -22,6 +22,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
@@ -273,7 +274,7 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
 def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       postJsonObject: {}, pageNumberParam: str,
-                      translate: {}) -> str:
+                      translate: {}, systemLanguage: str) -> str:
     """Returns html for the reply icon/button
     """
     replyStr = ''
@@ -286,9 +287,9 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
                 '?mention=' + postJsonObject['object']['attributedTo']
-    if postJsonObject['object'].get('content'):
-        mentionedActors = \
-            getMentionsFromHtml(postJsonObject['object']['content'])
+    content = getContentFromPost(postJsonObject, systemLanguage)
+    if content:
+        mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:
             for actorUrl in mentionedActors:
                 if '?mention=' + actorUrl not in replyToLink:
@@ -1160,7 +1161,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
-                         themeName: str,
+                         themeName: str, systemLanguage: str,
                          showRepeats: bool = True,
                          showIcons: bool = False,
                          manuallyApprovesFollowers: bool = False,
@@ -1410,7 +1411,7 @@ def individualPostAsHtml(allowDownloads: bool,
     replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
-                                 translate)
+                                 translate, systemLanguage)
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
 
@@ -1588,20 +1589,21 @@ def individualPostAsHtml(allowDownloads: bool,
         postJsonObject['object']['content'] = \
             E2EEdecryptMessageFromDevice(postJsonObject['object'])
 
-    if not postJsonObject['object'].get('content'):
+    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    if not contentStr:
         return ''
 
     isPatch = isGitPatch(baseDir, nickname, domain,
                          postJsonObject['object']['type'],
                          postJsonObject['object']['summary'],
-                         postJsonObject['object']['content'])
+                         contentStr)
 
     _logPostTiming(enableTimingLog, postStartTime, '16')
 
-    if not isPGPEncrypted(postJsonObject['object']['content']):
+    if not isPGPEncrypted(contentStr):
         if not isPatch:
             objectContent = \
-                removeLongWords(postJsonObject['object']['content'], 40, [])
+                removeLongWords(contentStr, 40, [])
             objectContent = removeTextFormatting(objectContent)
             objectContent = limitRepeatedWords(objectContent, 6)
             objectContent = \
@@ -1609,8 +1611,7 @@ def individualPostAsHtml(allowDownloads: bool,
             objectContent = htmlReplaceEmailQuote(objectContent)
             objectContent = htmlReplaceQuoteMarks(objectContent)
         else:
-            objectContent = \
-                postJsonObject['object']['content']
+            objectContent = contentStr
     else:
         objectContent = '🔒 ' + translate['Encrypted']
 
@@ -1719,7 +1720,7 @@ def htmlIndividualPost(cssCache: {},
                        showPublishedDateOnly: bool,
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
-                       themeName: str) -> str:
+                       themeName: str, systemLanguage: str) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1761,6 +1762,7 @@ def htmlIndividualPost(cssCache: {},
                              showPublishedDateOnly,
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
+                             systemLanguage,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1788,7 +1790,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1819,7 +1821,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1842,7 +1844,7 @@ def htmlPostReplies(cssCache: {},
                     showPublishedDateOnly: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
-                    themeName: str) -> str:
+                    themeName: str, systemLanguage: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1861,7 +1863,7 @@ def htmlPostReplies(cssCache: {},
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
-                                     themeName,
+                                     themeName, systemLanguage,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

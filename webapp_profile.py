@@ -73,7 +73,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            peertubeInstances: [],
                            allowLocalNetworkAccess: bool,
                            themeName: str,
-                           accessKeys: {}) -> str:
+                           accessKeys: {},
+                           systemLanguage: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -246,7 +247,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
                                  peertubeInstances, allowLocalNetworkAccess,
-                                 themeName,
+                                 themeName, systemLanguage,
                                  False, False, False, False, False)
         i += 1
         if i >= 20:
@@ -447,6 +448,7 @@ def htmlProfile(rssIconAtTop: bool,
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
+                systemLanguage: str,
                 extraJson: {} = None, pageNumber: int = None,
                 maxItemsPerPage: int = None) -> str:
     """Show the profile page as html
@@ -467,6 +469,7 @@ def htmlProfile(rssIconAtTop: bool,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
+                               systemLanguage,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])
@@ -796,7 +799,7 @@ def htmlProfile(rssIconAtTop: bool,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
-                              theme) + licenseStr
+                              theme, systemLanguage) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -850,7 +853,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str) -> str:
+                      themeName: str, systemLanguage: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -890,7 +893,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr

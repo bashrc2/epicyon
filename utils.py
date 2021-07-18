@@ -28,6 +28,23 @@ invalidCharacters = (
 )
 
 
+def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
+    """Returns the content from the post in the given language
+    """
+    thisPostJson = postJsonObject
+    if hasObjectDict(postJsonObject):
+        thisPostJson = postJsonObject['object']
+    if not thisPostJson.get('content'):
+        return ''
+    content = thisPostJson['content']
+    if thisPostJson.get('contentMap'):
+        if isinstance(thisPostJson['contentMap'], dict):
+            if thisPostJson['contentMap'].get(systemLanguage):
+                if isinstance(thisPostJson['contentMap'][systemLanguage], str):
+                    return thisPostJson['contentMap'][systemLanguage]
+    return content
+
+
 def acctDir(baseDir: str, nickname: str, domain: str) -> str:
     return baseDir + '/accounts/' + nickname + '@' + domain
 
