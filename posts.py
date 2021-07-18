@@ -31,6 +31,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from utils import understoodPostLanguage
 from utils import getContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -4027,7 +4028,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
             return None
-
+        if not understoodPostLanguage(baseDir, nickname, domain,
+                                      announcedJson, systemLanguage):
+            return None
         # Check the content of the announce
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):

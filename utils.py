@@ -2564,7 +2564,7 @@ def validUrlPrefix(url: str) -> bool:
     return False
 
 
-def getActorLanguagesList(actorJson: {}) -> []:
+def _getActorLanguagesList(actorJson: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
     if not actorJson.get('attachment'):
@@ -2589,7 +2589,7 @@ def getActorLanguagesList(actorJson: {}) -> []:
 def getActorLanguages(actorJson: {}) -> str:
     """Returns a string containing languages used by the given actor
     """
-    langList = getActorLanguagesList(actorJson)
+    langList = _getActorLanguagesList(actorJson)
     if not langList:
         return ''
     languagesStr = ''
@@ -2640,3 +2640,34 @@ def setActorLanguages(baseDir: str, actorJson: {}, languagesStr: str) -> None:
         "value": langList2
     }
     actorJson['attachment'].append(newLanguages)
+
+
+def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
+                           messageJson: {}, systemLanguage: str) -> bool:
+    """Returns true if the post is written in a language
+    understood by this account
+    """
+    msgObject = messageJson
+    if msgObject.get('object'):
+        if isinstance(msgObject['object'], dict):
+            msgObject = messageJson['object']
+    if not msgObject.get('contentMap'):
+        return True
+    if not isinstance(msgObject['contentMap'], dict):
+        return True
+    if msgObject['contentMap'].get(systemLanguage):
+        return True
+    actorFilename = acctDir(baseDir, nickname, domain)
+    if not os.path.isfile(actorFilename):
+        return False
+    actorJson = loadJson(actorFilename)
+    if not actorJson:
+        print('WARN: unable to load actor to check languages ' + actorFilename)
+        return False
+    languagesUnderstood = _getActorLanguagesList(actorJson)
+    if not languagesUnderstood:
+        return True
+    for lang in languagesUnderstood:
+        if msgObject['contentMap'].get(lang):
+            return True
+    return False
