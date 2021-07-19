@@ -1088,7 +1088,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
                              peertubeInstances: [],
                              mediaInstanceStr: str,
                              blogsInstanceStr: str,
-                             newsInstanceStr: str) -> (str, str, str):
+                             newsInstanceStr: str) -> (str, str, str, str):
     """Edit profile instance settings
     """
     imageFormats = getImageFormats()
@@ -1324,7 +1324,14 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         YTReplacementDomain + '">\n'
     peertubeStr += '    </div></details>\n'
 
-    return instanceStr, roleAssignStr, peertubeStr
+    libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
+    libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
+    libretranslateStr = \
+        _htmlEditProfileLibreTranslate(translate,
+                                       libretranslateUrl,
+                                       libretranslateApiKey)
+
+    return instanceStr, roleAssignStr, peertubeStr, libretranslateStr
 
 
 def _htmlEditProfileDangerZone(translate: {}) -> str:
@@ -2049,6 +2056,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     instanceStr = ''
     roleAssignStr = ''
     peertubeStr = ''
+    libretranslateStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
 
@@ -2058,7 +2066,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
-            instanceStr, roleAssignStr, peertubeStr = \
+            instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
                 _htmlEditProfileInstance(baseDir, translate,
                                          peertubeInstances,
                                          mediaInstanceStr,
@@ -2122,12 +2130,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += _htmlEditProfileChangePassword(translate)
 
     # automatic translations
-    libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
-    libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
-    editProfileForm += \
-        _htmlEditProfileLibreTranslate(translate,
-                                       libretranslateUrl,
-                                       libretranslateApiKey)
+    editProfileForm += libretranslateStr
 
     # Filtering and blocking section
     editProfileForm += \

@@ -4438,9 +4438,11 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['libretranslateUrl'] != \
                                currLibretranslateUrl:
                                 ltUrl = fields['libretranslateUrl']
-                                setConfigParam(baseDir,
-                                               'libretranslateUrl',
-                                               ltUrl)
+                                if '://' in ltUrl and \
+                                   '.' in ltUrl:
+                                    setConfigParam(baseDir,
+                                                   'libretranslateUrl',
+                                                   ltUrl)
                         else:
                             if currLibretranslateUrl:
                                 setConfigParam(baseDir,

@@ -110,6 +110,13 @@ parser = argparse.ArgumentParser(description='ActivityPub Server')
 parser.add_argument('--userAgentBlocks', type=str,
                     default=None,
                     help='List of blocked user agents, separated by commas')
+parser.add_argument('--libretranslate', dest='libretranslateUrl', type=str,
+                    default=None,
+                    help='URL for LibreTranslate service')
+parser.add_argument('--libretranslateApiKey',
+                    dest='libretranslateApiKey', type=str,
+                    default=None,
+                    help='API key for LibreTranslate service')
 parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
                     help='Nickname of the account to use')
@@ -605,6 +612,14 @@ baseDir = args.baseDir
 if baseDir.endswith('/'):
     print("--path option should not end with '/'")
     sys.exit()
+
+# automatic translations
+if args.libretranslateUrl:
+    if '://' in args.libretranslateUrl and \
+       '.' in args.libretranslateUrl:
+        setConfigParam(baseDir, 'libretranslateUrl', args.libretranslateUrl)
+if args.libretranslateApiKey:
+    setConfigParam(baseDir, 'libretranslateApiKey', args.libretranslateApiKey)
 
 if args.posts:
     if '@' not in args.posts:
