@@ -1485,6 +1485,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         translate['City for spoofed GPS image metadata'] + \
         '</label><br>\n'
 
+    city = ''
     cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
@@ -1505,8 +1506,9 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         citySelected = ''
         cityName = cityName.split(':')[0]
         cityName = cityName.lower()
-        if city in cityName:
-            citySelected = ' selected'
+        if city:
+            if city in cityName:
+                citySelected = ' selected'
         editProfileForm += \
             '    <option value="' + cityName + \
             '"' + citySelected.title() + '>' + \
