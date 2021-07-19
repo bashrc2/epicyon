@@ -30,7 +30,9 @@ def _getActorLanguagesList(actorJson: {}) -> []:
             continue
         if propertyValue['type'] != 'PropertyValue':
             continue
-        return propertyValue['value']
+        langList = propertyValue['value']
+        langList.sort()
+        return langList
     return []
 
 

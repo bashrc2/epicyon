@@ -124,6 +124,7 @@ from webapp_post import prepareHtmlPostNickname
 from speaker import speakerReplaceLinks
 from markdown import markdownToHtml
 from languages import setActorLanguages
+from languages import getActorLanguages
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -4213,8 +4214,7 @@ def _testSetActorLanguages():
     actorJson = {
         "attachment": []
     }
-    setActorLanguages(None, actorJson, 'en, es, fr')
-    print(str(actorJson))
+    setActorLanguages(None, actorJson, 'es, fr, en')
     assert len(actorJson['attachment']) == 1
     assert actorJson['attachment'][0]['name'] == 'Languages'
     assert actorJson['attachment'][0]['type'] == 'PropertyValue'
@@ -4222,6 +4222,8 @@ def _testSetActorLanguages():
     assert 'en' in actorJson['attachment'][0]['value']
     assert 'fr' in actorJson['attachment'][0]['value']
     assert 'es' in actorJson['attachment'][0]['value']
+    languagesStr = getActorLanguages(actorJson)
+    assert languagesStr == 'en / es / fr'
 
 
 def runAllTests():
