@@ -62,7 +62,10 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
 
     if not messageJson.get('type'):
         return
-    print("messageJson['type'] " + messageJson['type'])
+    if not isinstance(messageJson['type'], str):
+        if debug:
+            print('DEBUG: c2s actor update type is not a string')
+        return
     if messageJson['type'] != 'Update':
         return
     if not hasObjectDict(messageJson):
@@ -72,6 +75,10 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     if not messageJson['object'].get('type'):
         if debug:
             print('DEBUG: c2s actor update - no type')
+        return
+    if not isinstance(messageJson['object']['type'], str):
+        if debug:
+            print('DEBUG: c2s actor update object type is not a string')
         return
     if messageJson['object']['type'] != 'Person':
         if debug:
@@ -88,6 +95,10 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     if not messageJson.get('id'):
         if debug:
             print('DEBUG: c2s actor update has no id field')
+        return
+    if not isinstance(messageJson['id'], str):
+        if debug:
+            print('DEBUG: c2s actor update id is not a string')
         return
     actor = \
         httpPrefix + '://' + getFullDomain(domain, port) + '/users/' + nickname
