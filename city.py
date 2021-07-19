@@ -292,6 +292,7 @@ def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
     """Returns the name of the city to use as a GPS spoofing location for
     image metadata
     """
+    city = ''
     cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
