@@ -123,6 +123,7 @@ from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
 from speaker import speakerReplaceLinks
 from markdown import markdownToHtml
+from languages import setActorLanguages
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -4207,9 +4208,26 @@ def _testLimitRepetedWords() -> None:
     assert result == expected
 
 
+def _testSetActorLanguages():
+    print('testSetActorLanguages')
+    actorJson = {
+        "attachment": []
+    }
+    setActorLanguages(None, actorJson, 'en, es, fr')
+    print(str(actorJson))
+    assert len(actorJson['attachment']) == 1
+    assert actorJson['attachment'][0]['name'] == 'Languages'
+    assert actorJson['attachment'][0]['type'] == 'PropertyValue'
+    assert len(actorJson['attachment'][0]['value']) == 3
+    assert 'en' in actorJson['attachment'][0]['value']
+    assert 'fr' in actorJson['attachment'][0]['value']
+    assert 'es' in actorJson['attachment'][0]['value']
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testSetActorLanguages()
     _testLimitRepetedWords()
     _testLimitWordLengths()
     _testSwitchWords()
