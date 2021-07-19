@@ -8,7 +8,11 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+import json
+from urllib import request, parse
 from utils import acctDir
+from utils import hasObjectDict
+from utils import getConfigParam
 from cache import getPersonFromCache
 
 
@@ -126,4 +130,113 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
     for lang in languagesUnderstood:
         if msgObject['contentMap'].get(lang):
             return True
+    # is the language for this post supported by libretranslate?
+    libretranslateUrl = getConfigParam(baseDir, "libretranslateUrl")
+    if libretranslateUrl:
+        libretranslateApiKey = getConfigParam(baseDir, "libretranslateApiKey")
+        langList = \
+            _libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
+        for lang in langList:
+            if msgObject['contentMap'].get(lang):
+                return True
     return False
+
+
+def _libretranslateLanguages(url: str, apiKey: str = None) -> []:
+    """Returns a list of supported languages
+    """
+    if not url.endswith('/languages'):
+        if not url.endswith('/'):
+            url += "/languages"
+        else:
+            url += "languages"
+
+    params = dict()
+
+    if apiKey:
+        params["api_key"] = apiKey
+
+    urlParams = parse.urlencode(params)
+
+    req = request.Request(url, data=urlParams.encode())
+
+    response = request.urlopen(req)
+
+    response_str = response.read().decode()
+
+    result = json.loads(response_str)
+    if not result:
+        return []
+    if not isinstance(result, list):
+        return []
+
+    langList = []
+    for lang in result:
+        if not isinstance(lang, dict):
+            continue
+        if not lang.get('code'):
+            continue
+        langCode = lang['code']
+        if len(langCode) != 2:
+            continue
+        langList.append(langCode)
+    langList.sort()
+    return langList
+
+
+def _libretranslate(url: str, text: str,
+                    source: str, target: str, apiKey: str = None) -> str:
+    """Translate string using libretranslate
+    """
+
+    if not url.endswith('/translate'):
+        if not url.endswith('/'):
+            url += "/translate"
+        else:
+            url += "translate"
+
+    ltParams = {
+        "q": text,
+        "source": source,
+        "target": target
+    }
+
+    if apiKey:
+        ltParams["api_key"] = apiKey
+
+    urlParams = parse.urlencode(ltParams)
+
+    req = request.Request(url, data=urlParams.encode())
+    response = request.urlopen(req)
+
+    response_str = response.read().decode()
+
+    return json.loads(response_str)["translatedText"]
+
+
+def autoTranslatePost(baseDir: str, postJsonObject: {},
+                      systemLanguage: str) -> str:
+    """Tries to automatically translate the given post
+    """
+    if not hasObjectDict(postJsonObject):
+        return ''
+    msgObject = postJsonObject['object']
+    if not msgObject.get('contentMap'):
+        return ''
+    if not isinstance(msgObject['contentMap'], dict):
+        return ''
+
+    # is the language for this post supported by libretranslate?
+    libretranslateUrl = getConfigParam(baseDir, "libretranslateUrl")
+    if not libretranslateUrl:
+        return ''
+    libretranslateApiKey = getConfigParam(baseDir, "libretranslateApiKey")
+    langList = \
+        _libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
+    for lang in langList:
+        if msgObject['contentMap'].get(lang):
+            return _libretranslate(libretranslateUrl,
+                                   msgObject['contentMap']['lang'],
+                                   lang, systemLanguage,
+                                   libretranslateApiKey)
+    return ''

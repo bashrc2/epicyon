@@ -1612,6 +1612,29 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
     return editProfileForm
 
 
+def _htmlEditProfileLibreTranslate(translate: {},
+                                   libretranslateUrl: str,
+                                   libretranslateApiKey: str) -> str:
+    """Change automatic translation settings
+    """
+    if libretranslateUrl is None:
+        libretranslateUrl = ''
+    if libretranslateApiKey is None:
+        libretranslateApiKey = ''
+
+    editProfileForm = \
+        '    <details><summary class="cw">LibreTranslate</summary>\n' + \
+        '    <div class="container">\n' + \
+        '<label class="labels">URL</label><br>\n' + \
+        '      <input type="text" name="libretranslateUrl" ' + \
+        'value="' + libretranslateUrl + '"><br>\n' + \
+        '<label class="labels">API Key</label><br>\n' + \
+        '      <input type="text" name="libretranslateApiKey" ' + \
+        'value="' + libretranslateApiKey + '">\n' + \
+        '    </div></details>\n'
+    return editProfileForm
+
+
 def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     """Background images section of edit profile screen
     """
@@ -2042,8 +2065,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                          blogsInstanceStr,
                                          newsInstanceStr)
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # keyboard navigation
@@ -2098,6 +2120,14 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # Change password
     editProfileForm += _htmlEditProfileChangePassword(translate)
+
+    # automatic translations
+    libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
+    libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
+    editProfileForm += \
+        _htmlEditProfileLibreTranslate(translate,
+                                       libretranslateUrl,
+                                       libretranslateApiKey)
 
     # Filtering and blocking section
     editProfileForm += \

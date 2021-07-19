@@ -30,6 +30,7 @@ invalidCharacters = (
 
 def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
     """Returns the content from the post in the given language
+    including searching for a matching entry within contentMap
     """
     thisPostJson = postJsonObject
     if hasObjectDict(postJsonObject):
@@ -45,6 +46,17 @@ def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
     if not isinstance(content, str):
         return ''
     return content
+
+
+def getBaseContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
+    """Returns the content from the post in the given language
+    """
+    thisPostJson = postJsonObject
+    if hasObjectDict(postJsonObject):
+        thisPostJson = postJsonObject['object']
+    if not thisPostJson.get('content'):
+        return ''
+    return thisPostJson['content']
 
 
 def acctDir(baseDir: str, nickname: str, domain: str) -> str:

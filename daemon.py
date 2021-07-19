@@ -4430,7 +4430,39 @@ class PubServer(BaseHTTPRequestHandler):
                                 setConfigParam(baseDir,
                                                'customSubmitText', '')
 
-                        # change instance description
+                        # libretranslate URL
+                        currLibretranslateUrl = \
+                            getConfigParam(baseDir,
+                                           'libretranslateUrl')
+                        if fields.get('libretranslateUrl'):
+                            if fields['libretranslateUrl'] != \
+                               currLibretranslateUrl:
+                                ltUrl = fields['libretranslateUrl']
+                                setConfigParam(baseDir,
+                                               'libretranslateUrl',
+                                               ltUrl)
+                        else:
+                            if currLibretranslateUrl:
+                                setConfigParam(baseDir,
+                                               'libretranslateUrl', '')
+
+                        # libretranslate API Key
+                        currLibretranslateApiKey = \
+                            getConfigParam(baseDir,
+                                           'libretranslateApiKey')
+                        if fields.get('libretranslateApiKey'):
+                            if fields['libretranslateApiKey'] != \
+                               currLibretranslateApiKey:
+                                ltApiKey = fields['libretranslateApiKey']
+                                setConfigParam(baseDir,
+                                               'libretranslateApiKey',
+                                               ltApiKey)
+                        else:
+                            if currLibretranslateApiKey:
+                                setConfigParam(baseDir,
+                                               'libretranslateApiKey', '')
+
+                        # change instance short description
                         currInstanceDescriptionShort = \
                             getConfigParam(baseDir,
                                            'instanceDescriptionShort')
@@ -4445,6 +4477,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if currInstanceDescriptionShort:
                                 setConfigParam(baseDir,
                                                'instanceDescriptionShort', '')
+
+                        # change instance description
                         currInstanceDescription = \
                             getConfigParam(baseDir, 'instanceDescription')
                         if fields.get('instanceDescription'):

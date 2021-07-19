@@ -22,6 +22,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getBaseContentFromPost
 from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import updateAnnounceCollection
@@ -72,6 +73,7 @@ from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
 from speaker import updateSpeaker
+from languages import autoTranslatePost
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -286,7 +288,7 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
                 '?mention=' + postJsonObject['object']['attributedTo']
-    content = getContentFromPost(postJsonObject, systemLanguage)
+    content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if content:
         mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:
@@ -1592,7 +1594,9 @@ def individualPostAsHtml(allowDownloads: bool,
 
     contentStr = getContentFromPost(postJsonObject, systemLanguage)
     if not contentStr:
-        return ''
+        contentStr = autoTranslatePost(baseDir, postJsonObject, systemLanguage)
+        if not contentStr:
+            return ''
 
     isPatch = isGitPatch(baseDir, nickname, domain,
                          postJsonObject['object']['type'],
