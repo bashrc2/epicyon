@@ -13,7 +13,7 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
-from utils import understoodPostLanguage
+from languages import understoodPostLanguage
 from utils import getContentFromPost
 from utils import acctDir
 from utils import removeDomainPort
@@ -1367,6 +1367,7 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
+    domainFull = getFullDomain(domain, port)
     postJsonObject = downloadAnnounce(session, baseDir,
                                       httpPrefix,
                                       nickname, domain,
@@ -1375,7 +1376,8 @@ def _receiveAnnounce(recentPostsCache: {},
                                       YTReplacementDomain,
                                       allowLocalNetworkAccess,
                                       recentPostsCache, debug,
-                                      systemLanguage)
+                                      systemLanguage,
+                                      domainFull, personCache)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1600,7 +1602,9 @@ def _estimateNumberOfEmoji(content: str) -> int:
 def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
                       allowLocalNetworkAccess: bool, debug: bool,
-                      systemLanguage: str) -> bool:
+                      systemLanguage: str,
+                      httpPrefix: str, domainFull: str,
+                      personCache: {}) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1670,7 +1674,9 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                 return False
     # check that the post is in a language suitable for this account
     if not understoodPostLanguage(baseDir, nickname, domain,
-                                  messageJson, systemLanguage):
+                                  messageJson, systemLanguage,
+                                  httpPrefix, domainFull,
+                                  personCache):
         return False
     # check for filtered content
     if isFiltered(baseDir, nickname, domain, contentStr):
@@ -2405,10 +2411,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     nickname = handle.split('@')[0]
     jsonObj = None
+    domainFull = getFullDomain(domain, port)
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
                          allowLocalNetworkAccess, debug,
-                         systemLanguage):
+                         systemLanguage, httpPrefix,
+                         domainFull, personCache):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -2486,7 +2494,6 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     return False
 
             # get the actor being replied to
-            domainFull = getFullDomain(domain, port)
             actor = httpPrefix + '://' + domainFull + '/users/' + nickname
 
             # create a reply notification file if needed
@@ -2511,7 +2518,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             nickname, domain, postJsonObject,
                             translate, YTReplacementDomain,
                             allowLocalNetworkAccess,
-                            recentPostsCache, debug, systemLanguage):
+                            recentPostsCache, debug, systemLanguage,
+                            domainFull, personCache):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):

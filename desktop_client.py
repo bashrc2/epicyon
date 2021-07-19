@@ -655,7 +655,8 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                       pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
                       screenreader: str, espeak,
-                      translate: {}, yourActor: str) -> {}:
+                      translate: {}, yourActor: str,
+                      domainFull: str, personCache: {}) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -691,7 +692,8 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, False,
-                             systemLanguage)
+                             systemLanguage,
+                             domainFull, personCache)
         if postJsonObject2:
             if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
@@ -1596,7 +1598,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, baseDir, currTimeline,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
-                                          espeak, translate, yourActor)
+                                          espeak, translate, yourActor,
+                                          domainFull, personCache)
                     print('')
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlightText(sayStr)
@@ -2325,7 +2328,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              YTReplacementDomain,
                                              allowLocalNetworkAccess,
                                              recentPostsCache, False,
-                                             systemLanguage)
+                                             systemLanguage,
+                                             domainFull, personCache)
                         if postJsonObject2:
                             postJsonObject = postJsonObject2
                 if postJsonObject:

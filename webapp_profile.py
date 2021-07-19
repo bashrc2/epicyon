@@ -23,7 +23,7 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import getImageFormats
 from utils import acctDir
-from utils import getActorLanguages
+from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson

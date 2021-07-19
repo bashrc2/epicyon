@@ -31,7 +31,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
-from utils import understoodPostLanguage
+from languages import understoodPostLanguage
 from utils import getContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -2935,7 +2935,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  YTReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
                  recentPostsCache: {}, debug: bool,
-                 systemLanguage: str) -> bool:
+                 systemLanguage: str,
+                 domainFull: str, personCache: {}) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2946,7 +2947,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, debug,
-                             systemLanguage)
+                             systemLanguage,
+                             domainFull, personCache)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3900,7 +3902,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      translate: {}, YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
                      recentPostsCache: {}, debug: bool,
-                     systemLanguage: str) -> {}:
+                     systemLanguage: str,
+                     domainFull: str, personCache: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -4029,7 +4032,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             recentPostsCache)
             return None
         if not understoodPostLanguage(baseDir, nickname, domain,
-                                      announcedJson, systemLanguage):
+                                      announcedJson, systemLanguage,
+                                      httpPrefix, domainFull,
+                                      personCache):
             return None
         # Check the content of the announce
         contentStr = announcedJson['content']

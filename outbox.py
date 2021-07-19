@@ -391,7 +391,8 @@ def postMessageToOutbox(session, translate: {},
                                     messageJson,
                                     translate, YTReplacementDomain,
                                     allowLocalNetworkAccess,
-                                    recentPostsCache, debug, systemLanguage):
+                                    recentPostsCache, debug, systemLanguage,
+                                    domainFull, personCache):
                         inboxUpdateIndex('tlmedia', baseDir,
                                          postToNickname + '@' + domain,
                                          savedFilename, debug)

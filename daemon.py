@@ -208,8 +208,8 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
-from utils import getActorLanguages
-from utils import setActorLanguages
+from languages import getActorLanguages
+from languages import setActorLanguages
 from utils import getContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
