@@ -713,6 +713,11 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no object type')
         return False
+    if not isinstance(messageJson['object']['type'], str):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] +
+                  ' type within object is not a string')
+        return False
     if not messageJson['object'].get('object'):
         if debug:
             print('DEBUG: ' + messageJson['type'] +
