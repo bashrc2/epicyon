@@ -870,6 +870,11 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' object has no type')
         return False
+    if not isinstance(messageJson['object']['type'], str):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] +
+                  ' object type is not string')
+        return False
     if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
