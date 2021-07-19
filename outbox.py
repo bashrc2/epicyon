@@ -94,12 +94,12 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     if len(messageJson['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +
-                  messageJson['to'])
+                  str(messageJson['to']))
         return
     if messageJson['to'][0] != actor:
         if debug:
             print('DEBUG: c2s actor update - to does not contain actor ' +
-                  messageJson['to'] + ' ' + actor)
+                  str(messageJson['to']) + ' ' + actor)
         return
     if not messageJson['id'].startswith(actor + '#updates/'):
         if debug:
