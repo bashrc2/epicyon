@@ -4235,16 +4235,13 @@ class PubServer(BaseHTTPRequestHandler):
                         actorChanged = True
 
                     # change password
-                    if fields.get('password'):
-                        if len(fields['password']) > 2:
-                            if fields.get('passwordconfirm'):
-                                if fields['password'] == \
-                                   fields['passwordconfirm']:
-                                    # set password
-                                    pwd = fields['password']
-                                    storeBasicCredentials(baseDir,
-                                                          nickname,
-                                                          pwd)
+                    if fields.get('password') and \
+                       fields.get('passwordconfirm'):
+                        if len(fields['password']) > 2 and \
+                           fields['password'] == fields['passwordconfirm']:
+                                # set password
+                                storeBasicCredentials(baseDir, nickname,
+                                                      fields['password'])
 
                     # change city
                     if fields.get('cityDropdown'):
