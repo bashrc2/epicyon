@@ -214,6 +214,8 @@ def _libretranslate(url: str, text: str,
         else:
             url += "translate"
 
+    originalText = text
+            
     # get any links from the text
     links = getLinksFromContent(text)
 
@@ -236,7 +238,11 @@ def _libretranslate(url: str, text: str,
     urlParams = parse.urlencode(ltParams)
 
     req = request.Request(url, data=urlParams.encode())
-    response = request.urlopen(req)
+    try:
+        response = request.urlopen(req)
+    except BaseException:
+        print('Unaable to translate: ' + text)
+        return originalText
 
     response_str = response.read().decode()
 
