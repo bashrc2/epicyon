@@ -274,7 +274,7 @@ def autoTranslatePost(baseDir: str, postJsonObject: {},
         if msgObject['contentMap'].get(lang):
             translatedText = \
                 _libretranslate(libretranslateUrl,
-                                msgObject['contentMap']['lang'],
+                                msgObject['contentMap'][lang],
                                 lang, systemLanguage,
                                 libretranslateApiKey)
             if translatedText:
