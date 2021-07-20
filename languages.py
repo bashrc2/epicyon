@@ -108,22 +108,18 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
     understood by this account
     """
     msgObject = messageJson
-    if msgObject.get('object'):
-        if isinstance(msgObject['object'], dict):
-            msgObject = messageJson['object']
+    if hasObjectDict(messageJson):
+        msgObject = messageJson['object']
     if not msgObject.get('contentMap'):
         return True
     if not isinstance(msgObject['contentMap'], dict):
         return True
     if msgObject['contentMap'].get(systemLanguage):
         return True
-    actorFilename = acctDir(baseDir, nickname, domain)
-    if not os.path.isfile(actorFilename):
-        return False
     personUrl = httpPrefix + '://' + domainFull + '/users/' + nickname
     actorJson = getPersonFromCache(baseDir, personUrl, personCache, False)
     if not actorJson:
-        print('WARN: unable to load actor to check languages ' + actorFilename)
+        print('WARN: unable to load actor to check languages ' + personUrl)
         return False
     languagesUnderstood = _getActorLanguagesList(actorJson)
     if not languagesUnderstood:
