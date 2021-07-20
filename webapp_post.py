@@ -22,8 +22,8 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getActorLanguagesList
 from utils import getBaseContentFromPost
-from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
@@ -1592,7 +1592,16 @@ def individualPostAsHtml(allowDownloads: bool,
         postJsonObject['object']['contentMap'][systemLanguage] = \
             postJsonObject['object']['content']
 
-    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    domainFull = getFullDomain(domain, port)
+    personUrl = \
+        httpPrefix + '://' + domainFull + '/users/' + nickname
+    actorJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, False)
+    languagesUnderstood = []
+    if actorJson:
+        languagesUnderstood = getActorLanguagesList(actorJson)
+    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage,
+                                        languagesUnderstood)
     if not contentStr:
         contentStr = \
             autoTranslatePost(baseDir, postJsonObject,

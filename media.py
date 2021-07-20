@@ -13,7 +13,7 @@ import subprocess
 from random import randint
 from hashlib import sha1
 from auth import createPassword
-from utils import getContentFromPost
+from utils import getBaseContentFromPost
 from utils import getFullDomain
 from utils import getImageExtensions
 from utils import getVideoExtensions
@@ -38,12 +38,13 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str,
         return
     if not postJsonObject['object'].get('content'):
         return
-    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
     if 'www.youtube.com' not in contentStr:
         return
     contentStr = contentStr.replace('www.youtube.com', replacementDomain)
     postJsonObject['object']['content'] = contentStr
-    postJsonObject['object']['contentMap'][systemLanguage] = contentStr
+    if postJsonObject['object'].get('contentMap'):
+        postJsonObject['object']['contentMap'][systemLanguage] = contentStr
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:

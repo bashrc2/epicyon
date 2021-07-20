@@ -28,7 +28,32 @@ invalidCharacters = (
 )
 
 
-def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
+def getActorLanguagesList(actorJson: {}) -> []:
+    """Returns a list containing languages used by the given actor
+    """
+    if not actorJson.get('attachment'):
+        return []
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue['name'].lower().startswith('languages'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if not isinstance(propertyValue['value'], list):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        langList = propertyValue['value']
+        langList.sort()
+        return langList
+    return []
+
+
+def getContentFromPost(postJsonObject: {}, systemLanguage: str,
+                       languagesUnderstood: []) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
@@ -43,6 +68,12 @@ def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
             if thisPostJson['contentMap'].get(systemLanguage):
                 if isinstance(thisPostJson['contentMap'][systemLanguage], str):
                     return thisPostJson['contentMap'][systemLanguage]
+            else:
+                # is there a contentMap entry for one of
+                # the understood languages?
+                for lang in languagesUnderstood:
+                    if thisPostJson['contentMap'].get(lang):
+                        return thisPostJson['contentMap'][lang]
     else:
         if isinstance(thisPostJson['content'], str):
             content = thisPostJson['content']

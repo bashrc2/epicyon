@@ -14,7 +14,7 @@ import time
 import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
-from utils import getContentFromPost
+from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -353,7 +353,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          httpHeaders: {},
                          postPath: str, debug: bool,
                          blockedCache: [], systemLanguage: str) -> str:
-    """Saves the give json to the inbox queue for the person
+    """Saves the given json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
     if len(messageBytes) > 10240:
@@ -416,7 +416,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                                       replyNickname + '@' + replyDomain)
                             return None
         if postJsonObject['object'].get('content'):
-            contentStr = getContentFromPost(postJsonObject, systemLanguage)
+            contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
             if contentStr:
                 if isFiltered(baseDir, nickname, domain, contentStr):
                     if debug:
@@ -1649,7 +1649,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         return True
 
-    contentStr = getContentFromPost(messageJson, systemLanguage)
+    contentStr = getBaseContentFromPost(messageJson, systemLanguage)
     if dangerousMarkup(contentStr, allowLocalNetworkAccess):
         if messageJson['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
@@ -1951,7 +1951,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     sendingActorDomainFull = \
         getFullDomain(sendingActorDomain, sendingActorPort)
     senderStr = '@' + sendingActorNickname + '@' + sendingActorDomainFull
-    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
     if not contentStr.startswith(senderStr):
         postJsonObject['object']['content'] = \
             senderStr + ' ' + contentStr

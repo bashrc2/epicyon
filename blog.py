@@ -16,6 +16,8 @@ from webapp_utils import htmlHeaderWithBlogMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_media import addEmbeddedElements
+from utils import getActorLanguagesList
+from utils import getBaseContentFromPost
 from utils import getContentFromPost
 from utils import isAccountDir
 from utils import removeHtml
@@ -32,6 +34,7 @@ from utils import acctDir
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
+from cache import getPersonFromCache
 
 
 def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
@@ -166,6 +169,7 @@ def _htmlBlogPostContent(authorized: bool,
                          handle: str, restrictToDomain: bool,
                          peertubeInstances: [],
                          systemLanguage: str,
+                         personCache: {},
                          blogSeparator: str = '<hr>') -> str:
     """Returns the content for a single blog post
     """
@@ -237,7 +241,15 @@ def _htmlBlogPostContent(authorized: bool,
     if attachmentStr:
         blogStr += '<br><center>' + attachmentStr + '</center>'
 
-    jsonContent = getContentFromPost(postJsonObject, systemLanguage)
+    personUrl = \
+        httpPrefix + '://' + domainFull + '/users/' + nickname
+    actorJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, False)
+    languagesUnderstood = []
+    if actorJson:
+        languagesUnderstood = getActorLanguagesList(actorJson)
+    jsonContent = getContentFromPost(postJsonObject, systemLanguage,
+                                     languagesUnderstood)
     if jsonContent:
         contentStr = addEmbeddedElements(translate, jsonContent,
                                          peertubeInstances)
@@ -330,7 +342,8 @@ def _htmlBlogPostRSS2(authorized: bool,
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-                content = getContentFromPost(postJsonObject, systemLanguage)
+                content = \
+                    getBaseContentFromPost(postJsonObject, systemLanguage)
                 description = firstParagraphFromString(content)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
@@ -362,7 +375,8 @@ def _htmlBlogPostRSS3(authorized: bool,
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-                content = getContentFromPost(postJsonObject, systemLanguage)
+                content = \
+                    getBaseContentFromPost(postJsonObject, systemLanguage)
                 description = firstParagraphFromString(content)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
@@ -386,7 +400,7 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
 def _getSnippetFromBlogContent(postJsonObject: {}, systemLanguage: str) -> str:
     """Returns a snippet of text from the blog post as a preview
     """
-    content = getContentFromPost(postJsonObject, systemLanguage)
+    content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if '<p>' in content:
         content = content.split('<p>', 1)[1]
         if '</p>' in content:
@@ -404,7 +418,7 @@ def htmlBlogPost(authorized: bool,
                  nickname: str, domain: str, domainFull: str,
                  postJsonObject: {},
                  peertubeInstances: [],
-                 systemLanguage: str) -> str:
+                 systemLanguage: str, personCache: {}) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -428,7 +442,8 @@ def htmlBlogPost(authorized: bool,
                                     nickname, domain,
                                     domainFull, postJsonObject,
                                     None, False,
-                                    peertubeInstances, systemLanguage)
+                                    peertubeInstances, systemLanguage,
+                                    personCache)
 
     # show rss links
     blogStr += '<p class="rssfeed">'
@@ -456,7 +471,8 @@ def htmlBlogPage(authorized: bool, session,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
-                 peertubeInstances: [], systemLanguage: str) -> str:
+                 peertubeInstances: [], systemLanguage: str,
+                 personCache: {}) -> str:
     """Returns a html blog page containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -519,7 +535,8 @@ def htmlBlogPage(authorized: bool, session,
                                         domainFull, item,
                                         None, True,
                                         peertubeInstances,
-                                        systemLanguage)
+                                        systemLanguage,
+                                        personCache)
 
     if len(timelineJson['orderedItems']) >= noOfItems:
         blogStr += navigateStr
@@ -677,7 +694,8 @@ def htmlBlogView(authorized: bool,
                  session, baseDir: str, httpPrefix: str,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
-                 peertubeInstances: [], systemLanguage: str) -> str:
+                 peertubeInstances: [], systemLanguage: str,
+                 personCache: {}) -> str:
     """Show the blog main page
     """
     blogStr = ''
@@ -696,7 +714,7 @@ def htmlBlogView(authorized: bool,
                                 baseDir, httpPrefix, translate,
                                 nickname, domain, port,
                                 noOfItems, 1, peertubeInstances,
-                                systemLanguage)
+                                systemLanguage, personCache)
 
     domainFull = getFullDomain(domain, port)
 
@@ -840,7 +858,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
         placeholderMessage + '</label>'
     messageBoxHeight = 800
 
-    contentStr = getContentFromPost(postJsonObject, systemLanguage)
+    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     editBlogForm += \

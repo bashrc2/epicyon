@@ -32,7 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
-from utils import getContentFromPost
+from utils import getBaseContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import hasObjectDict
@@ -387,7 +387,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                 if not isPublic:
                     continue
 
-            content = getContentFromPost(item, systemLanguage)
+            content = getBaseContentFromPost(item, systemLanguage)
             content = content.replace('&apos;', "'")
 
             mentions = []
@@ -565,7 +565,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             break
         if not hasObjectDict(item):
             continue
-        contentStr = getContentFromPost(item, systemLanguage)
+        contentStr = getBaseContentFromPost(item, systemLanguage)
         if contentStr:
             _updateWordFrequency(contentStr, wordFrequency)
         if item['object'].get('inReplyTo'):

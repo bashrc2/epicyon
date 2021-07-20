@@ -210,7 +210,7 @@ from shares import expireShares
 from categories import setHashtagCategory
 from languages import getActorLanguages
 from languages import setActorLanguages
-from utils import getContentFromPost
+from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
 from utils import getImageMimeType
@@ -9825,7 +9825,8 @@ class PubServer(BaseHTTPRequestHandler):
                            domain, port,
                            maxPostsInBlogsFeed, pageNumber,
                            self.server.peertubeInstances,
-                           self.server.systemLanguage)
+                           self.server.systemLanguage,
+                           self.server.personCache)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -10955,7 +10956,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.port,
                                    maxPostsInBlogsFeed,
                                    self.server.peertubeInstances,
-                                   self.server.systemLanguage)
+                                   self.server.systemLanguage,
+                                   self.server.personCache)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -11054,7 +11056,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        postJsonObject,
                                        self.server.peertubeInstances,
-                                       self.server.systemLanguage)
+                                       self.server.systemLanguage,
+                                       self.server.personCache)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -13186,8 +13189,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     if pinToProfile:
                         contentStr = \
-                            getContentFromPost(messageJson,
-                                               self.server.systemLanguage)
+                            getBaseContentFromPost(messageJson,
+                                                   self.server.systemLanguage)
                         pinPost(self.server.baseDir,
                                 nickname, self.server.domain, contentStr)
                         return 1

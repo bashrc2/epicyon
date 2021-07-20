@@ -18,7 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
 from categories import setHashtagCategory
-from utils import getContentFromPost
+from utils import getBaseContentFromPost
 from utils import hasObjectDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -963,7 +963,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     content = \
-                        getContentFromPost(postJsonObject, systemLanguage)
+                        getBaseContentFromPost(postJsonObject, systemLanguage)
                     description = firstParagraphFromString(content)
                     description = removeHtml(description)
                     tagsFromPost = _getHashtagsFromPost(postJsonObject)

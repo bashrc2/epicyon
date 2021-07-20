@@ -11,7 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
-from utils import getContentFromPost
+from utils import getBaseContentFromPost
 from utils import isAccountDir
 from utils import getConfigParam
 from utils import getFullDomain
@@ -904,7 +904,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                         postJsonObject['object']['summary'] + \
                         '</title>'
                 description = \
-                    getContentFromPost(postJsonObject, systemLanguage)
+                    getBaseContentFromPost(postJsonObject, systemLanguage)
                 description = firstParagraphFromString(description)
                 hashtagFeed += \
                     '         <description>' + description + '</description>'

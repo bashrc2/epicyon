@@ -10,41 +10,17 @@ __module_group__ = "Core"
 import os
 import json
 from urllib import request, parse
+from utils import getActorLanguagesList
 from utils import removeHtml
-from utils import acctDir
 from utils import hasObjectDict
 from utils import getConfigParam
 from cache import getPersonFromCache
 
 
-def _getActorLanguagesList(actorJson: {}) -> []:
-    """Returns a list containing languages used by the given actor
-    """
-    if not actorJson.get('attachment'):
-        return []
-    for propertyValue in actorJson['attachment']:
-        if not propertyValue.get('name'):
-            continue
-        if not propertyValue['name'].lower().startswith('languages'):
-            continue
-        if not propertyValue.get('type'):
-            continue
-        if not propertyValue.get('value'):
-            continue
-        if not isinstance(propertyValue['value'], list):
-            continue
-        if propertyValue['type'] != 'PropertyValue':
-            continue
-        langList = propertyValue['value']
-        langList.sort()
-        return langList
-    return []
-
-
 def getActorLanguages(actorJson: {}) -> str:
     """Returns a string containing languages used by the given actor
     """
-    langList = _getActorLanguagesList(actorJson)
+    langList = getActorLanguagesList(actorJson)
     if not langList:
         return ''
     languagesStr = ''
@@ -121,7 +97,7 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
     if not actorJson:
         print('WARN: unable to load actor to check languages ' + personUrl)
         return False
-    languagesUnderstood = _getActorLanguagesList(actorJson)
+    languagesUnderstood = getActorLanguagesList(actorJson)
     if not languagesUnderstood:
         return True
     for lang in languagesUnderstood:
