@@ -185,6 +185,27 @@ def _libretranslateLanguages(url: str, apiKey: str = None) -> []:
     return langList
 
 
+def getLinksFromContent(content: str) -> []:
+    """Returns a list of links within the given content
+    """
+    if '<a href' not in content:
+        return []
+    sections = content.split('<a href')
+    first = True
+    links = []
+    for subsection in sections:
+        if first:
+            first = False
+            continue
+        if '"' not in subsection:
+            continue
+        url = subsection.split('"')[1].strip()
+        if '://' in url and '.' in url:
+            if url not in links:
+                links.append(url)
+    return links
+
+
 def _libretranslate(url: str, text: str,
                     source: str, target: str, apiKey: str = None) -> str:
     """Translate string using libretranslate
@@ -195,6 +216,9 @@ def _libretranslate(url: str, text: str,
             url += "/translate"
         else:
             url += "translate"
+
+    # get any links from the text
+    links = getLinksFromContent(text)
 
     # LibreTranslate doesn't like markup
     text = removeHtml(text)
@@ -215,7 +239,16 @@ def _libretranslate(url: str, text: str,
 
     response_str = response.read().decode()
 
-    return json.loads(response_str)["translatedText"]
+    translatedText = \
+        '<p>' + json.loads(response_str)['translatedText'] + '</p>'
+    if links:
+        for url in links:
+            urlDesc = url
+            if len(urlDesc) > 30:
+                urlDesc = urlDesc[:30]
+            translatedText += \
+                '<p><a href="' + url + '">' + urlDesc + '</a></p>'
+    return translatedText
 
 
 def autoTranslatePost(baseDir: str, postJsonObject: {},

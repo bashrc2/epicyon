@@ -125,6 +125,7 @@ from speaker import speakerReplaceLinks
 from markdown import markdownToHtml
 from languages import setActorLanguages
 from languages import getActorLanguages
+from languages import getLinksFromContent
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -4226,9 +4227,29 @@ def _testSetActorLanguages():
     assert languagesStr == 'en / es / fr'
 
 
+def _testGetLinksFromContent():
+    print('testGetLinksFromContent')
+    content = 'This text has no links'
+    links = getLinksFromContent(content)
+    assert not links
+
+    link1 = 'https://somewebsite.net'
+    link2 = 'http://somewhere.or.other'
+    content = \
+        'This is <a href="' + link1 + '">a link</a>. ' + \
+        'And <a href="' + link2 + '">another</a>.'
+    links = getLinksFromContent(content)
+    assert len(links) == 2
+    assert link1 in links
+    assert link2 in links
+
+
 def runAllTests():
     print('Running tests...')
+    _testGetLinksFromContent()
+    return
     updateDefaultThemesList(os.getcwd())
+    _testGetLinksFromContent()
     _testSetActorLanguages()
     _testLimitRepetedWords()
     _testLimitWordLengths()
