@@ -157,14 +157,14 @@ def _libretranslateLanguages(url: str, apiKey: str = None) -> []:
     return langList
 
 
-def getLinksFromContent(content: str) -> []:
+def getLinksFromContent(content: str) -> {}:
     """Returns a list of links within the given content
     """
     if '<a href' not in content:
-        return []
+        return {}
     sections = content.split('<a href')
     first = True
-    links = []
+    links = {}
     for subsection in sections:
         if first:
             first = False
@@ -172,9 +172,13 @@ def getLinksFromContent(content: str) -> []:
         if '"' not in subsection:
             continue
         url = subsection.split('"')[1].strip()
-        if '://' in url and '.' in url:
+        if '://' in url and '.' in url and \
+           '>' in subsection:
             if url not in links:
-                links.append(url)
+                linkText = subsection.split('>')[1]
+                if '<' in linkText:
+                    linkText = linkText.split('<')[0]
+                    links[linkText] = url
     return links
 
 
@@ -216,14 +220,22 @@ def _libretranslate(url: str, text: str,
 
     # append links form the original text
     if links:
-        for url in links:
+        for linkText, url in links.items():
             urlDesc = url
-            if len(urlDesc) > 30:
-                urlDesc = urlDesc[:30]
-            translatedText += \
-                '<p><a href="' + url + \
-                '" rel="nofollow noopener noreferrer" target="_blank">' + \
-                urlDesc + '</a></p>'
+            if linkText.startswith('@') and linkText in translatedText:
+                translatedText = \
+                    translatedText.replace(linkText,
+                                           '<a href="' + url +
+                                           '" rel="nofollow noopener ' +
+                                           'noreferrer" target="_blank">' +
+                                           linkText + '</a>')
+            else:
+                if len(urlDesc) > 40:
+                    urlDesc = urlDesc[:40]
+                translatedText += \
+                    '<p><a href="' + url + \
+                    '" rel="nofollow noopener noreferrer" target="_blank">' + \
+                    urlDesc + '</a></p>'
     return translatedText
 
 

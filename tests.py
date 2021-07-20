@@ -4239,9 +4239,11 @@ def _testGetLinksFromContent():
         'This is <a href="' + link1 + '">a link</a>. ' + \
         'And <a href="' + link2 + '">another</a>.'
     links = getLinksFromContent(content)
-    assert len(links) == 2
-    assert link1 in links
-    assert link2 in links
+    assert len(links.items()) == 2
+    assert links.get('a link')
+    assert links['a link'] == link1
+    assert links.get('another')
+    assert links['another'] == link2
 
 
 def runAllTests():
