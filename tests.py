@@ -126,6 +126,7 @@ from markdown import markdownToHtml
 from languages import setActorLanguages
 from languages import getActorLanguages
 from languages import getLinksFromContent
+from languages import addLinksToContent
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -4236,14 +4237,18 @@ def _testGetLinksFromContent():
     link1 = 'https://somewebsite.net'
     link2 = 'http://somewhere.or.other'
     content = \
-        'This is <a href="' + link1 + '">a link</a>. ' + \
+        'This is <a href="' + link1 + '">@linked</a>. ' + \
         'And <a href="' + link2 + '">another</a>.'
     links = getLinksFromContent(content)
     assert len(links.items()) == 2
-    assert links.get('a link')
-    assert links['a link'] == link1
+    assert links.get('@linked')
+    assert links['@linked'] == link1
     assert links.get('another')
     assert links['another'] == link2
+
+    contentPlain = '<p>' + removeHtml(content) + '</p>'
+    content = addLinksToContent(contentPlain, links)
+    assert '>@linked</a>' in content
 
 
 def runAllTests():

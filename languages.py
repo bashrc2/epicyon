@@ -182,6 +182,28 @@ def getLinksFromContent(content: str) -> {}:
     return links
 
 
+def addLinksToContent(content: str, links: {}) -> str:
+    """Adds links back into plain text
+    """
+    for linkText, url in links.items():
+        urlDesc = url
+        if linkText.startswith('@') and linkText in content:
+            content = \
+                content.replace(linkText,
+                                '<a href="' + url +
+                                '" rel="nofollow noopener ' +
+                                'noreferrer" target="_blank">' +
+                                linkText + '</a>')
+        else:
+            if len(urlDesc) > 40:
+                urlDesc = urlDesc[:40]
+            content += \
+                '<p><a href="' + url + \
+                '" rel="nofollow noopener noreferrer" target="_blank">' + \
+                urlDesc + '</a></p>'
+    return content
+
+
 def _libretranslate(url: str, text: str,
                     source: str, target: str, apiKey: str = None) -> str:
     """Translate string using libretranslate
@@ -220,22 +242,7 @@ def _libretranslate(url: str, text: str,
 
     # append links form the original text
     if links:
-        for linkText, url in links.items():
-            urlDesc = url
-            if linkText.startswith('@') and linkText in translatedText:
-                translatedText = \
-                    translatedText.replace(linkText,
-                                           '<a href="' + url +
-                                           '" rel="nofollow noopener ' +
-                                           'noreferrer" target="_blank">' +
-                                           linkText + '</a>')
-            else:
-                if len(urlDesc) > 40:
-                    urlDesc = urlDesc[:40]
-                translatedText += \
-                    '<p><a href="' + url + \
-                    '" rel="nofollow noopener noreferrer" target="_blank">' + \
-                    urlDesc + '</a></p>'
+        translatedText = addLinksToContent(translatedText, links)
     return translatedText
 
 
