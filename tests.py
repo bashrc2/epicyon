@@ -4246,8 +4246,6 @@ def _testGetLinksFromContent():
 
 def runAllTests():
     print('Running tests...')
-    _testGetLinksFromContent()
-    return
     updateDefaultThemesList(os.getcwd())
     _testGetLinksFromContent()
     _testSetActorLanguages()
