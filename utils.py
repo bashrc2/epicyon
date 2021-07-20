@@ -37,14 +37,15 @@ def getContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
         thisPostJson = postJsonObject['object']
     if not thisPostJson.get('content'):
         return ''
-    content = thisPostJson['content']
+    content = ''
     if thisPostJson.get('contentMap'):
         if isinstance(thisPostJson['contentMap'], dict):
             if thisPostJson['contentMap'].get(systemLanguage):
                 if isinstance(thisPostJson['contentMap'][systemLanguage], str):
                     return thisPostJson['contentMap'][systemLanguage]
-    if not isinstance(content, str):
-        return ''
+    else:
+        if isinstance(thisPostJson['content'], str):
+            content = thisPostJson['content']
     return content
 
 
