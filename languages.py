@@ -271,9 +271,9 @@ def autoTranslatePost(baseDir: str, postJsonObject: {},
                 _libretranslate(libretranslateUrl, content,
                                 lang, systemLanguage,
                                 libretranslateApiKey)
-            if removeHtml(translatedText) == removeHtml(content):
-                return content
             if translatedText:
+                if removeHtml(translatedText) == removeHtml(content):
+                    return content
                 translatedText = \
                     '<p>' + translate['Translated'].upper() + '</p>' + \
                     translatedText
