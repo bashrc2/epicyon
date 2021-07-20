@@ -220,6 +220,10 @@ def _libretranslate(url: str, text: str,
     # LibreTranslate doesn't like markup
     text = removeHtml(text)
 
+    # remove any links from plain text version of the content
+    for _, url in links.items():
+        text = text.replace(url, '')
+
     ltParams = {
         "q": text,
         "source": source,
