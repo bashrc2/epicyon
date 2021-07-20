@@ -2060,6 +2060,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     roleAssignStr = ''
     peertubeStr = ''
     libretranslateStr = ''
+    graphicsStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
 
