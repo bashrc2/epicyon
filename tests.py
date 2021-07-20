@@ -4247,6 +4247,7 @@ def _testGetLinksFromContent():
     assert links['another'] == link2
 
     contentPlain = '<p>' + removeHtml(content) + '</p>'
+    assert '>@linked</a>' not in contentPlain
     content = addLinksToContent(contentPlain, links)
     assert '>@linked</a>' in content
 
