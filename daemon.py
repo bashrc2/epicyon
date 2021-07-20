@@ -4239,9 +4239,9 @@ class PubServer(BaseHTTPRequestHandler):
                        fields.get('passwordconfirm'):
                         if len(fields['password']) > 2 and \
                            fields['password'] == fields['passwordconfirm']:
-                                # set password
-                                storeBasicCredentials(baseDir, nickname,
-                                                      fields['password'])
+                            # set password
+                            storeBasicCredentials(baseDir, nickname,
+                                                  fields['password'])
 
                     # change city
                     if fields.get('cityDropdown'):

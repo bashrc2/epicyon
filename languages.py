@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import json
 from urllib import request, parse
+from utils import removeHtml
 from utils import acctDir
 from utils import hasObjectDict
 from utils import getConfigParam
@@ -194,6 +195,9 @@ def _libretranslate(url: str, text: str,
             url += "/translate"
         else:
             url += "translate"
+
+    # LibreTranslate doesn't like markup
+    text = removeHtml(text)
 
     ltParams = {
         "q": text,
