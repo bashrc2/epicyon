@@ -2606,3 +2606,11 @@ def validUrlPrefix(url: str) -> bool:
         if url.startswith(pre):
             return True
     return False
+
+
+def removeLineEndings(text: str) -> str:
+    """Removes any newline from the end of a string
+    """
+    text = text.replace('\n', '')
+    text = text.replace('\r', '')
+    return text.strip()

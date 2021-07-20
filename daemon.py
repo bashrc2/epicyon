@@ -210,6 +210,7 @@ from shares import expireShares
 from categories import setHashtagCategory
 from languages import getActorLanguages
 from languages import setActorLanguages
+from utils import removeLineEndings
 from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
@@ -4237,6 +4238,10 @@ class PubServer(BaseHTTPRequestHandler):
                     # change password
                     if fields.get('password') and \
                        fields.get('passwordconfirm'):
+                        fields['password'] = \
+                            removeLineEndings(fields['password'])
+                        fields['passwordconfirm'] = \
+                            removeLineEndings(fields['passwordconfirm'])
                         if len(fields['password']) > 2 and \
                            fields['password'] == fields['passwordconfirm']:
                             # set password
