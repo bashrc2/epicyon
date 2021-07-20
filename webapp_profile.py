@@ -1612,11 +1612,11 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
         '    <div class="container">\n' + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
-        '      <input type="text" name="password" ' + \
+        '      <input type="password" name="password" ' + \
         'value=""><br>\n' + \
         '<label class="labels">' + translate['Confirm Password'] + \
         '</label><br>\n' + \
-        '      <input type="text" name="passwordconfirm" value="">\n' + \
+        '      <input type="password" name="passwordconfirm" value="">\n' + \
         '    </div></details>\n'
     return editProfileForm
 
