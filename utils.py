@@ -2614,3 +2614,13 @@ def removeLineEndings(text: str) -> str:
     text = text.replace('\n', '')
     text = text.replace('\r', '')
     return text.strip()
+
+
+def validPassword(password: str) -> bool:
+    """Returns true if the given password is valid
+    """
+    if len(password) < 8:
+        return False
+    if not re.match("^[a-zA-Z0-9!]*$", password):
+        return False
+    return True

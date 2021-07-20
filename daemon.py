@@ -210,6 +210,7 @@ from shares import expireShares
 from categories import setHashtagCategory
 from languages import getActorLanguages
 from languages import setActorLanguages
+from utils import validPassword
 from utils import removeLineEndings
 from utils import getBaseContentFromPost
 from utils import acctDir
@@ -1490,6 +1491,22 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self.server.lastLoginTime = int(time.time())
             if register:
+                if not validPassword(loginPassword):
+                    self.server.POSTbusy = False
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        self._redirect_headers('http://' + onionDomain +
+                                               '/login', cookie,
+                                               callingDomain)
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        self._redirect_headers('http://' + i2pDomain +
+                                               '/login', cookie,
+                                               callingDomain)
+                    else:
+                        self._redirect_headers(httpPrefix + '://' +
+                                               domainFull + '/login',
+                                               cookie, callingDomain)
+                    return
+
                 if not registerAccount(baseDir, httpPrefix, domain, port,
                                        loginNickname, loginPassword,
                                        self.server.manualFollowerApproval):
@@ -4242,7 +4259,7 @@ class PubServer(BaseHTTPRequestHandler):
                             removeLineEndings(fields['password'])
                         fields['passwordconfirm'] = \
                             removeLineEndings(fields['passwordconfirm'])
-                        if len(fields['password']) > 2 and \
+                        if validPassword(fields['password']) and \
                            fields['password'] == fields['passwordconfirm']:
                             # set password
                             storeBasicCredentials(baseDir, nickname,

@@ -39,6 +39,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import validPassword
 from utils import userAgentDomain
 from utils import camelCaseSplit
 from utils import decodedHost
@@ -4252,9 +4253,18 @@ def _testGetLinksFromContent():
     assert '>@linked</a>' in content
 
 
+def _testValidPassword():
+    print('testValidPassword')
+    assert not validPassword('123')
+    assert not validPassword('')
+    assert not validPassword('Abcdefg1?23456')
+    assert validPassword('Abcdef!g123456')
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testValidPassword()
     _testGetLinksFromContent()
     _testSetActorLanguages()
     _testLimitRepetedWords()
