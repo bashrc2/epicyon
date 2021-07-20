@@ -37,6 +37,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
+from utils import removeLineEndings
 from utils import removeDomainPort
 from utils import getStatusNumber
 from utils import getFullDomain
@@ -396,6 +397,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             print(publicKeyPem, file=text_file)
 
         if password:
+            password = removeLineEndings(password)
             storeBasicCredentials(baseDir, nickname, password)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
