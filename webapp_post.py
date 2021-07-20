@@ -24,6 +24,7 @@ from posts import downloadAnnounce
 from posts import populateRepliesJson
 from utils import getActorLanguagesList
 from utils import getBaseContentFromPost
+from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
@@ -1600,8 +1601,8 @@ def individualPostAsHtml(allowDownloads: bool,
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
-    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage,
-                                        languagesUnderstood)
+    contentStr = getContentFromPost(postJsonObject, systemLanguage,
+                                    languagesUnderstood)
     if not contentStr:
         contentStr = \
             autoTranslatePost(baseDir, postJsonObject,
