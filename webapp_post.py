@@ -1594,7 +1594,9 @@ def individualPostAsHtml(allowDownloads: bool,
 
     contentStr = getContentFromPost(postJsonObject, systemLanguage)
     if not contentStr:
-        contentStr = autoTranslatePost(baseDir, postJsonObject, systemLanguage)
+        contentStr = \
+            autoTranslatePost(baseDir, postJsonObject,
+                              systemLanguage, translate)
         if not contentStr:
             return ''
 

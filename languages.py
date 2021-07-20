@@ -256,7 +256,7 @@ def _libretranslate(url: str, text: str,
 
 
 def autoTranslatePost(baseDir: str, postJsonObject: {},
-                      systemLanguage: str) -> str:
+                      systemLanguage: str, translate: {}) -> str:
     """Tries to automatically translate the given post
     """
     if not hasObjectDict(postJsonObject):
@@ -276,8 +276,14 @@ def autoTranslatePost(baseDir: str, postJsonObject: {},
         _libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
     for lang in langList:
         if msgObject['contentMap'].get(lang):
-            return _libretranslate(libretranslateUrl,
-                                   msgObject['contentMap']['lang'],
-                                   lang, systemLanguage,
-                                   libretranslateApiKey)
+            translatedText = \
+                _libretranslate(libretranslateUrl,
+                                msgObject['contentMap']['lang'],
+                                lang, systemLanguage,
+                                libretranslateApiKey)
+            if translatedText:
+                translatedText = \
+                    '<p>' + translate['Translated'].upper() + '</p>' + \
+                    translatedText
+            return translatedText
     return ''
