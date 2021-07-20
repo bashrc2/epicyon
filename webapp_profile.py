@@ -1636,6 +1636,7 @@ def _htmlEditProfileLibreTranslate(translate: {},
         '    <div class="container">\n' + \
         '<label class="labels">URL</label><br>\n' + \
         '      <input type="text" name="libretranslateUrl" ' + \
+        'placeholder="http://0.0.0.0:5000" ' + \
         'value="' + libretranslateUrl + '"><br>\n' + \
         '<label class="labels">API Key</label><br>\n' + \
         '      <input type="text" name="libretranslateApiKey" ' + \
