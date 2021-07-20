@@ -4236,12 +4236,12 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change password
                     if fields.get('password'):
-                        if fields.get('passwordconfirm'):
-                            if actorJson['password'] == \
-                               fields['passwordconfirm']:
-                                if len(actorJson['password']) > 2:
+                        if len(fields['password']) > 2:
+                            if fields.get('passwordconfirm'):
+                                if fields['password'] == \
+                                   fields['passwordconfirm']:
                                     # set password
-                                    pwd = actorJson['password']
+                                    pwd = fields['password']
                                     storeBasicCredentials(baseDir,
                                                           nickname,
                                                           pwd)
