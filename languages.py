@@ -241,13 +241,17 @@ def _libretranslate(url: str, text: str,
 
     translatedText = \
         '<p>' + json.loads(response_str)['translatedText'] + '</p>'
+
+    # append links form the original text
     if links:
         for url in links:
             urlDesc = url
             if len(urlDesc) > 30:
                 urlDesc = urlDesc[:30]
             translatedText += \
-                '<p><a href="' + url + '">' + urlDesc + '</a></p>'
+                '<p><a href="' + url + \
+                '" rel="nofollow noopener noreferrer" target="_blank">' + \
+                urlDesc + '</a></p>'
     return translatedText
 
 
