@@ -208,7 +208,6 @@ def _libretranslate(url: str, text: str,
                     source: str, target: str, apiKey: str = None) -> str:
     """Translate string using libretranslate
     """
-
     if not url.endswith('/translate'):
         if not url.endswith('/'):
             url += "/translate"
@@ -267,11 +266,13 @@ def autoTranslatePost(baseDir: str, postJsonObject: {},
         _libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
     for lang in langList:
         if msgObject['contentMap'].get(lang):
+            content = msgObject['contentMap'][lang]
             translatedText = \
-                _libretranslate(libretranslateUrl,
-                                msgObject['contentMap'][lang],
+                _libretranslate(libretranslateUrl, content,
                                 lang, systemLanguage,
                                 libretranslateApiKey)
+            if removeHtml(translatedText) == removeHtml(content):
+                return content
             if translatedText:
                 translatedText = \
                     '<p>' + translate['Translated'].upper() + '</p>' + \
