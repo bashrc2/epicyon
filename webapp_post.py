@@ -693,7 +693,7 @@ def _getBlogCitationsHtml(boxName: str,
     return citationsStr
 
 
-def _boostOwnTootHtml(translate: {}) -> str:
+def _boostOwnPostHtml(translate: {}) -> str:
     """The html title for announcing your own post
     """
     return '        <img loading="lazy" title="' + \
@@ -785,9 +785,9 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     if isinstance(objJson['attributedTo'], str):
         attributedTo = objJson['attributedTo']
 
-    # boosting your own toot
+    # boosting your own post
     if attributedTo.startswith(postActor):
-        titleStr += _boostOwnTootHtml(translate)
+        titleStr += _boostOwnPostHtml(translate)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
