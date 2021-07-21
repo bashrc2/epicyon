@@ -804,12 +804,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     getPersonFromCache(baseDir, attributedTo, personCache, allowDownloads)
     announceDisplayName = getDisplayName(baseDir, attributedTo, personCache)
     if not announceDisplayName:
-        titleStr += \
-            _announceWithoutDisplayNameHtml(translate, announceNickname,
-                                            announceDomain, postJsonObject)
         announceDisplayName = announceNickname + '@' + announceDomain
-#        return (titleStr, replyAvatarImageInPost,
-#                containerClassIcons, containerClass)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.3')
 
@@ -990,13 +985,7 @@ def _getPostTitleReplyHtml(baseDir: str,
     getPersonFromCache(baseDir, replyActor, personCache, allowDownloads)
     replyDisplayName = getDisplayName(baseDir, replyActor, personCache)
     if not replyDisplayName:
-        inReplyTo = objJson['inReplyTo']
-        titleStr += \
-            _getReplyWithoutDisplayName(translate, inReplyTo,
-                                        replyNickname, replyDomain)
         replyDisplayName = replyNickname + '@' + replyDomain
-#        return (titleStr, replyAvatarImageInPost,
-#                containerClassIcons, containerClass)
 
     # add emoji to the display name
     if ':' in replyDisplayName:
