@@ -644,6 +644,7 @@ def htmlHashtagSearch(cssCache: {},
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str) -> str:
     """Show a page containing search results for a hashtag
+    or after selecting a hashtag from the swarm
     """
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
