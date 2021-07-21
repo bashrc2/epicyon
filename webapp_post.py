@@ -776,8 +776,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 
     # has no attribution
     if not objJson.get('attributedTo'):
-        titleStr += \
-            _announceUnattributedHtml(translate, postJsonObject)
+        titleStr += _announceUnattributedHtml(translate, postJsonObject)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
@@ -797,23 +796,17 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     if attributedTo:
         announceNickname = getNicknameFromActor(attributedTo)
     if not announceNickname:
-        titleStr += \
-            _announceUnattributedHtml(translate, postJsonObject)
+        titleStr += _announceUnattributedHtml(translate, postJsonObject)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    announceDomain, announcePort = \
-        getDomainFromActor(attributedTo)
-    getPersonFromCache(baseDir, attributedTo,
-                       personCache, allowDownloads)
-    announceDisplayName = \
-        getDisplayName(baseDir, attributedTo, personCache)
+    announceDomain, announcePort = getDomainFromActor(attributedTo)
+    getPersonFromCache(baseDir, attributedTo, personCache, allowDownloads)
+    announceDisplayName = getDisplayName(baseDir, attributedTo, personCache)
     if not announceDisplayName:
         titleStr += \
-            _announceWithoutDisplayNameHtml(translate,
-                                            announceNickname,
-                                            announceDomain,
-                                            postJsonObject)
+            _announceWithoutDisplayNameHtml(translate, announceNickname,
+                                            announceDomain, postJsonObject)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
@@ -822,14 +815,11 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     # add any emoji to the display name
     if ':' in announceDisplayName:
         announceDisplayName = \
-            addEmojiToDisplayName(baseDir, httpPrefix,
-                                  nickname, domain,
-                                  announceDisplayName,
-                                  False)
+            addEmojiToDisplayName(baseDir, httpPrefix, nickname, domain,
+                                  announceDisplayName, False)
     _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
     titleStr += \
-        _announceWithDisplayNameHtml(translate,
-                                     postJsonObject,
+        _announceWithDisplayNameHtml(translate, postJsonObject,
                                      announceDisplayName)
     # show avatar of person replied to
     announceActor = attributedTo
@@ -986,32 +976,23 @@ def _getPostTitleReplyHtml(baseDir: str,
     replyActor = inReplyTo.split('/statuses/')[0]
     replyNickname = getNicknameFromActor(replyActor)
     if not replyNickname:
-        titleStr += \
-            _replyToUnknownHtml(translate, postJsonObject)
+        titleStr += _replyToUnknownHtml(translate, postJsonObject)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    replyDomain, replyPort = \
-        getDomainFromActor(replyActor)
+    replyDomain, replyPort = getDomainFromActor(replyActor)
     if not (replyNickname and replyDomain):
-        titleStr += \
-            _replyToUnknownHtml(translate, postJsonObject)
+        titleStr += _replyToUnknownHtml(translate, postJsonObject)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    getPersonFromCache(baseDir, replyActor,
-                       personCache,
-                       allowDownloads)
-    replyDisplayName = \
-        getDisplayName(baseDir, replyActor,
-                       personCache)
+    getPersonFromCache(baseDir, replyActor, personCache, allowDownloads)
+    replyDisplayName = getDisplayName(baseDir, replyActor, personCache)
     if not replyDisplayName:
         inReplyTo = objJson['inReplyTo']
         titleStr += \
-            _getReplyWithoutDisplayName(translate,
-                                        inReplyTo,
-                                        replyNickname,
-                                        replyDomain)
+            _getReplyWithoutDisplayName(translate, inReplyTo,
+                                        replyNickname, replyDomain)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
@@ -1020,13 +1001,11 @@ def _getPostTitleReplyHtml(baseDir: str,
         _logPostTiming(enableTimingLog, postStartTime, '13.5')
 
         replyDisplayName = \
-            addEmojiToDisplayName(baseDir, httpPrefix,
-                                  nickname, domain,
+            addEmojiToDisplayName(baseDir, httpPrefix, nickname, domain,
                                   replyDisplayName, False)
         _logPostTiming(enableTimingLog, postStartTime, '13.6')
 
-    titleStr += \
-        _getReplyHtml(translate, inReplyTo, replyDisplayName)
+    titleStr += _getReplyHtml(translate, inReplyTo, replyDisplayName)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.7')
 
@@ -1322,8 +1301,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postJsonObject = postJsonAnnounce
 
         announceFilename = \
-            locatePost(baseDir, nickname, domain,
-                       postJsonObject['id'])
+            locatePost(baseDir, nickname, domain, postJsonObject['id'])
         if announceFilename:
             updateAnnounceCollection(recentPostsCache,
                                      baseDir, announceFilename,
