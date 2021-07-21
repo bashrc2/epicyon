@@ -807,8 +807,9 @@ def _getPostTitleAnnounceHtml(baseDir: str,
         titleStr += \
             _announceWithoutDisplayNameHtml(translate, announceNickname,
                                             announceDomain, postJsonObject)
-        return (titleStr, replyAvatarImageInPost,
-                containerClassIcons, containerClass)
+        announceDisplayName = announceNickname + '@' + announceDomain
+#        return (titleStr, replyAvatarImageInPost,
+#                containerClassIcons, containerClass)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.3')
 
@@ -993,8 +994,9 @@ def _getPostTitleReplyHtml(baseDir: str,
         titleStr += \
             _getReplyWithoutDisplayName(translate, inReplyTo,
                                         replyNickname, replyDomain)
-        return (titleStr, replyAvatarImageInPost,
-                containerClassIcons, containerClass)
+        replyDisplayName = replyNickname + '@' + replyDomain
+#        return (titleStr, replyAvatarImageInPost,
+#                containerClassIcons, containerClass)
 
     # add emoji to the display name
     if ':' in replyDisplayName:
@@ -1011,8 +1013,7 @@ def _getPostTitleReplyHtml(baseDir: str,
 
     # show avatar of person replied to
     replyAvatarUrl = \
-        getPersonAvatarUrl(baseDir, replyActor,
-                           personCache, allowDownloads)
+        getPersonAvatarUrl(baseDir, replyActor, personCache, allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
