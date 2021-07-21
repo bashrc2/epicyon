@@ -772,84 +772,87 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     """
     titleStr = ''
     replyAvatarImageInPost = ''
+    objJson = postJsonObject['object']
 
-    if postJsonObject['object'].get('attributedTo'):
-        attributedTo = ''
-        if isinstance(postJsonObject['object']['attributedTo'], str):
-            attributedTo = postJsonObject['object']['attributedTo']
-
-        if attributedTo.startswith(postActor):
-            titleStr += _boostOwnTootHtml(translate)
-        else:
-            # boosting another person's post
-            _logPostTiming(enableTimingLog, postStartTime, '13.2')
-            announceNickname = None
-            if attributedTo:
-                announceNickname = getNicknameFromActor(attributedTo)
-            if announceNickname:
-                announceDomain, announcePort = \
-                    getDomainFromActor(attributedTo)
-                getPersonFromCache(baseDir, attributedTo,
-                                   personCache, allowDownloads)
-                announceDisplayName = \
-                    getDisplayName(baseDir, attributedTo, personCache)
-                if announceDisplayName:
-                    _logPostTiming(enableTimingLog, postStartTime, '13.3')
-
-                    # add any emoji to the display name
-                    if ':' in announceDisplayName:
-                        announceDisplayName = \
-                            addEmojiToDisplayName(baseDir, httpPrefix,
-                                                  nickname, domain,
-                                                  announceDisplayName,
-                                                  False)
-                    _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
-                    titleStr += \
-                        _announceWithDisplayNameHtml(translate,
-                                                     postJsonObject,
-                                                     announceDisplayName)
-                    # show avatar of person replied to
-                    announceActor = \
-                        postJsonObject['object']['attributedTo']
-                    announceAvatarUrl = \
-                        getPersonAvatarUrl(baseDir, announceActor,
-                                           personCache, allowDownloads)
-
-                    _logPostTiming(enableTimingLog, postStartTime, '13.4')
-
-                    if announceAvatarUrl:
-                        idx = 'Show options for this person'
-                        if '/users/news/' not in announceAvatarUrl:
-                            replyAvatarImageInPost = \
-                                '        ' \
-                                '<div class=' + \
-                                '"timeline-avatar-reply">\n' \
-                                '            ' + \
-                                '<a class="imageAnchor" ' + \
-                                'href="/users/' + nickname + \
-                                '?options=' + \
-                                announceActor + ';' + \
-                                str(pageNumber) + \
-                                ';' + announceAvatarUrl + \
-                                messageIdStr + '">' \
-                                '<img loading="lazy" src="' + \
-                                announceAvatarUrl + '" ' + \
-                                'title="' + translate[idx] + \
-                                '" alt=" "' + avatarPosition + \
-                                getBrokenLinkSubstitute() + \
-                                '/></a>\n    </div>\n'
-                else:
-                    titleStr += \
-                        _announceWithoutDisplayNameHtml(translate,
-                                                        announceNickname,
-                                                        announceDomain,
-                                                        postJsonObject)
-            else:
-                titleStr += \
-                    _announceUnattributedHtml(translate, postJsonObject)
-    else:
+    # has no attribution
+    if not objJson.get('attributedTo'):
         titleStr += \
             _announceUnattributedHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    attributedTo = ''
+    if isinstance(objJson['attributedTo'], str):
+        attributedTo = objJson['attributedTo']
+
+    # boosting your own toot
+    if attributedTo.startswith(postActor):
+        titleStr += _boostOwnTootHtml(translate)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    # boosting another person's post
+    _logPostTiming(enableTimingLog, postStartTime, '13.2')
+    announceNickname = None
+    if attributedTo:
+        announceNickname = getNicknameFromActor(attributedTo)
+    if not announceNickname:
+        titleStr += \
+            _announceUnattributedHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    announceDomain, announcePort = \
+        getDomainFromActor(attributedTo)
+    getPersonFromCache(baseDir, attributedTo,
+                       personCache, allowDownloads)
+    announceDisplayName = \
+        getDisplayName(baseDir, attributedTo, personCache)
+    if not announceDisplayName:
+        titleStr += \
+            _announceWithoutDisplayNameHtml(translate,
+                                            announceNickname,
+                                            announceDomain,
+                                            postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.3')
+
+    # add any emoji to the display name
+    if ':' in announceDisplayName:
+        announceDisplayName = \
+            addEmojiToDisplayName(baseDir, httpPrefix,
+                                  nickname, domain,
+                                  announceDisplayName,
+                                  False)
+    _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
+    titleStr += \
+        _announceWithDisplayNameHtml(translate,
+                                     postJsonObject,
+                                     announceDisplayName)
+    # show avatar of person replied to
+    announceActor = objJson['attributedTo']
+    announceAvatarUrl = \
+        getPersonAvatarUrl(baseDir, announceActor,
+                           personCache, allowDownloads)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.4')
+
+    if announceAvatarUrl:
+        idx = 'Show options for this person'
+        if '/users/news/' not in announceAvatarUrl:
+            replyAvatarImageInPost = \
+                '        <div class="timeline-avatar-reply">\n' \
+                '            <a class="imageAnchor" ' + \
+                'href="/users/' + nickname + '?options=' + \
+                announceActor + ';' + str(pageNumber) + \
+                ';' + announceAvatarUrl + messageIdStr + '">' \
+                '<img loading="lazy" src="' + \
+                announceAvatarUrl + '" ' + \
+                'title="' + translate[idx] + \
+                '" alt=" "' + avatarPosition + \
+                getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
