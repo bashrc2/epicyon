@@ -718,22 +718,6 @@ def _announceUnattributedHtml(translate: {},
         '" class="announceOrReply">@unattributed</a>\n'
 
 
-def _announceWithoutDisplayNameHtml(translate: {},
-                                    announceNickname: str,
-                                    announceDomain: str,
-                                    postJsonObject: {}) -> str:
-    """Returns html for an announce title where there is no display name
-    only a handle nick@domain
-    """
-    return '    <img loading="lazy" title="' + \
-        translate['announces'] + '" alt="' + translate['announces'] + \
-        '" src="/icons/repeat_inactive.png" ' + \
-        'class="announceOrReply"/>\n' + \
-        '      <a href="' + postJsonObject['object']['id'] + '" ' + \
-        'class="announceOrReply">@' + \
-        announceNickname + '@' + announceDomain + '</a>\n'
-
-
 def _announceWithDisplayNameHtml(translate: {},
                                  postJsonObject: {},
                                  announceDisplayName: str) -> str:
@@ -897,21 +881,6 @@ def _getReplyHtml(translate: {},
         '        <a href="' + inReplyTo + \
         '" class="announceOrReply">' + \
         replyDisplayName + '</a>\n'
-
-
-def _getReplyWithoutDisplayName(translate: {},
-                                inReplyTo: str,
-                                replyNickname: str, replyDomain: str) -> str:
-    """Returns html for a reply without a display name,
-    only a handle nick@domain
-    """
-    return '        ' + \
-        '<img loading="lazy" title="' + translate['replying to'] + \
-        '" alt="' + translate['replying to'] + \
-        '" src="/icons/reply.png" ' + \
-        'class="announceOrReply"/>\n' + '        <a href="' + \
-        inReplyTo + '" class="announceOrReply">@' + \
-        replyNickname + '@' + replyDomain + '</a>\n'
 
 
 def _getPostTitleReplyHtml(baseDir: str,
