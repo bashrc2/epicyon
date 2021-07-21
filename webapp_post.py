@@ -1043,11 +1043,17 @@ def _getPostTitleHtml(baseDir: str,
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
-    titleStr = ''
-    replyAvatarImageInPost = ''
+#    titleStr = ''
+#    replyAvatarImageInPost = ''
 #    if not showRepeatIcon:
 #        return (titleStr, replyAvatarImageInPost,
 #                containerClassIcons, containerClass)
+
+    if not isAnnounced and boxName == 'search' and \
+       postJsonObject.get('object'):
+        if postJsonObject['object'].get('attributedTo'):
+            if postJsonObject['object']['attributedTo'] != postActor:
+                isAnnounced = True
 
     if isAnnounced:
         return _getPostTitleAnnounceHtml(baseDir,
