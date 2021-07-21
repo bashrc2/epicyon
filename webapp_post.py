@@ -825,20 +825,21 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '13.4')
 
-    if announceAvatarUrl:
-        idx = 'Show options for this person'
-        if '/users/news/' not in announceAvatarUrl:
-            replyAvatarImageInPost = \
-                '        <div class="timeline-avatar-reply">\n' \
-                '            <a class="imageAnchor" ' + \
-                'href="/users/' + nickname + '?options=' + \
-                announceActor + ';' + str(pageNumber) + \
-                ';' + announceAvatarUrl + messageIdStr + '">' \
-                '<img loading="lazy" src="' + \
-                announceAvatarUrl + '" ' + \
-                'title="' + translate[idx] + \
-                '" alt=" "' + avatarPosition + \
-                getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
+    if not announceAvatarUrl:
+        announceAvatarUrl = ''
+    idx = 'Show options for this person'
+    if '/users/news/' not in announceAvatarUrl:
+        replyAvatarImageInPost = \
+            '        <div class="timeline-avatar-reply">\n' \
+            '            <a class="imageAnchor" ' + \
+            'href="/users/' + nickname + '?options=' + \
+            announceActor + ';' + str(pageNumber) + \
+            ';' + announceAvatarUrl + messageIdStr + '">' \
+            '<img loading="lazy" src="' + \
+            announceAvatarUrl + '" ' + \
+            'title="' + translate[idx] + \
+            '" alt=" "' + avatarPosition + \
+            getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
