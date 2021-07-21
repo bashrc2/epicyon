@@ -948,20 +948,25 @@ def _getPostTitleReplyHtml(baseDir: str,
     """
     titleStr = ''
     replyAvatarImageInPost = ''
+    objJson = postJsonObject['object']
 
-    if not postJsonObject['object'].get('inReplyTo'):
+    # not a reply
+    if not objJson.get('inReplyTo'):
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
     containerClassIcons = 'containericons darker'
     containerClass = 'container darker'
-    if postJsonObject['object']['inReplyTo'].startswith(postActor):
+
+    # reply to self
+    if objJson['inReplyTo'].startswith(postActor):
         titleStr += _replyToYourselfHtml(translate)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    if '/statuses/' in postJsonObject['object']['inReplyTo']:
-        inReplyTo = postJsonObject['object']['inReplyTo']
+    # has a reply
+    if '/statuses/' in objJson['inReplyTo']:
+        inReplyTo = objJson['inReplyTo']
         replyActor = inReplyTo.split('/statuses/')[0]
         replyNickname = getNicknameFromActor(replyActor)
         if replyNickname:
@@ -980,12 +985,9 @@ def _getPostTitleReplyHtml(baseDir: str,
                         _logPostTiming(enableTimingLog, postStartTime, '13.5')
 
                         replyDisplayName = \
-                            addEmojiToDisplayName(baseDir,
-                                                  httpPrefix,
-                                                  nickname,
-                                                  domain,
-                                                  replyDisplayName,
-                                                  False)
+                            addEmojiToDisplayName(baseDir, httpPrefix,
+                                                  nickname, domain,
+                                                  replyDisplayName, False)
                         _logPostTiming(enableTimingLog, postStartTime, '13.6')
 
                     titleStr += \
@@ -995,10 +997,8 @@ def _getPostTitleReplyHtml(baseDir: str,
 
                     # show avatar of person replied to
                     replyAvatarUrl = \
-                        getPersonAvatarUrl(baseDir,
-                                           replyActor,
-                                           personCache,
-                                           allowDownloads)
+                        getPersonAvatarUrl(baseDir, replyActor,
+                                           personCache, allowDownloads)
 
                     _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
@@ -1027,8 +1027,7 @@ def _getPostTitleReplyHtml(baseDir: str,
                             getBrokenLinkSubstitute() + \
                             '/></a>\n        </div>\n'
                 else:
-                    inReplyTo = \
-                        postJsonObject['object']['inReplyTo']
+                    inReplyTo = objJson['inReplyTo']
                     titleStr += \
                         _getReplyWithoutDisplayName(translate,
                                                     inReplyTo,
@@ -1038,8 +1037,7 @@ def _getPostTitleReplyHtml(baseDir: str,
             titleStr += \
                 _replyToUnknownHtml(translate, postJsonObject)
     else:
-        postDomain = \
-            postJsonObject['object']['inReplyTo']
+        postDomain = objJson['inReplyTo']
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             postDomain = postDomain.replace(prefix, '')
