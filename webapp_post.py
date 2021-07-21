@@ -832,7 +832,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
                                      postJsonObject,
                                      announceDisplayName)
     # show avatar of person replied to
-    announceActor = objJson['attributedTo']
+    announceActor = attributedTo
     announceAvatarUrl = \
         getPersonAvatarUrl(baseDir, announceActor,
                            personCache, allowDownloads)
@@ -968,78 +968,7 @@ def _getPostTitleReplyHtml(baseDir: str,
                 containerClassIcons, containerClass)
 
     # has a reply
-    if '/statuses/' in objJson['inReplyTo']:
-        inReplyTo = objJson['inReplyTo']
-        replyActor = inReplyTo.split('/statuses/')[0]
-        replyNickname = getNicknameFromActor(replyActor)
-        if replyNickname:
-            replyDomain, replyPort = \
-                getDomainFromActor(replyActor)
-            if replyNickname and replyDomain:
-                getPersonFromCache(baseDir, replyActor,
-                                   personCache,
-                                   allowDownloads)
-                replyDisplayName = \
-                    getDisplayName(baseDir, replyActor,
-                                   personCache)
-                if replyDisplayName:
-                    # add emoji to the display name
-                    if ':' in replyDisplayName:
-                        _logPostTiming(enableTimingLog, postStartTime, '13.5')
-
-                        replyDisplayName = \
-                            addEmojiToDisplayName(baseDir, httpPrefix,
-                                                  nickname, domain,
-                                                  replyDisplayName, False)
-                        _logPostTiming(enableTimingLog, postStartTime, '13.6')
-
-                    titleStr += \
-                        _getReplyHtml(translate, inReplyTo, replyDisplayName)
-
-                    _logPostTiming(enableTimingLog, postStartTime, '13.7')
-
-                    # show avatar of person replied to
-                    replyAvatarUrl = \
-                        getPersonAvatarUrl(baseDir, replyActor,
-                                           personCache, allowDownloads)
-
-                    _logPostTiming(enableTimingLog, postStartTime, '13.8')
-
-                    if replyAvatarUrl:
-                        replyAvatarImageInPost = \
-                            '        <div class=' + \
-                            '"timeline-avatar-reply">\n'
-                        replyAvatarImageInPost += \
-                            '          ' + \
-                            '<a class="imageAnchor" ' + \
-                            'href="/users/' + nickname + \
-                            '?options=' + replyActor + \
-                            ';' + str(pageNumber) + ';' + \
-                            replyAvatarUrl + \
-                            messageIdStr + '">\n'
-                        replyAvatarImageInPost += \
-                            '          ' + \
-                            '<img loading="lazy" src="' + \
-                            replyAvatarUrl + '" '
-                        replyAvatarImageInPost += \
-                            'title="' + \
-                            translate['Show profile']
-                        replyAvatarImageInPost += \
-                            '" alt=" "' + \
-                            avatarPosition + \
-                            getBrokenLinkSubstitute() + \
-                            '/></a>\n        </div>\n'
-                else:
-                    inReplyTo = objJson['inReplyTo']
-                    titleStr += \
-                        _getReplyWithoutDisplayName(translate,
-                                                    inReplyTo,
-                                                    replyNickname,
-                                                    replyDomain)
-        else:
-            titleStr += \
-                _replyToUnknownHtml(translate, postJsonObject)
-    else:
+    if '/statuses/' not in objJson['inReplyTo']:
         postDomain = objJson['inReplyTo']
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
@@ -1050,6 +979,75 @@ def _getPostTitleReplyHtml(baseDir: str,
             titleStr += \
                 _replyWithUnknownPathHtml(translate,
                                           postJsonObject, postDomain)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    inReplyTo = objJson['inReplyTo']
+    replyActor = inReplyTo.split('/statuses/')[0]
+    replyNickname = getNicknameFromActor(replyActor)
+    if not replyNickname:
+        titleStr += \
+            _replyToUnknownHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    replyDomain, replyPort = \
+        getDomainFromActor(replyActor)
+    if not (replyNickname and replyDomain):
+        titleStr += \
+            _replyToUnknownHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    getPersonFromCache(baseDir, replyActor,
+                       personCache,
+                       allowDownloads)
+    replyDisplayName = \
+        getDisplayName(baseDir, replyActor,
+                       personCache)
+    if not replyDisplayName:
+        inReplyTo = objJson['inReplyTo']
+        titleStr += \
+            _getReplyWithoutDisplayName(translate,
+                                        inReplyTo,
+                                        replyNickname,
+                                        replyDomain)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    # add emoji to the display name
+    if ':' in replyDisplayName:
+        _logPostTiming(enableTimingLog, postStartTime, '13.5')
+
+        replyDisplayName = \
+            addEmojiToDisplayName(baseDir, httpPrefix,
+                                  nickname, domain,
+                                  replyDisplayName, False)
+        _logPostTiming(enableTimingLog, postStartTime, '13.6')
+
+    titleStr += \
+        _getReplyHtml(translate, inReplyTo, replyDisplayName)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.7')
+
+    # show avatar of person replied to
+    replyAvatarUrl = \
+        getPersonAvatarUrl(baseDir, replyActor,
+                           personCache, allowDownloads)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.8')
+
+    if replyAvatarUrl:
+        replyAvatarImageInPost = \
+            '        <div class="timeline-avatar-reply">\n' + \
+            '          <a class="imageAnchor" ' + \
+            'href="/users/' + nickname + '?options=' + replyActor + \
+            ';' + str(pageNumber) + ';' + replyAvatarUrl + \
+            messageIdStr + '">\n' + \
+            '          <img loading="lazy" src="' + replyAvatarUrl + '" ' + \
+            'title="' + translate['Show profile'] + \
+            '" alt=" "' + avatarPosition + getBrokenLinkSubstitute() + \
+            '/></a>\n        </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
