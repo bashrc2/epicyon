@@ -827,6 +827,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 
     if not announceAvatarUrl:
         announceAvatarUrl = ''
+
     idx = 'Show options for this person'
     if '/users/news/' not in announceAvatarUrl:
         replyAvatarImageInPost = \
@@ -835,10 +836,8 @@ def _getPostTitleAnnounceHtml(baseDir: str,
             'href="/users/' + nickname + '?options=' + \
             announceActor + ';' + str(pageNumber) + \
             ';' + announceAvatarUrl + messageIdStr + '">' \
-            '<img loading="lazy" src="' + \
-            announceAvatarUrl + '" ' + \
-            'title="' + translate[idx] + \
-            '" alt=" "' + avatarPosition + \
+            '<img loading="lazy" src="' + announceAvatarUrl + '" ' + \
+            'title="' + translate[idx] + '" alt=" "' + avatarPosition + \
             getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
@@ -1046,9 +1045,9 @@ def _getPostTitleHtml(baseDir: str,
     """
     titleStr = ''
     replyAvatarImageInPost = ''
-    if not showRepeatIcon:
-        return (titleStr, replyAvatarImageInPost,
-                containerClassIcons, containerClass)
+#    if not showRepeatIcon:
+#        return (titleStr, replyAvatarImageInPost,
+#                containerClassIcons, containerClass)
 
     if isAnnounced:
         return _getPostTitleAnnounceHtml(baseDir,
