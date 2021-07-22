@@ -1162,10 +1162,13 @@ def editTextArea(label: str, name: str, value: str = "",
     """
     if value is None:
         value = ''
-    return \
-        '<label class="labels">' + label + '</label><br>\n' + \
+    text = ''
+    if label:
+        text = '<label class="labels">' + label + '</label><br>\n'
+    text += \
         '      <textarea id="message" placeholder=' + \
         '"' + placeholder + '" name="' + name + '" ' + \
         'style="height:' + height + 'px" spellcheck="' + \
         str(spellcheck).lower() + '">' + \
         value + '</textarea>\n'
+    return text

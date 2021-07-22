@@ -15,6 +15,7 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlHeaderWithBlogMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
+from webapp_utils import editTextArea
 from webapp_media import addEmbeddedElements
 from utils import getActorLanguagesList
 from utils import getBaseContentFromPost
@@ -854,17 +855,15 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogForm += \
         '    <input type="text" name="subject" value="' + titleStr + '">'
     editBlogForm += ''
-    editBlogForm += '    <br><label class="labels">' + \
-        placeholderMessage + '</label>'
+    editBlogForm += '    <br>'
     messageBoxHeight = 800
 
     contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     editBlogForm += \
-        '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px" spellcheck="true">' + \
-        contentStr + '</textarea>'
+        editTextArea(placeholderMessage, 'message', contentStr,
+                     messageBoxHeight, '', True)
     editBlogForm += dateAndLocation
     if not mediaInstance:
         editBlogForm += editBlogImageSection

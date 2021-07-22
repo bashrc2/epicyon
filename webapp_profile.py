@@ -1218,12 +1218,9 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         with open(counselorsFile, 'r') as f:
             counselors = f.read()
     roleAssignStr += \
-        '  <b><label class="labels">' + \
-        translate['Counselors'] + '</label></b><br>\n' + \
-        '  <textarea id="message" name="counselors" ' + \
-        'placeholder="" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        counselors + '</textarea>'
+        '  <b>' + \
+        editTextArea(translate['Counselors'], 'counselors', counselors,
+                     200, '', False)
 
     # artists
     artists = ''
@@ -1232,28 +1229,20 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         with open(artistsFile, 'r') as f:
             artists = f.read()
     roleAssignStr += \
-        '  <b><label class="labels">' + \
-        translate['Artists'] + '</label></b><br>\n' + \
-        '  <textarea id="message" name="artists" ' + \
-        'placeholder="" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        artists + '</textarea>' + endEditSection()
+        '  <b>' + \
+        editTextArea(translate['Artists'], 'artists', artists,
+                     200, '', False)
+    roleAssignStr += endEditSection()
 
     # Video section
-    idx = 'Show video previews for the following Peertube sites.'
-    peertubeStr = \
-        beginEditSection(translate['Video Settings']) + \
-        '      <b><label class="labels">' + \
-        translate['Peertube Instances'] + '</label></b>\n' + \
-        '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
+    peertubeStr = beginEditSection(translate['Video Settings'])
     peertubeInstancesStr = ''
     for url in peertubeInstances:
         peertubeInstancesStr += url + '\n'
     peertubeStr += \
-        '      <textarea id="message" name="ptInstances" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        peertubeInstancesStr + '</textarea>\n' + \
+        editTextArea(translate['Peertube Instances'], 'ptInstances',
+                     peertubeInstancesStr, 200, '', False)
+    peertubeStr += \
         '      <br>\n'
     YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
     if not YTReplacementDomain:
@@ -1343,13 +1332,11 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
             gitProjectsStr = gitProjectsFile.read()
 
     idx = 'List of project names that you wish to receive git patches for'
+    editProfileForm = beginEditSection(translate['Git Projects'])
     editProfileForm = \
-        beginEditSection(translate['Git Projects']) + \
-        '      <label class="labels">' + \
-        translate[idx] + '</label>\n' + \
-        '      <textarea id="message" name="gitProjects" ' + \
-        'style="height:100px" spellcheck="false">' + \
-        gitProjectsStr + '</textarea>\n' + endEditSection()
+        editTextArea(translate[idx], 'gitProjects', gitProjectsStr,
+                     100, '', False)
+    editProfileForm = endEditSection()
     return editProfileForm
 
 
@@ -1472,21 +1459,14 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Blocked accounts'] + '</label></b>\n' + \
-        '      <br><label class="labels">' + translate[idx] + '</label>\n' + \
-        '      <textarea id="message" name="blocked" style="height:200px" ' + \
-        'spellcheck="false">' + blockedStr + '</textarea>\n'
+        editTextArea(translate['Blocked accounts'], 'blocked', blockedStr,
+                     200, '', False)
 
     idx = 'Direct messages are always allowed from these instances.'
     editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Direct Message permitted instances'] + '</label></b>\n' + \
-        '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n' + \
-        '      <textarea id="message" name="dmAllowedInstances" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        dmAllowedInstancesStr + '</textarea>\n'
+        editTextArea(translate['Direct Message permitted instances'],
+                     'dmAllowedInstances', dmAllowedInstancesStr,
+                     200, '', False)
 
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
@@ -1505,11 +1485,9 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
             userAgentsBlockedStr += '\n'
         userAgentsBlockedStr += ua
     editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Blocked User Agents'] + '</label></b>\n' + \
-        '      <textarea id="message" name="userAgentsBlockedStr" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        userAgentsBlockedStr + '</textarea>\n'
+        editTextArea(translate['Blocked User Agents'],
+                     'userAgentsBlockedStr', userAgentsBlockedStr,
+                     200, '', False)
 
     editProfileForm += endEditSection()
     return editProfileForm
@@ -1702,10 +1680,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
                       displayNickname)
 
     editProfileForm += \
-        '      <label class="labels">' + \
-        translate['Your bio'] + '</label>\n' + \
-        '      <textarea id="message" name="bio" style="height:200px" ' + \
-        'spellcheck="true">' + bioStr + '</textarea>\n'
+        editTextArea(translate['Your bio'], 'bio', bioStr, 200, '', True)
 
     editProfileForm += \
         '      <label class="labels">' + translate['Avatar image'] + \
