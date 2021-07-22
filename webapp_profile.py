@@ -60,6 +60,30 @@ from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
 
 
+def _editText(label: str, name: str, value: str = "") -> str:
+    """Returns html for editing a text field
+    """
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="text" name="' + name + '" value="' + \
+        value + '">\n'
+
+
+def _editTextArea(label: str, name: str, value: str = "",
+                  height: int = 600,
+                  placeholder: str = "",
+                  spellcheck: bool = False) -> str:
+    """Returns html for editing a textarea field
+    """
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <textarea id="message" placeholder=' + \
+        '"' + placeholder + '" name="' + name + '" ' + \
+        'style="height:' + height + 'px" spellcheck="' + \
+        str(spellcheck).lower() + '">' + \
+        value + '</textarea>\n'
+
+
 def htmlProfileAfterSearch(cssCache: {},
                            recentPostsCache: {}, maxRecentPosts: int,
                            translate: {},
@@ -205,24 +229,22 @@ def htmlProfileAfterSearch(cssCache: {},
         followIsPermitted = False
 
     if followIsPermitted:
-        profileStr += '<div class="container">\n'
-        profileStr += '  <form method="POST" action="' + \
-            backUrl + '/followconfirm">\n'
-        profileStr += '    <center>\n'
         profileStr += \
+            '<div class="container">\n' + \
+            '  <form method="POST" action="' + \
+            backUrl + '/followconfirm">\n' + \
+            '    <center>\n' + \
             '      <input type="hidden" name="actor" value="' + \
-            personUrl + '">\n'
-        profileStr += \
+            personUrl + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate['Follow'] + '</button>\n'
-        profileStr += \
+            translate['Follow'] + '</button>\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + accessKeys['viewButton'] + '">' + \
-            translate['View'] + '</button>\n'
-        profileStr += '    </center>\n'
-        profileStr += '  </form>\n'
-        profileStr += '</div>\n'
+            translate['View'] + '</button>\n' + \
+            '    </center>\n' + \
+            '  </form>\n' + \
+            '</div>\n'
 
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
@@ -277,15 +299,15 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     """The header of the profile screen, containing background
     image and avatar
     """
-    htmlStr = '\n\n    <figure class="profileHeader">\n'
-    htmlStr += '      <a href="/users/' + \
+    htmlStr = \
+        '\n\n    <figure class="profileHeader">\n' + \
+        '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '">\n'
-    htmlStr += '        <img class="profileBackground" ' + \
+        translate['Switch to timeline view'] + '">\n' + \
+        '        <img class="profileBackground" ' + \
         'alt="" ' + \
-        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
-    htmlStr += '      <figcaption>\n'
-    htmlStr += \
+        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n' + \
+        '      <figcaption>\n' + \
         '        <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
@@ -344,13 +366,13 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
         '<img class="qrcode" alt="' + translate['QR Code'] + \
-        '" src="/icons/qrcode.png" /></a></p>\n'
-    htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
-    htmlStr += loginButton
+        '" src="/icons/qrcode.png" /></a></p>\n' + \
+        '        <p>' + profileDescriptionShort + '</p>\n' + loginButton
     if pinnedContent:
         htmlStr += pinnedContent.replace('<p>', '<p>📎', 1)
-    htmlStr += '      </figcaption>\n'
-    htmlStr += '    </figure>\n\n'
+    htmlStr += \
+        '      </figcaption>\n' + \
+        '    </figure>\n\n'
     return htmlStr
 
 
@@ -370,24 +392,25 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     """The header of a searched for handle, containing background
     image and avatar
     """
-    htmlStr = '\n\n    <figure class="profileHeader">\n'
-    htmlStr += '      <a href="/users/' + \
+    htmlStr = \
+        '\n\n    <figure class="profileHeader">\n' + \
+        '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
-    htmlStr += '        <img class="profileBackground" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n' + \
+        '        <img class="profileBackground" ' + \
         'alt="" ' + \
-        'src="' + imageUrl + '" /></a>\n'
-    htmlStr += '      <figcaption>\n'
+        'src="' + imageUrl + '" /></a>\n' + \
+        '      <figcaption>\n'
     if avatarUrl:
-        htmlStr += '      <a href="/users/' + \
-            nickname + '/' + defaultTimeline + '" title="' + \
-            translate['Switch to timeline view'] + '">\n'
         htmlStr += \
+            '      <a href="/users/' + \
+            nickname + '/' + defaultTimeline + '" title="' + \
+            translate['Switch to timeline view'] + '">\n' + \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
             'alt="" class="title"></a>\n'
-    htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
+        '        <h1>' + displayName + '</h1>\n' + \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
     if joinedDate:
         htmlStr += '        <p>' + translate['Joined'] + ' ' + \
@@ -428,9 +451,10 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         if ctr > 0:
             htmlStr += otherAccountshtml
 
-    htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
-    htmlStr += '      </figcaption>\n'
-    htmlStr += '    </figure>\n\n'
+    htmlStr += \
+        '        <p>' + profileDescriptionShort + '</p>\n' + \
+        '      </figcaption>\n' + \
+        '    </figure>\n\n'
     return htmlStr
 
 
@@ -1156,12 +1180,9 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     instanceStr += \
         '  <label class="labels">' + \
-        translate['Instance Logo'] + '</label>'
-    instanceStr += \
-        '  <input type="file" id="instanceLogo" name="instanceLogo"'
-    instanceStr += '      accept="' + imageFormats + '"><br>\n'
-
-    instanceStr += \
+        translate['Instance Logo'] + '</label>' + \
+        '  <input type="file" id="instanceLogo" name="instanceLogo"' + \
+        '      accept="' + imageFormats + '"><br>\n' + \
         '  <br><label class="labels">' + \
         translate['Security'] + '</label><br>\n'
 
@@ -1216,20 +1237,17 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
-        translate['Type of instance'] + '</label><br>\n'
-    instanceStr += \
+        translate['Type of instance'] + '</label><br>\n' + \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-        translate['This is a media instance'] + '<br>\n'
-    instanceStr += \
+        translate['This is a media instance'] + '<br>\n' + \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
-        translate['This is a blogging instance'] + '<br>\n'
-    instanceStr += \
+        translate['This is a blogging instance'] + '<br>\n' + \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="newsInstance" ' + newsInstanceStr + '> ' + \
-        translate['This is a news instance'] + '<br>\n'
-    instanceStr += '    </div></details>\n'
+        translate['This is a news instance'] + '<br>\n' + \
+        '    </div></details>\n'
 
     # Role assignments section
     moderators = ''
@@ -1238,14 +1256,14 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         with open(moderatorsFile, 'r') as f:
             moderators = f.read()
     # site moderators
-    roleAssignStr = '<details><summary class="cw">' + \
-        translate['Role Assignment'] + '</summary>\n'
-    roleAssignStr += '<div class="container">'
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Moderators'] + '</label></b><br>\n'
-    roleAssignStr += '  ' + \
-        translate['A list of moderator nicknames. One per line.']
-    roleAssignStr += \
+    roleAssignStr = \
+        '<details><summary class="cw">' + \
+        translate['Role Assignment'] + '</summary>\n' + \
+        '<div class="container">' + \
+        '  <b><label class="labels">' + \
+        translate['Moderators'] + '</label></b><br>\n' + \
+        '  ' + \
+        translate['A list of moderator nicknames. One per line.'] + \
         '  <textarea id="message" name="moderators" placeholder="' + \
         translate['List of moderator nicknames'] + \
         '..." style="height:200px" spellcheck="false">' + \
@@ -1257,11 +1275,11 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if os.path.isfile(editorsFile):
         with open(editorsFile, 'r') as f:
             editors = f.read()
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Site Editors'] + '</label></b><br>\n'
-    roleAssignStr += '  ' + \
-        translate['A list of editor nicknames. One per line.']
     roleAssignStr += \
+        '  <b><label class="labels">' + \
+        translate['Site Editors'] + '</label></b><br>\n' + \
+        '  ' + \
+        translate['A list of editor nicknames. One per line.'] + \
         '  <textarea id="message" name="editors" placeholder="" ' + \
         'style="height:200px" spellcheck="false">' + \
         editors + '</textarea>'
@@ -1272,9 +1290,9 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if os.path.isfile(counselorsFile):
         with open(counselorsFile, 'r') as f:
             counselors = f.read()
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Counselors'] + '</label></b><br>\n'
     roleAssignStr += \
+        '  <b><label class="labels">' + \
+        translate['Counselors'] + '</label></b><br>\n' + \
         '  <textarea id="message" name="counselors" ' + \
         'placeholder="" ' + \
         'style="height:200px" spellcheck="false">' + \
@@ -1286,24 +1304,23 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if os.path.isfile(artistsFile):
         with open(artistsFile, 'r') as f:
             artists = f.read()
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Artists'] + '</label></b><br>\n'
     roleAssignStr += \
+        '  <b><label class="labels">' + \
+        translate['Artists'] + '</label></b><br>\n' + \
         '  <textarea id="message" name="artists" ' + \
         'placeholder="" ' + \
         'style="height:200px" spellcheck="false">' + \
-        artists + '</textarea>'
-    roleAssignStr += '    </div></details>\n'
+        artists + '</textarea>' + \
+        '    </div></details>\n'
 
     # Video section
-    peertubeStr = '    <details><summary class="cw">' + \
-        translate['Video Settings'] + '</summary>\n'
-    peertubeStr += '    <div class="container">\n'
-    peertubeStr += \
-        '      <b><label class="labels">' + \
-        translate['Peertube Instances'] + '</label></b>\n'
     idx = 'Show video previews for the following Peertube sites.'
-    peertubeStr += \
+    peertubeStr = \
+        '    <details><summary class="cw">' + \
+        translate['Video Settings'] + '</summary>\n' + \
+        '    <div class="container">\n' + \
+        '      <b><label class="labels">' + \
+        translate['Peertube Instances'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
         translate[idx] + '</label>\n'
     peertubeInstancesStr = ''
@@ -1312,8 +1329,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     peertubeStr += \
         '      <textarea id="message" name="ptInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
-        peertubeInstancesStr + '</textarea>\n'
-    peertubeStr += \
+        peertubeInstancesStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
         translate['YouTube Replacement Domain'] + '</label></b>\n'
     YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
@@ -1321,8 +1337,8 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         YTReplacementDomain = ''
     peertubeStr += \
         '      <input type="text" name="ytdomain" value="' + \
-        YTReplacementDomain + '">\n'
-    peertubeStr += '    </div></details>\n'
+        YTReplacementDomain + '">\n' + \
+        '    </div></details>\n'
 
     libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
     libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
@@ -1337,16 +1353,16 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 def _htmlEditProfileDangerZone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    editProfileForm = '    <details><summary class="cw">' + \
-        translate['Danger Zone'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += '      <b><label class="labels">' + \
-        translate['Danger Zone'] + '</label></b><br>\n'
-    editProfileForm += \
+    editProfileForm = \
+        '    <details><summary class="cw">' + \
+        translate['Danger Zone'] + '</summary>\n' + \
+        '    <div class="container">\n' + \
+        '      <b><label class="labels">' + \
+        translate['Danger Zone'] + '</label></b><br>\n' + \
         '      <input type="checkbox" class=dangercheckbox" ' + \
         'name="deactivateThisAccount"> ' + \
-        translate['Deactivate this account'] + '<br>\n'
-    editProfileForm += '    </div></details>\n'
+        translate['Deactivate this account'] + '<br>\n' + \
+        '    </div></details>\n'
     return editProfileForm
 
 
@@ -1364,8 +1380,7 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
             skillsStr += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
                 ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
-                '" value="' + skillDesc + '" style="width:40%">'
-            skillsStr += \
+                '" value="' + skillDesc + '" style="width:40%">' + \
                 '<input type="range" min="1" max="100" ' + \
                 'class="slider" name="skillValue' + \
                 str(skillCtr) + '" value="' + str(skillValue) + '"></p>'
@@ -1374,26 +1389,24 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
     skillsStr += \
         '<p><input type="text" placeholder="Skill ' + str(skillCtr) + \
         '" name="skillName' + str(skillCtr) + \
-        '" value="" style="width:40%">'
-    skillsStr += \
+        '" value="" style="width:40%">' + \
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>'
-    skillsStr += '    </div></details>\n'
+        str(skillCtr) + '" value="50"></p>' + \
+        '    </div></details>\n'
 
-    editProfileForm = '<details><summary class="cw">' + \
-        translate['Skills'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
-        '      <b><label class="labels">' + \
-        translate['Skills'] + '</label></b><br>\n'
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
-    editProfileForm += '      <label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += skillsStr
+    editProfileForm = \
+        '<details><summary class="cw">' + \
+        translate['Skills'] + '</summary>\n' + \
+        '    <div class="container">\n' + \
+        '      <b><label class="labels">' + \
+        translate['Skills'] + '</label></b><br>\n' + \
+        '      <label class="labels">' + \
+        translate[idx] + '</label>\n' + skillsStr
     return editProfileForm
 
 
@@ -1408,18 +1421,17 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
 
-    editProfileForm = '<details><summary class="cw">' + \
-        translate['Git Projects'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
     idx = 'List of project names that you wish to receive git patches for'
-    editProfileForm += \
+    editProfileForm = \
+        '<details><summary class="cw">' + \
+        translate['Git Projects'] + '</summary>\n' + \
+        '    <div class="container">\n' + \
         '      <label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += \
+        translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="gitProjects" ' + \
         'style="height:100px" spellcheck="false">' + \
-        gitProjectsStr + '</textarea>\n'
-    editProfileForm += '    </div></details>\n'
+        gitProjectsStr + '</textarea>\n' + \
+        '    </div></details>\n'
     return editProfileForm
 
 
@@ -1517,71 +1529,56 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
 
     editProfileForm += \
         '      <b><label class="labels">' + \
-        translate['Filtered words'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">' + \
-        translate['One per line'] + '</label>\n'
-    editProfileForm += '      <textarea id="message" ' + \
+        translate['Filtered words'] + '</label></b>\n' + \
+        '      <br><label class="labels">' + \
+        translate['One per line'] + '</label>\n' + \
+        '      <textarea id="message" ' + \
         'name="filteredWords" style="height:200px" spellcheck="false">' + \
-        filterStr + '</textarea>\n'
-
-    editProfileForm += \
+        filterStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
-        translate['Word Replacements'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
-    editProfileForm += \
+        translate['Word Replacements'] + '</label></b>\n' + \
+        '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="switchWords" ' + \
         'style="height:200px" spellcheck="false">' + \
-        switchStr + '</textarea>\n'
-
-    editProfileForm += \
+        switchStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
-        translate['Autogenerated Hashtags'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">A -> #B</label>\n'
-    editProfileForm += \
+        translate['Autogenerated Hashtags'] + '</label></b>\n' + \
+        '      <br><label class="labels">A -> #B</label>\n' + \
         '      <textarea id="message" name="autoTags" ' + \
         'style="height:200px" spellcheck="false">' + \
-        autoTags + '</textarea>\n'
-
-    editProfileForm += \
+        autoTags + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
-        translate['Autogenerated Content Warnings'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
-    editProfileForm += \
+        translate['Autogenerated Content Warnings'] + '</label></b>\n' + \
+        '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="autoCW" ' + \
         'style="height:200px" spellcheck="true">' + autoCW + '</textarea>\n'
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Blocked accounts'] + '</label></b>\n'
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     editProfileForm += \
-        '      <br><label class="labels">' + translate[idx] + '</label>\n'
-    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Blocked accounts'] + '</label></b>\n' + \
+        '      <br><label class="labels">' + translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="blocked" style="height:200px" ' + \
         'spellcheck="false">' + blockedStr + '</textarea>\n'
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Direct Message permitted instances'] + '</label></b>\n'
     idx = 'Direct messages are always allowed from these instances.'
     editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Direct Message permitted instances'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += \
+        translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="dmAllowedInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
         dmAllowedInstancesStr + '</textarea>\n'
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Federation list'] + '</label></b>\n'
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
     editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Federation list'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += \
+        translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="allowedInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
@@ -1593,8 +1590,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         userAgentsBlockedStr += ua
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Blocked User Agents'] + '</label></b>\n'
-    editProfileForm += \
+        translate['Blocked User Agents'] + '</label></b>\n' + \
         '      <textarea id="message" name="userAgentsBlockedStr" ' + \
         'style="height:200px" spellcheck="false">' + \
         userAgentsBlockedStr + '</textarea>\n'
@@ -1662,29 +1658,21 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
             '      <label class="labels">' + \
             translate['Background image'] + '</label>\n' + \
             '      <input type="file" id="image" name="image"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Timeline banner image'] + '</label>\n' + \
             '      <input type="file" id="banner" name="banner"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Search banner image'] + '</label>\n' + \
             '      <input type="file" id="search_banner" ' + \
             'name="search_banner"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Left column image'] + '</label>\n' + \
             '      <input type="file" id="left_col_image" ' + \
             'name="left_col_image"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Right column image'] + '</label>\n' + \
             '      <input type="file" id="right_col_image" ' + \
@@ -1693,6 +1681,20 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
 
     editProfileForm += '    </div></details>\n'
     return editProfileForm
+
+
+def _beginEditSection(label: str) -> str:
+    """returns the html for begining a dropdown section on edit profile screen
+    """
+    return \
+        '    <details><summary class="cw">' + label + '</summary>\n' + \
+        '<div class="container">'
+
+
+def _endEditSection() -> str:
+    """returns the html for ending a dropdown section on edit profile screen
+    """
+    return '    </div></details>\n'
 
 
 def _htmlEditProfileContactInfo(nickname: str,
@@ -1709,63 +1711,30 @@ def _htmlEditProfileContactInfo(nickname: str,
                                 translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = '    <details><summary class="cw">' + \
-        translate['Contact Details'] + '</summary>\n'
-    editProfileForm += '<div class="container">'
-    editProfileForm += '<label class="labels">' + \
-        translate['Email'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="email" value="' + emailAddress + '">\n'
-    editProfileForm += \
-        '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="xmppAddress" value="' + \
-        xmppAddress + '">\n'
-    editProfileForm += '<label class="labels">' + \
-        translate['Matrix'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="matrixAddress" value="' + \
-        matrixAddress + '">\n'
+    editProfileForm = _beginEditSection(translate['Contact Details'])
 
+    editProfileForm += _editText(translate['Email'],
+                                 'email', emailAddress)
+    editProfileForm += _editText(translate['XMPP'],
+                                 'xmppAddress', xmppAddress)
+    editProfileForm += _editText(translate['Matrix'],
+                                 'matrixAddress', matrixAddress)
+    editProfileForm += _editText('SSB', 'ssbAddress', ssbAddress)
+    editProfileForm += _editText('Tox', 'toxAddress', toxAddress)
+    editProfileForm += _editText('Briar', 'briarAddress', briarAddress)
+    editProfileForm += _editText('Jami', 'jamiAddress', jamiAddress)
+    editProfileForm += _editText('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += _editText(translate['PGP Fingerprint'],
+                                 'openpgp', PGPfingerprint)
     editProfileForm += \
-        '<label class="labels">SSB</label><br>\n' + \
-        '      <input type="text" name="ssbAddress" value="' + \
-        ssbAddress + '">\n'
-
+        _editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
+                      '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
     editProfileForm += \
-        '<label class="labels">Tox</label><br>\n' + \
-        '      <input type="text" name="toxAddress" value="' + \
-        toxAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">Briar</label><br>\n' + \
-        '      <input type="text" name="briarAddress" value="' + \
-        briarAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">Jami</label><br>\n' + \
-        '      <input type="text" name="jamiAddress" value="' + \
-        jamiAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">Cwtch</label><br>\n' + \
-        '      <input type="text" name="cwtchAddress" value="' + \
-        cwtchAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">' + \
-        translate['PGP Fingerprint'] + '</label><br>\n' + \
-        '      <input type="text" name="openpgp" value="' + \
-        PGPfingerprint + '">\n' + \
-        '<label class="labels">' + translate['PGP'] + '</label><br>\n' + \
-        '      <textarea id="message" placeholder=' + \
-        '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:600px" spellcheck="false">' + \
-        PGPpubKey + '</textarea>\n' + \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>\n' + \
-        '    </div></details>\n'
+        translate['Following'] + '</label></a><br>\n'
+
+    editProfileForm += _endEditSection()
     return editProfileForm
 
 
