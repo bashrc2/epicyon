@@ -1116,9 +1116,8 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
     """
     themeFormats = '.zip, .gz'
 
-    graphicsStr = '<details><summary class="cw">' + \
-        translate['Graphic Design'] + '</summary>\n'
-    graphicsStr += '<div class="container">'
+    graphicsStr = _beginEditSection(translate['Graphic Design'])
+
     graphicsStr += _htmlThemesDropdown(baseDir, translate)
     graphicsStr += \
         '      <label class="labels">' + \
@@ -1133,7 +1132,7 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button>\n'
 
-    graphicsStr += '    </div></details>\n'
+    graphicsStr += _endEditSection()
     return graphicsStr
 
 
@@ -1240,9 +1239,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
             moderators = f.read()
     # site moderators
     roleAssignStr = \
-        '<details><summary class="cw">' + \
-        translate['Role Assignment'] + '</summary>\n' + \
-        '<div class="container">' + \
+        _beginEditSection(translate['Role Assignment']) + \
         '  <b><label class="labels">' + \
         translate['Moderators'] + '</label></b><br>\n' + \
         '  ' + \
@@ -1293,15 +1290,12 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         '  <textarea id="message" name="artists" ' + \
         'placeholder="" ' + \
         'style="height:200px" spellcheck="false">' + \
-        artists + '</textarea>' + \
-        '    </div></details>\n'
+        artists + '</textarea>' + _endEditSection()
 
     # Video section
     idx = 'Show video previews for the following Peertube sites.'
     peertubeStr = \
-        '    <details><summary class="cw">' + \
-        translate['Video Settings'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        _beginEditSection(translate['Video Settings']) + \
         '      <b><label class="labels">' + \
         translate['Peertube Instances'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
@@ -1335,21 +1329,17 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 def _htmlEditProfileDangerZone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    editProfileForm = \
-        '    <details><summary class="cw">' + \
-        translate['Danger Zone'] + '</summary>\n' + \
-        '    <div class="container">\n'
+    editProfileForm = _beginEditSection(translate['Danger Zone'])
 
-    editProfileForm = \
+    editProfileForm += \
         '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
 
-    editProfileForm = \
+    editProfileForm += \
         _editCheckBox(translate['Deactivate this account'],
                       'deactivateThisAccount', False)
 
-    editProfileForm = \
-        '    </div></details>\n'
+    editProfileForm += _endEditSection()
     return editProfileForm
 
 
@@ -1379,17 +1369,14 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
         '" value="" style="width:40%">' + \
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>' + \
-        '    </div></details>\n'
+        str(skillCtr) + '" value="50"></p>' + _endEditSection()
 
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
     editProfileForm = \
-        '<details><summary class="cw">' + \
-        translate['Skills'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        _beginEditSection(translate['Skills']) + \
         '      <b><label class="labels">' + \
         translate['Skills'] + '</label></b><br>\n' + \
         '      <label class="labels">' + \
@@ -1410,15 +1397,12 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
 
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm = \
-        '<details><summary class="cw">' + \
-        translate['Git Projects'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        _beginEditSection(translate['Git Projects']) + \
         '      <label class="labels">' + \
         translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="gitProjects" ' + \
         'style="height:100px" spellcheck="false">' + \
-        gitProjectsStr + '</textarea>\n' + \
-        '    </div></details>\n'
+        gitProjectsStr + '</textarea>\n' + _endEditSection()
     return editProfileForm
 
 
@@ -1475,9 +1459,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
 
-    editProfileForm = '<details><summary class="cw">' + \
-        translate['Filtering and Blocking'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
+    editProfileForm = _beginEditSection(translate['Filtering and Blocking'])
 
     editProfileForm += \
         '<label class="labels">' + \
@@ -1582,7 +1564,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         'style="height:200px" spellcheck="false">' + \
         userAgentsBlockedStr + '</textarea>\n'
 
-    editProfileForm += '    </div></details>\n'
+    editProfileForm += _endEditSection()
     return editProfileForm
 
 
@@ -1590,9 +1572,7 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
     """Change password section of edit profile screen
     """
     editProfileForm = \
-        '    <details><summary class="cw">' + \
-        translate['Change Password'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        _beginEditSection(translate['Change Password']) + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
         '      <input type="password" name="password" ' + \
@@ -1600,7 +1580,7 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
         '<label class="labels">' + translate['Confirm Password'] + \
         '</label><br>\n' + \
         '      <input type="password" name="passwordconfirm" value="">\n' + \
-        '    </div></details>\n'
+        _endEditSection()
     return editProfileForm
 
 
@@ -1627,9 +1607,7 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm = \
-        '    <details><summary class="cw">' + \
-        translate['Background Images'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        _beginEditSection(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not newsInstance:
@@ -1659,7 +1637,7 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
             'name="right_col_image"' + \
             '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '    </div></details>\n'
+    editProfileForm += _endEditSection()
     return editProfileForm
 
 
