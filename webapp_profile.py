@@ -60,13 +60,41 @@ from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
 
 
+def _beginEditSection(label: str) -> str:
+    """returns the html for begining a dropdown section on edit profile screen
+    """
+    return \
+        '    <details><summary class="cw">' + label + '</summary>\n' + \
+        '<div class="container">'
+
+
+def _endEditSection() -> str:
+    """returns the html for ending a dropdown section on edit profile screen
+    """
+    return '    </div></details>\n'
+
+
 def _editText(label: str, name: str, value: str = "") -> str:
     """Returns html for editing a text field
     """
+    if value is None:
+        value = ''
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="text" name="' + name + '" value="' + \
         value + '">\n'
+
+
+def _editCheckBox(label: str, name: str, checked: bool = False) -> str:
+    """Returns html for editing a checkbox field
+    """
+    checkedStr = ''
+    if checked:
+        checkedStr = ' checked'
+
+    return \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
 
 
 def _editTextArea(label: str, name: str, value: str = "",
@@ -75,6 +103,8 @@ def _editTextArea(label: str, name: str, value: str = "",
                   spellcheck: bool = False) -> str:
     """Returns html for editing a textarea field
     """
+    if value is None:
+        value = ''
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <textarea id="message" placeholder=' + \
@@ -1049,13 +1079,9 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
     themes = getThemesList(baseDir)
     themesDropdown = '  <label class="labels">' + \
         translate['Theme'] + '</label><br>\n'
-    grayscale = ''
-    if _grayscaleEnabled(baseDir):
-        grayscale = 'checked'
+    grayscale = _grayscaleEnabled(baseDir)
     themesDropdown += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="grayscale" ' + grayscale + \
-        '> ' + translate['Grayscale'] + '<br>'
+        _editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
     themesDropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for themeName in themes:
@@ -1071,9 +1097,8 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
        os.path.isfile(baseDir + '/fonts/custom.otf') or \
        os.path.isfile(baseDir + '/fonts/custom.ttf'):
         themesDropdown += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="removeCustomFont"> ' + \
-            translate['Remove the custom font'] + '<br>'
+            _editCheckBox(translate['Remove the custom font'],
+                          'removeCustomFont', False)
     themeName = getConfigParam(baseDir, 'theme')
     themesDropdown = \
         themesDropdown.replace('<option value="' + themeName + '">',
@@ -1127,57 +1152,24 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
 
-    instanceStr = '<details><summary class="cw">' + \
-        translate['Instance Settings'] + '</summary>\n'
-    instanceStr += '<div class="container">'
-    instanceStr += \
-        '  <label class="labels">' + \
-        translate['Instance Title'] + '</label>'
-    if instanceTitle:
-        instanceStr += \
-            '  <input type="text" name="instanceTitle" value="' + \
-            instanceTitle + '"><br>'
-    else:
-        instanceStr += \
-            '  <input type="text" name="instanceTitle" value=""><br>'
-    instanceStr += \
-        '  <label class="labels">' + \
-        translate['Instance Short Description'] + '</label>'
-    if instanceDescriptionShort:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="instanceDescriptionShort" value="' + \
-            instanceDescriptionShort + '"><br>'
-    else:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="instanceDescriptionShort" value=""><br>'
-    instanceStr += \
-        '  <label class="labels">' + \
-        translate['Instance Description'] + '</label>'
-    if instanceDescription:
-        instanceStr += \
-            '  <textarea id="message" name="instanceDescription" ' + \
-            'style="height:200px" spellcheck="true">' + \
-            instanceDescription + '</textarea>'
-    else:
-        instanceStr += \
-            '  <textarea id="message" name="instanceDescription" ' + \
-            'style="height:200px" spellcheck="true"></textarea>'
+    instanceStr = _beginEditSection(translate['Instance Settings'])
 
     instanceStr += \
-        '  <label class="labels">' + \
-        translate['Custom post submit button text'] + '</label>'
-    if customSubmitText:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="customSubmitText" value="' + \
-            customSubmitText + '"><br>'
-    else:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="customSubmitText" value=""><br>'
-
+        _editText(translate['Instance Title'],
+                  'instanceTitle', instanceTitle)
+    instanceStr += '<br>\n'
+    instanceStr += \
+        _editText(translate['Instance Short Description'],
+                  'instanceDescriptionShort', instanceDescriptionShort)
+    instanceStr += '<br>\n'
+    instanceStr += \
+        _editTextArea(translate['Instance Description'],
+                      'instanceDescription', instanceDescription, 200,
+                      '', True)
+    instanceStr += \
+        _editText(translate['Custom post submit button text'],
+                  'customSubmitText', customSubmitText)
+    instanceStr += '<br>\n'
     instanceStr += \
         '  <label class="labels">' + \
         translate['Instance Logo'] + '</label>' + \
@@ -1190,64 +1182,51 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         translate['Show numbers of accounts within instance metadata']
     if getConfigParam(baseDir, "showNodeInfoAccounts"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoAccounts" checked> ' + \
-            nodeInfoStr + '<br>\n'
+            _editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoAccounts"> ' + \
-            nodeInfoStr + '<br>\n'
+            _editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', False)
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
     if getConfigParam(baseDir, "showNodeInfoVersion"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoVersion" checked> ' + \
-            nodeInfoStr + '<br>\n'
+            _editCheckBox(nodeInfoStr, 'showNodeInfoVersion', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoVersion"> ' + \
-            nodeInfoStr + '<br>\n'
+            _editCheckBox(nodeInfoStr, 'showNodeInfoVersion', False)
 
     if getConfigParam(baseDir, "verifyAllSignatures"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="verifyallsignatures" checked> ' + \
-            translate['Verify all signatures'] + '<br>\n'
+            _editCheckBox(translate['Verify all signatures'],
+                          'verifyallsignatures', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="verifyallsignatures"> ' + \
-            translate['Verify all signatures'] + '<br>\n'
+            _editCheckBox(translate['Verify all signatures'],
+                          'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
     if getConfigParam(baseDir, "brochMode"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="brochMode" checked> ' + \
-            translate['Broch mode'] + '<br>\n'
+            _editCheckBox(translate['Broch mode'], 'brochMode', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="brochMode"> ' + \
-            translate['Broch mode'] + '<br>\n'
+            _editCheckBox(translate['Broch mode'], 'brochMode', False)
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
-        translate['Type of instance'] + '</label><br>\n' + \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-        translate['This is a media instance'] + '<br>\n' + \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
-        translate['This is a blogging instance'] + '<br>\n' + \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="newsInstance" ' + newsInstanceStr + '> ' + \
-        translate['This is a news instance'] + '<br>\n' + \
-        '    </div></details>\n'
+        translate['Type of instance'] + '</label><br>\n'
+    instanceStr += \
+        _editCheckBox(translate['This is a media instance'],
+                      'mediaInstance', mediaInstanceStr)
+    instanceStr += \
+        _editCheckBox(translate['This is a blogging instance'],
+                      'blogsInstance', blogsInstanceStr)
+    instanceStr += \
+        _editCheckBox(translate['This is a news instance'],
+                      'newsInstance', newsInstanceStr)
+
+    instanceStr += _endEditSection()
 
     # Role assignments section
     moderators = ''
@@ -1330,15 +1309,14 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         '      <textarea id="message" name="ptInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
         peertubeInstancesStr + '</textarea>\n' + \
-        '      <br><b><label class="labels">' + \
-        translate['YouTube Replacement Domain'] + '</label></b>\n'
+        '      <br>\n'
     YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
     if not YTReplacementDomain:
         YTReplacementDomain = ''
     peertubeStr += \
-        '      <input type="text" name="ytdomain" value="' + \
-        YTReplacementDomain + '">\n' + \
-        '    </div></details>\n'
+        _editText(translate['YouTube Replacement Domain'],
+                  'ytdomain', YTReplacementDomain)
+    peertubeStr += _endEditSection()
 
     libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
     libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
@@ -1356,12 +1334,17 @@ def _htmlEditProfileDangerZone(translate: {}) -> str:
     editProfileForm = \
         '    <details><summary class="cw">' + \
         translate['Danger Zone'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        '    <div class="container">\n'
+
+    editProfileForm = \
         '      <b><label class="labels">' + \
-        translate['Danger Zone'] + '</label></b><br>\n' + \
-        '      <input type="checkbox" class=dangercheckbox" ' + \
-        'name="deactivateThisAccount"> ' + \
-        translate['Deactivate this account'] + '<br>\n' + \
+        translate['Danger Zone'] + '</label></b><br>\n'
+
+    editProfileForm = \
+        _editCheckBox(translate['Deactivate this account'],
+                      'deactivateThisAccount', False)
+
+    editProfileForm = \
         '    </div></details>\n'
     return editProfileForm
 
@@ -1683,20 +1666,6 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     return editProfileForm
 
 
-def _beginEditSection(label: str) -> str:
-    """returns the html for begining a dropdown section on edit profile screen
-    """
-    return \
-        '    <details><summary class="cw">' + label + '</summary>\n' + \
-        '<div class="container">'
-
-
-def _endEditSection() -> str:
-    """returns the html for ending a dropdown section on edit profile screen
-    """
-    return '    </div></details>\n'
-
-
 def _htmlEditProfileContactInfo(nickname: str,
                                 emailAddress: str,
                                 xmppAddress: str,
@@ -1747,33 +1716,26 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     """
     editProfileForm = '    <div class="container">\n'
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '> ' + translate['Approve follower requests'] + '<br>\n'
+        _editCheckBox(translate['Approve follower requests'],
+                      'approveFollowers', manuallyApprovesFollowers)
     editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isBot" ' + \
-        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
+        _editCheckBox(translate['This is a bot account'],
+                      'isBot', isBot)
     editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
-        translate['This is a group account'] + '<br>\n'
+        _editCheckBox(translate['This is a group account'],
+                      'isGroup', isGroup)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="followDMs" ' + followDMs + '> ' + \
-        translate['Only people I follow can send me DMs'] + '<br>\n'
+        _editCheckBox(translate['Only people I follow can send me DMs'],
+                      'followDMs', followDMs)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="removeTwitter" ' + removeTwitter + '> ' + \
-        translate['Remove Twitter posts'] + '<br>\n'
+        _editCheckBox(translate['Remove Twitter posts'],
+                      'removeTwitter', removeTwitter)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="notifyLikes" ' + notifyLikes + '> ' + \
-        translate['Notify when posts are liked'] + '<br>\n'
+        _editCheckBox(translate['Notify when posts are liked'],
+                      'notifyLikes', notifyLikes)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
-        translate["Don't show the Like button"] + '<br>\n'
+        _editCheckBox(translate["Don't show the Like button"],
+                      'hideLikeButton', hideLikeButton)
     editProfileForm += '    </div>\n'
     return editProfileForm
 
@@ -1917,9 +1879,8 @@ def _htmlEditProfileTopBanner(baseDir: str,
     if scheduledPostsExist(baseDir, nickname, domain):
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="removeScheduledPosts"> ' + \
-            translate['Remove scheduled posts'] + '<br>\n'
+            _editCheckBox(translate['Remove scheduled posts'],
+                          'removeScheduledPosts', False)
         editProfileForm += '    </div>\n'
     return editProfileForm
 
