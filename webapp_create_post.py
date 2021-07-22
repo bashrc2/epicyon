@@ -18,6 +18,7 @@ from utils import acctDir
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import editTextField
 
 
 def _htmlFollowingDataList(baseDir: str, nickname: str,
@@ -277,16 +278,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
     newPostImageSection = '    <div class="container">'
-    if not path.endswith('/newevent'):
-        newPostImageSection += \
-            '      <label class="labels">' + \
-            translate['Image description'] + '</label>\n'
-    else:
-        newPostImageSection += \
-            '      <label class="labels">' + \
-            translate['Event banner image description'] + '</label>\n'
     newPostImageSection += \
-        '      <input type="text" name="imageDescription">\n'
+        editTextField(translate['Image description'], 'imageDescription', '')
 
     if path.endswith('/newevent'):
         newPostImageSection += \
@@ -379,15 +372,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         endpoint = 'newshare'
         extraFields = '<div class="container">\n'
         extraFields += \
-            '  <label class="labels">' + \
-            translate['Type of shared item. eg. hat'] + ':</label>\n'
-        extraFields += \
-            '  <input type="text" class="itemType" name="itemType">\n'
-        extraFields += \
-            '  <br><label class="labels">' + \
-            translate['Category of shared item. eg. clothing'] + ':</label>\n'
-        extraFields += \
-            '  <input type="text" class="category" name="category">\n'
+            editTextField(translate['Type of shared item. eg. hat'] + ':',
+                          'itemType', '')
+        catStr = translate['Category of shared item. eg. clothing']
+        extraFields += editTextField(catStr + ':', 'category', '')
         extraFields += \
             '  <br><label class="labels">' + \
             translate['Duration of listing in days'] + ':</label>\n'
@@ -395,10 +383,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             'min="1" max="365" step="1" value="14">\n'
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
-        extraFields += \
-            '<label class="labels">' + \
-            translate['City or location of the shared item'] + ':</label>\n'
-        extraFields += '<input type="text" name="location">\n'
+        cityOrLocStr = translate['City or location of the shared item']
+        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
         extraFields += '</div>\n'
 
     citationsStr = ''
@@ -561,16 +547,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 'autocomplete="on"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
-        dateAndLocation += '<label class="labels">' + \
-            translate['Location'] + ': </label>\n'
-        dateAndLocation += '<input type="text" name="location">\n'
-        if endpoint == 'newevent':
-            dateAndLocation += '<br><label class="labels">' + \
-                translate['Ticket URL'] + ': </label>\n'
-            dateAndLocation += '<input type="text" name="ticketUrl">\n'
-            dateAndLocation += '<br><label class="labels">' + \
-                translate['Categories'] + ': </label>\n'
-            dateAndLocation += '<input type="text" name="category">\n'
+        dateAndLocation += \
+            editTextField(translate['Location'], 'location', '')
         dateAndLocation += '</div>\n'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
@@ -712,13 +690,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if mediaInstance and not replyStr:
         newPostForm += newPostImageSection
 
-    newPostForm += \
-        '    <label class="labels">' + placeholderSubject + '</label><br>'
     if not shareDescription:
         shareDescription = ''
     newPostForm += \
-        '    <input type="text" name="subject" value="' + \
-        shareDescription + '">'
+        editTextField(placeholderSubject, 'subject', shareDescription)
     newPostForm += ''
 
     selectedStr = ' selected'

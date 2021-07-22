@@ -55,67 +55,14 @@ from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
+from webapp_utils import editCheckBox
+from webapp_utils import editTextField
+from webapp_utils import editTextArea
+from webapp_utils import beginEditSection
+from webapp_utils import endEditSection
 from blog import getBlogAddress
 from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
-
-
-def _beginEditSection(label: str) -> str:
-    """returns the html for begining a dropdown section on edit profile screen
-    """
-    return \
-        '    <details><summary class="cw">' + label + '</summary>\n' + \
-        '<div class="container">'
-
-
-def _endEditSection() -> str:
-    """returns the html for ending a dropdown section on edit profile screen
-    """
-    return '    </div></details>\n'
-
-
-def _editText(label: str, name: str, value: str = "",
-              placeholder: str = "") -> str:
-    """Returns html for editing a text field
-    """
-    if value is None:
-        value = ''
-    placeholderStr = ''
-    if placeholder:
-        placeholderStr = ' placeholder="' + placeholder + '"'
-    return \
-        '<label class="labels">' + label + '</label><br>\n' + \
-        '      <input type="text" name="' + name + '" value="' + \
-        value + '"' + placeholderStr + '>\n'
-
-
-def _editCheckBox(label: str, name: str, checked: bool = False) -> str:
-    """Returns html for editing a checkbox field
-    """
-    checkedStr = ''
-    if checked:
-        checkedStr = ' checked'
-
-    return \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
-
-
-def _editTextArea(label: str, name: str, value: str = "",
-                  height: int = 600,
-                  placeholder: str = "",
-                  spellcheck: bool = False) -> str:
-    """Returns html for editing a textarea field
-    """
-    if value is None:
-        value = ''
-    return \
-        '<label class="labels">' + label + '</label><br>\n' + \
-        '      <textarea id="message" placeholder=' + \
-        '"' + placeholder + '" name="' + name + '" ' + \
-        'style="height:' + height + 'px" spellcheck="' + \
-        str(spellcheck).lower() + '">' + \
-        value + '</textarea>\n'
 
 
 def htmlProfileAfterSearch(cssCache: {},
@@ -1085,7 +1032,7 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
         translate['Theme'] + '</label><br>\n'
     grayscale = _grayscaleEnabled(baseDir)
     themesDropdown += \
-        _editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
+        editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
     themesDropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for themeName in themes:
@@ -1101,8 +1048,8 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
        os.path.isfile(baseDir + '/fonts/custom.otf') or \
        os.path.isfile(baseDir + '/fonts/custom.ttf'):
         themesDropdown += \
-            _editCheckBox(translate['Remove the custom font'],
-                          'removeCustomFont', False)
+            editCheckBox(translate['Remove the custom font'],
+                         'removeCustomFont', False)
     themeName = getConfigParam(baseDir, 'theme')
     themesDropdown = \
         themesDropdown.replace('<option value="' + themeName + '">',
@@ -1116,7 +1063,7 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
     """
     themeFormats = '.zip, .gz'
 
-    graphicsStr = _beginEditSection(translate['Graphic Design'])
+    graphicsStr = beginEditSection(translate['Graphic Design'])
 
     graphicsStr += _htmlThemesDropdown(baseDir, translate)
     graphicsStr += \
@@ -1132,7 +1079,7 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button>\n'
 
-    graphicsStr += _endEditSection()
+    graphicsStr += endEditSection()
     return graphicsStr
 
 
@@ -1155,23 +1102,23 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
 
-    instanceStr = _beginEditSection(translate['Instance Settings'])
+    instanceStr = beginEditSection(translate['Instance Settings'])
 
     instanceStr += \
-        _editText(translate['Instance Title'],
-                  'instanceTitle', instanceTitle)
+        editTextField(translate['Instance Title'],
+                      'instanceTitle', instanceTitle)
     instanceStr += '<br>\n'
     instanceStr += \
-        _editText(translate['Instance Short Description'],
-                  'instanceDescriptionShort', instanceDescriptionShort)
+        editTextField(translate['Instance Short Description'],
+                      'instanceDescriptionShort', instanceDescriptionShort)
     instanceStr += '<br>\n'
     instanceStr += \
-        _editTextArea(translate['Instance Description'],
-                      'instanceDescription', instanceDescription, 200,
-                      '', True)
+        editTextArea(translate['Instance Description'],
+                     'instanceDescription', instanceDescription, 200,
+                     '', True)
     instanceStr += \
-        _editText(translate['Custom post submit button text'],
-                  'customSubmitText', customSubmitText)
+        editTextField(translate['Custom post submit button text'],
+                      'customSubmitText', customSubmitText)
     instanceStr += '<br>\n'
     instanceStr += \
         '  <label class="labels">' + \
@@ -1185,51 +1132,51 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         translate['Show numbers of accounts within instance metadata']
     if getConfigParam(baseDir, "showNodeInfoAccounts"):
         instanceStr += \
-            _editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', True)
+            editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', True)
     else:
         instanceStr += \
-            _editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', False)
+            editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', False)
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
     if getConfigParam(baseDir, "showNodeInfoVersion"):
         instanceStr += \
-            _editCheckBox(nodeInfoStr, 'showNodeInfoVersion', True)
+            editCheckBox(nodeInfoStr, 'showNodeInfoVersion', True)
     else:
         instanceStr += \
-            _editCheckBox(nodeInfoStr, 'showNodeInfoVersion', False)
+            editCheckBox(nodeInfoStr, 'showNodeInfoVersion', False)
 
     if getConfigParam(baseDir, "verifyAllSignatures"):
         instanceStr += \
-            _editCheckBox(translate['Verify all signatures'],
-                          'verifyallsignatures', True)
+            editCheckBox(translate['Verify all signatures'],
+                         'verifyallsignatures', True)
     else:
         instanceStr += \
-            _editCheckBox(translate['Verify all signatures'],
-                          'verifyallsignatures', False)
+            editCheckBox(translate['Verify all signatures'],
+                         'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
     if getConfigParam(baseDir, "brochMode"):
         instanceStr += \
-            _editCheckBox(translate['Broch mode'], 'brochMode', True)
+            editCheckBox(translate['Broch mode'], 'brochMode', True)
     else:
         instanceStr += \
-            _editCheckBox(translate['Broch mode'], 'brochMode', False)
+            editCheckBox(translate['Broch mode'], 'brochMode', False)
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
         translate['Type of instance'] + '</label><br>\n'
     instanceStr += \
-        _editCheckBox(translate['This is a media instance'],
-                      'mediaInstance', mediaInstanceStr)
+        editCheckBox(translate['This is a media instance'],
+                     'mediaInstance', mediaInstanceStr)
     instanceStr += \
-        _editCheckBox(translate['This is a blogging instance'],
-                      'blogsInstance', blogsInstanceStr)
+        editCheckBox(translate['This is a blogging instance'],
+                     'blogsInstance', blogsInstanceStr)
     instanceStr += \
-        _editCheckBox(translate['This is a news instance'],
-                      'newsInstance', newsInstanceStr)
+        editCheckBox(translate['This is a news instance'],
+                     'newsInstance', newsInstanceStr)
 
-    instanceStr += _endEditSection()
+    instanceStr += endEditSection()
 
     # Role assignments section
     moderators = ''
@@ -1239,7 +1186,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
             moderators = f.read()
     # site moderators
     roleAssignStr = \
-        _beginEditSection(translate['Role Assignment']) + \
+        beginEditSection(translate['Role Assignment']) + \
         '  <b><label class="labels">' + \
         translate['Moderators'] + '</label></b><br>\n' + \
         '  ' + \
@@ -1290,12 +1237,12 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         '  <textarea id="message" name="artists" ' + \
         'placeholder="" ' + \
         'style="height:200px" spellcheck="false">' + \
-        artists + '</textarea>' + _endEditSection()
+        artists + '</textarea>' + endEditSection()
 
     # Video section
     idx = 'Show video previews for the following Peertube sites.'
     peertubeStr = \
-        _beginEditSection(translate['Video Settings']) + \
+        beginEditSection(translate['Video Settings']) + \
         '      <b><label class="labels">' + \
         translate['Peertube Instances'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
@@ -1312,9 +1259,9 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if not YTReplacementDomain:
         YTReplacementDomain = ''
     peertubeStr += \
-        _editText(translate['YouTube Replacement Domain'],
-                  'ytdomain', YTReplacementDomain)
-    peertubeStr += _endEditSection()
+        editTextField(translate['YouTube Replacement Domain'],
+                      'ytdomain', YTReplacementDomain)
+    peertubeStr += endEditSection()
 
     libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
     libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
@@ -1329,17 +1276,17 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 def _htmlEditProfileDangerZone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    editProfileForm = _beginEditSection(translate['Danger Zone'])
+    editProfileForm = beginEditSection(translate['Danger Zone'])
 
     editProfileForm += \
         '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
 
     editProfileForm += \
-        _editCheckBox(translate['Deactivate this account'],
-                      'deactivateThisAccount', False)
+        editCheckBox(translate['Deactivate this account'],
+                     'deactivateThisAccount', False)
 
-    editProfileForm += _endEditSection()
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1369,14 +1316,14 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
         '" value="" style="width:40%">' + \
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>' + _endEditSection()
+        str(skillCtr) + '" value="50"></p>' + endEditSection()
 
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
     editProfileForm = \
-        _beginEditSection(translate['Skills']) + \
+        beginEditSection(translate['Skills']) + \
         '      <b><label class="labels">' + \
         translate['Skills'] + '</label></b><br>\n' + \
         '      <label class="labels">' + \
@@ -1397,12 +1344,12 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
 
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm = \
-        _beginEditSection(translate['Git Projects']) + \
+        beginEditSection(translate['Git Projects']) + \
         '      <label class="labels">' + \
         translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="gitProjects" ' + \
         'style="height:100px" spellcheck="false">' + \
-        gitProjectsStr + '</textarea>\n' + _endEditSection()
+        gitProjectsStr + '</textarea>\n' + endEditSection()
     return editProfileForm
 
 
@@ -1459,7 +1406,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
 
-    editProfileForm = _beginEditSection(translate['Filtering and Blocking'])
+    editProfileForm = beginEditSection(translate['Filtering and Blocking'])
 
     editProfileForm += \
         '<label class="labels">' + \
@@ -1564,7 +1511,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         'style="height:200px" spellcheck="false">' + \
         userAgentsBlockedStr + '</textarea>\n'
 
-    editProfileForm += _endEditSection()
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1572,7 +1519,7 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
     """Change password section of edit profile screen
     """
     editProfileForm = \
-        _beginEditSection(translate['Change Password']) + \
+        beginEditSection(translate['Change Password']) + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
         '      <input type="password" name="password" ' + \
@@ -1580,7 +1527,7 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
         '<label class="labels">' + translate['Confirm Password'] + \
         '</label><br>\n' + \
         '      <input type="password" name="passwordconfirm" value="">\n' + \
-        _endEditSection()
+        endEditSection()
     return editProfileForm
 
 
@@ -1589,15 +1536,15 @@ def _htmlEditProfileLibreTranslate(translate: {},
                                    libretranslateApiKey: str) -> str:
     """Change automatic translation settings
     """
-    editProfileForm = _beginEditSection('LibreTranslate')
+    editProfileForm = beginEditSection('LibreTranslate')
 
     editProfileForm += \
-        _editText('URL', 'libretranslateUrl', libretranslateUrl,
-                  'http://0.0.0.0:5000')
+        editTextField('URL', 'libretranslateUrl', libretranslateUrl,
+                      'http://0.0.0.0:5000')
     editProfileForm += \
-        _editText('API Key', 'libretranslateApiKey', libretranslateApiKey)
+        editTextField('API Key', 'libretranslateApiKey', libretranslateApiKey)
 
-    editProfileForm += _endEditSection()
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1607,7 +1554,7 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm = \
-        _beginEditSection(translate['Background Images']) + \
+        beginEditSection(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not newsInstance:
@@ -1637,7 +1584,7 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
             'name="right_col_image"' + \
             '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += _endEditSection()
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1655,30 +1602,30 @@ def _htmlEditProfileContactInfo(nickname: str,
                                 translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = _beginEditSection(translate['Contact Details'])
+    editProfileForm = beginEditSection(translate['Contact Details'])
 
-    editProfileForm += _editText(translate['Email'],
-                                 'email', emailAddress)
-    editProfileForm += _editText(translate['XMPP'],
-                                 'xmppAddress', xmppAddress)
-    editProfileForm += _editText(translate['Matrix'],
-                                 'matrixAddress', matrixAddress)
-    editProfileForm += _editText('SSB', 'ssbAddress', ssbAddress)
-    editProfileForm += _editText('Tox', 'toxAddress', toxAddress)
-    editProfileForm += _editText('Briar', 'briarAddress', briarAddress)
-    editProfileForm += _editText('Jami', 'jamiAddress', jamiAddress)
-    editProfileForm += _editText('Cwtch', 'cwtchAddress', cwtchAddress)
-    editProfileForm += _editText(translate['PGP Fingerprint'],
-                                 'openpgp', PGPfingerprint)
+    editProfileForm += editTextField(translate['Email'],
+                                     'email', emailAddress)
+    editProfileForm += editTextField(translate['XMPP'],
+                                     'xmppAddress', xmppAddress)
+    editProfileForm += editTextField(translate['Matrix'],
+                                     'matrixAddress', matrixAddress)
+    editProfileForm += editTextField('SSB', 'ssbAddress', ssbAddress)
+    editProfileForm += editTextField('Tox', 'toxAddress', toxAddress)
+    editProfileForm += editTextField('Briar', 'briarAddress', briarAddress)
+    editProfileForm += editTextField('Jami', 'jamiAddress', jamiAddress)
+    editProfileForm += editTextField('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += editTextField(translate['PGP Fingerprint'],
+                                     'openpgp', PGPfingerprint)
     editProfileForm += \
-        _editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
-                      '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
+        editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
+                     '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
     editProfileForm += \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a><br>\n'
 
-    editProfileForm += _endEditSection()
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1691,26 +1638,26 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     """
     editProfileForm = '    <div class="container">\n'
     editProfileForm += \
-        _editCheckBox(translate['Approve follower requests'],
-                      'approveFollowers', manuallyApprovesFollowers)
+        editCheckBox(translate['Approve follower requests'],
+                     'approveFollowers', manuallyApprovesFollowers)
     editProfileForm += \
-        _editCheckBox(translate['This is a bot account'],
-                      'isBot', isBot)
+        editCheckBox(translate['This is a bot account'],
+                     'isBot', isBot)
     editProfileForm += \
-        _editCheckBox(translate['This is a group account'],
-                      'isGroup', isGroup)
+        editCheckBox(translate['This is a group account'],
+                     'isGroup', isGroup)
     editProfileForm += \
-        _editCheckBox(translate['Only people I follow can send me DMs'],
-                      'followDMs', followDMs)
+        editCheckBox(translate['Only people I follow can send me DMs'],
+                     'followDMs', followDMs)
     editProfileForm += \
-        _editCheckBox(translate['Remove Twitter posts'],
-                      'removeTwitter', removeTwitter)
+        editCheckBox(translate['Remove Twitter posts'],
+                     'removeTwitter', removeTwitter)
     editProfileForm += \
-        _editCheckBox(translate['Notify when posts are liked'],
-                      'notifyLikes', notifyLikes)
+        editCheckBox(translate['Notify when posts are liked'],
+                     'notifyLikes', notifyLikes)
     editProfileForm += \
-        _editCheckBox(translate["Don't show the Like button"],
-                      'hideLikeButton', hideLikeButton)
+        editCheckBox(translate["Don't show the Like button"],
+                     'hideLikeButton', hideLikeButton)
     editProfileForm += '    </div>\n'
     return editProfileForm
 
@@ -1751,7 +1698,8 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm = '    <div class="container">\n'
 
     editProfileForm += \
-        _editText(translate['Nickname'], 'displayNickname', displayNickname)
+        editTextField(translate['Nickname'], 'displayNickname',
+                      displayNickname)
 
     editProfileForm += \
         '      <label class="labels">' + \
@@ -1770,7 +1718,8 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
         occupationName = getOccupationName(actorJson)
 
     editProfileForm += \
-        _editText(translate['Occupation'], 'occupationName', occupationName)
+        editTextField(translate['Occupation'], 'occupationName',
+                      occupationName)
 
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):
@@ -1783,25 +1732,25 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
             alsoKnownAsStr += altActor
 
     editProfileForm += \
-        _editText(translate['Other accounts'], 'alsoKnownAs',
-                  alsoKnownAsStr, 'https://...')
+        editTextField(translate['Other accounts'], 'alsoKnownAs',
+                      alsoKnownAsStr, 'https://...')
 
     editProfileForm += \
-        _editText(translate['Moved to new account address'], 'movedTo',
-                  movedTo, 'https://...')
+        editTextField(translate['Moved to new account address'], 'movedTo',
+                      movedTo, 'https://...')
 
     editProfileForm += \
-        _editText(translate['Donations link'], 'donateUrl',
-                  donateUrl, 'https://...')
+        editTextField(translate['Donations link'], 'donateUrl',
+                      donateUrl, 'https://...')
 
     editProfileForm += \
-        _editText('Blog', 'blogAddress', blogAddress, 'https://...')
+        editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
 
     languagesListStr = _getSupportedLanguages(baseDir)
     showLanguages = getActorLanguages(actorJson)
     editProfileForm += \
-        _editText(translate['Languages'], 'showLanguages',
-                  showLanguages, languagesListStr)
+        editTextField(translate['Languages'], 'showLanguages',
+                      showLanguages, languagesListStr)
 
     editProfileForm += '    </div>\n'
     return editProfileForm
@@ -1837,8 +1786,8 @@ def _htmlEditProfileTopBanner(baseDir: str,
     if scheduledPostsExist(baseDir, nickname, domain):
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
-            _editCheckBox(translate['Remove scheduled posts'],
-                          'removeScheduledPosts', False)
+            editCheckBox(translate['Remove scheduled posts'],
+                         'removeScheduledPosts', False)
         editProfileForm += '    </div>\n'
     return editProfileForm
 

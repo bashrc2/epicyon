@@ -1111,3 +1111,61 @@ def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
             str(title) + '</a></label></li>\n'
     htmlStr += '</ul></div>\n'
     return htmlStr
+
+
+def beginEditSection(label: str) -> str:
+    """returns the html for begining a dropdown section on edit profile screen
+    """
+    return \
+        '    <details><summary class="cw">' + label + '</summary>\n' + \
+        '<div class="container">'
+
+
+def endEditSection() -> str:
+    """returns the html for ending a dropdown section on edit profile screen
+    """
+    return '    </div></details>\n'
+
+
+def editTextField(label: str, name: str, value: str = "",
+                  placeholder: str = "") -> str:
+    """Returns html for editing a text field
+    """
+    if value is None:
+        value = ''
+    placeholderStr = ''
+    if placeholder:
+        placeholderStr = ' placeholder="' + placeholder + '"'
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="text" name="' + name + '" value="' + \
+        value + '"' + placeholderStr + '>\n'
+
+
+def editCheckBox(label: str, name: str, checked: bool = False) -> str:
+    """Returns html for editing a checkbox field
+    """
+    checkedStr = ''
+    if checked:
+        checkedStr = ' checked'
+
+    return \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
+
+
+def editTextArea(label: str, name: str, value: str = "",
+                 height: int = 600,
+                 placeholder: str = "",
+                 spellcheck: bool = False) -> str:
+    """Returns html for editing a textarea field
+    """
+    if value is None:
+        value = ''
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <textarea id="message" placeholder=' + \
+        '"' + placeholder + '" name="' + name + '" ' + \
+        'style="height:' + height + 'px" spellcheck="' + \
+        str(spellcheck).lower() + '">' + \
+        value + '</textarea>\n'
