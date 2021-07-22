@@ -1169,7 +1169,7 @@ def editTextArea(label: str, name: str, value: str = "",
         '      <textarea id="message" placeholder=' + \
         '"' + placeholder + '" '
     text += 'name="' + name + '" '
-    text += 'style="height:' + height + 'px" '
+    text += 'style="height:' + str(height) + 'px" '
     text += 'spellcheck="' + str(spellcheck).lower() + '">'
     text += value + '</textarea>\n'
     return text
