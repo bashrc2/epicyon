@@ -74,15 +74,19 @@ def _endEditSection() -> str:
     return '    </div></details>\n'
 
 
-def _editText(label: str, name: str, value: str = "") -> str:
+def _editText(label: str, name: str, value: str = "",
+              placeholder: str = "") -> str:
     """Returns html for editing a text field
     """
     if value is None:
         value = ''
+    placeholderStr = ''
+    if placeholder:
+        placeholderStr = ' placeholder="' + placeholder + '"'
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="text" name="' + name + '" value="' + \
-        value + '">\n'
+        value + '"' + placeholderStr + '>\n'
 
 
 def _editCheckBox(label: str, name: str, checked: bool = False) -> str:
@@ -1605,22 +1609,15 @@ def _htmlEditProfileLibreTranslate(translate: {},
                                    libretranslateApiKey: str) -> str:
     """Change automatic translation settings
     """
-    if libretranslateUrl is None:
-        libretranslateUrl = ''
-    if libretranslateApiKey is None:
-        libretranslateApiKey = ''
+    editProfileForm = _beginEditSection('LibreTranslate')
 
-    editProfileForm = \
-        '    <details><summary class="cw">LibreTranslate</summary>\n' + \
-        '    <div class="container">\n' + \
-        '<label class="labels">URL</label><br>\n' + \
-        '      <input type="text" name="libretranslateUrl" ' + \
-        'placeholder="http://0.0.0.0:5000" ' + \
-        'value="' + libretranslateUrl + '"><br>\n' + \
-        '<label class="labels">API Key</label><br>\n' + \
-        '      <input type="text" name="libretranslateApiKey" ' + \
-        'value="' + libretranslateApiKey + '">\n' + \
-        '    </div></details>\n'
+    editProfileForm += \
+        _editText('URL', 'libretranslateUrl', libretranslateUrl,
+                  'http://0.0.0.0:5000')
+    editProfileForm += \
+        _editText('API Key', 'libretranslateApiKey', libretranslateApiKey)
+
+    editProfileForm += _endEditSection()
     return editProfileForm
 
 
@@ -1776,10 +1773,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm = '    <div class="container">\n'
 
     editProfileForm += \
-        '      <label class="labels">' + \
-        translate['Nickname'] + '</label>\n' + \
-        '      <input type="text" name="displayNickname" value="' + \
-        displayNickname + '"><br>\n'
+        _editText(translate['Nickname'], 'displayNickname', displayNickname)
 
     editProfileForm += \
         '      <label class="labels">' + \
@@ -1798,10 +1792,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
         occupationName = getOccupationName(actorJson)
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Occupation'] + ':</label><br>\n' + \
-        '      <input type="text" ' + \
-        'name="occupationName" value="' + occupationName + '">\n'
+        _editText(translate['Occupation'], 'occupationName', occupationName)
 
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):
@@ -1814,37 +1805,26 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
             alsoKnownAsStr += altActor
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Other accounts'] + ':</label><br>\n' + \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
+        _editText(translate['Other accounts'], 'alsoKnownAs',
+                  alsoKnownAsStr, 'https://...')
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Moved to new account address'] + ':</label><br>\n' + \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="movedTo" value="' + movedTo + '">\n'
+        _editText(translate['Moved to new account address'], 'movedTo',
+                  movedTo, 'https://...')
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Donations link'] + '</label><br>\n' + \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="donateUrl" value="' + donateUrl + '">\n'
+        _editText(translate['Donations link'], 'donateUrl',
+                  donateUrl, 'https://...')
 
     editProfileForm += \
-        '<label class="labels">Blog</label><br>\n' + \
-        '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">\n'
+        _editText('Blog', 'blogAddress', blogAddress, 'https://...')
 
     languagesListStr = _getSupportedLanguages(baseDir)
     showLanguages = getActorLanguages(actorJson)
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Languages'] + '</label><br>\n' + \
-        '      <input type="text" ' + \
-        'placeholder="' + languagesListStr + \
-        '" name="showLanguages" value="' + \
-        showLanguages + '">\n'
+        _editText(translate['Languages'], 'showLanguages',
+                  showLanguages, languagesListStr)
+
     editProfileForm += '    </div>\n'
     return editProfileForm
 
