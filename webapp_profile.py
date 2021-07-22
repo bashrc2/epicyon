@@ -1331,12 +1331,12 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
 
-    idx = 'List of project names that you wish to receive git patches for'
     editProfileForm = beginEditSection(translate['Git Projects'])
-    editProfileForm = \
+    idx = 'List of project names that you wish to receive git patches for'
+    editProfileForm += \
         editTextArea(translate[idx], 'gitProjects', gitProjectsStr,
                      100, '', False)
-    editProfileForm = endEditSection()
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
