@@ -533,7 +533,8 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
            '"' in word or \
            '@' in word or \
            "'" in word or \
-           '://' in word:
+           "--" in word or \
+           '//' in word:
             continue
         if word.lower() in commonWords:
             continue
