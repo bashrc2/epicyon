@@ -512,6 +512,7 @@ def _getCommonWords() -> str:
         'using', 'uses', 'https', 'still', 'want', 'wants'
     )
 
+
 def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     """Creates a dictionary containing words and the number of times
     that they appear

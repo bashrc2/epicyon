@@ -145,7 +145,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     ctr = 1
     for postDomain, blockedPostUrls in domainDict.items():
         infoForm += '<a href="' + \
-            httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
+            httpPrefix + '://' + postDomain + '" ' + \
+            'target="_blank" rel="nofollow noopener noreferrer">' + \
+            postDomain + '</a> '
         if isBlockedDomain(baseDir, postDomain):
             blockedPostsLinks = ''
             urlCtr = 0
@@ -153,7 +155,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 if urlCtr > 0:
                     blockedPostsLinks += '<br>'
                 blockedPostsLinks += \
-                    '<a href="' + url + '">' + url + '</a>'
+                    '<a href="' + url + '" ' + \
+                    'target="_blank" rel="nofollow noopener noreferrer">' + \
+                    url + '</a>'
                 urlCtr += 1
             blockedPostsHtml = ''
             if blockedPostsLinks:
@@ -194,7 +198,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             followingDomain, followingPort = getDomainFromActor(actor)
             followingDomainFull = \
                 getFullDomain(followingDomain, followingPort)
-            infoForm += '<a href="' + actor + '">' + \
+            infoForm += '<a href="' + actor + '" ' + \
+                'target="_blank" rel="nofollow noopener noreferrer">' + \
                 followingNickname + '@' + followingDomainFull + \
                 '</a><br><br>\n'
         infoForm += '</div>\n'
@@ -211,7 +216,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             followerNickname = getNicknameFromActor(actor)
             followerDomain, followerPort = getDomainFromActor(actor)
             followerDomainFull = getFullDomain(followerDomain, followerPort)
-            infoForm += '<a href="' + actor + '">' + \
+            infoForm += '<a href="' + actor + '" ' + \
+                'target="_blank" rel="nofollow noopener noreferrer">' + \
                 followerNickname + '@' + followerDomainFull + '</a><br><br>\n'
         infoForm += '</div>\n'
 
