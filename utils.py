@@ -852,6 +852,8 @@ def _genderFromString(translate: {}, text: str) -> str:
     """Given some text, does it contain a gender description?
     """
     gender = None
+    if not text:
+        return None
     textOrig = text
     text = text.lower()
     if translate['He/Him'].lower() in text or \
