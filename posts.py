@@ -509,7 +509,7 @@ def _getCommonWords() -> str:
         'includes', 'know', 'knowing', 'knows', 'things',
         'say', 'says', 'saying', 'many', 'somewhat',
         'problem', 'problems', 'idea', 'ideas',
-        'using', 'uses', 'https'
+        'using', 'uses', 'https', 'still', 'want', 'wants'
     )
 
 def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
