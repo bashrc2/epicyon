@@ -496,7 +496,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     that they appear
     """
     plainText = removeHtml(content)
-    removeChars = ('.', ';', '?')
+    removeChars = ('.', ';', '?', '\n')
     for ch in removeChars:
         plainText = plainText.replace(ch, ' ')
     wordsList = plainText.split(' ')
@@ -510,7 +510,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         'been', 'over', 'their', 'where', 'could', 'though',
         'like', 'think', 'same', 'maybe', 'really', 'thing',
         'something', 'possible', 'actual', 'actually',
-        'because', 'around', 'having', 'I'
+        'because', 'around', 'having'
     )
     for word in wordsList:
         wordLen = len(word)
