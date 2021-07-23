@@ -491,16 +491,10 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
     return personPosts
 
 
-def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
-    """Creates a dictionary containing words and the number of times
-    that they appear
+def _getCommonWords() -> str:
+    """Returns a list of common words
     """
-    plainText = removeHtml(content)
-    removeChars = ('.', ';', '?', '\n')
-    for ch in removeChars:
-        plainText = plainText.replace(ch, ' ')
-    wordsList = plainText.split(' ')
-    commonWords = (
+    return (
         'that', 'some', 'about', 'then', 'they', 'were',
         'also', 'from', 'with', 'this', 'have', 'more',
         'need', 'here', 'would', 'these', 'into', 'very',
@@ -510,8 +504,23 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         'been', 'over', 'their', 'where', 'could', 'though',
         'like', 'think', 'same', 'maybe', 'really', 'thing',
         'something', 'possible', 'actual', 'actually',
-        'because', 'around', 'having'
+        'because', 'around', 'having', 'especially', 'other',
+        'making', 'made', 'make', 'makes', 'including',
+        'includes', 'know', 'knowing', 'knows', 'things',
+        'say', 'says', 'saying', 'many', 'somewhat',
+        'problem', 'problems', 'idea', 'ideas'
     )
+
+def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
+    """Creates a dictionary containing words and the number of times
+    that they appear
+    """
+    plainText = removeHtml(content)
+    removeChars = ('.', ';', '?', '\n', ':')
+    for ch in removeChars:
+        plainText = plainText.replace(ch, ' ')
+    wordsList = plainText.split(' ')
+    commonWords = _getCommonWords()
     for word in wordsList:
         wordLen = len(word)
         if wordLen < 3:
@@ -524,8 +533,6 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
            '@' in word or \
            '://' in word:
             continue
-        if word.endswith(':'):
-            word = word.replace(':', '')
         if word.lower() in commonWords:
             continue
         if wordFrequency.get(word):
