@@ -508,7 +508,8 @@ def _getCommonWords() -> str:
         'making', 'made', 'make', 'makes', 'including',
         'includes', 'know', 'knowing', 'knows', 'things',
         'say', 'says', 'saying', 'many', 'somewhat',
-        'problem', 'problems', 'idea', 'ideas'
+        'problem', 'problems', 'idea', 'ideas',
+        'using', 'uses'
     )
 
 def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
@@ -531,6 +532,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         if '&' in word or \
            '"' in word or \
            '@' in word or \
+           "'" in word or \
            '://' in word:
             continue
         if word.lower() in commonWords:
