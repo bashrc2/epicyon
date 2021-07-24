@@ -11,7 +11,6 @@ import os
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getImageFormats
 from utils import getMediaFormats
 from utils import getConfigParam
 from utils import acctDir
@@ -273,7 +272,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     pathBase = path.replace('/newreport', '').replace('/newpost', '')
     pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
     pathBase = pathBase.replace('/newunlisted', '')
-    pathBase = pathBase.replace('/newevent', '')
     pathBase = pathBase.replace('/newreminder', '')
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
@@ -281,19 +279,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostImageSection += \
         editTextField(translate['Image description'], 'imageDescription', '')
 
-    if path.endswith('/newevent'):
-        newPostImageSection += \
-            '      <label class="labels">' + \
-            translate['Banner image'] + '</label>\n'
-        newPostImageSection += \
-            '      <input type="file" id="attachpic" name="attachpic"'
-        newPostImageSection += \
-            '            accept="' + getImageFormats() + '">\n'
-    else:
-        newPostImageSection += \
-            '      <input type="file" id="attachpic" name="attachpic"'
-        newPostImageSection += \
-            '            accept="' + getMediaFormats() + '">\n'
+    newPostImageSection += \
+        '      <input type="file" id="attachpic" name="attachpic"'
+    newPostImageSection += \
+        '            accept="' + getMediaFormats() + '">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
@@ -334,12 +323,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         scopeIcon = 'scope_reminder.png'
         scopeDescription = translate['Reminder']
         endpoint = 'newreminder'
-    elif path.endswith('/newevent'):
-        scopeIcon = 'scope_event.png'
-        scopeDescription = translate['Event']
-        endpoint = 'newevent'
-        placeholderSubject = translate['Event name']
-        placeholderMessage = translate['Describe the event'] + '...'
     elif path.endswith('/newreport'):
         scopeIcon = 'scope_report.png'
         scopeDescription = translate['Report']
@@ -417,69 +400,11 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if endpoint != 'newshare' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = '<div class="container">\n'
-
-        if endpoint == 'newevent':
-            # event status
-            dateAndLocation += '<label class="labels">' + \
-                translate['Status of the event'] + ':</label><br>\n'
-            dateAndLocation += '<input type="radio" id="tentative" ' + \
-                'name="eventStatus" value="tentative">\n'
-            dateAndLocation += '<label class="labels" for="tentative">' + \
-                translate['Tentative'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="confirmed" ' + \
-                'name="eventStatus" value="confirmed" checked>\n'
-            dateAndLocation += '<label class="labels" for="confirmed">' + \
-                translate['Confirmed'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="cancelled" ' + \
-                'name="eventStatus" value="cancelled">\n'
-            dateAndLocation += '<label class="labels" for="cancelled">' + \
-                translate['Cancelled'] + '</label><br>\n'
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            # maximum attendees
-            dateAndLocation += '<label class="labels" ' + \
-                'for="maximumAttendeeCapacity">' + \
-                translate['Maximum attendees'] + ':</label>\n'
-            dateAndLocation += '<input type="number" ' + \
-                'id="maximumAttendeeCapacity" ' + \
-                'name="maximumAttendeeCapacity" min="1" max="999999" ' + \
-                'value="100">\n'
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            # event joining options
-            dateAndLocation += '<label class="labels">' + \
-                translate['Joining'] + ':</label><br>\n'
-            dateAndLocation += '<input type="radio" id="free" ' + \
-                'name="joinMode" value="free" checked>\n'
-            dateAndLocation += '<label class="labels" for="free">' + \
-                translate['Anyone can join'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="restricted" ' + \
-                'name="joinMode" value="restricted">\n'
-            dateAndLocation += '<label class="labels" for="female">' + \
-                translate['Apply to join'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="invite" ' + \
-                'name="joinMode" value="invite">\n'
-            dateAndLocation += '<label class="labels" for="other">' + \
-                translate['Invitation only'] + '</label>\n'
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            # Event posts don't allow replies - they're just an announcement.
-            # They also have a few more checkboxes
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="privateEvent"><label class="labels"> ' + \
-                translate['This is a private event.'] + '</label></p>\n'
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="anonymousParticipationEnabled">' + \
-                '<label class="labels"> ' + \
-                translate['Allow anonymous participation.'] + '</label></p>\n'
-        else:
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="commentsEnabled" checked><label class="labels"> ' + \
-                translate['Allow replies.'] + '</label></p>\n'
+        dateAndLocation = \
+            '<div class="container">\n' + \
+            '<p><input type="checkbox" class="profilecheckbox" ' + \
+            'name="commentsEnabled" checked><label class="labels"> ' + \
+            translate['Allow replies.'] + '</label></p>\n'
 
         if endpoint == 'newpost':
             dateAndLocation += \
@@ -487,64 +412,25 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 'name="pinToProfile"><label class="labels"> ' + \
                 translate['Pin this post to your profile.'] + '</label></p>\n'
 
-        if not inReplyTo and endpoint != 'newevent':
+        if not inReplyTo:
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
                 'name="schedulePost"><label class="labels"> ' + \
                 translate['This is a scheduled post.'] + '</label></p>\n'
 
-        if endpoint != 'newevent':
-            dateAndLocation += \
-                '<p><img loading="lazy" alt="" title="" ' + \
-                'class="emojicalendar" src="/' + \
-                'icons/calendar.png"/>\n'
-            # select a date and time for this post
-            dateAndLocation += '<label class="labels">' + \
-                translate['Date'] + ': </label>\n'
-            dateAndLocation += '<input type="date" name="eventDate">\n'
-            dateAndLocation += '<label class="labelsright">' + \
-                translate['Time'] + ':'
-            dateAndLocation += \
-                '<input type="time" name="eventTime"></label></p>\n'
-        else:
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            dateAndLocation += \
-                '<p><img loading="lazy" alt="" title="" ' + \
-                'class="emojicalendar" src="/' + \
-                'icons/calendar.png"/>\n'
-            # select start time for the event
-            dateAndLocation += '<label class="labels">' + \
-                translate['Start Date'] + ': </label>\n'
-            dateAndLocation += '<input type="date" name="eventDate">\n'
-            dateAndLocation += '<label class="labelsright">' + \
-                translate['Time'] + ':'
-            dateAndLocation += \
-                '<input type="time" name="eventTime"></label></p>\n'
-            # select end time for the event
-            dateAndLocation += \
-                '<br><img loading="lazy" alt="" title="" ' + \
-                'class="emojicalendar" src="/' + \
-                'icons/calendar.png"/>\n'
-            dateAndLocation += '<label class="labels">' + \
-                translate['End Date'] + ': </label>\n'
-            dateAndLocation += '<input type="date" name="endDate">\n'
-            dateAndLocation += '<label class="labelsright">' + \
-                translate['Time'] + ':'
-            dateAndLocation += \
-                '<input type="time" name="endTime"></label>\n'
+        dateAndLocation += \
+            '<p><img loading="lazy" alt="" title="" ' + \
+            'class="emojicalendar" src="/' + \
+            'icons/calendar.png"/>\n'
+        # select a date and time for this post
+        dateAndLocation += '<label class="labels">' + \
+            translate['Date'] + ': </label>\n'
+        dateAndLocation += '<input type="date" name="eventDate">\n'
+        dateAndLocation += '<label class="labelsright">' + \
+            translate['Time'] + ':'
+        dateAndLocation += \
+            '<input type="time" name="eventTime"></label></p>\n'
 
-        if endpoint == 'newevent':
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            dateAndLocation += '<br><label class="labels">' + \
-                translate['Moderation policy or code of conduct'] + \
-                ': </label>\n'
-            dateAndLocation += \
-                '    <textarea id="message" ' + \
-                'name="repliesModerationOption" style="height:' + \
-                str(messageBoxHeight) + 'px" spellcheck="true" ' + \
-                'autocomplete="on"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += \
@@ -588,7 +474,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     dropdownUnlistedSuffix = '/newunlisted'
     dropdownFollowersSuffix = '/newfollowers'
     dropdownDMSuffix = '/newdm'
-    dropdownEventSuffix = '/newevent'
     dropdownReminderSuffix = '/newreminder'
     dropdownReportSuffix = '/newreport'
     if inReplyTo or mentions:
