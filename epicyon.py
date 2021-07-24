@@ -558,6 +558,9 @@ parser.add_argument('--summary', dest='summary', type=str,
 parser.add_argument('--itemImage', dest='itemImage', type=str,
                     default=None,
                     help='Filename of an image for an item being shared')
+parser.add_argument('--itemQty', dest='itemQty', type=int,
+                    default=1,
+                    help='Quantity of items being shared')
 parser.add_argument('--itemType', dest='itemType', type=str,
                     default=None,
                     help='Type of item being shared')
@@ -1246,6 +1249,10 @@ if args.itemName:
               'with the --summary option')
         sys.exit()
 
+    if not args.itemQty:
+        print('Specify a quantity of shared items with the --itemQty option')
+        sys.exit()
+
     if not args.itemType:
         print('Specify a type of shared item with the --itemType option')
         sys.exit()
@@ -1277,6 +1284,7 @@ if args.itemName:
                        args.itemName,
                        args.summary,
                        args.itemImage,
+                       args.itemQty,
                        args.itemType,
                        args.itemCategory,
                        args.location,

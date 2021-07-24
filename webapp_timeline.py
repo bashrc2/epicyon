@@ -821,8 +821,11 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
             '<img loading="lazy" src="' + item['imageUrl'] + \
             '" alt="' + translate['Item image'] + '">\n</a>\n'
     profileStr += '<p>' + item['summary'] + '</p>\n'
+    profileStr += '<p>'
     profileStr += \
-        '<p><b>' + translate['Type'] + ':</b> ' + item['itemType'] + ' '
+        '<b>' + translate['Quantity'] + ':</b> ' + str(item['itemQty']) + ' '
+    profileStr += \
+        '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + ' '
     profileStr += \
         '<b>' + translate['Category'] + ':</b> ' + item['category'] + ' '
     profileStr += \

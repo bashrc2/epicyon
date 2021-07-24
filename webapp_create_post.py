@@ -355,6 +355,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         endpoint = 'newshare'
         extraFields = '<div class="container">\n'
         extraFields += \
+            editTextField(translate['Quantity'] + ':',
+                          'itemQty', '1')
+        extraFields += \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '')
         catStr = translate['Category of shared item. eg. clothing']

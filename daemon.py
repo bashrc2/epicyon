@@ -13627,6 +13627,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                 return -1
             elif postType == 'newshare':
+                if not fields.get('itemQty'):
+                    return -1
                 if not fields.get('itemType'):
                     return -1
                 if not fields.get('category'):
@@ -13646,6 +13648,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname,
                                       self.server.domain)
+                itemQty = 1
+                if fields['itemQty']:
+                    if fields['itemQty'].isdigit():
+                        itemQty = int(fields['itemQty'])
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
@@ -13653,7 +13659,7 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['subject'],
                          fields['message'],
                          filename,
-                         fields['itemType'],
+                         itemQty, fields['itemType'],
                          fields['category'],
                          fields['location'],
                          durationStr,

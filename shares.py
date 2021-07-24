@@ -97,7 +97,7 @@ def _addShareDurationSec(duration: str, published: str) -> int:
 def addShare(baseDir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
-             itemType: str, itemCategory: str, location: str,
+             itemQty: int, itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool, city: str) -> None:
     """Adds a new share
     """
@@ -151,6 +151,7 @@ def addShare(baseDir: str,
         "displayName": displayName,
         "summary": summary,
         "imageUrl": imageUrl,
+        "itemQty": itemQty,
         "itemType": itemType,
         "category": itemCategory,
         "location": location,
@@ -321,7 +322,7 @@ def sendShareViaServer(baseDir, session,
                        fromDomain: str, fromPort: int,
                        httpPrefix: str, displayName: str,
                        summary: str, imageFilename: str,
-                       itemType: str, itemCategory: str,
+                       itemQty: int, itemType: str, itemCategory: str,
                        location: str, duration: str,
                        cachedWebfingers: {}, personCache: {},
                        debug: bool, projectVersion: str) -> {}:
@@ -347,6 +348,7 @@ def sendShareViaServer(baseDir, session,
             "type": "Offer",
             "displayName": displayName,
             "summary": summary,
+            "itemQty": itemQty,
             "itemType": itemType,
             "category": itemCategory,
             "location": location,
@@ -545,6 +547,10 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: summary missing from Offer')
         return
+    if not messageJson['object'].get('itemQty'):
+        if debug:
+            print('DEBUG: itemQty missing from Offer')
+        return
     if not messageJson['object'].get('itemType'):
         if debug:
             print('DEBUG: itemType missing from Offer')
@@ -566,6 +572,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              messageJson['object']['displayName'],
              messageJson['object']['summary'],
              messageJson['object']['imageFilename'],
+             messageJson['object']['itemQty'],
              messageJson['object']['itemType'],
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],
