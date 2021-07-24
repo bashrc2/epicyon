@@ -26,7 +26,7 @@ from utils import acctDir
 from media import processMetaData
 
 
-def _loadProductIds(baseDir: str, systemLanguage: str) -> {}:
+def _loadDfcIds(baseDir: str, systemLanguage: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
@@ -54,7 +54,7 @@ def _loadProductIds(baseDir: str, systemLanguage: str) -> {}:
         print('productTypes ontology does not contain the language ' +
               systemLanguage)
         return None
-    productIds = {}
+    dfcIds = {}
     for item in productTypes['@graph']:
         if not item.get('@id'):
             continue
@@ -66,9 +66,9 @@ def _loadProductIds(baseDir: str, systemLanguage: str) -> {}:
             if not label.get('@value'):
                 continue
             if label['@language'] == systemLanguage:
-                productIds[label['@value'].lower()] = item['@id']
+                dfcIds[label['@value'].lower()] = item['@id']
                 break
-    return productIds
+    return dfcIds
 
 
 def getValidSharedItemID(displayName: str) -> str:
@@ -139,19 +139,18 @@ def _addShareDurationSec(duration: str, published: str) -> int:
     return 0
 
 
-def _getshareProductId(baseDir: str, systemLanguage: str,
-                       itemType: str) -> str:
-    """Attempts to obtain an Id for the shared item,
+def _getshareDfcId(baseDir: str, systemLanguage: str, itemType: str) -> str:
+    """Attempts to obtain a DFC Id for the shared item,
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
     """
-    productIds = _loadProductIds(baseDir, systemLanguage)
-    if not productIds:
+    dfcIds = _loadDfcIds(baseDir, systemLanguage)
+    if not dfcIds:
         return ''
     itemTypeLower = itemType.lower()
     matchName = ''
     matchId = ''
-    for name, uri in productIds.items():
+    for name, uri in dfcIds.items():
         if name not in itemTypeLower:
             continue
         if len(name) > len(matchName):
@@ -160,7 +159,7 @@ def _getshareProductId(baseDir: str, systemLanguage: str,
     if not matchId:
         # bag of words match
         maxMatchedWords = 0
-        for name, uri in productIds.items():
+        for name, uri in dfcIds.items():
             words = name.split(' ')
             score = 0
             for wrd in words:
@@ -190,7 +189,7 @@ def addShare(baseDir: str,
     durationSec = _addShareDurationSec(duration, published)
 
     itemID = getValidSharedItemID(displayName)
-    productId = _getshareProductId(baseDir, systemLanguage, itemType)
+    dfcId = _getshareDfcId(baseDir, systemLanguage, itemType)
 
     # has an image for this share been uploaded?
     imageUrl = None
@@ -232,7 +231,7 @@ def addShare(baseDir: str,
         "summary": summary,
         "imageUrl": imageUrl,
         "itemQty": itemQty,
-        "productId": productId,
+        "dfcId": dfcId,
         "itemType": itemType,
         "category": itemCategory,
         "location": location,
