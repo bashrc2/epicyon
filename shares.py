@@ -139,11 +139,15 @@ def _addShareDurationSec(duration: str, published: str) -> int:
     return 0
 
 
-def _getshareDfcId(baseDir: str, systemLanguage: str, itemType: str) -> str:
+def _getshareDfcId(baseDir: str, systemLanguage: str,
+                   itemType: str, itemCategory: str,
+                   translate: {}) -> str:
     """Attempts to obtain a DFC Id for the shared item,
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
     """
+    if translate['food'] not in itemCategory.lower():
+        return ''
     dfcIds = _loadDfcIds(baseDir, systemLanguage)
     if not dfcIds:
         return ''
@@ -176,7 +180,7 @@ def addShare(baseDir: str,
              displayName: str, summary: str, imageFilename: str,
              itemQty: int, itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool, city: str,
-             systemLanguage: str) -> None:
+             systemLanguage: str, translate: {}) -> None:
     """Adds a new share
     """
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
@@ -189,7 +193,8 @@ def addShare(baseDir: str,
     durationSec = _addShareDurationSec(duration, published)
 
     itemID = getValidSharedItemID(displayName)
-    dfcId = _getshareDfcId(baseDir, systemLanguage, itemType)
+    dfcId = _getshareDfcId(baseDir, systemLanguage,
+                           itemType, itemCategory, translate)
 
     # has an image for this share been uploaded?
     imageUrl = None
@@ -603,7 +608,7 @@ def sendUndoShareViaServer(baseDir: str, session,
 def outboxShareUpload(baseDir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
                       messageJson: {}, debug: bool, city: str,
-                      systemLanguage: str) -> None:
+                      systemLanguage: str, translate: {}) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -658,7 +663,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],
              messageJson['object']['duration'],
-             debug, city, systemLanguage)
+             debug, city, systemLanguage, translate)
     if debug:
         print('DEBUG: shared item received via c2s')
 

@@ -13665,7 +13665,8 @@ class PubServer(BaseHTTPRequestHandler):
                          durationStr,
                          self.server.debug,
                          city,
-                         self.server.systemLanguage)
+                         self.server.systemLanguage,
+                         self.server.translate)
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)
