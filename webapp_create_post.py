@@ -357,7 +357,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += \
             editNumberField(translate['Quantity'],
                             'itemQty', 1, 1, 999999, 1)
-        extraFields += \
+        extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '')
         catStr = translate['Category of shared item. eg. clothing']
