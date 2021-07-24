@@ -73,7 +73,6 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
                          dropdownFollowersSuffix: str,
                          dropdownDMSuffix: str,
                          dropdownReminderSuffix: str,
-                         dropdownEventSuffix: str,
                          dropdownReportSuffix: str,
                          noDropDown: bool,
                          accessKeys: {}) -> str:
@@ -488,7 +487,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropdownUnlistedSuffix = ''
         dropdownFollowersSuffix = ''
         dropdownDMSuffix = ''
-        dropdownEventSuffix = ''
         dropdownReminderSuffix = ''
         dropdownReportSuffix = ''
     if inReplyTo:
@@ -520,7 +518,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                  dropdownFollowersSuffix,
                                  dropdownDMSuffix,
                                  dropdownReminderSuffix,
-                                 dropdownEventSuffix,
                                  dropdownReportSuffix,
                                  noDropDown, accessKeys)
     else:

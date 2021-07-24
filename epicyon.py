@@ -2327,7 +2327,7 @@ if args.testdata:
              httpPrefix, nickname, domain, port,
              "spanner",
              "It's a spanner",
-             "img/shares1.png",             
+             "img/shares1.png",
              1, "tool",
              "mechanical",
              "City",
