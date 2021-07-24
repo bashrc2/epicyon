@@ -714,6 +714,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  domainFull: str,
                                  path: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
+    See https://github.com/datafoodconsortium/ontology
     """
     dfcUrl = \
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
@@ -763,6 +764,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           domainFull: str,
                           path: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
+    See https://github.com/datafoodconsortium/ontology
     """
     dfcUrl = \
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
