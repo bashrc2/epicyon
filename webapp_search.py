@@ -176,9 +176,10 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" alt="Item image"></a>\n'
                         sharedItemsForm += \
                             '<p>' + sharedItem['summary'] + '</p>\n<p>'
-                        sharedItemsForm += \
-                            '<b>' + translate['Quantity'] + \
-                            ':</b> ' + str(sharedItem['itemQty']) + ' '
+                        if sharedItem.get('itemQty'):
+                            sharedItemsForm += \
+                                '<b>' + translate['Quantity'] + \
+                                ':</b> ' + str(sharedItem['itemQty']) + ' '
                         sharedItemsForm += \
                             '<b>' + translate['Type'] + \
                             ':</b> ' + sharedItem['itemType'] + ' '
