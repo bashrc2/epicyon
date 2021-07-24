@@ -9,6 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 import time
+import datetime
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
@@ -180,6 +181,7 @@ def addShare(baseDir: str,
              displayName: str, summary: str, imageFilename: str,
              itemQty: int, itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool, city: str,
+             price: str, currency: str,
              systemLanguage: str, translate: {}) -> None:
     """Adds a new share
     """
@@ -241,7 +243,9 @@ def addShare(baseDir: str,
         "category": itemCategory,
         "location": location,
         "published": published,
-        "expire": durationSec
+        "expire": durationSec,
+        "price": "0",
+        "currency": ""
     }
 
     saveJson(sharesJson, sharesFilename)
@@ -283,25 +287,27 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
     handleDomain = removeDomainPort(domain)
     handle = nickname + '@' + handleDomain
     sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
-    if os.path.isfile(sharesFilename):
-        sharesJson = loadJson(sharesFilename)
-        if sharesJson:
-            currTime = int(time.time())
-            deleteItemID = []
-            for itemID, item in sharesJson.items():
-                if currTime > item['expire']:
-                    deleteItemID.append(itemID)
-            if deleteItemID:
-                for itemID in deleteItemID:
-                    del sharesJson[itemID]
-                    # remove any associated images
-                    itemIDfile = \
-                        baseDir + '/sharefiles/' + nickname + '/' + itemID
-                    formats = getImageExtensions()
-                    for ext in formats:
-                        if os.path.isfile(itemIDfile + '.' + ext):
-                            os.remove(itemIDfile + '.' + ext)
-                saveJson(sharesJson, sharesFilename)
+    if not os.path.isfile(sharesFilename):
+        return
+    sharesJson = loadJson(sharesFilename)
+    if not sharesJson:
+        return
+    currTime = int(time.time())
+    deleteItemID = []
+    for itemID, item in sharesJson.items():
+        if currTime > item['expire']:
+            deleteItemID.append(itemID)
+    if not deleteItemID:
+        return
+    for itemID in deleteItemID:
+        del sharesJson[itemID]
+        # remove any associated images
+        itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
+        formats = getImageExtensions()
+        for ext in formats:
+            if os.path.isfile(itemIDfile + '.' + ext):
+                os.remove(itemIDfile + '.' + ext)
+    saveJson(sharesJson, sharesFilename)
 
 
 def getSharesFeedForPerson(baseDir: str,
@@ -410,7 +416,8 @@ def sendShareViaServer(baseDir, session,
                        itemQty: int, itemType: str, itemCategory: str,
                        location: str, duration: str,
                        cachedWebfingers: {}, personCache: {},
-                       debug: bool, projectVersion: str) -> {}:
+                       debug: bool, projectVersion: str,
+                       itemPrice: str, itemCurrency: str) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -438,6 +445,8 @@ def sendShareViaServer(baseDir, session,
             "category": itemCategory,
             "location": location,
             "duration": duration,
+            "itemPrice": itemPrice,
+            "itemCurrency": itemCurrency,
             'to': [toUrl],
             'cc': [ccUrl]
         },
@@ -663,7 +672,10 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],
              messageJson['object']['duration'],
-             debug, city, systemLanguage, translate)
+             debug, city,
+             messageJson['object']['itemPrice'],
+             messageJson['object']['itemCurrency'],
+             systemLanguage, translate)
     if debug:
         print('DEBUG: shared item received via c2s')
 
@@ -695,3 +707,112 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
                 messageJson['object']['displayName'])
     if debug:
         print('DEBUG: shared item removed via c2s')
+
+
+def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
+                                 nickname: str, domain: str,
+                                 domainFull: str,
+                                 path: str) -> {}:
+    """Returns the endpoint for the shares catalog of a particular account
+    """
+    dfcUrl = \
+        "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+    owner = httpPrefix + '://' + domainFull + '/users/' + nickname
+    dfcInstanceId = owner + '/catalog'
+    endpoint = {
+        "@context": {
+            "DFC": dfcUrl,
+            "@base": "http://maPlateformeNationale"
+        },
+        "@id": dfcInstanceId,
+        "@type": "DFC:Entreprise",
+        "DFC:supplies": []
+    }
+
+    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
+    if not os.path.isfile(sharesFilename):
+        return endpoint
+    sharesJson = loadJson(sharesFilename)
+    if not sharesJson:
+        return endpoint
+
+    for itemID, item in sharesJson.items():
+        if not item.get('dfcId'):
+            continue
+
+        expireDate = datetime.datetime.fromtimestamp(item['durationSec'])
+        expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        catalogItem = {
+            "@id": item['dfcId'],
+            "DFC:offeredThrough": owner,
+            "DFC:startDate": item['published'],
+            "DFC:expiryDate": expireDateStr,
+            "DFC:quantity": item['itemQty'],
+            "DFC:totalTheoriticalStock": item['itemQty'],
+            "DFC:price": "0",
+            "DFC:Image": item['imageUrl'],
+            "DFC:description": item['displayName'] + ': ' + item['summary']
+        }
+        endpoint['DFC:supplies'].append(catalogItem)
+
+    return endpoint
+
+
+def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
+                          domainFull: str,
+                          path: str) -> {}:
+    """Returns the endpoint for the shares catalog for the instance
+    """
+    dfcUrl = \
+        "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+    dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
+    endpoint = {
+        "@context": {
+            "DFC": dfcUrl,
+            "@base": "http://maPlateformeNationale"
+        },
+        "@id": dfcInstanceId,
+        "@type": "DFC:Entreprise",
+        "DFC:supplies": []
+    }
+
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for acct in dirs:
+            if not isAccountDir(acct):
+                continue
+            nickname = acct.split('@')[0]
+            domain = acct.split('@')[1]
+            owner = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+            sharesFilename = \
+                acctDir(baseDir, nickname, domain) + '/shares.json'
+            if not os.path.isfile(sharesFilename):
+                continue
+            sharesJson = loadJson(sharesFilename)
+            if not sharesJson:
+                continue
+
+            for itemID, item in sharesJson.items():
+                if not item.get('dfcId'):
+                    continue
+
+                expireDate = \
+                    datetime.datetime.fromtimestamp(item['durationSec'])
+                expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+                description = item['displayName'] + ': ' + item['summary']
+                catalogItem = {
+                    "@id": item['dfcId'],
+                    "DFC:offeredThrough": owner,
+                    "DFC:startDate": item['published'],
+                    "DFC:expiryDate": expireDateStr,
+                    "DFC:quantity": item['itemQty'],
+                    "DFC:totalTheoriticalStock": item['itemQty'],
+                    "DFC:price": "0",
+                    "DFC:Image": item['imageUrl'],
+                    "DFC:description": description
+                }
+                endpoint['DFC:supplies'].append(catalogItem)
+
+    return endpoint

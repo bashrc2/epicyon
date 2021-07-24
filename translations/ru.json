@@ -454,5 +454,7 @@
     "Languages": "Языки",
     "Translated": "Перевод",
     "Quantity": "Количество",
-    "food": "еда"
+    "food": "еда",
+    "Price": "Цена",
+    "Currency": "Валюта"
 }

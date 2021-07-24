@@ -454,5 +454,7 @@
     "Languages": "Idiomes",
     "Translated": "Traduït",
     "Quantity": "Quantitat",
-    "food": "menjar"
+    "food": "menjar",
+    "Price": "Preu",
+    "Currency": "Moneda"
 }

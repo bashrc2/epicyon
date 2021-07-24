@@ -454,5 +454,7 @@
     "Languages": "Ieithoedd",
     "Translated": "Chyfieithwyd",
     "Quantity": "Symiau",
-    "food": "bwyd"
+    "food": "bwyd",
+    "Price": "Prisia",
+    "Currency": "Harian"
 }

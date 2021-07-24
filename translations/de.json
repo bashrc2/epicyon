@@ -454,5 +454,7 @@
     "Languages": "Sprachen",
     "Translated": "Übersetzt",
     "Quantity": "Menge",
-    "food": "lebensmittel"
+    "food": "lebensmittel",
+    "Price": "Preis",
+    "Currency": "Währung"
 }

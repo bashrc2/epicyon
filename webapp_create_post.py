@@ -19,6 +19,7 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import editTextField
 from webapp_utils import editNumberField
+from webapp_utils import editCurrencyField
 
 
 def _htmlFollowingDataList(baseDir: str, nickname: str,
@@ -370,6 +371,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<div class="container">\n'
         cityOrLocStr = translate['City or location of the shared item']
         extraFields += editTextField(cityOrLocStr + ':', 'location', '')
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
+        extraFields += \
+            editCurrencyField(translate['Price'] + ':', 'itemPrice', '0.00')
+        extraFields += '<br>' + \
+            editTextField(translate['Currency'] + ':',
+                          'itemCurrency', 'EUR')
         extraFields += '</div>\n'
 
     citationsStr = ''

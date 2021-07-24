@@ -454,5 +454,7 @@
     "Languages": "Idiomas",
     "Translated": "Traducida",
     "Quantity": "Cantidad",
-    "food": "comida"
+    "food": "comida",
+    "Price": "Precio",
+    "Currency": "Divisa"
 }

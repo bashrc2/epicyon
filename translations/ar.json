@@ -454,5 +454,7 @@
     "Languages": "اللغات",
     "Translated": "تترجم",
     "Quantity": "كمية",
-    "food": "غذاء"
+    "food": "غذاء",
+    "Price": "السعر",
+    "Currency": "عملة"
 }

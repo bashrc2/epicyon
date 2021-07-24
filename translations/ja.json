@@ -454,5 +454,7 @@
     "Languages": "言語",
     "Translated": "翻訳",
     "Quantity": "量",
-    "food": "食物"
+    "food": "食物",
+    "Price": "価格",
+    "Currency": "通貨"
 }

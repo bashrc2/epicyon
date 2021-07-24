@@ -830,7 +830,14 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
     profileStr += \
         '<b>' + translate['Category'] + ':</b> ' + item['category'] + ' '
     profileStr += \
-        '<b>' + translate['Location'] + ':</b> ' + item['location'] + '</p>\n'
+        '<b>' + translate['Location'] + ':</b> ' + item['location']
+    if item.get('itemPrice') and item.get('itemCurrency'):
+        if item['itemPrice'].isdigit():
+            if float(item['itemPrice']) > 0:
+                profileStr += ' ' + \
+                    '<b>' + translate['Price'] + ':</b> ' + \
+                    item['itemPrice'] + ' ' + item['itemCurrency']
+    profileStr += '</p>\n'
     sharedesc = item['displayName']
     if '<' not in sharedesc and '?' not in sharedesc:
         if showContact:

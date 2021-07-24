@@ -13631,6 +13631,10 @@ class PubServer(BaseHTTPRequestHandler):
                     return -1
                 if not fields.get('itemType'):
                     return -1
+                if not fields.get('itemPrice'):
+                    return -1
+                if not fields.get('itemCurrency'):
+                    return -1
                 if not fields.get('category'):
                     return -1
                 if not fields.get('location'):
@@ -13652,6 +13656,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields['itemQty']:
                     if fields['itemQty'].isdigit():
                         itemQty = int(fields['itemQty'])
+                itemPrice = "0"
+                if fields['itemPrice']:
+                    if fields['itemPrice'].isdigit():
+                        itemPrice = fields['itemPrice']
+                itemCurrency = "EUR"
+                if fields['itemCurrency']:
+                    itemCurrency = fields['itemCurrency']
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
@@ -13664,7 +13675,7 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['location'],
                          durationStr,
                          self.server.debug,
-                         city,
+                         city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
                          self.server.translate)
                 if filename:

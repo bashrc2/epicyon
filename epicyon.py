@@ -561,6 +561,12 @@ parser.add_argument('--itemImage', dest='itemImage', type=str,
 parser.add_argument('--itemQty', dest='itemQty', type=int,
                     default=1,
                     help='Quantity of items being shared')
+parser.add_argument('--itemPrice', dest='itemPrice', type=str,
+                    default="0",
+                    help='Total price of items being shared')
+parser.add_argument('--itemCurrency', dest='itemCurrency', type=str,
+                    default="EUR",
+                    help='Currency of items being shared')
 parser.add_argument('--itemType', dest='itemType', type=str,
                     default=None,
                     help='Type of item being shared')
@@ -1290,7 +1296,8 @@ if args.itemName:
                        args.location,
                        args.duration,
                        cachedWebfingers, personCache,
-                       debug, __version__)
+                       debug, __version__,
+                       args.itemPrice, args.itemCurrency)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2330,7 +2337,7 @@ if args.testdata:
              "img/shares1.png",
              1, "tool",
              "mechanical",
-             "City",
+             "City", "0", "GBP",
              "2 months",
              debug, city, args.language, {})
     addShare(baseDir,
@@ -2340,7 +2347,7 @@ if args.testdata:
              "img/shares2.png",
              1, "hat",
              "clothing",
-             "City",
+             "City", "0", "GBP",
              "3 months",
              debug, city, args.language, {})
 

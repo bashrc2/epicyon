@@ -454,5 +454,7 @@
     "Languages": "语言",
     "Translated": "翻译",
     "Quantity": "数量",
-    "food": "食物"
+    "food": "食物",
+    "Price": "价钱",
+    "Currency": "货币"
 }

@@ -1159,6 +1159,23 @@ def editNumberField(label: str, name: str, value: int = 1,
         'min="' + str(minValue) + '" max="' + str(maxValue) + '" step="1">\n'
 
 
+def editCurrencyField(label: str, name: str, value: str = "0.00",
+                      placeholder: str = "0.00") -> str:
+    """Returns html for editing a currency field
+    """
+    if value is None:
+        value = '0.00'
+    placeholderStr = '0.00'
+    if placeholder:
+        if placeholder.isdigit():
+            placeholderStr = ' placeholder="' + str(placeholder) + '"'
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="text" name="' + name + '" value="' + \
+        str(value) + '"' + placeholderStr + ' ' + \
+        '" pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency">\n'
+
+
 def editCheckBox(label: str, name: str, checked: bool = False) -> str:
     """Returns html for editing a checkbox field
     """

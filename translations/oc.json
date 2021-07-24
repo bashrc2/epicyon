@@ -450,5 +450,7 @@
     "Languages": "Languages",
     "Translated": "Translated",
     "Quantity": "Quantity",
-    "food": "food"
+    "food": "food",
+    "Price": "Price",
+    "Currency": "Currency"
 }

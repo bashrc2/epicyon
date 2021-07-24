@@ -188,7 +188,16 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                             ':</b> ' + sharedItem['category'] + ' '
                         sharedItemsForm += \
                             '<b>' + translate['Location'] + \
-                            ':</b> ' + sharedItem['location'] + '</p>\n'
+                            ':</b> ' + sharedItem['location']
+                        if sharedItem.get('itemPrice') and \
+                           sharedItem.get('itemCurrency'):
+                            if sharedItem['itemPrice'].isdigit():
+                                if float(sharedItem['itemPrice']) > 0:
+                                    sharedItemsForm += \
+                                        ' <b>' + translate['Price'] + \
+                                        ':</b> ' + sharedItem['itemPrice'] + \
+                                        ' ' + sharedItem['itemCurrency']
+                        sharedItemsForm += '</p>\n'
                         contactActor = \
                             httpPrefix + '://' + domainFull + \
                             '/users/' + contactNickname

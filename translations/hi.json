@@ -454,5 +454,7 @@
     "Languages": "बोली",
     "Translated": "अनुवाद",
     "Quantity": "मात्रा",
-    "food": "खाना"
+    "food": "खाना",
+    "Price": "कीमत",
+    "Currency": "मुद्रा"
 }

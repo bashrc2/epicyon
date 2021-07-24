@@ -454,5 +454,7 @@
     "Languages": "Lugha",
     "Translated": "Ilitafsiriwa",
     "Quantity": "Wingi",
-    "food": "chakula"
+    "food": "chakula",
+    "Price": "Bei",
+    "Currency": "Fedha"
 }

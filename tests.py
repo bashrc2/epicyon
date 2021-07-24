@@ -3272,7 +3272,9 @@ def _testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing'
+        '_nothing',
+        'sharesCatalogEndpoint',
+        'sharesCatalogAccountEndpoint'
     ]
     excludeImports = [
         'link',
