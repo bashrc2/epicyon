@@ -18,6 +18,7 @@ from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import editTextField
+from webapp_utils import editNumberField
 
 
 def _htmlFollowingDataList(baseDir: str, nickname: str,
@@ -355,6 +356,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         endpoint = 'newshare'
         extraFields = '<div class="container">\n'
         extraFields += \
+            editNumberField(translate['Quantity'],
+                            'itemQty', 1, 1, 999999, 1)
+        extraFields += \
             editTextField(translate['Quantity'] + ':',
                           'itemQty', '1')
         extraFields += \
@@ -362,11 +366,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                           'itemType', '')
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += editTextField(catStr + ':', 'category', '')
+        extraFields += '<br>'
         extraFields += \
-            '  <br><label class="labels">' + \
-            translate['Duration of listing in days'] + ':</label>\n'
-        extraFields += '  <input type="number" name="duration" ' + \
-            'min="1" max="365" step="1" value="14">\n'
+            editNumberField(translate['Duration of listing in days'],
+                            'duration', 14, 1, 365, 1)
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
         cityOrLocStr = translate['City or location of the shared item']

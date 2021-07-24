@@ -1142,6 +1142,23 @@ def editTextField(label: str, name: str, value: str = "",
         value + '"' + placeholderStr + '>\n'
 
 
+def editNumberField(label: str, name: str, value: int = 1,
+                    minValue: int = 1, maxValue: int = 999999,
+                    placeholder: int = 1) -> str:
+    """Returns html for editing an integer number field
+    """
+    if value is None:
+        value = ''
+    placeholderStr = ''
+    if placeholder:
+        placeholderStr = ' placeholder="' + str(placeholder) + '"'
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="number" name="' + name + '" value="' + \
+        str(value) + '"' + placeholderStr + ' ' + \
+        'min="' + str(minValue) + '" max="' + str(maxValue) + '" step="1">\n'
+
+
 def editCheckBox(label: str, name: str, checked: bool = False) -> str:
     """Returns html for editing a checkbox field
     """
