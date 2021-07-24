@@ -2332,7 +2332,7 @@ if args.testdata:
              "mechanical",
              "City",
              "2 months",
-             debug, city)
+             debug, city, args.language)
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              "witch hat",
@@ -2342,7 +2342,7 @@ if args.testdata:
              "clothing",
              "City",
              "3 months",
-             debug, city)
+             debug, city, args.language)
 
     deleteAllPosts(baseDir, nickname, domain, 'inbox')
     deleteAllPosts(baseDir, nickname, domain, 'outbox')

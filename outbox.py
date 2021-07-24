@@ -548,9 +548,8 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle share uploads')
-    outboxShareUpload(baseDir, httpPrefix,
-                      postToNickname, domain,
-                      port, messageJson, debug, city)
+    outboxShareUpload(baseDir, httpPrefix, postToNickname, domain,
+                      port, messageJson, debug, city, systemLanguage)
 
     if debug:
         print('DEBUG: handle undo share uploads')

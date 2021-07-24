@@ -26,6 +26,51 @@ from utils import acctDir
 from media import processMetaData
 
 
+def _loadProductIds(baseDir: str, systemLanguage: str) -> {}:
+    """Loads the product types ontology
+    This is used to add an id to shared items
+    """
+    productTypesFilename = baseDir + '/ontology/customProductTypes.json'
+    if not os.path.isfile(productTypesFilename):
+        productTypesFilename = baseDir + '/ontology/productTypes.json'
+    productTypes = loadJson(productTypesFilename)
+    if not productTypes:
+        return None
+    if not productTypes.get('@graph'):
+        return None
+    if len(productTypes['@graph']) == 0:
+        return None
+    if not productTypes['@graph'][0].get('rdfs:label'):
+        return None
+    languageExists = False
+    for label in productTypes['@graph'][0]['rdfs:label']:
+        if not label.get('@language'):
+            continue
+        if productTypes['@graph'][0]['rdfs:label']['@language'] == \
+           systemLanguage:
+            languageExists = True
+            break
+    if not languageExists:
+        print('productTypes ontology does not contain the language ' +
+              systemLanguage)
+        return None
+    productIds = {}
+    for item in productTypes['@graph']:
+        if not item.get('@id'):
+            continue
+        if not item.get('rdfs:label'):
+            continue
+        for label in item['rdfs:label']:
+            if not label.get('@language'):
+                continue
+            if not label.get('@value'):
+                continue
+            if label['@language'] == systemLanguage:
+                productIds[label['@value'].lower()] = item['@id']
+                break
+    return productIds
+
+
 def getValidSharedItemID(displayName: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
@@ -94,11 +139,45 @@ def _addShareDurationSec(duration: str, published: str) -> int:
     return 0
 
 
+def _getshareProductId(baseDir: str, systemLanguage: str,
+                       itemType: str) -> str:
+    """Attempts to obtain an Id for the shared item,
+    based upon productTypes ontology.
+    See https://github.com/datafoodconsortium/ontology
+    """
+    productIds = _loadProductIds(baseDir, systemLanguage)
+    if not productIds:
+        return ''
+    itemTypeLower = itemType.lower()
+    matchName = ''
+    matchId = ''
+    for name, uri in productIds.items():
+        if name not in itemTypeLower:
+            continue
+        if len(name) > len(matchName):
+            matchName = name
+            matchId = uri
+    if not matchId:
+        # bag of words match
+        maxMatchedWords = 0
+        for name, uri in productIds.items():
+            words = name.split(' ')
+            score = 0
+            for wrd in words:
+                if wrd in itemTypeLower:
+                    score += 1
+            if score > maxMatchedWords:
+                maxMatchedWords = score
+                matchId = uri
+    return matchId
+
+
 def addShare(baseDir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
              itemQty: int, itemType: str, itemCategory: str, location: str,
-             duration: str, debug: bool, city: str) -> None:
+             duration: str, debug: bool, city: str,
+             systemLanguage: str) -> None:
     """Adds a new share
     """
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
@@ -111,6 +190,7 @@ def addShare(baseDir: str,
     durationSec = _addShareDurationSec(duration, published)
 
     itemID = getValidSharedItemID(displayName)
+    productId = _getshareProductId(baseDir, systemLanguage, itemType)
 
     # has an image for this share been uploaded?
     imageUrl = None
@@ -152,6 +232,7 @@ def addShare(baseDir: str,
         "summary": summary,
         "imageUrl": imageUrl,
         "itemQty": itemQty,
+        "productId": productId,
         "itemType": itemType,
         "category": itemCategory,
         "location": location,
@@ -522,7 +603,8 @@ def sendUndoShareViaServer(baseDir: str, session,
 
 def outboxShareUpload(baseDir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
-                      messageJson: {}, debug: bool, city: str) -> None:
+                      messageJson: {}, debug: bool, city: str,
+                      systemLanguage: str) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -577,7 +659,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],
              messageJson['object']['duration'],
-             debug, city)
+             debug, city, systemLanguage)
     if debug:
         print('DEBUG: shared item received via c2s')
 
