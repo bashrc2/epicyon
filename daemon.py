@@ -10688,6 +10688,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                      self.server.path)
                         msg = json.dumps(catalogStr,
                                          ensure_ascii=False).encode('utf-8')
+                        msglen = len(msg)
+                        self._set_headers('text/csv',
+                                          msglen, None, callingDomain)
                     else:
                         catalogJson = \
                             sharesCatalogEndpoint(self.server.baseDir,
@@ -10696,9 +10699,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.path)
                         msg = json.dumps(catalogJson,
                                          ensure_ascii=False).encode('utf-8')
-                    msglen = len(msg)
-                    self._set_headers('application/json',
-                                      msglen, None, callingDomain)
+                        msglen = len(msg)
+                        self._set_headers('application/json',
+                                          msglen, None, callingDomain)
                     self._write(msg)
                     return
                 else:
