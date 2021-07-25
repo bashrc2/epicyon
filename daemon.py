@@ -105,6 +105,7 @@ from skills import actorSkillValue
 from skills import setActorSkillLevel
 from auth import recordLoginFailure
 from auth import authorize
+from auth import authorizeDFC
 from auth import createPassword
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
@@ -10671,11 +10672,13 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 catalogAuthorized = True
             else:
-                # basic auth access to catalog
+                # basic auth access to shared items catalog
                 if self.headers.get('Authorization'):
-                    if authorize(self.server.baseDir, self.path,
-                                 self.headers['Authorization'],
-                                 self.server.debug):
+                    if authorizeDFC(self.server.sharedItemsFederatedDomains,
+                                    self.server.baseDir,
+                                    callingDomain,
+                                    self.headers['Authorization'],
+                                    self.server.debug):
                         catalogAuthorized = True
             # show shared items DFC catalog
             if self._hasAccept(callingDomain) and catalogAuthorized:
@@ -14808,7 +14811,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(userAgentsBlocked: [],
+def runDaemon(sharedItemsFederatedDomains: [],
+              userAgentsBlocked: [],
               logLoginFailures: bool,
               city: str,
               showNodeInfoAccounts: bool,
@@ -15067,6 +15071,7 @@ def runDaemon(userAgentsBlocked: [],
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
+    httpd.sharedItemsFederatedDomains = sharedItemsFederatedDomains.copy()
     httpd.baseDir = baseDir
     httpd.instanceId = instanceId
     httpd.personCache = {}

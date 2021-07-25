@@ -89,7 +89,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     """
     if ' ' not in authHeader:
         if debug:
-            print('DEBUG: basic auth - Authorixation header does not ' +
+            print('DEBUG: basic auth - Authorisation header does not ' +
                   'contain a space character')
         return False
     if not hasUsersPath(path):
@@ -143,6 +143,61 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
                     print('DEBUG: Password check failed for ' + nickname)
             return success
     print('DEBUG: Did not find credentials for ' + nickname +
+          ' in ' + passwordFile)
+    return False
+
+
+def authorizeDFC(sharedItemsFederatedDomains: [],
+                 baseDir: str,
+                 callingDomain: str,
+                 authHeader: str,
+                 debug: bool) -> bool:
+    """HTTP basic auth for shared item federation
+    """
+    if callingDomain not in sharedItemsFederatedDomains:
+        if debug:
+            print(callingDomain +
+                  ' is not in the shared items federation list')
+        return False
+    if 'Basic ' not in authHeader:
+        if debug:
+            print('DEBUG: DFC basic auth - Authorisation header does not ' +
+                  'contain a space character')
+        return False
+    base64Str = \
+        authHeader.split(' ')[1].replace('\n', '').replace('\r', '')
+    plain = base64.b64decode(base64Str).decode('utf-8')
+    if ':' not in plain:
+        if debug:
+            print('DEBUG: DFC basic auth header does not contain a ":" ' +
+                  'separator for username:password')
+        return False
+    basicAuthDomain = plain.split(':')[0]
+    if basicAuthDomain != callingDomain:
+        if debug:
+            print('DEBUG: DFC calling domain does not match ' +
+                  'the one in the Authorization header (' +
+                  basicAuthDomain + ')')
+        return False
+    passwordFile = baseDir + '/accounts/sharedItemsFederationTokens'
+    if not os.path.isfile(passwordFile):
+        if debug:
+            print('DEBUG: shared item federation tokens file missing ' +
+                  passwordFile)
+        return False
+    providedPassword = plain.split(':')[1]
+    passfile = open(passwordFile, 'r')
+    for line in passfile:
+        if line.startswith(basicAuthDomain + ':'):
+            storedPassword = \
+                line.split(':')[1].replace('\n', '').replace('\r', '')
+            success = _verifyPassword(storedPassword, providedPassword)
+            if not success:
+                if debug:
+                    print('DEBUG: DFC password check failed for ' +
+                          basicAuthDomain)
+            return success
+    print('DEBUG: DFC did not find credentials for ' + basicAuthDomain +
           ' in ' + passwordFile)
     return False
 

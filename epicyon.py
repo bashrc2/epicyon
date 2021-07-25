@@ -264,6 +264,10 @@ parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
+parser.add_argument('--federateshares', nargs='+',
+                    dest='sharedItemsFederatedDomains',
+                    help='Specify federation list for shared items, ' +
+                    'separated by spaces')
 parser.add_argument("--following", "--followingList",
                     dest='followingList',
                     type=str2bool, nargs='?',
@@ -1023,6 +1027,16 @@ else:
     configFederationList = getConfigParam(baseDir, 'federationList')
     if configFederationList:
         federationList = configFederationList
+
+sharedItemsFederatedDomains = []
+if args.sharedItemsFederatedDomains:
+    setConfigParam(baseDir, 'sharedItemsFederatedDomains',
+                   sharedItemsFederatedDomains)
+else:
+    configSharedItemsFederatedDomains = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+    if configSharedItemsFederatedDomains:
+        sharedItemsFederatedDomains = configSharedItemsFederatedDomains
 
 proxyType = None
 if args.tor or domain.endswith('.onion'):
@@ -2142,6 +2156,9 @@ if args.desktop:
 
 if federationList:
     print('Federating with: ' + str(federationList))
+if sharedItemsFederatedDomains:
+    print('Federating shared items with: ' +
+          str(sharedItemsFederatedDomains))
 
 if args.block:
     if not nickname:
@@ -2657,7 +2674,8 @@ if args.registration:
         print('New registrations closed')
 
 if __name__ == "__main__":
-    runDaemon(userAgentsBlocked,
+    runDaemon(sharedItemsFederatedDomains,
+              userAgentsBlocked,
               args.logLoginFailures,
               args.city,
               args.showNodeInfoAccounts,

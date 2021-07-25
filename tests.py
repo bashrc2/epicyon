@@ -457,6 +457,7 @@ def createServerAlice(path: str, domain: str, port: int,
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
+    sharedItemsFederatedDomains = []
     systemLanguage = 'en'
     nickname = 'alice'
     httpPrefix = 'http'
@@ -554,7 +555,8 @@ def createServerAlice(path: str, domain: str, port: int,
     logLoginFailures = False
     userAgentsBlocked = []
     print('Server running: Alice')
-    runDaemon(userAgentsBlocked,
+    runDaemon(sharedItemsFederatedDomains,
+              userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
@@ -585,6 +587,7 @@ def createServerBob(path: str, domain: str, port: int,
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
+    sharedItemsFederatedDomains = []
     systemLanguage = 'en'
     nickname = 'bob'
     httpPrefix = 'http'
@@ -680,7 +683,8 @@ def createServerBob(path: str, domain: str, port: int,
     logLoginFailures = False
     userAgentsBlocked = []
     print('Server running: Bob')
-    runDaemon(userAgentsBlocked,
+    runDaemon(sharedItemsFederatedDomains,
+              userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
@@ -710,6 +714,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
+    sharedItemsFederatedDomains = []
     nickname = 'eve'
     httpPrefix = 'http'
     proxyType = None
@@ -740,7 +745,8 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     logLoginFailures = False
     userAgentsBlocked = []
     print('Server running: Eve')
-    runDaemon(userAgentsBlocked,
+    runDaemon(sharedItemsFederatedDomains,
+              userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
