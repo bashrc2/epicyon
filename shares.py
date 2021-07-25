@@ -742,7 +742,7 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
         value = arg.split('=')[1]
         if key == 'today':
             value = value.lower()
-            if 'true' in value or 'y' in value or '1' in value:
+            if 't' in value or 'y' in value or '1' in value:
                 today = True
         elif key.startswith('min'):
             if isfloat(value):
