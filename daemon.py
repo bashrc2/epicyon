@@ -10713,6 +10713,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       msglen, None, callingDomain)
                     self._write(msg)
                     return
+                self._404()
+                return
             self._400()
             return
 
