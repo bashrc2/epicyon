@@ -205,7 +205,7 @@ from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
 from shares import getSharesFeedForPerson
 from shares import addShare
-from shares import removeShare
+from shares import removeSharedItem
 from shares import expireShares
 from categories import setHashtagCategory
 from languages import getActorLanguages
@@ -3332,8 +3332,9 @@ class PubServer(BaseHTTPRequestHandler):
             shareNickname = getNicknameFromActor(shareActor)
             if shareNickname:
                 shareDomain, sharePort = getDomainFromActor(shareActor)
-                removeShare(baseDir,
-                            shareNickname, shareDomain, shareName)
+                removeSharedItem(baseDir,
+                                 shareNickname, shareDomain, shareName,
+                                 httpPrefix, domainFull)
 
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath

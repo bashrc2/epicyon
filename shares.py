@@ -72,7 +72,7 @@ def _loadDfcIds(baseDir: str, systemLanguage: str) -> {}:
     return dfcIds
 
 
-def getValidSharedItemID(displayName: str) -> str:
+def getValidSharedItemID(actor: str, displayName: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
@@ -84,11 +84,12 @@ def getValidSharedItemID(displayName: str) -> str:
         displayName = displayName.replace(ch, '-')
     displayName = displayName.replace('.', '_')
     displayName = displayName.replace("’", "'")
-    return displayName
+    return actor + '/item/' + displayName
 
 
-def removeShare(baseDir: str, nickname: str, domain: str,
-                displayName: str) -> None:
+def removeSharedItem(baseDir: str, nickname: str, domain: str,
+                     displayName: str,
+                     httpPrefix: str, domainFull: str) -> None:
     """Removes a share for a person
     """
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
@@ -101,7 +102,8 @@ def removeShare(baseDir: str, nickname: str, domain: str,
         print('ERROR: shares.json could not be loaded from ' + sharesFilename)
         return
 
-    itemID = getValidSharedItemID(displayName)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    itemID = getValidSharedItemID(actor, displayName)
     if sharesJson.get(itemID):
         # remove any image for the item
         itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
@@ -176,6 +178,28 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
     return matchId
 
 
+def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
+                               domainFull: str) -> None:
+    """Indicate to each account that a new share is available
+    """
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for handle in dirs:
+            if not isAccountDir(handle):
+                continue
+            accountDir = baseDir + '/accounts/' + handle
+            newShareFile = accountDir + '/.newShare'
+            if os.path.isfile(newShareFile):
+                continue
+            nickname = handle.split('@')[0]
+            try:
+                with open(newShareFile, 'w+') as fp:
+                    fp.write(httpPrefix + '://' + domainFull +
+                             '/users/' + nickname + '/tlshares')
+            except BaseException:
+                pass
+        break
+
+
 def addShare(baseDir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
@@ -194,7 +218,9 @@ def addShare(baseDir: str,
     published = int(time.time())
     durationSec = _addShareDurationSec(duration, published)
 
-    itemID = getValidSharedItemID(displayName)
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    itemID = getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(baseDir, systemLanguage,
                            itemType, itemCategory, translate)
 
@@ -244,28 +270,13 @@ def addShare(baseDir: str,
         "location": location,
         "published": published,
         "expire": durationSec,
-        "price": "0",
-        "currency": ""
+        "price": price,
+        "currency": currency
     }
 
     saveJson(sharesJson, sharesFilename)
 
-    # indicate that a new share is available
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-        for handle in dirs:
-            if not isAccountDir(handle):
-                continue
-            accountDir = baseDir + '/accounts/' + handle
-            newShareFile = accountDir + '/.newShare'
-            if not os.path.isfile(newShareFile):
-                nickname = handle.split('@')[0]
-                try:
-                    with open(newShareFile, 'w+') as fp:
-                        fp.write(httpPrefix + '://' + domainFull +
-                                 '/users/' + nickname + '/tlshares')
-                except BaseException:
-                    pass
-        break
+    _indicateNewShareAvailable(baseDir, httpPrefix, domainFull)
 
 
 def expireShares(baseDir: str) -> None:
@@ -703,8 +714,10 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
-    removeShare(baseDir, nickname, domain,
-                messageJson['object']['displayName'])
+    domainFull = getFullDomain(domain, port)
+    removeSharedItem(baseDir, nickname, domain,
+                     messageJson['object']['displayName'],
+                     httpPrefix, domainFull)
     if debug:
         print('DEBUG: shared item removed via c2s')
 
@@ -718,11 +731,14 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     """
     dfcUrl = \
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+    dfcPtUrl = \
+        "http://static.datafoodconsortium.org/data/productTypes.rdf#"
     owner = httpPrefix + '://' + domainFull + '/users/' + nickname
     dfcInstanceId = owner + '/catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
+            "dfc-pt": dfcPtUrl,
             "@base": "http://maPlateformeNationale"
         },
         "@id": dfcInstanceId,
@@ -740,12 +756,17 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     for itemID, item in sharesJson.items():
         if not item.get('dfcId'):
             continue
+        if '#' not in item['dfcId']:
+            continue
 
         expireDate = datetime.datetime.fromtimestamp(item['durationSec'])
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        dfcId = item['dfcId'].split('#')[1]
         catalogItem = {
             "@id": item['dfcId'],
+            "@type": "DFC:SuppliedProduct",
+            "DFC:hasType": "dfc-pt:" + dfcId,
             "DFC:offeredThrough": owner,
             "DFC:startDate": item['published'],
             "DFC:expiryDate": expireDateStr,
@@ -768,10 +789,13 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
     """
     dfcUrl = \
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+    dfcPtUrl = \
+        "http://static.datafoodconsortium.org/data/productTypes.rdf#"
     dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
+            "dfc-pt": dfcPtUrl,
             "@base": "http://maPlateformeNationale"
         },
         "@id": dfcInstanceId,
@@ -798,14 +822,20 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
             for itemID, item in sharesJson.items():
                 if not item.get('dfcId'):
                     continue
+                if '#' not in item['dfcId']:
+                    continue
 
                 expireDate = \
                     datetime.datetime.fromtimestamp(item['durationSec'])
                 expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
                 description = item['displayName'] + ': ' + item['summary']
+                shareId = getValidSharedItemID(owner, item['displayName'])
+                dfcId = item['dfcId'].split('#')[1]
                 catalogItem = {
-                    "@id": item['dfcId'],
+                    "@id": shareId,
+                    "@type": "DFC:SuppliedProduct",
+                    "DFC:hasType": "dfc-pt:" + dfcId,
                     "DFC:offeredThrough": owner,
                     "DFC:startDate": item['published'],
                     "DFC:expiryDate": expireDateStr,
