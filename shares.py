@@ -913,3 +913,30 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                 endpoint['DFC:supplies'].append(catalogItem)
 
     return endpoint
+
+
+def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
+                             domainFull: str,
+                             path: str) -> str:
+    """Returns a CSV version of the shares catalog
+    """
+    catalogJson = \
+        sharesCatalogEndpoint(baseDir, httpPrefix, domainFull, path)
+    if not catalogJson:
+        return ''
+    if not catalogJson.get('DFC:supplies'):
+        return ''
+    csvStr = \
+        'id,type,hasType,startDate,expiryDate,' + \
+        'quantity,price,Image,description\n'
+    for item in catalogJson['DFC:supplies']:
+        csvStr += item['@id'] + ','
+        csvStr += item['@type'] + ','
+        csvStr += item['DFC:hasType'] + ','
+        csvStr += item['DFC:startDate'] + ','
+        csvStr += item['DFC:expiryDate'] + ','
+        csvStr += item['DFC:quantity'] + ','
+        csvStr += item['DFC:price'] + ','
+        csvStr += item['DFC:Image'] + ','
+        csvStr += item['DFC:description'] + '\n'
+    return csvStr

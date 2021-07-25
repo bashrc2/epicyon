@@ -208,6 +208,7 @@ from shares import addShare
 from shares import removeSharedItem
 from shares import expireShares
 from shares import sharesCatalogEndpoint
+from shares import sharesCatalogCSVEndpoint
 from categories import setHashtagCategory
 from languages import getActorLanguages
 from languages import setActorLanguages
@@ -516,6 +517,16 @@ class PubServer(BaseHTTPRequestHandler):
             if blockedUA:
                 print('Blocked User agent: ' + agentDomain)
         return blockedUA
+
+    def _requestCSV(self) -> bool:
+        """Should a csv response be given?
+        """
+        if not self.headers.get('Accept'):
+            return False
+        acceptStr = self.headers['Accept']
+        if 'text/csv' in acceptStr:
+            return True
+        return False
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
@@ -10669,13 +10680,22 @@ class PubServer(BaseHTTPRequestHandler):
             # show shared items DFC catalog
             if self._hasAccept(callingDomain) and catalogAuthorized:
                 if not self._requestHTTP():
-                    catalogJson = \
-                        sharesCatalogEndpoint(self.server.baseDir,
-                                              self.server.httpPrefix,
-                                              self.server.domainFull,
-                                              self.server.path)
-                    msg = json.dumps(catalogJson,
-                                     ensure_ascii=False).encode('utf-8')
+                    if self._requestCSV():
+                        catalogStr = \
+                            sharesCatalogCSVEndpoint(self.server.baseDir,
+                                                     self.server.httpPrefix,
+                                                     self.server.domainFull,
+                                                     self.server.path)
+                        msg = json.dumps(catalogStr,
+                                         ensure_ascii=False).encode('utf-8')
+                    else:
+                        catalogJson = \
+                            sharesCatalogEndpoint(self.server.baseDir,
+                                                  self.server.httpPrefix,
+                                                  self.server.domainFull,
+                                                  self.server.path)
+                        msg = json.dumps(catalogJson,
+                                         ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen, None, callingDomain)
