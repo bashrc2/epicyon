@@ -16,6 +16,7 @@ from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
 from utils import acctDir
+from utils import isfloat
 from follow import followerApprovalActive
 from person import isPersonSnoozed
 from markdown import markdownToHtml
@@ -832,7 +833,7 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
     profileStr += \
         '<b>' + translate['Location'] + ':</b> ' + item['location']
     if item.get('itemPrice') and item.get('itemCurrency'):
-        if item['itemPrice'].isdigit():
+        if isfloat(item['itemPrice']):
             if float(item['itemPrice']) > 0:
                 profileStr += ' ' + \
                     '<b>' + translate['Price'] + ':</b> ' + \

@@ -25,6 +25,7 @@ from utils import firstParagraphFromString
 from utils import searchBoxPosts
 from utils import getAltPath
 from utils import acctDir
+from utils import isfloat
 from skills import noOfActorSkills
 from skills import getSkillsFromList
 from categories import getHashtagCategory
@@ -191,7 +192,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                             ':</b> ' + sharedItem['location']
                         if sharedItem.get('itemPrice') and \
                            sharedItem.get('itemCurrency'):
-                            if sharedItem['itemPrice'].isdigit():
+                            if isfloat(sharedItem['itemPrice']):
                                 if float(sharedItem['itemPrice']) > 0:
                                     sharedItemsForm += \
                                         ' <b>' + translate['Price'] + \

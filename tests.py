@@ -3273,7 +3273,6 @@ def _testFunctions():
         'setOrganizationScheme',
         'fill_headers',
         '_nothing',
-        'sharesCatalogEndpoint',
         'sharesCatalogAccountEndpoint'
     ]
     excludeImports = [

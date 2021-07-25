@@ -25,6 +25,7 @@ from utils import hasObjectDict
 from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acctDir
+from utils import isfloat
 from media import processMetaData
 
 
@@ -723,21 +724,51 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
         print('DEBUG: shared item removed via c2s')
 
 
+def _sharesCatalogParams(path: str) -> (bool, float, float, str):
+    """Returns parameters when accessing the shares catalog
+    """
+    today = False
+    minPrice = 0
+    maxPrice = 9999999
+    matchPattern = None
+    if '?' not in path:
+        return today, minPrice, maxPrice, matchPattern
+    args = path.split('?', 1)[1]
+    argList = args.split('?')
+    for arg in argList:
+        if '=' not in arg:
+            continue
+        key = arg.split('=')[0].lower()
+        value = arg.split('=')[1]
+        if key == 'today':
+            value = value.lower()
+            if 'true' in value or 'y' in value or '1' in value:
+                today = True
+        elif key.startswith('min'):
+            if isfloat(value):
+                minPrice = float(value)
+        elif key.startswith('max'):
+            if isfloat(value):
+                maxPrice = float(value)
+        elif key.startswith('match'):
+            matchPattern = value
+    return today, minPrice, maxPrice, matchPattern
+
+
 def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  nickname: str, domain: str,
                                  domainFull: str,
-                                 path: str, today: bool,
-                                 minPrice: float, maxPrice: float,
-                                 matchPattern: str) -> {}:
+                                 path: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
     """
+    today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
     dfcPtUrl = \
         "http://static.datafoodconsortium.org/data/productTypes.rdf#"
     owner = httpPrefix + '://' + domainFull + '/users/' + nickname
-    dfcInstanceId = owner + '/catalog'
+    dfcInstanceId = owner + '/dfc-catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
@@ -802,17 +833,16 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
 def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           domainFull: str,
-                          path: str, today: bool,
-                          minPrice: float, maxPrice: float,
-                          matchPattern: str) -> {}:
+                          path: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
     """
+    today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
     dfcPtUrl = \
         "http://static.datafoodconsortium.org/data/productTypes.rdf#"
-    dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
+    dfcInstanceId = httpPrefix + '://' + domainFull + '/dfc-catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,

@@ -562,7 +562,7 @@ parser.add_argument('--itemQty', dest='itemQty', type=int,
                     default=1,
                     help='Quantity of items being shared')
 parser.add_argument('--itemPrice', dest='itemPrice', type=str,
-                    default="0",
+                    default="0.00",
                     help='Total price of items being shared')
 parser.add_argument('--itemCurrency', dest='itemCurrency', type=str,
                     default="EUR",

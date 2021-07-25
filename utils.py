@@ -2626,3 +2626,11 @@ def validPassword(password: str) -> bool:
     if not re.match("^[a-zA-Z0-9!]*$", password):
         return False
     return True
+
+
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False

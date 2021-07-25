@@ -207,9 +207,11 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeSharedItem
 from shares import expireShares
+from shares import sharesCatalogEndpoint
 from categories import setHashtagCategory
 from languages import getActorLanguages
 from languages import setActorLanguages
+from utils import isfloat
 from utils import validPassword
 from utils import removeLineEndings
 from utils import getBaseContentFromPost
@@ -10618,7 +10620,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'get cookie')
 
-        # manifest for progressive web apps
         if '/manifest.json' in self.path:
             if self._hasAccept(callingDomain):
                 if not self._requestHTTP():
@@ -10653,6 +10654,34 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'isAuthorized')
+
+        if self.path.startswith('/dfc-catalog'):
+            catalogAuthorized = False
+            if authorized:
+                catalogAuthorized = True
+            else:
+                if self.headers.get('Authorization'):
+                    if authorize(self.server.baseDir, self.path,
+                                 self.headers['Authorization'],
+                                 self.server.debug):
+                        catalogAuthorized = True
+            # show shared items DFC catalog
+            if self._hasAccept(callingDomain) and catalogAuthorized:
+                if not self._requestHTTP():
+                    catalogJson = \
+                        sharesCatalogEndpoint(self.server.baseDir,
+                                              self.server.httpPrefix,
+                                              self.server.domainFull,
+                                              self.server.path)
+                    msg = json.dumps(catalogJson,
+                                     ensure_ascii=False).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json',
+                                      msglen, None, callingDomain)
+                    self._write(msg)
+                    return
+                else:
+                    self.path = '/'
 
         # minimal mastodon api
         if self._mastoApi(self.path, callingDomain, authorized,
@@ -13657,9 +13686,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields['itemQty']:
                     if fields['itemQty'].isdigit():
                         itemQty = int(fields['itemQty'])
-                itemPrice = "0"
+                itemPrice = "0.00"
                 if fields['itemPrice']:
-                    if fields['itemPrice'].isdigit():
+                    if isfloat(fields['itemPrice']):
                         itemPrice = fields['itemPrice']
                 itemCurrency = "EUR"
                 if fields['itemCurrency']:
