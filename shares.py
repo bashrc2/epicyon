@@ -725,7 +725,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
 def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  nickname: str, domain: str,
                                  domainFull: str,
-                                 path: str) -> {}:
+                                 path: str, today: bool) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
     """
@@ -746,6 +746,9 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
         "DFC:supplies": []
     }
 
+    currDate = datetime.datetime.utcnow()
+    currDateStr = currDate.strftime("%Y-%m-%d")
+
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     if not os.path.isfile(sharesFilename):
         return endpoint
@@ -758,6 +761,9 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
             continue
         if '#' not in item['dfcId']:
             continue
+        if today:
+            if not item['published'].startswith(currDateStr):
+                continue
 
         expireDate = datetime.datetime.fromtimestamp(item['durationSec'])
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -783,7 +789,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
 def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           domainFull: str,
-                          path: str) -> {}:
+                          path: str, today: bool) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
     """
@@ -802,6 +808,9 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
         "@type": "DFC:Entreprise",
         "DFC:supplies": []
     }
+
+    currDate = datetime.datetime.utcnow()
+    currDateStr = currDate.strftime("%Y-%m-%d")
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
@@ -824,6 +833,9 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                     continue
                 if '#' not in item['dfcId']:
                     continue
+                if today:
+                    if not item['published'].startswith(currDateStr):
+                        continue
 
                 expireDate = \
                     datetime.datetime.fromtimestamp(item['durationSec'])
