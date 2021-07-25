@@ -764,16 +764,15 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
         shareId = getValidSharedItemID(owner, item['displayName'])
         dfcId = item['dfcId'].split('#')[1]
+        priceStr = item['itemPrice'] + ' ' + item['currency']
         catalogItem = {
             "@id": shareId,
             "@type": "DFC:SuppliedProduct",
             "DFC:hasType": "dfc-pt:" + dfcId,
-            "DFC:offeredThrough": owner,
             "DFC:startDate": item['published'],
             "DFC:expiryDate": expireDateStr,
             "DFC:quantity": item['itemQty'],
-            "DFC:totalTheoriticalStock": item['itemQty'],
-            "DFC:price": "0",
+            "DFC:price": priceStr,
             "DFC:Image": item['imageUrl'],
             "DFC:description": item['displayName'] + ': ' + item['summary']
         }
@@ -833,16 +832,15 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                 description = item['displayName'] + ': ' + item['summary']
                 shareId = getValidSharedItemID(owner, item['displayName'])
                 dfcId = item['dfcId'].split('#')[1]
+                priceStr = item['itemPrice'] + ' ' + item['currency']
                 catalogItem = {
                     "@id": shareId,
                     "@type": "DFC:SuppliedProduct",
                     "DFC:hasType": "dfc-pt:" + dfcId,
-                    "DFC:offeredThrough": owner,
                     "DFC:startDate": item['published'],
                     "DFC:expiryDate": expireDateStr,
                     "DFC:quantity": item['itemQty'],
-                    "DFC:totalTheoriticalStock": item['itemQty'],
-                    "DFC:price": "0",
+                    "DFC:price": priceStr,
                     "DFC:Image": item['imageUrl'],
                     "DFC:description": description
                 }
