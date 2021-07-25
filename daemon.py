@@ -10660,6 +10660,7 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized:
                 catalogAuthorized = True
             else:
+                # basic auth access to catalog
                 if self.headers.get('Authorization'):
                     if authorize(self.server.baseDir, self.path,
                                  self.headers['Authorization'],
