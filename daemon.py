@@ -10679,31 +10679,38 @@ class PubServer(BaseHTTPRequestHandler):
                         catalogAuthorized = True
             # show shared items DFC catalog
             if self._hasAccept(callingDomain) and catalogAuthorized:
-                if not self._requestHTTP():
-                    if self._requestCSV():
-                        # catalog as a CSV file for import into a spreadsheet
-                        catalogStr = \
-                            sharesCatalogCSVEndpoint(self.server.baseDir,
-                                                     self.server.httpPrefix,
-                                                     self.server.domainFull,
-                                                     self.server.path)
-                        msg = json.dumps(catalogStr,
-                                         ensure_ascii=False).encode('utf-8')
-                        msglen = len(msg)
-                        self._set_headers('text/csv',
-                                          msglen, None, callingDomain)
-                    else:
-                        # catalog as a json
-                        catalogJson = \
-                            sharesCatalogEndpoint(self.server.baseDir,
-                                                  self.server.httpPrefix,
-                                                  self.server.domainFull,
-                                                  self.server.path)
-                        msg = json.dumps(catalogJson,
-                                         ensure_ascii=False).encode('utf-8')
-                        msglen = len(msg)
-                        self._set_headers('application/json',
-                                          msglen, None, callingDomain)
+                catalogType = 'html'
+                if self.path.endswith('.csv') or self._requestCSV():
+                    catalogType = 'csv'
+                elif self.path.endswith('.json') or not self._requestHTTP():
+                    catalogType = 'json'
+
+                if catalogType == 'json':
+                    # catalog as a json
+                    catalogJson = \
+                        sharesCatalogEndpoint(self.server.baseDir,
+                                              self.server.httpPrefix,
+                                              self.server.domainFull,
+                                              self.server.path)
+                    msg = json.dumps(catalogJson,
+                                     ensure_ascii=False).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json',
+                                      msglen, None, callingDomain)
+                    self._write(msg)
+                    return
+                elif catalogType == 'csv':
+                    # catalog as a CSV file for import into a spreadsheet
+                    catalogStr = \
+                        sharesCatalogCSVEndpoint(self.server.baseDir,
+                                                 self.server.httpPrefix,
+                                                 self.server.domainFull,
+                                                 self.server.path)
+                    msg = json.dumps(catalogStr,
+                                     ensure_ascii=False).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/csv',
+                                      msglen, None, callingDomain)
                     self._write(msg)
                     return
             self.path = '/'
