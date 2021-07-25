@@ -10681,6 +10681,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._hasAccept(callingDomain) and catalogAuthorized:
                 if not self._requestHTTP():
                     if self._requestCSV():
+                        # catalog as a CSV file for import into a spreadsheet
                         catalogStr = \
                             sharesCatalogCSVEndpoint(self.server.baseDir,
                                                      self.server.httpPrefix,
@@ -10692,6 +10693,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/csv',
                                           msglen, None, callingDomain)
                     else:
+                        # catalog as a json
                         catalogJson = \
                             sharesCatalogEndpoint(self.server.baseDir,
                                                   self.server.httpPrefix,
