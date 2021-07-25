@@ -762,9 +762,10 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
         expireDate = datetime.datetime.fromtimestamp(item['durationSec'])
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        shareId = getValidSharedItemID(owner, item['displayName'])
         dfcId = item['dfcId'].split('#')[1]
         catalogItem = {
-            "@id": item['dfcId'],
+            "@id": shareId,
             "@type": "DFC:SuppliedProduct",
             "DFC:hasType": "dfc-pt:" + dfcId,
             "DFC:offeredThrough": owner,
