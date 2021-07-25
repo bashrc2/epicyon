@@ -132,9 +132,10 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
             print('DEBUG: passwords file missing')
         return False
     providedPassword = plain.split(':')[1]
-    passfile = open(passwordFile, 'r')
-    for line in passfile:
-        if line.startswith(nickname + ':'):
+    with open(passwordFile, 'r') as passfile:
+        for line in passfile:
+            if not line.startswith(nickname + ':'):
+                continue
             storedPassword = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
             success = _verifyPassword(storedPassword, providedPassword)
@@ -145,6 +146,37 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     print('DEBUG: Did not find credentials for ' + nickname +
           ' in ' + passwordFile)
     return False
+
+
+def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
+                                       baseDir: str) -> None:
+    """Generates tokens for shared item federated domains
+    """
+    if not sharedItemsFederatedDomains:
+        return
+    tokensFile = baseDir + '/accounts/sharedItemsFederationTokens'
+    if not os.path.isfile(tokensFile):
+        with open(tokensFile, 'w+') as fp:
+            fp.write('')
+    tokens = []
+    with open(tokensFile, 'r') as fp:
+        tokens = fp.read().split('\n')
+    tokensAdded = False
+    for domain in sharedItemsFederatedDomains:
+        domainFound = False
+        for line in tokens:
+            if line.startswith(domain + ':'):
+                domainFound = True
+                break
+        if not domainFound:
+            newLine = domain + ':' + createPassword(64)
+            tokens.append(newLine)
+            tokensAdded = True
+    if not tokensAdded:
+        return
+    with open(tokensFile, 'w+') as fp:
+        for line in tokens:
+            fp.write(line + '\n')
 
 
 def authorizeDFC(sharedItemsFederatedDomains: [],
@@ -179,26 +211,27 @@ def authorizeDFC(sharedItemsFederatedDomains: [],
                   'the one in the Authorization header (' +
                   basicAuthDomain + ')')
         return False
-    passwordFile = baseDir + '/accounts/sharedItemsFederationTokens'
-    if not os.path.isfile(passwordFile):
+    tokensFile = baseDir + '/accounts/sharedItemsFederationTokens'
+    if not os.path.isfile(tokensFile):
         if debug:
             print('DEBUG: shared item federation tokens file missing ' +
-                  passwordFile)
+                  tokensFile)
         return False
-    providedPassword = plain.split(':')[1]
-    passfile = open(passwordFile, 'r')
-    for line in passfile:
-        if line.startswith(basicAuthDomain + ':'):
-            storedPassword = \
+    providedToken = plain.split(':')[1]
+    with open(tokensFile, 'r') as tokfile:
+        for line in tokfile:
+            if not line.startswith(basicAuthDomain + ':'):
+                continue
+            storedToken = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
-            success = _verifyPassword(storedPassword, providedPassword)
+            success = _verifyPassword(storedToken, providedToken)
             if not success:
                 if debug:
-                    print('DEBUG: DFC password check failed for ' +
+                    print('DEBUG: DFC token check failed for ' +
                           basicAuthDomain)
             return success
-    print('DEBUG: DFC did not find credentials for ' + basicAuthDomain +
-          ' in ' + passwordFile)
+    print('DEBUG: DFC did not find token for ' + basicAuthDomain +
+          ' in ' + tokensFile)
     return False
 
 

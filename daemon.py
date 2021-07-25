@@ -103,6 +103,7 @@ from skills import noOfActorSkills
 from skills import actorHasSkill
 from skills import actorSkillValue
 from skills import setActorSkillLevel
+from auth import generateSharedItemFederationTokens
 from auth import recordLoginFailure
 from auth import authorize
 from auth import authorizeDFC
@@ -15209,6 +15210,10 @@ def runDaemon(sharedItemsFederatedDomains: [],
     httpd.maxRecentPosts = maxRecentPosts
     httpd.iconsCache = {}
     httpd.fontsCache = {}
+
+    # create tokens used for shared item federation
+    generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
+                                       baseDir)
 
     # load peertube instances from file into a list
     httpd.peertubeInstances = []
