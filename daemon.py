@@ -10706,8 +10706,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           msglen, None, callingDomain)
                     self._write(msg)
                     return
-                else:
-                    self.path = '/'
+            self.path = '/'
 
         # minimal mastodon api
         if self._mastoApi(self.path, callingDomain, authorized,
