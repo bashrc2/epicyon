@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+import re
 import time
 import datetime
 from webfinger import webfingerHandle
@@ -725,7 +726,9 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
 def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  nickname: str, domain: str,
                                  domainFull: str,
-                                 path: str, today: bool) -> {}:
+                                 path: str, today: bool,
+                                 minPrice: float, maxPrice: float,
+                                 matchPattern: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
     """
@@ -764,6 +767,16 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
         if today:
             if not item['published'].startswith(currDateStr):
                 continue
+        if minPrice is not None:
+            if float(item['itemPrice']) < minPrice:
+                continue
+        if maxPrice is not None:
+            if float(item['itemPrice']) > maxPrice:
+                continue
+        description = item['displayName'] + ': ' + item['summary']
+        if matchPattern:
+            if not re.match(matchPattern, description):
+                continue
 
         expireDate = datetime.datetime.fromtimestamp(item['durationSec'])
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -780,7 +793,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
             "DFC:quantity": item['itemQty'],
             "DFC:price": priceStr,
             "DFC:Image": item['imageUrl'],
-            "DFC:description": item['displayName'] + ': ' + item['summary']
+            "DFC:description": description
         }
         endpoint['DFC:supplies'].append(catalogItem)
 
@@ -789,7 +802,9 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
 def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           domainFull: str,
-                          path: str, today: bool) -> {}:
+                          path: str, today: bool,
+                          minPrice: float, maxPrice: float,
+                          matchPattern: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
     """
@@ -836,12 +851,21 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                 if today:
                     if not item['published'].startswith(currDateStr):
                         continue
+                if minPrice is not None:
+                    if float(item['itemPrice']) < minPrice:
+                        continue
+                if maxPrice is not None:
+                    if float(item['itemPrice']) > maxPrice:
+                        continue
+                description = item['displayName'] + ': ' + item['summary']
+                if matchPattern:
+                    if not re.match(matchPattern, description):
+                        continue
 
                 expireDate = \
                     datetime.datetime.fromtimestamp(item['durationSec'])
                 expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-                description = item['displayName'] + ': ' + item['summary']
                 shareId = getValidSharedItemID(owner, item['displayName'])
                 dfcId = item['dfcId'].split('#')[1]
                 priceStr = item['itemPrice'] + ' ' + item['currency']
