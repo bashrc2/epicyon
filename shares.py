@@ -734,7 +734,7 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
     if '?' not in path:
         return today, minPrice, maxPrice, matchPattern
     args = path.split('?', 1)[1]
-    argList = args.split('?')
+    argList = args.split(';')
     for arg in argList:
         if '=' not in arg:
             continue
