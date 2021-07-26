@@ -1028,16 +1028,6 @@ else:
     if configFederationList:
         federationList = configFederationList
 
-sharedItemsFederatedDomains = []
-if args.sharedItemsFederatedDomains:
-    setConfigParam(baseDir, 'sharedItemsFederatedDomains',
-                   sharedItemsFederatedDomains)
-else:
-    configSharedItemsFederatedDomains = \
-        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
-    if configSharedItemsFederatedDomains:
-        sharedItemsFederatedDomains = configSharedItemsFederatedDomains
-
 proxyType = None
 if args.tor or domain.endswith('.onion'):
     proxyType = 'tor'
@@ -2156,9 +2146,22 @@ if args.desktop:
 
 if federationList:
     print('Federating with: ' + str(federationList))
-if sharedItemsFederatedDomains:
+if args.sharedItemsFederatedDomains:
     print('Federating shared items with: ' +
-          str(sharedItemsFederatedDomains))
+          args.sharedItemsFederatedDomains)
+
+sharedItemsFederatedDomains = []
+if args.sharedItemsFederatedDomains:
+    sharedItemsFederatedDomainsStr = args.sharedItemsFederatedDomains
+    setConfigParam(baseDir, 'sharedItemsFederatedDomains',
+                   sharedItemsFederatedDomainsStr)
+else:
+    sharedItemsFederatedDomainsStr = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+if sharedItemsFederatedDomainsStr:
+    sharedItemsFederatedDomainsList = sharedItemsFederatedDomainsStr.split(',')
+    for sharedFederatedDomain in sharedItemsFederatedDomainsList:
+        sharedItemsFederatedDomains.append(sharedFederatedDomain.strip())
 
 if args.block:
     if not nickname:

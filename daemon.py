@@ -15072,7 +15072,15 @@ def runDaemon(sharedItemsFederatedDomains: [],
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
+    if not sharedItemsFederatedDomains:
+        sharedItemsTokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        if os.path.isfile(sharedItemsTokensFilename):
+            sharedItemsFederatedDomains = loadJson(sharedItemsTokensFilename)
     httpd.sharedItemsFederatedDomains = sharedItemsFederatedDomains.copy()
+    if httpd.sharedItemsFederatedDomains:
+        if domain not in httpd.sharedItemsFederatedDomains:
+            httpd.sharedItemsFederatedDomains.append(domain)
     httpd.baseDir = baseDir
     httpd.instanceId = instanceId
     httpd.personCache = {}
