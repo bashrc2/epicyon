@@ -203,6 +203,7 @@ from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
+from shares import createSharedItemFederationToken
 from shares import authorizeSharedItems
 from shares import generateSharedItemFederationTokens
 from shares import getSharesFeedForPerson
@@ -15219,6 +15220,9 @@ def runDaemon(sharedItemsFederatedDomains: [],
     httpd.sharedItemFederationTokens = \
         generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
                                            baseDir)
+    httpd.sharedItemFederationTokens = \
+        createSharedItemFederationToken(baseDir, domain,
+                                        httpd.sharedItemFederationTokens)
 
     # load peertube instances from file into a list
     httpd.peertubeInstances = []

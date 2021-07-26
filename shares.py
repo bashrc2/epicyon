@@ -216,7 +216,7 @@ def addShare(baseDir: str,
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
-        sharesJson = loadJson(sharesFilename)
+        sharesJson = loadJson(sharesFilename, 1, 2)
 
     duration = duration.lower()
     published = int(time.time())
@@ -304,7 +304,7 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
     sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
     if not os.path.isfile(sharesFilename):
         return
-    sharesJson = loadJson(sharesFilename)
+    sharesJson = loadJson(sharesFilename, 1, 2)
     if not sharesJson:
         return
     currTime = int(time.time())
@@ -788,7 +788,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     if not os.path.isfile(sharesFilename):
         return endpoint
-    sharesJson = loadJson(sharesFilename)
+    sharesJson = loadJson(sharesFilename, 1, 2)
     if not sharesJson:
         return endpoint
 
@@ -871,7 +871,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                 acctDir(baseDir, nickname, domain) + '/shares.json'
             if not os.path.isfile(sharesFilename):
                 continue
-            sharesJson = loadJson(sharesFilename)
+            sharesJson = loadJson(sharesFilename, 1, 2)
             if not sharesJson:
                 continue
 
@@ -949,25 +949,68 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
     """Generates tokens for shared item federated domains
     """
     if not sharedItemsFederatedDomains:
-        return
+        return {}
 
     tokensJson = {}
     if baseDir:
         tokensFilename = \
             baseDir + '/accounts/sharedItemsFederationTokens.json'
-        if not os.path.isfile(tokensFilename):
-            tokensJson = loadJson(tokensFilename)
+        if os.path.isfile(tokensFilename):
+            tokensJson = loadJson(tokensFilename, 1, 2)
+            if tokensJson is None:
+                tokensJson = {}
 
     tokensAdded = False
     for domain in sharedItemsFederatedDomains:
         if not tokensJson.get(domain):
-            tokensJson[domain] = secrets.token_urlsafe(64)
+            tokensJson[domain] = ''
             tokensAdded = True
 
     if not tokensAdded:
         return tokensJson
     if baseDir:
         saveJson(tokensJson, tokensFilename)
+    return tokensJson
+
+
+def updateSharedItemFederationToken(baseDir: str,
+                                    tokenDomain: str, newToken: str,
+                                    tokensJson: {} = None) -> {}:
+    """Updates a token for shared item federation
+    """
+    if not tokensJson:
+        tokensJson = {}
+    if baseDir:
+        tokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        if os.path.isfile(tokensFilename):
+            tokensJson = loadJson(tokensFilename, 1, 2)
+            if tokensJson is None:
+                tokensJson = {}
+    tokensJson[tokenDomain] = newToken
+    if baseDir:
+        saveJson(tokensJson, tokensFilename)
+    return tokensJson
+
+
+def createSharedItemFederationToken(baseDir: str,
+                                    tokenDomain: str,
+                                    tokensJson: {} = None) -> {}:
+    """Updates a token for shared item federation
+    """
+    if not tokensJson:
+        tokensJson = {}
+    if baseDir:
+        tokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        if os.path.isfile(tokensFilename):
+            tokensJson = loadJson(tokensFilename, 1, 2)
+            if tokensJson is None:
+                tokensJson = {}
+    if not tokensJson.get(tokenDomain):
+        tokensJson[tokenDomain] = secrets.token_urlsafe(64)
+        if baseDir:
+            saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 
@@ -1009,7 +1052,7 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
                 print('DEBUG: shared item federation tokens file missing ' +
                       tokensFilename)
             return False
-        tokensJson = loadJson(tokensFilename)
+        tokensJson = loadJson(tokensFilename, 1, 2)
     if not tokensJson:
         return False
     if not tokensJson.get(callingDomain):

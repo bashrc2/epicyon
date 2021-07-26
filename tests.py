@@ -130,6 +130,8 @@ from languages import getLinksFromContent
 from languages import addLinksToContent
 from shares import authorizeSharedItems
 from shares import generateSharedItemFederationTokens
+from shares import createSharedItemFederationToken
+from shares import updateSharedItemFederationToken
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -4276,19 +4278,25 @@ def _testAuthorizeSharedItems():
         ['dog.domain', 'cat.domain', 'birb.domain']
     tokensJson = \
         generateSharedItemFederationTokens(sharedItemsFederatedDomains, None)
+    tokensJson = \
+        createSharedItemFederationToken(None, 'cat.domain', tokensJson)
     assert tokensJson
-    assert tokensJson.get('dog.domain')
+    assert not tokensJson.get('dog.domain')
     assert tokensJson.get('cat.domain')
-    assert tokensJson.get('birb.domain')
-    assert len(tokensJson['dog.domain']) >= 64
+    assert not tokensJson.get('birb.domain')
+    assert len(tokensJson['dog.domain']) == 0
     assert len(tokensJson['cat.domain']) >= 64
-    assert len(tokensJson['birb.domain']) >= 64
+    assert len(tokensJson['birb.domain']) == 0
     assert not authorizeSharedItems(sharedItemsFederatedDomains, None,
-                                    'dog.domain', 'w' * 86,
+                                    'cat.domain', 'M' * 86,
                                     False, tokensJson)
     assert authorizeSharedItems(sharedItemsFederatedDomains, None,
-                                'dog.domain', tokensJson['dog.domain'],
+                                'cat.domain', tokensJson['cat.domain'],
                                 False, tokensJson)
+    tokensJson = \
+        updateSharedItemFederationToken(None,
+                                        'dog.domain', 'testToken', tokensJson)
+    assert tokensJson['dog.domain'] == 'testToken'
 
 
 def runAllTests():
