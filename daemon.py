@@ -106,7 +106,7 @@ from skills import setActorSkillLevel
 from auth import generateSharedItemFederationTokens
 from auth import recordLoginFailure
 from auth import authorize
-from auth import authorizeDFC
+from auth import authorizeSharedItems
 from auth import createPassword
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
@@ -10669,19 +10669,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout', 'isAuthorized')
 
         if self.path.startswith('/dfc-catalog'):
-            catalogAuthorized = False
-            if authorized:
-                catalogAuthorized = True
-            else:
+            catalogAuthorized = authorized
+            if not catalogAuthorized:
                 # basic auth access to shared items catalog
                 if self.headers.get('Authorization'):
-                    if authorizeDFC(self.server.sharedItemsFederatedDomains,
-                                    self.server.baseDir,
-                                    callingDomain,
-                                    self.headers['Authorization'],
-                                    self.server.debug):
+                    permittedDomains = \
+                        self.server.sharedItemsFederatedDomains
+                    if authorizeSharedItems(permittedDomains,
+                                            self.server.baseDir,
+                                            callingDomain,
+                                            self.headers['Authorization'],
+                                            self.server.debug):
                         catalogAuthorized = True
-            # show shared items DFC catalog
+            # show shared items catalog for federation
             if self._hasAccept(callingDomain) and catalogAuthorized:
                 catalogType = 'html'
                 if self.path.endswith('.csv') or self._requestCSV():
