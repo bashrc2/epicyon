@@ -12,12 +12,15 @@ import re
 import secrets
 import time
 import datetime
+from session import getJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from auth import constantTimeStringCheck
 from posts import getPersonBox
 from session import postJson
 from session import postImage
+from session import createSession
+from utils import getConfigParam
 from utils import getFullDomain
 from utils import validNickname
 from utils import loadJson
@@ -1073,3 +1076,107 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
                   'mismatch for ' + callingDomain)
         return False
     return True
+
+
+def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
+                                baseDir: str, domain: str,
+                                httpPrefix: str,
+                                tokensJson: {}, debug: bool) -> None:
+    """Updates the cache of federated shares for the instance.
+    This enables shared items to be available even when other instances
+    might not be online
+    """
+    # create directories where catalogs will be stored
+    cacheDir = baseDir + '/cache'
+    if not os.path.isdir(cacheDir):
+        os.mkdir(cacheDir)
+    catalogsDir = cacheDir + '/catalogs'
+    if not os.path.isdir(catalogsDir):
+        os.mkdir(catalogsDir)
+
+    asHeader = {
+        'Accept': 'application/ld+json'
+    }
+    for otherDomain in sharedItemsFederatedDomains:
+        # NOTE: otherDomain does not have a port extension,
+        # so may not work in some situations
+        if otherDomain.startswith(domain):
+            # only download from instances other than this one
+            continue
+        if not tokensJson.get(otherDomain):
+            # token has been obtained for the other domain
+            continue
+        url = httpPrefix + '://' + otherDomain + '/catalog'
+        asHeader['Authorization'] = tokensJson[otherDomain]
+        catalogJson = getJson(session, url, asHeader, None,
+                              debug, __version__, httpPrefix, None)
+        if not catalogJson:
+            print('WARN: failed to download shared items catalog for ' +
+                  otherDomain)
+            continue
+        catalogFilename = catalogsDir + '/' + otherDomain + '.json'
+        if saveJson(catalogJson, catalogFilename):
+            print('Downloaded shared items catalog for ' + otherDomain)
+        else:
+            time.sleep(2)
+
+
+def runFederatedSharesWatchdog(projectVersion: str, httpd) -> None:
+    """This tries to keep the federated shares update thread
+    running even if it dies
+    """
+    print('Starting federated shares watchdog')
+    federatedSharesOriginal = \
+        httpd.thrPostSchedule.clone(runFederatedSharesDaemon)
+    httpd.thrFederatedSharesDaemon.start()
+    while True:
+        time.sleep(55)
+        if httpd.thrFederatedSharesDaemon.is_alive():
+            continue
+        httpd.thrFederatedSharesDaemon.kill()
+        httpd.thrFederatedSharesDaemon = \
+            federatedSharesOriginal.clone(runFederatedSharesDaemon)
+        httpd.thrFederatedSharesDaemon.start()
+        print('Restarting federated shares daemon...')
+
+
+def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
+                             domain: str, proxyType: str, debug: bool) -> None:
+    """Runs the daemon used to update federated shared items
+    """
+    secondsPerHour = 60 * 60
+    fileCheckIntervalSec = 120
+    time.sleep(60)
+    while True:
+        sharedItemsFederatedDomainsStr = \
+            getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+        if not sharedItemsFederatedDomainsStr:
+            time.sleep(fileCheckIntervalSec)
+            continue
+
+        # get a list of the domains within the shared items federation
+        sharedItemsFederatedDomains = []
+        sharedItemsFederatedDomainsList = \
+            sharedItemsFederatedDomainsStr.split(',')
+        for sharedFederatedDomain in sharedItemsFederatedDomainsList:
+            sharedItemsFederatedDomains.append(sharedFederatedDomain.strip())
+        if not sharedItemsFederatedDomains:
+            time.sleep(fileCheckIntervalSec)
+            continue
+
+        # load the tokens
+        tokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        if not os.path.isfile(tokensFilename):
+            time.sleep(fileCheckIntervalSec)
+            continue
+        tokensJson = loadJson(tokensFilename, 1, 2)
+        if not tokensJson:
+            time.sleep(fileCheckIntervalSec)
+            continue
+
+        session = createSession(proxyType)
+        _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
+                                    baseDir, domain, httpPrefix, tokensJson,
+                                    debug)
+        time.sleep(secondsPerHour * 6)

@@ -203,6 +203,8 @@ from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
+from shares import runFederatedSharesDaemon
+from shares import runFederatedSharesWatchdog
 from shares import updateSharedItemFederationToken
 from shares import createSharedItemFederationToken
 from shares import authorizeSharedItems
@@ -15285,6 +15287,13 @@ def runDaemon(sharedItemsFederatedDomains: [],
                               httpPrefix, domain, port,
                               httpd.translate), daemon=True)
 
+    print('Creating federated shares thread')
+    httpd.thrFederatedSharesDaemon = \
+        threadWithTrace(target=runFederatedSharesDaemon,
+                        args=(baseDir, httpd,
+                              httpPrefix, domain,
+                              proxyType, debug), daemon=True)
+
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
     httpd.restartInboxQueue = False
@@ -15310,9 +15319,16 @@ def runDaemon(sharedItemsFederatedDomains: [],
             threadWithTrace(target=runNewswireWatchdog,
                             args=(projectVersion, httpd), daemon=True)
         httpd.thrNewswireWatchdog.start()
+
+        print('Creating federated shares watchdog')
+        httpd.thrFederatedSharesWatchdog = \
+            threadWithTrace(target=runFederatedSharesWatchdog,
+                            args=(projectVersion, httpd), daemon=True)
+        httpd.thrFederatedSharesWatchdog.start()
     else:
         httpd.thrInboxQueue.start()
         httpd.thrPostSchedule.start()
+        httpd.thrFederatedSharesDaemon.start()
 
     if clientToServer:
         print('Running ActivityPub client on ' +

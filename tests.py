@@ -3265,6 +3265,8 @@ def _testFunctions():
         'str2bool',
         'runNewswireDaemon',
         'runNewswireWatchdog',
+        'runFederatedSharesWatchdog',
+        'runFederatedSharesDaemon',
         'threadSendPost',
         'sendToFollowers',
         'expireCache',
