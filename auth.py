@@ -169,7 +169,7 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
                 domainFound = True
                 break
         if not domainFound:
-            newLine = domain + ':' + createPassword(64)
+            newLine = domain + ':' + secrets.token_urlsafe(64)
             tokens.append(newLine)
             tokensAdded = True
     if not tokensAdded:
