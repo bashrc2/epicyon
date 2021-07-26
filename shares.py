@@ -987,9 +987,16 @@ def updateSharedItemFederationToken(baseDir: str,
             tokensJson = loadJson(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
-    tokensJson[tokenDomain] = newToken
-    if baseDir:
-        saveJson(tokensJson, tokensFilename)
+    updateRequired = False
+    if tokensJson.get(tokenDomain):
+        if tokensJson[tokenDomain] != newToken:
+            updateRequired = True
+    else:
+        updateRequired = True
+    if updateRequired:
+        tokensJson[tokenDomain] = newToken
+        if baseDir:
+            saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 

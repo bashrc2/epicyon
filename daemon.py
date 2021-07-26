@@ -203,6 +203,7 @@ from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
+from shares import updateSharedItemFederationToken
 from shares import createSharedItemFederationToken
 from shares import authorizeSharedItems
 from shares import generateSharedItemFederationTokens
@@ -14691,6 +14692,23 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 23)
+
+        # update the shared item federation token for the calling domain
+        # if it is within the permitted federation
+        if self.headers.get('SharesCatalog') and \
+           callingDomain != self.server.domain and \
+           callingDomain != self.server.domainFull and \
+           callingDomain in self.server.sharedItemsFederatedDomains:
+            if self.server.debug:
+                print('DEBUG: ' +
+                      'POST updating shared item federation token for ' +
+                      callingDomain)
+            sharedItemTokens = self.server.sharedItemFederationTokens
+            self.server.sharedItemFederationTokens = \
+                updateSharedItemFederationToken(self.server.baseDir,
+                                                callingDomain,
+                                                self.headers['SharesCatalog'],
+                                                sharedItemTokens)
 
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
