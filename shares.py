@@ -773,7 +773,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     dfcPtUrl = \
         "http://static.datafoodconsortium.org/data/productTypes.rdf#"
     owner = httpPrefix + '://' + domainFull + '/users/' + nickname
-    dfcInstanceId = owner + '/dfc-catalog'
+    dfcInstanceId = owner + '/catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
@@ -847,7 +847,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
         "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
     dfcPtUrl = \
         "http://static.datafoodconsortium.org/data/productTypes.rdf#"
-    dfcInstanceId = httpPrefix + '://' + domainFull + '/dfc-catalog'
+    dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
