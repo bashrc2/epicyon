@@ -10668,7 +10668,9 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'isAuthorized')
 
-        if self.path.startswith('/dfc-catalog'):
+        if self.path.startswith('/dfc-catalog') or \
+           self.path.startswith('/shareditems') or \
+           self.path.startswith('/catalog'):
             catalogAuthorized = authorized
             if not catalogAuthorized:
                 # basic auth access to shared items catalog
