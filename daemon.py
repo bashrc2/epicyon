@@ -15072,15 +15072,7 @@ def runDaemon(sharedItemsFederatedDomains: [],
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
-    if not sharedItemsFederatedDomains:
-        sharedItemsTokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
-        if os.path.isfile(sharedItemsTokensFilename):
-            sharedItemsFederatedDomains = loadJson(sharedItemsTokensFilename)
     httpd.sharedItemsFederatedDomains = sharedItemsFederatedDomains.copy()
-    if httpd.sharedItemsFederatedDomains:
-        if domain not in httpd.sharedItemsFederatedDomains:
-            httpd.sharedItemsFederatedDomains.append(domain)
     httpd.baseDir = baseDir
     httpd.instanceId = instanceId
     httpd.personCache = {}
@@ -15220,8 +15212,9 @@ def runDaemon(sharedItemsFederatedDomains: [],
     httpd.fontsCache = {}
 
     # create tokens used for shared item federation
-    generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
-                                       baseDir)
+    httpd.sharedItemFederationTokens = \
+        generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
+                                           baseDir)
 
     # load peertube instances from file into a list
     httpd.peertubeInstances = []
