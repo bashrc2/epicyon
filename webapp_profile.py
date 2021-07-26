@@ -1895,6 +1895,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     peertubeStr = ''
     libretranslateStr = ''
     graphicsStr = ''
+    sharesFederationStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
 
@@ -1904,6 +1905,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
+            # shared items section
+            sharesFederationStr = \
+                _htmlEditProfileSharedItems(baseDir, nickname,
+                                            domain, translate)
             instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
                 _htmlEditProfileInstance(baseDir, translate,
                                          peertubeInstances,
@@ -1979,15 +1984,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         _htmlEditProfileGitProjects(baseDir, nickname, domain, translate)
 
-    # shared items section
-    editProfileForm += \
-        _htmlEditProfileSharedItems(baseDir, nickname, domain, translate)
-
     # Skills section
     editProfileForm += \
         _htmlEditProfileSkills(baseDir, nickname, domain, translate)
 
-    editProfileForm += roleAssignStr + peertubeStr + graphicsStr + instanceStr
+    editProfileForm += roleAssignStr + peertubeStr + graphicsStr
+    editProfileForm += sharesFederationStr + instanceStr
 
     # danger zone section
     editProfileForm += _htmlEditProfileDangerZone(translate)
