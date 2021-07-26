@@ -10675,11 +10675,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.headers.get('Authorization'):
                     permittedDomains = \
                         self.server.sharedItemsFederatedDomains
+                    sharedItemTokens = self.server.sharedItemFederationTokens
                     if authorizeSharedItems(permittedDomains,
                                             self.server.baseDir,
                                             callingDomain,
                                             self.headers['Authorization'],
-                                            self.server.debug):
+                                            self.server.debug,
+                                            sharedItemTokens):
                         catalogAuthorized = True
             # show shared items catalog for federation
             if self._hasAccept(callingDomain) and catalogAuthorized:
