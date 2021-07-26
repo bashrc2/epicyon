@@ -103,7 +103,6 @@ from skills import noOfActorSkills
 from skills import actorHasSkill
 from skills import actorSkillValue
 from skills import setActorSkillLevel
-from auth import generateSharedItemFederationTokens
 from auth import recordLoginFailure
 from auth import authorize
 from auth import authorizeSharedItems
@@ -205,6 +204,7 @@ from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
+from shares import generateSharedItemFederationTokens
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeSharedItem

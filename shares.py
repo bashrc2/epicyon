@@ -9,6 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 import re
+import secrets
 import time
 import datetime
 from webfinger import webfingerHandle
@@ -940,3 +941,34 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         csvStr += item['DFC:Image'] + ','
         csvStr += item['DFC:description'] + '\n'
     return csvStr
+
+
+def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
+                                       baseDir: str) -> None:
+    """Generates tokens for shared item federated domains
+    """
+    if not sharedItemsFederatedDomains:
+        return
+    tokensFile = baseDir + '/accounts/sharedItemsFederationTokens'
+    if not os.path.isfile(tokensFile):
+        with open(tokensFile, 'w+') as fp:
+            fp.write('')
+    tokens = []
+    with open(tokensFile, 'r') as fp:
+        tokens = fp.read().split('\n')
+    tokensAdded = False
+    for domain in sharedItemsFederatedDomains:
+        domainFound = False
+        for line in tokens:
+            if line.startswith(domain + ':'):
+                domainFound = True
+                break
+        if not domainFound:
+            newLine = domain + ':' + secrets.token_urlsafe(64)
+            tokens.append(newLine)
+            tokensAdded = True
+    if not tokensAdded:
+        return
+    with open(tokensFile, 'w+') as fp:
+        for line in tokens:
+            fp.write(line + '\n')
