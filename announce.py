@@ -169,7 +169,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
                        announceNickname, announceDomain, announcePort, None,
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion)
+                       debug, projectVersion, None)
 
     return newAnnounce
 

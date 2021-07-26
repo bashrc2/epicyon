@@ -821,7 +821,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                           httpPrefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion)
+                          personCache, debug, projectVersion, None)
 
 
 def followedAccountRejects(session, baseDir: str, httpPrefix: str,
@@ -882,7 +882,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
                           httpPrefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion)
+                          personCache, debug, projectVersion, None)
 
 
 def sendFollowRequest(session, baseDir: str,
@@ -941,7 +941,7 @@ def sendFollowRequest(session, baseDir: str,
                    httpPrefix, True, clientToServer,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
-                   debug, projectVersion)
+                   debug, projectVersion, None)
 
     return newFollowJson
 

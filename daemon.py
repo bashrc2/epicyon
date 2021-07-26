@@ -1131,7 +1131,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.YTReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.allowLocalNetworkAccess,
-                                   city, self.server.systemLanguage)
+                                   city, self.server.systemLanguage,
+                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.sharedItemFederationTokens)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post

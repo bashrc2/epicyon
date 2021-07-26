@@ -112,7 +112,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.YTReplacementDomain,
                                        httpd.showPublishedDateOnly,
                                        httpd.allowLocalNetworkAccess,
-                                       httpd.city, httpd.systemLanguage):
+                                       httpd.city, httpd.systemLanguage,
+                                       httpd.sharedItemsFederatedDomains,
+                                       httpd.sharedItemFederationTokens):
                 indexLines.remove(line)
                 os.remove(postFilename)
                 continue

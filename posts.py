@@ -2211,7 +2211,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                    httpPrefix: str, saveToFile: bool, clientToServer: bool,
                    federationList: [],
                    sendThreads: [], postLog: [], cachedWebfingers: {},
-                   personCache: {}, debug: bool, projectVersion: str) -> int:
+                   personCache: {}, debug: bool, projectVersion: str,
+                   sharedItemsToken: str) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2336,6 +2337,10 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         createSignedHeader(privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
                            postPath, httpPrefix, withDigest, postJsonStr)
+    # optionally add a token so that the receiving instance may access
+    # your shared items catalog
+    if sharedItemsToken:
+        signatureHeaderJson['SharesCatalog'] = sharedItemsToken
 
     # Keep the number of threads being used small
     while len(sendThreads) > 1000:
@@ -2446,7 +2451,9 @@ def sendToNamedAddresses(session, baseDir: str,
                          sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          postJsonObject: {}, debug: bool,
-                         projectVersion: str) -> None:
+                         projectVersion: str,
+                         sharedItemsFederatedDomains: [],
+                         sharedItemFederationTokens: {}) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -2562,13 +2569,23 @@ def sendToNamedAddresses(session, baseDir: str,
                 fromDomain = i2pDomain
                 fromHttpPrefix = 'http'
         cc = []
+
+        # if the "to" domain is within the shared items
+        # federation list then send the token for this domain
+        # so that it can request a catalog
+        sharedItemsToken = None
+        if toDomain in sharedItemsFederatedDomains:
+            if sharedItemFederationTokens.get(fromDomain):
+                sharedItemsToken = sharedItemFederationTokens[fromDomain]
+
         sendSignedJson(postJsonObject, session, baseDir,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
                        cc, fromHttpPrefix, True, clientToServer,
                        federationList,
                        sendThreads, postLog, cachedWebfingers,
-                       personCache, debug, projectVersion)
+                       personCache, debug, projectVersion,
+                       sharedItemsToken)
 
 
 def _hasSharedInbox(session, httpPrefix: str, domain: str,
@@ -2616,7 +2633,9 @@ def sendToFollowers(session, baseDir: str,
                     sendThreads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
                     postJsonObject: {}, debug: bool,
-                    projectVersion: str) -> None:
+                    projectVersion: str,
+                    sharedItemsFederatedDomains: [],
+                    sharedItemFederationTokens: {}) -> None:
     """sends a post to the followers of the given nickname
     """
     print('sendToFollowers')
@@ -2655,6 +2674,14 @@ def sendToFollowers(session, baseDir: str,
 
         if debug:
             pprint(followerHandles)
+
+        # if the followers domain is within the shared items
+        # federation list then send the token for this domain
+        # so that it can request a catalog
+        sharedItemsToken = None
+        if followerDomain in sharedItemsFederatedDomains:
+            if sharedItemFederationTokens.get(domain):
+                sharedItemsToken = sharedItemFederationTokens[domain]
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
@@ -2720,7 +2747,8 @@ def sendToFollowers(session, baseDir: str,
                            cc, fromHttpPrefix, True, clientToServer,
                            federationList,
                            sendThreads, postLog, cachedWebfingers,
-                           personCache, debug, projectVersion)
+                           personCache, debug, projectVersion,
+                           sharedItemsToken)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
@@ -2742,7 +2770,8 @@ def sendToFollowers(session, baseDir: str,
                                cc, fromHttpPrefix, True, clientToServer,
                                federationList,
                                sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, projectVersion)
+                               personCache, debug, projectVersion,
+                               sharedItemsToken)
 
         time.sleep(4)
 
@@ -2762,7 +2791,9 @@ def sendToFollowersThread(session, baseDir: str,
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
-                          projectVersion: str):
+                          projectVersion: str,
+                          sharedItemsFederatedDomains: [],
+                          sharedItemFederationTokens: {}):
     """Returns a thread used to send a post to followers
     """
     sendThread = \
@@ -2774,7 +2805,9 @@ def sendToFollowersThread(session, baseDir: str,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,
                               postJsonObject.copy(), debug,
-                              projectVersion), daemon=True)
+                              projectVersion,
+                              sharedItemsFederatedDomains,
+                              sharedItemFederationTokens), daemon=True)
     try:
         sendThread.start()
     except SocketError as e:

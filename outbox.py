@@ -190,7 +190,9 @@ def postMessageToOutbox(session, translate: {},
                         YTReplacementDomain: str,
                         showPublishedDateOnly: bool,
                         allowLocalNetworkAccess: bool,
-                        city: str, systemLanguage: str) -> bool:
+                        city: str, systemLanguage: str,
+                        sharedItemsFederatedDomains: [],
+                        sharedItemFederationTokens: {}) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -462,7 +464,9 @@ def postMessageToOutbox(session, translate: {},
                               cachedWebfingers,
                               personCache,
                               messageJson, debug,
-                              version)
+                              version,
+                              sharedItemsFederatedDomains,
+                              sharedItemFederationTokens)
     followersThreads.append(followersThread)
 
     if debug:
@@ -584,5 +588,7 @@ def postMessageToOutbox(session, translate: {},
                          cachedWebfingers,
                          personCache,
                          messageJson, debug,
-                         version)
+                         version,
+                         sharedItemsFederatedDomains,
+                         sharedItemFederationTokens)
     return True

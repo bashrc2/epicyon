@@ -2000,7 +2000,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                                memberNickname, memberDomain, memberPort, cc,
                                httpPrefix, False, False, federationList,
                                sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, __version__)
+                               personCache, debug, __version__, None)
 
 
 def _inboxUpdateCalendar(baseDir: str, handle: str,
@@ -2178,7 +2178,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                    senderNickname, senderDomain, senderPort, cc,
                    httpPrefix, False, False, federationList,
                    sendThreads, postLog, cachedWebfingers,
-                   personCache, debug, __version__)
+                   personCache, debug, __version__, None)
     return True
 
 
@@ -2476,6 +2476,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 # if the votes on a question have changed then
                 # send out an update
                 questionJson['type'] = 'Update'
+                sharedItemsFederatedDomains = []
+                sharedItemFederationTokens = {}
                 sendToFollowersThread(session, baseDir,
                                       nickname, domain,
                                       onionDomain, i2pDomain, port,
@@ -2483,7 +2485,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                       sendThreads, postLog,
                                       cachedWebfingers, personCache,
                                       postJsonObject, debug,
-                                      __version__)
+                                      __version__,
+                                      sharedItemsFederatedDomains,
+                                      sharedItemFederationTokens)
 
         isReplyToMutedPost = False
 
