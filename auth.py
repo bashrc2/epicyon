@@ -148,60 +148,6 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     return False
 
 
-def authorizeSharedItems(sharedItemsFederatedDomains: [],
-                         baseDir: str,
-                         callingDomain: str,
-                         authHeader: str,
-                         debug: bool) -> bool:
-    """HTTP simple token check for shared item federation
-    """
-    if not sharedItemsFederatedDomains:
-        # no shared item federation
-        return False
-    if callingDomain not in sharedItemsFederatedDomains:
-        if debug:
-            print(callingDomain +
-                  ' is not in the shared items federation list')
-        return False
-    if 'Basic ' in authHeader:
-        if debug:
-            print('DEBUG: shared item federation should not use basic auth')
-        return False
-    providedToken = authHeader.replace('\n', '').replace('\r', '').strip()
-    if not providedToken:
-        if debug:
-            print('DEBUG: shared item federation token is empty')
-        return False
-    if len(providedToken) < 60:
-        if debug:
-            print('DEBUG: shared item federation token is too small ' +
-                  providedToken)
-        return False
-    tokensFile = baseDir + '/accounts/sharedItemsFederationTokens'
-    if not os.path.isfile(tokensFile):
-        if debug:
-            print('DEBUG: shared item federation tokens file missing ' +
-                  tokensFile)
-        return False
-    # check the tokens file
-    with open(tokensFile, 'r') as tokfile:
-        for line in tokfile:
-            if not line.startswith(callingDomain + ':'):
-                continue
-            storedToken = \
-                line.split(':')[1].replace('\n', '').replace('\r', '')
-            if constantTimeStringCheck(storedToken, providedToken):
-                return True
-            else:
-                if debug:
-                    print('DEBUG: shared item federation token ' +
-                          'check failed for ' + callingDomain)
-                return False
-    print('DEBUG: shared item federation token for ' + callingDomain +
-          ' not found in ' + tokensFile)
-    return False
-
-
 def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     """Stores login credentials to a file
     """

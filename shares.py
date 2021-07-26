@@ -14,6 +14,7 @@ import time
 import datetime
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
+from auth import constantTimeStringCheck
 from posts import getPersonBox
 from session import postJson
 from session import postImage
@@ -949,26 +950,72 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
     """
     if not sharedItemsFederatedDomains:
         return
-    tokensFile = baseDir + '/accounts/sharedItemsFederationTokens'
-    if not os.path.isfile(tokensFile):
-        with open(tokensFile, 'w+') as fp:
-            fp.write('')
-    tokens = []
-    with open(tokensFile, 'r') as fp:
-        tokens = fp.read().split('\n')
+
+    tokensFilename = baseDir + '/accounts/sharedItemsFederationTokens.json'
+    tokensJson = {}
+    if not os.path.isfile(tokensFilename):
+        tokensJson = loadJson(tokensFilename)
+
     tokensAdded = False
     for domain in sharedItemsFederatedDomains:
-        domainFound = False
-        for line in tokens:
-            if line.startswith(domain + ':'):
-                domainFound = True
-                break
-        if not domainFound:
-            newLine = domain + ':' + secrets.token_urlsafe(64)
-            tokens.append(newLine)
+        if not tokensJson.get(domain):
+            tokensJson[domain] = secrets.token_urlsafe(64)
             tokensAdded = True
+
     if not tokensAdded:
         return
-    with open(tokensFile, 'w+') as fp:
-        for line in tokens:
-            fp.write(line + '\n')
+    saveJson(tokensJson, tokensFilename)
+
+
+def authorizeSharedItems(sharedItemsFederatedDomains: [],
+                         baseDir: str,
+                         callingDomain: str,
+                         authHeader: str,
+                         debug: bool,
+                         tokensJson: {} = None) -> bool:
+    """HTTP simple token check for shared item federation
+    """
+    if not sharedItemsFederatedDomains:
+        # no shared item federation
+        return False
+    if callingDomain not in sharedItemsFederatedDomains:
+        if debug:
+            print(callingDomain +
+                  ' is not in the shared items federation list')
+        return False
+    if 'Basic ' in authHeader:
+        if debug:
+            print('DEBUG: shared item federation should not use basic auth')
+        return False
+    providedToken = authHeader.replace('\n', '').replace('\r', '').strip()
+    if not providedToken:
+        if debug:
+            print('DEBUG: shared item federation token is empty')
+        return False
+    if len(providedToken) < 60:
+        if debug:
+            print('DEBUG: shared item federation token is too small ' +
+                  providedToken)
+        return False
+    if not tokensJson:
+        tokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        if not os.path.isfile(tokensFilename):
+            if debug:
+                print('DEBUG: shared item federation tokens file missing ' +
+                      tokensFilename)
+            return False
+        tokensJson = loadJson(tokensFilename)
+    if not tokensJson:
+        return False
+    if not tokensJson.get(callingDomain):
+        if debug:
+            print('DEBUG: shared item federation token ' +
+                  'check failed for ' + callingDomain)
+        return False
+    if not constantTimeStringCheck(tokensJson[callingDomain], providedToken):
+        if debug:
+            print('DEBUG: shared item federation token ' +
+                  'mismatch for ' + callingDomain)
+        return False
+    return True
