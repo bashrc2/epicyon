@@ -945,16 +945,18 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
 
 
 def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
-                                       baseDir: str) -> None:
+                                       baseDir: str) -> {}:
     """Generates tokens for shared item federated domains
     """
     if not sharedItemsFederatedDomains:
         return
 
-    tokensFilename = baseDir + '/accounts/sharedItemsFederationTokens.json'
     tokensJson = {}
-    if not os.path.isfile(tokensFilename):
-        tokensJson = loadJson(tokensFilename)
+    if baseDir:
+        tokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        if not os.path.isfile(tokensFilename):
+            tokensJson = loadJson(tokensFilename)
 
     tokensAdded = False
     for domain in sharedItemsFederatedDomains:
@@ -963,8 +965,10 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
             tokensAdded = True
 
     if not tokensAdded:
-        return
-    saveJson(tokensJson, tokensFilename)
+        return tokensJson
+    if baseDir:
+        saveJson(tokensJson, tokensFilename)
+    return tokensJson
 
 
 def authorizeSharedItems(sharedItemsFederatedDomains: [],

@@ -128,6 +128,8 @@ from languages import setActorLanguages
 from languages import getActorLanguages
 from languages import getLinksFromContent
 from languages import addLinksToContent
+from shares import authorizeSharedItems
+from shares import generateSharedItemFederationTokens
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -4268,9 +4270,31 @@ def _testValidPassword():
     assert validPassword('Abcdef!g123456')
 
 
+def _testAuthorizeSharedItems():
+    print('testAuthorizeSharedItems')
+    sharedItemsFederatedDomains = \
+        ['dog.domain', 'cat.domain', 'birb.domain']
+    tokensJson = \
+        generateSharedItemFederationTokens(sharedItemsFederatedDomains, None)
+    assert tokensJson
+    assert tokensJson.get('dog.domain')
+    assert tokensJson.get('cat.domain')
+    assert tokensJson.get('birb.domain')
+    assert len(tokensJson['dog.domain']) >= 64
+    assert len(tokensJson['cat.domain']) >= 64
+    assert len(tokensJson['birb.domain']) >= 64
+    assert not authorizeSharedItems(sharedItemsFederatedDomains, None,
+                                    'dog.domain', 'w' * 86,
+                                    False, tokensJson)
+    assert authorizeSharedItems(sharedItemsFederatedDomains, None,
+                                'dog.domain', tokensJson['dog.domain'],
+                                False, tokensJson)
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testAuthorizeSharedItems()
     _testValidPassword()
     _testGetLinksFromContent()
     _testSetActorLanguages()
