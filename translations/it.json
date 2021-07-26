@@ -456,5 +456,6 @@
     "Quantity": "Quantità",
     "food": "cibo",
     "Price": "Prezzo",
-    "Currency": "Moneta"
+    "Currency": "Moneta",
+    "List of domains which can access the shared items catalog": "Elenco dei domini che possono accedere al catalogo articoli condivisi"
 }

@@ -456,5 +456,6 @@
     "Quantity": "Количество",
     "food": "еда",
     "Price": "Цена",
-    "Currency": "Валюта"
+    "Currency": "Валюта",
+    "List of domains which can access the shared items catalog": "Список доменов, которые могут получить доступ к каталогу общих пунктов"
 }

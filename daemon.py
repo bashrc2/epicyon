@@ -203,6 +203,7 @@ from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
+from shares import mergeSharedItemTokens
 from shares import runFederatedSharesDaemon
 from shares import runFederatedSharesWatchdog
 from shares import updateSharedItemFederationToken
@@ -4824,6 +4825,49 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.domainFull,
                                              brochMode)
                                 setConfigParam(baseDir, "brochMode", brochMode)
+
+                            # shared item federation domains
+                            siDomainUpdated = False
+                            sharedItemsFederatedDomainsStr = \
+                                getConfigParam(baseDir,
+                                               "sharedItemsFederatedDomains")
+                            sharedItemsFormStr = ''
+                            if sharedItemsFederatedDomainsStr and \
+                               fields.get('shareDomainList'):
+                                sharedItemsList = \
+                                    sharedItemsFederatedDomainsStr.split(',')
+                                for sharedFederatedDomain in sharedItemsList:
+                                    sharedItemsFormStr += \
+                                        sharedFederatedDomain.strip() + '\n'
+
+                                if fields.get('shareDomainList') != \
+                                   sharedItemsFormStr:
+                                    sharedItemsFormStr2 = \
+                                        sharedItemsFormStr.replace('\n', ',')
+                                    sharedItemsField = \
+                                        "sharedItemsFederatedDomains"
+                                    setConfigParam(baseDir, sharedItemsField,
+                                                   sharedItemsFormStr2)
+                                    siDomainUpdated = True
+                            else:
+                                if not fields.get('shareDomainList') and \
+                                   sharedItemsFederatedDomainsStr:
+                                    sharedItemsField = \
+                                        "sharedItemsFederatedDomains"
+                                    setConfigParam(baseDir, sharedItemsField,
+                                                   '')
+                                    siDomainUpdated = True
+                            if siDomainUpdated:
+                                siDomains = sharedItemsFormStr.split('\n')
+                                siTokens = \
+                                    self.server.sharedItemFederationTokens
+                                self.server.sharedItemsFederatedDomains = \
+                                    siDomains
+                                self.server.sharedItemFederationTokens = \
+                                    mergeSharedItemTokens(self.server.baseDir,
+                                                          self.server.domain,
+                                                          siDomains,
+                                                          siTokens)
 
                         # change moderators list
                         if fields.get('moderators'):

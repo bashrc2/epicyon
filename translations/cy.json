@@ -456,5 +456,6 @@
     "Quantity": "Symiau",
     "food": "bwyd",
     "Price": "Prisia",
-    "Currency": "Harian"
+    "Currency": "Harian",
+    "List of domains which can access the shared items catalog": "Rhestr o barthau a all gael mynediad i'r catalog eitemau a rennir"
 }

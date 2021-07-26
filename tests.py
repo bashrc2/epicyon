@@ -132,6 +132,7 @@ from shares import authorizeSharedItems
 from shares import generateSharedItemFederationTokens
 from shares import createSharedItemFederationToken
 from shares import updateSharedItemFederationToken
+from shares import mergeSharedItemTokens
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3104,6 +3105,8 @@ def _testFunctions():
         for sourceFile in files:
             if not sourceFile.endswith('.py'):
                 continue
+            if sourceFile.startswith('.#'):
+                continue
             modName = sourceFile.replace('.py', '')
             modules[modName] = {
                 'functions': []
@@ -4299,6 +4302,20 @@ def _testAuthorizeSharedItems():
         updateSharedItemFederationToken(None,
                                         'dog.domain', 'testToken', tokensJson)
     assert tokensJson['dog.domain'] == 'testToken'
+
+    # the shared item federation list changes
+    sharedItemsFederatedDomains = \
+        ['possum.domain', 'cat.domain', 'birb.domain']
+    tokensJson = mergeSharedItemTokens(None, '',
+                                       sharedItemsFederatedDomains,
+                                       tokensJson)
+    assert 'dog.domain' not in tokensJson
+    assert 'cat.domain' in tokensJson
+    assert len(tokensJson['cat.domain']) >= 64
+    assert 'birb.domain' in tokensJson
+    assert 'possum.domain' in tokensJson
+    assert len(tokensJson['birb.domain']) == 0
+    assert len(tokensJson['possum.domain']) == 0
 
 
 def runAllTests():

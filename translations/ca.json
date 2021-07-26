@@ -456,5 +456,6 @@
     "Quantity": "Quantitat",
     "food": "menjar",
     "Price": "Preu",
-    "Currency": "Moneda"
+    "Currency": "Moneda",
+    "List of domains which can access the shared items catalog": "Llista de dominis que poden accedir al catàleg d'articles compartits"
 }

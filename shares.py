@@ -979,7 +979,7 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
 def updateSharedItemFederationToken(baseDir: str,
                                     tokenDomain: str, newToken: str,
                                     tokensJson: {} = None) -> {}:
-    """Updates a token for shared item federation
+    """Updates an individual token for shared item federation
     """
     if not tokensJson:
         tokensJson = {}
@@ -1003,10 +1003,44 @@ def updateSharedItemFederationToken(baseDir: str,
     return tokensJson
 
 
+def mergeSharedItemTokens(baseDir: str, domain: str,
+                          newSharedItemsFederatedDomains: [],
+                          tokensJson: {}) -> {}:
+    """When the shared item federation domains list has changed, update
+    the tokens dict accordingly
+    """
+    removals = []
+    changed = False
+    print('Test 46237')
+    for tokenDomain, tok in tokensJson.items():
+        print('tokenDomain: ' + tokenDomain)
+        if domain:
+            if tokenDomain.startswith(domain):
+                continue
+        if tokenDomain not in newSharedItemsFederatedDomains:
+            removals.append(tokenDomain)
+            print('remove ' + tokenDomain)
+    # remove domains no longer in the federation list
+    for tokenDomain in removals:
+        del tokensJson[tokenDomain]
+        print('removing ' + tokenDomain)
+        changed = True
+    # add new domains from the federation list
+    for tokenDomain in newSharedItemsFederatedDomains:
+        if tokenDomain not in tokensJson:
+            tokensJson[tokenDomain] = ''
+            changed = True
+    if baseDir and changed:
+        tokensFilename = \
+            baseDir + '/accounts/sharedItemsFederationTokens.json'
+        saveJson(tokensJson, tokensFilename)
+    return tokensJson
+
+
 def createSharedItemFederationToken(baseDir: str,
                                     tokenDomain: str,
                                     tokensJson: {} = None) -> {}:
-    """Updates a token for shared item federation
+    """Updates an individual token for shared item federation
     """
     if not tokensJson:
         tokensJson = {}

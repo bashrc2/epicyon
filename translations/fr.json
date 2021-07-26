@@ -456,5 +456,6 @@
     "Quantity": "Quantité",
     "food": "aliments",
     "Price": "Prix",
-    "Currency": "Devise"
+    "Currency": "Devise",
+    "List of domains which can access the shared items catalog": "Liste des domaines pouvant accéder au catalogue d'éléments partagés"
 }

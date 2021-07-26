@@ -1340,6 +1340,28 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
     return editProfileForm
 
 
+def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
+                                translate: {}) -> str:
+    """shared items section of edit profile screen
+    """
+    sharedItemsStr = ''
+    sharedItemsFederatedDomainsStr = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+    if sharedItemsFederatedDomainsStr:
+        sharedItemsFederatedDomainsList = \
+            sharedItemsFederatedDomainsStr.split(',')
+        for sharedFederatedDomain in sharedItemsFederatedDomainsList:
+            sharedItemsStr += sharedFederatedDomain.strip() + '\n'
+
+    editProfileForm = beginEditSection(translate['Shares'])
+    idx = 'List of domains which can access the shared items catalog'
+    editProfileForm += \
+        editTextArea(translate[idx], 'shareDomainList', sharedItemsStr,
+                     200, '', False)
+    editProfileForm += endEditSection()
+    return editProfileForm
+
+
 def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
                               userAgentsBlocked: str, translate: {}) -> str:
     """Filtering and blocking section of edit profile screen
@@ -1956,6 +1978,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     # git projects section
     editProfileForm += \
         _htmlEditProfileGitProjects(baseDir, nickname, domain, translate)
+
+    # shared items section
+    editProfileForm += \
+        _htmlEditProfileSharedItems(baseDir, nickname, domain, translate)
 
     # Skills section
     editProfileForm += \

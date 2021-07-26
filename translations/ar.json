@@ -456,5 +456,6 @@
     "Quantity": "كمية",
     "food": "غذاء",
     "Price": "السعر",
-    "Currency": "عملة"
+    "Currency": "عملة",
+    "List of domains which can access the shared items catalog": "قائمة المجالات التي يمكن الوصول إلى كتالوج البنود المشتركة"
 }
