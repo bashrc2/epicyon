@@ -4837,7 +4837,6 @@ class PubServer(BaseHTTPRequestHandler):
                             if not sharedItemsFederatedDomainsStr:
                                 sharedItemsFederatedDomainsStr = ''
                             sharedItemsFormStr = ''
-                            print('shareDomainList')
                             if fields.get('shareDomainList'):
                                 sharedItemsList = \
                                     sharedItemsFederatedDomainsStr.split(',')
@@ -4845,17 +4844,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     sharedItemsFormStr += \
                                         sharedFederatedDomain.strip() + '\n'
 
-                                print('shareDomainList1: ' +
-                                      fields['shareDomainList'])
-                                print('shareDomainList2: ' +
-                                      sharedItemsFormStr)
                                 shareDomainList = fields['shareDomainList']
                                 if shareDomainList != \
                                    sharedItemsFormStr:
                                     sharedItemsFormStr2 = \
                                         shareDomainList.replace('\n', ',')
-                                    print('shareDomainList3: ' +
-                                          sharedItemsFormStr2)
                                     sharedItemsField = \
                                         "sharedItemsFederatedDomains"
                                     setConfigParam(baseDir, sharedItemsField,
