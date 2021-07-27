@@ -91,8 +91,8 @@ def getValidSharedItemID(actor: str, displayName: str) -> str:
         displayName = displayName.replace(ch, '-')
     displayName = displayName.replace('.', '_')
     displayName = displayName.replace("’", "'")
-    actor = actor.replace('://', '--##')
-    actor = actor.replace('/', '#')
+    actor = actor.replace('://', '___')
+    actor = actor.replace('/', '--')
     return actor + '#shareditems#' + displayName
 
 
