@@ -159,7 +159,9 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
     See https://github.com/datafoodconsortium/ontology
     """
     if translate['food'] not in itemCategory.lower():
-        return ''
+        itemType = itemType.replace(' ', '_')
+        itemType = itemType.replace('.', '')
+        return 'epicyon#' + itemType
     if not dfcIds:
         dfcIds = _loadDfcIds(baseDir, systemLanguage)
         if not dfcIds:
@@ -193,6 +195,11 @@ def _getshareTypeFromDfcId(dfcUri: str, dfcIds: {}) -> str:
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
     """
+    if dfcUri.startswith('epicyon#'):
+        itemType = dfcUri.split('#')[1]
+        itemType = itemType.replace('_', ' ')
+        return itemType
+
     for name, uri in dfcIds.items():
         if uri.endswith('#' + dfcUri):
             return name
@@ -834,12 +841,15 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         shareId = getValidSharedItemID(owner, item['displayName'])
-        dfcId = item['dfcId'].split('#')[1]
+        if item['dfcId'].startswith('epicyon#'):
+            dfcId = "epicyon:" + item['dfcId'].split('#')[1]
+        else:
+            dfcId = "dfc-pt:" + item['dfcId'].split('#')[1]
         priceStr = item['itemPrice'] + ' ' + item['itemCurrency']
         catalogItem = {
             "@id": shareId,
             "@type": "DFC:SuppliedProduct",
-            "DFC:hasType": "dfc-pt:" + dfcId,
+            "DFC:hasType": dfcId,
             "DFC:startDate": item['published'],
             "DFC:expiryDate": expireDateStr,
             "DFC:quantity": item['itemQty'],
@@ -918,12 +928,15 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                 expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
                 shareId = getValidSharedItemID(owner, item['displayName'])
-                dfcId = item['dfcId'].split('#')[1]
+                if item['dfcId'].startswith('epicyon#'):
+                    dfcId = "epicyon:" + item['dfcId'].split('#')[1]
+                else:
+                    dfcId = "dfc-pt:" + item['dfcId'].split('#')[1]
                 priceStr = item['itemPrice'] + ' ' + item['itemCurrency']
                 catalogItem = {
                     "@id": shareId,
                     "@type": "DFC:SuppliedProduct",
-                    "DFC:hasType": "dfc-pt:" + dfcId,
+                    "DFC:hasType": dfcId,
                     "DFC:startDate": item['published'],
                     "DFC:expiryDate": expireDateStr,
                     "DFC:quantity": item['itemQty'],
