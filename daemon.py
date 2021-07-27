@@ -15340,7 +15340,8 @@ def runDaemon(sharedItemsFederatedDomains: [],
         threadWithTrace(target=runFederatedSharesDaemon,
                         args=(baseDir, httpd,
                               httpPrefix, domain,
-                              proxyType, debug), daemon=True)
+                              proxyType, debug,
+                              httpd.systemLanguage), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False

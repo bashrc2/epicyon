@@ -128,7 +128,7 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
               '" does not exist in ' + sharesFilename)
 
 
-def _addShareDurationSec(duration: str, published: str) -> int:
+def _addShareDurationSec(duration: str, published: int) -> int:
     """Returns the duration for the shared item in seconds
     """
     if ' ' not in duration:
@@ -151,16 +151,17 @@ def _addShareDurationSec(duration: str, published: str) -> int:
 
 def _getshareDfcId(baseDir: str, systemLanguage: str,
                    itemType: str, itemCategory: str,
-                   translate: {}) -> str:
+                   translate: {}, dfcIds: {} = None) -> str:
     """Attempts to obtain a DFC Id for the shared item,
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
     """
     if translate['food'] not in itemCategory.lower():
         return ''
-    dfcIds = _loadDfcIds(baseDir, systemLanguage)
     if not dfcIds:
-        return ''
+        dfcIds = _loadDfcIds(baseDir, systemLanguage)
+        if not dfcIds:
+            return ''
     itemTypeLower = itemType.lower()
     matchName = ''
     matchId = ''
@@ -183,6 +184,19 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
                 maxMatchedWords = score
                 matchId = uri
     return matchId
+
+
+def _getshareTypeFromDfcId(dfcUri: str, dfcIds: {}) -> str:
+    """Attempts to obtain a share item type from its DFC Id,
+    based upon productTypes ontology.
+    See https://github.com/datafoodconsortium/ontology
+    """
+    for name, uri in dfcIds.items():
+        if uri.endswith('#' + dfcUri):
+            return name
+        elif uri == dfcUri:
+            return name
+    return None
 
 
 def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
@@ -1111,7 +1125,8 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
 def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
                                 baseDir: str, domain: str,
                                 httpPrefix: str,
-                                tokensJson: {}, debug: bool) -> None:
+                                tokensJson: {}, debug: bool,
+                                systemLanguage: str) -> None:
     """Updates the cache of federated shares for the instance.
     This enables shared items to be available even when other instances
     might not be online
@@ -1147,6 +1162,13 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         catalogFilename = catalogsDir + '/' + federatedDomain + '.json'
         if saveJson(catalogJson, catalogFilename):
             print('Downloaded shared items catalog for ' + federatedDomain)
+            sharesJson = _dfcToSharesFormat(catalogJson,
+                                            baseDir, systemLanguage)
+            if sharesJson:
+                sharesFilename = \
+                    catalogsDir + '/' + federatedDomain + '.shares.json'
+                saveJson(sharesJson, sharesFilename)
+                print('Converted shares catalog for ' + federatedDomain)
         else:
             time.sleep(2)
 
@@ -1171,7 +1193,8 @@ def runFederatedSharesWatchdog(projectVersion: str, httpd) -> None:
 
 
 def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
-                             domain: str, proxyType: str, debug: bool) -> None:
+                             domain: str, proxyType: str, debug: bool,
+                             systemLanguage: str) -> None:
     """Runs the daemon used to update federated shared items
     """
     secondsPerHour = 60 * 60
@@ -1208,5 +1231,70 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
         session = createSession(proxyType)
         _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
                                     baseDir, domain, httpPrefix, tokensJson,
-                                    debug)
+                                    debug, systemLanguage)
         time.sleep(secondsPerHour * 6)
+
+
+def _dfcToSharesFormat(catalogJson: {},
+                       baseDir: str, systemLanguage: str) -> {}:
+    """Converts DFC format into the internal formal used to store shared items.
+    This simplifies subsequent search and display
+    """
+    if not catalogJson.get('DFC:supplies'):
+        return {}
+    sharesJson = {}
+    dfcIds = _loadDfcIds(baseDir, systemLanguage)
+    currTime = int(time.time())
+    for item in catalogJson['DFC:supplies']:
+        if not item.get('@id') or \
+           not item.get('@type') or \
+           not item.get('DFC:hasType') or \
+           not item.get('DFC:startDate') or \
+           not item.get('DFC:expiryDate') or \
+           not item.get('DFC:quantity') or \
+           not item.get('DFC:price') or \
+           not item.get('DFC:Image') or \
+           not item.get('DFC:description'):
+            continue
+
+        if ' ' not in item['DFC:price']:
+            continue
+        if ':' not in item['DFC:description']:
+            continue
+        if ':' not in item['DFC:hasType']:
+            continue
+
+        try:
+            expiryTime = \
+                datetime.datetime.strptime(item['DFC:expiryDate'],
+                                           '%Y-%m-%dT%H:%M:%SZ')
+        except BaseException:
+            continue
+        durationSec = \
+            int((expiryTime - datetime.datetime(1970, 1, 1)).total_seconds())
+        if durationSec < currTime:
+            # has expired
+            continue
+
+        hasType = item['DFC:hasType'].split(':')[1]
+        itemType = _getshareTypeFromDfcId(hasType, dfcIds)
+        if not itemType:
+            continue
+        dfcId = dfcIds[itemType]
+        itemID = item['@id']
+        description = item['DFC:description'].split(':', 1)[1].strip()
+        sharesJson[itemID] = {
+            "displayName": item['DFC:description'].split(':')[0],
+            "summary": description,
+            "imageUrl": item['DFC:Image'],
+            "itemQty": item['DFC:quantity'],
+            "dfcId": dfcId,
+            "itemType": itemType,
+            "category": "food",
+            "location": "",
+            "published": item['DFC:startDate'],
+            "expire": durationSec,
+            "price": item['DFC:price'].split(' ')[0],
+            "currency": item['DFC:price'].split(' ')[1]
+        }
+    return sharesJson
