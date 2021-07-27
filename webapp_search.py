@@ -144,7 +144,8 @@ def _htmlSearchResultShare(sharedItem: {}, translate: {},
     sharedItemsForm += \
         '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
     sharedItemsForm += \
-        '<b>' + translate['Category'] + ':</b> ' + sharedItem['category'] + '<br>'
+        '<b>' + translate['Category'] + ':</b> ' + \
+        sharedItem['category'] + '<br>'
     if sharedItem.get('location'):
         sharedItemsForm += \
             '<b>' + translate['Location'] + ':</b> ' + \

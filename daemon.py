@@ -10755,7 +10755,8 @@ class PubServer(BaseHTTPRequestHandler):
         # shared items catalog for this instance
         # this is only accessible to instance members or to
         # other instances which present an authorization token
-        if self.path.startswith('/catalog'):
+        if self.path.startswith('/catalog') or \
+           (self.path.startswith('/users/') and '/catalog' in self.path):
             catalogAuthorized = authorized
             if not catalogAuthorized:
                 # basic auth access to shared items catalog
