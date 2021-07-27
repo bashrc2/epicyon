@@ -38,6 +38,8 @@ def _getLeftColumnShares(baseDir: str,
     """
     pageNumber = 1
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    # NOTE: this could potentially be slow if the number of federated
+    # shared items is large
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
                            baseDir, maxSharesInLeftColumn,

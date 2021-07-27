@@ -362,30 +362,31 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                 if ctr >= maxSharesPerAccount:
                     break
         break
-    catalogsDir = baseDir + '/cache/catalogs'
-    if os.path.isdir(catalogsDir):
-        for subdir, dirs, files in os.walk(catalogsDir):
-            for f in files:
-                if '#' in f:
-                    continue
-                if not f.endswith('.shares.json'):
-                    continue
-                federatedDomain = f.split('.')[0]
-                if federatedDomain not in sharedItemsFederatedDomains:
-                    continue
-                sharesFilename = catalogsDir + '/' + f
-                sharesJson = loadJson(sharesFilename)
-                if not sharesJson:
-                    continue
-                ctr = 0
-                for itemID, item in sharesJson.items():
-                    # assign owner to the item
-                    item['actor'] = itemID.split('/shareditems/')[0]
-                    allSharesJson[str(item['published'])] = item
-                    ctr += 1
-                    if ctr >= maxSharesPerAccount:
-                        break
-            break
+    if sharedItemsFederatedDomains:
+        catalogsDir = baseDir + '/cache/catalogs'
+        if os.path.isdir(catalogsDir):
+            for subdir, dirs, files in os.walk(catalogsDir):
+                for f in files:
+                    if '#' in f:
+                        continue
+                    if not f.endswith('.shares.json'):
+                        continue
+                    federatedDomain = f.split('.')[0]
+                    if federatedDomain not in sharedItemsFederatedDomains:
+                        continue
+                    sharesFilename = catalogsDir + '/' + f
+                    sharesJson = loadJson(sharesFilename)
+                    if not sharesJson:
+                        continue
+                    ctr = 0
+                    for itemID, item in sharesJson.items():
+                        # assign owner to the item
+                        item['actor'] = itemID.split('/shareditems/')[0]
+                        allSharesJson[str(item['published'])] = item
+                        ctr += 1
+                        if ctr >= maxSharesPerAccount:
+                            break
+                break
     # sort the shared items in descending order of publication date
     sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
     lastPage = False
