@@ -10785,7 +10785,7 @@ class PubServer(BaseHTTPRequestHandler):
                         sharesCatalogEndpoint(self.server.baseDir,
                                               self.server.httpPrefix,
                                               self.server.domainFull,
-                                              self.server.path)
+                                              self.path)
                     msg = json.dumps(catalogJson,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -10799,7 +10799,7 @@ class PubServer(BaseHTTPRequestHandler):
                         sharesCatalogCSVEndpoint(self.server.baseDir,
                                                  self.server.httpPrefix,
                                                  self.server.domainFull,
-                                                 self.server.path)
+                                                 self.path)
                     msg = json.dumps(catalogStr,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
