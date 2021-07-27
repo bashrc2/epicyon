@@ -10230,8 +10230,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         mediaStr = path.split('/sharefiles/')[1]
-        mediaFilename = \
-            baseDir + '/sharefiles/' + mediaStr
+        mediaFilename = baseDir + '/sharefiles/' + mediaStr
         if not os.path.isfile(mediaFilename):
             self._404()
             return True

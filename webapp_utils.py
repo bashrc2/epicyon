@@ -384,6 +384,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                         shareActor = ''
                         if '#shareditems#' in itemID:
                             shareActor = itemID.split('#shareditems#')[0]
+                            shareActor = shareActor.replace('--##', '://')
                             shareActor = shareActor.replace('#', '/')
                         item['actor'] = shareActor
                         allSharesJson[str(item['published'])] = item
