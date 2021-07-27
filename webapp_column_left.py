@@ -32,15 +32,16 @@ def _getLeftColumnShares(baseDir: str,
                          httpPrefix: str, domainFull: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
-                         translate: {}) -> []:
+                         translate: {},
+                         sharedItemsFederatedDomains: []) -> []:
     """get any shares and turn them into the left column links format
     """
     pageNumber = 1
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber,
-                           maxSharesInLeftColumn,
-                           baseDir, maxSharesInLeftColumn)
+        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
+                           baseDir, maxSharesInLeftColumn,
+                           sharedItemsFederatedDomains)
     if not sharesJson:
         return []
 
@@ -69,7 +70,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool, theme: str,
-                         accessKeys: {}) -> str:
+                         accessKeys: {},
+                         sharedItemsFederatedDomains: []) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -159,7 +161,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         sharesList = \
             _getLeftColumnShares(baseDir,
                                  httpPrefix, domainFull, nickname,
-                                 maxSharesInLeftColumn, translate)
+                                 maxSharesInLeftColumn, translate,
+                                 sharedItemsFederatedDomains)
         if linksList and sharesList:
             linksList = sharesList + linksList
 
@@ -272,7 +275,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     rssIconAtTop: bool,
                     iconsAsButtons: bool,
                     defaultTimeline: str,
-                    theme: str, accessKeys: {}) -> str:
+                    theme: str, accessKeys: {},
+                    sharedItemsFederatedDomains: []) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -314,7 +318,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False,
-                                 theme, accessKeys)
+                                 theme, accessKeys,
+                                 sharedItemsFederatedDomains)
     else:
         if editor:
             htmlStr += '<br><br><br>\n<center>\n  '

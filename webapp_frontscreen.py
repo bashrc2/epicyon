@@ -99,6 +99,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     allowLocalNetworkAccess: bool,
                     accessKeys: {},
                     systemLanguage: str,
+                    sharedItemsFederatedDomains: [],
                     extraJson: {} = None,
                     pageNumber: int = None,
                     maxItemsPerPage: int = None) -> str:
@@ -143,7 +144,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False, None, rssIconAtTop, True,
-                             True, theme, accessKeys)
+                             True, theme, accessKeys,
+                             sharedItemsFederatedDomains)
     profileHeaderStr += \
         '      </td>\n' + \
         '      <td valign="top" class="col-center">\n'

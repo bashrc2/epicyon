@@ -7665,6 +7665,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.sharedItemsFederatedDomains,
                                     rolesList,
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -7740,6 +7741,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 city = getSpoofedCity(self.server.city,
                                                       baseDir,
                                                       nickname, domain)
+                                sharedItemsFederatedDomains = \
+                                    self.server.sharedItemsFederatedDomains
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7765,6 +7768,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.debug,
                                                 accessKeys, city,
                                                 self.server.systemLanguage,
+                                                sharedItemsFederatedDomains,
                                                 skills,
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -8076,6 +8080,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = htmlInbox(self.server.cssCache,
                                         defaultTimeline,
                                         recentPostsCache,
@@ -8109,7 +8115,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.allowLocalNetworkAccess,
                                         self.server.textModeBanner,
                                         accessKeys,
-                                        self.server.systemLanguage)
+                                        self.server.systemLanguage,
+                                        sharedItemsFederatedDomains)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -8213,6 +8220,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -8246,7 +8255,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.allowLocalNetworkAccess,
                                          self.server.textModeBanner,
                                          accessKeys,
-                                         self.server.systemLanguage)
+                                         self.server.systemLanguage,
+                                         sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8343,6 +8353,8 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
 
+                    sharedItemsFederatedDomains = \
+                        self.server.sharedItemsFederatedDomains
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -8376,7 +8388,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.allowLocalNetworkAccess,
                                          self.server.textModeBanner,
                                          accessKeys,
-                                         self.server.systemLanguage)
+                                         self.server.systemLanguage,
+                                         sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8507,7 +8520,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allowLocalNetworkAccess,
                                        self.server.textModeBanner,
                                        accessKeys,
-                                       self.server.systemLanguage)
+                                       self.server.systemLanguage,
+                                       self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8638,7 +8652,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allowLocalNetworkAccess,
                                        self.server.textModeBanner,
                                        accessKeys,
-                                       self.server.systemLanguage)
+                                       self.server.systemLanguage,
+                                       self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8778,7 +8793,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.allowLocalNetworkAccess,
                                       self.server.textModeBanner,
                                       accessKeys,
-                                      self.server.systemLanguage)
+                                      self.server.systemLanguage,
+                                      self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8880,6 +8896,8 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
 
+                    sharedItemsFederatedDomains = \
+                        self.server.sharedItemsFederatedDomains
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -8914,7 +8932,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.allowLocalNetworkAccess,
                                           self.server.textModeBanner,
                                           accessKeys,
-                                          self.server.systemLanguage)
+                                          self.server.systemLanguage,
+                                          sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9011,7 +9030,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowLocalNetworkAccess,
                                    self.server.textModeBanner,
                                    accessKeys,
-                                   self.server.systemLanguage)
+                                   self.server.systemLanguage,
+                                   self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9091,6 +9111,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -9125,7 +9147,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.allowLocalNetworkAccess,
                                           self.server.textModeBanner,
                                           accessKeys,
-                                          self.server.systemLanguage)
+                                          self.server.systemLanguage,
+                                          sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -9252,7 +9275,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.allowLocalNetworkAccess,
                                self.server.textModeBanner,
                                accessKeys,
-                               self.server.systemLanguage)
+                               self.server.systemLanguage,
+                               self.server.sharedItemsFederatedDomains)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -9335,6 +9359,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
@@ -9368,7 +9394,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.allowLocalNetworkAccess,
                                            self.server.textModeBanner,
                                            accessKeys,
-                                           self.server.systemLanguage)
+                                           self.server.systemLanguage,
+                                           sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -9485,6 +9512,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.sharedItemsFederatedDomains,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -9599,6 +9627,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.sharedItemsFederatedDomains,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9713,6 +9742,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.sharedItemsFederatedDomains,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9850,6 +9880,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug,
                             accessKeys, city,
                             self.server.systemLanguage,
+                            self.server.sharedItemsFederatedDomains,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -11901,6 +11932,8 @@ class PubServer(BaseHTTPRequestHandler):
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 iconsAsButtons = self.server.iconsAsButtons
                 defaultTimeline = self.server.defaultTimeline
+                sharedItemsDomains = \
+                    self.server.sharedItemsFederatedDomains
                 msg = htmlLinksMobile(self.server.cssCache,
                                       self.server.baseDir, nickname,
                                       self.server.domainFull,
@@ -11912,7 +11945,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       iconsAsButtons,
                                       defaultTimeline,
                                       self.server.themeName,
-                                      accessKeys).encode('utf-8')
+                                      accessKeys,
+                                      sharedItemsDomains).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)

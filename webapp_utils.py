@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from collections import OrderedDict
 from session import getJson
+from utils import isAccountDir
 from utils import removeHtml
 from utils import getImageExtensions
 from utils import getProtocolPrefixes
@@ -331,7 +332,8 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 
 
 def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
-                       baseDir: str, maxSharesPerAccount: int) -> ({}, bool):
+                       baseDir: str, maxSharesPerAccount: int,
+                       sharedItemsFederatedDomains: []) -> ({}, bool):
     """Get a page on the shared items timeline as json
     maxSharesPerAccount helps to avoid one person dominating the timeline
     by sharing a large number of things
@@ -339,7 +341,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     allSharesJson = {}
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
+            if not isAccountDir(handle):
                 continue
             accountDir = baseDir + '/accounts/' + handle
             sharesFilename = accountDir + '/shares.json'
@@ -360,6 +362,30 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                 if ctr >= maxSharesPerAccount:
                     break
         break
+    catalogsDir = baseDir + '/cache/catalogs'
+    if os.path.isdir(catalogsDir):
+        for subdir, dirs, files in os.walk(catalogsDir):
+            for f in files:
+                if '#' in f:
+                    continue
+                if not f.endswith('.shares.json'):
+                    continue
+                federatedDomain = f.split('.')[0]
+                if federatedDomain not in sharedItemsFederatedDomains:
+                    continue
+                sharesFilename = catalogsDir + '/' + f
+                sharesJson = loadJson(sharesFilename)
+                if not sharesJson:
+                    continue
+                ctr = 0
+                for itemID, item in sharesJson.items():
+                    # assign owner to the item
+                    item['actor'] = itemID.split('/shareditems/')[0]
+                    allSharesJson[str(item['published'])] = item
+                    ctr += 1
+                    if ctr >= maxSharesPerAccount:
+                        break
+            break
     # sort the shared items in descending order of publication date
     sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
     lastPage = False

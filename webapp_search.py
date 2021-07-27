@@ -316,6 +316,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     if currPage <= pageNumber and os.path.isdir(catalogsDir):
         for subdir, dirs, files in os.walk(catalogsDir):
             for f in files:
+                if '#' in f:
+                    continue
                 if not f.endswith('.shares.json'):
                     continue
                 federatedDomain = f.split('.')[0]

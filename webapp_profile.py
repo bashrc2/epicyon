@@ -455,6 +455,7 @@ def htmlProfile(rssIconAtTop: bool,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
                 systemLanguage: str,
+                sharedItemsFederatedDomains: [],
                 extraJson: {} = None, pageNumber: int = None,
                 maxItemsPerPage: int = None) -> str:
     """Show the profile page as html
@@ -476,6 +477,7 @@ def htmlProfile(rssIconAtTop: bool,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
                                systemLanguage,
+                               sharedItemsFederatedDomains,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])
