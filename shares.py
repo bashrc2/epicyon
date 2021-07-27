@@ -1291,8 +1291,14 @@ def _dfcToSharesFormat(catalogJson: {},
             # has expired
             continue
 
-        hasType = item['DFC:hasType'].split(':')[1]
-        itemType = _getshareTypeFromDfcId(hasType, dfcIds)
+        if item['DFC:hasType'].startswith('epicyon:'):
+            itemType = item['DFC:hasType'].split(':')[1]
+            itemType = itemType.replace('_', ' ')
+            itemCategory = 'non-food'
+        else:
+            hasType = item['DFC:hasType'].split(':')[1]
+            itemType = _getshareTypeFromDfcId(hasType, dfcIds)
+            itemCategory = 'food'
         if not itemType:
             continue
         dfcId = dfcIds[itemType]
@@ -1305,7 +1311,7 @@ def _dfcToSharesFormat(catalogJson: {},
             "itemQty": item['DFC:quantity'],
             "dfcId": dfcId,
             "itemType": itemType,
-            "category": "food",
+            "category": itemCategory,
             "location": "",
             "published": item['DFC:startDate'],
             "expire": durationSec,
