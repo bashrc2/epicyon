@@ -1155,7 +1155,7 @@ def endEditSection() -> str:
 
 
 def editTextField(label: str, name: str, value: str = "",
-                  placeholder: str = "") -> str:
+                  placeholder: str = "", required: bool = False) -> str:
     """Returns html for editing a text field
     """
     if value is None:
@@ -1163,10 +1163,13 @@ def editTextField(label: str, name: str, value: str = "",
     placeholderStr = ''
     if placeholder:
         placeholderStr = ' placeholder="' + placeholder + '"'
+    requiredStr = ''
+    if required:
+        requiredStr = ' required'
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="text" name="' + name + '" value="' + \
-        value + '"' + placeholderStr + '>\n'
+        value + '"' + placeholderStr + requiredStr + '>\n'
 
 
 def editNumberField(label: str, name: str, value: int = 1,

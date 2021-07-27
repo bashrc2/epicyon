@@ -360,9 +360,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                             'itemQty', 1, 1, 999999, 1)
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
-                          'itemType', '')
+                          'itemType', '', '', True)
         catStr = translate['Category of shared item. eg. clothing']
-        extraFields += editTextField(catStr + ':', 'category', '')
+        extraFields += editTextField(catStr + ':', 'category', '', '', True)
         extraFields += '<br>'
         extraFields += \
             editNumberField(translate['Duration of listing in days'],
