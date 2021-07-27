@@ -169,16 +169,25 @@ def _htmlSearchResultShare(sharedItem: {}, translate: {},
     return sharedItemsForm
 
 
-def _htmlSearchResultSharePrev(actor: str, domainFull: str,
+def _htmlSearchResultSharePage(actor: str, domainFull: str,
                                callingDomain: str, pageNumber: int,
-                               searchStrLower: str, translate: {}) -> str:
+                               searchStrLower: str, translate: {},
+                               previous: bool) -> str:
     """Returns the html for the previous button on shared items search results
     """
     postActor = getAltPath(actor, domainFull, callingDomain)
     # previous page link, needs to be a POST
+    if previous:
+        pageNumber -= 1
+        titleStr = translate['Page up']
+        imageUrl = 'pageup.png'
+    else:
+        pageNumber += 1
+        titleStr = translate['Page down']
+        imageUrl = 'pagedown.png'
     sharedItemsForm = \
         '<form method="POST" action="' + postActor + '/searchhandle?page=' + \
-        str(pageNumber - 1) + '">\n'
+        str(pageNumber) + '">\n'
     sharedItemsForm += \
         '  <input type="hidden" ' + 'name="actor" value="' + actor + '">\n'
     sharedItemsForm += \
@@ -189,8 +198,8 @@ def _htmlSearchResultSharePrev(actor: str, domainFull: str,
         '" type="submit" name="submitSearch">\n'
     sharedItemsForm += \
         '    <img loading="lazy" ' + 'class="pageicon" src="/icons' + \
-        '/pageup.png" title="' + translate['Page up'] + \
-        '" alt="' + translate['Page up'] + '"/></a>\n'
+        '/' + imageUrl + '" title="' + titleStr + \
+        '" alt="' + titleStr + '"/></a>\n'
     sharedItemsForm += '  </center>\n'
     sharedItemsForm += '</form>\n'
     return sharedItemsForm
@@ -249,47 +258,25 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                                    contactNickname,
                                                    name, actor)
                         if not resultsExist and currPage > 1:
-                            # show the previous button
+                            # show the previous page button
                             sharedItemsForm += \
-                                _htmlSearchResultSharePrev(actor, domainFull,
+                                _htmlSearchResultSharePage(actor, domainFull,
                                                            callingDomain,
                                                            pageNumber,
                                                            searchStrLower,
-                                                           translate)
+                                                           translate, True)
                         resultsExist = True
                     ctr += 1
                     if ctr >= resultsPerPage:
                         currPage += 1
                         if currPage > pageNumber:
-                            postActor = \
-                                getAltPath(actor, domainFull,
-                                           callingDomain)
-                            # next page link, needs to be a POST
+                            # show the next page button
                             sharedItemsForm += \
-                                '<form method="POST" action="' + \
-                                postActor + \
-                                '/searchhandle?page=' + \
-                                str(pageNumber + 1) + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="actor" value="' + actor + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="searchtext" value="' + \
-                                searchStrLower + '"><br>\n'
-                            sharedItemsForm += \
-                                '  <center>\n' + \
-                                '    <a href="' + actor + \
-                                '" type="submit" name="submitSearch">\n'
-                            sharedItemsForm += \
-                                '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/icons' + \
-                                '/pagedown.png" title="' + \
-                                translate['Page down'] + \
-                                '" alt="' + translate['Page down'] + \
-                                '"/></a>\n'
-                            sharedItemsForm += '  </center>\n'
-                            sharedItemsForm += '</form>\n'
+                                _htmlSearchResultSharePage(actor, domainFull,
+                                                           callingDomain,
+                                                           pageNumber,
+                                                           searchStrLower,
+                                                           translate, False)
                             break
                         ctr = 0
         break
