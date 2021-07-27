@@ -205,6 +205,52 @@ def _htmlSearchResultSharePage(actor: str, domainFull: str,
     return sharedItemsForm
 
 
+def _htmlSharesResult(sharesJson: {}, pageNumber: int, resultsPerPage: int,
+                      searchStrLowerList: [], currPage: int, ctr: int,
+                      callingDomain: str, httpPrefix: str, domainFull: str,
+                      contactNickname: str, actor: str,
+                      resultsExist: bool, searchStrLower: str,
+                      translate: {}) -> (bool, int, int, str):
+    """
+    """
+    sharedItemsForm = ''
+    if currPage > pageNumber:
+        return resultsExist, currPage, ctr, sharedItemsForm
+
+    for name, sharedItem in sharesJson.items():
+        if _matchSharedItem(searchStrLowerList, sharedItem):
+            if currPage == pageNumber:
+                # show individual search result
+                sharedItemsForm += \
+                    _htmlSearchResultShare(sharedItem, translate,
+                                           httpPrefix, domainFull,
+                                           contactNickname,
+                                           name, actor)
+                if not resultsExist and currPage > 1:
+                    # show the previous page button
+                    sharedItemsForm += \
+                        _htmlSearchResultSharePage(actor, domainFull,
+                                                   callingDomain,
+                                                   pageNumber,
+                                                   searchStrLower,
+                                                   translate, True)
+                resultsExist = True
+            ctr += 1
+            if ctr >= resultsPerPage:
+                currPage += 1
+                if currPage > pageNumber:
+                    # show the next page button
+                    sharedItemsForm += \
+                        _htmlSearchResultSharePage(actor, domainFull,
+                                                   callingDomain,
+                                                   pageNumber,
+                                                   searchStrLower,
+                                                   translate, False)
+                    return resultsExist, currPage, ctr, sharedItemsForm
+                ctr = 0
+    return resultsExist, currPage, ctr, sharedItemsForm
+
+
 def htmlSearchSharedItems(cssCache: {}, translate: {},
                           baseDir: str, searchStr: str,
                           pageNumber: int,
@@ -248,37 +294,20 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
             if not sharesJson:
                 continue
 
-            for name, sharedItem in sharesJson.items():
-                if _matchSharedItem(searchStrLowerList, sharedItem):
-                    if currPage == pageNumber:
-                        # show individual search result
-                        sharedItemsForm += \
-                            _htmlSearchResultShare(sharedItem, translate,
-                                                   httpPrefix, domainFull,
-                                                   contactNickname,
-                                                   name, actor)
-                        if not resultsExist and currPage > 1:
-                            # show the previous page button
-                            sharedItemsForm += \
-                                _htmlSearchResultSharePage(actor, domainFull,
-                                                           callingDomain,
-                                                           pageNumber,
-                                                           searchStrLower,
-                                                           translate, True)
-                        resultsExist = True
-                    ctr += 1
-                    if ctr >= resultsPerPage:
-                        currPage += 1
-                        if currPage > pageNumber:
-                            # show the next page button
-                            sharedItemsForm += \
-                                _htmlSearchResultSharePage(actor, domainFull,
-                                                           callingDomain,
-                                                           pageNumber,
-                                                           searchStrLower,
-                                                           translate, False)
-                            break
-                        ctr = 0
+            (resultsExist, currPage, ctr,
+             resultStr) = _htmlSharesResult(sharesJson, pageNumber,
+                                            resultsPerPage,
+                                            searchStrLowerList,
+                                            currPage, ctr,
+                                            callingDomain, httpPrefix,
+                                            domainFull,
+                                            contactNickname,
+                                            actor, resultsExist,
+                                            searchStrLower, translate)
+            sharedItemsForm += resultStr
+
+            if currPage > pageNumber:
+                break
         break
     if not resultsExist:
         sharedItemsForm += \
