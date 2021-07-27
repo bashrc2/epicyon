@@ -11267,7 +11267,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.translate,
                                               self.server.baseDir,
                                               actor, shareName,
-                                              callingDomain).encode('utf-8')
+                                              callingDomain)
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -11278,7 +11278,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/tlshares',
                                        cookie, callingDomain)
                 return
-            msglen = len(msg)
+            msglen = len(msg.encode('utf-8'))
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
             self._write(msg)
