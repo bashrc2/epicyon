@@ -381,7 +381,8 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                     ctr = 0
                     for itemID, item in sharesJson.items():
                         # assign owner to the item
-                        item['actor'] = itemID.split('/shareditems/')[0]
+                        item['actor'] = \
+                            itemID.split('#shareditems#')[0].replace('#', '/')
                         allSharesJson[str(item['published'])] = item
                         ctr += 1
                         if ctr >= maxSharesPerAccount:

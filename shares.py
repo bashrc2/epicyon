@@ -83,7 +83,7 @@ def getValidSharedItemID(actor: str, displayName: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
-    removeChars = (' ', '\n', '\r')
+    removeChars = (' ', '\n', '\r', '#')
     for ch in removeChars:
         displayName = displayName.replace(ch, '')
     removeChars2 = ('+', '/', '\\', '?', '&')
@@ -91,7 +91,7 @@ def getValidSharedItemID(actor: str, displayName: str) -> str:
         displayName = displayName.replace(ch, '-')
     displayName = displayName.replace('.', '_')
     displayName = displayName.replace("’", "'")
-    return actor + '/shareditems/' + displayName
+    return actor.replace('/', '#') + '#shareditems#' + displayName
 
 
 def removeSharedItem(baseDir: str, nickname: str, domain: str,
