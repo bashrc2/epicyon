@@ -828,7 +828,7 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
     if item.get('itemQty'):
         profileStr += \
             '<b>' + translate['Quantity'] + ':</b> ' + \
-            str(item['itemQty']) + ' '
+            str(item['itemQty']) + '<br>'
     profileStr += \
         '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + ' '
     profileStr += \

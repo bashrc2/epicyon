@@ -293,8 +293,8 @@ def addShare(baseDir: str,
         "location": location,
         "published": published,
         "expire": durationSec,
-        "price": price,
-        "currency": currency
+        "itemPrice": price,
+        "itemCurrency": currency
     }
 
     saveJson(sharesJson, sharesFilename)
@@ -1296,7 +1296,7 @@ def _dfcToSharesFormat(catalogJson: {},
             "location": "",
             "published": item['DFC:startDate'],
             "expire": durationSec,
-            "price": item['DFC:price'].split(' ')[0],
-            "currency": item['DFC:price'].split(' ')[1]
+            "itemPrice": item['DFC:price'].split(' ')[0],
+            "itemCurrency": item['DFC:price'].split(' ')[1]
         }
     return sharesJson
