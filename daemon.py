@@ -13790,21 +13790,29 @@ class PubServer(BaseHTTPRequestHandler):
                 return -1
             elif postType == 'newshare':
                 if not fields.get('itemQty'):
+                    print(postType + ' no itemQty')
                     return -1
                 if not fields.get('itemType'):
+                    print(postType + ' no itemType')
                     return -1
                 if not fields.get('itemPrice'):
+                    print(postType + ' no itemPrice')
                     return -1
                 if not fields.get('itemCurrency'):
+                    print(postType + ' no itemCurrency')
                     return -1
                 if not fields.get('category'):
+                    print(postType + ' no category')
                     return -1
                 if not fields.get('location'):
+                    print(postType + ' no location')
                     return -1
                 if not fields.get('duration'):
+                    print(postType + ' no duratio')
                     return -1
                 if attachmentMediaType:
                     if attachmentMediaType != 'image':
+                        print('Attached media is not an image')
                         return -1
                 durationStr = fields['duration']
                 if durationStr:
@@ -13825,6 +13833,7 @@ class PubServer(BaseHTTPRequestHandler):
                 itemCurrency = "EUR"
                 if fields['itemCurrency']:
                     itemCurrency = fields['itemCurrency']
+                print('Adding shared item')
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
