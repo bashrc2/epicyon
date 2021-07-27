@@ -813,7 +813,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     return tlStr
 
 
-def htmlIndividualShare(actor: str, item: {}, translate: {},
+def htmlIndividualShare(domain: str, shareId: str,
+                        actor: str, item: {}, translate: {},
                         showContact: bool, removeButton: bool) -> str:
     """Returns an individual shared item as html
     """
@@ -854,9 +855,9 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
                 '?replydm=sharedesc:' + sharedesc + \
                 '?mention=' + contactActor + '"><button class="button">' + \
                 translate['Contact'] + '</button></a>\n'
-        if removeButton:
+        if removeButton and domain in shareId:
             profileStr += \
-                ' <a href="' + actor + '?rmshare=' + sharedesc + \
+                ' <a href="' + actor + '?rmshare=' + shareId + \
                 '"><button class="button">' + \
                 translate['Remove'] + '</button></a>\n'
     profileStr += '</div>\n'
@@ -898,7 +899,8 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         if item['actor'] == actor:
             showRemoveButton = True
         timelineStr += \
-            htmlIndividualShare(actor, item, translate,
+            htmlIndividualShare(domain, item['shareId'],
+                                actor, item, translate,
                                 showContactButton, showRemoveButton)
         timelineStr += separatorStr
         ctr += 1

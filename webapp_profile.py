@@ -1013,7 +1013,8 @@ def _htmlProfileShares(actor: str, translate: {},
     """
     profileStr = ''
     for item in sharesJson['orderedItems']:
-        profileStr += htmlIndividualShare(actor, item, translate, False, False)
+        profileStr += htmlIndividualShare(domain, item['shareId'],
+                                          actor, item, translate, False, False)
     if len(profileStr) > 0:
         profileStr = '<div class="share-title">' + profileStr + '</div>\n'
     return profileStr
