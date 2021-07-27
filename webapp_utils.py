@@ -1195,7 +1195,7 @@ def editCurrencyField(label: str, name: str, value: str = "0.00",
     """
     if value is None:
         value = '0.00'
-    placeholderStr = '0.00'
+    placeholderStr = ''
     if placeholder:
         if placeholder.isdigit():
             placeholderStr = ' placeholder="' + str(placeholder) + '"'
