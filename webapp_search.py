@@ -257,7 +257,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           resultsPerPage: int,
                           httpPrefix: str,
                           domainFull: str, actor: str,
-                          callingDomain: str) -> str:
+                          callingDomain: str,
+                          sharedItemsFederatedDomains: []) -> str:
     """Search results for shared items
     """
     currPage = 1
@@ -309,6 +310,38 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
             if currPage > pageNumber:
                 break
         break
+
+    # search federated shared items
+    catalogsDir = baseDir + '/cache/catalogs'
+    if currPage <= pageNumber and os.path.isdir(catalogsDir):
+        for subdir, dirs, files in os.walk(catalogsDir):
+            for f in files:
+                if not f.endswith('.json'):
+                    continue
+                federatedDomain = f.split('.')[0]
+                if federatedDomain not in sharedItemsFederatedDomains:
+                    continue
+                sharesFilename = catalogsDir + '/' + f
+                sharesJson = loadJson(sharesFilename)
+                if not sharesJson:
+                    continue
+
+                (resultsExist, currPage, ctr,
+                 resultStr) = _htmlSharesResult(sharesJson, pageNumber,
+                                                resultsPerPage,
+                                                searchStrLowerList,
+                                                currPage, ctr,
+                                                callingDomain, httpPrefix,
+                                                domainFull,
+                                                contactNickname,
+                                                actor, resultsExist,
+                                                searchStrLower, translate)
+                sharedItemsForm += resultStr
+
+                if currPage > pageNumber:
+                    break
+            break
+
     if not resultsExist:
         sharedItemsForm += \
             '<center><h5>' + translate['No results'] + '</h5></center>\n'

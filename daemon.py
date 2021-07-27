@@ -3137,6 +3137,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             else:
                 # shared items search
+                sharedItemsFederatedDomains = \
+                    self.server.sharedItemsFederatedDomains
                 sharedItemsStr = \
                     htmlSearchSharedItems(self.server.cssCache,
                                           self.server.translate,
@@ -3145,7 +3147,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInFeed,
                                           httpPrefix,
                                           domainFull,
-                                          actorStr, callingDomain)
+                                          actorStr, callingDomain,
+                                          sharedItemsFederatedDomains)
                 if sharedItemsStr:
                     msg = sharedItemsStr.encode('utf-8')
                     msglen = len(msg)
