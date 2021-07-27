@@ -1203,7 +1203,7 @@ def editCurrencyField(label: str, name: str, value: str = "0.00",
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="text" name="' + name + '" value="' + \
         str(value) + '"' + placeholderStr + ' ' + \
-        '" pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency">\n'
+        ' pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency">\n'
 
 
 def editCheckBox(label: str, name: str, checked: bool = False) -> str:
