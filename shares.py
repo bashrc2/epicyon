@@ -835,7 +835,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
         shareId = getValidSharedItemID(owner, item['displayName'])
         dfcId = item['dfcId'].split('#')[1]
-        priceStr = item['itemPrice'] + ' ' + item['currency']
+        priceStr = item['itemPrice'] + ' ' + item['itemCurrency']
         catalogItem = {
             "@id": shareId,
             "@type": "DFC:SuppliedProduct",
@@ -919,7 +919,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
 
                 shareId = getValidSharedItemID(owner, item['displayName'])
                 dfcId = item['dfcId'].split('#')[1]
-                priceStr = item['itemPrice'] + ' ' + item['currency']
+                priceStr = item['itemPrice'] + ' ' + item['itemCurrency']
                 catalogItem = {
                     "@id": shareId,
                     "@type": "DFC:SuppliedProduct",
