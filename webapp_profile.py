@@ -1358,8 +1358,8 @@ def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
     editProfileForm = beginEditSection(translate['Shares'])
     idx = 'List of domains which can access the shared items catalog'
     editProfileForm += \
-        editTextArea(translate[idx], 'shareDomainList', sharedItemsStr,
-                     200, '', False)
+        editTextArea(translate[idx], 'shareDomainList',
+                     sharedItemsStr, 200, '', False)
     editProfileForm += endEditSection()
     return editProfileForm
 
