@@ -1220,7 +1220,6 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         with open(counselorsFile, 'r') as f:
             counselors = f.read()
     roleAssignStr += \
-        '  <b>' + \
         editTextArea(translate['Counselors'], 'counselors', counselors,
                      200, '', False)
 
@@ -1231,7 +1230,6 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         with open(artistsFile, 'r') as f:
             artists = f.read()
     roleAssignStr += \
-        '  <b>' + \
         editTextArea(translate['Artists'], 'artists', artists,
                      200, '', False)
     roleAssignStr += endEditSection()
