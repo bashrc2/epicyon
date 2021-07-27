@@ -108,8 +108,9 @@ def _matchSharedItem(searchStrLowerList: [],
     """
     for searchSubstr in searchStrLowerList:
         searchSubstr = searchSubstr.strip()
-        if searchSubstr in sharedItem['location'].lower():
-            return True
+        if sharedItem.get('location'):
+            if searchSubstr in sharedItem['location'].lower():
+                return True
         elif searchSubstr in sharedItem['summary'].lower():
             return True
         elif searchSubstr in sharedItem['displayName'].lower():
@@ -143,8 +144,9 @@ def _htmlSearchResultShare(sharedItem: {}, translate: {},
         '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + ' '
     sharedItemsForm += \
         '<b>' + translate['Category'] + ':</b> ' + sharedItem['category'] + ' '
-    sharedItemsForm += \
-        '<b>' + translate['Location'] + ':</b> ' + sharedItem['location']
+    if sharedItem.get('location'):
+        sharedItemsForm += \
+            '<b>' + translate['Location'] + ':</b> ' + sharedItem['location']
     if sharedItem.get('itemPrice') and \
        sharedItem.get('itemCurrency'):
         if isfloat(sharedItem['itemPrice']):
