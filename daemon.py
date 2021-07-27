@@ -4834,16 +4834,17 @@ class PubServer(BaseHTTPRequestHandler):
                             sharedItemsFederatedDomainsStr = \
                                 getConfigParam(baseDir,
                                                "sharedItemsFederatedDomains")
+                            if not sharedItemsFederatedDomainsStr:
+                                sharedItemsFederatedDomainsStr = ''
                             sharedItemsFormStr = ''
-                            if sharedItemsFederatedDomainsStr and \
-                               fields.get('shareDomainList'):
+                            if fields.get('shareDomainList'):
                                 sharedItemsList = \
                                     sharedItemsFederatedDomainsStr.split(',')
                                 for sharedFederatedDomain in sharedItemsList:
                                     sharedItemsFormStr += \
                                         sharedFederatedDomain.strip() + '\n'
 
-                                if fields.get('shareDomainList') != \
+                                if fields['shareDomainList'] != \
                                    sharedItemsFormStr:
                                     sharedItemsFormStr2 = \
                                         sharedItemsFormStr.replace('\n', ',')
@@ -4853,8 +4854,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    sharedItemsFormStr2)
                                     siDomainUpdated = True
                             else:
-                                if not fields.get('shareDomainList') and \
-                                   sharedItemsFederatedDomainsStr:
+                                if sharedItemsFederatedDomainsStr:
                                     sharedItemsField = \
                                         "sharedItemsFederatedDomains"
                                     setConfigParam(baseDir, sharedItemsField,
