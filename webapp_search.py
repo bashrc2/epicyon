@@ -119,6 +119,56 @@ def _matchSharedItem(searchStrLowerList: [],
     return False
 
 
+def _htmlSearchResultShare(sharedItem: {}, translate: {},
+                           httpPrefix: str, domainFull: str,
+                           contactNickname: str, name: str,
+                           actor: str) -> str:
+    """Returns the html for an individual shared item
+    """
+    sharedItemsForm = '<div class="container">\n'
+    sharedItemsForm += \
+        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
+    if sharedItem.get('imageUrl'):
+        sharedItemsForm += \
+            '<a href="' + sharedItem['imageUrl'] + '">\n'
+        sharedItemsForm += \
+            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
+            '" alt="Item image"></a>\n'
+    sharedItemsForm += '<p>' + sharedItem['summary'] + '</p>\n<p>'
+    if sharedItem.get('itemQty'):
+        sharedItemsForm += \
+            '<b>' + translate['Quantity'] + \
+            ':</b> ' + str(sharedItem['itemQty']) + ' '
+    sharedItemsForm += \
+        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + ' '
+    sharedItemsForm += \
+        '<b>' + translate['Category'] + ':</b> ' + sharedItem['category'] + ' '
+    sharedItemsForm += \
+        '<b>' + translate['Location'] + ':</b> ' + sharedItem['location']
+    if sharedItem.get('itemPrice') and \
+       sharedItem.get('itemCurrency'):
+        if isfloat(sharedItem['itemPrice']):
+            if float(sharedItem['itemPrice']) > 0:
+                sharedItemsForm += \
+                    ' <b>' + translate['Price'] + \
+                    ':</b> ' + sharedItem['itemPrice'] + \
+                    ' ' + sharedItem['itemCurrency']
+    sharedItemsForm += '</p>\n'
+    contactActor = \
+        httpPrefix + '://' + domainFull + '/users/' + contactNickname
+    sharedItemsForm += \
+        '<p><a href="' + actor + '?replydm=sharedesc:' + \
+        sharedItem['displayName'] + '?mention=' + contactActor + \
+        '"><button class="button">' + translate['Contact'] + '</button></a>\n'
+    if actor.endswith('/users/' + contactNickname):
+        sharedItemsForm += \
+            ' <a href="' + actor + '?rmshare=' + \
+            name + '"><button class="button">' + \
+            translate['Remove'] + '</button></a>\n'
+    sharedItemsForm += '</p></div>\n'
+    return sharedItemsForm
+
+
 def htmlSearchSharedItems(cssCache: {}, translate: {},
                           baseDir: str, searchStr: str,
                           pageNumber: int,
@@ -165,58 +215,11 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
             for name, sharedItem in sharesJson.items():
                 if _matchSharedItem(searchStrLowerList, sharedItem):
                     if currPage == pageNumber:
-                        sharedItemsForm += '<div class="container">\n'
                         sharedItemsForm += \
-                            '<p class="share-title">' + \
-                            sharedItem['displayName'] + '</p>\n'
-                        if sharedItem.get('imageUrl'):
-                            sharedItemsForm += \
-                                '<a href="' + \
-                                sharedItem['imageUrl'] + '">\n'
-                            sharedItemsForm += \
-                                '<img loading="lazy" src="' + \
-                                sharedItem['imageUrl'] + \
-                                '" alt="Item image"></a>\n'
-                        sharedItemsForm += \
-                            '<p>' + sharedItem['summary'] + '</p>\n<p>'
-                        if sharedItem.get('itemQty'):
-                            sharedItemsForm += \
-                                '<b>' + translate['Quantity'] + \
-                                ':</b> ' + str(sharedItem['itemQty']) + ' '
-                        sharedItemsForm += \
-                            '<b>' + translate['Type'] + \
-                            ':</b> ' + sharedItem['itemType'] + ' '
-                        sharedItemsForm += \
-                            '<b>' + translate['Category'] + \
-                            ':</b> ' + sharedItem['category'] + ' '
-                        sharedItemsForm += \
-                            '<b>' + translate['Location'] + \
-                            ':</b> ' + sharedItem['location']
-                        if sharedItem.get('itemPrice') and \
-                           sharedItem.get('itemCurrency'):
-                            if isfloat(sharedItem['itemPrice']):
-                                if float(sharedItem['itemPrice']) > 0:
-                                    sharedItemsForm += \
-                                        ' <b>' + translate['Price'] + \
-                                        ':</b> ' + sharedItem['itemPrice'] + \
-                                        ' ' + sharedItem['itemCurrency']
-                        sharedItemsForm += '</p>\n'
-                        contactActor = \
-                            httpPrefix + '://' + domainFull + \
-                            '/users/' + contactNickname
-                        sharedItemsForm += \
-                            '<p><a href="' + actor + \
-                            '?replydm=sharedesc:' + \
-                            sharedItem['displayName'] + \
-                            '?mention=' + contactActor + \
-                            '"><button class="button">' + \
-                            translate['Contact'] + '</button></a>\n'
-                        if actor.endswith('/users/' + contactNickname):
-                            sharedItemsForm += \
-                                ' <a href="' + actor + '?rmshare=' + \
-                                name + '"><button class="button">' + \
-                                translate['Remove'] + '</button></a>\n'
-                        sharedItemsForm += '</p></div>\n'
+                            _htmlSearchResultShare(sharedItem, translate,
+                                                   httpPrefix, domainFull,
+                                                   contactNickname,
+                                                   name, actor)
                         if not resultsExist and currPage > 1:
                             postActor = \
                                 getAltPath(actor, domainFull,
