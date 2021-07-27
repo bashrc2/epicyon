@@ -1190,7 +1190,8 @@ def editNumberField(label: str, name: str, value: int = 1,
 
 
 def editCurrencyField(label: str, name: str, value: str = "0.00",
-                      placeholder: str = "0.00") -> str:
+                      placeholder: str = "0.00",
+                      required: bool = False) -> str:
     """Returns html for editing a currency field
     """
     if value is None:
@@ -1199,11 +1200,15 @@ def editCurrencyField(label: str, name: str, value: str = "0.00",
     if placeholder:
         if placeholder.isdigit():
             placeholderStr = ' placeholder="' + str(placeholder) + '"'
+    requiredStr = ''
+    if required:
+        requiredStr = ' required'
     return \
         '<label class="labels">' + label + '</label><br>\n' + \
         '      <input type="text" name="' + name + '" value="' + \
         str(value) + '"' + placeholderStr + ' ' + \
-        ' pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency">\n'
+        ' pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency"' + \
+        requiredStr + '>\n'
 
 
 def editCheckBox(label: str, name: str, checked: bool = False) -> str:
