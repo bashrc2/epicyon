@@ -137,9 +137,10 @@ def _htmlSearchResultShare(sharedItem: {}, translate: {},
             '" alt="Item image"></a>\n'
     sharedItemsForm += '<p>' + sharedItem['summary'] + '</p>\n<p>'
     if sharedItem.get('itemQty'):
-        sharedItemsForm += \
-            '<b>' + translate['Quantity'] + \
-            ':</b> ' + str(sharedItem['itemQty']) + '<br>'
+        if sharedItem['itemQty'] > 1:
+            sharedItemsForm += \
+                '<b>' + translate['Quantity'] + \
+                ':</b> ' + str(sharedItem['itemQty']) + '<br>'
     sharedItemsForm += \
         '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
     sharedItemsForm += \
