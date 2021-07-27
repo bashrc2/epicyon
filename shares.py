@@ -1011,19 +1011,15 @@ def mergeSharedItemTokens(baseDir: str, domain: str,
     """
     removals = []
     changed = False
-    print('Test 46237')
     for tokenDomain, tok in tokensJson.items():
-        print('tokenDomain: ' + tokenDomain)
         if domain:
             if tokenDomain.startswith(domain):
                 continue
         if tokenDomain not in newSharedItemsFederatedDomains:
             removals.append(tokenDomain)
-            print('remove ' + tokenDomain)
     # remove domains no longer in the federation list
     for tokenDomain in removals:
         del tokensJson[tokenDomain]
-        print('removing ' + tokenDomain)
         changed = True
     # add new domains from the federation list
     for tokenDomain in newSharedItemsFederatedDomains:
@@ -1131,26 +1127,26 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
     asHeader = {
         'Accept': 'application/ld+json'
     }
-    for otherDomain in sharedItemsFederatedDomains:
-        # NOTE: otherDomain does not have a port extension,
+    for federatedDomain in sharedItemsFederatedDomains:
+        # NOTE: federatedDomain does not have a port extension,
         # so may not work in some situations
-        if otherDomain.startswith(domain):
+        if federatedDomain.startswith(domain):
             # only download from instances other than this one
             continue
-        if not tokensJson.get(otherDomain):
+        if not tokensJson.get(federatedDomain):
             # token has been obtained for the other domain
             continue
-        url = httpPrefix + '://' + otherDomain + '/catalog'
-        asHeader['Authorization'] = tokensJson[otherDomain]
+        url = httpPrefix + '://' + federatedDomain + '/catalog'
+        asHeader['Authorization'] = tokensJson[federatedDomain]
         catalogJson = getJson(session, url, asHeader, None,
                               debug, __version__, httpPrefix, None)
         if not catalogJson:
             print('WARN: failed to download shared items catalog for ' +
-                  otherDomain)
+                  federatedDomain)
             continue
-        catalogFilename = catalogsDir + '/' + otherDomain + '.json'
+        catalogFilename = catalogsDir + '/' + federatedDomain + '.json'
         if saveJson(catalogJson, catalogFilename):
-            print('Downloaded shared items catalog for ' + otherDomain)
+            print('Downloaded shared items catalog for ' + federatedDomain)
         else:
             time.sleep(2)
 
