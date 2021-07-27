@@ -457,5 +457,6 @@
     "food": "comida",
     "Price": "Precio",
     "Currency": "Divisa",
-    "List of domains which can access the shared items catalog": "Lista de dominios que pueden acceder al catálogo de artículos compartidos"
+    "List of domains which can access the shared items catalog": "Lista de dominios que pueden acceder al catálogo de artículos compartidos",
+    "Shares Catalog": "Catálogo de acciones"
 }

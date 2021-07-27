@@ -457,5 +457,6 @@
     "food": "खाना",
     "Price": "कीमत",
     "Currency": "मुद्रा",
-    "List of domains which can access the shared items catalog": "डोमेन की सूची जो साझा आइटम कैटलॉग तक पहुंच सकती है"
+    "List of domains which can access the shared items catalog": "डोमेन की सूची जो साझा आइटम कैटलॉग तक पहुंच सकती है",
+    "Shares Catalog": "शेयर कैटलॉग"
 }

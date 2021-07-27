@@ -457,5 +457,6 @@
     "food": "食物",
     "Price": "価格",
     "Currency": "通貨",
-    "List of domains which can access the shared items catalog": "共有項目カタログにアクセスできるドメインのリスト"
+    "List of domains which can access the shared items catalog": "共有項目カタログにアクセスできるドメインのリスト",
+    "Shares Catalog": "カタログを共有します"
 }

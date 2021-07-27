@@ -457,5 +457,6 @@
     "food": "aliments",
     "Price": "Prix",
     "Currency": "Devise",
-    "List of domains which can access the shared items catalog": "Liste des domaines pouvant accéder au catalogue d'éléments partagés"
+    "List of domains which can access the shared items catalog": "Liste des domaines pouvant accéder au catalogue d'éléments partagés",
+    "Shares Catalog": "Actions Catalogue"
 }

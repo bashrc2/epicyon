@@ -457,5 +457,6 @@
     "food": "food",
     "Price": "Price",
     "Currency": "Currency",
-    "List of domains which can access the shared items catalog": "List of domains which can access the shared items catalog"
+    "List of domains which can access the shared items catalog": "List of domains which can access the shared items catalog",
+    "Shares Catalog": "Shares Catalog"
 }

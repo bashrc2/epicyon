@@ -457,5 +457,6 @@
     "food": "menjar",
     "Price": "Preu",
     "Currency": "Moneda",
-    "List of domains which can access the shared items catalog": "Llista de dominis que poden accedir al catàleg d'articles compartits"
+    "List of domains which can access the shared items catalog": "Llista de dominis que poden accedir al catàleg d'articles compartits",
+    "Shares Catalog": "Catàleg d'accions"
 }
