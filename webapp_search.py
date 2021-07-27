@@ -102,6 +102,23 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
     return emojiForm
 
 
+def _matchSharedItem(searchStrLowerList: [],
+                     sharedItem: {}) -> bool:
+    """Returns true if the shared item matches search criteria
+    """
+    for searchSubstr in searchStrLowerList:
+        searchSubstr = searchSubstr.strip()
+        if searchSubstr in sharedItem['location'].lower():
+            return True
+        elif searchSubstr in sharedItem['summary'].lower():
+            return True
+        elif searchSubstr in sharedItem['displayName'].lower():
+            return True
+        elif searchSubstr in sharedItem['category'].lower():
+            return True
+    return False
+
+
 def htmlSearchSharedItems(cssCache: {}, translate: {},
                           baseDir: str, searchStr: str,
                           pageNumber: int,
@@ -133,7 +150,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     resultsExist = False
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
+            if not isAccountDir(handle):
                 continue
             contactNickname = handle.split('@')[0]
             sharesFilename = baseDir + '/accounts/' + handle + \
@@ -146,22 +163,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                 continue
 
             for name, sharedItem in sharesJson.items():
-                matched = True
-                for searchSubstr in searchStrLowerList:
-                    subStrMatched = False
-                    searchSubstr = searchSubstr.strip()
-                    if searchSubstr in sharedItem['location'].lower():
-                        subStrMatched = True
-                    elif searchSubstr in sharedItem['summary'].lower():
-                        subStrMatched = True
-                    elif searchSubstr in sharedItem['displayName'].lower():
-                        subStrMatched = True
-                    elif searchSubstr in sharedItem['category'].lower():
-                        subStrMatched = True
-                    if not subStrMatched:
-                        matched = False
-                        break
-                if matched:
+                if _matchSharedItem(searchStrLowerList, sharedItem):
                     if currPage == pageNumber:
                         sharedItemsForm += '<div class="container">\n'
                         sharedItemsForm += \
