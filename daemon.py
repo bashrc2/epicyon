@@ -13804,9 +13804,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('category'):
                     print(postType + ' no category')
                     return -1
-                if not fields.get('location'):
-                    print(postType + ' no location')
-                    return -1
                 if not fields.get('duration'):
                     print(postType + ' no duratio')
                     return -1

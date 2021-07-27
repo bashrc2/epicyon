@@ -376,8 +376,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += \
             editCurrencyField(translate['Price'] + ':', 'itemPrice', '0.00')
         extraFields += '<br>' + \
-            editTextField(translate['Currency'] + ':',
-                          'itemCurrency', 'EUR')
+            editTextField(translate['Currency'] + ':', 'itemCurrency', 'EUR',
+                          'EUR / GBP / USD ...', True)
         extraFields += '</div>\n'
 
     citationsStr = ''
