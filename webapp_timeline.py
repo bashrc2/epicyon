@@ -830,12 +830,13 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
             '<b>' + translate['Quantity'] + ':</b> ' + \
             str(item['itemQty']) + '<br>'
     profileStr += \
-        '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + ' '
+        '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + '<br>'
     profileStr += \
-        '<b>' + translate['Category'] + ':</b> ' + item['category'] + ' '
+        '<b>' + translate['Category'] + ':</b> ' + item['category'] + '<br>'
     if item.get('location'):
         profileStr += \
-            '<b>' + translate['Location'] + ':</b> ' + item['location']
+            '<b>' + translate['Location'] + ':</b> ' + \
+            item['location'] + '<br>'
     if item.get('itemPrice') and item.get('itemCurrency'):
         if isfloat(item['itemPrice']):
             if float(item['itemPrice']) > 0:

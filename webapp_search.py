@@ -141,12 +141,13 @@ def _htmlSearchResultShare(sharedItem: {}, translate: {},
             '<b>' + translate['Quantity'] + \
             ':</b> ' + str(sharedItem['itemQty']) + '<br>'
     sharedItemsForm += \
-        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + ' '
+        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
     sharedItemsForm += \
-        '<b>' + translate['Category'] + ':</b> ' + sharedItem['category'] + ' '
+        '<b>' + translate['Category'] + ':</b> ' + sharedItem['category'] + '<br>'
     if sharedItem.get('location'):
         sharedItemsForm += \
-            '<b>' + translate['Location'] + ':</b> ' + sharedItem['location']
+            '<b>' + translate['Location'] + ':</b> ' + \
+            sharedItem['location'] + '<br>'
     if sharedItem.get('itemPrice') and \
        sharedItem.get('itemCurrency'):
         if isfloat(sharedItem['itemPrice']):
