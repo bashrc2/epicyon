@@ -93,7 +93,7 @@ def getValidSharedItemID(actor: str, displayName: str) -> str:
     displayName = displayName.replace("’", "'")
     actor = actor.replace('://', '___')
     actor = actor.replace('/', '--')
-    return actor + '#shareditems#' + displayName
+    return actor + '--shareditems--' + displayName
 
 
 def removeSharedItem(baseDir: str, nickname: str, domain: str,

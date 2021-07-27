@@ -382,8 +382,8 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                     for itemID, item in sharesJson.items():
                         # assign owner to the item
                         shareActor = ''
-                        if '#shareditems#' in itemID:
-                            shareActor = itemID.split('#shareditems#')[0]
+                        if '--shareditems--' in itemID:
+                            shareActor = itemID.split('--shareditems--')[0]
                             shareActor = shareActor.replace('___', '://')
                             shareActor = shareActor.replace('--', '/')
                         item['actor'] = shareActor
