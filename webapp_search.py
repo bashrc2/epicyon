@@ -169,6 +169,33 @@ def _htmlSearchResultShare(sharedItem: {}, translate: {},
     return sharedItemsForm
 
 
+def _htmlSearchResultSharePrev(actor: str, domainFull: str,
+                               callingDomain: str, pageNumber: int,
+                               searchStrLower: str, translate: {}) -> str:
+    """Returns the html for the previous button on shared items search results
+    """
+    postActor = getAltPath(actor, domainFull, callingDomain)
+    # previous page link, needs to be a POST
+    sharedItemsForm = \
+        '<form method="POST" action="' + postActor + '/searchhandle?page=' + \
+        str(pageNumber - 1) + '">\n'
+    sharedItemsForm += \
+        '  <input type="hidden" ' + 'name="actor" value="' + actor + '">\n'
+    sharedItemsForm += \
+        '  <input type="hidden" ' + 'name="searchtext" value="' + \
+        searchStrLower + '"><br>\n'
+    sharedItemsForm += \
+        '  <center>\n' + '    <a href="' + actor + \
+        '" type="submit" name="submitSearch">\n'
+    sharedItemsForm += \
+        '    <img loading="lazy" ' + 'class="pageicon" src="/icons' + \
+        '/pageup.png" title="' + translate['Page up'] + \
+        '" alt="' + translate['Page up'] + '"/></a>\n'
+    sharedItemsForm += '  </center>\n'
+    sharedItemsForm += '</form>\n'
+    return sharedItemsForm
+
+
 def htmlSearchSharedItems(cssCache: {}, translate: {},
                           baseDir: str, searchStr: str,
                           pageNumber: int,
@@ -215,41 +242,20 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
             for name, sharedItem in sharesJson.items():
                 if _matchSharedItem(searchStrLowerList, sharedItem):
                     if currPage == pageNumber:
+                        # show individual search result
                         sharedItemsForm += \
                             _htmlSearchResultShare(sharedItem, translate,
                                                    httpPrefix, domainFull,
                                                    contactNickname,
                                                    name, actor)
                         if not resultsExist and currPage > 1:
-                            postActor = \
-                                getAltPath(actor, domainFull,
-                                           callingDomain)
-                            # previous page link, needs to be a POST
+                            # show the previous button
                             sharedItemsForm += \
-                                '<form method="POST" action="' + \
-                                postActor + \
-                                '/searchhandle?page=' + \
-                                str(pageNumber - 1) + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="actor" value="' + actor + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="searchtext" value="' + \
-                                searchStrLower + '"><br>\n'
-                            sharedItemsForm += \
-                                '  <center>\n' + \
-                                '    <a href="' + actor + \
-                                '" type="submit" name="submitSearch">\n'
-                            sharedItemsForm += \
-                                '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/icons' + \
-                                '/pageup.png" title="' + \
-                                translate['Page up'] + \
-                                '" alt="' + translate['Page up'] + \
-                                '"/></a>\n'
-                            sharedItemsForm += '  </center>\n'
-                            sharedItemsForm += '</form>\n'
+                                _htmlSearchResultSharePrev(actor, domainFull,
+                                                           callingDomain,
+                                                           pageNumber,
+                                                           searchStrLower,
+                                                           translate)
                         resultsExist = True
                     ctr += 1
                     if ctr >= resultsPerPage:
