@@ -15285,6 +15285,10 @@ def runDaemon(sharedItemsFederatedDomains: [],
         print('Creating archive')
         os.mkdir(archiveDir)
 
+    if not os.path.isdir(baseDir + '/sharefiles'):
+        print('Creating shared item files directory')
+        os.mkdir(baseDir + '/sharefiles')
+
     print('Creating cache expiry thread')
     httpd.thrCache = \
         threadWithTrace(target=expireCache,
