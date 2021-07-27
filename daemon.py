@@ -10773,7 +10773,7 @@ class PubServer(BaseHTTPRequestHandler):
                         catalogAuthorized = True
             # show shared items catalog for federation
             if self._hasAccept(callingDomain) and catalogAuthorized:
-                catalogType = 'html'
+                catalogType = 'json'
                 if self.path.endswith('.csv') or self._requestCSV():
                     catalogType = 'csv'
                 elif self.path.endswith('.json') or not self._requestHTTP():
