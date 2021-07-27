@@ -4849,11 +4849,12 @@ class PubServer(BaseHTTPRequestHandler):
                                       fields['shareDomainList'])
                                 print('shareDomainList2: ' +
                                       sharedItemsFormStr)
-                                if fields['shareDomainList'] != \
+                                shareDomainList = fields['shareDomainList']
+                                if shareDomainList != \
                                    sharedItemsFormStr:
                                     sharedItemsFormStr2 = \
-                                        sharedItemsFormStr.replace('\n', ',')
-                                    print('shareDomainList2: ' +
+                                        shareDomainList.replace('\n', ',')
+                                    print('shareDomainList3: ' +
                                           sharedItemsFormStr2)
                                     sharedItemsField = \
                                         "sharedItemsFederatedDomains"
