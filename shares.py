@@ -113,7 +113,6 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
         print('ERROR: shares.json could not be loaded from ' + sharesFilename)
         return
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     if sharesJson.get(itemID):
         # remove any image for the item
         itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID

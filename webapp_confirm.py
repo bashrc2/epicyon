@@ -20,7 +20,6 @@ from utils import acctDir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
-from shares import getValidSharedItemID
 
 
 def htmlConfirmDelete(cssCache: {},
