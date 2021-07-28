@@ -1256,7 +1256,7 @@ def editTextArea(label: str, name: str, value: str = "",
 
 def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                           httpPrefix: str, domainFull: str,
-                          contactNickname: str, name: str,
+                          contactNickname: str, itemID: str,
                           actor: str) -> str:
     """Returns the html for an individual shared item
     """
@@ -1316,7 +1316,7 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
     if showRemoveButton:
         sharedItemsForm += \
             ' <a href="' + actor + '?rmshare=' + \
-            name + '"><button class="button">' + \
+            itemID + '"><button class="button">' + \
             translate['Remove'] + '</button></a>\n'
     sharedItemsForm += '</p></div>\n'
     return sharedItemsForm

@@ -913,6 +913,11 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                            sharedItemsFederatedDomains)
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    adminNickname = getConfigParam(baseDir, 'admin')
+    adminActor = ''
+    if adminNickname:
+        adminActor = \
+            httpPrefix + '://' + domainFull + '/users/' + adminNickname
     timelineStr = ''
 
     if pageNumber > 1:
@@ -927,13 +932,22 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
 
     separatorStr = htmlPostSeparator(baseDir, None)
     ctr = 0
+
+    isAdminAccount = False
+    if adminActor and actor == adminActor:
+        isAdminAccount = True
+    isModeratorAccount = False
+    if isModerator(baseDir, nickname):
+        isModeratorAccount = True
+
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
             showContactButton = True
         showRemoveButton = False
-        if item['actor'] == actor:
-            showRemoveButton = True
+        if '___' + domain in item['shareId']:
+            if item['actor'] == actor or isAdminAccount or isModeratorAccount:
+                showRemoveButton = True
         timelineStr += \
             htmlIndividualShare(domain, item['shareId'],
                                 actor, item, translate,
