@@ -107,7 +107,6 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
                                 callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
-    print('Shared item ID 2: ' + itemID)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
@@ -115,16 +114,13 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if not os.path.isfile(sharesFile):
         print('ERROR: no shares file ' + sharesFile)
         return None
-    print('Shared item ID 3: ' + itemID)
     sharesJson = loadJson(sharesFile)
     if not sharesJson:
         print('ERROR: unable to load shares.json')
         return None
-    print('Shared item ID 4: ' + itemID)
     if not sharesJson.get(itemID):
         print('ERROR: share named "' + itemID + '" is not in ' + sharesFile)
         return None
-    print('Shared item ID 5: ' + itemID)
     sharedItemDisplayName = sharesJson[itemID]['displayName']
     sharedItemImageUrl = None
     if sharesJson[itemID].get('imageUrl'):
@@ -167,7 +163,6 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     sharesStr += '  </div>\n'
     sharesStr += '</div>\n'
     sharesStr += htmlFooter()
-    print('Shared item ID 6: ' + sharesStr)
     return sharesStr
 
 

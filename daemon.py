@@ -11257,9 +11257,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             itemID = self.path.split('?rmshare=')[1]
-            print('Shared item ID 0: ' + itemID)
             itemID = urllib.parse.unquote_plus(itemID.strip())
-            print('Shared item ID 1: ' + itemID)
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.httpPrefix + '://' + \
@@ -11270,7 +11268,6 @@ class PubServer(BaseHTTPRequestHandler):
                                               actor, itemID,
                                               callingDomain)
             if not msg:
-                print('Shared item ID: no msg')
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actor = 'http://' + self.server.onionDomain + usersPath
