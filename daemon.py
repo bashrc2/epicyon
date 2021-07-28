@@ -11280,7 +11280,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/tlshares',
                                        cookie, callingDomain)
                 return
-            msglen = len(msg.encode('utf-8'))
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
             self._write(msg)
