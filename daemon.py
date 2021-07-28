@@ -11256,13 +11256,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   'blog post 2 done')
 
         # after selecting a shared item from the left column then show it
-        if htmlGET and '?showshare=' in self.path:
+        if htmlGET and '?showshare=' in self.path and '/users/' in self.path:
             itemID = self.path.split('?showshare=')[1]
             usersPath = self.path.split('?showshare=')[0]
+            nickname = usersPath.replace('/users/', '')
             itemID = urllib.parse.unquote_plus(itemID.strip())
             msg = \
                 htmlShowShare(self.server.baseDir,
-                              self.server.domain, self.server.nickname,
+                              self.server.domain, nickname,
                               self.server.httpPrefix, self.server.domainFull,
                               itemID, self.server.translate,
                               self.server.sharedItemsFederatedDomains)
