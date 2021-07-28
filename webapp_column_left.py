@@ -53,9 +53,9 @@ def _getLeftColumnShares(baseDir: str,
         sharedesc = item['displayName']
         if '<' in sharedesc or '?' in sharedesc:
             continue
-        contactActor = item['actor']
-        shareLink = actor + '?replydm=sharedesc:' + \
-            sharedesc.replace(' ', '_') + '?mention=' + contactActor
+        shareId = item['shareId']
+        # selecting this link calls htmlShowShare
+        shareLink = actor + '?showshare=' + shareId
         linksList.append(sharedesc + ' ' + shareLink)
         ctr += 1
         if ctr >= maxSharesInLeftColumn:

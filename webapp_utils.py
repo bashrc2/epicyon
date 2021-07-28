@@ -18,6 +18,8 @@ from utils import loadJson
 from utils import getCachedPostFilename
 from utils import getConfigParam
 from utils import acctDir
+from utils import getNicknameFromActor
+from utils import isfloat
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -1249,3 +1251,120 @@ def editTextArea(label: str, name: str, value: str = "",
     text += 'spellcheck="' + str(spellcheck).lower() + '">'
     text += value + '</textarea>\n'
     return text
+
+
+def htmlSearchResultShare(sharedItem: {}, translate: {},
+                          httpPrefix: str, domainFull: str,
+                          contactNickname: str, name: str,
+                          actor: str) -> str:
+    """Returns the html for an individual shared item
+    """
+    sharedItemsForm = '<div class="container">\n'
+    sharedItemsForm += \
+        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
+    if sharedItem.get('imageUrl'):
+        sharedItemsForm += \
+            '<a href="' + sharedItem['imageUrl'] + '">\n'
+        sharedItemsForm += \
+            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
+            '" alt="Item image"></a>\n'
+    sharedItemsForm += '<p>' + sharedItem['summary'] + '</p>\n<p>'
+    if sharedItem.get('itemQty'):
+        if sharedItem['itemQty'] > 1:
+            sharedItemsForm += \
+                '<b>' + translate['Quantity'] + \
+                ':</b> ' + str(sharedItem['itemQty']) + '<br>'
+    sharedItemsForm += \
+        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
+    sharedItemsForm += \
+        '<b>' + translate['Category'] + ':</b> ' + \
+        sharedItem['category'] + '<br>'
+    if sharedItem.get('location'):
+        sharedItemsForm += \
+            '<b>' + translate['Location'] + ':</b> ' + \
+            sharedItem['location'] + '<br>'
+    if sharedItem.get('itemPrice') and \
+       sharedItem.get('itemCurrency'):
+        if isfloat(sharedItem['itemPrice']):
+            if float(sharedItem['itemPrice']) > 0:
+                sharedItemsForm += \
+                    ' <b>' + translate['Price'] + \
+                    ':</b> ' + sharedItem['itemPrice'] + \
+                    ' ' + sharedItem['itemCurrency']
+    sharedItemsForm += '</p>\n'
+    contactActor = \
+        httpPrefix + '://' + domainFull + '/users/' + contactNickname
+    sharedItemsForm += \
+        '<p><a href="' + actor + '?replydm=sharedesc:' + \
+        sharedItem['displayName'] + '?mention=' + contactActor + \
+        '"><button class="button">' + translate['Contact'] + '</button></a>\n'
+    if actor.endswith('/users/' + contactNickname):
+        sharedItemsForm += \
+            ' <a href="' + actor + '?rmshare=' + \
+            name + '"><button class="button">' + \
+            translate['Remove'] + '</button></a>\n'
+    sharedItemsForm += '</p></div>\n'
+    return sharedItemsForm
+
+
+def htmlShowShare(baseDir: str, domain: str, nickname: str,
+                  httpPrefix: str, domainFull: str,
+                  itemID: str, translate: {},
+                  sharedItemsFederatedDomains: []) -> str:
+    """Shows an individual shared item after selecting it from the left column
+    """
+    sharesJson = None
+
+    shareUrl = itemID.replace('___', '://').replace('--', '/')
+    contactNickname = getNicknameFromActor(shareUrl)
+    if not contactNickname:
+        return None
+
+    if '://' + domainFull + '/' in shareUrl:
+        # shared item on this instance
+        sharesFilename = \
+            acctDir(baseDir, contactNickname, domain) + '/shares.json'
+        if not os.path.isfile(sharesFilename):
+            return None
+        sharesJson = loadJson(sharesFilename)
+    else:
+        # federated shared item
+        catalogsDir = baseDir + '/cache/catalogs'
+        if not os.path.isdir(catalogsDir):
+            return None
+        for subdir, dirs, files in os.walk(catalogsDir):
+            for f in files:
+                if '#' in f:
+                    continue
+                if not f.endswith('.shares.json'):
+                    continue
+                federatedDomain = f.split('.')[0]
+                if federatedDomain not in sharedItemsFederatedDomains:
+                    continue
+                sharesFilename = catalogsDir + '/' + f
+                sharesJson = loadJson(sharesFilename)
+                if not sharesJson:
+                    continue
+                if sharesJson.get(itemID):
+                    break
+            break
+
+    if not sharesJson:
+        return None
+    if not sharesJson.get(itemID):
+        return None
+    sharedItem = sharesJson[itemID]
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    shareStr = \
+        htmlSearchResultShare(sharedItem, translate, httpPrefix,
+                              domainFull, contactNickname, itemID,
+                              actor)
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        shareStr + htmlFooter()

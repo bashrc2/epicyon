@@ -147,6 +147,7 @@ from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
 from webapp_utils import setBlogAddress
+from webapp_utils import htmlShowShare
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
@@ -11253,6 +11254,37 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'person options done',
                                   'blog post 2 done')
+
+        # after selecting a shared item from the left column then show it
+        if htmlGET and '?showshare=' in self.path:
+            itemID = self.path.split('?showshare=')[1]
+            usersPath = self.path.split('?showshare=')[0]
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            msg = \
+                htmlShowShare(self.server.baseDir,
+                              self.server.domain, self.server.nickname,
+                              self.server.httpPrefix, self.server.domainFull,
+                              itemID, self.server.translate,
+                              self.server.sharedItemsFederatedDomains)
+            if not msg:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'http://' + self.server.i2pDomain + usersPath
+                self._redirect_headers(actor + '/tlshares',
+                                       cookie, callingDomain)
+                return
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'htmlShowShare')
+            return
 
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
