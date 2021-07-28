@@ -119,14 +119,22 @@ def _isFilteredBase(filename: str, content: str) -> bool:
     return False
 
 
+def isFilteredGlobally(baseDir: str, content: str) -> bool:
+    """Is the given content globally filtered?
+    """
+    globalFiltersFilename = baseDir + '/accounts/filters.txt'
+    if _isFilteredBase(globalFiltersFilename, content):
+        return True
+    return False
+
+
 def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex
     You can add individual words or use word1+word2 to indicate that two
     words must be present although not necessarily adjacent
     """
-    globalFiltersFilename = baseDir + '/accounts/filters.txt'
-    if _isFilteredBase(globalFiltersFilename, content):
+    if isFilteredGlobally(baseDir, content):
         return True
 
     if not nickname or not domain:
