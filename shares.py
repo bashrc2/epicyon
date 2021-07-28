@@ -973,7 +973,8 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         csvStr += str(item['DFC:quantity']) + ','
         csvStr += item['DFC:price'] + ','
         csvStr += '"' + item['DFC:Image'] + '",'
-        csvStr += '"' + item['DFC:description'] + '"\n'
+        description = item['DFC:description'].replace('"', "'")
+        csvStr += '"' + description + '"\n'
     return csvStr
 
 
