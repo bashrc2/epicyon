@@ -838,7 +838,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
             if not re.match(matchPattern, description):
                 continue
 
-        expireDate = datetime.datetime.fromtimestamp(item['durationSec'])
+        expireDate = datetime.datetime.fromtimestamp(item['expire'])
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         shareId = getValidSharedItemID(owner, item['displayName'])
@@ -925,7 +925,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                         continue
 
                 expireDate = \
-                    datetime.datetime.fromtimestamp(item['durationSec'])
+                    datetime.datetime.fromtimestamp(item['expire'])
                 expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
                 shareId = getValidSharedItemID(owner, item['displayName'])
