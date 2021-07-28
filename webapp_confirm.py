@@ -104,11 +104,10 @@ def htmlConfirmDelete(cssCache: {},
 
 
 def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
-                                actor: str, shareName: str,
+                                actor: str, itemID: str,
                                 callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
-    itemID = getValidSharedItemID(actor, shareName)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
@@ -153,7 +152,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     sharesStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     sharesStr += '    <input type="hidden" name="shareName" value="' + \
-        shareName + '">\n'
+        itemID + '">\n'
     sharesStr += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'

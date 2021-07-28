@@ -11256,22 +11256,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
-            print('Debug rmshare: 1: ' + self.path)
             shareName = self.path.split('?rmshare=')[1]
             shareName = urllib.parse.unquote_plus(shareName.strip())
-            print('Debug rmshare: 2: ' + shareName)
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
-            print('Debug rmshare: 3: ' + actor)
             msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
                                               self.server.translate,
                                               self.server.baseDir,
                                               actor, shareName,
                                               callingDomain)
             if not msg:
-                print('Debug rmshare: no msg ' + actor)
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actor = 'http://' + self.server.onionDomain + usersPath
