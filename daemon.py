@@ -10800,8 +10800,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.httpPrefix,
                                                  self.server.domainFull,
                                                  self.path)
-                    msg = json.dumps(catalogStr,
-                                     ensure_ascii=False).encode('utf-8')
+                    msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
                                       msglen, None, callingDomain)

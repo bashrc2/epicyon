@@ -963,7 +963,7 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         return ''
     csvStr = \
         'id,type,hasType,startDate,expiryDate,' + \
-        'quantity,price,currency,Image,description,\r\n'
+        'quantity,price,currency,Image,description,\n'
     for item in catalogJson['DFC:supplies']:
         csvStr += '"' + item['@id'] + '",'
         csvStr += '"' + item['@type'] + '",'
@@ -975,7 +975,7 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         csvStr += '"' + item['DFC:price'].split(' ')[1] + '",'
         csvStr += '"' + item['DFC:Image'] + '",'
         description = item['DFC:description'].replace('"', "'")
-        csvStr += '"' + description + '",\r\n'
+        csvStr += '"' + description + '",\n'
     return csvStr
 
 
