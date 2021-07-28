@@ -222,13 +222,15 @@ def htmlProfileAfterSearch(cssCache: {},
             personUrl + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate['Follow'] + '</button>\n' + \
-            '      <button type="submit" class="button" name="submitView" ' + \
-            'accesskey="' + accessKeys['viewButton'] + '">' + \
-            translate['View'] + '</button>\n' + \
-            '    </center>\n' + \
-            '  </form>\n' + \
-            '</div>\n'
+            translate['Follow'] + '</button>\n'
+
+    profileStr += \
+        '      <button type="submit" class="button" name="submitView" ' + \
+        'accesskey="' + accessKeys['viewButton'] + '">' + \
+        translate['View'] + '</button>\n' + \
+        '    </center>\n' + \
+        '  </form>\n' + \
+        '</div>\n'
 
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
