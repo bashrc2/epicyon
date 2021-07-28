@@ -562,7 +562,7 @@ parser.add_argument('--summary', dest='summary', type=str,
 parser.add_argument('--itemImage', dest='itemImage', type=str,
                     default=None,
                     help='Filename of an image for an item being shared')
-parser.add_argument('--itemQty', dest='itemQty', type=int,
+parser.add_argument('--itemQty', dest='itemQty', type=float,
                     default=1,
                     help='Quantity of items being shared')
 parser.add_argument('--itemPrice', dest='itemPrice', type=str,

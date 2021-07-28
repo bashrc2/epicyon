@@ -13821,8 +13821,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain)
                 itemQty = 1
                 if fields['itemQty']:
-                    if fields['itemQty'].isdigit():
-                        itemQty = int(fields['itemQty'])
+                    if isfloat(fields['itemQty']):
+                        itemQty = float(fields['itemQty'])
                 itemPrice = "0.00"
                 if fields['itemPrice']:
                     if isfloat(fields['itemPrice']):
