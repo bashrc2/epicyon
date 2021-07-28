@@ -28,6 +28,13 @@ invalidCharacters = (
 )
 
 
+def getUsersPaths() -> []:
+    """Returns the possible paths for users accounts
+    e.g. /users/nickname, /channel/nickname
+    """
+    return ('users', 'profile', 'channel', 'accounts', 'u', 'c')
+
+
 def getActorLanguagesList(actorJson: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
@@ -159,7 +166,7 @@ def getLockedAccount(actorJson: {}) -> bool:
 def hasUsersPath(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = ('users', 'accounts', 'channel', 'profile', 'u')
+    usersList = getUsersPaths()
     for usersStr in usersList:
         if '/' + usersStr + '/' in pathStr:
             return True
@@ -1579,7 +1586,7 @@ def _isReservedName(nickname: str) -> bool:
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses', 'tags',
                      'accounts', 'headers',
-                     'channels', 'profile', 'u',
+                     'channels', 'profile', 'u', 'c',
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars',
                      'welcome', 'helpimages',
