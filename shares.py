@@ -34,6 +34,7 @@ from utils import isAccountDir
 from utils import acctDir
 from utils import isfloat
 from media import processMetaData
+from filters import isFiltered
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str) -> {}:
@@ -239,6 +240,11 @@ def addShare(baseDir: str,
              systemLanguage: str, translate: {}) -> None:
     """Adds a new share
     """
+    if isFiltered(baseDir, nickname, domain,
+                  displayName + ' ' + summary + ' ' +
+                  itemType + ' ' + itemCategory):
+        print('Shared item was filtered due to content')
+        return
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
