@@ -81,7 +81,7 @@ def _loadDfcIds(baseDir: str, systemLanguage: str) -> {}:
     return dfcIds
 
 
-def getValidSharedItemID(actor: str, displayName: str) -> str:
+def _getValidSharedItemID(actor: str, displayName: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
@@ -250,7 +250,7 @@ def addShare(baseDir: str,
 
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    itemID = getValidSharedItemID(actor, displayName)
+    itemID = _getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(baseDir, systemLanguage,
                            itemType, itemCategory, translate)
 
@@ -842,7 +842,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
         expireDate = datetime.datetime.fromtimestamp(item['expire'])
         expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        shareId = getValidSharedItemID(owner, item['displayName'])
+        shareId = _getValidSharedItemID(owner, item['displayName'])
         if item['dfcId'].startswith('epicyon#'):
             dfcId = "epicyon:" + item['dfcId'].split('#')[1]
         else:
@@ -927,7 +927,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
 
                 startDateStr = dateSecondsToString(item['published'])
                 expireDateStr = dateSecondsToString(item['expire'])
-                shareId = getValidSharedItemID(owner, item['displayName'])
+                shareId = _getValidSharedItemID(owner, item['displayName'])
                 if item['dfcId'].startswith('epicyon#'):
                     dfcId = "epicyon:" + item['dfcId'].split('#')[1]
                 else:
