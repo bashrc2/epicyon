@@ -151,7 +151,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">\n'
     sharesStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
-    sharesStr += '    <input type="hidden" name="shareName" value="' + \
+    sharesStr += '    <input type="hidden" name="itemID" value="' + \
         itemID + '">\n'
     sharesStr += \
         '    <button type="submit" class="button" name="submitYes">' + \

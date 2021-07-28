@@ -3351,14 +3351,14 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            shareName = removeShareConfirmParams.split('shareName=')[1]
-            if '&' in shareName:
-                shareName = shareName.split('&')[0]
+            itemID = removeShareConfirmParams.split('itemID=')[1]
+            if '&' in itemID:
+                itemID = itemID.split('&')[0]
             shareNickname = getNicknameFromActor(shareActor)
             if shareNickname:
                 shareDomain, sharePort = getDomainFromActor(shareActor)
                 removeSharedItem(baseDir,
-                                 shareNickname, shareDomain, shareName,
+                                 shareNickname, shareDomain, itemID,
                                  httpPrefix, domainFull)
 
         if callingDomain.endswith('.onion') and onionDomain:
@@ -11256,8 +11256,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
-            shareName = self.path.split('?rmshare=')[1]
-            shareName = urllib.parse.unquote_plus(shareName.strip())
+            itemID = self.path.split('?rmshare=')[1]
+            itemID = urllib.parse.unquote_plus(itemID.strip())
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.httpPrefix + '://' + \
@@ -11265,7 +11265,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
                                               self.server.translate,
                                               self.server.baseDir,
-                                              actor, shareName,
+                                              actor, itemID,
                                               callingDomain)
             if not msg:
                 if callingDomain.endswith('.onion') and \

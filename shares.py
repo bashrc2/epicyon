@@ -99,7 +99,7 @@ def getValidSharedItemID(actor: str, displayName: str) -> str:
 
 
 def removeSharedItem(baseDir: str, nickname: str, domain: str,
-                     displayName: str,
+                     itemID: str,
                      httpPrefix: str, domainFull: str) -> None:
     """Removes a share for a person
     """
@@ -114,7 +114,6 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
         return
 
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    itemID = getValidSharedItemID(actor, displayName)
     if sharesJson.get(itemID):
         # remove any image for the item
         itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
