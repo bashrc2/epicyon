@@ -107,6 +107,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
                                 callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
+    print('Shared item ID 2: ' + itemID)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
