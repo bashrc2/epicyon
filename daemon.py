@@ -11266,7 +11266,9 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domain, nickname,
                               self.server.httpPrefix, self.server.domainFull,
                               itemID, self.server.translate,
-                              self.server.sharedItemsFederatedDomains)
+                              self.server.sharedItemsFederatedDomains,
+                              self.server.defaultTimeline,
+                              self.server.themeName)
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:

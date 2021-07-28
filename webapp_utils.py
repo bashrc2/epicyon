@@ -1310,7 +1310,8 @@ def htmlSearchResultShare(sharedItem: {}, translate: {},
 def htmlShowShare(baseDir: str, domain: str, nickname: str,
                   httpPrefix: str, domainFull: str,
                   itemID: str, translate: {},
-                  sharedItemsFederatedDomains: []) -> str:
+                  sharedItemsFederatedDomains: [],
+                  defaultTimeline: str, theme: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
     sharesJson = None
@@ -1355,10 +1356,23 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
         return None
     sharedItem = sharesJson[itemID]
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
+
     shareStr = \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '/' + \
+        defaultTimeline + '" title="" alt="">\n'
+    shareStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="" ' + \
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header><br>\n'
+    shareStr += '<center>' + \
         htmlSearchResultShare(sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
-                              actor)
+                              actor) + '</center>'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
