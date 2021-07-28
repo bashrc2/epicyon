@@ -202,7 +202,10 @@ def htmlProfileAfterSearch(cssCache: {},
     domainFull = getFullDomain(domain, port)
 
     followIsPermitted = True
-    if searchNickname == 'news' and searchDomainFull == domainFull:
+    if not profileJson.get('followers'):
+        # no followers collection specified within actor
+        followIsPermitted = False
+    elif searchNickname == 'news' and searchDomainFull == domainFull:
         # currently the news actor is not something you can follow
         followIsPermitted = False
     elif searchNickname == nickname and searchDomainFull == domainFull:
