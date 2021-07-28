@@ -434,6 +434,7 @@ def getSharesFeedForPerson(baseDir: str,
             pageCtr += 1
             totalCtr += 1
             if currPage == pageNumber:
+                item['shareId'] = itemID
                 shares['orderedItems'].append(item)
             if pageCtr >= sharesPerPage:
                 pageCtr = 0
