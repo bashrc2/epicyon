@@ -168,6 +168,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if linksList and sharesList:
             linksList = sharesList + linksList
 
+    newTabStr = ' target="_blank" rel="nofollow noopener noreferrer"'
     if linksList:
         htmlStr += '<nav>\n'
         for lineStr in linksList:
@@ -218,22 +219,30 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     if lineStr.endswith(','):
                         lineStr = lineStr[:len(lineStr)-1]
                     # add link to the returned html
-                    htmlStr += \
-                        '      <p><a href="' + linkStr + \
-                        '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        lineStr + '</a></p>\n'
+                    if '?showshare=' not in linkStr:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '"' + newTabStr + '>' + \
+                            lineStr + '</a></p>\n'
+                    else:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '">' + lineStr + '</a></p>\n'
                     linksFileContainsEntries = True
                 elif lineStr.startswith('=> '):
                     # gemini style link
                     lineStr = lineStr.replace('=> ', '')
                     lineStr = lineStr.replace(linkStr, '')
                     # add link to the returned html
-                    htmlStr += \
-                        '      <p><a href="' + linkStr + \
-                        '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        lineStr.strip() + '</a></p>\n'
+                    if '?showshare=' not in linkStr:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '"' + newTabStr + '>' + \
+                            lineStr.strip() + '</a></p>\n'
+                    else:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '">' + lineStr.strip() + '</a></p>\n'
                     linksFileContainsEntries = True
             else:
                 if lineStr.startswith('#') or lineStr.startswith('*'):
