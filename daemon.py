@@ -10795,12 +10795,11 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 elif catalogType == 'csv':
                     # catalog as a CSV file for import into a spreadsheet
-                    catalogStr = \
+                    msg = \
                         sharesCatalogCSVEndpoint(self.server.baseDir,
                                                  self.server.httpPrefix,
                                                  self.server.domainFull,
-                                                 self.path)
-                    msg = msg.encode('utf-8')
+                                                 self.path).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
                                       msglen, None, callingDomain)
