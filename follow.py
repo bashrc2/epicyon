@@ -28,7 +28,6 @@ from utils import saveJson
 from utils import isAccountDir
 from utils import getUserPaths
 from utils import acctDir
-from utils import getUsersPaths
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -109,12 +108,11 @@ def _removeFromFollowBase(baseDir: str,
         acceptDenyDomain = acceptOrDenyHandle.split('@')[1]
         # for each possible users path construct an actor and
         # check if it exists in teh file
-        usersPaths = getUsersPaths()
+        usersPaths = getUserPaths()
         actorFound = False
         for usersName in usersPaths:
             acceptDenyActor = \
-                '://' + acceptDenyDomain + '/' + \
-                usersName + '/' + acceptDenyNickname
+                '://' + acceptDenyDomain + usersName + acceptDenyNickname
             if acceptDenyActor in open(approveFollowsFilename).read():
                 actorFound = True
                 break

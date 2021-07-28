@@ -51,9 +51,8 @@ from utils import getProtocolPrefixes
 from utils import hasUsersPath
 from utils import getImageExtensions
 from utils import isImageFile
-from utils import getUserPaths
 from utils import acctDir
-from utils import getUsersPaths
+from utils import getUserPaths
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -1194,10 +1193,10 @@ def _detectUsersPath(url: str) -> str:
     """
     if '/' not in url:
         return '/users/'
-    usersPaths = getUsersPaths()
+    usersPaths = getUserPaths()
     for possibleUsersPath in usersPaths:
-        if '/' + possibleUsersPath + '/' in url:
-            return '/' + possibleUsersPath + '/'
+        if possibleUsersPath in url:
+            return possibleUsersPath
     return '/users/'
 
 

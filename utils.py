@@ -28,13 +28,6 @@ invalidCharacters = (
 )
 
 
-def getUsersPaths() -> []:
-    """Returns the possible paths for users accounts
-    e.g. /users/nickname, /channel/nickname
-    """
-    return ('users', 'profile', 'channel', 'accounts', 'u', 'c')
-
-
 def getActorLanguagesList(actorJson: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
@@ -166,9 +159,9 @@ def getLockedAccount(actorJson: {}) -> bool:
 def hasUsersPath(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = getUsersPaths()
+    usersList = getUserPaths()
     for usersStr in usersList:
-        if '/' + usersStr + '/' in pathStr:
+        if usersStr in pathStr:
             return True
     if '://' in pathStr:
         domain = pathStr.split('://')[1]
@@ -981,8 +974,9 @@ def getNicknameFromActor(actor: str) -> str:
 
 def getUserPaths() -> []:
     """Returns possible user paths
+    e.g. /users/nickname, /channel/nickname
     """
-    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/', '/c/')
 
 
 def getDomainFromActor(actor: str) -> (str, int):
