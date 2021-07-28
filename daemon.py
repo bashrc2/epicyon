@@ -11270,6 +11270,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               actor, itemID,
                                               callingDomain)
             if not msg:
+                print('Shared item ID: no msg')
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actor = 'http://' + self.server.onionDomain + usersPath

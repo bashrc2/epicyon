@@ -167,7 +167,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     sharesStr += '  </div>\n'
     sharesStr += '</div>\n'
     sharesStr += htmlFooter()
-    print('Shared item ID 6: ' + itemID)
+    print('Shared item ID 6: ' + sharesStr)
     return sharesStr
 
 
