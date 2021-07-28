@@ -970,7 +970,7 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         csvStr += item['DFC:hasType'] + ','
         csvStr += item['DFC:startDate'] + ','
         csvStr += item['DFC:expiryDate'] + ','
-        csvStr += item['DFC:quantity'] + ','
+        csvStr += str(item['DFC:quantity']) + ','
         csvStr += item['DFC:price'] + ','
         csvStr += item['DFC:Image'] + ','
         csvStr += item['DFC:description'] + '\n'
