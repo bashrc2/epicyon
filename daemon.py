@@ -3344,7 +3344,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        if '&submitYes=' in removeShareConfirmParams:
+        if '&submitYes=' in removeShareConfirmParams and authorized:
             removeShareConfirmParams = \
                 removeShareConfirmParams.replace('+', ' ').strip()
             removeShareConfirmParams = \
@@ -3352,15 +3352,22 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            itemID = removeShareConfirmParams.split('itemID=')[1]
-            if '&' in itemID:
-                itemID = itemID.split('&')[0]
-            shareNickname = getNicknameFromActor(shareActor)
-            if shareNickname:
-                shareDomain, sharePort = getDomainFromActor(shareActor)
-                removeSharedItem(baseDir,
-                                 shareNickname, shareDomain, itemID,
-                                 httpPrefix, domainFull)
+            adminNickname = getConfigParam(baseDir, 'admin')
+            adminActor = \
+                httpPrefix + '://' + domainFull + '/users' + adminNickname
+            actor = originPathStr
+            actorNickname = getNicknameFromActor(actor)
+            if actor == shareActor or actor == adminActor or \
+               isModerator(baseDir, actorNickname):
+                itemID = removeShareConfirmParams.split('itemID=')[1]
+                if '&' in itemID:
+                    itemID = itemID.split('&')[0]
+                shareNickname = getNicknameFromActor(shareActor)
+                if shareNickname:
+                    shareDomain, sharePort = getDomainFromActor(shareActor)
+                    removeSharedItem(baseDir,
+                                     shareNickname, shareDomain, itemID,
+                                     httpPrefix, domainFull)
 
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
