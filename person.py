@@ -53,6 +53,7 @@ from utils import getImageExtensions
 from utils import isImageFile
 from utils import getUserPaths
 from utils import acctDir
+from utils import getUsersPaths
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -1188,6 +1189,18 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     return True
 
 
+def _detectUsersPath(url: str) -> str:
+    """Tries to detect the /users/ path
+    """
+    if '/' not in url:
+        return '/users/'
+    usersPaths = getUsersPaths()
+    for possibleUsersPath in usersPaths:
+        if '/' + possibleUsersPath + '/' in url:
+            return '/' + possibleUsersPath + '/'
+    return '/users/'
+
+
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                  debug: bool, quiet: bool = False) -> ({}, {}):
     """Returns the actor json
@@ -1195,8 +1208,11 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if debug:
         print('getActorJson for ' + handle)
     originalActor = handle
+
+    # try to determine the users path
+    detectedUsersPath = _detectUsersPath(handle)
     if '/@' in handle or \
-       '/users/' in handle or \
+       detectedUsersPath in handle or \
        handle.startswith('http') or \
        handle.startswith('hyper'):
         # format: https://domain/@nick
@@ -1204,12 +1220,13 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         if not hasUsersPath(originalHandle):
             if not quiet or debug:
                 print('getActorJson: Expected actor format: ' +
-                      'https://domain/@nick or https://domain/users/nick')
+                      'https://domain/@nick or https://domain' +
+                      detectedUsersPath + 'nick')
             return None, None
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
-        handle = handle.replace('/@', '/users/')
+        handle = handle.replace('/@', detectedUsersPath)
         paths = getUserPaths()
         userPathFound = False
         for userPath in paths:
