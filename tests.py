@@ -39,6 +39,8 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import dateStringToSeconds
+from utils import dateSecondsToString
 from utils import validPassword
 from utils import userAgentDomain
 from utils import camelCaseSplit
@@ -4318,9 +4320,19 @@ def _testAuthorizeSharedItems():
     assert len(tokensJson['possum.domain']) == 0
 
 
+def _testDateConversions() -> None:
+    print('testDateConversions')
+    dateStr = "2021-05-16T14:37:41Z"
+    dateSec = dateStringToSeconds(dateStr)
+    dateStr2 = dateSecondsToString(dateSec)
+    assert dateStr == dateStr2
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testFunctions()
+    _testDateConversions()
     _testAuthorizeSharedItems()
     _testValidPassword()
     _testGetLinksFromContent()
@@ -4328,7 +4340,6 @@ def runAllTests():
     _testLimitRepetedWords()
     _testLimitWordLengths()
     _testSwitchWords()
-    _testFunctions()
     _testUserAgentDomain()
     _testRoles()
     _testSkills()

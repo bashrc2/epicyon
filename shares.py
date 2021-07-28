@@ -20,6 +20,8 @@ from posts import getPersonBox
 from session import postJson
 from session import postImage
 from session import createSession
+from utils import dateStringToSeconds
+from utils import dateSecondsToString
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import validNickname
@@ -924,10 +926,8 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                     if not re.match(matchPattern, description):
                         continue
 
-                expireDate = \
-                    datetime.datetime.fromtimestamp(item['expire'])
-                expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
-
+                startDateStr = dateSecondsToString(item['published'])
+                expireDateStr = dateSecondsToString(item['expire'])
                 shareId = getValidSharedItemID(owner, item['displayName'])
                 if item['dfcId'].startswith('epicyon#'):
                     dfcId = "epicyon:" + item['dfcId'].split('#')[1]
@@ -938,7 +938,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                     "@id": shareId,
                     "@type": "DFC:SuppliedProduct",
                     "DFC:hasType": dfcId,
-                    "DFC:startDate": item['published'],
+                    "DFC:startDate": startDateStr,
                     "DFC:expiryDate": expireDateStr,
                     "DFC:quantity": item['itemQty'],
                     "DFC:price": priceStr,
@@ -1280,15 +1280,13 @@ def _dfcToSharesFormat(catalogJson: {},
         if ':' not in item['DFC:hasType']:
             continue
 
-        try:
-            expiryTime = \
-                datetime.datetime.strptime(item['DFC:expiryDate'],
-                                           '%Y-%m-%dT%H:%M:%SZ')
-        except BaseException:
+        startTimeSec = dateStringToSeconds(item['DFC:startDate'])
+        if not startTimeSec:
             continue
-        durationSec = \
-            int((expiryTime - datetime.datetime(1970, 1, 1)).total_seconds())
-        if durationSec < currTime:
+        expiryTimeSec = dateStringToSeconds(item['DFC:expiryDate'])
+        if not expiryTimeSec:
+            continue
+        if expiryTimeSec < currTime:
             # has expired
             continue
 
@@ -1314,8 +1312,8 @@ def _dfcToSharesFormat(catalogJson: {},
             "itemType": itemType,
             "category": itemCategory,
             "location": "",
-            "published": item['DFC:startDate'],
-            "expire": durationSec,
+            "published": startTimeSec,
+            "expire": expiryTimeSec,
             "itemPrice": item['DFC:price'].split(' ')[0],
             "itemCurrency": item['DFC:price'].split(' ')[1]
         }

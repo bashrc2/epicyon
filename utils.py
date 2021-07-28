@@ -2634,3 +2634,21 @@ def isfloat(value):
         return True
     except ValueError:
         return False
+
+
+def dateStringToSeconds(dateStr: str) -> int:
+    """Converts a date string (eg "published") into seconds since epoch
+    """
+    try:
+        expiryTime = \
+            datetime.datetime.strptime(dateStr, '%Y-%m-%dT%H:%M:%SZ')
+    except BaseException:
+        return None
+    return int(datetime.datetime.timestamp(expiryTime))
+
+
+def dateSecondsToString(dateSec: int) -> str:
+    """Converts a date in seconds since epoch to a string
+    """
+    thisDate = datetime.datetime.fromtimestamp(dateSec)
+    return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
