@@ -659,6 +659,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     baseDir, actor, nickname, domain, port,
                                     maxSharesPerAccount, httpPrefix,
                                     sharedItemsFederatedDomains) +
+                '  </div>\n' + '  </td>\n' +
+                '  </tr>\n' + '  </tbody>\n' + '  </table>\n' +
                 htmlFooter())
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
