@@ -222,15 +222,27 @@ def htmlProfileAfterSearch(cssCache: {},
             personUrl + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate['Follow'] + '</button>\n'
-
-    profileStr += \
-        '      <button type="submit" class="button" name="submitView" ' + \
-        'accesskey="' + accessKeys['viewButton'] + '">' + \
-        translate['View'] + '</button>\n' + \
-        '    </center>\n' + \
-        '  </form>\n' + \
-        '</div>\n'
+            translate['Follow'] + '</button>\n' + \
+            '      <button type="submit" class="button" name="submitView" ' + \
+            'accesskey="' + accessKeys['viewButton'] + '">' + \
+            translate['View'] + '</button>\n' + \
+            '    </center>\n' + \
+            '  </form>\n' + \
+            '</div>\n'
+    else:
+        profileStr += \
+            '<div class="container">\n' + \
+            '  <form method="POST" action="' + \
+            backUrl + '/followconfirm">\n' + \
+            '    <center>\n' + \
+            '      <input type="hidden" name="actor" value="' + \
+            personUrl + '">\n' + \
+            '      <button type="submit" class="button" name="submitView" ' + \
+            'accesskey="' + accessKeys['viewButton'] + '">' + \
+            translate['View'] + '</button>\n' + \
+            '    </center>\n' + \
+            '  </form>\n' + \
+            '</div>\n'
 
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
