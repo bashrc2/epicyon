@@ -24,6 +24,7 @@ from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from person import getPersonAvatarUrl
+from posts import isModerator
 
 
 def getBrokenLinkSubstitute() -> str:
@@ -1253,7 +1254,7 @@ def editTextArea(label: str, name: str, value: str = "",
     return text
 
 
-def htmlSearchResultShare(sharedItem: {}, translate: {},
+def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                           httpPrefix: str, domainFull: str,
                           contactNickname: str, name: str,
                           actor: str) -> str:
@@ -1298,7 +1299,21 @@ def htmlSearchResultShare(sharedItem: {}, translate: {},
         '<p><a href="' + actor + '?replydm=sharedesc:' + \
         sharedItem['displayName'] + '?mention=' + contactActor + \
         '"><button class="button">' + translate['Contact'] + '</button></a>\n'
+
+    # should the remove button be shown?
+    showRemoveButton = False
+    nickname = getNicknameFromActor(actor)
     if actor.endswith('/users/' + contactNickname):
+        showRemoveButton = True
+    elif isModerator(baseDir, nickname):
+        showRemoveButton = True
+    else:
+        adminNickname = getConfigParam(baseDir, 'admin')
+        if adminNickname:
+            if actor.endswith('/users/' + adminNickname):
+                showRemoveButton = True
+
+    if showRemoveButton:
         sharedItemsForm += \
             ' <a href="' + actor + '?rmshare=' + \
             name + '"><button class="button">' + \
@@ -1370,7 +1385,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header><br>\n'
     shareStr += \
-        htmlSearchResultShare(sharedItem, translate, httpPrefix,
+        htmlSearchResultShare(baseDir, sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
                               actor)
 

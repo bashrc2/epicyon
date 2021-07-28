@@ -156,13 +156,14 @@ def _htmlSearchResultSharePage(actor: str, domainFull: str,
     return sharedItemsForm
 
 
-def _htmlSharesResult(sharesJson: {}, pageNumber: int, resultsPerPage: int,
+def _htmlSharesResult(baseDir: str,
+                      sharesJson: {}, pageNumber: int, resultsPerPage: int,
                       searchStrLowerList: [], currPage: int, ctr: int,
                       callingDomain: str, httpPrefix: str, domainFull: str,
                       contactNickname: str, actor: str,
                       resultsExist: bool, searchStrLower: str,
                       translate: {}) -> (bool, int, int, str):
-    """
+    """Result for shared items search
     """
     sharedItemsForm = ''
     if currPage > pageNumber:
@@ -173,7 +174,7 @@ def _htmlSharesResult(sharesJson: {}, pageNumber: int, resultsPerPage: int,
             if currPage == pageNumber:
                 # show individual search result
                 sharedItemsForm += \
-                    htmlSearchResultShare(sharedItem, translate,
+                    htmlSearchResultShare(baseDir, sharedItem, translate,
                                           httpPrefix, domainFull,
                                           contactNickname,
                                           name, actor)
@@ -247,7 +248,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                 continue
 
             (resultsExist, currPage, ctr,
-             resultStr) = _htmlSharesResult(sharesJson, pageNumber,
+             resultStr) = _htmlSharesResult(baseDir, sharesJson, pageNumber,
                                             resultsPerPage,
                                             searchStrLowerList,
                                             currPage, ctr,
@@ -280,7 +281,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                     continue
 
                 (resultsExist, currPage, ctr,
-                 resultStr) = _htmlSharesResult(sharesJson, pageNumber,
+                 resultStr) = _htmlSharesResult(baseDir, sharesJson,
+                                                pageNumber,
                                                 resultsPerPage,
                                                 searchStrLowerList,
                                                 currPage, ctr,
