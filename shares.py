@@ -706,12 +706,13 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: duration missing from Offer')
         return
+    itemQty = float(messageJson['object']['itemQty'])
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              messageJson['object']['displayName'],
              messageJson['object']['summary'],
              messageJson['object']['imageFilename'],
-             float(messageJson['object']['itemQty']),
+             itemQty,
              messageJson['object']['itemType'],
              messageJson['object']['itemCategory'],
              messageJson['object']['location'],

@@ -333,6 +333,46 @@ def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
                                   None, usersPath, translate, followApprovals)
 
 
+def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
+                     httpPrefix: str, translate: {},
+                     moderator: bool, editor: bool,
+                     newswire: {}, positiveVoting: bool,
+                     showPublishAsIcon: bool,
+                     rssIconAtTop: bool, publishButtonAtTop: bool,
+                     authorized: bool, theme: str,
+                     defaultTimeline: str, accessKeys: {},
+                     boxName: str,
+                     enableTimingLog: bool, timelineStartTime) -> str:
+    """Ending of the timeline, containing the right column
+    """
+    # end of timeline-posts
+    tlStr = '  </div>\n'
+
+    # end of column-center
+    tlStr += '  </td>\n'
+
+    # right column
+    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
+                                           httpPrefix, translate,
+                                           moderator, editor,
+                                           newswire, positiveVoting,
+                                           False, None, True,
+                                           showPublishAsIcon,
+                                           rssIconAtTop, publishButtonAtTop,
+                                           authorized, True, theme,
+                                           defaultTimeline, accessKeys)
+    tlStr += '  <td valign="top" class="col-right" ' + \
+        'id="newswire" tabindex="-1">' + \
+        rightColumnStr + '  </td>\n'
+    tlStr += '  </tr>\n'
+
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
+
+    tlStr += '  </tbody>\n'
+    tlStr += '</table>\n'
+    return tlStr
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -659,8 +699,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     baseDir, actor, nickname, domain, port,
                                     maxSharesPerAccount, httpPrefix,
                                     sharedItemsFederatedDomains) +
-                '  </div>\n' + '  </td>\n' +
-                '  </tr>\n' + '  </tbody>\n' + '  </table>\n' +
+                _htmlTimelineEnd(baseDir, nickname, domainFull,
+                                 httpPrefix, translate,
+                                 moderator, editor,
+                                 newswire, positiveVoting,
+                                 showPublishAsIcon,
+                                 rssIconAtTop, publishButtonAtTop,
+                                 authorized, theme,
+                                 defaultTimeline, accessKeys,
+                                 boxName,
+                                 enableTimingLog, timelineStartTime) +
                 htmlFooter())
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
@@ -786,31 +834,17 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     elif itemCtr == 0:
         tlStr += _getHelpForTimeline(baseDir, boxName)
 
-    # end of timeline-posts
-    tlStr += '  </div>\n'
-
-    # end of column-center
-    tlStr += '  </td>\n'
-
-    # right column
-    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
-                                           httpPrefix, translate,
-                                           moderator, editor,
-                                           newswire, positiveVoting,
-                                           False, None, True,
-                                           showPublishAsIcon,
-                                           rssIconAtTop, publishButtonAtTop,
-                                           authorized, True, theme,
-                                           defaultTimeline, accessKeys)
-    tlStr += '  <td valign="top" class="col-right" ' + \
-        'id="newswire" tabindex="-1">' + \
-        rightColumnStr + '  </td>\n'
-    tlStr += '  </tr>\n'
-
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
-
-    tlStr += '  </tbody>\n'
-    tlStr += '</table>\n'
+    tlStr += \
+        _htmlTimelineEnd(baseDir, nickname, domainFull,
+                         httpPrefix, translate,
+                         moderator, editor,
+                         newswire, positiveVoting,
+                         showPublishAsIcon,
+                         rssIconAtTop, publishButtonAtTop,
+                         authorized, theme,
+                         defaultTimeline, accessKeys,
+                         boxName,
+                         enableTimingLog, timelineStartTime)
     tlStr += htmlFooter()
     return tlStr
 
