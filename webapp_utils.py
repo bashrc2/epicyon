@@ -1369,10 +1369,10 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
         'alt="" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header><br>\n'
-    shareStr += '<center>' + \
+    shareStr += \
         htmlSearchResultShare(sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
-                              actor) + '</center>'
+                              actor)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
