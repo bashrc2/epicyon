@@ -702,10 +702,6 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: category missing from Offer')
         return
-    if not messageJson['object'].get('location'):
-        if debug:
-            print('DEBUG: location missing from Offer')
-        return
     if not messageJson['object'].get('duration'):
         if debug:
             print('DEBUG: duration missing from Offer')
