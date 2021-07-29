@@ -177,7 +177,7 @@ def htmlLogin(cssCache: {}, translate: {},
         translate['Password'] + '</b></label>\n' + \
         '    <input type="password" ' + autocompleteStr + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
-        'pattern="{8,}" name="password" required>\n' + \
+        'pattern="{8,256}" name="password" required>\n' + \
         loginButtonStr + registerButtonStr + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \

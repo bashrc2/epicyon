@@ -1598,7 +1598,7 @@ def getNicknameValidationPattern() -> str:
             pattern += '(?!.*\\b' + word + '\\b)'
         else:
             pattern = '^(?!.*\\b' + word + '\\b)'
-    return pattern + '.*$'
+    return pattern + '.*${1,30}'
 
 
 def _isReservedName(nickname: str) -> bool:
