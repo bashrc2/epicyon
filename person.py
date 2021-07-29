@@ -1319,6 +1319,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                 return None, None
     else:
         # group actor only needs a json http GET
+        originalActor = httpPrefix + '://' + domain + '/c/' + nickname
         personUrl = originalActor
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
