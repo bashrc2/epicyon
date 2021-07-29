@@ -63,20 +63,35 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
             print('Webfinger from cache: ' + str(wf))
         return wf
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix, domain)
-    par = {
-        'resource': 'acct:{}'.format(nickname + '@' + wfDomain)
-    }
     hdr = {
         'Accept': 'application/jrd+json'
     }
+    par = {
+        'resource': 'acct:{}'.format(nickname + '@' + wfDomain)
+    }
+    success = False
     try:
         result = \
             getJson(session, url, hdr, par,
                     debug, projectVersion,
                     httpPrefix, fromDomain)
+        if result:
+            success = True
     except Exception as e:
-        print('ERROR: webfingerHandle ' + str(e))
-        return None
+        print('ERROR: webfingerHandle acct ' + str(e))
+        pass
+    if not success:
+        par['resource'] = par['resource'].replace('acct:', 'group:')
+        try:
+            result = \
+                getJson(session, url, hdr, par,
+                        debug, projectVersion,
+                        httpPrefix, fromDomain)
+            if result:
+                success = True
+        except Exception as e:
+            print('ERROR: webfingerHandle group ' + str(e))
+            return None
 
     if result:
         storeWebfingerInCache(nickname + '@' + wfDomain,
