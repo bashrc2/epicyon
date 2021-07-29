@@ -1595,9 +1595,9 @@ def getNicknameValidationPattern() -> str:
     pattern = ''
     for word in reservedNames:
         if pattern:
-            pattern += '(?!.*\b' + word + '\b)'
+            pattern += '(?!.*\\b' + word + '\\b)'
         else:
-            pattern = '^(?!.*\b' + word + '\b)'
+            pattern = '^(?!.*\\b' + word + '\\b)'
     return pattern + '.*$'
 
 
