@@ -1567,27 +1567,44 @@ def isValidLanguage(text: str) -> bool:
     return False
 
 
+def _getReservedWords() -> str:
+    return ('inbox', 'dm', 'outbox', 'following',
+            'public', 'followers', 'category',
+            'channel', 'calendar',
+            'tlreplies', 'tlmedia', 'tlblogs',
+            'tlblogs', 'tlfeatures',
+            'moderation', 'moderationaction',
+            'activity', 'undo', 'pinned',
+            'reply', 'replies', 'question', 'like',
+            'likes', 'users', 'statuses', 'tags',
+            'accounts', 'headers',
+            'channels', 'profile', 'u', 'c',
+            'updates', 'repeat', 'announce',
+            'shares', 'fonts', 'icons', 'avatars',
+            'welcome', 'helpimages',
+            'bookmark', 'bookmarks', 'tlbookmarks',
+            'ignores', 'linksmobile', 'newswiremobile',
+            'minimal', 'search', 'eventdelete',
+            'searchemoji', 'catalog')
+
+
+def getNicknameValidationPattern() -> str:
+    """Returns a html text input validation pattern for nickname
+    """
+    reservedNames = _getReservedWords()
+    pattern = ''
+    for word in reservedNames:
+        if pattern:
+            pattern += '|' + word
+        else:
+            pattern = '[^(' + word
+    return pattern + ')]'
+
+
 def _isReservedName(nickname: str) -> bool:
     """Is the given nickname reserved for some special function?
     """
-    reservedNames = ('inbox', 'dm', 'outbox', 'following',
-                     'public', 'followers', 'category',
-                     'channel', 'calendar',
-                     'tlreplies', 'tlmedia', 'tlblogs',
-                     'tlblogs', 'tlfeatures',
-                     'moderation', 'moderationaction',
-                     'activity', 'undo', 'pinned',
-                     'reply', 'replies', 'question', 'like',
-                     'likes', 'users', 'statuses', 'tags',
-                     'accounts', 'headers',
-                     'channels', 'profile', 'u', 'c',
-                     'updates', 'repeat', 'announce',
-                     'shares', 'fonts', 'icons', 'avatars',
-                     'welcome', 'helpimages',
-                     'bookmark', 'bookmarks', 'tlbookmarks',
-                     'ignores', 'linksmobile', 'newswiremobile',
-                     'minimal', 'search', 'eventdelete',
-                     'searchemoji', 'catalog')
+    reservedNames = _getReservedWords()
     if nickname in reservedNames:
         return True
     return False
