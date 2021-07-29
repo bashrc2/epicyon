@@ -35,6 +35,7 @@ from utils import acctDir
 from utils import isfloat
 from media import processMetaData
 from filters import isFilteredGlobally
+from siteactive import siteIsActive
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str) -> {}:
@@ -1172,6 +1173,8 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
             continue
         if not tokensJson.get(federatedDomain):
             # token has been obtained for the other domain
+            continue
+        if not siteIsActive(httpPrefix + '://' + federatedDomain):
             continue
         url = httpPrefix + '://' + federatedDomain + '/catalog'
         asHeader['Authorization'] = tokensJson[federatedDomain]
