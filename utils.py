@@ -1613,6 +1613,10 @@ def _isReservedName(nickname: str) -> bool:
 def validNickname(domain: str, nickname: str) -> bool:
     """Is the given nickname valid?
     """
+    if len(nickname) == 0:
+        return False
+    if len(nickname) > 30:
+        return False
     if not isValidLanguage(nickname):
         return False
     forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#')
