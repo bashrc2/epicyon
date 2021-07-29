@@ -18,26 +18,37 @@ from utils import loadJsonOnionify
 from utils import saveJson
 from utils import getProtocolPrefixes
 from utils import removeDomainPort
+from utils import getUserPaths
 
 
 def _parseHandle(handle: str) -> (str, str):
+    """Parses a handle and returns nickname and domain
+    """
     if '.' not in handle:
         return None, None
     prefixes = getProtocolPrefixes()
     handleStr = handle
     for prefix in prefixes:
         handleStr = handleStr.replace(prefix, '')
+
+    # try domain/@nick
     if '/@' in handle:
         domain, nickname = handleStr.split('/@')
-    else:
-        if '/users/' in handle:
-            domain, nickname = handleStr.split('/users/')
-        else:
-            if '@' in handle:
-                nickname, domain = handle.split('@')
-            else:
-                return None, None
-    return nickname, domain
+        return nickname, domain
+
+    # try nick@domain
+    if '@' in handle:
+        nickname, domain = handle.split('@')
+        return nickname, domain
+
+    # try for different /users/ paths
+    usersPaths = getUserPaths()
+    for possibleUsersPath in usersPaths:
+        if possibleUsersPath in handle:
+            domain, nickname = handleStr.split(possibleUsersPath)
+            return nickname, domain
+
+    return None, None
 
 
 def webfingerHandle(session, handle: str, httpPrefix: str,
