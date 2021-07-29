@@ -1595,10 +1595,10 @@ def getNicknameValidationPattern() -> str:
     pattern = ''
     for word in reservedNames:
         if pattern:
-            pattern += '|' + word
+            pattern += '(?!.*\b' + word + '\b)'
         else:
-            pattern = '(?!(' + word
-    return pattern + '))'
+            pattern = '^(?!.*\b' + word + '\b)'
+    return pattern + '.*$'
 
 
 def _isReservedName(nickname: str) -> bool:
