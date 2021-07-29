@@ -397,7 +397,7 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
-    idx = 'Enter an address, shared item, !history, #hashtag, ' + \
+    idx = "Enter an address, shared item, 'history, #hashtag, " + \
         '*skill or :emoji: to search for'
     followStr += \
         '  <p class="followText">' + translate[idx] + '</p>\n'
@@ -570,7 +570,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       systemLanguage: str) -> str:
     """Show a page containing search results for your post history
     """
-    if historysearch.startswith('!'):
+    if historysearch.startswith("'"):
         historysearch = historysearch[1:].strip()
 
     historysearch = historysearch.lower().strip('\n').strip('\r')

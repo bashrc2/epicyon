@@ -2944,10 +2944,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-            elif searchStr.startswith('!'):
+            elif searchStr.startswith("'"):
                 # your post history search
                 nickname = getNicknameFromActor(actorStr)
-                searchStr = searchStr.replace('!', '', 1).strip()
+                searchStr = searchStr.replace("'", '', 1).strip()
                 historyStr = \
                     htmlHistorySearch(self.server.cssCache,
                                       self.server.translate,
