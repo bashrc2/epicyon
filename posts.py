@@ -267,6 +267,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
 
     # get the actor / personUrl
     if not wfRequest.get('errors'):
+        # get the actor url from webfinger links
         personUrl = getUserUrl(wfRequest, sourceId, debug)
     else:
         if nickname == 'dev':
@@ -277,6 +278,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
         else:
+            # the final fallback is a mastodon style url
             personUrl = httpPrefix + '://' + domain + '/users/' + nickname
     if not personUrl:
         return None, None, None, None, None, None, None
