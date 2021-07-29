@@ -219,11 +219,42 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
                     yield item
 
 
+def _getPersonBoxActor(session, baseDir: str, actor: str,
+                       profileStr: str, asHeader: {},
+                       debug: bool, projectVersion: str,
+                       httpPrefix: str, domain: str,
+                       personCache: {}) -> {}:
+    """Returns the actor json for the given actor url
+    """
+    personJson = \
+        getPersonFromCache(baseDir, actor, personCache, True)
+    if personJson:
+        return personJson
+
+    if '/channel/' in actor or '/accounts/' in actor:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+    personJson = getJson(session, actor, asHeader, None,
+                         debug, projectVersion, httpPrefix, domain)
+    if personJson:
+        return personJson
+    asHeader = {
+        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    }
+    personJson = getJson(session, actor, asHeader, None,
+                         debug, projectVersion, httpPrefix, domain)
+    if personJson:
+        return personJson
+    print('Unable to get actor for ' + actor)
+    return None
+
+
 def getPersonBox(baseDir: str, session, wfRequest: {},
                  personCache: {},
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
-                 boxName='inbox',
+                 boxName: str = 'inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, str):
     debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
@@ -234,6 +265,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         print('No webfinger given')
         return None, None, None, None, None, None, None
 
+    # get the actor / personUrl
     if not wfRequest.get('errors'):
         personUrl = getUserUrl(wfRequest, sourceId, debug)
     else:
@@ -248,24 +280,18 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             personUrl = httpPrefix + '://' + domain + '/users/' + nickname
     if not personUrl:
         return None, None, None, None, None, None, None
+
+    # get the actor json from the url
     personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, True)
+        _getPersonBoxActor(session, baseDir, personUrl,
+                           profileStr, asHeader,
+                           debug, projectVersion,
+                           httpPrefix, domain,
+                           personCache)
     if not personJson:
-        if '/channel/' in personUrl or '/accounts/' in personUrl:
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
-            }
-        personJson = getJson(session, personUrl, asHeader, None,
-                             debug, projectVersion, httpPrefix, domain)
-        if not personJson:
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
-            }
-            personJson = getJson(session, personUrl, asHeader, None,
-                                 debug, projectVersion, httpPrefix, domain)
-            if not personJson:
-                print('Unable to get actor for ' + personUrl)
-                return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None
+
+    # get the url for the box/collection
     boxJson = None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
@@ -273,7 +299,6 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                 boxJson = personJson['endpoints'][boxName]
     else:
         boxJson = personJson[boxName]
-
     if not boxJson:
         return None, None, None, None, None, None, None
 
