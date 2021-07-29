@@ -14,6 +14,7 @@ import time
 import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
+from utils import getUserPaths
 from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import removeDomainPort
@@ -749,10 +750,10 @@ def _personReceiveUpdate(baseDir: str,
               ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
-    usersPaths = ('users', 'profile', 'channel', 'accounts', 'u', 'c')
+    usersPaths = getUserPaths()
     usersStrFound = False
     for usersStr in usersPaths:
-        actor = updateDomainFull + '/' + usersStr + '/' + updateNickname
+        actor = updateDomainFull + usersStr + updateNickname
         if actor in personJson['id']:
             usersStrFound = True
             break

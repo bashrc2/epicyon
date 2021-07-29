@@ -1725,6 +1725,10 @@ if args.followers:
             nickname = args.followers.split('/u/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.followers.split('/u/')[0]
+        elif '/c/' in args.followers:
+            nickname = args.followers.split('/c/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/c/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.followers:
@@ -1790,6 +1794,7 @@ if args.followers:
         personUrl = personUrl.replace('/channel/', '/actor/')
         personUrl = personUrl.replace('/profile/', '/actor/')
         personUrl = personUrl.replace('/u/', '/actor/')
+        personUrl = personUrl.replace('/c/', '/actor/')
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain

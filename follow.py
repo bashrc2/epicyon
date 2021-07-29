@@ -564,6 +564,8 @@ def _storeFollowRequest(baseDir: str,
             alreadyFollowing = True
         elif '://' + domainFull + '/u/' + nickname in followersStr:
             alreadyFollowing = True
+        elif '://' + domainFull + '/c/' + nickname in followersStr:
+            alreadyFollowing = True
 
         if alreadyFollowing:
             if debug:
