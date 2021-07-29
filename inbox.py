@@ -240,10 +240,14 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
     if not personUrl:
         return None
     personUrl = personUrl.replace('#main-key', '')
-    if personUrl.endswith('/users/inbox'):
-        if debug:
-            print('DEBUG: Obtaining public key for shared inbox')
-        personUrl = personUrl.replace('/users/inbox', '/inbox')
+    usersPaths = getUserPaths()
+    for possibleUsersPath in usersPaths:
+        if personUrl.endswith(possibleUsersPath + 'inbox'):
+            if debug:
+                print('DEBUG: Obtaining public key for shared inbox')
+            personUrl = \
+                personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
+            break
     personJson = \
         getPersonFromCache(baseDir, personUrl, personCache, True)
     if not personJson:
