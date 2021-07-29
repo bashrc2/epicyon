@@ -67,8 +67,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         return None
     wfDomain = removeDomainPort(domain)
 
-    wf = getWebfingerFromCache(nickname + '@' + wfDomain,
-                               cachedWebfingers)
+    wfHandle = nickname + '@' + wfDomain
+    wf = getWebfingerFromCache(wfHandle, cachedWebfingers)
     if wf:
         if debug:
             print('Webfinger from cache: ' + str(wf))
@@ -78,7 +78,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         'Accept': 'application/jrd+json'
     }
     par = {
-        'resource': 'acct:{}'.format(nickname + '@' + wfDomain)
+        'resource': 'acct:{}'.format(wfHandle)
     }
     success = False
     try:
@@ -93,7 +93,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         pass
     if not success:
         par = {
-            'resource': 'group:{}'.format(nickname + '@' + wfDomain)
+            'resource': 'group:{}'.format(wfHandle)
         }
         try:
             result = \
@@ -107,8 +107,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
             return None
 
     if result:
-        storeWebfingerInCache(nickname + '@' + wfDomain,
-                              result, cachedWebfingers)
+        storeWebfingerInCache(wfHandle, result, cachedWebfingers)
     else:
         if debug:
             print("WARN: Unable to webfinger " + url + ' ' +
