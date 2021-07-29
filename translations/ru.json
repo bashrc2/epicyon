@@ -107,7 +107,7 @@
     "Nickname": "кличка",
     "Enter Nickname": "Введите ник",
     "Password": "пароль",
-    "Enter Password": "Введите пароль",
+    "Enter Password": "Минимум 8 символов",
     "Profile for": "Профиль для",
     "The files attached below should be no larger than 10MB in total uploaded at once.": "Прилагаемые ниже файлы должны быть не более 10 МБ в общей сложности загружены за один раз.",
     "Avatar image": "Аватар изображения",

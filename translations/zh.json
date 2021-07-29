@@ -106,7 +106,7 @@
     "Nickname": "昵称",
     "Enter Nickname": "输入昵称",
     "Password": "密码",
-    "Enter Password": "输入密码",
+    "Enter Password": "至少8个字符",
     "Profile for": "的个人资料",
     "The files attached below should be no larger than 10MB in total uploaded at once.": "一次上传的文件总数不得超过10MB。",
     "Avatar image": "头像图片",

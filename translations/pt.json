@@ -107,7 +107,7 @@
     "Nickname": "Apelido",
     "Enter Nickname": "Digite o apelido",
     "Password": "Senha",
-    "Enter Password": "Digite a senha",
+    "Enter Password": "Mínimo de 8 caracteres",
     "Profile for": "Perfil para",
     "The files attached below should be no larger than 10MB in total uploaded at once.": "Os arquivos anexados abaixo não devem ter mais de 10 MB no total de upload de uma só vez.",
     "Avatar image": "Imagem do avatar",

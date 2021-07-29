@@ -107,7 +107,7 @@
     "Nickname": "ニックネーム",
     "Enter Nickname": "ニックネームを入力",
     "Password": "パスワード",
-    "Enter Password": "パスワードを入力する",
+    "Enter Password": "最小8文字",
     "Profile for": "のプロフィール",
     "The files attached below should be no larger than 10MB in total uploaded at once.": "以下に添付するファイルは、一度にアップロードされる合計で最大10MBである必要があります。",
     "Avatar image": "アバター画像",
