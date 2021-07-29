@@ -2225,11 +2225,9 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     if toDomain.endswith('.onion') or toDomain.endswith('.i2p'):
         httpPrefix = 'http'
 
-#    sharedInbox = False
     if toNickname == 'inbox':
         # shared inbox actor on @domain@domain
         toNickname = toDomain
-#        sharedInbox = True
 
     toDomain = getFullDomain(toDomain, toPort)
 
