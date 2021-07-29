@@ -81,7 +81,9 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         print('ERROR: webfingerHandle acct ' + str(e))
         pass
     if not success:
-        par['resource'] = par['resource'].replace('acct:', 'group:')
+        par = {
+            'resource': 'group:{}'.format(nickname + '@' + wfDomain)
+        }
         try:
             result = \
                 getJson(session, url, hdr, par,
