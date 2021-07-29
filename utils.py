@@ -2641,8 +2641,6 @@ def validPassword(password: str) -> bool:
     """
     if len(password) < 8:
         return False
-    if not re.match("^[a-zA-Z0-9!]*$", password):
-        return False
     return True
 
 

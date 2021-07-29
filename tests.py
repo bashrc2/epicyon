@@ -4271,14 +4271,6 @@ def _testGetLinksFromContent():
     assert '>@linked</a>' in content
 
 
-def _testValidPassword():
-    print('testValidPassword')
-    assert not validPassword('123')
-    assert not validPassword('')
-    assert not validPassword('Abcdefg1?23456')
-    assert validPassword('Abcdef!g123456')
-
-
 def _testAuthorizeSharedItems():
     print('testAuthorizeSharedItems')
     sharedItemsFederatedDomains = \
@@ -4326,6 +4318,15 @@ def _testDateConversions() -> None:
     dateSec = dateStringToSeconds(dateStr)
     dateStr2 = dateSecondsToString(dateSec)
     assert dateStr == dateStr2
+
+
+def _testValidPassword():
+    print('testValidPassword')
+    assert not validPassword('123')
+    assert not validPassword('')
+    assert validPassword('パスワード12345')
+    assert validPassword('测试密码12345')
+    assert validPassword('A!bc:defg1/234?56')
 
 
 def runAllTests():
