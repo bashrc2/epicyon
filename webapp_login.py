@@ -169,8 +169,9 @@ def htmlLogin(cssCache: {}, translate: {},
         '    <label for="nickname"><b>' + \
         translate['Nickname'] + '</b></label>\n' + \
         '    <input type="text" ' + autocompleteStr + ' placeholder="' + \
-        translate['Enter Nickname'] + '" name="username" ' + \
-        'pattern="' + nicknamePattern + '" required autofocus>\n' + \
+        translate['Enter Nickname'] + '" ' + \
+        'pattern="' + nicknamePattern + '" name="username" ' + \
+        'required autofocus>\n' + \
         '\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
