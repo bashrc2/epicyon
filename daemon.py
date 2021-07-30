@@ -273,6 +273,7 @@ from utils import isSuspended
 from utils import dangerousMarkup
 from utils import refreshNewswire
 from utils import isImageFile
+from utils import hasGroupPath
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -2568,9 +2569,11 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
+                groupAccount = hasGroupPath(followingActor)
                 unfollowAccount(self.server.baseDir, self.postToNickname,
                                 self.server.domain,
-                                followingNickname, followingDomainFull)
+                                followingNickname, followingDomainFull,
+                                self.server.debug, groupAccount)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onionDomain:

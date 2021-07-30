@@ -2499,17 +2499,17 @@ if args.testdata:
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followPerson(baseDir, nickname, domain, 'ultrapancake', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followPerson(baseDir, nickname, domain, 'sausagedog', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followPerson(baseDir, nickname, domain, 'drokk', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followerOfPerson(baseDir, nickname, domain, 'drokk', domainFull,
-                     federationList, False)
+                     federationList, False, False)
     followerOfPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
-                     federationList, False)
+                     federationList, False, False)
     setConfigParam(baseDir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions

@@ -983,7 +983,7 @@ def getGroupPaths() -> []:
     """Returns possible group paths
     e.g. https://lemmy/c/groupname
     """
-    return ('/c/')
+    return ['/c/']
 
 
 def getDomainFromActor(actor: str) -> (str, int):
@@ -1051,7 +1051,8 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
 def followPerson(baseDir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federationList: [], debug: bool,
-                 followFile='following.txt') -> bool:
+                 groupAccount: bool,
+                 followFile: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
     followDomainStrLower = followDomain.lower().replace('\n', '')
@@ -2679,3 +2680,15 @@ def dateSecondsToString(dateSec: int) -> str:
     """
     thisDate = datetime.datetime.fromtimestamp(dateSec)
     return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def hasGroupPath(actor: str) -> bool:
+    """Does the given actor url contain a path which indicates
+    that it belongs to a group?
+    e.g. https://lemmy/c/groupname
+    """
+    groupPaths = getGroupPaths()
+    for grpPath in groupPaths:
+        if grpPath in actor:
+            return True
+    return False

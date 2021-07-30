@@ -28,6 +28,7 @@ from utils import saveJson
 from utils import isAccountDir
 from utils import getUserPaths
 from utils import acctDir
+from utils import hasGroupPath
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -62,6 +63,8 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
                     handle = handle.replace('\n', '')
                     nickname = handle.split('@')[0]
                     domain = handle.split('@')[1]
+                    if nickname.startswith('!'):
+                        nickname = nickname[1:]
                     actor = \
                         httpPrefix + '://' + domain + '/users/' + nickname
                     lastSeenFilename = \
@@ -194,12 +197,13 @@ def getMutualsOfPerson(baseDir: str,
 
 def followerOfPerson(baseDir: str, nickname: str, domain: str,
                      followerNickname: str, followerDomain: str,
-                     federationList: [], debug: bool) -> bool:
+                     federationList: [], debug: bool,
+                     groupAccount: bool) -> bool:
     """Adds a follower of the given person
     """
     return followPerson(baseDir, nickname, domain,
                         followerNickname, followerDomain,
-                        federationList, debug, 'followers.txt')
+                        federationList, debug, groupAccount, 'followers.txt')
 
 
 def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
@@ -233,13 +237,15 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
 
 def unfollowAccount(baseDir: str, nickname: str, domain: str,
                     followNickname: str, followDomain: str,
-                    followFile: str = 'following.txt',
-                    debug: bool = False) -> bool:
+                    debug: bool, groupAccount: bool,
+                    followFile: str = 'following.txt') -> bool:
     """Removes a person to the follow list
     """
     domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     handleToUnfollow = followNickname + '@' + followDomain
+    if groupAccount:
+        handleToUnfollow = '!' + handleToUnfollow
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     if not os.path.isdir(baseDir + '/accounts/' + handle):
@@ -260,8 +266,9 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
         lines = f.readlines()
         with open(filename, 'w+') as f:
             for line in lines:
-                if line.strip("\n").strip("\r").lower() != \
-                   handleToUnfollowLower:
+                checkHandle = line.strip("\n").strip("\r").lower()
+                if checkHandle != handleToUnfollowLower and \
+                   checkHandle != '!' + handleToUnfollowLower:
                     f.write(line)
 
     # write to an unfollowed file so that if a follow accept
@@ -281,12 +288,12 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
 
 def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
                         followerNickname: str, followerDomain: str,
-                        debug: bool = False) -> bool:
+                        debug: bool, groupAccount: bool) -> bool:
     """Remove a follower of a person
     """
     return unfollowAccount(baseDir, nickname, domain,
                            followerNickname, followerDomain,
-                           'followers.txt', debug)
+                           debug, groupAccount, 'followers.txt')
 
 
 def clearFollows(baseDir: str, nickname: str, domain: str,
@@ -1418,8 +1425,10 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
+    groupAccount = hasGroupPath(messageJson['object']['object'])
     if unfollowAccount(baseDir, nicknameFollower, domainFollowerFull,
-                       nicknameFollowing, domainFollowingFull):
+                       nicknameFollowing, domainFollowingFull,
+                       debug, groupAccount):
         if debug:
             print('DEBUG: ' + nicknameFollower + ' unfollowed ' +
                   nicknameFollowing + '@' + domainFollowingFull)

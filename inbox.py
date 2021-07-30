@@ -45,6 +45,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
+from utils import hasGroupPath
 from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
@@ -675,10 +676,11 @@ def _receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
+    groupAccount = hasGroupPath(messageJson['object']['actor'])
     if unfollowerOfAccount(baseDir,
                            nicknameFollowing, domainFollowingFull,
                            nicknameFollower, domainFollowerFull,
-                           debug):
+                           debug, groupAccount):
         print(nicknameFollowing + '@' + domainFollowingFull + ': '
               'Follower ' + nicknameFollower + '@' + domainFollowerFull +
               ' was removed')

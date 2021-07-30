@@ -17,6 +17,7 @@ from utils import domainPermitted
 from utils import followPerson
 from utils import hasObjectDict
 from utils import acctDir
+from utils import hasGroupPath
 
 
 def _createAcceptReject(baseDir: str, federationList: [],
@@ -160,10 +161,13 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
                       ' but they have been unfollowed')
             return
 
+    # does the url path indicate that this is a group actor
+    groupAccount = hasGroupPath(followedActor)
+
     if followPerson(baseDir,
                     nickname, acceptedDomainFull,
                     followedNickname, followedDomainFull,
-                    federationList, debug):
+                    federationList, debug, groupAccount):
         if debug:
             print('DEBUG: ' + nickname + '@' + acceptedDomainFull +
                   ' followed ' + followedNickname + '@' + followedDomainFull)
