@@ -981,7 +981,7 @@ def getUserPaths() -> []:
 
 def getGroupPaths() -> []:
     """Returns possible group paths
-    e.g. /c/groupname
+    e.g. https://lemmy/c/groupname
     """
     return ('/c/')
 
