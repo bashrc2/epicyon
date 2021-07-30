@@ -297,7 +297,7 @@ def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
 
 
 def clearFollows(baseDir: str, nickname: str, domain: str,
-                 followFile='following.txt') -> None:
+                 followFile: str = 'following.txt') -> None:
     """Removes all follows
     """
     handle = nickname + '@' + domain
@@ -452,10 +452,14 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                     if currPage == pageNumber:
                         line2 = \
                             line.lower().replace('\n', '').replace('\r', '')
-                        url = httpPrefix + '://' + \
-                            line2.split('@')[1] + \
-                            '/users/' + \
-                            line2.split('@')[0]
+                        nick = line2.split('@')[0]
+                        dom = line2.split('@')[1]
+                        if not nick.startswith('!'):
+                            # person actor
+                            url = httpPrefix + '://' + dom + '/users/' + nick
+                        else:
+                            # group actor
+                            url = httpPrefix + '://' + dom + '/c/' + nick
                         following['orderedItems'].append(url)
                 elif ((line.startswith('http') or
                        line.startswith('hyper')) and
@@ -563,16 +567,13 @@ def _storeFollowRequest(baseDir: str,
 
         if approveHandle in followersStr:
             alreadyFollowing = True
-        elif '://' + domainFull + '/profile/' + nickname in followersStr:
-            alreadyFollowing = True
-        elif '://' + domainFull + '/channel/' + nickname in followersStr:
-            alreadyFollowing = True
-        elif '://' + domainFull + '/accounts/' + nickname in followersStr:
-            alreadyFollowing = True
-        elif '://' + domainFull + '/u/' + nickname in followersStr:
-            alreadyFollowing = True
-        elif '://' + domainFull + '/c/' + nickname in followersStr:
-            alreadyFollowing = True
+        else:
+            usersPaths = getUserPaths()
+            for possibleUsersPath in usersPaths:
+                url = '://' + domainFull + possibleUsersPath + nickname
+                if url in followersStr:
+                    alreadyFollowing = True
+                    break
 
         if alreadyFollowing:
             if debug:
@@ -754,13 +755,18 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                   followersFilename + ' adding ' + approveHandle)
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
+                    groupAccount = hasGroupPath(messageJson['object'])
                     try:
                         with open(followersFilename, 'r+') as followersFile:
                             content = followersFile.read()
                             if approveHandle + '\n' not in content:
                                 followersFile.seek(0, 0)
-                                followersFile.write(approveHandle + '\n' +
-                                                    content)
+                                if not groupAccount:
+                                    followersFile.write(approveHandle +
+                                                        '\n' + content)
+                                else:
+                                    followersFile.write('!' + approveHandle +
+                                                        '\n' + content)
                     except Exception as e:
                         print('WARN: ' +
                               'Failed to write entry to followers file ' +
@@ -915,9 +921,13 @@ def sendFollowRequest(session, baseDir: str,
 
     statusNumber, published = getStatusNumber()
 
+    groupAccount = False
     if followNickname:
         followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
+        groupAccount = hasGroupPath(followedActor)
+        if groupAccount:
+            followHandle = '!' + followHandle
     else:
         if debug:
             print('DEBUG: sendFollowRequest - assuming single user instance')

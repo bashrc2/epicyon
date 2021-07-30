@@ -1945,6 +1945,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
         return
     if not postJsonObject.get('object'):
         return
+    if not hasObjectDict(postJsonObject):
+        return
     nickname = handle.split('@')[0]
 #    groupname = _getGroupName(baseDir, handle)
     domain = handle.split('@')[1]
@@ -1960,6 +1962,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     senderStr = '@' + sendingActorNickname + '@' + sendingActorDomainFull
     contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
     if not contentStr.startswith(senderStr):
+        pprint(postJsonObject)
         postJsonObject['object']['content'] = \
             senderStr + ' ' + contentStr
         postJsonObject['object']['contentMap'][systemLanguage] = \

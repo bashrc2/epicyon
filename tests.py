@@ -69,6 +69,7 @@ from follow import unfollowAccount
 from follow import unfollowerOfAccount
 from follow import sendFollowRequest
 from person import createPerson
+from person import createGroup
 from person import setDisplayNickname
 from person import setBio
 # from person import generateRSAKey
@@ -136,9 +137,11 @@ from shares import createSharedItemFederationToken
 from shares import updateSharedItemFederationToken
 from shares import mergeSharedItemTokens
 
+testServerGroupRunning = False
 testServerAliceRunning = False
 testServerBobRunning = False
 testServerEveRunning = False
+thrGroup = None
 thrAlice = None
 thrBob = None
 thrEve = None
@@ -773,6 +776,72 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               sendThreads, False)
 
 
+def createServerGroup(path: str, domain: str, port: int,
+                      federationList: [],
+                      hasFollows: bool, hasPosts: bool,
+                      sendThreads: []):
+    print('Creating test server: Group on port ' + str(port))
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+    os.chdir(path)
+    sharedItemsFederatedDomains = []
+    # systemLanguage = 'en'
+    nickname = 'testgroup'
+    httpPrefix = 'http'
+    proxyType = None
+    password = 'testgrouppass'
+    maxReplies = 64
+    domainMaxPostsPerDay = 1000
+    accountMaxPostsPerDay = 1000
+    allowDeletion = True
+    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+        createGroup(path, nickname, domain, port, httpPrefix, True,
+                    password)
+    deleteAllPosts(path, nickname, domain, 'inbox')
+    deleteAllPosts(path, nickname, domain, 'outbox')
+    global testServerGroupRunning
+    testServerGroupRunning = True
+    maxMentions = 10
+    maxEmoji = 10
+    onionDomain = None
+    i2pDomain = None
+    allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
+    dormantMonths = 3
+    sendThreadsTimeoutMins = 30
+    maxFollowers = 10
+    verifyAllSignatures = True
+    brochMode = False
+    showNodeInfoAccounts = True
+    showNodeInfoVersion = True
+    city = 'London, England'
+    logLoginFailures = False
+    userAgentsBlocked = []
+    print('Server running: Group')
+    runDaemon(sharedItemsFederatedDomains,
+              userAgentsBlocked,
+              logLoginFailures, city,
+              showNodeInfoAccounts,
+              showNodeInfoVersion,
+              brochMode,
+              verifyAllSignatures,
+              sendThreadsTimeoutMins,
+              dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
+              2048, False, True, False, False, True, maxFollowers,
+              0, 100, 1024, 5, False,
+              0, False, 1, False, False, False,
+              5, True, True, 'en', __version__,
+              "instanceId", False, path, domain,
+              onionDomain, i2pDomain, None, port, port,
+              httpPrefix, federationList, maxMentions, maxEmoji, False,
+              proxyType, maxReplies,
+              domainMaxPostsPerDay, accountMaxPostsPerDay,
+              allowDeletion, True, True, False, sendThreads,
+              False)
+
+
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
 
@@ -1236,6 +1305,158 @@ def testFollowBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.is_alive() is False
+
+    # queue item removed
+    time.sleep(4)
+    assert len([name for name in os.listdir(queuePath)
+                if os.path.isfile(os.path.join(queuePath, name))]) == 0
+
+    os.chdir(baseDir)
+    shutil.rmtree(baseDir + '/.tests')
+
+
+def testGroupFollow():
+    print('Testing following of a group')
+
+    global testServerAliceRunning
+    testServerAliceRunning = False
+
+    # systemLanguage = 'en'
+    httpPrefix = 'http'
+    proxyType = None
+    federationList = []
+
+    baseDir = os.getcwd()
+    if os.path.isdir(baseDir + '/.tests'):
+        shutil.rmtree(baseDir + '/.tests')
+    os.mkdir(baseDir + '/.tests')
+
+    # create the servers
+    aliceDir = baseDir + '/.tests/alice'
+    aliceDomain = '127.0.0.57'
+    alicePort = 61927
+    aliceSendThreads = []
+    # aliceAddress = aliceDomain + ':' + str(alicePort)
+
+    testgroupDir = baseDir + '/.tests/testgroup'
+    testgroupDomain = '127.0.0.63'
+    testgroupPort = 61925
+    testgroupSendThreads = []
+    testgroupAddress = testgroupDomain + ':' + str(testgroupPort)
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.is_alive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
+    thrAlice = \
+        threadWithTrace(target=createServerAlice,
+                        args=(aliceDir, aliceDomain, alicePort,
+                              testgroupAddress,
+                              federationList, False, False,
+                              aliceSendThreads),
+                        daemon=True)
+
+    global thrGroup
+    if thrGroup:
+        while thrGroup.is_alive():
+            thrGroup.stop()
+            time.sleep(1)
+        thrGroup.kill()
+
+    thrGroup = \
+        threadWithTrace(target=createServerGroup,
+                        args=(testgroupDir, testgroupDomain, testgroupPort,
+                              federationList, False, False,
+                              testgroupSendThreads),
+                        daemon=True)
+
+    thrAlice.start()
+    thrGroup.start()
+    assert thrAlice.is_alive() is True
+    assert thrGroup.is_alive() is True
+
+    # wait for all servers to be running
+    ctr = 0
+    while not (testServerAliceRunning and testServerGroupRunning):
+        time.sleep(1)
+        ctr += 1
+        if ctr > 60:
+            break
+    print('Alice online: ' + str(testServerAliceRunning))
+    print('Test Group online: ' + str(testServerGroupRunning))
+    assert ctr <= 60
+    time.sleep(1)
+
+    queuePath = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
+
+    # In the beginning the test group had no followers
+
+    print('*********************************************************')
+    print('Alice sends a follow request to the test group')
+    os.chdir(aliceDir)
+    sessionAlice = createSession(proxyType)
+    # inReplyTo = None
+    # inReplyToAtomUri = None
+    # subject = None
+    alicePostLog = []
+    # followersOnly = False
+    # saveToFile = True
+    clientToServer = False
+    # ccUrl = None
+    alicePersonCache = {}
+    aliceCachedWebfingers = {}
+    alicePostLog = []
+    testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
+    sendResult = \
+        sendFollowRequest(sessionAlice, aliceDir,
+                          'alice', aliceDomain, alicePort, httpPrefix,
+                          'testgroup', testgroupDomain, testgroupActor,
+                          testgroupPort, httpPrefix,
+                          clientToServer, federationList,
+                          aliceSendThreads, alicePostLog,
+                          aliceCachedWebfingers, alicePersonCache,
+                          True, __version__)
+    print('sendResult: ' + str(sendResult))
+
+    for t in range(16):
+        if os.path.isfile(testgroupDir + '/accounts/testgroup@' +
+                          testgroupDomain + '/followers.txt'):
+            if os.path.isfile(aliceDir + '/accounts/alice@' +
+                              aliceDomain + '/following.txt'):
+                if os.path.isfile(aliceDir + '/accounts/alice@' +
+                                  aliceDomain + '/followingCalendar.txt'):
+                    break
+        time.sleep(1)
+
+    assert validInbox(testgroupDir, 'testgroup', testgroupDomain)
+    assert validInboxFilenames(testgroupDir, 'testgroup', testgroupDomain,
+                               aliceDomain, alicePort)
+    assert 'alice@' + aliceDomain in open(testgroupDir +
+                                          '/accounts/testgroup@' +
+                                          testgroupDomain +
+                                          '/followers.txt').read()
+    assert 'testgroup@' + testgroupDomain in open(aliceDir +
+                                                  '/accounts/alice@' +
+                                                  aliceDomain +
+                                                  '/following.txt').read()
+    testgroupHandle = 'testgroup@' + testgroupDomain
+    assert testgroupHandle in open(aliceDir +
+                                   '/accounts/alice@' +
+                                   aliceDomain +
+                                   '/followingCalendar.txt').read()
+
+    # stop the servers
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.is_alive() is False
+
+    thrGroup.kill()
+    thrGroup.join()
+    assert thrGroup.is_alive() is False
 
     # queue item removed
     time.sleep(4)
@@ -3285,6 +3506,7 @@ def _testFunctions():
         'getThisWeeksEvents',
         'getAvailability',
         '_testThreadsFunction',
+        'createServerGroup',
         'createServerAlice',
         'createServerBob',
         'createServerEve',

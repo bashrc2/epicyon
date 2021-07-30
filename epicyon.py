@@ -54,6 +54,7 @@ from follow import clearFollows
 from follow import followerOfPerson
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from tests import testGroupFollow
 from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
@@ -608,6 +609,7 @@ if args.tests:
     sys.exit()
 if args.testsnetwork:
     print('Network Tests')
+    testGroupFollow()
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
