@@ -227,13 +227,15 @@ def getDefaultPersonContext() -> str:
 def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str, saveToFile: bool,
                       manualFollowerApproval: bool,
-                      password: str = None) -> (str, str, {}, {}):
+                      groupAccount: bool,
+                      password: str) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     privateKeyPem, publicKeyPem = generateRSAKey()
     webfingerEndpoint = \
         createWebfingerEndpoint(nickname, domain, port,
-                                httpPrefix, publicKeyPem)
+                                httpPrefix, publicKeyPem,
+                                groupAccount)
     if saveToFile:
         storeWebfingerEndpoint(nickname, domain, port,
                                baseDir, webfingerEndpoint)
@@ -243,6 +245,8 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
     domain = getFullDomain(domain, port)
 
     personType = 'Person'
+    if groupAccount:
+        personType = 'Group'
     # Enable follower approval by default
     approveFollowers = manualFollowerApproval
     personName = nickname
@@ -436,8 +440,8 @@ def createGroup(baseDir: str, nickname: str, domain: str, port: int,
      newPerson, webfingerEndpoint) = createPerson(baseDir, nickname,
                                                   domain, port,
                                                   httpPrefix, saveToFile,
-                                                  False, password)
-    newPerson['type'] = 'Group'
+                                                  False, password, True)
+
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
@@ -458,7 +462,8 @@ def savePersonQrcode(baseDir: str,
 def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  httpPrefix: str, saveToFile: bool,
                  manualFollowerApproval: bool,
-                 password: str = None) -> (str, str, {}, {}):
+                 password: str,
+                 groupAccount: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not validNickname(domain, nickname):
@@ -484,6 +489,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                                                        httpPrefix,
                                                        saveToFile,
                                                        manualFollowerApproval,
+                                                       groupAccount,
                                                        password)
     if not getConfigParam(baseDir, 'admin'):
         if nickname != 'news':
@@ -554,7 +560,7 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
     """Generates the shared inbox
     """
     return _createPersonBase(baseDir, nickname, domain, port, httpPrefix,
-                             True, True, None)
+                             True, True, False, None)
 
 
 def createNewsInbox(baseDir: str, domain: str, port: int,
@@ -1216,7 +1222,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
        handle.startswith('http') or \
        handle.startswith('hyper'):
         if detectedUsersPath == '/c/':
-            requiresWebfinger = False
+            # requiresWebfinger = False
+            requiresWebfinger = True
         # format: https://domain/@nick
         originalHandle = handle
         if not hasUsersPath(originalHandle):
@@ -1258,7 +1265,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         elif handle.startswith('!'):
             # handle for a group
             handle = handle[1:]
-            requiresWebfinger = False
+            # requiresWebfinger = False
+            requiresWebfinger = True
         if '@' not in handle:
             if not quiet:
                 print('getActorJsonSyntax: --actor nickname@domain')

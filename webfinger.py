@@ -139,7 +139,8 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
 
 
 def createWebfingerEndpoint(nickname: str, domain: str, port: int,
-                            httpPrefix: str, publicKeyPem) -> {}:
+                            httpPrefix: str, publicKeyPem: str,
+                            groupAccount: bool) -> {}:
     """Creates a webfinger endpoint for a user
     """
     originalDomain = domain
@@ -147,7 +148,10 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
 
     personName = nickname
     personId = httpPrefix + "://" + domain + "/users/" + personName
-    subjectStr = "acct:" + personName + "@" + originalDomain
+    if not groupAccount:
+        subjectStr = "acct:" + personName + "@" + originalDomain
+    else:
+        subjectStr = "group:" + personName + "@" + originalDomain
     profilePageHref = httpPrefix + "://" + domain + "/@" + nickname
     if nickname == 'inbox' or nickname == originalDomain:
         personName = 'actor'
@@ -225,17 +229,20 @@ def webfingerLookup(path: str, baseDir: str,
     if not path.startswith('/.well-known/webfinger?'):
         return None
     handle = None
-    if 'resource=acct:' in path:
-        handle = path.split('resource=acct:')[1].strip()
-        handle = urllib.parse.unquote(handle)
-        if debug:
-            print('DEBUG: WEBFINGER handle ' + handle)
-    else:
-        if 'resource=acct%3A' in path:
-            handle = path.split('resource=acct%3A')[1]
+    resourceTypes = ('acct', 'group')
+    for resType in resourceTypes:
+        if 'resource=' + resType + ':' in path:
+            handle = path.split('resource=' + resType + ':')[1].strip()
+            handle = urllib.parse.unquote(handle)
+            if debug:
+                print('DEBUG: WEBFINGER handle ' + handle)
+            break
+        elif 'resource=' + resType + '%3A' in path:
+            handle = path.split('resource=' + resType + '%3A')[1]
             handle = urllib.parse.unquote(handle.strip())
             if debug:
                 print('DEBUG: WEBFINGER handle ' + handle)
+            break
     if not handle:
         if debug:
             print('DEBUG: WEBFINGER handle missing')
