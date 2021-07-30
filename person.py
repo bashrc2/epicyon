@@ -53,6 +53,7 @@ from utils import getImageExtensions
 from utils import isImageFile
 from utils import acctDir
 from utils import getUserPaths
+from utils import getGroupPaths
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -1213,7 +1214,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if debug:
         print('getActorJson for ' + handle)
     originalActor = handle
-    requiresWebfinger = True
+    groupAccount = False
 
     # try to determine the users path
     detectedUsersPath = _detectUsersPath(handle)
@@ -1221,9 +1222,9 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
        detectedUsersPath in handle or \
        handle.startswith('http') or \
        handle.startswith('hyper'):
-        if detectedUsersPath == '/c/':
-            # requiresWebfinger = False
-            requiresWebfinger = True
+        groupPaths = getGroupPaths()
+        if detectedUsersPath in groupPaths:
+            groupAccount = True
         # format: https://domain/@nick
         originalHandle = handle
         if not hasUsersPath(originalHandle):
@@ -1265,8 +1266,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         elif handle.startswith('!'):
             # handle for a group
             handle = handle[1:]
-            # requiresWebfinger = False
-            requiresWebfinger = True
+            groupAccount = True
         if '@' not in handle:
             if not quiet:
                 print('getActorJsonSyntax: --actor nickname@domain')
@@ -1296,39 +1296,34 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         nickname = domain
 
     handle = nickname + '@' + domain
-    if requiresWebfinger:
-        # person actor requires webfinger
-        wfRequest = webfingerHandle(session, handle,
-                                    httpPrefix, cachedWebfingers,
-                                    None, __version__, debug)
-        if not wfRequest:
-            if not quiet:
-                print('getActorJson Unable to webfinger ' + handle)
-            return None, None
-        if not isinstance(wfRequest, dict):
-            if not quiet:
-                print('getActorJson Webfinger for ' + handle +
-                      ' did not return a dict. ' + str(wfRequest))
-            return None, None
-
+    wfRequest = webfingerHandle(session, handle,
+                                httpPrefix, cachedWebfingers,
+                                None, __version__, debug,
+                                groupAccount)
+    if not wfRequest:
         if not quiet:
-            pprint(wfRequest)
+            print('getActorJson Unable to webfinger ' + handle)
+        return None, None
+    if not isinstance(wfRequest, dict):
+        if not quiet:
+            print('getActorJson Webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wfRequest))
+        return None, None
 
-        personUrl = None
-        if wfRequest.get('errors'):
-            if not quiet or debug:
-                print('getActorJson wfRequest error: ' +
-                      str(wfRequest['errors']))
-            if hasUsersPath(handle):
-                personUrl = originalActor
-            else:
-                if debug:
-                    print('No users path in ' + handle)
-                return None, None
-    else:
-        # group actor only needs a json http GET
-        originalActor = httpPrefix + '://' + domain + '/c/' + nickname
-        personUrl = originalActor
+    if not quiet:
+        pprint(wfRequest)
+
+    personUrl = None
+    if wfRequest.get('errors'):
+        if not quiet or debug:
+            print('getActorJson wfRequest error: ' +
+                  str(wfRequest['errors']))
+        if hasUsersPath(handle):
+            personUrl = originalActor
+        else:
+            if debug:
+                print('No users path in ' + handle)
+            return None, None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
     headersList = (

@@ -984,7 +984,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug)
+                        fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: follow request webfinger failed for ' + handle)
@@ -1075,7 +1075,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug)
+                        fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unfollow webfinger failed for ' + handle)

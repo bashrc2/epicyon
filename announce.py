@@ -235,7 +235,7 @@ def sendAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -315,7 +315,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: undo announce webfinger failed for ' + handle)

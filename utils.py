@@ -979,6 +979,13 @@ def getUserPaths() -> []:
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/', '/c/')
 
 
+def getGroupPaths() -> []:
+    """Returns possible group paths
+    e.g. /c/groupname
+    """
+    return ('/c/')
+
+
 def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """

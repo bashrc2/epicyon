@@ -2053,7 +2053,7 @@ def _individualFollowAsHtml(translate: {},
     followUrlWf = \
         webfingerHandle(session, followUrlHandle, httpPrefix,
                         cachedWebfingers,
-                        domain, __version__, debug)
+                        domain, __version__, debug, False)
 
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,

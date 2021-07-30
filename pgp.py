@@ -547,7 +547,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, __version__, debug)
+                        domain, __version__, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: pgp actor update webfinger failed for ' +

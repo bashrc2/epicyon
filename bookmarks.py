@@ -376,7 +376,7 @@ def sendBookmarkViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: bookmark webfinger failed for ' + handle)
@@ -461,7 +461,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unbookmark webfinger failed for ' + handle)

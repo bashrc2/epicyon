@@ -208,7 +208,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)

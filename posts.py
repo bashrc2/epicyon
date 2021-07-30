@@ -1957,7 +1957,7 @@ def sendPost(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         return 1
     if not isinstance(wfRequest, dict):
@@ -2077,7 +2077,7 @@ def sendPostViaServer(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug)
+                        fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
@@ -2275,7 +2275,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2624,7 +2624,7 @@ def _hasSharedInbox(session, httpPrefix: str, domain: str,
     ]
     for handle in tryHandles:
         wfRequest = webfingerHandle(session, handle, httpPrefix, {},
-                                    None, __version__, debug)
+                                    None, __version__, debug, False)
         if wfRequest:
             if isinstance(wfRequest, dict):
                 if not wfRequest.get('errors'):
@@ -3594,7 +3594,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         sys.exit()
     if not isinstance(wfRequest, dict):
@@ -3637,7 +3637,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         return domainList
     if not isinstance(wfRequest, dict):
@@ -3717,7 +3717,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         return {}
     if not isinstance(wfRequest, dict):
@@ -4214,7 +4214,7 @@ def sendBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: block webfinger failed for ' + handle)
@@ -4290,7 +4290,7 @@ def sendMuteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: mute webfinger failed for ' + handle)
@@ -4371,7 +4371,7 @@ def sendUndoMuteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: undo mute webfinger failed for ' + handle)
@@ -4457,7 +4457,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unblock webfinger failed for ' + handle)

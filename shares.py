@@ -509,7 +509,7 @@ def sendShareViaServer(baseDir, session,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug)
+                        fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -610,7 +610,7 @@ def sendUndoShareViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug)
+                        fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unshare webfinger failed for ' + handle)
