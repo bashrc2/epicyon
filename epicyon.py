@@ -1873,6 +1873,9 @@ if args.addgroup:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+    if nickname.startswith('!'):
+        # remove preceding group indicator
+        nickname = nickname[1:]
     if not validNickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
