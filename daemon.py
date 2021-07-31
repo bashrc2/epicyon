@@ -9905,11 +9905,19 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show profile posts')
         else:
             if self._fetchAuthenticated():
+                acceptStr = self.headers['Accept']
                 msgStr = json.dumps(actorJson, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/ld+json', msglen,
-                                  cookie, callingDomain)
+                if 'application/ld+json' in acceptStr:
+                    self._set_headers('application/ld+json', msglen,
+                                      cookie, callingDomain)
+                elif 'application/jrd+json' in acceptStr:
+                    self._set_headers('application/jrd+json', msglen,
+                                      cookie, callingDomain)
+                else:
+                    self._set_headers('application/activity+json', msglen,
+                                      cookie, callingDomain)
                 self._write(msg)
             else:
                 self._404()
