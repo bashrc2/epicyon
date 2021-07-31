@@ -109,7 +109,10 @@ def manualApproveFollowRequest(session, baseDir: str,
     if approveHandle in approveFollowsStr:
         exists = True
     elif '@' in approveHandle:
-        reqNick = approveHandle.split('@')[0]
+        groupAccount = False
+        if approveHandle.startswith('!'):
+            groupAccount = True
+        reqNick = approveHandle.split('@')[0].replace('!', '')
         reqDomain = approveHandle.split('@')[1].strip()
         reqPrefix = httpPrefix + '://' + reqDomain
         paths = getUserPaths()
@@ -117,6 +120,8 @@ def manualApproveFollowRequest(session, baseDir: str,
             if reqPrefix + userPath + reqNick in approveFollowsStr:
                 exists = True
                 approveHandleFull = reqPrefix + userPath + reqNick
+                if groupAccount:
+                    approveHandleFull = '!' + approveHandleFull
                 break
     if not exists:
         print('Manual follow accept: ' + approveHandleFull +

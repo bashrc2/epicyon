@@ -546,7 +546,8 @@ def _storeFollowRequest(baseDir: str,
                         nicknameToFollow: str, domainToFollow: str, port: int,
                         nickname: str, domain: str, fromPort: int,
                         followJson: {},
-                        debug: bool, personUrl: str) -> bool:
+                        debug: bool, personUrl: str,
+                        groupAccount: bool) -> bool:
     """Stores the follow request for later use
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -554,9 +555,11 @@ def _storeFollowRequest(baseDir: str,
     if not os.path.isdir(accountsDir):
         return False
 
-    approveHandle = nickname + '@' + domain
     domainFull = getFullDomain(domain, fromPort)
     approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
+
+    if groupAccount:
+        approveHandle = '!' + approveHandle
 
     followersFilename = accountsDir + '/followers.txt'
     if os.path.isfile(followersFilename):
@@ -600,6 +603,8 @@ def _storeFollowRequest(baseDir: str,
     approveHandleStored = approveHandle
     if '/users/' not in personUrl:
         approveHandleStored = personUrl
+        if groupAccount:
+            approveHandle = '!' + approveHandle
 
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
@@ -733,11 +738,26 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                 print('Too many follow requests')
                 return False
 
+        # Get the actor for the follower and add it to the cache.
+        # Getting their public key has the same result
+        if debug:
+            print('Obtaining the following actor: ' + messageJson['actor'])
+        if not getPersonPubKey(baseDir, session, messageJson['actor'],
+                               personCache, debug, projectVersion,
+                               httpPrefix, domainToFollow, onionDomain):
+            if debug:
+                print('Unable to obtain following actor: ' +
+                      messageJson['actor'])
+
+        groupAccount = \
+            hasGroupType(baseDir, messageJson['object'], personCache)
+
         print('Storing follow request for approval')
         return _storeFollowRequest(baseDir,
                                    nicknameToFollow, domainToFollow, port,
                                    nickname, domain, fromPort,
-                                   messageJson, debug, messageJson['actor'])
+                                   messageJson, debug, messageJson['actor'],
+                                   groupAccount)
     else:
         print('Follow request does not require approval')
         # update the followers
