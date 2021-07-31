@@ -1049,6 +1049,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             self._404()
             return True
+        if self.path.startswith('/poco'):
+            # NOTE: I have no idea what this endpoint is for, but
+            # other systems try to access it
+            self._404()
+            return True
         if self.path.startswith('/.well-known/nodeinfo') or \
            self.path.startswith('/.well-known/x-nodeinfo'):
             if callingDomain.endswith('.onion') and \
