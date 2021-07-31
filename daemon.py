@@ -1049,9 +1049,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             self._404()
             return True
-        if self.path.startswith('/poco'):
-            # NOTE: I have no idea what this endpoint is for, but
-            # other systems try to access it
+        if self.path.startswith('/api/statusnet') or \
+           self.path.startswith('/api/gnusocial') or \
+           self.path.startswith('/siteinfo') or \
+           self.path.startswith('/poco') or \
+           self.path.startswith('/friendi'):
             self._404()
             return True
         if self.path.startswith('/.well-known/nodeinfo') or \
