@@ -1049,7 +1049,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             self._404()
             return True
-        if self.path.startswith('/.well-known/nodeinfo'):
+        if self.path.startswith('/.well-known/nodeinfo') or \
+           self.path.startswith('/.well-known/x-nodeinfo'):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 wfResult = \
