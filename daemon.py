@@ -9905,13 +9905,6 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show profile posts')
         else:
             if self._fetchAuthenticated():
-                # TODO this is a test
-                del actorJson['hasOccupation']
-                del actorJson['shares']
-                del actorJson['orgSchema']
-                del actorJson['availability']
-                del actorJson['occupationName']
-                del actorJson['tts']
                 msgStr = json.dumps(actorJson, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
                 msglen = len(msg)
