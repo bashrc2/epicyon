@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from utils import hasGroupType
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import removeIdEnding
@@ -159,9 +160,16 @@ def createAnnounce(session, baseDir: str, federationList: [],
     announceNickname = None
     announceDomain = None
     announcePort = None
+    groupAccount = False
     if hasUsersPath(objectUrl):
         announceNickname = getNicknameFromActor(objectUrl)
         announceDomain, announcePort = getDomainFromActor(objectUrl)
+        if '/' + str(announceNickname) + '/' in objectUrl:
+            announceActor = \
+                objectUrl.split('/' + announceNickname + '/')[0] + \
+                '/' + announceNickname
+            if hasGroupType(baseDir, announceActor, personCache):
+                groupAccount = True
 
     if announceNickname and announceDomain:
         sendSignedJson(newAnnounce, session, baseDir,
@@ -169,7 +177,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
                        announceNickname, announceDomain, announcePort, None,
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion, None)
+                       debug, projectVersion, None, groupAccount)
 
     return newAnnounce
 

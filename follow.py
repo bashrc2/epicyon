@@ -862,13 +862,20 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
             except BaseException:
                 pass
 
+    groupAccount = False
+    if followJson:
+        if followJson.get('actor'):
+            if hasGroupType(baseDir, followJson['actor'], personCache):
+                groupAccount = True
+
     return sendSignedJson(acceptJson, session, baseDir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
                           httpPrefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion, None)
+                          personCache, debug, projectVersion, None,
+                          groupAccount)
 
 
 def followedAccountRejects(session, baseDir: str, httpPrefix: str,
@@ -914,6 +921,9 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
               nickname + '@' + domain + ' port ' + str(fromPort))
     clientToServer = False
     denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
+    groupAccount = False
+    if hasGroupType(baseDir, personUrl, personCache):
+        groupAccount = True
     # remove from the follow requests file
     removeFromFollowRequests(baseDir, nicknameToFollow, domainToFollow,
                              denyHandle, debug)
@@ -929,7 +939,8 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
                           httpPrefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion, None)
+                          personCache, debug, projectVersion, None,
+                          groupAccount)
 
 
 def sendFollowRequest(session, baseDir: str,
@@ -992,7 +1003,7 @@ def sendFollowRequest(session, baseDir: str,
                    httpPrefix, True, clientToServer,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
-                   debug, projectVersion, None)
+                   debug, projectVersion, None, groupAccount)
 
     return newFollowJson
 

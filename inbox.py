@@ -1950,6 +1950,10 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
         for memberHandle in groupMembers:
             if memberHandle != handle:
                 memberNickname = memberHandle.split('@')[0]
+                groupAccount = False
+                if memberNickname.startswith('!'):
+                    memberNickname = memberNickname[1:]
+                    groupAccount = True
                 memberDomain = memberHandle.split('@')[1]
                 memberPort = port
                 if ':' in memberDomain:
@@ -1960,7 +1964,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                                memberNickname, memberDomain, memberPort, cc,
                                httpPrefix, False, False, federationList,
                                sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, __version__, None)
+                               personCache, debug, __version__, None,
+                               groupAccount)
 
 
 def _inboxUpdateCalendar(baseDir: str, handle: str,
@@ -2093,6 +2098,10 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     lastBounceMessage[0] = currTime
 
     senderNickname = sendingHandle.split('@')[0]
+    groupAccount = False
+    if sendingHandle.startswith('!'):
+        sendingHandle = sendingHandle[1:]
+        groupAccount = True
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
     if ':' in senderDomain:
@@ -2138,7 +2147,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                    senderNickname, senderDomain, senderPort, cc,
                    httpPrefix, False, False, federationList,
                    sendThreads, postLog, cachedWebfingers,
-                   personCache, debug, __version__, None)
+                   personCache, debug, __version__, None, groupAccount)
     return True
 
 

@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import hasGroupType
 from utils import getBaseContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -1912,8 +1913,12 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         if debug:
             # save the log file
             postLogFilename = baseDir + '/post.log'
-            with open(postLogFilename, 'a+') as logFile:
-                logFile.write(logStr + '\n')
+            if os.path.isfile(postLogFilename):
+                with open(postLogFilename, 'a+') as logFile:
+                    logFile.write(logStr + '\n')
+            else:
+                with open(postLogFilename, 'w+') as logFile:
+                    logFile.write(logStr + '\n')
 
         if postResult:
             if debug:
@@ -2239,7 +2244,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                    federationList: [],
                    sendThreads: [], postLog: [], cachedWebfingers: {},
                    personCache: {}, debug: bool, projectVersion: str,
-                   sharedItemsToken: str) -> int:
+                   sharedItemsToken: str, groupAccount: bool) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2275,7 +2280,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                                domain, projectVersion, debug, False)
+                                domain, projectVersion, debug, groupAccount)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2603,6 +2608,8 @@ def sendToNamedAddresses(session, baseDir: str,
             if sharedItemFederationTokens.get(fromDomain):
                 sharedItemsToken = sharedItemFederationTokens[fromDomain]
 
+        groupAccount = hasGroupType(baseDir, address, personCache)
+
         sendSignedJson(postJsonObject, session, baseDir,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
@@ -2610,7 +2617,7 @@ def sendToNamedAddresses(session, baseDir: str,
                        federationList,
                        sendThreads, postLog, cachedWebfingers,
                        personCache, debug, projectVersion,
-                       sharedItemsToken)
+                       sharedItemsToken, groupAccount)
 
 
 def _hasSharedInbox(session, httpPrefix: str, domain: str,
@@ -2751,6 +2758,11 @@ def sendToFollowers(session, baseDir: str,
         if withSharedInbox:
             toNickname = followerHandles[index].split('@')[0]
 
+            groupAccount = False
+            if toNickname.startswith('!'):
+                groupAccount = True
+                toNickname = toNickname[1:]
+
             # if there are more than one followers on the domain
             # then send the post to the shared inbox
             if len(followerHandles) > 1:
@@ -2773,12 +2785,17 @@ def sendToFollowers(session, baseDir: str,
                            federationList,
                            sendThreads, postLog, cachedWebfingers,
                            personCache, debug, projectVersion,
-                           sharedItemsToken)
+                           sharedItemsToken, groupAccount)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
                 print('Sending post to followers ' + handle)
                 toNickname = handle.split('@')[0]
+
+                groupAccount = False
+                if toNickname.startswith('!'):
+                    groupAccount = True
+                    toNickname = toNickname[1:]
 
                 if postJsonObject['type'] != 'Update':
                     print('Sending post to followers from ' +
@@ -2796,7 +2813,7 @@ def sendToFollowers(session, baseDir: str,
                                federationList,
                                sendThreads, postLog, cachedWebfingers,
                                personCache, debug, projectVersion,
-                               sharedItemsToken)
+                               sharedItemsToken, groupAccount)
 
         time.sleep(4)
 

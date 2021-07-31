@@ -18,6 +18,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
+from utils import hasGroupType
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -85,13 +86,20 @@ def _like(recentPostsCache: {},
     likedPostNickname = None
     likedPostDomain = None
     likedPostPort = None
+    groupAccount = False
     if actorLiked:
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
+        groupAccount = hasGroupType(baseDir, actorLiked, personCache)
     else:
         if hasUsersPath(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
             likedPostDomain, likedPostPort = getDomainFromActor(objectUrl)
+            if '/' + str(likedPostNickname) + '/' in objectUrl:
+                actorLiked = \
+                    objectUrl.split('/' + likedPostNickname + '/')[0] + \
+                    '/' + likedPostNickname
+                groupAccount = hasGroupType(baseDir, actorLiked, personCache)
 
     if likedPostNickname:
         postFilename = locatePost(baseDir, nickname, domain, objectUrl)
@@ -113,7 +121,7 @@ def _like(recentPostsCache: {},
                        'https://www.w3.org/ns/activitystreams#Public',
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion, None)
+                       debug, projectVersion, None, groupAccount)
 
     return newLikeJson
 
