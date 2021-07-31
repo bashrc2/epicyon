@@ -1081,6 +1081,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     else:
         handleToFollow = followNickname + '@' + followDomain
 
+    if groupAccount:
+        handleToFollow = '!' + handleToFollow
+
     # was this person previously unfollowed?
     unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
@@ -1098,6 +1101,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     handleToFollow = followNickname + '@' + followDomain
+    if groupAccount:
+        handleToFollow = '!' + handleToFollow
     filename = baseDir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
@@ -2682,13 +2687,33 @@ def dateSecondsToString(dateSec: int) -> str:
     return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def hasGroupPath(actor: str) -> bool:
-    """Does the given actor url contain a path which indicates
-    that it belongs to a group?
-    e.g. https://lemmy/c/groupname
+def hasGroupType(baseDir: str, actor: str, personCache: {}) -> bool:
+    """Does the given actor url have a group type?
     """
+    # does the actor path clearly indicate that this is a group?
+    # eg. https://lemmy/c/groupname
     groupPaths = getGroupPaths()
     for grpPath in groupPaths:
         if grpPath in actor:
             return True
+    # is there a cached actor which can be examined for Group type?
+    return isGroupActor(baseDir, actor, personCache)
+
+
+def isGroupActor(baseDir: str, actor: str, personCache: {}) -> bool:
+    """Is the given actor a group?
+    """
+    if personCache:
+        if personCache.get(actor):
+            if personCache[actor].get('actor'):
+                if personCache[actor]['actor'].get('type'):
+                    if personCache[actor]['actor']['type'] == 'Group':
+                        return True
+                return False
+    cachedActorFilename = \
+        baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+    if not os.path.isfile(cachedActorFilename):
+        return False
+    if '"type": "Group"' in open(cachedActorFilename).read():
+        return True
     return False

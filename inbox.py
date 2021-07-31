@@ -45,19 +45,18 @@ from utils import loadJson
 from utils import saveJson
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
-from utils import hasGroupPath
+from utils import hasGroupType
 from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
-from session import getJson
 from follow import isFollowingActor
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
 from follow import unfollowerOfAccount
 from pprint import pprint
-from cache import getPersonFromCache
 from cache import storePersonInCache
+from cache import getPersonPubKey
 from acceptreject import receiveAcceptReject
 from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
@@ -232,55 +231,6 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
                 return False
         break
     return True
-
-
-def getPersonPubKey(baseDir: str, session, personUrl: str,
-                    personCache: {}, debug: bool,
-                    projectVersion: str, httpPrefix: str,
-                    domain: str, onionDomain: str) -> str:
-    if not personUrl:
-        return None
-    personUrl = personUrl.replace('#main-key', '')
-    usersPaths = getUserPaths()
-    for possibleUsersPath in usersPaths:
-        if personUrl.endswith(possibleUsersPath + 'inbox'):
-            if debug:
-                print('DEBUG: Obtaining public key for shared inbox')
-            personUrl = \
-                personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
-            break
-    personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, True)
-    if not personJson:
-        if debug:
-            print('DEBUG: Obtaining public key for ' + personUrl)
-        personDomain = domain
-        if onionDomain:
-            if '.onion/' in personUrl:
-                personDomain = onionDomain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/activity+json; profile="' + profileStr + '"'
-        }
-        personJson = \
-            getJson(session, personUrl, asHeader, None, debug,
-                    projectVersion, httpPrefix, personDomain)
-        if not personJson:
-            return None
-    pubKey = None
-    if personJson.get('publicKey'):
-        if personJson['publicKey'].get('publicKeyPem'):
-            pubKey = personJson['publicKey']['publicKeyPem']
-    else:
-        if personJson.get('publicKeyPem'):
-            pubKey = personJson['publicKeyPem']
-
-    if not pubKey:
-        if debug:
-            print('DEBUG: Public key not found for ' + personUrl)
-
-    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
-    return pubKey
 
 
 def inboxMessageHasParams(messageJson: {}) -> bool:
@@ -676,7 +626,7 @@ def _receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    groupAccount = hasGroupPath(messageJson['object']['actor'])
+    groupAccount = hasGroupType(baseDir, messageJson['object']['actor'], None)
     if unfollowerOfAccount(baseDir,
                            nicknameFollowing, domainFollowingFull,
                            nicknameFollower, domainFollowerFull,
@@ -3148,7 +3098,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 queueJson['post'],
                                 federationList,
                                 debug, projectVersion,
-                                maxFollowers):
+                                maxFollowers, onionDomain):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:

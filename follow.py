@@ -28,13 +28,14 @@ from utils import saveJson
 from utils import isAccountDir
 from utils import getUserPaths
 from utils import acctDir
-from utils import hasGroupPath
+from utils import hasGroupType
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from session import getJson
 from session import postJson
+from cache import getPersonPubKey
 
 
 def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
@@ -626,7 +627,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
                          debug: bool, projectVersion: str,
-                         maxFollowers: int) -> bool:
+                         maxFollowers: int, onionDomain: str) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -740,22 +741,34 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     else:
         print('Follow request does not require approval')
         # update the followers
-        if os.path.isdir(baseDir + '/accounts/' +
-                         nicknameToFollow + '@' + domainToFollow):
-            followersFilename = \
-                baseDir + '/accounts/' + \
-                nicknameToFollow + '@' + domainToFollow + '/followers.txt'
+        accountToBeFollowed = \
+            acctDir(baseDir, nicknameToFollow, domainToFollow)
+        if os.path.isdir(accountToBeFollowed):
+            followersFilename = accountToBeFollowed + '/followers.txt'
 
             # for actors which don't follow the mastodon
             # /users/ path convention store the full actor
             if '/users/' not in messageJson['actor']:
                 approveHandle = messageJson['actor']
 
+            # Get the actor for the follower and add it to the cache.
+            # Getting their public key has the same result
+            if debug:
+                print('Obtaining the following actor: ' + messageJson['actor'])
+            if not getPersonPubKey(baseDir, session, messageJson['actor'],
+                                   personCache, debug, projectVersion,
+                                   httpPrefix, domainToFollow, onionDomain):
+                if debug:
+                    print('Unable to obtain following actor: ' +
+                          messageJson['actor'])
+
             print('Updating followers file: ' +
                   followersFilename + ' adding ' + approveHandle)
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
-                    groupAccount = hasGroupPath(messageJson['object'])
+                    groupAccount = \
+                        hasGroupType(baseDir, messageJson['object'],
+                                     personCache)
                     try:
                         with open(followersFilename, 'r+') as followersFile:
                             content = followersFile.read()
@@ -925,7 +938,7 @@ def sendFollowRequest(session, baseDir: str,
     if followNickname:
         followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
-        groupAccount = hasGroupPath(followedActor)
+        groupAccount = hasGroupType(baseDir, followedActor, personCache)
         if groupAccount:
             followHandle = '!' + followHandle
     else:
@@ -1435,7 +1448,7 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    groupAccount = hasGroupPath(messageJson['object']['object'])
+    groupAccount = hasGroupType(baseDir, messageJson['object']['object'], None)
     if unfollowAccount(baseDir, nicknameFollower, domainFollowerFull,
                        nicknameFollowing, domainFollowingFull,
                        debug, groupAccount):

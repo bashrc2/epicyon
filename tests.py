@@ -39,6 +39,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import isGroupActor
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
 from utils import validPassword
@@ -1261,6 +1262,7 @@ def testFollowBetweenServers():
     assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
+    assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
@@ -1319,7 +1321,10 @@ def testGroupFollow():
     print('Testing following of a group')
 
     global testServerAliceRunning
+    global testServerGroupRunning
+    systemLanguage = 'en'
     testServerAliceRunning = False
+    testServerGroupRunning = False
 
     # systemLanguage = 'en'
     httpPrefix = 'http'
@@ -1399,17 +1404,18 @@ def testGroupFollow():
     print('Alice sends a follow request to the test group')
     os.chdir(aliceDir)
     sessionAlice = createSession(proxyType)
-    # inReplyTo = None
-    # inReplyToAtomUri = None
-    # subject = None
+    inReplyTo = None
+    inReplyToAtomUri = None
+    subject = None
     alicePostLog = []
-    # followersOnly = False
-    # saveToFile = True
+    followersOnly = False
+    saveToFile = True
     clientToServer = False
-    # ccUrl = None
+    ccUrl = None
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
+    # aliceActor = httpPrefix + '://' + aliceAddress + '/users/alice'
     testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
@@ -1422,32 +1428,88 @@ def testGroupFollow():
                           True, __version__)
     print('sendResult: ' + str(sendResult))
 
+    aliceFollowingFilename = \
+        aliceDir + '/accounts/alice@' + aliceDomain + '/following.txt'
+    aliceFollowingCalendarFilename = \
+        aliceDir + '/accounts/alice@' + aliceDomain + \
+        '/followingCalendar.txt'
+    testgroupFollowersFilename = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + \
+        '/followers.txt'
+
     for t in range(16):
-        if os.path.isfile(testgroupDir + '/accounts/testgroup@' +
-                          testgroupDomain + '/followers.txt'):
-            if os.path.isfile(aliceDir + '/accounts/alice@' +
-                              aliceDomain + '/following.txt'):
-                if os.path.isfile(aliceDir + '/accounts/alice@' +
-                                  aliceDomain + '/followingCalendar.txt'):
+        if os.path.isfile(testgroupFollowersFilename):
+            if os.path.isfile(aliceFollowingFilename):
+                if os.path.isfile(aliceFollowingCalendarFilename):
                     break
         time.sleep(1)
 
     assert validInbox(testgroupDir, 'testgroup', testgroupDomain)
     assert validInboxFilenames(testgroupDir, 'testgroup', testgroupDomain,
                                aliceDomain, alicePort)
-    assert 'alice@' + aliceDomain in open(testgroupDir +
-                                          '/accounts/testgroup@' +
-                                          testgroupDomain +
-                                          '/followers.txt').read()
-    assert 'testgroup@' + testgroupDomain in open(aliceDir +
-                                                  '/accounts/alice@' +
-                                                  aliceDomain +
-                                                  '/following.txt').read()
+    assert 'alice@' + aliceDomain in open(testgroupFollowersFilename).read()
+
+    testgroupWebfingerFilename = \
+        testgroupDir + '/wfendpoints/testgroup@' + \
+        testgroupDomain + ':' + str(testgroupPort) + '.json'
+    assert os.path.isfile(testgroupWebfingerFilename)
+    assert 'group:testgroup@' in open(testgroupWebfingerFilename).read()
+    print('group: exists within the webfinger endpoint for testgroup')
+
     testgroupHandle = 'testgroup@' + testgroupDomain
-    assert testgroupHandle in open(aliceDir +
-                                   '/accounts/alice@' +
-                                   aliceDomain +
-                                   '/followingCalendar.txt').read()
+    followingStr = ''
+    with open(aliceFollowingFilename, 'r') as fp:
+        followingStr = fp.read()
+        print('Alice following.txt:\n\n' + followingStr)
+    if '!testgroup' not in followingStr:
+        print('Alice following.txt does not contain !testgroup@' +
+              testgroupDomain + ':' + str(testgroupPort))
+    assert isGroupActor(aliceDir, testgroupActor, alicePersonCache)
+    assert '!testgroup' in followingStr
+    assert testgroupHandle in open(aliceFollowingFilename).read()
+    assert testgroupHandle in open(aliceFollowingCalendarFilename).read()
+    print('Alice follows the test group')
+
+    print('\n\n*********************************************************')
+    print('Alice posts to the test group')
+    alicePostLog = []
+    alicePersonCache = {}
+    aliceCachedWebfingers = {}
+    alicePostLog = []
+    isArticle = False
+    city = 'London, England'
+    sendResult = \
+        sendPost(__version__,
+                 sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
+                 'testgroup', testgroupDomain, testgroupPort, ccUrl,
+                 httpPrefix, "Alice group message", followersOnly,
+                 saveToFile, clientToServer, True,
+                 None, None, None, city, federationList,
+                 aliceSendThreads, alicePostLog, aliceCachedWebfingers,
+                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
+                 inReplyToAtomUri, subject)
+    print('sendResult: ' + str(sendResult))
+
+    queuePath = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
+    inboxPath = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/inbox'
+    aliceMessageArrived = False
+    startPosts = len([name for name in os.listdir(inboxPath)
+                      if os.path.isfile(os.path.join(inboxPath, name))])
+    for i in range(20):
+        time.sleep(1)
+        if os.path.isdir(inboxPath):
+            currPosts = \
+                len([name for name in os.listdir(inboxPath)
+                     if os.path.isfile(os.path.join(inboxPath, name))])
+            if currPosts > startPosts:
+                aliceMessageArrived = True
+                print('Alice post sent to test group!')
+                break
+
+    assert aliceMessageArrived is True
+    print('Post from Alice to test group succeeded')
 
     # stop the servers
     thrAlice.kill()
@@ -1465,6 +1527,7 @@ def testGroupFollow():
 
     os.chdir(baseDir)
     shutil.rmtree(baseDir + '/.tests')
+    print('Testing following of a group is complete')
 
 
 def _testFollowersOfPerson():

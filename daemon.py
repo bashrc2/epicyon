@@ -92,7 +92,6 @@ from inbox import runInboxQueue
 from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
-from inbox import getPersonPubKey
 from follow import isFollowingActor
 from follow import getFollowingFeed
 from follow import sendFollowRequest
@@ -273,7 +272,7 @@ from utils import isSuspended
 from utils import dangerousMarkup
 from utils import refreshNewswire
 from utils import isImageFile
-from utils import hasGroupPath
+from utils import hasGroupType
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -286,6 +285,7 @@ from media import processMetaData
 from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
+from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
 from theme import importTheme
 from theme import exportTheme
@@ -2569,7 +2569,9 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
-                groupAccount = hasGroupPath(followingActor)
+                groupAccount = hasGroupType(self.server.baseDir,
+                                            followingActor,
+                                            self.server.personCache)
                 unfollowAccount(self.server.baseDir, self.postToNickname,
                                 self.server.domain,
                                 followingNickname, followingDomainFull,
