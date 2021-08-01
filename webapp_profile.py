@@ -246,7 +246,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
-                              projectVersion, httpPrefix, domain):
+                              projectVersion, httpPrefix, domain, debug):
         if not item.get('actor'):
             continue
         if item['actor'] != personUrl:

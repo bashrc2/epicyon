@@ -184,13 +184,20 @@ def getUserUrl(wfRequest: {}, sourceId: int = 0, debug: bool = False) -> str:
 
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
-                  domain: str, depth=0) -> {}:
+                  domain: str, debug: bool, depth: int = 0) -> {}:
     if depth > 10:
+        if debug:
+            print('Maximum search depth reached')
         return None
 
+    if debug:
+        print('Getting user feed for ' + feedUrl)
+        print('User feed header ' + str(asHeader))
     feedJson = getJson(session, feedUrl, asHeader, None,
                        False, projectVersion, httpPrefix, domain)
     if not feedJson:
+        if debug:
+            print('No user feed was returned')
         return None
 
     if 'orderedItems' in feedJson:
@@ -203,13 +210,16 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
     elif 'next' in feedJson:
         nextUrl = feedJson['next']
 
+    if debug:
+        print('User feed next url: ' + str(nextUrl))
+        
     if nextUrl:
         if isinstance(nextUrl, str):
             if '?max_id=0' not in nextUrl:
                 userFeed = \
                     parseUserFeed(session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
-                                  domain, depth + 1)
+                                  domain, debug, depth + 1)
                 if userFeed:
                     for item in userFeed:
                         yield item
@@ -355,6 +365,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               domain: str, systemLanguage: str) -> {}:
     """Gets public posts from an outbox
     """
+    if debug:
+        print('Getting outbox posts for ' + outboxUrl)
     personPosts = {}
     if not outboxUrl:
         return personPosts
@@ -367,10 +379,12 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
     if raw:
+        if debug:
+            print('Returning the raw feed')
         result = []
         i = 0
         userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                                 projectVersion, httpPrefix, domain)
+                                 projectVersion, httpPrefix, domain, debug)
         for item in userFeed:
             result.append(item)
             i += 1
@@ -379,9 +393,11 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         pprint(result)
         return None
 
+    if debug:
+        print('Returning a human readable version of the feed')
     i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain)
+                             projectVersion, httpPrefix, domain, debug)
     for item in userFeed:
         if not item.get('id'):
             if debug:
@@ -597,7 +613,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
 
     i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain)
+                             projectVersion, httpPrefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -652,7 +668,7 @@ def _getPostsForBlockedDomains(baseDir: str,
 
     i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain)
+                             projectVersion, httpPrefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -3599,6 +3615,8 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     print('Starting new session for getting public posts')
     session = createSession(proxyType)
     if not session:
+        if debug:
+            print('Session was not created')
         return
     personCache = {}
     cachedWebfingers = {}
@@ -3610,12 +3628,16 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
                         domain, projectVersion, debug, False)
     if not wfRequest:
+        if debug:
+            print('No webfinger result was returned for ' + handle)
         sys.exit()
     if not isinstance(wfRequest, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
               str(wfRequest))
         sys.exit()
 
+    if debug:
+        print('Getting the outbox for ' + handle)
     (personUrl, pubKeyId, pubKey,
      personId, shaedInbox,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
@@ -3623,6 +3645,9 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                                             projectVersion, httpPrefix,
                                             nickname, domain, 'outbox',
                                             62524)
+    if debug:
+        print('Actor url: ' + personId)
+
     maxMentions = 10
     maxEmoji = 10
     maxAttachments = 5
