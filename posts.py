@@ -3259,6 +3259,7 @@ def _createBoxIndexed(recentPostsCache: {},
        boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks':
+        print('ERROR: invalid boxname ' + boxname)
         return None
 
     # bookmarks and events timelines are like the inbox
