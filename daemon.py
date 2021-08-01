@@ -9214,15 +9214,13 @@ class PubServer(BaseHTTPRequestHandler):
                             proxyType: str, cookie: str,
                             debug: str) -> bool:
         """Shows the outbox timeline
-        """
+        """        
         # get outbox feed for a person
         outboxFeed = \
             personBoxJson(self.server.recentPostsCache,
                           self.server.session,
-                          baseDir, domain,
-                          port, path,
-                          httpPrefix,
-                          maxPostsInFeed, 'outbox',
+                          baseDir, domain, port, path,
+                          httpPrefix, maxPostsInFeed, 'outbox',
                           authorized,
                           self.server.newswireVotesThreshold,
                           self.server.positiveVoting,
@@ -13021,19 +13019,21 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show bookmarks 2 done')
 
         # outbox timeline
-        if self._showOutboxTimeline(authorized,
-                                    callingDomain, self.path,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    self.server.domain,
-                                    self.server.domainFull,
-                                    self.server.port,
-                                    self.server.onionDomain,
-                                    self.server.i2pDomain,
-                                    GETstartTime, GETtimings,
-                                    self.server.proxyType,
-                                    cookie, self.server.debug):
-            return
+        if self.path.endswith('/outbox') or \
+           '/outbox?page=' in self.path:
+            if self._showOutboxTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show events done',
