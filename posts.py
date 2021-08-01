@@ -428,8 +428,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
                                 if urlPermitted(tagItem['icon']['url'],
-                                                federationList,
-                                                "objects:read"):
+                                                federationList):
                                     emojiName = tagItem['name']
                                     emojiIcon = tagItem['icon']['url']
                                     emoji[emojiName] = emojiIcon
@@ -461,8 +460,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     if isinstance(item['object']['inReplyTo'], str):
                         # No replies to non-permitted domains
                         if not urlPermitted(item['object']['inReplyTo'],
-                                            federationList,
-                                            "objects:read"):
+                                            federationList):
                             if debug:
                                 print('url not permitted ' +
                                       item['object']['inReplyTo'])
@@ -474,7 +472,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
                     if urlPermitted(item['object']['conversation'],
-                                    federationList, "objects:read"):
+                                    federationList):
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -484,8 +482,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             if urlPermitted(attach['url'],
-                                            federationList,
-                                            "objects:read"):
+                                            federationList):
                                 attachment.append([attach['name'],
                                                    attach['url']])
                             else:

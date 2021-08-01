@@ -2687,7 +2687,8 @@ def dateSecondsToString(dateSec: int) -> str:
     return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def hasGroupType(baseDir: str, actor: str, personCache: {}) -> bool:
+def hasGroupType(baseDir: str, actor: str, personCache: {},
+                 debug: bool = False) -> bool:
     """Does the given actor url have a group type?
     """
     # does the actor path clearly indicate that this is a group?
@@ -2695,12 +2696,15 @@ def hasGroupType(baseDir: str, actor: str, personCache: {}) -> bool:
     groupPaths = getGroupPaths()
     for grpPath in groupPaths:
         if grpPath in actor:
+            if debug:
+                print('grpPath ' + grpPath + ' in ' + actor)
             return True
     # is there a cached actor which can be examined for Group type?
-    return isGroupActor(baseDir, actor, personCache)
+    return isGroupActor(baseDir, actor, personCache, debug)
 
 
-def isGroupActor(baseDir: str, actor: str, personCache: {}) -> bool:
+def isGroupActor(baseDir: str, actor: str, personCache: {},
+                 debug: bool = False) -> bool:
     """Is the given actor a group?
     """
     if personCache:
@@ -2708,12 +2712,20 @@ def isGroupActor(baseDir: str, actor: str, personCache: {}) -> bool:
             if personCache[actor].get('actor'):
                 if personCache[actor]['actor'].get('type'):
                     if personCache[actor]['actor']['type'] == 'Group':
+                        if debug:
+                            print('Cached actor ' + actor + ' has Group type')
                         return True
                 return False
+    if debug:
+        print('Actor ' + actor + ' not in cache')
     cachedActorFilename = \
         baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
     if not os.path.isfile(cachedActorFilename):
+        if debug:
+            print('Cached actor file not found ' + cachedActorFilename)
         return False
     if '"type": "Group"' in open(cachedActorFilename).read():
+        if debug:
+            print('Group type found in ' + cachedActorFilename)
         return True
     return False

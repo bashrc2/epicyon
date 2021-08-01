@@ -162,9 +162,10 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
             return
 
     # does the url path indicate that this is a group actor
-    groupAccount = hasGroupType(baseDir, followedActor, None)
+    groupAccount = hasGroupType(baseDir, followedActor, None, debug)
     if debug:
-        print('Accepted follow is a group: ' + str(groupAccount))
+        print('Accepted follow is a group: ' + str(groupAccount) +
+              ' ' + followedActor + ' ' + baseDir)
 
     if followPerson(baseDir,
                     nickname, acceptedDomainFull,

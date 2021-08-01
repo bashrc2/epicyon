@@ -787,8 +787,11 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
                     groupAccount = \
-                        hasGroupType(baseDir, messageJson['object'],
+                        hasGroupType(baseDir, messageJson['actor'],
                                      personCache)
+                    if debug:
+                        print(approveHandle + ' / ' + messageJson['actor'] +
+                              ' is Group: ' + str(groupAccount))
                     try:
                         with open(followersFilename, 'r+') as followersFile:
                             content = followersFile.read()

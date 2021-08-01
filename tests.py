@@ -614,7 +614,7 @@ def createServerBob(path: str, domain: str, port: int,
                      False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
-    if hasFollows:
+    if hasFollows and aliceAddress:
         followPerson(path, nickname, domain,
                      'alice', aliceAddress, federationList, False, False)
         followerOfPerson(path, nickname, domain,
@@ -1321,9 +1321,11 @@ def testGroupFollow():
     print('Testing following of a group')
 
     global testServerAliceRunning
+    global testServerBobRunning
     global testServerGroupRunning
     systemLanguage = 'en'
     testServerAliceRunning = False
+    testServerBobRunning = False
     testServerGroupRunning = False
 
     # systemLanguage = 'en'
@@ -1342,6 +1344,12 @@ def testGroupFollow():
     alicePort = 61927
     aliceSendThreads = []
     # aliceAddress = aliceDomain + ':' + str(alicePort)
+
+    bobDir = baseDir + '/.tests/bob'
+    bobDomain = '127.0.0.59'
+    bobPort = 61814
+    bobSendThreads = []
+    # bobAddress = bobDomain + ':' + str(bobPort)
 
     testgroupDir = baseDir + '/.tests/testgroup'
     testgroupDomain = '127.0.0.63'
@@ -1364,6 +1372,20 @@ def testGroupFollow():
                               aliceSendThreads),
                         daemon=True)
 
+    global thrBob
+    if thrBob:
+        while thrBob.is_alive():
+            thrBob.stop()
+            time.sleep(1)
+        thrBob.kill()
+
+    thrBob = \
+        threadWithTrace(target=createServerBob,
+                        args=(bobDir, bobDomain, bobPort, None,
+                              federationList, False, False,
+                              bobSendThreads),
+                        daemon=True)
+
     global thrGroup
     if thrGroup:
         while thrGroup.is_alive():
@@ -1379,18 +1401,23 @@ def testGroupFollow():
                         daemon=True)
 
     thrAlice.start()
+    thrBob.start()
     thrGroup.start()
     assert thrAlice.is_alive() is True
+    assert thrBob.is_alive() is True
     assert thrGroup.is_alive() is True
 
     # wait for all servers to be running
     ctr = 0
-    while not (testServerAliceRunning and testServerGroupRunning):
+    while not (testServerAliceRunning and
+               testServerBobRunning and
+               testServerGroupRunning):
         time.sleep(1)
         ctr += 1
         if ctr > 60:
             break
     print('Alice online: ' + str(testServerAliceRunning))
+    print('Bob online: ' + str(testServerBobRunning))
     print('Test Group online: ' + str(testServerGroupRunning))
     assert ctr <= 60
     time.sleep(1)
@@ -1448,6 +1475,7 @@ def testGroupFollow():
     assert validInboxFilenames(testgroupDir, 'testgroup', testgroupDomain,
                                aliceDomain, alicePort)
     assert 'alice@' + aliceDomain in open(testgroupFollowersFilename).read()
+    assert '!alice@' + aliceDomain not in open(testgroupFollowersFilename).read()
 
     testgroupWebfingerFilename = \
         testgroupDir + '/wfendpoints/testgroup@' + \
@@ -1468,10 +1496,88 @@ def testGroupFollow():
     assert '!testgroup' in followingStr
     assert testgroupHandle in open(aliceFollowingFilename).read()
     assert testgroupHandle in open(aliceFollowingCalendarFilename).read()
+    print('\n\n*********************************************************')
     print('Alice follows the test group')
+
+    print('*********************************************************')
+    print('Bob sends a follow request to the test group')
+    os.chdir(bobDir)
+    sessionBob = createSession(proxyType)
+    inReplyTo = None
+    inReplyToAtomUri = None
+    subject = None
+    bobPostLog = []
+    followersOnly = False
+    saveToFile = True
+    clientToServer = False
+    ccUrl = None
+    bobPersonCache = {}
+    bobCachedWebfingers = {}
+    bobPostLog = []
+    # bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
+    testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
+    sendResult = \
+        sendFollowRequest(sessionBob, bobDir,
+                          'bob', bobDomain, bobPort, httpPrefix,
+                          'testgroup', testgroupDomain, testgroupActor,
+                          testgroupPort, httpPrefix,
+                          clientToServer, federationList,
+                          bobSendThreads, bobPostLog,
+                          bobCachedWebfingers, bobPersonCache,
+                          True, __version__)
+    print('sendResult: ' + str(sendResult))
+
+    bobFollowingFilename = \
+        bobDir + '/accounts/bob@' + bobDomain + '/following.txt'
+    bobFollowingCalendarFilename = \
+        bobDir + '/accounts/bob@' + bobDomain + \
+        '/followingCalendar.txt'
+    testgroupFollowersFilename = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + \
+        '/followers.txt'
+
+    for t in range(16):
+        if os.path.isfile(testgroupFollowersFilename):
+            if os.path.isfile(bobFollowingFilename):
+                if os.path.isfile(bobFollowingCalendarFilename):
+                    break
+        time.sleep(1)
+
+    assert validInbox(testgroupDir, 'testgroup', testgroupDomain)
+    assert validInboxFilenames(testgroupDir, 'testgroup', testgroupDomain,
+                               bobDomain, bobPort)
+    assert 'bob@' + bobDomain in open(testgroupFollowersFilename).read()
+    assert '!bob@' + bobDomain not in open(testgroupFollowersFilename).read()
+
+    testgroupWebfingerFilename = \
+        testgroupDir + '/wfendpoints/testgroup@' + \
+        testgroupDomain + ':' + str(testgroupPort) + '.json'
+    assert os.path.isfile(testgroupWebfingerFilename)
+    assert 'group:testgroup@' in open(testgroupWebfingerFilename).read()
+    print('group: exists within the webfinger endpoint for testgroup')
+
+    testgroupHandle = 'testgroup@' + testgroupDomain
+    followingStr = ''
+    with open(bobFollowingFilename, 'r') as fp:
+        followingStr = fp.read()
+        print('Bob following.txt:\n\n' + followingStr)
+    if '!testgroup' not in followingStr:
+        print('Bob following.txt does not contain !testgroup@' +
+              testgroupDomain + ':' + str(testgroupPort))
+    assert isGroupActor(bobDir, testgroupActor, bobPersonCache)
+    assert '!testgroup' in followingStr
+    assert testgroupHandle in open(bobFollowingFilename).read()
+    assert testgroupHandle in open(bobFollowingCalendarFilename).read()
+    print('Bob follows the test group')
 
     print('\n\n*********************************************************')
     print('Alice posts to the test group')
+    inboxPathBob = \
+        bobDir + '/accounts/bob@' + bobDomain + '/inbox'    
+    startPostsBob = \
+        len([name for name in os.listdir(inboxPathBob)
+             if os.path.isfile(os.path.join(inboxPathBob, name))])
+    assert startPostsBob == 0
     alicePostLog = []
     alicePersonCache = {}
     aliceCachedWebfingers = {}
@@ -1509,12 +1615,33 @@ def testGroupFollow():
                 break
 
     assert aliceMessageArrived is True
+    print('\n\n*********************************************************')
     print('Post from Alice to test group succeeded')
+    print('\n\n*********************************************************')
+    print('Check that post was relayed from test group to bob')
+
+    bobMessageArrived = False
+    for i in range(20):
+        time.sleep(1)
+        if os.path.isdir(inboxPathBob):
+            currPostsBob = \
+                len([name for name in os.listdir(inboxPathBob)
+                     if os.path.isfile(os.path.join(inboxPathBob, name))])
+            if currPostsBob > startPostsBob:
+                bobMessageArrived = True
+                print('Bob received relayed group post!')
+                break
+
+    assert bobMessageArrived is True
 
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
     assert thrAlice.is_alive() is False
+
+    thrBob.kill()
+    thrBob.join()
+    assert thrBob.is_alive() is False
 
     thrGroup.kill()
     thrGroup.join()

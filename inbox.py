@@ -217,19 +217,22 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
     domain = removeDomainPort(domain)
     inboxDir = acctDir(baseDir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
+        print('Not an inbox directory: ' + inboxDir)
         return True
     expectedStr = expectedDomain + ':' + str(expectedPort)
+    expectedFound = False
     for subdir, dirs, files in os.walk(inboxDir):
         for f in files:
             filename = os.path.join(subdir, f)
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
-            if expectedStr not in filename:
-                print('Expected: ' + expectedStr)
-                print('Invalid filename: ' + filename)
-                return False
+            if expectedStr in filename:
+                expectedFound = True
         break
+    if not expectedFound:
+        print('Expected file was not found: ' + expectedStr)
+        return False
     return True
 
 
@@ -1890,6 +1893,9 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         systemLanguage: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
+    if debug:
+        print('\n\n=========================================================')
+        print(handle + ' sending to group members')
     followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFile):
         return
