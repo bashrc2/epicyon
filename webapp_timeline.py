@@ -738,6 +738,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show the posts
     itemCtr = 0
     if timelineJson:
+        if not timelineJson.get('orderedItems'):
+            print('ERROR: no orderedItems in timeline for ' + boxName:)
+            return ''
+
+    if timelineJson:
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
             if pageNumber > 1:
