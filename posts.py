@@ -205,8 +205,6 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
         pprint(feedJson)
 
     if 'orderedItems' in feedJson:
-        #for item in feedJson['orderedItems']:
-        #    yield item
         return feedJson['orderedItems']
 
     nextUrl = None
@@ -217,7 +215,7 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
 
     if debug:
         print('User feed next url: ' + str(nextUrl))
-        
+
     if nextUrl:
         if isinstance(nextUrl, str):
             if '?max_id=0' not in nextUrl:
@@ -225,15 +223,11 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
                     parseUserFeed(session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
                                   domain, debug, depth + 1)
-                if userFeed:                    
-                    #for item in userFeed:
-                    #    yield item
+                if userFeed:
                     return userFeed
         elif isinstance(nextUrl, dict):
             userFeed = nextUrl
             if userFeed.get('orderedItems'):
-                #for item in userFeed['orderedItems']:
-                #    yield item
                 return userFeed['orderedItems']
     return None
 
@@ -546,8 +540,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     "plaintext": _cleanHtml(content),
                     "attachment": attachment,
                     "mentions": mentions,
-                    "emoji": emoji,
-                    "conversation": conversation
+                    "emoji": emoji
                 }
         i += 1
 
