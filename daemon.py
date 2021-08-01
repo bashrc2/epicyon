@@ -9240,11 +9240,12 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber = 1
             if authorized and pageNumber > 1:
                 # if a page wasn't specified then show the first one
+                pageStr = '?page=' + str(pageNumber)
                 outboxFeed = \
                     personBoxJson(self.server.recentPostsCache,
                                   self.server.session,
                                   baseDir, domain, port,
-                                  path + '?page=' + str(pageNumber),
+                                  path + pageStr,
                                   httpPrefix,
                                   maxPostsInFeed, 'outbox',
                                   authorized,
