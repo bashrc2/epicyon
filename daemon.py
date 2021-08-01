@@ -9236,6 +9236,9 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber = int(pageNumber)
                 else:
                     pageNumber = 1
+            else:
+                if self._requestHTTP():
+                    pageNumber = 1
             if authorized and pageNumber >= 1:
                 # if a page wasn't specified then show the first one
                 pageStr = '?page=' + str(pageNumber)
