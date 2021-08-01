@@ -9228,7 +9228,7 @@ class PubServer(BaseHTTPRequestHandler):
         if outboxFeed:
             nickname = \
                 path.replace('/users/', '').replace('/outbox', '')
-            pageNumber = 1
+            pageNumber = 0
             if '?page=' in nickname:
                 pageNumber = nickname.split('?page=')[1]
                 nickname = nickname.split('?page=')[0]
@@ -9236,7 +9236,7 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber = int(pageNumber)
                 else:
                     pageNumber = 1
-            if authorized and pageNumber > 1:
+            if authorized and pageNumber >= 1:
                 # if a page wasn't specified then show the first one
                 pageStr = '?page=' + str(pageNumber)
                 outboxFeed = \
@@ -9250,6 +9250,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.newswireVotesThreshold,
                                   self.server.positiveVoting,
                                   self.server.votingTimeMins)
+            else:
+                pageNumber = 1
 
             if self._requestHTTP():
                 fullWidthTimelineButtonHeader = \
