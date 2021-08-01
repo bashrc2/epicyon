@@ -200,6 +200,10 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
             print('No user feed was returned')
         return None
 
+    if debug:
+        print('User feed:')
+        pprint(feedJson)
+
     if 'orderedItems' in feedJson:
         for item in feedJson['orderedItems']:
             yield item
