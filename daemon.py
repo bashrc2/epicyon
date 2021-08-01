@@ -9228,32 +9228,31 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.positiveVoting,
                           self.server.votingTimeMins)
         if outboxFeed:
+            nickname = \
+                path.replace('/users/', '').replace('/outbox', '')
+            pageNumber = 1
+            if '?page=' in nickname:
+                pageNumber = nickname.split('?page=')[1]
+                nickname = nickname.split('?page=')[0]
+                if pageNumber.isdigit():
+                    pageNumber = int(pageNumber)
+                else:
+                    pageNumber = 1
+            if authorized and pageNumber > 1:
+                # if a page wasn't specified then show the first one
+                outboxFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir, domain, port,
+                                  path + '?page=' + str(pageNumber),
+                                  httpPrefix,
+                                  maxPostsInFeed, 'outbox',
+                                  authorized,
+                                  self.server.newswireVotesThreshold,
+                                  self.server.positiveVoting,
+                                  self.server.votingTimeMins)
+
             if self._requestHTTP():
-                nickname = \
-                    path.replace('/users/', '').replace('/outbox', '')
-                pageNumber = 1
-                if '?page=' in nickname:
-                    pageNumber = nickname.split('?page=')[1]
-                    nickname = nickname.split('?page=')[0]
-                    if pageNumber.isdigit():
-                        pageNumber = int(pageNumber)
-                    else:
-                        pageNumber = 1
-                if 'page=' not in path:
-                    # if a page wasn't specified then show the first one
-                    outboxFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      baseDir,
-                                      domain,
-                                      port,
-                                      path + '?page=1',
-                                      httpPrefix,
-                                      maxPostsInFeed, 'outbox',
-                                      authorized,
-                                      self.server.newswireVotesThreshold,
-                                      self.server.positiveVoting,
-                                      self.server.votingTimeMins)
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
                 minimalNick = isMinimal(baseDir, domain, nickname)
