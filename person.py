@@ -755,6 +755,7 @@ def personBoxJson(recentPostsCache: {},
        boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks':
+        print('ERROR: personBoxJson invalid box name ' + boxname)
         return None
 
     if not '/' + boxname in path:
