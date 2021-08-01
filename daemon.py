@@ -9214,7 +9214,7 @@ class PubServer(BaseHTTPRequestHandler):
                             proxyType: str, cookie: str,
                             debug: str) -> bool:
         """Shows the outbox timeline
-        """        
+        """
         # get outbox feed for a person
         outboxFeed = \
             personBoxJson(self.server.recentPostsCache,

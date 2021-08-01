@@ -1488,6 +1488,37 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
     }
 
 
+def regenerateIndexForBox(baseDir: str,
+                          nickname: str, domain: str, boxName: str) -> None:
+    """Generates an index for the given box if it doesn't exist
+    Used by unit tests to artificially create an index
+    """
+    boxDir = acctDir(baseDir, nickname, domain) + '/' + boxName
+    boxIndexFilename = boxDir + '.index'
+
+    if not os.path.isdir(boxDir):
+        return
+    if os.path.isfile(boxIndexFilename):
+        return
+
+    indexLines = []
+    for subdir, dirs, files in os.walk(boxDir):
+        for f in files:
+            if ':##' not in f:
+                continue
+            indexLines.append(f)
+        break
+
+    indexLines.sort(reverse=True)
+
+    result = ''
+    with open(boxIndexFilename, 'w+') as fp:
+        for line in indexLines:
+            result += line + '\n'
+            fp.write(line + '\n')
+    print('Index generated for ' + boxName + '\n' + result)
+
+
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
@@ -3164,7 +3195,7 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
         if not force:
             # If not authorized and it's a private post
             # then just don't show it within timelines
-            if not isPublicPost(postObj):
+            if not isPublicPost(postJsonObject):
                 return False
     else:
         postObj = postJsonObject
@@ -3267,6 +3298,7 @@ def _createBoxIndexed(recentPostsCache: {},
         indexBoxName = boxname
         timelineNickname = 'news'
 
+    originalDomain = domain
     domain = getFullDomain(domain, port)
 
     boxActor = httpPrefix + '://' + domain + '/users/' + nickname
@@ -3300,7 +3332,7 @@ def _createBoxIndexed(recentPostsCache: {},
     postsInBox = []
 
     indexFilename = \
-        baseDir + '/accounts/' + timelineNickname + '@' + domain + \
+        acctDir(baseDir, timelineNickname, originalDomain) + \
         '/' + indexBoxName + '.index'
     totalPostsCount = 0
     postsAddedToTimeline = 0
@@ -3342,22 +3374,29 @@ def _createBoxIndexed(recentPostsCache: {},
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             url = recentPostsCache['json'][postUrl]
+                            print('Adding post to timeline: ' +
+                                  boxname + ' ' + url)
                             if _addPostStringToTimeline(url,
                                                         boxname, postsInBox,
                                                         boxActor):
                                 totalPostsCount += 1
                                 postsAddedToTimeline += 1
                                 continue
+                            else:
+                                print('Post not added to timeline')
+                            print('postsInBox: ' + str(len(postsInBox)))
 
                 # read the post from file
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
-                               domain, postUrl, False)
+                               originalDomain, postUrl, False)
                 if fullPostFilename:
                     # has the post been rejected?
                     if os.path.isfile(fullPostFilename + '.reject'):
                         continue
 
+                    print('Adding post to timeline: ' +
+                          boxname + ' ' + fullPostFilename)
                     if _addPostToTimeline(fullPostFilename, boxname,
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
@@ -3366,13 +3405,16 @@ def _createBoxIndexed(recentPostsCache: {},
                         print('WARN: Unable to add post ' + postUrl +
                               ' nickname ' + nickname +
                               ' timeline ' + boxname)
+                    print('postsInBox: ' + str(len(postsInBox)))
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
                         fullPostFilename = \
                             locatePost(baseDir, timelineNickname,
-                                       domain, postUrl, False)
+                                       originalDomain, postUrl, False)
                         if fullPostFilename:
+                            print('Adding post to timeline: ' +
+                                  boxname + ' ' + fullPostFilename)
                             if _addPostToTimeline(fullPostFilename, boxname,
                                                   postsInBox, boxActor):
                                 postsAddedToTimeline += 1
@@ -3381,6 +3423,7 @@ def _createBoxIndexed(recentPostsCache: {},
                                 print('WARN: Unable to add features post ' +
                                       postUrl + ' nickname ' + nickname +
                                       ' timeline ' + boxname)
+                            print('postsInBox: ' + str(len(postsInBox)))
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)

@@ -24,6 +24,8 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from session import getJson
+from posts import regenerateIndexForBox
 from posts import removePostInteractions
 from posts import getMentionedPeople
 from posts import validContentWarning
@@ -547,6 +549,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage)
+        regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -675,6 +678,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage)
+        regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -1343,7 +1347,7 @@ def testGroupFollow():
     aliceDomain = '127.0.0.57'
     alicePort = 61927
     aliceSendThreads = []
-    # aliceAddress = aliceDomain + ':' + str(alicePort)
+    aliceAddress = aliceDomain + ':' + str(alicePort)
 
     bobDir = baseDir + '/.tests/bob'
     bobDomain = '127.0.0.59'
@@ -1368,7 +1372,7 @@ def testGroupFollow():
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort,
                               testgroupAddress,
-                              federationList, False, False,
+                              federationList, False, True,
                               aliceSendThreads),
                         daemon=True)
 
@@ -1421,6 +1425,35 @@ def testGroupFollow():
     print('Test Group online: ' + str(testServerGroupRunning))
     assert ctr <= 60
     time.sleep(1)
+
+    print('*********************************************************')
+    print('Alice has some outbox posts')
+    aliceOutbox = 'http://' + aliceAddress + '/users/alice/outbox'
+    session = createSession(None)
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    }
+    outboxJson = getJson(session, aliceOutbox, asHeader, None,
+                         True, __version__, 'http', None)
+    assert outboxJson
+    pprint(outboxJson)
+    assert outboxJson['type'] == 'OrderedCollection'
+    assert 'first' in outboxJson
+    firstPage = outboxJson['first']
+    assert 'totalItems' in outboxJson
+    print('Alice outbox totalItems: ' + str(outboxJson['totalItems']))
+    assert outboxJson['totalItems'] == 3
+
+    outboxJson = getJson(session, firstPage, asHeader, None,
+                         True, __version__, 'http', None)
+    assert outboxJson
+    pprint(outboxJson)
+    assert 'orderedItems' in outboxJson
+    assert outboxJson['type'] == 'OrderedCollectionPage'
+    print('Alice outbox orderedItems: ' +
+          str(len(outboxJson['orderedItems'])))
+    assert len(outboxJson['orderedItems']) == 3
 
     queuePath = \
         testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
@@ -1618,6 +1651,7 @@ def testGroupFollow():
     assert aliceMessageArrived is True
     print('\n\n*********************************************************')
     print('Post from Alice to test group succeeded')
+
     print('\n\n*********************************************************')
     print('Check that post was relayed from test group to bob')
 
@@ -4267,6 +4301,7 @@ def _testRemovePostInteractions() -> None:
     assert postJsonObject['object']['shares'] == {}
     assert postJsonObject['object']['bookmarks'] == {}
     assert postJsonObject['object']['ignores'] == {}
+    postJsonObject['object']['to'] = ["some private address"]
     assert not removePostInteractions(postJsonObject, False)
 
 
