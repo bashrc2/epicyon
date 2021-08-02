@@ -1929,6 +1929,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                        personCache, cachedWebfingers,
                        debug, __version__)
 
+    # TODO: include handling of shared inbox
+
     with open(followersFile, 'r') as groupMembers:
         for memberHandle in groupMembers:
             if memberHandle == handle:
