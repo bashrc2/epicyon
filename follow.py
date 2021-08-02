@@ -991,6 +991,7 @@ def sendFollowRequest(session, baseDir: str,
         'object': followedId
     }
     if groupAccount:
+        newFollowJson['to'] = followedId
         print('Follow request: ' + str(newFollowJson))
 
     if _followApprovalRequired(baseDir, nickname, domain, debug,
