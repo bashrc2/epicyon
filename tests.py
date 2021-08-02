@@ -1655,7 +1655,7 @@ def testGroupFollow():
     print('\n\n*********************************************************')
     print('Check that post was relayed from test group to bob')
 
-    # bobMessageArrived = False
+    bobMessageArrived = False
     for i in range(20):
         time.sleep(1)
         if os.path.isdir(inboxPathBob):
@@ -1663,11 +1663,11 @@ def testGroupFollow():
                 len([name for name in os.listdir(inboxPathBob)
                      if os.path.isfile(os.path.join(inboxPathBob, name))])
             if currPostsBob > startPostsBob:
-                # bobMessageArrived = True
+                bobMessageArrived = True
                 print('Bob received relayed group post!')
                 break
 
-    # assert bobMessageArrived is True
+    assert bobMessageArrived is True
 
     # stop the servers
     thrAlice.kill()

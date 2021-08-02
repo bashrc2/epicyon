@@ -89,6 +89,7 @@ from categories import guessHashtagCategory
 from context import hasValidContext
 from speaker import updateSpeaker
 from announce import isSelfAnnounce
+from announce import createAnnounce
 from notifyOnPost import notifyWhenPersonPosts
 
 
@@ -1899,79 +1900,56 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFile):
         return
+    if not postJsonObject.get('to'):
+        return
     if not postJsonObject.get('object'):
         return
     if not hasObjectDict(postJsonObject):
         return
-    nickname = handle.split('@')[0]
+    nickname = handle.split('@')[0].replace('!', '')
 #    groupname = _getGroupName(baseDir, handle)
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
-    # set sender
+    groupActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    if groupActor not in postJsonObject['to']:
+        return
     cc = ''
-    sendingActor = postJsonObject['actor']
-    sendingActorNickname = getNicknameFromActor(sendingActor)
-    sendingActorDomain, sendingActorPort = \
-        getDomainFromActor(sendingActor)
-    sendingActorDomainFull = \
-        getFullDomain(sendingActorDomain, sendingActorPort)
-    senderStr = '@' + sendingActorNickname + '@' + sendingActorDomainFull
-    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
-    if not contentStr.startswith(senderStr):
-        pprint(postJsonObject)
-        postJsonObject['object']['content'] = \
-            senderStr + ' ' + contentStr
-        postJsonObject['object']['contentMap'][systemLanguage] = \
-            senderStr + ' ' + contentStr
-        # add mention to tag list
-        if not postJsonObject['object']['tag']:
-            postJsonObject['object']['tag'] = []
-        # check if the mention already exists
-        mentionExists = False
-        for mention in postJsonObject['object']['tag']:
-            if mention['type'] == 'Mention':
-                if mention.get('href'):
-                    if mention['href'] == sendingActor:
-                        mentionExists = True
-        if not mentionExists:
-            # add the mention of the original sender
-            postJsonObject['object']['tag'].append({
-                'href': sendingActor,
-                'name': senderStr,
-                'type': 'Mention'
-            })
+    nickname = handle.split('@')[0].replace('!', '')
 
-    postJsonObject['actor'] = \
-        httpPrefix + '://' + domainFull + '/users/' + nickname
-    postJsonObject['to'] = \
-        [postJsonObject['actor'] + '/followers']
-    postJsonObject['cc'] = [cc]
-    postJsonObject['object']['to'] = postJsonObject['to']
-    postJsonObject['object']['cc'] = [cc]
-    # set subject
-    if not postJsonObject['object'].get('summary'):
-        postJsonObject['object']['summary'] = 'General Discussion'
-    domain = removeDomainPort(domain)
+    if debug:
+        print('Group announce: ' + postJsonObject['object']['id'])
+    announceJson = \
+        createAnnounce(session, baseDir, federationList,
+                       nickname, domain, port,
+                       groupActor + '/followers', cc,
+                       httpPrefix,
+                       postJsonObject['object']['id'],
+                       False, False,
+                       sendThreads, postLog,
+                       personCache, cachedWebfingers,
+                       debug, __version__)
+
     with open(followersFile, 'r') as groupMembers:
         for memberHandle in groupMembers:
-            if memberHandle != handle:
-                memberNickname = memberHandle.split('@')[0]
-                groupAccount = False
-                if memberNickname.startswith('!'):
-                    memberNickname = memberNickname[1:]
-                    groupAccount = True
-                memberDomain = memberHandle.split('@')[1]
-                memberPort = port
-                if ':' in memberDomain:
-                    memberPort = getPortFromDomain(memberDomain)
-                    memberDomain = removeDomainPort(memberDomain)
-                sendSignedJson(postJsonObject, session, baseDir,
-                               nickname, domain, port,
-                               memberNickname, memberDomain, memberPort, cc,
-                               httpPrefix, False, False, federationList,
-                               sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, __version__, None,
-                               groupAccount)
+            if memberHandle == handle:
+                continue
+            memberNickname = memberHandle.split('@')[0]
+            if memberNickname.startswith('!'):
+                # don't have groups which are members of groups
+                continue
+            memberDomain = memberHandle.split('@')[1]
+            memberPort = port
+            if ':' in memberDomain:
+                memberPort = getPortFromDomain(memberDomain)
+                memberDomain = removeDomainPort(memberDomain)
+            groupAccount = False
+            sendSignedJson(announceJson, session, baseDir,
+                           nickname, domain, port,
+                           memberNickname, memberDomain, memberPort, cc,
+                           httpPrefix, False, False, federationList,
+                           sendThreads, postLog, cachedWebfingers,
+                           personCache, debug, __version__, None,
+                           groupAccount)
 
 
 def _inboxUpdateCalendar(baseDir: str, handle: str,
