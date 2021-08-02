@@ -595,7 +595,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
 
     if personJson.get('shares'):
         if personJson['shares'].endswith('/shares'):
-            personJson['shares'] = personJson['shares']['id'] + '/catalog'
+            personJson['shares'] = personJson['id'] + '/catalog'
             updateActor = True
 
     occupationName = ''
