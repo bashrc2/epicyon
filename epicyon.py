@@ -610,7 +610,6 @@ if args.tests:
 if args.testsnetwork:
     print('Network Tests')
     testGroupFollow()
-    sys.exit()
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
