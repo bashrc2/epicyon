@@ -1892,14 +1892,24 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, debug: bool,
                         systemLanguage: str,
-                        onionDomain: str, i2pDomain: str,
-                        sharedItemFederationTokens: {},
-                        sharedItemsFederatedDomains: []) -> None:
+                        onionDomain: str, i2pDomain: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
         print('\n\n=========================================================')
         print(handle + ' sending to group members')
+
+    sharedItemFederationTokens = {}
+    sharedItemsFederatedDomains = []
+    sharedItemsFederatedDomainsStr = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+    if sharedItemsFederatedDomainsStr:
+        siFederatedDomainsList = \
+            sharedItemsFederatedDomainsStr.split(',')
+        for sharedFederatedDomain in siFederatedDomainsList:
+            domainStr = sharedFederatedDomain.strip()
+            sharedItemsFederatedDomains.append(domainStr)
+
     followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFile):
         return
@@ -2421,6 +2431,18 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 questionJson['type'] = 'Update'
                 sharedItemsFederatedDomains = []
                 sharedItemFederationTokens = {}
+
+                sharedItemFederationTokens = {}
+                sharedItemsFederatedDomains = []
+                sharedItemsFederatedDomainsStr = \
+                    getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+                if sharedItemsFederatedDomainsStr:
+                    siFederatedDomainsList = \
+                        sharedItemsFederatedDomainsStr.split(',')
+                    for sharedFederatedDomain in siFederatedDomainsList:
+                        domainStr = sharedFederatedDomain.strip()
+                        sharedItemsFederatedDomains.append(domainStr)
+
                 sendToFollowersThread(session, baseDir,
                                       nickname, domain,
                                       onionDomain, i2pDomain, port,
@@ -2566,25 +2588,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             # send the post out to group members
             if isGroup:
-                sharedItemFederationTokens = {}
-                sharedItemsFederatedDomains = []
-                sharedItemsFederatedDomainsStr = \
-                    getConfigParam(baseDir, 'sharedItemsFederatedDomains')
-                if sharedItemsFederatedDomainsStr:
-                    siFederatedDomainsList = \
-                        sharedItemsFederatedDomainsStr.split(',')
-                    for sharedFederatedDomain in siFederatedDomainsList:
-                        domainStr = sharedFederatedDomain.strip()
-                        sharedItemsFederatedDomains.append(domainStr)
-
                 _sendToGroupMembers(session, baseDir, handle, port,
                                     postJsonObject,
                                     httpPrefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
                                     debug, systemLanguage,
-                                    onionDomain, i2pDomain,
-                                    sharedItemFederationTokens,
-                                    sharedItemsFederatedDomains)
+                                    onionDomain, i2pDomain)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
