@@ -1891,7 +1891,10 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         httpPrefix: str, federationList: [],
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, debug: bool,
-                        systemLanguage: str) -> None:
+                        systemLanguage: str,
+                        onionDomain: str, i2pDomain: str,
+                        sharedItemFederationTokens: {},
+                        sharedItemsFederatedDomains: []) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
@@ -1929,29 +1932,14 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                        personCache, cachedWebfingers,
                        debug, __version__)
 
-    # TODO: include handling of shared inbox
-
-    with open(followersFile, 'r') as groupMembers:
-        for memberHandle in groupMembers:
-            if memberHandle == handle:
-                continue
-            memberNickname = memberHandle.split('@')[0]
-            if memberNickname.startswith('!'):
-                # don't have groups which are members of groups
-                continue
-            memberDomain = memberHandle.split('@')[1]
-            memberPort = port
-            if ':' in memberDomain:
-                memberPort = getPortFromDomain(memberDomain)
-                memberDomain = removeDomainPort(memberDomain)
-            groupAccount = False
-            sendSignedJson(announceJson, session, baseDir,
-                           nickname, domain, port,
-                           memberNickname, memberDomain, memberPort, cc,
-                           httpPrefix, False, False, federationList,
-                           sendThreads, postLog, cachedWebfingers,
-                           personCache, debug, __version__, None,
-                           groupAccount)
+    sendToFollowersThread(session, baseDir, nickname, domain,
+                          onionDomain, i2pDomain, port,
+                          httpPrefix, federationList,
+                          sendThreads, postLog,
+                          cachedWebfingers, personCache,
+                          announceJson, debug, __version__,
+                          sharedItemsFederatedDomains,
+                          sharedItemFederationTokens)
 
 
 def _inboxUpdateCalendar(baseDir: str, handle: str,
@@ -2578,11 +2566,25 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             # send the post out to group members
             if isGroup:
+                sharedItemFederationTokens = {}
+                sharedItemsFederatedDomains = []
+                sharedItemsFederatedDomainsStr = \
+                    getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+                if sharedItemsFederatedDomainsStr:
+                    siFederatedDomainsList = \
+                        sharedItemsFederatedDomainsStr.split(',')
+                    for sharedFederatedDomain in siFederatedDomainsList:
+                        domainStr = sharedFederatedDomain.strip()
+                        sharedItemsFederatedDomains.append(domainStr)
+
                 _sendToGroupMembers(session, baseDir, handle, port,
                                     postJsonObject,
                                     httpPrefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
-                                    debug, systemLanguage)
+                                    debug, systemLanguage,
+                                    onionDomain, i2pDomain,
+                                    sharedItemFederationTokens,
+                                    sharedItemsFederatedDomains)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
