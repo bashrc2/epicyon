@@ -759,7 +759,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                                    messageJson, debug, messageJson['actor'],
                                    groupAccount)
     else:
-        print('Follow request does not require approval')
+        print('Follow request does not require approval ' + approveHandle)
         # update the followers
         accountToBeFollowed = \
             acctDir(baseDir, nicknameToFollow, domainToFollow)
