@@ -244,38 +244,39 @@ def htmlProfileAfterSearch(cssCache: {},
             '  </form>\n' + \
             '</div>\n'
 
-    i = 0
-    print('Test 5236543: ' + str(outboxUrl) + ' v' +
-          str(projectVersion) + ' http:' + str(httpPrefix) + ' ' +
-          str(domain) + ' debug:' + str(debug))
-    for item in parseUserFeed(session, outboxUrl, asHeader,
-                              projectVersion, httpPrefix, domain, debug):
-        if not item.get('actor'):
-            continue
-        if item['actor'] != personUrl:
-            continue
-        if not item.get('type'):
-            continue
-        if item['type'] != 'Create':
-            continue
-        if not hasObjectDict(item):
-            continue
+    userFeed = \
+        parseUserFeed(session, outboxUrl, asHeader, projectVersion,
+                      httpPrefix, domain, debug)
+    if userFeed:
+        i = 0
+        for item in userFeed:
+            if not item.get('actor'):
+                continue
+            if item['actor'] != personUrl:
+                continue
+            if not item.get('type'):
+                continue
+            if item['type'] != 'Create':
+                continue
+            if not hasObjectDict(item):
+                continue
 
-        profileStr += \
-            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                 translate, None, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 nickname, domain, port,
-                                 item, avatarUrl, False, False,
-                                 httpPrefix, projectVersion, 'inbox',
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances, allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
-                                 False, False, False, False, False)
-        i += 1
-        if i >= 20:
-            break
+            profileStr += \
+                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                                     translate, None, baseDir,
+                                     session, cachedWebfingers, personCache,
+                                     nickname, domain, port,
+                                     item, avatarUrl, False, False,
+                                     httpPrefix, projectVersion, 'inbox',
+                                     YTReplacementDomain,
+                                     showPublishedDateOnly,
+                                     peertubeInstances,
+                                     allowLocalNetworkAccess,
+                                     themeName, systemLanguage,
+                                     False, False, False, False, False)
+            i += 1
+            if i >= 20:
+                break
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
