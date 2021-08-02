@@ -300,7 +300,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'followers': personId + '/followers',
         'following': personId + '/following',
         'tts': personId + '/speaker',
-        'shares': personId + '/shares',
+        'shares': personId + '/catalog',
         'hasOccupation': [
             {
                 '@type': 'Occupation',
@@ -592,6 +592,11 @@ def personUpgradeActor(baseDir: str, personJson: {},
         statusNumber, published = getStatusNumber()
         personJson['published'] = published
         updateActor = True
+
+    if personJson.get('shares'):
+        if personJson['shares'].endswith('/shares'):
+            personJson['shares'] = personJson['shares']['id'] + '/catalog'
+            updateActor = True
 
     occupationName = ''
     if personJson.get('occupationName'):
