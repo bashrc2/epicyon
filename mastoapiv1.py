@@ -11,61 +11,7 @@ import os
 from utils import loadJson
 from utils import getConfigParam
 from utils import acctDir
-from utils import isAccountDir
 from metadata import metaDataInstance
-
-
-def _getMastApiV1Directory(baseDir: str, domain: str) -> []:
-    mastoDirectory = []
-    ctr = 1
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-        for acct in dirs:
-            if not isAccountDir(acct):
-                continue
-            actorFilename = \
-                os.path.join(baseDir + '/accounts', acct + '.json')
-            if not os.path.isfile(actorFilename):
-                continue
-            actorJson = loadJson(actorFilename, 0, 1)
-            if not actorJson:
-                continue
-            if not actorJson.get('discoverable'):
-                continue
-            isGroup = False
-            if actorJson['type'] != 'Person' and actorJson['type'] != 'Group':
-                continue
-            if actorJson['type'] == 'Group':
-                isGroup = True
-            isLocked = False
-            if actorJson.get('manuallyApprovesFollowers'):
-                isLocked = True
-            isBot = False
-            acct = {
-                "id": ctr,
-                "username": actorJson['preferredUsername'],
-                "acct": actorJson['preferredUsername'] + "@" + domain,
-                "display_name": actorJson['name'],
-                "locked": isLocked,
-                "bot": isBot,
-                "discoverable": True,
-                "group": isGroup,
-                "created_at": actorJson['published'],
-                "note": actorJson['summary'],
-                "url": actorJson['url'],
-                "avatar": actorJson['icon']['url'],
-                "avatar_static": actorJson['icon']['url'],
-                "header": actorJson['image']['url'],
-                "header_static": actorJson['image']['url'],
-                "followers_count": 999,
-                "following_count": 999,
-                "statuses_count": 999,
-                "last_status_at": "2021-07-31",
-                "emojis": []
-            }
-            mastoDirectory.append(acct)
-            ctr += 1
-        break
-    return mastoDirectory
 
 
 def _getMastApiV1Id(path: str) -> int:
@@ -194,6 +140,9 @@ def mastoApiV1Response(path: str, callingDomain: str,
                     _getMastoApiV1Account(baseDir, pathNickname, domain)
                 sendJsonStr = 'masto API account sent for ' + nickname
 
+    # NOTE: adding support for '/api/v1/directory seems to create
+    # federation problems, so avoid implementing that
+
     if path.startswith('/api/v1/blocks'):
         sendJson = []
         sendJsonStr = 'masto API instance blocks sent'
@@ -212,9 +161,6 @@ def mastoApiV1Response(path: str, callingDomain: str,
     elif path.startswith('/api/v1/reports'):
         sendJson = []
         sendJsonStr = 'masto API reports sent'
-    elif path.startswith('/api/v1/directory'):
-        sendJson = _getMastApiV1Directory(baseDir, domain)
-        sendJsonStr = 'masto API directory sent'
     elif path.startswith('/api/v1/statuses'):
         sendJson = []
         sendJsonStr = 'masto API statuses sent'
