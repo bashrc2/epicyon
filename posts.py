@@ -3382,7 +3382,6 @@ def _createBoxIndexed(recentPostsCache: {},
                                 continue
                             else:
                                 print('Post not added to timeline')
-                            print('postsInBox: ' + str(len(postsInBox)))
 
                 # read the post from file
                 fullPostFilename = \
@@ -3401,7 +3400,6 @@ def _createBoxIndexed(recentPostsCache: {},
                         print('WARN: Unable to add post ' + postUrl +
                               ' nickname ' + nickname +
                               ' timeline ' + boxname)
-                    print('postsInBox: ' + str(len(postsInBox)))
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3417,7 +3415,6 @@ def _createBoxIndexed(recentPostsCache: {},
                                 print('WARN: Unable to add features post ' +
                                       postUrl + ' nickname ' + nickname +
                                       ' timeline ' + boxname)
-                            print('postsInBox: ' + str(len(postsInBox)))
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)

@@ -15160,7 +15160,7 @@ def runDaemon(sharedItemsFederatedDomains: [],
             loadTranslationsFromFile(baseDir, language)
         if not httpd.systemLanguage:
             print('ERROR: no system language loaded')
-            sys.exit()            
+            sys.exit()
         print('System language: ' + httpd.systemLanguage)
         if not httpd.translate:
             print('ERROR: no translations were loaded')
