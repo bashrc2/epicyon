@@ -397,9 +397,12 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
     if debug:
         print('Returning a human readable version of the feed')
-    i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
                              projectVersion, httpPrefix, domain, debug)
+    if not userFeed:
+        return personPosts
+
+    i = 0
     for item in userFeed:
         if not item.get('id'):
             if debug:
@@ -3673,12 +3676,16 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     personCache = {}
     cachedWebfingers = {}
     federationList = []
-
+    groupAccount = False
+    if nickname.startswith('!'):
+        nickname = nickname[1:]
+        groupAccount = True
     domainFull = getFullDomain(domain, port)
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
+
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug, False)
+                        domain, projectVersion, debug, groupAccount)
     if not wfRequest:
         if debug:
             print('No webfinger result was returned for ' + handle)
