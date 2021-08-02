@@ -975,6 +975,7 @@ def sendFollowRequest(session, baseDir: str,
         groupAccount = hasGroupType(baseDir, followedActor, personCache)
         if groupAccount:
             followHandle = '!' + followHandle
+            print('Follow request being sent to group account')
     else:
         if debug:
             print('DEBUG: sendFollowRequest - assuming single user instance')
@@ -989,6 +990,8 @@ def sendFollowRequest(session, baseDir: str,
         'actor': followActor,
         'object': followedId
     }
+    if groupAccount:
+        print('Follow request: ' + str(newFollowJson))
 
     if _followApprovalRequired(baseDir, nickname, domain, debug,
                                followHandle):
