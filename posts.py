@@ -3374,8 +3374,6 @@ def _createBoxIndexed(recentPostsCache: {},
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             url = recentPostsCache['json'][postUrl]
-                            print('Adding post to timeline: ' +
-                                  boxname + ' ' + url)
                             if _addPostStringToTimeline(url,
                                                         boxname, postsInBox,
                                                         boxActor):
@@ -3395,8 +3393,6 @@ def _createBoxIndexed(recentPostsCache: {},
                     if os.path.isfile(fullPostFilename + '.reject'):
                         continue
 
-                    print('Adding post to timeline: ' +
-                          boxname + ' ' + fullPostFilename)
                     if _addPostToTimeline(fullPostFilename, boxname,
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
@@ -3413,8 +3409,6 @@ def _createBoxIndexed(recentPostsCache: {},
                             locatePost(baseDir, timelineNickname,
                                        originalDomain, postUrl, False)
                         if fullPostFilename:
-                            print('Adding post to timeline: ' +
-                                  boxname + ' ' + fullPostFilename)
                             if _addPostToTimeline(fullPostFilename, boxname,
                                                   postsInBox, boxActor):
                                 postsAddedToTimeline += 1

@@ -738,7 +738,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show the posts
     itemCtr = 0
     if timelineJson:
-        if not timelineJson.get('orderedItems'):
+        if 'orderedItems' not in timelineJson:
             print('ERROR: no orderedItems in timeline for '
                   + boxName + ' ' + str(timelineJson))
             return ''
