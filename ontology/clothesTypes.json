@@ -1,0 +1,404 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductOntology.owl#",
+    "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.rdf#",
+    "dfc-p:specialize": {
+      "@type": "@id"
+    }
+  },
+  "@graph": [
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#shirt",
+      "rdfs:label": [
+        {
+          "@value": "La chemise",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shirt",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/clothesTypes.rdf#shirt",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#belt",
+      "rdfs:label": [
+        {
+          "@value": "Ceinture",
+          "@language": "fr"
+        },
+        {
+          "@value": "Belt",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#belt",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#childrens-clothing",
+      "rdfs:label": [
+        {
+          "@value": "Vêtements pour enfants",
+          "@language": "fr"
+        },
+        {
+          "@value": "Children's Clothing",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#childrens-clothing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#coat",
+      "rdfs:label": [
+        {
+          "@value": "Manteau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Coat",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#coat",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#dress",
+      "rdfs:label": [
+        {
+          "@value": "Robe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Dress",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#dress",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#shoes",
+      "rdfs:label": [
+        {
+          "@value": "Des chaussures",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shoes",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shoes",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#gown",
+      "rdfs:label": [
+        {
+          "@value": "Robe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Gown",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#gown",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#hat",
+      "rdfs:label": [
+        {
+          "@value": "Chapeau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hat",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#hat",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#hosiery‎",
+      "rdfs:label": [
+        {
+          "@value": "Hosiery",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hosiery‎",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#hosiery‎",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#jacket",
+      "rdfs:label": [
+        {
+          "@value": "Veste",
+          "@language": "fr"
+        },
+        {
+          "@value": "Jacket",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#jacket",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#jeans",
+      "rdfs:label": [
+        {
+          "@value": "Jeans",
+          "@language": "fr"
+        },
+        {
+          "@value": "Jeans",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#jeans",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#mask",
+      "rdfs:label": [
+        {
+          "@value": "Masquer",
+          "@language": "fr"
+        },
+        {
+          "@value": "Mask",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#mask",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#neckwear",
+      "rdfs:label": [
+        {
+          "@value": "Vêtements de cou",
+          "@language": "fr"
+        },
+        {
+          "@value": "Neckwear",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#neckwear",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#suit",
+      "rdfs:label": [
+        {
+          "@value": "Costume",
+          "@language": "fr"
+        },
+        {
+          "@value": "Suit",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#suit",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#poncho",
+      "rdfs:label": [
+        {
+          "@value": "Poncho",
+          "@language": "fr"
+        },
+        {
+          "@value": "Poncho",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#poncho",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#cloak",
+      "rdfs:label": [
+        {
+          "@value": "Manteau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cloak",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#cloak",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#sari",
+      "rdfs:label": [
+        {
+          "@value": "Sari",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sari",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sari",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#sash",
+      "rdfs:label": [
+        {
+          "@value": "Ceinture",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sash",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sash",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#shawl",
+      "rdfs:label": [
+        {
+          "@value": "Châle",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shawl",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shawl",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#skirt",
+      "rdfs:label": [
+        {
+          "@value": "Jupe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Skirt",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#skirt",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#trousers",
+      "rdfs:label": [
+        {
+          "@value": "Pantalon",
+          "@language": "fr"
+        },
+        {
+          "@value": "Trousers",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#trousers",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#shorts",
+      "rdfs:label": [
+        {
+          "@value": "Shorts",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shorts",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shorts",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#underwear",
+      "rdfs:label": [
+        {
+          "@value": "Sous-vêtement",
+          "@language": "fr"
+        },
+        {
+          "@value": "Underwear",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#underwear",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#socks",
+      "rdfs:label": [
+        {
+          "@value": "Des chaussettes",
+          "@language": "fr"
+        },
+        {
+          "@value": "Socks",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#socks",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#helmet",
+      "rdfs:label": [
+        {
+          "@value": "Casque",
+          "@language": "fr"
+        },
+        {
+          "@value": "Helmet",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#helmet",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#gloves",
+      "rdfs:label": [
+        {
+          "@value": "Gants",
+          "@language": "fr"
+        },
+        {
+          "@value": "Gloves",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#gloves",
+      "@type": "dfc-p:ProductType"
+    }
+  ]
+}
