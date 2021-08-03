@@ -12,7 +12,6 @@ from collections import OrderedDict
 from session import getJson
 from utils import isAccountDir
 from utils import removeHtml
-from utils import getImageExtensions
 from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
@@ -20,6 +19,9 @@ from utils import getConfigParam
 from utils import acctDir
 from utils import getNicknameFromActor
 from utils import isfloat
+from utils import getAudioExtensions
+from utils import getVideoExtensions
+from utils import getImageExtensions
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -793,15 +795,13 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
 def _isImageMimeType(mimeType: str) -> bool:
     """Is the given mime type an image?
     """
-    imageMimeTypes = (
-        'image/png',
-        'image/jpeg',
-        'image/webp',
-        'image/avif',
-        'image/svg+xml',
-        'image/gif'
-    )
-    if mimeType in imageMimeTypes:
+    extensions = getImageExtensions()
+    if mimeType == 'image/svg+xml':
+        return True
+    if not mimeType.startswith('image/'):
+        return False
+    ext = mimeType.split('/')[1]
+    if ext in extensions:
         return True
     return False
 
@@ -809,12 +809,11 @@ def _isImageMimeType(mimeType: str) -> bool:
 def _isVideoMimeType(mimeType: str) -> bool:
     """Is the given mime type a video?
     """
-    videoMimeTypes = (
-        'video/mp4',
-        'video/webm',
-        'video/ogv'
-    )
-    if mimeType in videoMimeTypes:
+    extensions = getVideoExtensions()
+    if not mimeType.startswith('video/'):
+        return False
+    ext = mimeType.split('/')[1]
+    if ext in extensions:
         return True
     return False
 
@@ -822,11 +821,13 @@ def _isVideoMimeType(mimeType: str) -> bool:
 def _isAudioMimeType(mimeType: str) -> bool:
     """Is the given mime type an audio file?
     """
-    audioMimeTypes = (
-        'audio/mpeg',
-        'audio/ogg'
-    )
-    if mimeType in audioMimeTypes:
+    extensions = getAudioExtensions()
+    if mimeType == 'audio/mpeg':
+        return True
+    if not mimeType.startswith('audio/'):
+        return False
+    ext = mimeType.split('/')[1]
+    if ext in extensions:
         return True
     return False
 

@@ -951,6 +951,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'flac': 'audio/flac',
         'zip': 'application/zip'
     }
     detectedExtension = None

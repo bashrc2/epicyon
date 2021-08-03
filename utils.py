@@ -297,6 +297,18 @@ def isArtist(baseDir: str, nickname: str) -> bool:
     return False
 
 
+def getVideoExtensions() -> []:
+    """Returns a list of the possible video file extensions
+    """
+    return ('mp4', 'webm', 'ogv')
+
+
+def getAudioExtensions() -> []:
+    """Returns a list of the possible audio file extensions
+    """
+    return ('mp3', 'ogg', 'flac')
+
+
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """
@@ -335,18 +347,6 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
         if contentType.endswith(mimeExt):
             return ext
     return 'png'
-
-
-def getVideoExtensions() -> []:
-    """Returns a list of the possible video file extensions
-    """
-    return ('mp4', 'webm', 'ogv')
-
-
-def getAudioExtensions() -> []:
-    """Returns a list of the possible audio file extensions
-    """
-    return ('mp3', 'ogg')
 
 
 def getMediaExtensions() -> []:
@@ -2216,6 +2216,7 @@ def mediaFileMimeType(filename: str) -> str:
         'avif': 'image/avif',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'flac': 'audio/flac',
         'mp4': 'video/mp4',
         'ogv': 'video/ogv'
     }
