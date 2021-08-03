@@ -15263,8 +15263,8 @@ def runDaemon(maxLikeCount: int,
     httpd.maxLikeCount = maxLikeCount
     if httpd.maxLikeCount < 0:
         httpd.maxLikeCount = 0
-    elif httpd.maxLikeCount > 99:
-        httpd.maxLikeCount = 99
+    elif httpd.maxLikeCount > 16:
+        httpd.maxLikeCount = 16
 
     httpd.followingItemsPerPage = 12
     if registration == 'open':
