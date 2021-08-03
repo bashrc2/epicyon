@@ -40,8 +40,8 @@ from siteactive import siteIsActive
 
 def _dfcProductTypes() -> []:
     # this list should match the ontology json files
-    # eg. ontology/foodType.json
-    return ['food']
+    # eg. ontology/foodTypes.json
+    return ['food', 'tool']
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str,

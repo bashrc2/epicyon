@@ -1,0 +1,1064 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductOntology.owl#",
+    "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.rdf#",
+    "dfc-p:specialize": {
+      "@type": "@id"
+    }
+  },
+  "@graph": [
+    {
+      "@id": "https://tools/data/toolTypes.rdf#garden-trowel",
+      "rdfs:label": [
+        {
+          "@value": "Truelle de jardin",
+          "@language": "fr"
+        },
+        {
+          "@value": "Garden Trowel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-trowel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#watering-can",
+      "rdfs:label": [
+        {
+          "@value": "Arrosoir",
+          "@language": "fr"
+        },
+        {
+          "@value": "Watering Can",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#watering-can",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#auger",
+      "rdfs:label": [
+        {
+          "@value": "Tailleuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "Auger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#auger",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#backpack-sprayer",
+      "rdfs:label": [
+        {
+          "@value": "Pulvérisateur à dos",
+          "@language": "fr"
+        },
+        {
+          "@value": "Backpack Sprayer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#backpack-sprayer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#border-spade",
+      "rdfs:label": [
+        {
+          "@value": "Pelle frontalière",
+          "@language": "fr"
+        },
+        {
+          "@value": "Border Spade",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#border-spade",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bow-rake",
+      "rdfs:label": [
+        {
+          "@value": "Râteau d'arc",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bow Rake",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bow-rake",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#broadfork",
+      "rdfs:label": [
+        {
+          "@value": "Larges",
+          "@language": "fr"
+        },
+        {
+          "@value": "Broadfork",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#broadfork",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#budding-knife",
+      "rdfs:label": [
+        {
+          "@value": "Couteau en herbe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Budding Knife",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#budding-knife",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bulb-planter",
+      "rdfs:label": [
+        {
+          "@value": "Planteur d'ampoule",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bulb Planter",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bulb-planter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#compost-bin",
+      "rdfs:label": [
+        {
+          "@value": "Bac à compost",
+          "@language": "fr"
+        },
+        {
+          "@value": "Compost Bin",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#compost-bin",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#compost-fork",
+      "rdfs:label": [
+        {
+          "@value": "Fourchette de compost",
+          "@language": "fr"
+        },
+        {
+          "@value": "Compost Fork",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#compost-fork",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#core-aerator",
+      "rdfs:label": [
+        {
+          "@value": "Aérateur de noyau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Core Aerator",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#core-aerator",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#drum-aerators",
+      "rdfs:label": [
+        {
+          "@value": "Aérateurs de tambour",
+          "@language": "fr"
+        },
+        {
+          "@value": "Drum Aerators",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drum-aerators",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#edging-shears",
+      "rdfs:label": [
+        {
+          "@value": "Édition de cisailles",
+          "@language": "fr"
+        },
+        {
+          "@value": "Edging Shears",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#edging-shears",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#electric-edger",
+      "rdfs:label": [
+        {
+          "@value": "Edger électrique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Electric Edger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electric-edger",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#flat-rake",
+      "rdfs:label": [
+        {
+          "@value": "Râteau plat",
+          "@language": "fr"
+        },
+        {
+          "@value": "Flat Rake",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#flat-rake",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#garden-fork",
+      "rdfs:label": [
+        {
+          "@value": "Fourche à bêcher",
+          "@language": "fr"
+        },
+        {
+          "@value": "Garden Fork",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-fork",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#garden-hoe",
+      "rdfs:label": [
+        {
+          "@value": "Jardin houe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Garden Hoe",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-hoe",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#garden-shovel",
+      "rdfs:label": [
+        {
+          "@value": "Pelle de jardin",
+          "@language": "fr"
+        },
+        {
+          "@value": "Garden Shovel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-shovel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#gas-powered-lawn-edger",
+      "rdfs:label": [
+        {
+          "@value": "Edger à gaz à gaz",
+          "@language": "fr"
+        },
+        {
+          "@value": "Gas Powered Lawn Edger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gas-powered-lawn-edger",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#gardening-gloves",
+      "rdfs:label": [
+        {
+          "@value": "Gants de jardinage",
+          "@language": "fr"
+        },
+        {
+          "@value": "Gardening Gloves",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening-gloves",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hand-cultivator",
+      "rdfs:label": [
+        {
+          "@value": "Cultivateur de mains",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hand Cultivator",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hand-cultivator",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#handheld-sprayer",
+      "rdfs:label": [
+        {
+          "@value": "Pulvérisateur de poche",
+          "@language": "fr"
+        },
+        {
+          "@value": "Handheld Sprayer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#handheld-sprayer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hand-seeder",
+      "rdfs:label": [
+        {
+          "@value": "Semoir à la main",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hand Seeder",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hand-seeder",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hedge-shears",
+      "rdfs:label": [
+        {
+          "@value": "Cisailles de haie",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hedge Shears",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hedge-shears",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hoe",
+      "rdfs:label": [
+        {
+          "@value": "Houe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hoe",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hoe",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#kneeler",
+      "rdfs:label": [
+        {
+          "@value": "Agenouilloir",
+          "@language": "fr"
+        },
+        {
+          "@value": "Kneeler",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kneeler",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#lawn-mower",
+      "rdfs:label": [
+        {
+          "@value": "Tondeuse à gazon",
+          "@language": "fr"
+        },
+        {
+          "@value": "Lawn Mower",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#lawn-mower",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#leaf-blower",
+      "rdfs:label": [
+        {
+          "@value": "Souffleur de feuilles",
+          "@language": "fr"
+        },
+        {
+          "@value": "Leaf Blower",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#leaf-blower",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#leaf-rake",
+      "rdfs:label": [
+        {
+          "@value": "Râteau de feuilles",
+          "@language": "fr"
+        },
+        {
+          "@value": "Leaf Rake",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#leaf-rake",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#machete",
+      "rdfs:label": [
+        {
+          "@value": "Machette",
+          "@language": "fr"
+        },
+        {
+          "@value": "Machete",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#machete",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#manual-edger",
+      "rdfs:label": [
+        {
+          "@value": "Edger manuel",
+          "@language": "fr"
+        },
+        {
+          "@value": "Manual Edger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#manual-edger",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pick-mattock",
+      "rdfs:label": [
+        {
+          "@value": "Choisi le mittock",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pick Mattock",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pick-mattock",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pitchfork",
+      "rdfs:label": [
+        {
+          "@value": "Pittoresque",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pitchfork",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pitchfork",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#planting-dibble",
+      "rdfs:label": [
+        {
+          "@value": "Planter DiBble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Planting Dibble",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#planting-dibble",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pointed-shovel",
+      "rdfs:label": [
+        {
+          "@value": "Pelle pointue",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pointed Shovel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pointed-shovel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pole-pruner",
+      "rdfs:label": [
+        {
+          "@value": "Châtrice",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pole Pruner",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pole-pruner",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#post-hole-pincer",
+      "rdfs:label": [
+        {
+          "@value": "Pincer Pincer",
+          "@language": "fr"
+        },
+        {
+          "@value": "Post Hole Pincer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#post-hole-pincer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#potato-fork",
+      "rdfs:label": [
+        {
+          "@value": "Fourchette de pommes de terre",
+          "@language": "fr"
+        },
+        {
+          "@value": "Potato Fork",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#potato-fork",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#powered-chainsaw",
+      "rdfs:label": [
+        {
+          "@value": "Tronçonneuse alimenté",
+          "@language": "fr"
+        },
+        {
+          "@value": "Powered Chainsaw",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#powered-chainsaw",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#powered-edger",
+      "rdfs:label": [
+        {
+          "@value": "Edger alimenté",
+          "@language": "fr"
+        },
+        {
+          "@value": "Powered Edger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#powered-edger",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pruning-knife",
+      "rdfs:label": [
+        {
+          "@value": "Coup de couteau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pruning Knife",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pruning-knife",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pruning-saw",
+      "rdfs:label": [
+        {
+          "@value": "Scie à élagité",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pruning Saw",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pruning-saw",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pruning-shears",
+      "rdfs:label": [
+        {
+          "@value": "Cisailles de taille",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pruning Shears",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pruning-shears",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#rake",
+      "rdfs:label": [
+        {
+          "@value": "Râteau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Rake",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#rake",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#rotary-tiller",
+      "rdfs:label": [
+        {
+          "@value": "Taber rotatif",
+          "@language": "fr"
+        },
+        {
+          "@value": "Rotary Tiller",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#rotary-tiller",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#round-point-shovel",
+      "rdfs:label": [
+        {
+          "@value": "Pelle à point rond",
+          "@language": "fr"
+        },
+        {
+          "@value": "Round Point Shovel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#round-point-shovel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#scoop-shovel",
+      "rdfs:label": [
+        {
+          "@value": "Pelleteuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "Scoop Shovel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#scoop-shovel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#scuffle-hoe",
+      "rdfs:label": [
+        {
+          "@value": "Bracelet houe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Scuffle Hoe",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#scuffle-hoe",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#seeder-row-planter",
+      "rdfs:label": [
+        {
+          "@value": "Planteur de rangée de semis",
+          "@language": "fr"
+        },
+        {
+          "@value": "Seeder Row Planter",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#seeder-row-planter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#shredder",
+      "rdfs:label": [
+        {
+          "@value": "Déchiqueteuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shredder",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shredder",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#soil-scoop",
+      "rdfs:label": [
+        {
+          "@value": "Écosserie",
+          "@language": "fr"
+        },
+        {
+          "@value": "Soil Scoop",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soil-scoop",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#spading-fork",
+      "rdfs:label": [
+        {
+          "@value": "Fourchette",
+          "@language": "fr"
+        },
+        {
+          "@value": "Spading Fork",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spading-fork",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#spike-aerator",
+      "rdfs:label": [
+        {
+          "@value": "Aérateur de pic",
+          "@language": "fr"
+        },
+        {
+          "@value": "Spike Aerator",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spike-aerator",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#spiked-aerating-shoes",
+      "rdfs:label": [
+        {
+          "@value": "Chaussures d'aération à pointes",
+          "@language": "fr"
+        },
+        {
+          "@value": "Spiked Aerating Shoes",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spiked-aerating-shoes",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#spreader",
+      "rdfs:label": [
+        {
+          "@value": "Épandeuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "Spreader",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spreader",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#sprinkler",
+      "rdfs:label": [
+        {
+          "@value": "Arroseuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sprinkler",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sprinkler",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#square-point-shovel",
+      "rdfs:label": [
+        {
+          "@value": "Pelle à point carré",
+          "@language": "fr"
+        },
+        {
+          "@value": "Square Point Shovel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#square-point-shovel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#step-edger",
+      "rdfs:label": [
+        {
+          "@value": "Step Edger",
+          "@language": "fr"
+        },
+        {
+          "@value": "Step Edger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#step-edger",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#string-trimmer",
+      "rdfs:label": [
+        {
+          "@value": "Tondeuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "String Trimmer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#string-trimmer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#trailer-sprayer",
+      "rdfs:label": [
+        {
+          "@value": "Pulvérisateur de remorque",
+          "@language": "fr"
+        },
+        {
+          "@value": "Trailer Sprayer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#trailer-sprayer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#transplant-spade",
+      "rdfs:label": [
+        {
+          "@value": "Pache de transplantation",
+          "@language": "fr"
+        },
+        {
+          "@value": "Transplant Spade",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#transplant-spade",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#trench-shovel",
+      "rdfs:label": [
+        {
+          "@value": "Tranchée",
+          "@language": "fr"
+        },
+        {
+          "@value": "Trench Shovel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#trench-shovel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#tree-pruner",
+      "rdfs:label": [
+        {
+          "@value": "Arbre",
+          "@language": "fr"
+        },
+        {
+          "@value": "Tree Pruner",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tree-pruner",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#twist-tiller",
+      "rdfs:label": [
+        {
+          "@value": "Torsadeur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Twist Tiller",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#twist-tiller",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#warren-hoe",
+      "rdfs:label": [
+        {
+          "@value": "Warren houe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Warren Hoe",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#warren-hoe",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#water-hose",
+      "rdfs:label": [
+        {
+          "@value": "Tuyau d'eau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Water Hose",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#water-hose",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#weeder",
+      "rdfs:label": [
+        {
+          "@value": "Weeder",
+          "@language": "fr"
+        },
+        {
+          "@value": "Weeder",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#weeder",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#wheelbarrow",
+      "rdfs:label": [
+        {
+          "@value": "Brouette",
+          "@language": "fr"
+        },
+        {
+          "@value": "Wheelbarrow",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wheelbarrow",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#wheel-edger",
+      "rdfs:label": [
+        {
+          "@value": "Edger de roue",
+          "@language": "fr"
+        },
+        {
+          "@value": "Wheel Edger",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wheel-edger",
+      "@type": "dfc-p:ProductType"
+    }
+  ]
+}
