@@ -795,11 +795,11 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
 def _isImageMimeType(mimeType: str) -> bool:
     """Is the given mime type an image?
     """
-    extensions = getImageExtensions()
     if mimeType == 'image/svg+xml':
         return True
     if not mimeType.startswith('image/'):
         return False
+    extensions = getImageExtensions()
     ext = mimeType.split('/')[1]
     if ext in extensions:
         return True
@@ -809,9 +809,9 @@ def _isImageMimeType(mimeType: str) -> bool:
 def _isVideoMimeType(mimeType: str) -> bool:
     """Is the given mime type a video?
     """
-    extensions = getVideoExtensions()
     if not mimeType.startswith('video/'):
         return False
+    extensions = getVideoExtensions()
     ext = mimeType.split('/')[1]
     if ext in extensions:
         return True
@@ -821,11 +821,11 @@ def _isVideoMimeType(mimeType: str) -> bool:
 def _isAudioMimeType(mimeType: str) -> bool:
     """Is the given mime type an audio file?
     """
-    extensions = getAudioExtensions()
     if mimeType == 'audio/mpeg':
         return True
     if not mimeType.startswith('audio/'):
         return False
+    extensions = getAudioExtensions()
     ext = mimeType.split('/')[1]
     if ext in extensions:
         return True
