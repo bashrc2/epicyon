@@ -449,6 +449,9 @@ parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                     default=1,
                     help='Minimum number of votes to remove or add' +
                     ' a newswire item')
+parser.add_argument('--maxLikeCount', dest='maxLikeCount', type=int,
+                    default=10,
+                    help='Maximum number of likes displayed on a post')
 parser.add_argument('--votingtime', dest='votingtime', type=int,
                     default=1440,
                     help='Time to vote on newswire items in minutes')
@@ -2584,6 +2587,11 @@ sendThreadsTimeoutMins = \
 if sendThreadsTimeoutMins is not None:
     args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
 
+maxLikeCount = \
+    getConfigParam(baseDir, 'maxLikeCount')
+if maxLikeCount is not None:
+    args.maxLikeCount = int(maxLikeCount)
+
 showPublishAsIcon = \
     getConfigParam(baseDir, 'showPublishAsIcon')
 if showPublishAsIcon is not None:
@@ -2687,7 +2695,8 @@ if args.registration:
         print('New registrations closed')
 
 if __name__ == "__main__":
-    runDaemon(sharedItemsFederatedDomains,
+    runDaemon(args.maxLikeCount,
+              sharedItemsFederatedDomains,
               userAgentsBlocked,
               args.logLoginFailures,
               args.city,

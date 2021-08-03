@@ -567,7 +567,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, boxName: str,
-                      systemLanguage: str) -> str:
+                      systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -647,7 +648,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
+                                 themeName, systemLanguage, maxLikeCount,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -671,7 +672,8 @@ def htmlHashtagSearch(cssCache: {},
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str, systemLanguage: str) -> str:
+                      themeName: str, systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -822,7 +824,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
+                                 themeName, systemLanguage, maxLikeCount,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,

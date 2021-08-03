@@ -2928,7 +2928,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
                                       self.server.themeName,
-                                      self.server.systemLanguage)
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
@@ -2983,7 +2984,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
                                       self.server.themeName, 'outbox',
-                                      self.server.systemLanguage)
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
@@ -3018,7 +3020,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
                                       self.server.themeName, 'bookmarks',
-                                      self.server.systemLanguage)
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount)
                 if bookmarksStr:
                     msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
@@ -3113,7 +3116,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                allowLocalNetworkAccess,
                                                self.server.themeName,
                                                accessKeys,
-                                               self.server.systemLanguage)
+                                               self.server.systemLanguage,
+                                               self.server.maxLikeCount)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -6347,7 +6351,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertubeInstances,
                               self.server.allowLocalNetworkAccess,
                               self.server.themeName,
-                              self.server.systemLanguage)
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -7289,7 +7294,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.peertubeInstances,
                                   self.server.allowLocalNetworkAccess,
                                   self.server.themeName,
-                                  self.server.systemLanguage)
+                                  self.server.systemLanguage,
+                                  self.server.maxLikeCount)
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
@@ -7498,7 +7504,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.themeName,
-                                    self.server.systemLanguage)
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -7587,7 +7594,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.themeName,
-                                    self.server.systemLanguage)
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -7687,6 +7695,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.maxLikeCount,
                                     self.server.sharedItemsFederatedDomains,
                                     rolesList,
                                     None, None)
@@ -7790,6 +7799,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.debug,
                                                 accessKeys, city,
                                                 self.server.systemLanguage,
+                                                self.server.maxLikeCount,
                                                 sharedItemsFederatedDomains,
                                                 skills,
                                                 None, None)
@@ -7925,7 +7935,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.peertubeInstances,
                                    self.server.allowLocalNetworkAccess,
                                    self.server.themeName,
-                                   self.server.systemLanguage)
+                                   self.server.systemLanguage,
+                                   self.server.maxLikeCount)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -8138,6 +8149,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.textModeBanner,
                                         accessKeys,
                                         self.server.systemLanguage,
+                                        self.server.maxLikeCount,
                                         sharedItemsFederatedDomains)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -8278,6 +8290,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.textModeBanner,
                                          accessKeys,
                                          self.server.systemLanguage,
+                                         self.server.maxLikeCount,
                                          sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -8411,6 +8424,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.textModeBanner,
                                          accessKeys,
                                          self.server.systemLanguage,
+                                         self.server.maxLikeCount,
                                          sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -8543,6 +8557,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.textModeBanner,
                                        accessKeys,
                                        self.server.systemLanguage,
+                                       self.server.maxLikeCount,
                                        self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -8675,6 +8690,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.textModeBanner,
                                        accessKeys,
                                        self.server.systemLanguage,
+                                       self.server.maxLikeCount,
                                        self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -8816,6 +8832,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.textModeBanner,
                                       accessKeys,
                                       self.server.systemLanguage,
+                                      self.server.maxLikeCount,
                                       self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -8955,6 +8972,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.textModeBanner,
                                           accessKeys,
                                           self.server.systemLanguage,
+                                          self.server.maxLikeCount,
                                           sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -9053,6 +9071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.textModeBanner,
                                    accessKeys,
                                    self.server.systemLanguage,
+                                   self.server.maxLikeCount,
                                    self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -9170,6 +9189,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.textModeBanner,
                                           accessKeys,
                                           self.server.systemLanguage,
+                                          self.server.maxLikeCount,
                                           sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -9299,6 +9319,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.textModeBanner,
                                accessKeys,
                                self.server.systemLanguage,
+                               self.server.maxLikeCount,
                                self.server.sharedItemsFederatedDomains)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -9418,6 +9439,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.textModeBanner,
                                            accessKeys,
                                            self.server.systemLanguage,
+                                           self.server.maxLikeCount,
                                            sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -9535,6 +9557,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.maxLikeCount,
                                     self.server.sharedItemsFederatedDomains,
                                     shares,
                                     pageNumber, sharesPerPage)
@@ -9650,6 +9673,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.maxLikeCount,
                                     self.server.sharedItemsFederatedDomains,
                                     following,
                                     pageNumber,
@@ -9765,6 +9789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.systemLanguage,
+                                    self.server.maxLikeCount,
                                     self.server.sharedItemsFederatedDomains,
                                     followers,
                                     pageNumber,
@@ -9903,6 +9928,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug,
                             accessKeys, city,
                             self.server.systemLanguage,
+                            self.server.maxLikeCount,
                             self.server.sharedItemsFederatedDomains,
                             None, None).encode('utf-8')
             msglen = len(msg)
@@ -14993,7 +15019,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(sharedItemsFederatedDomains: [],
+def runDaemon(maxLikeCount: int,
+              sharedItemsFederatedDomains: [],
               userAgentsBlocked: [],
               logLoginFailures: bool,
               city: str,
@@ -15232,6 +15259,13 @@ def runDaemon(sharedItemsFederatedDomains: [],
     # for it to be considered dormant?
     httpd.dormantMonths = dormantMonths
 
+    # maximum number of likes to display on a post
+    httpd.maxLikeCount = maxLikeCount
+    if httpd.maxLikeCount < 0:
+        httpd.maxLikeCount = 0
+    elif httpd.maxLikeCount > 99:
+        httpd.maxLikeCount = 99
+
     httpd.followingItemsPerPage = 12
     if registration == 'open':
         httpd.registration = True
@@ -15434,7 +15468,8 @@ def runDaemon(sharedItemsFederatedDomains: [],
                               httpd.peertubeInstances,
                               verifyAllSignatures,
                               httpd.themeName,
-                              httpd.systemLanguage), daemon=True)
+                              httpd.systemLanguage,
+                              httpd.maxLikeCount), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

@@ -568,8 +568,10 @@ def createServerAlice(path: str, domain: str, port: int,
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
+    maxLikeCount = 10
     print('Server running: Alice')
-    runDaemon(sharedItemsFederatedDomains,
+    runDaemon(maxLikeCount,
+              sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -697,8 +699,10 @@ def createServerBob(path: str, domain: str, port: int,
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
+    maxLikeCount = 10
     print('Server running: Bob')
-    runDaemon(sharedItemsFederatedDomains,
+    runDaemon(maxLikeCount,
+              sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -759,8 +763,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
+    maxLikeCount = 10
     print('Server running: Eve')
-    runDaemon(sharedItemsFederatedDomains,
+    runDaemon(maxLikeCount,
+              sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -823,8 +829,10 @@ def createServerGroup(path: str, domain: str, port: int,
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
+    maxLikeCount = 10
     print('Server running: Group')
-    runDaemon(sharedItemsFederatedDomains,
+    runDaemon(maxLikeCount,
+              sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,

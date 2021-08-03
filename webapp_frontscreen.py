@@ -32,7 +32,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           showPublishedDateOnly: bool,
                           peertubeInstances: [],
                           allowLocalNetworkAccess: bool,
-                          themeName: str, systemLanguage: str) -> str:
+                          themeName: str, systemLanguage: str,
+                          maxLikeCount: int) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -74,6 +75,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -98,7 +100,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
                     accessKeys: {},
-                    systemLanguage: str,
+                    systemLanguage: str, maxLikeCount: int,
                     sharedItemsFederatedDomains: [],
                     extraJson: {} = None,
                     pageNumber: int = None,
@@ -170,7 +172,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
-                              theme, systemLanguage) + licenseStr
+                              theme, systemLanguage,
+                              maxLikeCount) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

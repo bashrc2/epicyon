@@ -80,7 +80,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            allowLocalNetworkAccess: bool,
                            themeName: str,
                            accessKeys: {},
-                           systemLanguage: str) -> str:
+                           systemLanguage: str,
+                           maxLikeCount: int) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -272,7 +273,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
-                                     themeName, systemLanguage,
+                                     themeName, systemLanguage, maxLikeCount,
                                      False, False, False, False, False)
             i += 1
             if i >= 20:
@@ -475,7 +476,7 @@ def htmlProfile(rssIconAtTop: bool,
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
-                systemLanguage: str,
+                systemLanguage: str, maxLikeCount: int,
                 sharedItemsFederatedDomains: [],
                 extraJson: {} = None, pageNumber: int = None,
                 maxItemsPerPage: int = None) -> str:
@@ -497,7 +498,7 @@ def htmlProfile(rssIconAtTop: bool,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
-                               systemLanguage,
+                               systemLanguage, maxLikeCount,
                                sharedItemsFederatedDomains,
                                pageNumber, maxItemsPerPage)
 
@@ -828,7 +829,8 @@ def htmlProfile(rssIconAtTop: bool,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
-                              theme, systemLanguage) + licenseStr
+                              theme, systemLanguage,
+                              maxLikeCount) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -882,7 +884,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str, systemLanguage: str) -> str:
+                      themeName: str, systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -923,6 +926,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr

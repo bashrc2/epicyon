@@ -167,7 +167,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                showPublishedDateOnly: bool,
                                peertubeInstances: [],
                                allowLocalNetworkAccess: bool,
-                               themeName: str, systemLanguage: str) -> None:
+                               themeName: str, systemLanguage: str,
+                               maxLikeCount: int) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -185,7 +186,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
-                         themeName, systemLanguage,
+                         themeName, systemLanguage, maxLikeCount,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -2246,7 +2247,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        allowLocalNetworkAccess: bool,
                        peertubeInstances: [],
                        lastBounceMessage: [],
-                       themeName: str, systemLanguage: str) -> bool:
+                       themeName: str, systemLanguage: str,
+                       maxLikeCount: int) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2572,7 +2574,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    showPublishedDateOnly,
                                                    peertubeInstances,
                                                    allowLocalNetworkAccess,
-                                                   themeName, systemLanguage)
+                                                   themeName, systemLanguage,
+                                                   maxLikeCount)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2832,7 +2835,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   maxFollowers: int, allowLocalNetworkAccess: bool,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
-                  themeName: str, systemLanguage: str) -> None:
+                  themeName: str, systemLanguage: str,
+                  maxLikeCount: int) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -3220,7 +3224,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                allowLocalNetworkAccess,
                                peertubeInstances,
                                lastBounceMessage,
-                               themeName, systemLanguage)
+                               themeName, systemLanguage,
+                               maxLikeCount)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')

@@ -48,6 +48,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
+                   maxLikeCount: int,
                    sharedItemsFederatedDomains: []) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
@@ -65,7 +66,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allowLocalNetworkAccess,
                         textModeBanner, accessKeys, systemLanguage,
-                        sharedItemsFederatedDomains)
+                        maxLikeCount, sharedItemsFederatedDomains)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},

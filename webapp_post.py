@@ -460,7 +460,8 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                      postStartTime,
                      translate: {}, pageNumberParam: str,
                      timelinePostBookmark: str,
-                     boxName: str) -> str:
+                     boxName: str,
+                     maxLikeCount: int) -> str:
     """Returns html for like icon/button
     """
     likeStr = ''
@@ -475,10 +476,10 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
 
         likeCountStr = ''
         if likeCount > 0:
-            if likeCount <= 10:
+            if likeCount <= maxLikeCount:
                 likeCountStr = ' (' + str(likeCount) + ')'
             else:
-                likeCountStr = ' (10+)'
+                likeCountStr = ' (' + str(maxLikeCount) + '+)'
             if likedByPerson(postJsonObject, nickname, domainFull):
                 if likeCount == 1:
                     # liked by the reader only
@@ -1101,6 +1102,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
+                         maxLikeCount: int,
                          showRepeats: bool = True,
                          showIcons: bool = False,
                          manuallyApprovesFollowers: bool = False,
@@ -1392,7 +1394,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                postStartTime,
                                translate, pageNumberParam,
                                timelinePostBookmark,
-                               boxName)
+                               boxName, maxLikeCount)
 
     _logPostTiming(enableTimingLog, postStartTime, '12.5')
 
@@ -1673,7 +1675,8 @@ def htmlIndividualPost(cssCache: {},
                        showPublishedDateOnly: bool,
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
-                       themeName: str, systemLanguage: str) -> str:
+                       themeName: str, systemLanguage: str,
+                       maxLikeCount: int) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1715,7 +1718,7 @@ def htmlIndividualPost(cssCache: {},
                              showPublishedDateOnly,
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
-                             systemLanguage,
+                             systemLanguage, maxLikeCount,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1744,6 +1747,7 @@ def htmlIndividualPost(cssCache: {},
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1775,6 +1779,7 @@ def htmlIndividualPost(cssCache: {},
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1797,7 +1802,8 @@ def htmlPostReplies(cssCache: {},
                     showPublishedDateOnly: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
-                    themeName: str, systemLanguage: str) -> str:
+                    themeName: str, systemLanguage: str,
+                    maxLikeCount: int) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1817,6 +1823,7 @@ def htmlPostReplies(cssCache: {},
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage,
+                                     maxLikeCount,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

@@ -400,6 +400,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  allowLocalNetworkAccess: bool,
                  textModeBanner: str,
                  accessKeys: {}, systemLanguage: str,
+                 maxLikeCount: int,
                  sharedItemsFederatedDomains: []) -> str:
     """Show the timeline as html
     """
@@ -804,6 +805,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
                                              theme, systemLanguage,
+                                             maxLikeCount,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -998,6 +1000,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                allowLocalNetworkAccess: bool,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
+               maxLikeCount: int,
                sharedItemsFederatedDomains: []) -> str:
     """Show the shares timeline as html
     """
@@ -1020,7 +1023,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1045,6 +1048,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               allowLocalNetworkAccess: bool,
               textModeBanner: str,
               accessKeys: {}, systemLanguage: str,
+              maxLikeCount: int,
               sharedItemsFederatedDomains: []) -> str:
     """Show the inbox as html
     """
@@ -1067,7 +1071,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1092,6 +1096,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   allowLocalNetworkAccess: bool,
                   textModeBanner: str,
                   accessKeys: {}, systemLanguage: str,
+                  maxLikeCount: int,
                   sharedItemsFederatedDomains: []) -> str:
     """Show the bookmarks as html
     """
@@ -1114,7 +1119,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1139,6 +1144,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  allowLocalNetworkAccess: bool,
                  textModeBanner: str,
                  accessKeys: {}, systemLanguage: str,
+                 maxLikeCount: int,
                  sharedItemsFederatedDomains: []) -> str:
     """Show the DM timeline as html
     """
@@ -1156,7 +1162,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1181,6 +1187,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      allowLocalNetworkAccess: bool,
                      textModeBanner: str,
                      accessKeys: {}, systemLanguage: str,
+                     maxLikeCount: int,
                      sharedItemsFederatedDomains: []) -> str:
     """Show the replies timeline as html
     """
@@ -1199,7 +1206,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1224,6 +1231,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
+                   maxLikeCount: int,
                    sharedItemsFederatedDomains: []) -> str:
     """Show the media timeline as html
     """
@@ -1242,7 +1250,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1267,6 +1275,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
+                   maxLikeCount: int,
                    sharedItemsFederatedDomains: []) -> str:
     """Show the blogs timeline as html
     """
@@ -1285,7 +1294,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1311,6 +1320,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       allowLocalNetworkAccess: bool,
                       textModeBanner: str,
                       accessKeys: {}, systemLanguage: str,
+                      maxLikeCount: int,
                       sharedItemsFederatedDomains: []) -> str:
     """Show the features timeline as html
     """
@@ -1329,7 +1339,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1354,6 +1364,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   allowLocalNetworkAccess: bool,
                   textModeBanner: str,
                   accessKeys: {}, systemLanguage: str,
+                  maxLikeCount: int,
                   sharedItemsFederatedDomains: []) -> str:
     """Show the news timeline as html
     """
@@ -1372,7 +1383,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
 
 
@@ -1397,6 +1408,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                allowLocalNetworkAccess: bool,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
+               maxLikeCount: int,
                sharedItemsFederatedDomains: []) -> str:
     """Show the Outbox as html
     """
@@ -1416,5 +1428,5 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys, systemLanguage,
+                        accessKeys, systemLanguage, maxLikeCount,
                         sharedItemsFederatedDomains)
