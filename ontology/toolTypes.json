@@ -1059,6 +1059,576 @@
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wheel-edger",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#laser-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Coupeur laser",
+          "@language": "fr"
+        },
+        {
+          "@value": "Laser Cutter",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#laser-cutter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bandsaw",
+      "rdfs:label": [
+        {
+          "@value": "Scie à ruban",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bandsaw",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bandsaw",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bench-grinder",
+      "rdfs:label": [
+        {
+          "@value": "Broyeur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bench Grinder",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-grinder",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bench-scroll-saw",
+      "rdfs:label": [
+        {
+          "@value": "Scie de défilement bancaire",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bench Scroll Saw",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-scroll-saw",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cnc-mill",
+      "rdfs:label": [
+        {
+          "@value": "Moulin à commande numérique",
+          "@language": "fr"
+        },
+        {
+          "@value": "CNC Mill",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cnc-mill",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#dremels",
+      "rdfs:label": [
+        {
+          "@value": "Dramelle",
+          "@language": "fr"
+        },
+        {
+          "@value": "Dremels",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#dremels",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#floor-standing-pillar-drill",
+      "rdfs:label": [
+        {
+          "@value": "Porte debout au sol",
+          "@language": "fr"
+        },
+        {
+          "@value": "Floor Standing Pillar Drill",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#floor-standing-pillar-drill",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#lathe",
+      "rdfs:label": [
+        {
+          "@value": "Tour",
+          "@language": "fr"
+        },
+        {
+          "@value": "Lathe",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#lathe",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#table-saw",
+      "rdfs:label": [
+        {
+          "@value": "Banc de scie",
+          "@language": "fr"
+        },
+        {
+          "@value": "Table Saw",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#table-saw",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#mitre-saw",
+      "rdfs:label": [
+        {
+          "@value": "Scie à onglet",
+          "@language": "fr"
+        },
+        {
+          "@value": "Mitre Saw",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mitre-saw",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#wire-bending-tool",
+      "rdfs:label": [
+        {
+          "@value": "Outil de pliage de fil",
+          "@language": "fr"
+        },
+        {
+          "@value": "Wire Bending Tool",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wire-bending-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#wood-vice",
+      "rdfs:label": [
+        {
+          "@value": "Vice du bois",
+          "@language": "fr"
+        },
+        {
+          "@value": "Wood Vice",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wood-vice",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#metal-vice",
+      "rdfs:label": [
+        {
+          "@value": "Vice du métal",
+          "@language": "fr"
+        },
+        {
+          "@value": "Metal Vice",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#metal-vice",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#woodturning-lathe",
+      "rdfs:label": [
+        {
+          "@value": "Tour de bois",
+          "@language": "fr"
+        },
+        {
+          "@value": "Woodturning Lathe",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#woodturning-lathe",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#multimeter",
+      "rdfs:label": [
+        {
+          "@value": "Multimètre",
+          "@language": "fr"
+        },
+        {
+          "@value": "Multimeter",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#multimeter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bench-power-supply",
+      "rdfs:label": [
+        {
+          "@value": "Alimentation électrique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bench Power Supply",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-power-supply",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#capacitance-meter",
+      "rdfs:label": [
+        {
+          "@value": "Compteur de capacités",
+          "@language": "fr"
+        },
+        {
+          "@value": "Capacitance Meter",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#capacitance-meter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#oscilloscope",
+      "rdfs:label": [
+        {
+          "@value": "Oscilloscope",
+          "@language": "fr"
+        },
+        {
+          "@value": "Oscilloscope",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oscilloscope",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#oscilloscope-probes",
+      "rdfs:label": [
+        {
+          "@value": "Sondes d'oscilloscope",
+          "@language": "fr"
+        },
+        {
+          "@value": "Oscilloscope Probes",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oscilloscope-probes",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#signal-generator",
+      "rdfs:label": [
+        {
+          "@value": "Générateur de signal",
+          "@language": "fr"
+        },
+        {
+          "@value": "Signal Generator",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#signal-generator",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#mains-transformer",
+      "rdfs:label": [
+        {
+          "@value": "Transformateur principal",
+          "@language": "fr"
+        },
+        {
+          "@value": "Mains Transformer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mains-transformer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "rdfs:label": [
+        {
+          "@value": "Pistolet à air chaud",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hot Air Gun",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bench-pillar-drill",
+      "rdfs:label": [
+        {
+          "@value": "Percaire de banc",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bench Pillar Drill",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-pillar-drill",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bench-magnifier-lamp",
+      "rdfs:label": [
+        {
+          "@value": "Lampe de loupe de banc",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bench Magnifier Lamp",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-magnifier-lamp",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#electronic-hotplate",
+      "rdfs:label": [
+        {
+          "@value": "Plaque de feu électronique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Electronic Hotplate",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electronic-hotplate",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#microscope",
+      "rdfs:label": [
+        {
+          "@value": "Microscope",
+          "@language": "fr"
+        },
+        {
+          "@value": "Microscope",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#microscope",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#soldering-iron",
+      "rdfs:label": [
+        {
+          "@value": "Fer à souder",
+          "@language": "fr"
+        },
+        {
+          "@value": "Soldering Iron",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soldering-iron",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#solder-reflow-oven",
+      "rdfs:label": [
+        {
+          "@value": "Four de refusion à souder",
+          "@language": "fr"
+        },
+        {
+          "@value": "Solder Reflow Oven",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#solder-reflow-oven",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#spot-welder",
+      "rdfs:label": [
+        {
+          "@value": "Soudeur tache",
+          "@language": "fr"
+        },
+        {
+          "@value": "Spot Welder",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spot-welder",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#flat-bed-pen-plotter",
+      "rdfs:label": [
+        {
+          "@value": "Traceur de stylo plat",
+          "@language": "fr"
+        },
+        {
+          "@value": "Flat-Bed Pen Plotter",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#flat-bed-pen-plotter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#printer",
+      "rdfs:label": [
+        {
+          "@value": "Imprimante",
+          "@language": "fr"
+        },
+        {
+          "@value": "Printer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#printer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#laminator",
+      "rdfs:label": [
+        {
+          "@value": "Laminateur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Laminator",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#laminator",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#thermal-camera",
+      "rdfs:label": [
+        {
+          "@value": "Caméra thermique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Thermal Camera",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#thermal-camera",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#glue-gun",
+      "rdfs:label": [
+        {
+          "@value": "Pistolet à colle",
+          "@language": "fr"
+        },
+        {
+          "@value": "Glue Gun",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#glue-gun",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "rdfs:label": [
+        {
+          "@value": "Pistolet à air chaud",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hot Air Gun",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#label-printer",
+      "rdfs:label": [
+        {
+          "@value": "Imprimante d'étiquettes",
+          "@language": "fr"
+        },
+        {
+          "@value": "Label Printer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#label-printer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "rdfs:label": [
+        {
+          "@value": "Machine à coudre",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sewing Machine",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "rdfs:label": [
+        {
+          "@value": "",
+          "@language": "fr"
+        },
+        {
+          "@value": "",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
