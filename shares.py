@@ -38,13 +38,22 @@ from filters import isFilteredGlobally
 from siteactive import siteIsActive
 
 
-def _loadDfcIds(baseDir: str, systemLanguage: str) -> {}:
+def _dfcProductTypes() -> []:
+    # this list should match the ontology json files
+    # eg. ontology/foodType.json
+    return ['food']
+
+
+def _loadDfcIds(baseDir: str, systemLanguage: str,
+                productType: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
-    productTypesFilename = baseDir + '/ontology/customProductTypes.json'
+    productTypesFilename = \
+        baseDir + '/ontology/custom' + productType.title() + 'Types.json'
     if not os.path.isfile(productTypesFilename):
-        productTypesFilename = baseDir + '/ontology/productTypes.json'
+        productTypesFilename = \
+            baseDir + '/ontology/' + productType + 'Types.json'
     productTypes = loadJson(productTypesFilename)
     if not productTypes:
         return None
@@ -153,6 +162,20 @@ def _addShareDurationSec(duration: str, published: int) -> int:
     return 0
 
 
+def _dfcProductTypeFromCategory(itemCategory: str, translate: {}) -> str:
+    """Does the shared item category match a DFC product type?
+    If so then return the product type.
+    This will be used to select an appropriate ontology file
+    such as ontology/foodTypes.json
+    """
+    productTypesList = _dfcProductTypes()
+    categoryLower = itemCategory.lower()
+    for productType in productTypesList:
+        if translate[productType] in categoryLower:
+            return productType
+    return None
+
+
 def _getshareDfcId(baseDir: str, systemLanguage: str,
                    itemType: str, itemCategory: str,
                    translate: {}, dfcIds: {} = None) -> str:
@@ -160,12 +183,15 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
     """
-    if translate['food'] not in itemCategory.lower():
+    # does the category field match any prodyct type ontology
+    # files in the ontology subdirectory?
+    matchedProductType = _dfcProductTypeFromCategory(itemCategory, translate)
+    if not matchedProductType:
         itemType = itemType.replace(' ', '_')
         itemType = itemType.replace('.', '')
         return 'epicyon#' + itemType
     if not dfcIds:
-        dfcIds = _loadDfcIds(baseDir, systemLanguage)
+        dfcIds = _loadDfcIds(baseDir, systemLanguage, matchedProductType)
         if not dfcIds:
             return ''
     itemTypeLower = itemType.lower()
@@ -1268,7 +1294,12 @@ def _dfcToSharesFormat(catalogJson: {},
     if not catalogJson.get('DFC:supplies'):
         return {}
     sharesJson = {}
-    dfcIds = _loadDfcIds(baseDir, systemLanguage)
+
+    dfcIds = {}
+    productTypesList = _dfcProductTypes()
+    for productType in productTypesList:
+        dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType)
+
     currTime = int(time.time())
     for item in catalogJson['DFC:supplies']:
         if not item.get('@id') or \
@@ -1303,9 +1334,16 @@ def _dfcToSharesFormat(catalogJson: {},
             itemType = item['DFC:hasType'].split(':')[1]
             itemType = itemType.replace('_', ' ')
             itemCategory = 'non-food'
+            productType = None
         else:
             hasType = item['DFC:hasType'].split(':')[1]
-            itemType = _getshareTypeFromDfcId(hasType, dfcIds)
+            itemType = None
+            productType = None
+            for prodType in productTypesList:
+                itemType = _getshareTypeFromDfcId(hasType, dfcIds[prodType])
+                if itemType:
+                    productType = prodType
+                    break
             itemCategory = 'food'
         if not itemType:
             continue
@@ -1314,7 +1352,9 @@ def _dfcToSharesFormat(catalogJson: {},
         if isFilteredGlobally(baseDir, allText):
             continue
 
-        dfcId = dfcIds[itemType]
+        dfcId = None
+        if productType:
+            dfcId = dfcIds[productType][itemType]
         itemID = item['@id']
         description = item['DFC:description'].split(':', 1)[1].strip()
 
