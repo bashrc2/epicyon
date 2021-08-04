@@ -645,7 +645,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
-        self.send_header('Set-Cookie', 'epicyon=; SameSite=Lax')
+        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
         self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
@@ -668,7 +668,7 @@ class PubServer(BaseHTTPRequestHandler):
                   redirect)
 
         self.send_response(303)
-        self.send_header('Set-Cookie', 'epicyon=; SameSite=Lax')
+        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
         self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
@@ -686,7 +686,7 @@ class PubServer(BaseHTTPRequestHandler):
             if 'HttpOnly;' not in cookieStr:
                 if self.server.httpPrefix == 'https':
                     cookieStr += '; Secure'
-                cookieStr += '; HttpOnly; SameSite=Lax'
+                cookieStr += '; HttpOnly; SameSite=Strict'
             self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
@@ -766,7 +766,7 @@ class PubServer(BaseHTTPRequestHandler):
             if 'HttpOnly;' not in cookieStr:
                 if self.server.httpPrefix == 'https':
                     cookieStr += '; Secure'
-                cookieStr += '; HttpOnly; SameSite=Lax'
+                cookieStr += '; HttpOnly; SameSite=Strict'
             if not cookie.startswith('SET:'):
                 self.send_header('Cookie', cookieStr)
             else:
@@ -1430,7 +1430,7 @@ class PubServer(BaseHTTPRequestHandler):
             del self.server.tokens[nickname]
         self._redirect_headers(self.server.httpPrefix + '://' +
                                self.server.domainFull + '/login',
-                               'epicyon=; SameSite=Lax',
+                               'epicyon=; SameSite=Strict',
                                callingDomain)
 
     def _benchmarkGETtimings(self, GETstartTime, GETtimings: {},
@@ -1640,7 +1640,7 @@ class PubServer(BaseHTTPRequestHandler):
                 index = self.server.tokens[loginNickname]
                 self.server.tokensLookup[index] = loginNickname
                 cookieStr = 'SET:epicyon=' + \
-                    self.server.tokens[loginNickname] + '; SameSite=Lax'
+                    self.server.tokens[loginNickname] + '; SameSite=Strict'
                 if callingDomain.endswith('.onion') and onionDomain:
                     self._redirect_headers('http://' +
                                            onionDomain +
