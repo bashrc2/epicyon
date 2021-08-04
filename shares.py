@@ -172,8 +172,12 @@ def _dfcProductTypeFromCategory(itemCategory: str, translate: {}) -> str:
     productTypesList = _dfcProductTypes()
     categoryLower = itemCategory.lower()
     for productType in productTypesList:
-        if translate[productType] in categoryLower:
-            return productType
+        if translate.get(productType):
+            if translate[productType] in categoryLower:
+                return productType
+        else:
+            if productType in categoryLower:
+                return productType
     return None
 
 

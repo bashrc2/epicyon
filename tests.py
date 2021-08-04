@@ -12,6 +12,7 @@ import os
 import shutil
 import json
 import datetime
+from shutil import copyfile
 from random import randint
 from time import gmtime, strftime
 from pprint import pprint
@@ -1463,10 +1464,11 @@ def testSharedItemsFederation():
 
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
+    copyfile(baseDir + '/img/logo.png', bobDir + '/logo.png')
     sessionBob = createSession(proxyType)
     sharedItemName = 'cheddar'
     sharedItemDescription = 'Some cheese'
-    sharedItemImageFilename = 'img/logo.png'
+    sharedItemImageFilename = 'logo.png'
     sharedItemQty = 1
     sharedItemType = 'Cheese'
     sharedItemCategory = 'Food'
@@ -1489,7 +1491,7 @@ def testSharedItemsFederation():
     assert isinstance(shareJson, dict)
     sharedItemName = 'Epicyon T-shirt'
     sharedItemDescription = 'A fashionable item'
-    sharedItemImageFilename = 'img/logo.png'
+    sharedItemImageFilename = 'logo.png'
     sharedItemQty = 1
     sharedItemType = 'T-Shirt'
     sharedItemCategory = 'Clothes'
@@ -1512,7 +1514,7 @@ def testSharedItemsFederation():
     assert isinstance(shareJson, dict)
     sharedItemName = 'Soldering iron'
     sharedItemDescription = 'A soldering iron'
-    sharedItemImageFilename = 'img/logo.png'
+    sharedItemImageFilename = 'logo.png'
     sharedItemQty = 1
     sharedItemType = 'Soldering iron'
     sharedItemCategory = 'Tools'
@@ -1534,15 +1536,19 @@ def testSharedItemsFederation():
     assert shareJson
     assert isinstance(shareJson, dict)
 
+    time.sleep(2)
     print('\n\n*********************************************************')
-    print('Bob has a shares.json file')
+    print('Bob has a shares.json file containing the uploaded items')
 
     sharesFilename = bobDir + '/accounts/bob@' + bobDomain + '/shares.json'
     assert os.path.isfile(sharesFilename)
+    sharesJson = loadJson(sharesFilename)
+    assert sharesJson
+    pprint(sharesJson)
+    assert len(sharesJson.items()) == 3
 
     print('\n\n*********************************************************')
     print('Bob can read the shared items catalog on his own instance')
-    time.sleep(10)
     catalogJson = \
         getSharedItemsCatalogViaServer(bobDir, sessionBob, 'bob', bobPassword,
                                        bobDomain, bobPort, httpPrefix, True)
