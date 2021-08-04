@@ -139,6 +139,7 @@ from shares import generateSharedItemFederationTokens
 from shares import createSharedItemFederationToken
 from shares import updateSharedItemFederationToken
 from shares import mergeSharedItemTokens
+from shares import sendShareViaServer
 
 testServerGroupRunning = False
 testServerAliceRunning = False
@@ -1275,6 +1276,262 @@ def testFollowBetweenServers():
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
     assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
+
+    print('\n\n*********************************************************')
+    print('Alice sends a message to Bob')
+    alicePostLog = []
+    alicePersonCache = {}
+    aliceCachedWebfingers = {}
+    alicePostLog = []
+    isArticle = False
+    city = 'London, England'
+    sendResult = \
+        sendPost(__version__,
+                 sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
+                 'bob', bobDomain, bobPort, ccUrl,
+                 httpPrefix, 'Alice message', followersOnly, saveToFile,
+                 clientToServer, True,
+                 None, None, None, city, federationList,
+                 aliceSendThreads, alicePostLog, aliceCachedWebfingers,
+                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
+                 inReplyToAtomUri, subject)
+    print('sendResult: ' + str(sendResult))
+
+    queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
+    inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
+    aliceMessageArrived = False
+    for i in range(20):
+        time.sleep(1)
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath)
+                    if os.path.isfile(os.path.join(inboxPath, name))]) > 0:
+                aliceMessageArrived = True
+                print('Alice message sent to Bob!')
+                break
+
+    assert aliceMessageArrived is True
+    print('Message from Alice to Bob succeeded')
+
+    # stop the servers
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.is_alive() is False
+
+    thrBob.kill()
+    thrBob.join()
+    assert thrBob.is_alive() is False
+
+    # queue item removed
+    time.sleep(4)
+    assert len([name for name in os.listdir(queuePath)
+                if os.path.isfile(os.path.join(queuePath, name))]) == 0
+
+    os.chdir(baseDir)
+    shutil.rmtree(baseDir + '/.tests')
+
+
+def testSharedItemsFederation():
+    print('Testing federation of shared items between Alice and Bob')
+
+    global testServerAliceRunning
+    global testServerBobRunning
+    testServerAliceRunning = False
+    testServerBobRunning = False
+
+    systemLanguage = 'en'
+    httpPrefix = 'http'
+    proxyType = None
+    federationList = []
+
+    baseDir = os.getcwd()
+    if os.path.isdir(baseDir + '/.tests'):
+        shutil.rmtree(baseDir + '/.tests')
+    os.mkdir(baseDir + '/.tests')
+
+    # create the servers
+    aliceDir = baseDir + '/.tests/alice'
+    aliceDomain = '127.0.0.74'
+    alicePort = 61917
+    aliceSendThreads = []
+    aliceAddress = aliceDomain + ':' + str(alicePort)
+
+    bobDir = baseDir + '/.tests/bob'
+    bobDomain = '127.0.0.81'
+    bobPort = 61983
+    bobSendThreads = []
+    bobAddress = bobDomain + ':' + str(bobPort)
+    bobPassword = 'bobpass'
+    bobCachedWebfingers = {}
+    bobPersonCache = {}
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.is_alive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
+    thrAlice = \
+        threadWithTrace(target=createServerAlice,
+                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                              federationList, False, False,
+                              aliceSendThreads),
+                        daemon=True)
+
+    global thrBob
+    if thrBob:
+        while thrBob.is_alive():
+            thrBob.stop()
+            time.sleep(1)
+        thrBob.kill()
+
+    thrBob = \
+        threadWithTrace(target=createServerBob,
+                        args=(bobDir, bobDomain, bobPort, aliceAddress,
+                              federationList, False, False,
+                              bobSendThreads),
+                        daemon=True)
+
+    thrAlice.start()
+    thrBob.start()
+    assert thrAlice.is_alive() is True
+    assert thrBob.is_alive() is True
+
+    # wait for all servers to be running
+    ctr = 0
+    while not (testServerAliceRunning and testServerBobRunning):
+        time.sleep(1)
+        ctr += 1
+        if ctr > 60:
+            break
+    print('Alice online: ' + str(testServerAliceRunning))
+    print('Bob online: ' + str(testServerBobRunning))
+    assert ctr <= 60
+    time.sleep(1)
+
+    # In the beginning all was calm and there were no follows
+
+    print('*********************************************************')
+    print('Alice sends a follow request to Bob')
+    os.chdir(aliceDir)
+    sessionAlice = createSession(proxyType)
+    inReplyTo = None
+    inReplyToAtomUri = None
+    subject = None
+    alicePostLog = []
+    followersOnly = False
+    saveToFile = True
+    clientToServer = False
+    ccUrl = None
+    alicePersonCache = {}
+    aliceCachedWebfingers = {}
+    alicePostLog = []
+    bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
+    sendResult = \
+        sendFollowRequest(sessionAlice, aliceDir,
+                          'alice', aliceDomain, alicePort, httpPrefix,
+                          'bob', bobDomain, bobActor,
+                          bobPort, httpPrefix,
+                          clientToServer, federationList,
+                          aliceSendThreads, alicePostLog,
+                          aliceCachedWebfingers, alicePersonCache,
+                          True, __version__)
+    print('sendResult: ' + str(sendResult))
+
+    for t in range(16):
+        if os.path.isfile(bobDir + '/accounts/bob@' +
+                          bobDomain + '/followers.txt'):
+            if os.path.isfile(aliceDir + '/accounts/alice@' +
+                              aliceDomain + '/following.txt'):
+                if os.path.isfile(aliceDir + '/accounts/alice@' +
+                                  aliceDomain + '/followingCalendar.txt'):
+                    break
+        time.sleep(1)
+
+    assert validInbox(bobDir, 'bob', bobDomain)
+    assert validInboxFilenames(bobDir, 'bob', bobDomain,
+                               aliceDomain, alicePort)
+    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
+                                          bobDomain + '/followers.txt').read()
+    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
+                                      aliceDomain + '/following.txt').read()
+    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
+                                      aliceDomain +
+                                      '/followingCalendar.txt').read()
+    assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
+
+    print('\n\n*********************************************************')
+    print('Bob publishes a shared item')
+    sessionBob = createSession(proxyType)
+    sharedItemName = 'cheddar'
+    sharedItemDescription = 'Some cheese'
+    sharedItemImageFilename = 'img/logo.png'
+    sharedItemQty = 1
+    sharedItemType = 'Cheese'
+    sharedItemCategory = 'Food'
+    sharedItemLocation = "Bob's location"
+    sharedItemDuration = "10 days"
+    sharedItemPrice = "1.30"
+    sharedItemCurrency = "EUR"
+    shareJson = \
+        sendShareViaServer(bobDir, sessionBob,
+                           'bob', bobPassword,
+                           bobDomain, bobPort,
+                           httpPrefix, sharedItemName,
+                           sharedItemDescription, sharedItemImageFilename,
+                           sharedItemQty, sharedItemType, sharedItemCategory,
+                           sharedItemLocation, sharedItemDuration,
+                           bobCachedWebfingers, bobPersonCache,
+                           True, __version__,
+                           sharedItemPrice, sharedItemCurrency)
+    assert shareJson
+    assert isinstance(shareJson, dict)
+    sharedItemName = 'Epicyon T-shirt'
+    sharedItemDescription = 'A fashionable item'
+    sharedItemImageFilename = 'img/logo.png'
+    sharedItemQty = 1
+    sharedItemType = 'T-Shirt'
+    sharedItemCategory = 'Clothes'
+    sharedItemLocation = "Bob's location"
+    sharedItemDuration = "5 days"
+    sharedItemPrice = "0"
+    sharedItemCurrency = "EUR"
+    shareJson = \
+        sendShareViaServer(bobDir, sessionBob,
+                           'bob', bobPassword,
+                           bobDomain, bobPort,
+                           httpPrefix, sharedItemName,
+                           sharedItemDescription, sharedItemImageFilename,
+                           sharedItemQty, sharedItemType, sharedItemCategory,
+                           sharedItemLocation, sharedItemDuration,
+                           bobCachedWebfingers, bobPersonCache,
+                           True, __version__,
+                           sharedItemPrice, sharedItemCurrency)
+    assert shareJson
+    assert isinstance(shareJson, dict)
+    sharedItemName = 'Soldering iron'
+    sharedItemDescription = 'A soldering iron'
+    sharedItemImageFilename = 'img/logo.png'
+    sharedItemQty = 1
+    sharedItemType = 'Soldering iron'
+    sharedItemCategory = 'Tools'
+    sharedItemLocation = "Bob's location"
+    sharedItemDuration = "9 days"
+    sharedItemPrice = "10.00"
+    sharedItemCurrency = "EUR"
+    shareJson = \
+        sendShareViaServer(bobDir, sessionBob,
+                           'bob', bobPassword,
+                           bobDomain, bobPort,
+                           httpPrefix, sharedItemName,
+                           sharedItemDescription, sharedItemImageFilename,
+                           sharedItemQty, sharedItemType, sharedItemCategory,
+                           sharedItemLocation, sharedItemDuration,
+                           bobCachedWebfingers, bobPersonCache,
+                           True, __version__,
+                           sharedItemPrice, sharedItemCurrency)
+    assert shareJson
+    assert isinstance(shareJson, dict)
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
