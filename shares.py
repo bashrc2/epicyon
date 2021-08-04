@@ -12,6 +12,7 @@ import re
 import secrets
 import time
 import datetime
+from pprint import pprint
 from session import getJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
@@ -689,6 +690,41 @@ def sendUndoShareViaServer(baseDir: str, session,
     return undoShareJson
 
 
+def getSharedItemsCatalogViaServer(baseDir, session,
+                                   nickname: str, password: str,
+                                   domain: str, port: int,
+                                   httpPrefix: str, debug: bool) -> {}:
+    """Returns the shared items catalog via c2s
+    """
+    if not session:
+        print('WARN: No session for getSharedItemsCatalogViaServer')
+        return 6
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader,
+        'Accept': 'application/json'
+    }
+    domainFull = getFullDomain(domain, port)
+    url = httpPrefix + '://' + domainFull + '/users/' + nickname + '/catalog'
+    if debug:
+        print('Shared items catalog request to: ' + url)
+    catalogJson = getJson(session, url, headers, None, debug,
+                          __version__, httpPrefix, None)
+    if not catalogJson:
+        if debug:
+            print('DEBUG: GET shared items catalog failed for c2s to ' + url)
+#        return 5
+
+    if debug:
+        print('DEBUG: c2s GET shared items catalog success')
+
+    return catalogJson
+
+
 def outboxShareUpload(baseDir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
                       messageJson: {}, debug: bool, city: str,
@@ -737,14 +773,20 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
     location = ''
     if messageJson['object'].get('location'):
         location = messageJson['object']['location']
+    imageFilename = None
+    if messageJson['object'].get('imageFilename'):
+        imageFilename = messageJson['object']['imageFilename']
+    if debug:
+        print('Adding shared item')
+        pprint(messageJson)
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              messageJson['object']['displayName'],
              messageJson['object']['summary'],
-             messageJson['object']['imageFilename'],
+             imageFilename,
              itemQty,
              messageJson['object']['itemType'],
-             messageJson['object']['itemCategory'],
+             messageJson['object']['category'],
              location,
              messageJson['object']['duration'],
              debug, city,

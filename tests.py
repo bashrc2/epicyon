@@ -140,6 +140,7 @@ from shares import createSharedItemFederationToken
 from shares import updateSharedItemFederationToken
 from shares import mergeSharedItemTokens
 from shares import sendShareViaServer
+from shares import getSharedItemsCatalogViaServer
 
 testServerGroupRunning = False
 testServerAliceRunning = False
@@ -1461,7 +1462,7 @@ def testSharedItemsFederation():
     assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
 
     print('\n\n*********************************************************')
-    print('Bob publishes a shared item')
+    print('Bob publishes some shared items')
     sessionBob = createSession(proxyType)
     sharedItemName = 'cheddar'
     sharedItemDescription = 'Some cheese'
@@ -1534,6 +1535,23 @@ def testSharedItemsFederation():
     assert isinstance(shareJson, dict)
 
     print('\n\n*********************************************************')
+    print('Bob has a shares.json file')
+
+    sharesFilename = bobDir + '/accounts/bob@' + bobDomain + '/shares.json'
+    assert os.path.isfile(sharesFilename)
+
+    print('\n\n*********************************************************')
+    print('Bob can read the shared items catalog on his own instance')
+    time.sleep(10)
+    catalogJson = \
+        getSharedItemsCatalogViaServer(bobDir, sessionBob, 'bob', bobPassword,
+                                       bobDomain, bobPort, httpPrefix, True)
+    assert catalogJson
+    pprint(catalogJson)
+    assert 'DFC:supplies' in catalogJson
+    assert len(catalogJson.get('DFC:supplies')) == 3
+
+    print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
     alicePostLog = []
     alicePersonCache = {}
@@ -1584,6 +1602,8 @@ def testSharedItemsFederation():
 
     os.chdir(baseDir)
     shutil.rmtree(baseDir + '/.tests')
+    print('Testing federation of shared items between ' +
+          'Alice and Bob is complete')
 
 
 def testGroupFollow():
