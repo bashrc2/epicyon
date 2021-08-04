@@ -1464,7 +1464,16 @@ def testSharedItemsFederation():
 
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
+    if os.path.isdir(bobDir + '/ontology'):
+        shutil.rmtree(bobDir + '/ontology')
+    os.mkdir(bobDir + '/ontology')
     copyfile(baseDir + '/img/logo.png', bobDir + '/logo.png')
+    copyfile(baseDir + '/ontology/foodTypes.json',
+             bobDir + '/ontology/foodTypes.json')
+    copyfile(baseDir + '/ontology/toolTypes.json',
+             bobDir + '/ontology/toolTypes.json')
+    copyfile(baseDir + '/ontology/clothesTypes.json',
+             bobDir + '/ontology/clothesTypes.json')
     sessionBob = createSession(proxyType)
     sharedItemName = 'cheddar'
     sharedItemDescription = 'Some cheese'
@@ -1546,6 +1555,10 @@ def testSharedItemsFederation():
     assert sharesJson
     pprint(sharesJson)
     assert len(sharesJson.items()) == 3
+    for itemID, item in sharesJson.items():
+        if not item.get('dfcId'):
+            print(itemID + ' does not have dfcId field')
+        assert item.get('dfcId')
 
     print('\n\n*********************************************************')
     print('Bob can read the shared items catalog on his own instance')
@@ -4029,8 +4042,7 @@ def _testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing',
-        'sharesCatalogAccountEndpoint'
+        '_nothing'
     ]
     excludeImports = [
         'link',

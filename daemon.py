@@ -215,6 +215,7 @@ from shares import addShare
 from shares import removeSharedItem
 from shares import expireShares
 from shares import sharesCatalogEndpoint
+from shares import sharesCatalogAccountEndpoint
 from shares import sharesCatalogCSVEndpoint
 from categories import setHashtagCategory
 from languages import getActorLanguages
@@ -10815,6 +10816,9 @@ class PubServer(BaseHTTPRequestHandler):
            (self.path.startswith('/users/') and '/catalog' in self.path):
             catalogAuthorized = authorized
             if not catalogAuthorized:
+                if self.server.debug:
+                    print('Catalog access is not authorized. Checking' +
+                          'Authorization header')
                 # basic auth access to shared items catalog
                 if self.headers.get('Authorization'):
                     permittedDomains = \
@@ -10827,6 +10831,12 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.debug,
                                             sharedItemTokens):
                         catalogAuthorized = True
+                    elif self.server.debug:
+                        print('Authorization token refused for ' +
+                              'shared items federation')
+                elif self.server.debug:
+                    print('No authorization header is available for ' +
+                          'shared items federation')
             # show shared items catalog for federation
             if self._hasAccept(callingDomain) and catalogAuthorized:
                 catalogType = 'json'
@@ -10834,14 +10844,35 @@ class PubServer(BaseHTTPRequestHandler):
                     catalogType = 'csv'
                 elif self.path.endswith('.json') or not self._requestHTTP():
                     catalogType = 'json'
+                if self.server.debug:
+                    print('Preparing DFC catalog in format ' + catalogType)
 
                 if catalogType == 'json':
                     # catalog as a json
-                    catalogJson = \
-                        sharesCatalogEndpoint(self.server.baseDir,
-                                              self.server.httpPrefix,
-                                              self.server.domainFull,
-                                              self.path)
+                    if not self.path.startswith('/users/'):
+                        if self.server.debug:
+                            print('Catalog for the instance')
+                        catalogJson = \
+                            sharesCatalogEndpoint(self.server.baseDir,
+                                                  self.server.httpPrefix,
+                                                  self.server.domainFull,
+                                                  self.path)
+                    else:
+                        domainFull = self.server.domainFull
+                        httpPrefix = self.server.httpPrefix
+                        nickname = self.path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.debug:
+                            print('Catalog for account: ' + nickname)
+                        catalogJson = \
+                            sharesCatalogAccountEndpoint(self.server.baseDir,
+                                                         httpPrefix,
+                                                         nickname,
+                                                         self.server.domain,
+                                                         domainFull,
+                                                         self.path,
+                                                         self.server.debug)
                     msg = json.dumps(catalogJson,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)

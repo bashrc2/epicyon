@@ -2689,10 +2689,10 @@ def _hasSharedInbox(session, httpPrefix: str, domain: str,
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
-    tryHandles = [
-        domain + '@' + domain,
-        'inbox@' + domain
-    ]
+    tryHandles = []
+    if ':' not in domain:
+        tryHandles.append(domain + '@' + domain)
+    tryHandles.append('inbox@' + domain)
     for handle in tryHandles:
         wfRequest = webfingerHandle(session, handle, httpPrefix, {},
                                     None, __version__, debug, False)

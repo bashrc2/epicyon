@@ -68,8 +68,7 @@ def _loadDfcIds(baseDir: str, systemLanguage: str,
     for label in productTypes['@graph'][0]['rdfs:label']:
         if not label.get('@language'):
             continue
-        if productTypes['@graph'][0]['rdfs:label']['@language'] == \
-           systemLanguage:
+        if label['@language'] == systemLanguage:
             languageExists = True
             break
     if not languageExists:
@@ -783,6 +782,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
     if debug:
         print('Adding shared item')
         pprint(messageJson)
+
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              messageJson['object']['displayName'],
@@ -866,7 +866,7 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
 def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  nickname: str, domain: str,
                                  domainFull: str,
-                                 path: str) -> {}:
+                                 path: str, debug: bool) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
     """
@@ -893,13 +893,19 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
     sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
     if not os.path.isfile(sharesFilename):
+        if debug:
+            print('shares.json file not found: ' + sharesFilename)
         return endpoint
     sharesJson = loadJson(sharesFilename, 1, 2)
     if not sharesJson:
+        if debug:
+            print('Unable to load json for ' + sharesFilename)
         return endpoint
 
     for itemID, item in sharesJson.items():
         if not item.get('dfcId'):
+            if debug:
+                print('Item does not have dfcId: ' + itemID)
             continue
         if '#' not in item['dfcId']:
             continue
@@ -980,6 +986,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                 acctDir(baseDir, nickname, domain) + '/shares.json'
             if not os.path.isfile(sharesFilename):
                 continue
+            print('Test 78363 ' + sharesFilename)
             sharesJson = loadJson(sharesFilename, 1, 2)
             if not sharesJson:
                 continue
