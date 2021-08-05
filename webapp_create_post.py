@@ -371,7 +371,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             if translate.get(category):
                 translatedCategory = translate[category]
             extraFields += '    <option value="' + \
-                category + '">' + \
+                translatedCategory + '">' + \
                 translatedCategory + '</option>'
         extraFields += '<br>'
         extraFields += \
