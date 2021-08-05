@@ -369,7 +369,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             translatedCategory = "food"
             if translate.get(category):
                 translatedCategory = translate[category]
-            themesDropdown += '    <option value="' + \
+            extraFields += '    <option value="' + \
                 category + '">' + \
                 translatedCategory + '</option>'
         extraFields += '<br>'
