@@ -2677,14 +2677,17 @@ def sendToNamedAddresses(session, baseDir: str,
         # another onion domain then switch the clearnet
         # domain for the onion one
         fromDomain = domain
+        fromDomainFull = getFullDomain(domain, port)
         fromHttpPrefix = httpPrefix
         if onionDomain:
             if toDomain.endswith('.onion'):
                 fromDomain = onionDomain
+                fromDomainFull = onionDomain
                 fromHttpPrefix = 'http'
         elif i2pDomain:
             if toDomain.endswith('.i2p'):
                 fromDomain = i2pDomain
+                fromDomainFull = i2pDomain
                 fromHttpPrefix = 'http'
         cc = []
 
@@ -2693,8 +2696,8 @@ def sendToNamedAddresses(session, baseDir: str,
         # so that it can request a catalog
         sharedItemsToken = None
         if toDomain in sharedItemsFederatedDomains:
-            if sharedItemFederationTokens.get(fromDomain):
-                sharedItemsToken = sharedItemFederationTokens[fromDomain]
+            if sharedItemFederationTokens.get(fromDomainFull):
+                sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
 
         groupAccount = hasGroupType(baseDir, address, personCache)
 
@@ -2800,8 +2803,9 @@ def sendToFollowers(session, baseDir: str,
         # so that it can request a catalog
         sharedItemsToken = None
         if followerDomain in sharedItemsFederatedDomains:
-            if sharedItemFederationTokens.get(domain):
-                sharedItemsToken = sharedItemFederationTokens[domain]
+            domainFull = getFullDomain(domain, port)
+            if sharedItemFederationTokens.get(domainFull):
+                sharedItemsToken = sharedItemFederationTokens[domainFull]
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
