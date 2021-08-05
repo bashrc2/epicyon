@@ -362,7 +362,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
         # catStr = translate['Category of shared item. eg. clothing']
-        themesDropdown += '  <select id="themeDropdown" ' + \
+        extraFields += '  <select id="themeDropdown" ' + \
             'name="category" class="theme">'
         categoryTypes = ("food", "clothes", "tool")
         for category in categoryTypes:
