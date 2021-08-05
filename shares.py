@@ -1080,9 +1080,9 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
                 tokensJson = {}
 
     tokensAdded = False
-    for domain in sharedItemsFederatedDomains:
-        if not tokensJson.get(domain):
-            tokensJson[domain] = ''
+    for domainFull in sharedItemsFederatedDomains:
+        if not tokensJson.get(domainFull):
+            tokensJson[domainFull] = ''
             tokensAdded = True
 
     if not tokensAdded:
@@ -1093,33 +1093,38 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
 
 
 def updateSharedItemFederationToken(baseDir: str,
-                                    tokenDomain: str, newToken: str,
+                                    tokenDomainFull: str, newToken: str,
+                                    debug: bool,
                                     tokensJson: {} = None) -> {}:
     """Updates an individual token for shared item federation
     """
+    if debug:
+        print('Updating shared items token for ' + tokenDomainFull)
     if not tokensJson:
         tokensJson = {}
     if baseDir:
         tokensFilename = \
             baseDir + '/accounts/sharedItemsFederationTokens.json'
         if os.path.isfile(tokensFilename):
+            if debug:
+                print('Update loading tokens for ' + tokenDomainFull)
             tokensJson = loadJson(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
     updateRequired = False
-    if tokensJson.get(tokenDomain):
-        if tokensJson[tokenDomain] != newToken:
+    if tokensJson.get(tokenDomainFull):
+        if tokensJson[tokenDomainFull] != newToken:
             updateRequired = True
     else:
         updateRequired = True
     if updateRequired:
-        tokensJson[tokenDomain] = newToken
+        tokensJson[tokenDomainFull] = newToken
         if baseDir:
             saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 
-def mergeSharedItemTokens(baseDir: str, domain: str,
+def mergeSharedItemTokens(baseDir: str, domainFull: str,
                           newSharedItemsFederatedDomains: [],
                           tokensJson: {}) -> {}:
     """When the shared item federation domains list has changed, update
@@ -1127,20 +1132,20 @@ def mergeSharedItemTokens(baseDir: str, domain: str,
     """
     removals = []
     changed = False
-    for tokenDomain, tok in tokensJson.items():
-        if domain:
-            if tokenDomain.startswith(domain):
+    for tokenDomainFull, tok in tokensJson.items():
+        if domainFull:
+            if tokenDomainFull.startswith(domainFull):
                 continue
-        if tokenDomain not in newSharedItemsFederatedDomains:
-            removals.append(tokenDomain)
+        if tokenDomainFull not in newSharedItemsFederatedDomains:
+            removals.append(tokenDomainFull)
     # remove domains no longer in the federation list
-    for tokenDomain in removals:
-        del tokensJson[tokenDomain]
+    for tokenDomainFull in removals:
+        del tokensJson[tokenDomainFull]
         changed = True
     # add new domains from the federation list
-    for tokenDomain in newSharedItemsFederatedDomains:
-        if tokenDomain not in tokensJson:
-            tokensJson[tokenDomain] = ''
+    for tokenDomainFull in newSharedItemsFederatedDomains:
+        if tokenDomainFull not in tokensJson:
+            tokensJson[tokenDomainFull] = ''
             changed = True
     if baseDir and changed:
         tokensFilename = \
@@ -1150,7 +1155,7 @@ def mergeSharedItemTokens(baseDir: str, domain: str,
 
 
 def createSharedItemFederationToken(baseDir: str,
-                                    tokenDomain: str,
+                                    tokenDomainFull: str,
                                     tokensJson: {} = None) -> {}:
     """Updates an individual token for shared item federation
     """
@@ -1163,8 +1168,8 @@ def createSharedItemFederationToken(baseDir: str,
             tokensJson = loadJson(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
-    if not tokensJson.get(tokenDomain):
-        tokensJson[tokenDomain] = secrets.token_urlsafe(64)
+    if not tokensJson.get(tokenDomainFull):
+        tokensJson[tokenDomainFull] = secrets.token_urlsafe(64)
         if baseDir:
             saveJson(tokensJson, tokensFilename)
     return tokensJson
@@ -1172,7 +1177,7 @@ def createSharedItemFederationToken(baseDir: str,
 
 def authorizeSharedItems(sharedItemsFederatedDomains: [],
                          baseDir: str,
-                         callingDomain: str,
+                         originDomainFull: str,
                          authHeader: str,
                          debug: bool,
                          tokensJson: {} = None) -> bool:
@@ -1181,9 +1186,9 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
     if not sharedItemsFederatedDomains:
         # no shared item federation
         return False
-    if callingDomain not in sharedItemsFederatedDomains:
+    if originDomainFull not in sharedItemsFederatedDomains:
         if debug:
-            print(callingDomain +
+            print(originDomainFull +
                   ' is not in the shared items federation list')
         return False
     if 'Basic ' in authHeader:
@@ -1211,21 +1216,22 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
         tokensJson = loadJson(tokensFilename, 1, 2)
     if not tokensJson:
         return False
-    if not tokensJson.get(callingDomain):
+    if not tokensJson.get(originDomainFull):
         if debug:
             print('DEBUG: shared item federation token ' +
-                  'check failed for ' + callingDomain)
+                  'check failed for ' + originDomainFull)
         return False
-    if not constantTimeStringCheck(tokensJson[callingDomain], providedToken):
+    if not constantTimeStringCheck(tokensJson[originDomainFull],
+                                   providedToken):
         if debug:
             print('DEBUG: shared item federation token ' +
-                  'mismatch for ' + callingDomain)
+                  'mismatch for ' + originDomainFull)
         return False
     return True
 
 
 def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
-                                baseDir: str, domain: str,
+                                baseDir: str, domainFull: str,
                                 httpPrefix: str,
                                 tokensJson: {}, debug: bool,
                                 systemLanguage: str) -> None:
@@ -1242,37 +1248,38 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         os.mkdir(catalogsDir)
 
     asHeader = {
-        'Accept': 'application/ld+json'
+        "Accept": "application/ld+json",
+        "Origin": domainFull
     }
-    for federatedDomain in sharedItemsFederatedDomains:
+    for federatedDomainFull in sharedItemsFederatedDomains:
         # NOTE: federatedDomain does not have a port extension,
         # so may not work in some situations
-        if federatedDomain.startswith(domain):
+        if federatedDomainFull.startswith(domainFull):
             # only download from instances other than this one
             continue
-        if not tokensJson.get(federatedDomain):
+        if not tokensJson.get(federatedDomainFull):
             # token has been obtained for the other domain
             continue
-        if not siteIsActive(httpPrefix + '://' + federatedDomain):
+        if not siteIsActive(httpPrefix + '://' + federatedDomainFull):
             continue
-        url = httpPrefix + '://' + federatedDomain + '/catalog'
-        asHeader['Authorization'] = tokensJson[federatedDomain]
+        url = httpPrefix + '://' + federatedDomainFull + '/catalog'
+        asHeader['Authorization'] = tokensJson[federatedDomainFull]
         catalogJson = getJson(session, url, asHeader, None,
                               debug, __version__, httpPrefix, None)
         if not catalogJson:
             print('WARN: failed to download shared items catalog for ' +
-                  federatedDomain)
+                  federatedDomainFull)
             continue
-        catalogFilename = catalogsDir + '/' + federatedDomain + '.json'
+        catalogFilename = catalogsDir + '/' + federatedDomainFull + '.json'
         if saveJson(catalogJson, catalogFilename):
-            print('Downloaded shared items catalog for ' + federatedDomain)
+            print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
                                             baseDir, systemLanguage)
             if sharesJson:
                 sharesFilename = \
-                    catalogsDir + '/' + federatedDomain + '.shares.json'
+                    catalogsDir + '/' + federatedDomainFull + '.shares.json'
                 saveJson(sharesJson, sharesFilename)
-                print('Converted shares catalog for ' + federatedDomain)
+                print('Converted shares catalog for ' + federatedDomainFull)
         else:
             time.sleep(2)
 
@@ -1297,7 +1304,7 @@ def runFederatedSharesWatchdog(projectVersion: str, httpd) -> None:
 
 
 def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
-                             domain: str, proxyType: str, debug: bool,
+                             domainFull: str, proxyType: str, debug: bool,
                              systemLanguage: str) -> None:
     """Runs the daemon used to update federated shared items
     """
@@ -1334,8 +1341,8 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
 
         session = createSession(proxyType)
         _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
-                                    baseDir, domain, httpPrefix, tokensJson,
-                                    debug, systemLanguage)
+                                    baseDir, domainFull, httpPrefix,
+                                    tokensJson, debug, systemLanguage)
         time.sleep(secondsPerHour * 6)
 
 

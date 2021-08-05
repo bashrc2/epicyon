@@ -614,7 +614,6 @@ if args.tests:
 if args.testsnetwork:
     print('Network Tests')
     testSharedItemsFederation()
-    sys.exit()
     testGroupFollow()
     testPostMessageBetweenServers()
     testFollowBetweenServers()

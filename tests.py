@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import setConfigParam
 from utils import isGroupActor
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
@@ -942,6 +943,8 @@ def testPostMessageBetweenServers():
     ccUrl = None
     alicePersonCache = {}
     aliceCachedWebfingers = {}
+    aliceSharedItemsFederatedDomains = []
+    aliceSharedItemFederationTokens = {}
     attachedImageFilename = baseDir + '/img/logo.png'
     testImageWidth, testImageHeight = \
         getImageDimensions(attachedImageFilename)
@@ -967,8 +970,10 @@ def testPostMessageBetweenServers():
                  attachedImageFilename, mediaType,
                  attachedImageDescription, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
-                 inReplyToAtomUri, subject)
+                 alicePersonCache, isArticle, systemLanguage,
+                 aliceSharedItemsFederatedDomains,
+                 aliceSharedItemFederationTokens,
+                 inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
     queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
@@ -1284,6 +1289,8 @@ def testFollowBetweenServers():
     alicePostLog = []
     alicePersonCache = {}
     aliceCachedWebfingers = {}
+    aliceSharedItemsFederatedDomains = []
+    aliceSharedItemFederationTokens = {}
     alicePostLog = []
     isArticle = False
     city = 'London, England'
@@ -1295,8 +1302,10 @@ def testFollowBetweenServers():
                  clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
-                 inReplyToAtomUri, subject)
+                 alicePersonCache, isArticle, systemLanguage,
+                 aliceSharedItemsFederatedDomains,
+                 aliceSharedItemFederationTokens,
+                 inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
     queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
@@ -1412,6 +1421,13 @@ def testSharedItemsFederation():
     time.sleep(1)
 
     # In the beginning all was calm and there were no follows
+
+    print('\n\n*********************************************************')
+    print("Alice and Bob agree to share items catalogs")
+    assert os.path.isdir(aliceDir)
+    assert os.path.isdir(bobDir)
+    setConfigParam(aliceDir, 'sharedItemsFederatedDomains', bobAddress)
+    setConfigParam(bobDir, 'sharedItemsFederatedDomains', aliceAddress)
 
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
@@ -1572,9 +1588,20 @@ def testSharedItemsFederation():
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
+    aliceTokensFilename = \
+        aliceDir + '/accounts/sharedItemsFederationTokens.json'
+    assert os.path.isfile(aliceTokensFilename)
+    aliceSharedItemFederationTokens = loadJson(aliceTokensFilename)
+    assert aliceSharedItemFederationTokens
+    print('Alice shared item federation tokens:')
+    pprint(aliceSharedItemFederationTokens)
+    assert len(aliceSharedItemFederationTokens.items()) > 0
+    for hostStr, token in aliceSharedItemFederationTokens.items():
+        assert ':' in hostStr
     alicePostLog = []
     alicePersonCache = {}
     aliceCachedWebfingers = {}
+    aliceSharedItemsFederatedDomains = [bobAddress]
     alicePostLog = []
     isArticle = False
     city = 'London, England'
@@ -1586,8 +1613,10 @@ def testSharedItemsFederation():
                  clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
-                 inReplyToAtomUri, subject)
+                 alicePersonCache, isArticle, systemLanguage,
+                 aliceSharedItemsFederatedDomains,
+                 aliceSharedItemFederationTokens, True,
+                 inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
     queuePath = bobDir + '/accounts/bob@' + bobDomain + '/queue'
@@ -1604,6 +1633,32 @@ def testSharedItemsFederation():
 
     assert aliceMessageArrived is True
     print('Message from Alice to Bob succeeded')
+
+    print('\n\n*********************************************************')
+    print('Check that Alice received the shared items authorization')
+    print('token from Bob')
+    aliceTokensFilename = \
+        aliceDir + '/accounts/sharedItemsFederationTokens.json'
+    bobTokensFilename = \
+        bobDir + '/accounts/sharedItemsFederationTokens.json'
+    assert os.path.isfile(aliceTokensFilename)
+    assert os.path.isfile(bobTokensFilename)
+    aliceTokens = loadJson(aliceTokensFilename)
+    assert aliceTokens
+    for hostStr, token in aliceTokens.items():
+        assert ':' in hostStr
+    assert aliceTokens.get(aliceAddress)
+    print('Alice tokens')
+    pprint(aliceTokens)
+    bobTokens = loadJson(bobTokensFilename)
+    assert bobTokens
+    for hostStr, token in bobTokens.items():
+        assert ':' in hostStr
+    assert bobTokens.get(bobAddress)
+    print("Check that Bob now has Alice's token")
+    assert bobTokens.get(aliceAddress)
+    print('Bob tokens')
+    pprint(bobTokens)
 
     # stop the servers
     thrAlice.kill()
@@ -1919,6 +1974,8 @@ def testGroupFollow():
     alicePostLog = []
     alicePersonCache = {}
     aliceCachedWebfingers = {}
+    aliceSharedItemsFederatedDomains = []
+    aliceSharedItemFederationTokens = {}
     alicePostLog = []
     isArticle = False
     city = 'London, England'
@@ -1930,8 +1987,10 @@ def testGroupFollow():
                  saveToFile, clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
-                 alicePersonCache, isArticle, systemLanguage, inReplyTo,
-                 inReplyToAtomUri, subject)
+                 alicePersonCache, isArticle, systemLanguage,
+                 aliceSharedItemsFederatedDomains,
+                 aliceSharedItemFederationTokens,
+                 inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
     queuePath = \
@@ -5047,7 +5106,8 @@ def _testAuthorizeSharedItems():
                                 False, tokensJson)
     tokensJson = \
         updateSharedItemFederationToken(None,
-                                        'dog.domain', 'testToken', tokensJson)
+                                        'dog.domain', 'testToken',
+                                        True, tokensJson)
     assert tokensJson['dog.domain'] == 'testToken'
 
     # the shared item federation list changes

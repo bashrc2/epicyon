@@ -2009,9 +2009,11 @@ def sendPost(projectVersion: str,
              federationList: [], sendThreads: [], postLog: [],
              cachedWebfingers: {}, personCache: {},
              isArticle: bool, systemLanguage: str,
+             sharedItemsFederatedDomains: [],
+             sharedItemFederationTokens: {},
              debug: bool = False, inReplyTo: str = None,
              inReplyToAtomUri: str = None, subject: str = None) -> int:
-    """Post to another inbox
+    """Post to another inbox. Used by unit tests.
     """
     withDigest = True
 
@@ -2099,6 +2101,26 @@ def sendPost(projectVersion: str,
                            toDomain, toPort,
                            postPath, httpPrefix, withDigest, postJsonStr)
 
+    # if the "to" domain is within the shared items
+    # federation list then send the token for this domain
+    # so that it can request a catalog
+    if toDomain in sharedItemsFederatedDomains:
+        domainFull = getFullDomain(domain, port)
+        if sharedItemFederationTokens.get(domainFull):
+            signatureHeaderJson['Origin'] = domainFull
+            signatureHeaderJson['SharesCatalog'] = \
+                sharedItemFederationTokens[domainFull]
+            if debug:
+                print('SharesCatalog added to header')
+        elif debug:
+            print(domainFull + ' not in sharedItemFederationTokens')
+    elif debug:
+        print(toDomain + ' not in sharedItemsFederatedDomains ' +
+              str(sharedItemsFederatedDomains))
+
+    if debug:
+        print('signatureHeaderJson: ' + str(signatureHeaderJson))
+
     # Keep the number of threads being used small
     while len(sendThreads) > 1000:
         print('WARN: Maximum threads reached - killing send thread')
@@ -2139,14 +2161,14 @@ def sendPostViaServer(projectVersion: str,
         print('WARN: No session for sendPostViaServer')
         return 6
 
-    fromDomain = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    handle = httpPrefix + '://' + fromDomain + '/@' + fromNickname
+    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomainFull, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
@@ -2167,7 +2189,7 @@ def sendPostViaServer(projectVersion: str,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname,
-                                            fromDomain, postToBox,
+                                            fromDomainFull, postToBox,
                                             82796)
     if not inboxUrl:
         if debug:
@@ -2185,7 +2207,6 @@ def sendPostViaServer(projectVersion: str,
     clientToServer = True
     if toDomain.lower().endswith('public'):
         toPersonId = 'https://www.w3.org/ns/activitystreams#Public'
-        fromDomainFull = getFullDomain(fromDomain, fromPort)
         cc = httpPrefix + '://' + fromDomainFull + '/users/' + \
             fromNickname + '/followers'
     else:
@@ -2217,7 +2238,7 @@ def sendPostViaServer(projectVersion: str,
 
     if attachImageFilename:
         headers = {
-            'host': fromDomain,
+            'host': fromDomainFull,
             'Authorization': authHeader
         }
         postResult = \
@@ -2229,7 +2250,7 @@ def sendPostViaServer(projectVersion: str,
 #            return 9
 
     headers = {
-        'host': fromDomain,
+        'host': fromDomainFull,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
@@ -2434,7 +2455,10 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if sharedItemsToken:
+        signatureHeaderJson['Origin'] = getFullDomain(domain, port)
         signatureHeaderJson['SharesCatalog'] = sharedItemsToken
+    elif debug:
+        print('Not sending shared items federation token')
 
     # Keep the number of threads being used small
     while len(sendThreads) > 1000:

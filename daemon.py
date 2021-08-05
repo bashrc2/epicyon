@@ -4893,9 +4893,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.sharedItemFederationTokens
                                 self.server.sharedItemsFederatedDomains = \
                                     siDomains
+                                domainFull = self.server.domainFull
                                 self.server.sharedItemFederationTokens = \
                                     mergeSharedItemTokens(self.server.baseDir,
-                                                          self.server.domain,
+                                                          domainFull,
                                                           siDomains,
                                                           siTokens)
 
@@ -10820,13 +10821,15 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Catalog access is not authorized. Checking' +
                           'Authorization header')
                 # basic auth access to shared items catalog
-                if self.headers.get('Authorization'):
+                if self.headers.get('Origin') and \
+                   self.headers.get('Authorization'):
                     permittedDomains = \
                         self.server.sharedItemsFederatedDomains
                     sharedItemTokens = self.server.sharedItemFederationTokens
+                    originDomain = self.headers.get('Origin')
                     if authorizeSharedItems(permittedDomains,
                                             self.server.baseDir,
-                                            callingDomain,
+                                            originDomain,
                                             self.headers['Authorization'],
                                             self.server.debug,
                                             sharedItemTokens):
@@ -10835,8 +10838,12 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Authorization token refused for ' +
                               'shared items federation')
                 elif self.server.debug:
-                    print('No authorization header is available for ' +
-                          'shared items federation')
+                    if not self.headers.get('Origin'):
+                        print('No Origin header is available for ' +
+                              'shared items federation')
+                    else:
+                        print('No Authorization header is available for ' +
+                              'shared items federation')
             # show shared items catalog for federation
             if self._hasAccept(callingDomain) and catalogAuthorized:
                 catalogType = 'json'
@@ -14625,6 +14632,49 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.defaultTimeline)
                 return
 
+        # update the shared item federation token for the calling domain
+        # if it is within the permitted federation
+        if self.headers.get('Origin') and \
+           self.headers.get('SharesCatalog'):
+            if self.server.debug:
+                print('SharesCatalog header: ' + self.headers['SharesCatalog'])
+            if not self.server.sharedItemsFederatedDomains:
+                siDomainsStr = getConfigParam(self.server.baseDir,
+                                              'sharedItemsFederatedDomains')
+                if siDomainsStr:
+                    if self.server.debug:
+                        print('Loading shared items federated domains list')
+                    siDomainsList = siDomainsStr.split(',')
+                    domainsList = self.server.sharedItemsFederatedDomains
+                    for siDomain in siDomainsList:
+                        domainsList.append(siDomain.strip())
+            originDomain = self.headers.get('Origin')
+            if originDomain != self.server.domainFull and \
+               originDomain != self.server.onionDomain and \
+               originDomain != self.server.i2pDomain and \
+               originDomain in self.server.sharedItemsFederatedDomains:
+                if self.server.debug:
+                    print('DEBUG: ' +
+                          'POST updating shared item federation ' +
+                          'token for ' + originDomain + ' to ' +
+                          self.server.domainFull)
+                sharedItemTokens = self.server.sharedItemFederationTokens
+                sharesToken = self.headers['SharesCatalog']
+                self.server.sharedItemFederationTokens = \
+                    updateSharedItemFederationToken(self.server.baseDir,
+                                                    originDomain,
+                                                    sharesToken,
+                                                    self.server.debug,
+                                                    sharedItemTokens)
+            elif self.server.debug:
+                if originDomain not in self.server.sharedItemsFederatedDomains:
+                    print('originDomain is not in federated domains list ' +
+                          originDomain)
+                else:
+                    print('originDomain is not a different instance. ' +
+                          originDomain + ' ' + self.server.domainFull + ' ' +
+                          str(self.server.sharedItemsFederatedDomains))
+
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
 
         # receive different types of post created by htmlNewPost
@@ -14905,23 +14955,6 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 23)
-
-        # update the shared item federation token for the calling domain
-        # if it is within the permitted federation
-        if self.headers.get('SharesCatalog') and \
-           callingDomain != self.server.domain and \
-           callingDomain != self.server.domainFull and \
-           callingDomain in self.server.sharedItemsFederatedDomains:
-            if self.server.debug:
-                print('DEBUG: ' +
-                      'POST updating shared item federation token for ' +
-                      callingDomain)
-            sharedItemTokens = self.server.sharedItemFederationTokens
-            self.server.sharedItemFederationTokens = \
-                updateSharedItemFederationToken(self.server.baseDir,
-                                                callingDomain,
-                                                self.headers['SharesCatalog'],
-                                                sharedItemTokens)
 
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
@@ -15469,7 +15502,7 @@ def runDaemon(maxLikeCount: int,
         generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
                                            baseDir)
     httpd.sharedItemFederationTokens = \
-        createSharedItemFederationToken(baseDir, domain,
+        createSharedItemFederationToken(baseDir, httpd.domainFull,
                                         httpd.sharedItemFederationTokens)
 
     # load peertube instances from file into a list
@@ -15518,7 +15551,7 @@ def runDaemon(maxLikeCount: int,
     httpd.thrFederatedSharesDaemon = \
         threadWithTrace(target=runFederatedSharesDaemon,
                         args=(baseDir, httpd,
-                              httpPrefix, domain,
+                              httpPrefix, httpd.domainFull,
                               proxyType, debug,
                               httpd.systemLanguage), daemon=True)
 
