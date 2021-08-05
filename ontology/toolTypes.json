@@ -1616,18 +1616,348 @@
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "@id": "https://tools/data/toolTypes.rdf#laptop",
       "rdfs:label": [
         {
-          "@value": "",
+          "@value": "Portable",
           "@language": "fr"
         },
         {
-          "@value": "",
+          "@value": "Laptop",
           "@language": "en"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#laptop",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#desktop-computer",
+      "rdfs:label": [
+        {
+          "@value": "Ordinateur de bureau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Desktop Computer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#desktop-computer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-monitor",
+      "rdfs:label": [
+        {
+          "@value": "Moniteur d'ordinateur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Monitor",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-monitor",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-mouse",
+      "rdfs:label": [
+        {
+          "@value": "Souris d'ordinateur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Mouse",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-mouse",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-trackball",
+      "rdfs:label": [
+        {
+          "@value": "Computer Shueball",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Trackball",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-trackball",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-drawing-tablet",
+      "rdfs:label": [
+        {
+          "@value": "Tablette de dessin informatique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Drawing Tablet",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-drawing-tablet",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-webcam",
+      "rdfs:label": [
+        {
+          "@value": "Webcam",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Webcam",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-webcam",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-microphone",
+      "rdfs:label": [
+        {
+          "@value": "Microphone informatique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Microphone",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-microphone",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#computer-keyboard",
+      "rdfs:label": [
+        {
+          "@value": "Clavier d'ordinateur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Computer Keyboard",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-keyboard",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#mobile-phone",
+      "rdfs:label": [
+        {
+          "@value": "Téléphone mobile",
+          "@language": "fr"
+        },
+        {
+          "@value": "Mobile Phone",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mobile-phone",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#dect-phone",
+      "rdfs:label": [
+        {
+          "@value": "Téléphone de Dec",
+          "@language": "fr"
+        },
+        {
+          "@value": "DECT Phone",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#dect-phone",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#dect-base-station",
+      "rdfs:label": [
+        {
+          "@value": "Station de base de Dec",
+          "@language": "fr"
+        },
+        {
+          "@value": "DECT Base Station",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#dect-base-station",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#network-router",
+      "rdfs:label": [
+        {
+          "@value": "Routeur de réseau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Network Router",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#network-router",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#wifi-router",
+      "rdfs:label": [
+        {
+          "@value": "Routeur Wi-Fi",
+          "@language": "fr"
+        },
+        {
+          "@value": "Wifi Router",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wifi-router",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#battery",
+      "rdfs:label": [
+        {
+          "@value": "Batterie",
+          "@language": "fr"
+        },
+        {
+          "@value": "Battery",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#battery",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable",
+      "rdfs:label": [
+        {
+          "@value": "Câble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cable",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#microcontroller",
+      "rdfs:label": [
+        {
+          "@value": "Microcontrôleur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Microcontroller",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#microcontroller",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#single-board-computer",
+      "rdfs:label": [
+        {
+          "@value": "Ordinateur unique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Single Board Computer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#single-board-computer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#screwdriver",
+      "rdfs:label": [
+        {
+          "@value": "Tournevis",
+          "@language": "fr"
+        },
+        {
+          "@value": "Screwdriver",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#screwdriver",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#spanner",
+      "rdfs:label": [
+        {
+          "@value": "Clé",
+          "@language": "fr"
+        },
+        {
+          "@value": "Spanner",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spanner",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hammer",
+      "rdfs:label": [
+        {
+          "@value": "Marteau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hammer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hammer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#drill-bit",
+      "rdfs:label": [
+        {
+          "@value": "Foreuse",
+          "@language": "fr"
+        },
+        {
+          "@value": "Drill bit",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill-bit",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#socket-set",
+      "rdfs:label": [
+        {
+          "@value": "Prise de courant",
+          "@language": "fr"
+        },
+        {
+          "@value": "Socket Set",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#socket-set",
       "@type": "dfc-p:ProductType"
     }
   ]
