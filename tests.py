@@ -1660,6 +1660,21 @@ def testSharedItemsFederation():
     print('Bob tokens')
     pprint(bobTokens)
 
+    print('\n\n*********************************************************')
+    print('Alice can read the federated shared items catalog of Bob')
+    headers = {
+        'Origin': aliceAddress,
+        'Authorization': bobTokens[bobAddress],
+        'host': bobAddress,
+        'Accept': 'application/json'
+    }
+    url = httpPrefix + '://' + bobAddress + '/catalog'
+    catalogJson = getJson(sessionAlice, url, headers, None, True)
+    assert catalogJson
+    pprint(catalogJson)
+    assert 'DFC:supplies' in catalogJson
+    assert len(catalogJson.get('DFC:supplies')) == 3
+
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
@@ -5099,9 +5114,11 @@ def _testAuthorizeSharedItems():
     assert len(tokensJson['cat.domain']) >= 64
     assert len(tokensJson['birb.domain']) == 0
     assert not authorizeSharedItems(sharedItemsFederatedDomains, None,
+                                    'birb.domain',
                                     'cat.domain', 'M' * 86,
                                     False, tokensJson)
     assert authorizeSharedItems(sharedItemsFederatedDomains, None,
+                                'birb.domain',
                                 'cat.domain', tokensJson['cat.domain'],
                                 False, tokensJson)
     tokensJson = \

@@ -10818,18 +10818,18 @@ class PubServer(BaseHTTPRequestHandler):
             catalogAuthorized = authorized
             if not catalogAuthorized:
                 if self.server.debug:
-                    print('Catalog access is not authorized. Checking' +
-                          'Authorization header')
-                # basic auth access to shared items catalog
+                    print('Catalog access is not authorized. ' +
+                          'Checking Authorization header')
+                # Check the authorization token
                 if self.headers.get('Origin') and \
                    self.headers.get('Authorization'):
                     permittedDomains = \
                         self.server.sharedItemsFederatedDomains
                     sharedItemTokens = self.server.sharedItemFederationTokens
-                    originDomain = self.headers.get('Origin')
                     if authorizeSharedItems(permittedDomains,
                                             self.server.baseDir,
-                                            originDomain,
+                                            self.headers['Origin'],
+                                            callingDomain,
                                             self.headers['Authorization'],
                                             self.server.debug,
                                             sharedItemTokens):
@@ -10838,12 +10838,8 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Authorization token refused for ' +
                               'shared items federation')
                 elif self.server.debug:
-                    if not self.headers.get('Origin'):
-                        print('No Origin header is available for ' +
-                              'shared items federation')
-                    else:
-                        print('No Authorization header is available for ' +
-                              'shared items federation')
+                    print('No Authorization header is available for ' +
+                          'shared items federation')
             # show shared items catalog for federation
             if self._hasAccept(callingDomain) and catalogAuthorized:
                 catalogType = 'json'
