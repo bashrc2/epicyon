@@ -2169,6 +2169,51 @@
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oven",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#pliers",
+      "rdfs:label": [
+        {
+          "@value": "Pinces",
+          "@language": "fr"
+        },
+        {
+          "@value": "Pliers",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pliers",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#solder-sucker",
+      "rdfs:label": [
+        {
+          "@value": "Ventouse de soudure",
+          "@language": "fr"
+        },
+        {
+          "@value": "Solder Sucker",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#solder-sucker",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#mains-extension-cable",
+      "rdfs:label": [
+        {
+          "@value": "Câble d'extension secteur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Mains Extension Cable",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mains-extension-cable",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
