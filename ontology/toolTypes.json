@@ -1959,6 +1959,216 @@
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#socket-set",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#paintbrush",
+      "rdfs:label": [
+        {
+          "@value": "Pinceau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Paintbrush",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#paintbrush",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#paint-roller",
+      "rdfs:label": [
+        {
+          "@value": "Rouleau de peinture",
+          "@language": "fr"
+        },
+        {
+          "@value": "Paint Roller",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#paint-roller",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#water-barrel",
+      "rdfs:label": [
+        {
+          "@value": "Baril d'eau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Water Barrel",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#water-barrel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#thermostat",
+      "rdfs:label": [
+        {
+          "@value": "Thermostat",
+          "@language": "fr"
+        },
+        {
+          "@value": "Thermostat",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#thermostat",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#thermometer",
+      "rdfs:label": [
+        {
+          "@value": "Thermomètre",
+          "@language": "fr"
+        },
+        {
+          "@value": "Thermometer",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#thermometer",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#gas-sensor",
+      "rdfs:label": [
+        {
+          "@value": "Capteur de gaz",
+          "@language": "fr"
+        },
+        {
+          "@value": "Gas Sensor",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gas-sensor",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#fire-alarm",
+      "rdfs:label": [
+        {
+          "@value": "Alarme incendie",
+          "@language": "fr"
+        },
+        {
+          "@value": "Fire Alarm",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fire-alarm",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#kettle",
+      "rdfs:label": [
+        {
+          "@value": "Bouilloire",
+          "@language": "fr"
+        },
+        {
+          "@value": "Kettle",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kettle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#coffee-machine",
+      "rdfs:label": [
+        {
+          "@value": "Cafetière",
+          "@language": "fr"
+        },
+        {
+          "@value": "Coffee Machine",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#coffee-machine",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#electric-heater",
+      "rdfs:label": [
+        {
+          "@value": "Chauffage électrique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Electric Header",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electric-heater",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#fire-extinguisher",
+      "rdfs:label": [
+        {
+          "@value": "Extincteur d'incendie",
+          "@language": "fr"
+        },
+        {
+          "@value": "Fire Extinguisher",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fire-extinguisher",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#blow-torch",
+      "rdfs:label": [
+        {
+          "@value": "Coup de flèche",
+          "@language": "fr"
+        },
+        {
+          "@value": "Blow Torch",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#blow-torch",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bunsen-burner",
+      "rdfs:label": [
+        {
+          "@value": "Bec Bunsen",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bunsen Burner",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bunsen-burner",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#oven",
+      "rdfs:label": [
+        {
+          "@value": "Four",
+          "@language": "fr"
+        },
+        {
+          "@value": "Oven",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oven",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
