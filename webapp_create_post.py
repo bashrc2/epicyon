@@ -361,8 +361,17 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        catStr = translate['Category of shared item. eg. clothing']
-        extraFields += editTextField(catStr + ':', 'category', '', '', True)
+        # catStr = translate['Category of shared item. eg. clothing']
+        themesDropdown += '  <select id="themeDropdown" ' + \
+            'name="category" class="theme">'
+        categoryTypes = ("food", "clothes", "tool")
+        for category in categoryTypes:
+            translatedCategory = "food"
+            if translate.get(category):
+                translatedCategory = translate[category]
+            themesDropdown += '    <option value="' + \
+                category + '">' + \
+                translatedCategory + '</option>'
         extraFields += '<br>'
         extraFields += \
             editNumberField(translate['Duration of listing in days'],
