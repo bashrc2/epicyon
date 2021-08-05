@@ -361,7 +361,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        # catStr = translate['Category of shared item. eg. clothing']
+        catStr = translate['Category of shared item. eg. clothing']
+        extraFields += '<label class="labels">' + catStr + '</label><br>\n'
         extraFields += '  <select id="themeDropdown" ' + \
             'name="category" class="theme">'
         categoryTypes = ("food", "clothes", "tool")
