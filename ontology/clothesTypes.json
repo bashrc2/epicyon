@@ -101,6 +101,21 @@
       "@type": "dfc-p:ProductType"
     },
     {
+      "@id": "https://clothes/data/clothesTypes.rdf#boots",
+      "rdfs:label": [
+        {
+          "@value": "Bottes",
+          "@language": "fr"
+        },
+        {
+          "@value": "Boots",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#boots",
+      "@type": "dfc-p:ProductType"
+    },
+    {
       "@id": "https://clothes/data/clothesTypes.rdf#gown",
       "rdfs:label": [
         {
@@ -203,6 +218,21 @@
         }
       ],
       "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#neckwear",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#scarf",
+      "rdfs:label": [
+        {
+          "@value": "Écharpe",
+          "@language": "fr"
+        },
+        {
+          "@value": "Scarf",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#scarf",
       "@type": "dfc-p:ProductType"
     },
     {
