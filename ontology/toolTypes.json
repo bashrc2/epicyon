@@ -18,6 +18,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Llana de jardín",
+          "@language": "es"
+        },
+        {
           "@value": "Garden Trowel",
           "@language": "en"
         }
@@ -31,6 +35,10 @@
         {
           "@value": "Arrosoir",
           "@language": "fr"
+        },
+        {
+          "@value": "Regadera",
+          "@language": "es"
         },
         {
           "@value": "Watering Can",
@@ -48,6 +56,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Barrena",
+          "@language": "es"
+        },
+        {
           "@value": "Auger",
           "@language": "en"
         }
@@ -61,6 +73,10 @@
         {
           "@value": "Pulvérisateur à dos",
           "@language": "fr"
+        },
+        {
+          "@value": "Pulverizador de mochila",
+          "@language": "es"
         },
         {
           "@value": "Backpack Sprayer",
@@ -78,6 +94,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pala fronteriza",
+          "@language": "es"
+        },
+        {
           "@value": "Border Spade",
           "@language": "en"
         }
@@ -91,6 +111,10 @@
         {
           "@value": "Râteau d'arc",
           "@language": "fr"
+        },
+        {
+          "@value": "Rake de arco",
+          "@language": "es"
         },
         {
           "@value": "Bow Rake",
@@ -108,6 +132,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Bloadfork",
+          "@language": "es"
+        },
+        {
           "@value": "Broadfork",
           "@language": "en"
         }
@@ -121,6 +149,10 @@
         {
           "@value": "Couteau en herbe",
           "@language": "fr"
+        },
+        {
+          "@value": "Cuchillo en ciernes",
+          "@language": "es"
         },
         {
           "@value": "Budding Knife",
@@ -138,6 +170,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Plantador de bombilla",
+          "@language": "es"
+        },
+        {
           "@value": "Bulb Planter",
           "@language": "en"
         }
@@ -151,6 +187,10 @@
         {
           "@value": "Bac à compost",
           "@language": "fr"
+        },
+        {
+          "@value": "Cesto de basura",
+          "@language": "es"
         },
         {
           "@value": "Compost Bin",
@@ -168,6 +208,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Tenedor de compost",
+          "@language": "es"
+        },
+        {
           "@value": "Compost Fork",
           "@language": "en"
         }
@@ -181,6 +225,10 @@
         {
           "@value": "Aérateur de noyau",
           "@language": "fr"
+        },
+        {
+          "@value": "Aerodinador central",
+          "@language": "es"
         },
         {
           "@value": "Core Aerator",
@@ -198,6 +246,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Aeradores de tambores",
+          "@language": "es"
+        },
+        {
           "@value": "Drum Aerators",
           "@language": "en"
         }
@@ -211,6 +263,10 @@
         {
           "@value": "Édition de cisailles",
           "@language": "fr"
+        },
+        {
+          "@value": "Cizallas de bordes",
+          "@language": "es"
         },
         {
           "@value": "Edging Shears",
@@ -228,6 +284,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Borde eléctrico",
+          "@language": "es"
+        },
+        {
           "@value": "Electric Edger",
           "@language": "en"
         }
@@ -241,6 +301,10 @@
         {
           "@value": "Râteau plat",
           "@language": "fr"
+        },
+        {
+          "@value": "Rastrillo plano",
+          "@language": "es"
         },
         {
           "@value": "Flat Rake",
@@ -258,6 +322,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Tenedor de jardín",
+          "@language": "es"
+        },
+        {
           "@value": "Garden Fork",
           "@language": "en"
         }
@@ -271,6 +339,10 @@
         {
           "@value": "Jardin houe",
           "@language": "fr"
+        },
+        {
+          "@value": "Azada del jardín",
+          "@language": "es"
         },
         {
           "@value": "Garden Hoe",
@@ -288,6 +360,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pala de jardín",
+          "@language": "es"
+        },
+        {
           "@value": "Garden Shovel",
           "@language": "en"
         }
@@ -301,6 +377,10 @@
         {
           "@value": "Edger à gaz à gaz",
           "@language": "fr"
+        },
+        {
+          "@value": "Edger de césped accionado en gas",
+          "@language": "es"
         },
         {
           "@value": "Gas Powered Lawn Edger",
@@ -318,6 +398,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Guantes de jardineria",
+          "@language": "es"
+        },
+        {
           "@value": "Gardening Gloves",
           "@language": "en"
         }
@@ -331,6 +415,10 @@
         {
           "@value": "Cultivateur de mains",
           "@language": "fr"
+        },
+        {
+          "@value": "Cultivador de manos",
+          "@language": "es"
         },
         {
           "@value": "Hand Cultivator",
@@ -348,6 +436,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pulverizador de mano",
+          "@language": "es"
+        },
+        {
           "@value": "Handheld Sprayer",
           "@language": "en"
         }
@@ -361,6 +453,10 @@
         {
           "@value": "Semoir à la main",
           "@language": "fr"
+        },
+        {
+          "@value": "Sembradora de mano",
+          "@language": "es"
         },
         {
           "@value": "Hand Seeder",
@@ -378,6 +474,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Cizallas de seto",
+          "@language": "es"
+        },
+        {
           "@value": "Hedge Shears",
           "@language": "en"
         }
@@ -391,6 +491,10 @@
         {
           "@value": "Houe",
           "@language": "fr"
+        },
+        {
+          "@value": "Azada",
+          "@language": "es"
         },
         {
           "@value": "Hoe",
@@ -408,6 +512,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Arrodillador",
+          "@language": "es"
+        },
+        {
           "@value": "Kneeler",
           "@language": "en"
         }
@@ -421,6 +529,10 @@
         {
           "@value": "Tondeuse à gazon",
           "@language": "fr"
+        },
+        {
+          "@value": "Cortacésped",
+          "@language": "es"
         },
         {
           "@value": "Lawn Mower",
@@ -438,6 +550,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Soplador de hojas",
+          "@language": "es"
+        },
+        {
           "@value": "Leaf Blower",
           "@language": "en"
         }
@@ -451,6 +567,10 @@
         {
           "@value": "Râteau de feuilles",
           "@language": "fr"
+        },
+        {
+          "@value": "Rastrillo de hojas",
+          "@language": "es"
         },
         {
           "@value": "Leaf Rake",
@@ -469,6 +589,10 @@
         },
         {
           "@value": "Machete",
+          "@language": "es"
+        },
+        {
+          "@value": "Machete",
           "@language": "en"
         }
       ],
@@ -481,6 +605,10 @@
         {
           "@value": "Edger manuel",
           "@language": "fr"
+        },
+        {
+          "@value": "Edger manual",
+          "@language": "es"
         },
         {
           "@value": "Manual Edger",
@@ -498,6 +626,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pique Mattock",
+          "@language": "es"
+        },
+        {
           "@value": "Pick Mattock",
           "@language": "en"
         }
@@ -511,6 +643,10 @@
         {
           "@value": "Pittoresque",
           "@language": "fr"
+        },
+        {
+          "@value": "Horca",
+          "@language": "es"
         },
         {
           "@value": "Pitchfork",
@@ -528,6 +664,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Plantando Dibble",
+          "@language": "es"
+        },
+        {
           "@value": "Planting Dibble",
           "@language": "en"
         }
@@ -541,6 +681,10 @@
         {
           "@value": "Pelle pointue",
           "@language": "fr"
+        },
+        {
+          "@value": "Pala puntiaguda",
+          "@language": "es"
         },
         {
           "@value": "Pointed Shovel",
@@ -558,6 +702,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pole Proper",
+          "@language": "es"
+        },
+        {
           "@value": "Pole Pruner",
           "@language": "en"
         }
@@ -571,6 +719,10 @@
         {
           "@value": "Pincer Pincer",
           "@language": "fr"
+        },
+        {
+          "@value": "Publicar pinza de orificio",
+          "@language": "es"
         },
         {
           "@value": "Post Hole Pincer",
@@ -588,6 +740,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Tenedor de patata",
+          "@language": "es"
+        },
+        {
           "@value": "Potato Fork",
           "@language": "en"
         }
@@ -601,6 +757,10 @@
         {
           "@value": "Tronçonneuse alimenté",
           "@language": "fr"
+        },
+        {
+          "@value": "Motosierra motorizada",
+          "@language": "es"
         },
         {
           "@value": "Powered Chainsaw",
@@ -618,6 +778,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Energista motorizado",
+          "@language": "es"
+        },
+        {
           "@value": "Powered Edger",
           "@language": "en"
         }
@@ -631,6 +795,10 @@
         {
           "@value": "Coup de couteau",
           "@language": "fr"
+        },
+        {
+          "@value": "Cuchillo de poda",
+          "@language": "es"
         },
         {
           "@value": "Pruning Knife",
@@ -648,6 +816,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Sierra de poda",
+          "@language": "es"
+        },
+        {
           "@value": "Pruning Saw",
           "@language": "en"
         }
@@ -661,6 +833,10 @@
         {
           "@value": "Cisailles de taille",
           "@language": "fr"
+        },
+        {
+          "@value": "Tijeras de podar",
+          "@language": "es"
         },
         {
           "@value": "Pruning Shears",
@@ -678,6 +854,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Rastrillo",
+          "@language": "es"
+        },
+        {
           "@value": "Rake",
           "@language": "en"
         }
@@ -691,6 +871,10 @@
         {
           "@value": "Taber rotatif",
           "@language": "fr"
+        },
+        {
+          "@value": "Timón rotatorio",
+          "@language": "es"
         },
         {
           "@value": "Rotary Tiller",
@@ -708,6 +892,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Punta redonda Pala",
+          "@language": "es"
+        },
+        {
           "@value": "Round Point Shovel",
           "@language": "en"
         }
@@ -721,6 +909,10 @@
         {
           "@value": "Pelleteuse",
           "@language": "fr"
+        },
+        {
+          "@value": "Pala de scoel",
+          "@language": "es"
         },
         {
           "@value": "Scoop Shovel",
@@ -738,6 +930,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Azada",
+          "@language": "es"
+        },
+        {
           "@value": "Scuffle Hoe",
           "@language": "en"
         }
@@ -751,6 +947,10 @@
         {
           "@value": "Planteur de rangée de semis",
           "@language": "fr"
+        },
+        {
+          "@value": "Sembradora de fila",
+          "@language": "es"
         },
         {
           "@value": "Seeder Row Planter",
@@ -768,6 +968,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Desfibradora",
+          "@language": "es"
+        },
+        {
           "@value": "Shredder",
           "@language": "en"
         }
@@ -781,6 +985,10 @@
         {
           "@value": "Écosserie",
           "@language": "fr"
+        },
+        {
+          "@value": "Cucharada de suelo",
+          "@language": "es"
         },
         {
           "@value": "Soil Scoop",
@@ -798,6 +1006,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Bifurcación",
+          "@language": "es"
+        },
+        {
           "@value": "Spading Fork",
           "@language": "en"
         }
@@ -811,6 +1023,10 @@
         {
           "@value": "Aérateur de pic",
           "@language": "fr"
+        },
+        {
+          "@value": "Aireador de espiga",
+          "@language": "es"
         },
         {
           "@value": "Spike Aerator",
@@ -828,6 +1044,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Zapatos de aire acera con pinchos",
+          "@language": "es"
+        },
+        {
           "@value": "Spiked Aerating Shoes",
           "@language": "en"
         }
@@ -841,6 +1061,10 @@
         {
           "@value": "Épandeuse",
           "@language": "fr"
+        },
+        {
+          "@value": "Esparcidor",
+          "@language": "es"
         },
         {
           "@value": "Spreader",
@@ -858,6 +1082,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Aspersor",
+          "@language": "es"
+        },
+        {
           "@value": "Sprinkler",
           "@language": "en"
         }
@@ -871,6 +1099,10 @@
         {
           "@value": "Pelle à point carré",
           "@language": "fr"
+        },
+        {
+          "@value": "Pala de punto cuadrado",
+          "@language": "es"
         },
         {
           "@value": "Square Point Shovel",
@@ -888,6 +1120,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Edger Paso",
+          "@language": "es"
+        },
+        {
           "@value": "Step Edger",
           "@language": "en"
         }
@@ -901,6 +1137,10 @@
         {
           "@value": "Tondeuse",
           "@language": "fr"
+        },
+        {
+          "@value": "Cortadora de cuerdas",
+          "@language": "es"
         },
         {
           "@value": "String Trimmer",
@@ -918,6 +1158,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pulverizador de remolque",
+          "@language": "es"
+        },
+        {
           "@value": "Trailer Sprayer",
           "@language": "en"
         }
@@ -931,6 +1175,10 @@
         {
           "@value": "Pache de transplantation",
           "@language": "fr"
+        },
+        {
+          "@value": "Espada de trasplante",
+          "@language": "es"
         },
         {
           "@value": "Transplant Spade",
@@ -948,6 +1196,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pala de zanjas",
+          "@language": "es"
+        },
+        {
           "@value": "Trench Shovel",
           "@language": "en"
         }
@@ -963,6 +1215,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Podadora de árboles",
+          "@language": "es"
+        },
+        {
           "@value": "Tree Pruner",
           "@language": "en"
         }
@@ -976,6 +1232,10 @@
         {
           "@value": "Torsadeur",
           "@language": "fr"
+        },
+        {
+          "@value": "Timón de giro",
+          "@language": "es"
         },
         {
           "@value": "Twist Tiller",
@@ -994,6 +1254,10 @@
         },
         {
           "@value": "Warren Hoe",
+          "@language": "es"
+        },
+        {
+          "@value": "Warren Hoe",
           "@language": "en"
         }
       ],
@@ -1006,6 +1270,10 @@
         {
           "@value": "Tuyau d'eau",
           "@language": "fr"
+        },
+        {
+          "@value": "Manguera de agua",
+          "@language": "es"
         },
         {
           "@value": "Water Hose",
@@ -1024,6 +1292,10 @@
         },
         {
           "@value": "Weeder",
+          "@language": "es"
+        },
+        {
+          "@value": "Weeder",
           "@language": "en"
         }
       ],
@@ -1036,6 +1308,10 @@
         {
           "@value": "Brouette",
           "@language": "fr"
+        },
+        {
+          "@value": "Carretilla",
+          "@language": "es"
         },
         {
           "@value": "Wheelbarrow",
@@ -1053,6 +1329,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Borde de la rueda",
+          "@language": "es"
+        },
+        {
           "@value": "Wheel Edger",
           "@language": "en"
         }
@@ -1066,6 +1346,10 @@
         {
           "@value": "Coupeur laser",
           "@language": "fr"
+        },
+        {
+          "@value": "Cortador láser",
+          "@language": "es"
         },
         {
           "@value": "Laser Cutter",
@@ -1083,6 +1367,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Sierra de banda",
+          "@language": "es"
+        },
+        {
           "@value": "Bandsaw",
           "@language": "en"
         }
@@ -1096,6 +1384,10 @@
         {
           "@value": "Broyeur",
           "@language": "fr"
+        },
+        {
+          "@value": "Amoladora de banco",
+          "@language": "es"
         },
         {
           "@value": "Bench Grinder",
@@ -1113,6 +1405,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Sierra de desplazamiento del banco",
+          "@language": "es"
+        },
+        {
           "@value": "Bench Scroll Saw",
           "@language": "en"
         }
@@ -1126,6 +1422,10 @@
         {
           "@value": "Moulin à commande numérique",
           "@language": "fr"
+        },
+        {
+          "@value": "Molino de cnc",
+          "@language": "es"
         },
         {
           "@value": "CNC Mill",
@@ -1144,6 +1444,10 @@
         },
         {
           "@value": "Dremels",
+          "@language": "es"
+        },
+        {
+          "@value": "Dremels",
           "@language": "en"
         }
       ],
@@ -1156,6 +1460,10 @@
         {
           "@value": "Porte debout au sol",
           "@language": "fr"
+        },
+        {
+          "@value": "Taladro de pilar de pie",
+          "@language": "es"
         },
         {
           "@value": "Floor Standing Pillar Drill",
@@ -1173,6 +1481,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Torno",
+          "@language": "es"
+        },
+        {
           "@value": "Lathe",
           "@language": "en"
         }
@@ -1186,6 +1498,10 @@
         {
           "@value": "Banc de scie",
           "@language": "fr"
+        },
+        {
+          "@value": "Sierra de mesa",
+          "@language": "es"
         },
         {
           "@value": "Table Saw",
@@ -1203,6 +1519,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Sierra de inglete",
+          "@language": "es"
+        },
+        {
           "@value": "Mitre Saw",
           "@language": "en"
         }
@@ -1216,6 +1536,10 @@
         {
           "@value": "Outil de pliage de fil",
           "@language": "fr"
+        },
+        {
+          "@value": "Herramienta de flexión de alambre",
+          "@language": "es"
         },
         {
           "@value": "Wire Bending Tool",
@@ -1233,6 +1557,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Vicio de madera",
+          "@language": "es"
+        },
+        {
           "@value": "Wood Vice",
           "@language": "en"
         }
@@ -1246,6 +1574,10 @@
         {
           "@value": "Vice du métal",
           "@language": "fr"
+        },
+        {
+          "@value": "Vicio de metal",
+          "@language": "es"
         },
         {
           "@value": "Metal Vice",
@@ -1263,6 +1595,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Torno de leña",
+          "@language": "es"
+        },
+        {
           "@value": "Woodturning Lathe",
           "@language": "en"
         }
@@ -1276,6 +1612,10 @@
         {
           "@value": "Multimètre",
           "@language": "fr"
+        },
+        {
+          "@value": "Multímetro",
+          "@language": "es"
         },
         {
           "@value": "Multimeter",
@@ -1293,6 +1633,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Fuente de alimentación de banco",
+          "@language": "es"
+        },
+        {
           "@value": "Bench Power Supply",
           "@language": "en"
         }
@@ -1306,6 +1650,10 @@
         {
           "@value": "Compteur de capacités",
           "@language": "fr"
+        },
+        {
+          "@value": "Medidor de capacitancia",
+          "@language": "es"
         },
         {
           "@value": "Capacitance Meter",
@@ -1323,6 +1671,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Osciloscopio",
+          "@language": "es"
+        },
+        {
           "@value": "Oscilloscope",
           "@language": "en"
         }
@@ -1336,6 +1688,10 @@
         {
           "@value": "Sondes d'oscilloscope",
           "@language": "fr"
+        },
+        {
+          "@value": "Sondas de osciloscopio",
+          "@language": "es"
         },
         {
           "@value": "Oscilloscope Probes",
@@ -1353,6 +1709,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Generador de señales",
+          "@language": "es"
+        },
+        {
           "@value": "Signal Generator",
           "@language": "en"
         }
@@ -1366,6 +1726,10 @@
         {
           "@value": "Transformateur principal",
           "@language": "fr"
+        },
+        {
+          "@value": "Transformador de red",
+          "@language": "es"
         },
         {
           "@value": "Mains Transformer",
@@ -1383,6 +1747,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pistola de aire caliente",
+          "@language": "es"
+        },
+        {
           "@value": "Hot Air Gun",
           "@language": "en"
         }
@@ -1396,6 +1764,10 @@
         {
           "@value": "Percaire de banc",
           "@language": "fr"
+        },
+        {
+          "@value": "Taladro de pilar de banco",
+          "@language": "es"
         },
         {
           "@value": "Bench Pillar Drill",
@@ -1413,6 +1785,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Lámpara de la lupa del banco",
+          "@language": "es"
+        },
+        {
           "@value": "Bench Magnifier Lamp",
           "@language": "en"
         }
@@ -1426,6 +1802,10 @@
         {
           "@value": "Plaque de feu électronique",
           "@language": "fr"
+        },
+        {
+          "@value": "Placa electrónica",
+          "@language": "es"
         },
         {
           "@value": "Electronic Hotplate",
@@ -1443,6 +1823,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Microscopio",
+          "@language": "es"
+        },
+        {
           "@value": "Microscope",
           "@language": "en"
         }
@@ -1456,6 +1840,10 @@
         {
           "@value": "Fer à souder",
           "@language": "fr"
+        },
+        {
+          "@value": "Soldador",
+          "@language": "es"
         },
         {
           "@value": "Soldering Iron",
@@ -1473,6 +1861,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Horno de reflujo de soldadura",
+          "@language": "es"
+        },
+        {
           "@value": "Solder Reflow Oven",
           "@language": "en"
         }
@@ -1486,6 +1878,10 @@
         {
           "@value": "Soudeur tache",
           "@language": "fr"
+        },
+        {
+          "@value": "Soldadura por puntos",
+          "@language": "es"
         },
         {
           "@value": "Spot Welder",
@@ -1503,6 +1899,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pluma de lecho plana",
+          "@language": "es"
+        },
+        {
           "@value": "Flat-Bed Pen Plotter",
           "@language": "en"
         }
@@ -1516,6 +1916,10 @@
         {
           "@value": "Imprimante",
           "@language": "fr"
+        },
+        {
+          "@value": "Impresora",
+          "@language": "es"
         },
         {
           "@value": "Printer",
@@ -1533,6 +1937,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Laminador",
+          "@language": "es"
+        },
+        {
           "@value": "Laminator",
           "@language": "en"
         }
@@ -1546,6 +1954,10 @@
         {
           "@value": "Caméra thermique",
           "@language": "fr"
+        },
+        {
+          "@value": "Cámara térmica",
+          "@language": "es"
         },
         {
           "@value": "Thermal Camera",
@@ -1563,6 +1975,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Pistola de pegamento",
+          "@language": "es"
+        },
+        {
           "@value": "Glue Gun",
           "@language": "en"
         }
@@ -1576,6 +1992,10 @@
         {
           "@value": "Pistolet à air chaud",
           "@language": "fr"
+        },
+        {
+          "@value": "Pistola de aire caliente",
+          "@language": "es"
         },
         {
           "@value": "Hot Air Gun",
@@ -1593,6 +2013,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Impresora de etiquetas",
+          "@language": "es"
+        },
+        {
           "@value": "Label Printer",
           "@language": "en"
         }
@@ -1606,6 +2030,10 @@
         {
           "@value": "Machine à coudre",
           "@language": "fr"
+        },
+        {
+          "@value": "Máquina de coser",
+          "@language": "es"
         },
         {
           "@value": "Sewing Machine",
@@ -1623,6 +2051,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Computadora portátil",
+          "@language": "es"
+        },
+        {
           "@value": "Laptop",
           "@language": "en"
         }
@@ -1636,6 +2068,10 @@
         {
           "@value": "Ordinateur de bureau",
           "@language": "fr"
+        },
+        {
+          "@value": "Computadora de escritorio",
+          "@language": "es"
         },
         {
           "@value": "Desktop Computer",
@@ -1653,6 +2089,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Monitor de computadora",
+          "@language": "es"
+        },
+        {
           "@value": "Computer Monitor",
           "@language": "en"
         }
@@ -1666,6 +2106,10 @@
         {
           "@value": "Souris d'ordinateur",
           "@language": "fr"
+        },
+        {
+          "@value": "Ratón de computadora",
+          "@language": "es"
         },
         {
           "@value": "Computer Mouse",
@@ -1683,6 +2127,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Trackball informático",
+          "@language": "es"
+        },
+        {
           "@value": "Computer Trackball",
           "@language": "en"
         }
@@ -1696,6 +2144,10 @@
         {
           "@value": "Tablette de dessin informatique",
           "@language": "fr"
+        },
+        {
+          "@value": "Tableta de dibujo de computadora",
+          "@language": "es"
         },
         {
           "@value": "Computer Drawing Tablet",
@@ -1713,6 +2165,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Webcam",
+          "@language": "es"
+        },
+        {
           "@value": "Computer Webcam",
           "@language": "en"
         }
@@ -1726,6 +2182,10 @@
         {
           "@value": "Microphone informatique",
           "@language": "fr"
+        },
+        {
+          "@value": "Micrófono de computadora",
+          "@language": "es"
         },
         {
           "@value": "Computer Microphone",
@@ -1743,6 +2203,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Teclado",
+          "@language": "es"
+        },
+        {
           "@value": "Computer Keyboard",
           "@language": "en"
         }
@@ -1756,6 +2220,10 @@
         {
           "@value": "Téléphone mobile",
           "@language": "fr"
+        },
+        {
+          "@value": "Teléfono móvil",
+          "@language": "es"
         },
         {
           "@value": "Mobile Phone",
@@ -1773,6 +2241,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Teléfono DECT",
+          "@language": "es"
+        },
+        {
           "@value": "DECT Phone",
           "@language": "en"
         }
@@ -1786,6 +2258,10 @@
         {
           "@value": "Station de base de Dec",
           "@language": "fr"
+        },
+        {
+          "@value": "Estación base DECT",
+          "@language": "es"
         },
         {
           "@value": "DECT Base Station",
@@ -1803,6 +2279,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Enrutador de red",
+          "@language": "es"
+        },
+        {
           "@value": "Network Router",
           "@language": "en"
         }
@@ -1818,6 +2298,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Router de wifi",
+          "@language": "es"
+        },
+        {
           "@value": "Wifi Router",
           "@language": "en"
         }
@@ -1831,6 +2315,10 @@
         {
           "@value": "Batterie",
           "@language": "fr"
+        },
+        {
+          "@value": "Batería",
+          "@language": "es"
         },
         {
           "@value": "Battery",
@@ -1849,6 +2337,10 @@
         },
         {
           "@value": "Cable",
+          "@language": "es"
+        },
+        {
+          "@value": "Cable",
           "@language": "en"
         }
       ],
@@ -1861,6 +2353,10 @@
         {
           "@value": "Microcontrôleur",
           "@language": "fr"
+        },
+        {
+          "@value": "Microcontroladora",
+          "@language": "es"
         },
         {
           "@value": "Microcontroller",
@@ -1878,6 +2374,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Computadora de una sola tabla",
+          "@language": "es"
+        },
+        {
           "@value": "Single Board Computer",
           "@language": "en"
         }
@@ -1891,6 +2391,10 @@
         {
           "@value": "Tournevis",
           "@language": "fr"
+        },
+        {
+          "@value": "Destornillador",
+          "@language": "es"
         },
         {
           "@value": "Screwdriver",
@@ -1908,6 +2412,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Llave",
+          "@language": "es"
+        },
+        {
           "@value": "Spanner",
           "@language": "en"
         }
@@ -1921,6 +2429,10 @@
         {
           "@value": "Marteau",
           "@language": "fr"
+        },
+        {
+          "@value": "Martillo",
+          "@language": "es"
         },
         {
           "@value": "Hammer",
@@ -1938,6 +2450,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Broca",
+          "@language": "es"
+        },
+        {
           "@value": "Drill bit",
           "@language": "en"
         }
@@ -1951,6 +2467,10 @@
         {
           "@value": "Prise de courant",
           "@language": "fr"
+        },
+        {
+          "@value": "Conjunto de zócalos",
+          "@language": "es"
         },
         {
           "@value": "Socket Set",
@@ -1968,6 +2488,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Cepillo de pintura",
+          "@language": "es"
+        },
+        {
           "@value": "Paintbrush",
           "@language": "en"
         }
@@ -1981,6 +2505,10 @@
         {
           "@value": "Rouleau de peinture",
           "@language": "fr"
+        },
+        {
+          "@value": "Rodillo",
+          "@language": "es"
         },
         {
           "@value": "Paint Roller",
@@ -1998,6 +2526,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Barril de agua",
+          "@language": "es"
+        },
+        {
           "@value": "Water Barrel",
           "@language": "en"
         }
@@ -2011,6 +2543,10 @@
         {
           "@value": "Thermostat",
           "@language": "fr"
+        },
+        {
+          "@value": "Termostato",
+          "@language": "es"
         },
         {
           "@value": "Thermostat",
@@ -2028,6 +2564,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Termómetro",
+          "@language": "es"
+        },
+        {
           "@value": "Thermometer",
           "@language": "en"
         }
@@ -2041,6 +2581,10 @@
         {
           "@value": "Capteur de gaz",
           "@language": "fr"
+        },
+        {
+          "@value": "Sensor de gas",
+          "@language": "es"
         },
         {
           "@value": "Gas Sensor",
@@ -2058,6 +2602,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Alarma de incendios",
+          "@language": "es"
+        },
+        {
           "@value": "Fire Alarm",
           "@language": "en"
         }
@@ -2071,6 +2619,10 @@
         {
           "@value": "Bouilloire",
           "@language": "fr"
+        },
+        {
+          "@value": "Pava",
+          "@language": "es"
         },
         {
           "@value": "Kettle",
@@ -2088,6 +2640,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Maquina de cafe",
+          "@language": "es"
+        },
+        {
           "@value": "Coffee Machine",
           "@language": "en"
         }
@@ -2101,6 +2657,10 @@
         {
           "@value": "Chauffage électrique",
           "@language": "fr"
+        },
+        {
+          "@value": "Encabezado eléctrico",
+          "@language": "es"
         },
         {
           "@value": "Electric Header",
@@ -2118,6 +2678,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Extintor de incendios",
+          "@language": "es"
+        },
+        {
           "@value": "Fire Extinguisher",
           "@language": "en"
         }
@@ -2131,6 +2695,10 @@
         {
           "@value": "Coup de flèche",
           "@language": "fr"
+        },
+        {
+          "@value": "Soplar antorcha",
+          "@language": "es"
         },
         {
           "@value": "Blow Torch",
@@ -2148,6 +2716,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Bustsen Querador",
+          "@language": "es"
+        },
+        {
           "@value": "Bunsen Burner",
           "@language": "en"
         }
@@ -2161,6 +2733,10 @@
         {
           "@value": "Four",
           "@language": "fr"
+        },
+        {
+          "@value": "Horno",
+          "@language": "es"
         },
         {
           "@value": "Oven",
@@ -2178,6 +2754,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Alicates",
+          "@language": "es"
+        },
+        {
           "@value": "Pliers",
           "@language": "en"
         }
@@ -2193,6 +2773,10 @@
           "@language": "fr"
         },
         {
+          "@value": "Lechón de soldadura",
+          "@language": "es"
+        },
+        {
           "@value": "Solder Sucker",
           "@language": "en"
         }
@@ -2206,6 +2790,10 @@
         {
           "@value": "Câble d'extension secteur",
           "@language": "fr"
+        },
+        {
+          "@value": "Cable de extensión de la red",
+          "@language": "es"
         },
         {
           "@value": "Mains Extension Cable",

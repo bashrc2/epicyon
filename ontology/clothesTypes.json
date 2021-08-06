@@ -22,6 +22,10 @@
           "@language": "de"
         },
         {
+          "@value": "Camisa",
+          "@language": "es"
+        },
+        {
           "@value": "Shirt",
           "@language": "en"
         }
@@ -39,6 +43,10 @@
         {
           "@value": "Gürtel",
           "@language": "de"
+        },
+        {
+          "@value": "Cinturón",
+          "@language": "es"
         },
         {
           "@value": "Belt",
@@ -60,6 +68,10 @@
           "@language": "de"
         },
         {
+          "@value": "Ropa de ninos",
+          "@language": "es"
+        },
+        {
           "@value": "Children's Clothing",
           "@language": "en"
         }
@@ -77,6 +89,10 @@
         {
           "@value": "Mantel",
           "@language": "de"
+        },
+        {
+          "@value": "Abrigo",
+          "@language": "es"
         },
         {
           "@value": "Coat",
@@ -98,6 +114,10 @@
           "@language": "de"
         },
         {
+          "@value": "Vestir",
+          "@language": "es"
+        },
+        {
           "@value": "Dress",
           "@language": "en"
         }
@@ -115,6 +135,10 @@
         {
           "@value": "Schuhe",
           "@language": "de"
+        },
+        {
+          "@value": "Zapatos",
+          "@language": "es"
         },
         {
           "@value": "Shoes",
@@ -136,6 +160,10 @@
           "@language": "de"
         },
         {
+          "@value": "Botas",
+          "@language": "es"
+        },
+        {
           "@value": "Boots",
           "@language": "en"
         }
@@ -153,6 +181,10 @@
         {
           "@value": "Kleid",
           "@language": "de"
+        },
+        {
+          "@value": "Vestido",
+          "@language": "es"
         },
         {
           "@value": "Gown",
@@ -174,6 +206,10 @@
           "@language": "de"
         },
         {
+          "@value": "Sombrero",
+          "@language": "es"
+        },
+        {
           "@value": "Hat",
           "@language": "en"
         }
@@ -191,6 +227,10 @@
         {
           "@value": "‎Strumpfwaren",
           "@language": "de"
+        },
+        {
+          "@value": "‎Hosi",
+          "@language": "es"
         },
         {
           "@value": "Hosiery‎",
@@ -212,6 +252,10 @@
           "@language": "de"
         },
         {
+          "@value": "Chaqueta",
+          "@language": "es"
+        },
+        {
           "@value": "Jacket",
           "@language": "en"
         }
@@ -229,6 +273,10 @@
         {
           "@value": "Jeans",
           "@language": "de"
+        },
+        {
+          "@value": "Vaqueras",
+          "@language": "es"
         },
         {
           "@value": "Jeans",
@@ -250,6 +298,10 @@
           "@language": "de"
         },
         {
+          "@value": "Máscara",
+          "@language": "es"
+        },
+        {
           "@value": "Mask",
           "@language": "en"
         }
@@ -267,6 +319,10 @@
         {
           "@value": "Krawatten",
           "@language": "de"
+        },
+        {
+          "@value": "Corbatas",
+          "@language": "es"
         },
         {
           "@value": "Neckwear",
@@ -288,6 +344,10 @@
           "@language": "de"
         },
         {
+          "@value": "Bufanda",
+          "@language": "es"
+        },
+        {
           "@value": "Scarf",
           "@language": "en"
         }
@@ -305,6 +365,10 @@
         {
           "@value": "Anzug",
           "@language": "de"
+        },
+        {
+          "@value": "Traje",
+          "@language": "es"
         },
         {
           "@value": "Suit",
@@ -327,6 +391,10 @@
         },
         {
           "@value": "Poncho",
+          "@language": "es"
+        },
+        {
+          "@value": "Poncho",
           "@language": "en"
         }
       ],
@@ -343,6 +411,10 @@
         {
           "@value": "Mantel",
           "@language": "de"
+        },
+        {
+          "@value": "Capa",
+          "@language": "es"
         },
         {
           "@value": "Cloak",
@@ -365,6 +437,10 @@
         }
         {
           "@value": "Sari",
+          "@language": "es"
+        }
+        {
+          "@value": "Sari",
           "@language": "en"
         }
       ],
@@ -381,6 +457,10 @@
         {
           "@value": "Schärpe",
           "@language": "de"
+        },
+        {
+          "@value": "Faja",
+          "@language": "es"
         },
         {
           "@value": "Sash",
@@ -402,6 +482,10 @@
           "@language": "de"
         },
         {
+          "@value": "Chal",
+          "@language": "es"
+        },
+        {
           "@value": "Shawl",
           "@language": "en"
         }
@@ -419,6 +503,10 @@
         {
           "@value": "Rock",
           "@language": "de"
+        },
+        {
+          "@value": "Falda",
+          "@language": "es"
         },
         {
           "@value": "Skirt",
@@ -440,6 +528,10 @@
           "@language": "de"
         },
         {
+          "@value": "Pantalones",
+          "@language": "es"
+        },
+        {
           "@value": "Trousers",
           "@language": "en"
         }
@@ -457,6 +549,10 @@
         {
           "@value": "Kurze Hose",
           "@language": "de"
+        },
+        {
+          "@value": "Bermudas",
+          "@language": "es"
         },
         {
           "@value": "Shorts",
@@ -478,6 +574,10 @@
           "@language": "de"
         },
         {
+          "@value": "Ropa interior",
+          "@language": "es"
+        },
+        {
           "@value": "Underwear",
           "@language": "en"
         }
@@ -495,6 +595,10 @@
         {
           "@value": "Socken",
           "@language": "de"
+        },
+        {
+          "@value": "Medias",
+          "@language": "es"
         },
         {
           "@value": "Socks",
@@ -516,6 +620,10 @@
           "@language": "de"
         },
         {
+          "@value": "Casco",
+          "@language": "es"
+        },
+        {
           "@value": "Helmet",
           "@language": "en"
         }
@@ -533,6 +641,10 @@
         {
           "@value": "Handschuhe",
           "@language": "de"
+        },
+        {
+          "@value": "Guantes",
+          "@language": "es"
         },
         {
           "@value": "Gloves",
