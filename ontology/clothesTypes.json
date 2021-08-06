@@ -653,6 +653,213 @@
       ],
       "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#gloves",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#kurta",
+      "rdfs:label": [
+        {
+          "@value": "Kurta",
+          "@language": "fr"
+        },
+        {
+          "@value": "Kurta",
+          "@language": "de"
+        },
+        {
+          "@value": "Kurta",
+          "@language": "es"
+        },
+        {
+          "@value": "Kurta",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#kurta",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#sherwani",
+      "rdfs:label": [
+        {
+          "@value": "Sherwani",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sherwani",
+          "@language": "de"
+        },
+        {
+          "@value": "Sherwani",
+          "@language": "es"
+        },
+        {
+          "@value": "Sherwani",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sherwani",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#shalwar-kameez",
+      "rdfs:label": [
+        {
+          "@value": "Shalwar Kameez",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shalwar Kameez",
+          "@language": "de"
+        },
+        {
+          "@value": "Shalwar Kameez",
+          "@language": "es"
+        },
+        {
+          "@value": "Shalwar Kameez",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shalwar-kameez",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#cheongsam",
+      "rdfs:label": [
+        {
+          "@value": "Cheongsam",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cheongsam",
+          "@language": "de"
+        },
+        {
+          "@value": "Cheongsam",
+          "@language": "es"
+        },
+        {
+          "@value": "Cheongsam",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#cheongsam",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#áo-bà-ba",
+      "rdfs:label": [
+        {
+          "@value": "Áo bà ba",
+          "@language": "fr"
+        },
+        {
+          "@value": "Áo bà ba",
+          "@language": "de"
+        },
+        {
+          "@value": "Áo bà ba",
+          "@language": "es"
+        },
+        {
+          "@value": "Áo bà ba",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#áo-bà-ba",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#áo-dài",
+      "rdfs:label": [
+        {
+          "@value": "Áo dài",
+          "@language": "fr"
+        },
+        {
+          "@value": "Áo dài",
+          "@language": "de"
+        },
+        {
+          "@value": "Áo dài",
+          "@language": "es"
+        },
+        {
+          "@value": "Áo dài",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#áo-dài",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#halter-top",
+      "rdfs:label": [
+        {
+          "@value": "Halter haut",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bikini-Oberteil",
+          "@language": "de"
+        },
+        {
+          "@value": "Camiseta sin mangas",
+          "@language": "es"
+        },
+        {
+          "@value": "Halter top",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#halter-top",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#sandals",
+      "rdfs:label": [
+        {
+          "@value": "Des sandales",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sandalen",
+          "@language": "de"
+        },
+        {
+          "@value": "Sandalias",
+          "@language": "es"
+        },
+        {
+          "@value": "Sandals",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sandals",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#slippers",
+      "rdfs:label": [
+        {
+          "@value": "Chaussons",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hausschuhe",
+          "@language": "de"
+        },
+        {
+          "@value": "Zapatillas",
+          "@language": "es"
+        },
+        {
+          "@value": "Slippers",
+          "@language": "en"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#slippers",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
