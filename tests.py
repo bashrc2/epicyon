@@ -1490,6 +1490,10 @@ def testSharedItemsFederation():
              bobDir + '/ontology/toolTypes.json')
     copyfile(baseDir + '/ontology/clothesTypes.json',
              bobDir + '/ontology/clothesTypes.json')
+    assert os.path.isfile(bobDir + '/logo.png')
+    assert os.path.isfile(bobDir + '/ontology/foodTypes.json')
+    assert os.path.isfile(bobDir + '/ontology/toolTypes.json')
+    assert os.path.isfile(bobDir + '/ontology/clothesTypes.json')
     sessionBob = createSession(proxyType)
     sharedItemName = 'cheddar'
     sharedItemDescription = 'Some cheese'
@@ -1573,6 +1577,7 @@ def testSharedItemsFederation():
     assert len(sharesJson.items()) == 3
     for itemID, item in sharesJson.items():
         if not item.get('dfcId'):
+            pprint(item)
             print(itemID + ' does not have dfcId field')
         assert item.get('dfcId')
 

@@ -57,12 +57,16 @@ def _loadDfcIds(baseDir: str, systemLanguage: str,
             baseDir + '/ontology/' + productType + 'Types.json'
     productTypes = loadJson(productTypesFilename)
     if not productTypes:
+        print('Unable to load ontology: ' + productTypesFilename)
         return None
     if not productTypes.get('@graph'):
+        print('No @graph list within ontology')
         return None
     if len(productTypes['@graph']) == 0:
+        print('@graph list has no contents')
         return None
     if not productTypes['@graph'][0].get('rdfs:label'):
+        print('@graph list entry has no rdfs:label')
         return None
     languageExists = False
     for label in productTypes['@graph'][0]['rdfs:label']:
@@ -211,6 +215,7 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
         # bag of words match
         maxMatchedWords = 0
         for name, uri in dfcIds.items():
+            name = name.replace('-', ' ')
             words = name.split(' ')
             score = 0
             for wrd in words:
