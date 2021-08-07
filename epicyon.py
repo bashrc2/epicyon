@@ -120,7 +120,7 @@ parser.add_argument('--libretranslateApiKey',
                     default=None,
                     help='API key for LibreTranslate service')
 parser.add_argument('--defaultCurrency', dest='defaultCurrency', type=str,
-                    default="EUR",
+                    default=None,
                     help='Default currency EUR/GBP/USD...')
 parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
@@ -2699,6 +2699,9 @@ if args.registration:
         setConfigParam(baseDir, 'registration', 'closed')
         print('New registrations closed')
 
+defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+if not defaultCurrency:
+    setConfigParam(baseDir, 'defaultCurrency', 'EUR')
 if args.defaultCurrency:
     if args.defaultCurrency == args.defaultCurrency.upper():
         setConfigParam(baseDir, 'defaultCurrency', args.defaultCurrency)
