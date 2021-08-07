@@ -367,7 +367,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 
         extraFields += '  <select id="themeDropdown" ' + \
-            'name="category" class="theme">'
+            'name="category" class="theme">\n'
         for category in categoryTypes:
             translatedCategory = "food"
             if translate.get(category):
@@ -394,7 +394,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
         currencies = getCurrencies()
         extraFields += '  <select id="themeDropdown" ' + \
-            'name="itemCurrency" class="theme">'
+            'name="itemCurrency" class="theme">\n'
         currencyList = []
         for symbol, currName in currencies.items():
             currencyList.append(currName + ' ' + symbol)
