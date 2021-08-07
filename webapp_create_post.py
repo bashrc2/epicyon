@@ -395,10 +395,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         currencies = getCurrencies()
         extraFields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">'
+        currencyList = []
         for symbol, currName in currencies.items():
+            currencyList.append(currName + ' ' + symbol)
+        currencyList.sort()
+        for currName in currencyList:
             extraFields += '    <option value="' + \
-                currName + '">' + \
-                currName + ' ' + symbol + '</option>'
+                currName + '">' + currName + '</option>'
 
         extraFields += '</div>\n'
 
