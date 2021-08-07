@@ -15498,7 +15498,7 @@ def runDaemon(maxLikeCount: int,
         generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
                                            baseDir)
     httpd.sharedItemFederationTokens = \
-        createSharedItemFederationToken(baseDir, httpd.domainFull,
+        createSharedItemFederationToken(baseDir, httpd.domainFull, False,
                                         httpd.sharedItemFederationTokens)
 
     # load peertube instances from file into a list

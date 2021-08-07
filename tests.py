@@ -5110,7 +5110,7 @@ def _testAuthorizeSharedItems():
     tokensJson = \
         generateSharedItemFederationTokens(sharedItemsFederatedDomains, None)
     tokensJson = \
-        createSharedItemFederationToken(None, 'cat.domain', tokensJson)
+        createSharedItemFederationToken(None, 'cat.domain', False, tokensJson)
     assert tokensJson
     assert not tokensJson.get('dog.domain')
     assert tokensJson.get('cat.domain')

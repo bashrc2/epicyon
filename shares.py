@@ -12,6 +12,7 @@ import re
 import secrets
 import time
 import datetime
+from random import randint
 from pprint import pprint
 from session import getJson
 from webfinger import webfingerHandle
@@ -1161,6 +1162,7 @@ def mergeSharedItemTokens(baseDir: str, domainFull: str,
 
 def createSharedItemFederationToken(baseDir: str,
                                     tokenDomainFull: str,
+                                    force: bool,
                                     tokensJson: {} = None) -> {}:
     """Updates an individual token for shared item federation
     """
@@ -1173,7 +1175,7 @@ def createSharedItemFederationToken(baseDir: str,
             tokensJson = loadJson(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
-    if not tokensJson.get(tokenDomainFull):
+    if force or not tokensJson.get(tokenDomainFull):
         tokensJson[tokenDomainFull] = secrets.token_urlsafe(64)
         if baseDir:
             saveJson(tokensJson, tokensFilename)
@@ -1310,6 +1312,76 @@ def runFederatedSharesWatchdog(projectVersion: str, httpd) -> None:
         print('Restarting federated shares daemon...')
 
 
+def _generateNextSharesTokenUpdate(baseDir: str,
+                                   minDays: int, maxDays: int) -> None:
+    """Creates a file containing the next date when the shared items token
+    for this instance will be updated
+    """
+    tokenUpdateFilename = baseDir + '/accounts/.tokenUpdate'
+    nextUpdateSec = None
+    if os.path.isfile(tokenUpdateFilename):
+        with open(tokenUpdateFilename, 'r') as fp:
+            nextUpdateStr = fp.read()
+            if nextUpdateStr:
+                if nextUpdateStr.isdigit():
+                    nextUpdateSec = int(nextUpdateStr)
+    currTime = int(time.time())
+    updated = False
+    if nextUpdateSec:
+        if currTime > nextUpdateSec:
+            nextUpdateDays = randint(minDays, maxDays)
+            nextUpdateInterval = int(60 * 60 * 24 * nextUpdateDays)
+            nextUpdateSec += nextUpdateInterval
+            updated = True
+    else:
+        nextUpdateDays = randint(minDays, maxDays)
+        nextUpdateInterval = int(60 * 60 * 24 * nextUpdateDays)
+        nextUpdateSec = currTime + nextUpdateInterval
+        updated = True
+    if updated:
+        with open(tokenUpdateFilename, 'w+') as fp:
+            fp.write(str(nextUpdateSec))
+
+
+def _regenerateSharesToken(baseDir: str, domainFull: str,
+                           minDays: int, maxDays: int, httpd) -> None:
+    """Occasionally the shared items token for your instance is updated.
+    Scenario:
+      - You share items with $FriendlyInstance
+      - Some time later under new management
+        $FriendlyInstance becomes $HostileInstance
+      - You block $HostileInstance and remove them from your
+        federated shares domains list
+      - $HostileInstance still knows your shared items token,
+        and can still have access to your shared items if it presents a
+        spoofed Origin header together with the token
+    By rotating the token occasionally $HostileInstance will eventually
+    lose access to your federated shares. If other instances within your
+    federated shares list of domains continue to follow and communicate
+    then they will receive the new token automatically
+    """
+    tokenUpdateFilename = baseDir + '/accounts/.tokenUpdate'
+    if not os.path.isfile(tokenUpdateFilename):
+        return
+    nextUpdateSec = None
+    with open(tokenUpdateFilename, 'r') as fp:
+        nextUpdateStr = fp.read()
+        if nextUpdateStr:
+            if nextUpdateStr.isdigit():
+                nextUpdateSec = int(nextUpdateStr)
+    if not nextUpdateSec:
+        return
+    currTime = int(time.time())
+    if currTime <= nextUpdateSec:
+        return
+    createSharedItemFederationToken(baseDir, domainFull, True, None)
+    _generateNextSharesTokenUpdate(baseDir, minDays, maxDays)
+    # update the tokens used within the daemon
+    httpd.sharedItemFederationTokens = \
+        generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
+                                           baseDir)
+
+
 def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
                              domainFull: str, proxyType: str, debug: bool,
                              systemLanguage: str) -> None:
@@ -1318,12 +1390,20 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
     secondsPerHour = 60 * 60
     fileCheckIntervalSec = 120
     time.sleep(60)
+    # the token for this instance will be changed every 7-14 days
+    minDays = 7
+    maxDays = 14
+    _generateNextSharesTokenUpdate(baseDir, minDays, maxDays)
     while True:
         sharedItemsFederatedDomainsStr = \
             getConfigParam(baseDir, 'sharedItemsFederatedDomains')
         if not sharedItemsFederatedDomainsStr:
             time.sleep(fileCheckIntervalSec)
             continue
+
+        # occasionally change the federated shared items token
+        # for this instance
+        _regenerateSharesToken(baseDir, domainFull, minDays, maxDays, httpd)
 
         # get a list of the domains within the shared items federation
         sharedItemsFederatedDomains = []
