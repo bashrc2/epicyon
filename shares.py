@@ -38,6 +38,7 @@ from utils import isfloat
 from media import processMetaData
 from filters import isFilteredGlobally
 from siteactive import siteIsActive
+from content import getPriceFromString
 
 
 def _dfcProductTypes() -> []:
@@ -508,6 +509,14 @@ def sendShareViaServer(baseDir, session,
     if not session:
         print('WARN: No session for sendShareViaServer')
         return 6
+
+    # convert $4.23 to 4.23 USD
+    newItemPrice, newItemCurrency = getPriceFromString(itemPrice)
+    if newItemPrice != itemPrice:
+        itemPrice = newItemPrice
+        if not itemCurrency:
+            if newItemCurrency != itemCurrency:
+                itemCurrency = newItemCurrency
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
