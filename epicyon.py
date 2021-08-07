@@ -119,6 +119,9 @@ parser.add_argument('--libretranslateApiKey',
                     dest='libretranslateApiKey', type=str,
                     default=None,
                     help='API key for LibreTranslate service')
+parser.add_argument('--defaultCurrency', dest='defaultCurrency', type=str,
+                    default="EUR",
+                    help='Default currency EUR/GBP/USD...')
 parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
                     help='Nickname of the account to use')
@@ -2695,6 +2698,11 @@ if args.registration:
     else:
         setConfigParam(baseDir, 'registration', 'closed')
         print('New registrations closed')
+
+if args.defaultCurrency:
+    if args.defaultCurrency == args.defaultCurrency.upper():
+        setConfigParam(baseDir, 'defaultCurrency', args.defaultCurrency)
+        print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
     runDaemon(args.maxLikeCount,

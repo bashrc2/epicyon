@@ -399,9 +399,16 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         for symbol, currName in currencies.items():
             currencyList.append(currName + ' ' + symbol)
         currencyList.sort()
+        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+        if not defaultCurrency:
+            defaultCurrency = "EUR"
         for currName in currencyList:
-            extraFields += '    <option value="' + \
-                currName + '">' + currName + '</option>\n'
+            if defaultCurrency not in currName:
+                extraFields += '    <option value="' + \
+                    currName + '">' + currName + '</option>\n'
+            else:
+                extraFields += '    <option value="' + \
+                    currName + '" selected>' + currName + '</option>\n'
         extraFields += '  </select>\n'
 
         extraFields += '</div>\n'
