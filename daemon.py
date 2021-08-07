@@ -277,6 +277,7 @@ from utils import hasGroupType
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
+from content import getPriceFromString
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
@@ -13920,10 +13921,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('itemType'):
                     print(postType + ' no itemType')
                     return -1
-                if not fields.get('itemPrice'):
+                if 'itemPrice' not in fields:
                     print(postType + ' no itemPrice')
                     return -1
-                if not fields.get('itemCurrency'):
+                if 'itemCurrency' not in fields:
                     print(postType + ' no itemCurrency')
                     return -1
                 if not fields.get('category'):
@@ -13949,10 +13950,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if isfloat(fields['itemQty']):
                         itemQty = float(fields['itemQty'])
                 itemPrice = "0.00"
-                if fields['itemPrice']:
-                    if isfloat(fields['itemPrice']):
-                        itemPrice = fields['itemPrice']
                 itemCurrency = "EUR"
+                if fields['itemPrice']:
+                    itemPrice, itemCurrency = \
+                        getPriceFromString(fields['itemPrice'])
                 if fields['itemCurrency']:
                     itemCurrency = fields['itemCurrency']
                 print('Adding shared item')

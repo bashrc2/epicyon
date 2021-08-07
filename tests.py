@@ -104,6 +104,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import getPriceFromString
 from content import limitRepeatedWords
 from content import switchWords
 from content import extractTextFieldsInPOST
@@ -5164,9 +5165,23 @@ def _testValidPassword():
     assert validPassword('A!bc:defg1/234?56')
 
 
+def _testGetPriceFromString() -> None:
+    print('testGetPriceFromString')
+    price, curr = getPriceFromString("5.23")
+    assert price == "5.23"
+    assert curr == "EUR"
+    price, curr = getPriceFromString("£7.36")
+    assert price == "7.36"
+    assert curr == "GBP"
+    price, curr = getPriceFromString("$10.63")
+    assert price == "10.63"
+    assert curr == "USD"
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _testGetPriceFromString()
     _testFunctions()
     _testDateConversions()
     _testAuthorizeSharedItems()
