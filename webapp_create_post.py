@@ -408,7 +408,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     currName + '">' + currName + '</option>\n'
             else:
                 extraFields += '    <option value="' + \
-                    currName + '" selected>' + currName + '</option>\n'
+                    currName + '" selected="selected">' + \
+                    currName + '</option>\n'
         extraFields += '  </select>\n'
 
         extraFields += '</div>\n'
