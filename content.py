@@ -22,6 +22,7 @@ from utils import isPGPEncrypted
 from utils import containsPGPPublicKey
 from utils import acctDir
 from utils import isfloat
+from utils import getCurrencies
 from petnames import getPetName
 
 
@@ -1092,62 +1093,7 @@ def limitRepeatedWords(text: str, maxRepeats: int) -> str:
 def getPriceFromString(priceStr: str) -> (str, str):
     """Returns the item price and currency
     """
-    currencies = {
-        "J$": "JMD",
-        "£": "GBP",
-        "€": "EUR",
-        "؋": "AFN",
-        "ƒ": "AWG",
-        "₼": "AZN",
-        "Br": "BYN",
-        "BZ$": "BZD",
-        "$b": "BOB",
-        "KM": "BAM",
-        "P": "BWP",
-        "лв": "BGN",
-        "R$": "BRL",
-        "៛": "KHR",
-        "$U": "UYU",
-        "RD$": "DOP",
-        "$": "USD",
-        "₡": "CRC",
-        "kn": "HRK",
-        "₱": "CUP",
-        "Kč": "CZK",
-        "kr": "NOK",
-        "¢": "GHS",
-        "Q": "GTQ",
-        "L": "HNL",
-        "Ft": "HUF",
-        "Rp": "IDR",
-        "﷼": "IRR",
-        "₪": "ILS",
-        "¥": "JPY",
-        "₩": "KRW",
-        "₭": "LAK",
-        "ден": "MKD",
-        "RM": "MYR",
-        "₨": "MUR",
-        "₮": "MNT",
-        "MT": "MZN",
-        "C$": "NIO",
-        "₦": "NGN",
-        "Gs": "PYG",
-        "zł": "PLN",
-        "lei": "RON",
-        "₽": "RUB",
-        "Дин": "RSD",
-        "S": "SOS",
-        "R": "ZAR",
-        "CHF": "CHF",
-        "NT$": "TWD",
-        "฿": "THB",
-        "TT$": "TTD",
-        "₴": "UAH",
-        "Bs": "VEF",
-        "₫": "VND",
-        "Z$": "ZQD"
-    }
+    currencies = getCurrencies()
     for symbol, name in currencies.items():
         if symbol in priceStr:
             price = priceStr.replace(symbol, '')

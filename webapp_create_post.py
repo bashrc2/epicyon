@@ -14,6 +14,7 @@ from utils import getDomainFromActor
 from utils import getMediaFormats
 from utils import getConfigParam
 from utils import acctDir
+from utils import getCurrencies
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -364,6 +365,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         categoryTypes = ("food", "clothes", "tool")
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
+
         extraFields += '  <select id="themeDropdown" ' + \
             'name="category" class="theme">'
         for category in categoryTypes:
@@ -373,6 +375,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             extraFields += '    <option value="' + \
                 translatedCategory + '">' + \
                 translatedCategory + '</option>'
+
         extraFields += '<br>'
         extraFields += \
             editNumberField(translate['Duration of listing in days'],
@@ -386,9 +389,18 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += \
             editCurrencyField(translate['Price'] + ':', 'itemPrice', '0.00',
                               '0.00', True)
-        extraFields += '<br>' + \
-            editTextField(translate['Currency'] + ':', 'itemCurrency', 'EUR',
-                          'EUR / GBP / USD ...', True)
+        extraFields += '<br>'
+        extraFields += \
+            '<label class="labels">' + translate['Currency'] + '</label><br>\n'
+        currencies = getCurrencies()
+        currencies.sort()
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="itemCurrency" class="theme">'
+        for symbol, currName in currencies.items():
+            extraFields += '    <option value="' + \
+                currName + '">' + \
+                currName + ' ' + symbol + '</option>'
+
         extraFields += '</div>\n'
 
     citationsStr = ''
