@@ -895,10 +895,14 @@ def htmlIndividualShare(domain: str, shareId: str,
         if showContact:
             contactActor = item['actor']
             profileStr += \
-                '<p><a href="' + actor + \
+                '<p>' + \
+                '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
                 '?mention=' + contactActor + '"><button class="button">' + \
                 translate['Contact'] + '</button></a>\n'
+            profileStr += \
+                '<a href="' + contactActor + '"><button class="button">' + \
+                translate['View'] + '</button></a>\n'
         if removeButton and domain in shareId:
             profileStr += \
                 ' <a href="' + actor + '?rmshare=' + shareId + \
