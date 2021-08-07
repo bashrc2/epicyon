@@ -393,7 +393,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
         currencies = getCurrencies()
-        currencies.sort()
         extraFields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">'
         for symbol, currName in currencies.items():
