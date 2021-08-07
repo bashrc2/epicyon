@@ -374,9 +374,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 translatedCategory = translate[category]
             extraFields += '    <option value="' + \
                 translatedCategory + '">' + \
-                translatedCategory + '</option>'
+                translatedCategory + '</option>\n'
 
-        extraFields += '  </select><br>'
+        extraFields += '  </select><br>\n'
         extraFields += \
             editNumberField(translate['Duration of listing in days'],
                             'duration', 14, 1, 365, 1)
@@ -401,7 +401,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         currencyList.sort()
         for currName in currencyList:
             extraFields += '    <option value="' + \
-                currName + '">' + currName + '</option>'
+                currName + '">' + currName + '</option>\n'
         extraFields += '  </select>\n'
 
         extraFields += '</div>\n'
