@@ -1297,9 +1297,13 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
     contactActor = \
         httpPrefix + '://' + domainFull + '/users/' + contactNickname
     sharedItemsForm += \
-        '<p><a href="' + actor + '?replydm=sharedesc:' + \
+        '<p>' + \
+        '<a href="' + actor + '?replydm=sharedesc:' + \
         sharedItem['displayName'] + '?mention=' + contactActor + \
-        '"><button class="button">' + translate['Contact'] + '</button></a>\n'
+        '"><button class="button">' + translate['Contact'] + \
+        '</button></a>\n' + \
+        '<a href="' + contactActor + '"><button class="button">' + \
+        translate['View'] + '</button></a>\n'
 
     # should the remove button be shown?
     showRemoveButton = False
