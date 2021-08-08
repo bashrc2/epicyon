@@ -457,7 +457,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shoes",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -532,7 +532,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#boots",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1132,7 +1132,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#scarf",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#neckwear",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1957,7 +1957,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#socks",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2707,7 +2707,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sandals",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2782,7 +2782,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#slippers",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     }
   ]
