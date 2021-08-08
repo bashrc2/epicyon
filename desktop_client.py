@@ -416,7 +416,7 @@ def _desktopReplyToPost(session, postId: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, subject: str,
                         screenreader: str, systemLanguage: str,
-                        espeak) -> None:
+                        espeak, conversationId: str) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in postId:
@@ -470,7 +470,7 @@ def _desktopReplyToPost(session, postId: str,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          systemLanguage, debug, postId, postId,
-                         subject) == 0:
+                         conversationId, subject) == 0:
         sayStr = 'Reply sent'
     else:
         sayStr = 'Reply failed'
@@ -486,6 +486,7 @@ def _desktopNewPost(session,
                     espeak) -> None:
     """Use the desktop client to create a new post
     """
+    conversationId = None
     sayStr = 'Create new post'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     sayStr = 'Type your post, then press Enter.'
@@ -532,7 +533,7 @@ def _desktopNewPost(session,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          systemLanguage, debug, None, None,
-                         subject) == 0:
+                         conversationId, subject) == 0:
         sayStr = 'Post sent'
     else:
         sayStr = 'Post failed'
@@ -1140,6 +1141,7 @@ def _desktopNewDMbase(session, toHandle: str,
                       espeak) -> None:
     """Use the desktop client to create a new direct message
     """
+    conversationId = None
     toPort = port
     if '://' in toHandle:
         toNickname = getNicknameFromActor(toHandle)
@@ -1225,7 +1227,7 @@ def _desktopNewDMbase(session, toHandle: str,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          systemLanguage, debug, None, None,
-                         subject) == 0:
+                         conversationId, subject) == 0:
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'
@@ -1670,6 +1672,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         subject = None
                         if postJsonObject['object'].get('summary'):
                             subject = postJsonObject['object']['summary']
+                        conversationId = None
+                        if postJsonObject['object'].get('conversation'):
+                            conversationId = \
+                                postJsonObject['object']['conversation']
                         sessionReply = createSession(proxyType)
                         _desktopReplyToPost(sessionReply, postId,
                                             baseDir, nickname, password,
@@ -1677,7 +1683,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             cachedWebfingers, personCache,
                                             debug, subject,
                                             screenreader, systemLanguage,
-                                            espeak)
+                                            espeak, conversationId)
                 refreshTimeline = True
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or

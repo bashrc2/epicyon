@@ -594,13 +594,15 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         mediaType = None
         imageDescription = None
         city = 'London, England'
+        conversationId = None
         blog = createNewsPost(baseDir,
                               domain, port, httpPrefix,
                               rssDescription,
                               followersOnly, saveToFile,
                               attachImageFilename, mediaType,
                               imageDescription, city,
-                              rssTitle, systemLanguage)
+                              rssTitle, systemLanguage,
+                              conversationId)
         if not blog:
             continue
 

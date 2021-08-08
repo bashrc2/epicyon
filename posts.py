@@ -915,7 +915,8 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
                    tags: [], attachImageFilename: str,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
-                   inReplyToAtomUri: str, systemLanguage: str) -> {}:
+                   inReplyToAtomUri: str, systemLanguage: str,
+                   conversationId: str) -> {}:
     """Creates a new server-to-server post
     """
     actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
@@ -926,6 +927,8 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
         httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
     newPostAttributedTo = \
         httpPrefix + '://' + domain + '/users/' + nickname
+    if not conversationId:
+        conversationId = newPostId
     newPost = {
         '@context': postContext,
         'id': newPostId + '/activity',
@@ -936,6 +939,7 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
         'cc': toCC,
         'object': {
             'id': newPostId,
+            'conversation': conversationId,
             'type': postObjectType,
             'summary': summary,
             'inReplyTo': inReplyTo,
@@ -983,7 +987,8 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
                    tags: [], attachImageFilename: str,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
-                   inReplyToAtomUri: str, systemLanguage: str) -> {}:
+                   inReplyToAtomUri: str, systemLanguage: str,
+                   conversationId: str) -> {}:
     """Creates a new client-to-server post
     """
     idStr = \
@@ -991,9 +996,12 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
         '/statuses/' + statusNumber + '/replies'
     newPostUrl = \
         httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
+    if not conversationId:
+        conversationId = newPostId
     newPost = {
         "@context": postContext,
         'id': newPostId,
+        'conversation': conversationId,
         'type': postObjectType,
         'summary': summary,
         'inReplyTo': inReplyTo,
@@ -1153,7 +1161,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     repliesModerationOption: str,
                     anonymousParticipationEnabled: bool,
                     eventStatus: str, ticketUrl: str,
-                    systemLanguage: str) -> {}:
+                    systemLanguage: str,
+                    conversationId: str) -> {}:
     """Creates a message
     """
     content = removeInvalidChars(content)
@@ -1282,7 +1291,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                            tags, attachImageFilename,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
-                           inReplyToAtomUri, systemLanguage)
+                           inReplyToAtomUri, systemLanguage,
+                           conversationId)
     else:
         newPost = \
             _createPostC2S(baseDir, nickname, domain, port,
@@ -1293,7 +1303,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                            tags, attachImageFilename,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
-                           inReplyToAtomUri, systemLanguage)
+                           inReplyToAtomUri, systemLanguage,
+                           conversationId)
 
     _createPostMentions(ccUrl, newPost, toRecipients, tags)
 
@@ -1532,7 +1543,8 @@ def createPublicPost(baseDir: str,
                      eventDate: str, eventTime: str,
                      location: str,
                      isArticle: bool,
-                     systemLanguage: str) -> {}:
+                     systemLanguage: str,
+                     conversationId: str) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)
@@ -1562,7 +1574,8 @@ def createPublicPost(baseDir: str,
                            maximumAttendeeCapacity,
                            repliesModerationOption,
                            anonymousParticipationEnabled,
-                           eventStatus, ticketUrl, systemLanguage)
+                           eventStatus, ticketUrl, systemLanguage,
+                           conversationId)
 
 
 def _appendCitationsToBlogPost(baseDir: str,
@@ -1604,7 +1617,8 @@ def createBlogPost(baseDir: str,
                    inReplyTo: str, inReplyToAtomUri: str,
                    subject: str, schedulePost: bool,
                    eventDate: str, eventTime: str,
-                   location: str, systemLanguage: str) -> {}:
+                   location: str, systemLanguage: str,
+                   conversationId: str) -> {}:
     blogJson = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
@@ -1615,7 +1629,7 @@ def createBlogPost(baseDir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location,
-                         True, systemLanguage)
+                         True, systemLanguage, conversationId)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
@@ -1628,7 +1642,8 @@ def createNewsPost(baseDir: str,
                    content: str, followersOnly: bool, saveToFile: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, city: str,
-                   subject: str, systemLanguage: str) -> {}:
+                   subject: str, systemLanguage: str,
+                   conversationId: str) -> {}:
     clientToServer = False
     inReplyTo = None
     inReplyToAtomUri = None
@@ -1646,7 +1661,7 @@ def createNewsPost(baseDir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location,
-                         True, systemLanguage)
+                         True, systemLanguage, conversationId)
     blog['object']['type'] = 'Article'
     return blog
 
@@ -1675,7 +1690,8 @@ def createQuestionPost(baseDir: str,
                         False, False, None, None, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None, systemLanguage)
+                        None, None, None, None, None, systemLanguage,
+                        None)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1706,7 +1722,8 @@ def createUnlistedPost(baseDir: str,
                        inReplyTo: str, inReplyToAtomUri: str,
                        subject: str, schedulePost: bool,
                        eventDate: str, eventTime: str,
-                       location: str, systemLanguage: str) -> {}:
+                       location: str, systemLanguage: str,
+                       conversationId: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domainFull = getFullDomain(domain, port)
@@ -1722,7 +1739,8 @@ def createUnlistedPost(baseDir: str,
                            inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
-                           None, None, None, None, None, systemLanguage)
+                           None, None, None, None, None, systemLanguage,
+                           conversationId)
 
 
 def createFollowersOnlyPost(baseDir: str,
@@ -1737,7 +1755,8 @@ def createFollowersOnlyPost(baseDir: str,
                             inReplyToAtomUri: str,
                             subject: str, schedulePost: bool,
                             eventDate: str, eventTime: str,
-                            location: str, systemLanguage: str) -> {}:
+                            location: str, systemLanguage: str,
+                            conversationId: str) -> {}:
     """Followers only post
     """
     domainFull = getFullDomain(domain, port)
@@ -1753,7 +1772,8 @@ def createFollowersOnlyPost(baseDir: str,
                            inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
-                           None, None, None, None, None, systemLanguage)
+                           None, None, None, None, None, systemLanguage,
+                           conversationId)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
@@ -1805,7 +1825,8 @@ def createDirectMessagePost(baseDir: str,
                             subject: str, debug: bool,
                             schedulePost: bool,
                             eventDate: str, eventTime: str,
-                            location: str, systemLanguage: str) -> {}:
+                            location: str, systemLanguage: str,
+                            conversationId: str) -> {}:
     """Direct Message post
     """
     content = resolvePetnames(baseDir, nickname, domain, content)
@@ -1828,7 +1849,8 @@ def createDirectMessagePost(baseDir: str,
                         inReplyTo, inReplyToAtomUri, subject,
                         schedulePost, eventDate, eventTime, location,
                         None, None, None, None, None,
-                        None, None, None, None, None, systemLanguage)
+                        None, None, None, None, None, systemLanguage,
+                        conversationId)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
     messageJson['object']['to'] = messageJson['to']
@@ -1918,7 +1940,8 @@ def createReportPost(baseDir: str,
                             True, False, None, None, subject,
                             False, None, None, None, None, None,
                             None, None, None,
-                            None, None, None, None, None, systemLanguage)
+                            None, None, None, None, None, systemLanguage,
+                            None)
         if not postJsonObject:
             continue
 
@@ -2014,6 +2037,7 @@ def sendPost(projectVersion: str,
     """Post to another inbox. Used by unit tests.
     """
     withDigest = True
+    conversationId = None
 
     if toNickname == 'inbox':
         # shared inbox actor on @domain@domain
@@ -2069,7 +2093,8 @@ def sendPost(projectVersion: str,
                         inReplyToAtomUri, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None, systemLanguage)
+                        None, None, None, None, None, systemLanguage,
+                        conversationId)
 
     # get the senders private key
     privateKeyPem = _getPersonKey(nickname, domain, baseDir, 'private')
@@ -2152,6 +2177,7 @@ def sendPostViaServer(projectVersion: str,
                       debug: bool = False,
                       inReplyTo: str = None,
                       inReplyToAtomUri: str = None,
+                      conversationId: str = None,
                       subject: str = None) -> int:
     """Send a post via a proxy (c2s)
     """
@@ -2230,7 +2256,8 @@ def sendPostViaServer(projectVersion: str,
                         inReplyToAtomUri, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None, systemLanguage)
+                        None, None, None, None, None, systemLanguage,
+                        conversationId)
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 

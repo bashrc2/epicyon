@@ -2111,6 +2111,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     eventDate = None
     eventTime = None
     location = None
+    conversationId = None
     postJsonObject = \
         createDirectMessagePost(baseDir, nickname, domain, port,
                                 httpPrefix, content, followersOnly,
@@ -2121,7 +2122,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                                 inReplyTo, inReplyToAtomUri,
                                 subject, debug, schedulePost,
                                 eventDate, eventTime, location,
-                                systemLanguage)
+                                systemLanguage, conversationId)
     if not postJsonObject:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False

@@ -184,7 +184,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
                 theme: str, noDropDown: bool,
-                accessKeys: {}, customSubmitText: str) -> str:
+                accessKeys: {}, customSubmitText: str,
+                conversationId: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -541,6 +542,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropdownFollowersSuffix += '?mention=' + mentionedActor
         dropdownDMSuffix += '?mention=' + mentionedActor
         dropdownReportSuffix += '?mention=' + mentionedActor
+    if conversationId and inReplyTo:
+        dropdownNewPostSuffix += '?conversationId=' + conversationId
+        dropdownNewBlogSuffix += '?conversationId=' + conversationId
+        dropdownUnlistedSuffix += '?conversationId=' + conversationId
+        dropdownFollowersSuffix += '?conversationId=' + conversationId
+        dropdownDMSuffix += '?conversationId=' + conversationId
 
     dropDownContent = ''
     if not reportUrl and not shareDescription:
@@ -568,6 +575,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + \
         path + '?' + endpoint + '?page=' + str(pageNumber) + '">\n'
+    if conversationId:
+        newPostForm += \
+            '    <input type="hidden" name="conversationId" value="' + \
+            conversationId + '">'
     newPostForm += '  <div class="vertical-center">\n'
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'

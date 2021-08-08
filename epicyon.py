@@ -115,6 +115,10 @@ parser.add_argument('--userAgentBlocks', type=str,
 parser.add_argument('--libretranslate', dest='libretranslateUrl', type=str,
                     default=None,
                     help='URL for LibreTranslate service')
+parser.add_argument('--conversationId', dest='conversationId', type=str,
+                    default=None,
+                    help='Conversation Id which can be added ' +
+                    'when sending a post')
 parser.add_argument('--libretranslateApiKey',
                     dest='libretranslateApiKey', type=str,
                     default=None,
@@ -1179,7 +1183,7 @@ if args.message:
                       attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
                       args.language, args.debug,
-                      replyTo, replyTo, subject)
+                      replyTo, replyTo, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2408,6 +2412,7 @@ if args.testdata:
     testEventTime = None
     testLocation = None
     testIsArticle = False
+    conversationId = None
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",
@@ -2420,7 +2425,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2432,7 +2437,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2444,7 +2449,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2456,7 +2461,7 @@ if args.testdata:
                      'someone', testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -2469,7 +2474,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2481,7 +2486,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2493,7 +2498,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2505,7 +2510,7 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language)
+                     testIsArticle, args.language, conversationId)
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,

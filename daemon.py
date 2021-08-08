@@ -421,6 +421,7 @@ class PubServer(BaseHTTPRequestHandler):
         eventDate = None
         eventTime = None
         location = None
+        conversationId = None
         city = getSpoofedCity(self.server.city,
                               self.server.baseDir,
                               nickname, self.server.domain)
@@ -441,7 +442,8 @@ class PubServer(BaseHTTPRequestHandler):
                              eventDate,
                              eventTime,
                              location, False,
-                             self.server.systemLanguage)
+                             self.server.systemLanguage,
+                             conversationId)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -2363,7 +2365,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
             customSubmitText = getConfigParam(baseDir, 'customSubmitText')
-
+            conversationId = None
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2378,7 +2380,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.newswire,
                               self.server.themeName,
                               True, accessKeys,
-                              customSubmitText).encode('utf-8')
+                              customSubmitText,
+                              conversationId).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2476,7 +2479,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
             customSubmitText = getConfigParam(baseDir, 'customSubmitText')
-
+            conversationId = None
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2490,7 +2493,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.newswire,
                               self.server.themeName,
                               True, accessKeys,
-                              customSubmitText).encode('utf-8')
+                              customSubmitText,
+                              conversationId).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -10433,7 +10437,7 @@ class PubServer(BaseHTTPRequestHandler):
                      shareDescription: str, replyPageNumber: int,
                      domain: str, domainFull: str,
                      GETstartTime, GETtimings: {}, cookie,
-                     noDropDown: bool) -> bool:
+                     noDropDown: bool, conversationId: str) -> bool:
         """Shows the new post screen
         """
         isNewPostEndpoint = False
@@ -10471,7 +10475,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.newswire,
                               self.server.themeName,
                               noDropDown, accessKeys,
-                              customSubmitText).encode('utf-8')
+                              customSubmitText,
+                              conversationId).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -12526,8 +12531,13 @@ class PubServer(BaseHTTPRequestHandler):
         replyToList = []
         replyPageNumber = 1
         shareDescription = None
+        conversationId = None
 #        replytoActor = None
         if htmlGET:
+            if '?conversationId=' in self.path:
+                conversationId = self.path.split('?conversationId=')[1]
+                if '?' in conversationId:
+                    conversationId = conversationId.split('?')[0]
             # public reply
             if '?replyto=' in self.path:
                 inReplyToUrl = self.path.split('?replyto=')[1]
@@ -12699,7 +12709,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  GETstartTime, GETtimings,
-                                 cookie, noDropDown):
+                                 cookie, noDropDown, conversationId):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -13478,6 +13488,9 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       self.server.baseDir,
                                       nickname, self.server.domain)
+                conversationId = None
+                if fields['conversationId']:
+                    conversationId = fields['conversationId']
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
@@ -13493,7 +13506,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
                                      fields['location'], False,
-                                     self.server.systemLanguage)
+                                     self.server.systemLanguage,
+                                     conversationId)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13552,6 +13566,9 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 clientToServer = False
                 city = None
+                conversationId = None
+                if fields['conversationId']:
+                    conversationId = fields['conversationId']
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
                                    self.server.domain, self.server.port,
@@ -13568,7 +13585,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['eventDate'],
                                    fields['eventTime'],
                                    fields['location'],
-                                   self.server.systemLanguage)
+                                   self.server.systemLanguage,
+                                   conversationId)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13682,6 +13700,11 @@ class PubServer(BaseHTTPRequestHandler):
                 followersOnly = False
                 saveToFile = False
                 clientToServer = False
+
+                conversationId = None
+                if fields['conversationId']:
+                    conversationId = fields['conversationId']
+
                 messageJson = \
                     createUnlistedPost(self.server.baseDir,
                                        nickname,
@@ -13700,7 +13723,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['eventDate'],
                                        fields['eventTime'],
                                        fields['location'],
-                                       self.server.systemLanguage)
+                                       self.server.systemLanguage,
+                                       conversationId)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13722,6 +13746,11 @@ class PubServer(BaseHTTPRequestHandler):
                 followersOnly = True
                 saveToFile = False
                 clientToServer = False
+
+                conversationId = None
+                if fields['conversationId']:
+                    conversationId = fields['conversationId']
+
                 messageJson = \
                     createFollowersOnlyPost(self.server.baseDir,
                                             nickname,
@@ -13742,7 +13771,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventDate'],
                                             fields['eventTime'],
                                             fields['location'],
-                                            self.server.systemLanguage)
+                                            self.server.systemLanguage,
+                                            conversationId)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13767,6 +13797,11 @@ class PubServer(BaseHTTPRequestHandler):
                     followersOnly = True
                     saveToFile = False
                     clientToServer = False
+
+                    conversationId = None
+                    if fields['conversationId']:
+                        conversationId = fields['conversationId']
+
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
@@ -13788,7 +13823,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['eventDate'],
                                                 fields['eventTime'],
                                                 fields['location'],
-                                                self.server.systemLanguage)
+                                                self.server.systemLanguage,
+                                                conversationId)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13818,6 +13854,7 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 clientToServer = False
                 commentsEnabled = False
+                conversationId = None
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
@@ -13836,7 +13873,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventDate'],
                                             fields['eventTime'],
                                             fields['location'],
-                                            self.server.systemLanguage)
+                                            self.server.systemLanguage,
+                                            conversationId)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1

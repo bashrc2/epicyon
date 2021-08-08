@@ -276,7 +276,8 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
 def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       postJsonObject: {}, pageNumberParam: str,
-                      translate: {}, systemLanguage: str) -> str:
+                      translate: {}, systemLanguage: str,
+                      conversationId: str) -> str:
     """Returns html for the reply icon/button
     """
     replyStr = ''
@@ -302,11 +303,15 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
 
     replyStr = ''
     replyToThisPostStr = translate['Reply to this post']
+    conversationStr = ''
+    if conversationId:
+        conversationStr = '?conversationId=' + conversationId
     if isPublicRepeat:
         replyStr += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyto=' + replyToLink + \
             '?actor=' + postJsonObject['actor'] + \
+            conversationStr + \
             '" title="' + replyToThisPostStr + '">\n'
     else:
         if isDM(postJsonObject):
@@ -315,6 +320,7 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replydm=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
+                conversationStr + \
                 '" title="' + replyToThisPostStr + '">\n'
         else:
             replyStr += \
@@ -322,6 +328,7 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replyfollowers=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
+                conversationStr + \
                 '" title="' + replyToThisPostStr + '">\n'
 
     replyStr += \
@@ -1350,10 +1357,15 @@ def individualPostAsHtml(allowDownloads: bool,
             if postJsonObject['object']['rejectReplies']:
                 commentsEnabled = False
 
+    conversationId = None
+    if postJsonObject['object']['conversation']:
+        conversationId = postJsonObject['object']['conversation']
+
     replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
-                                 translate, systemLanguage)
+                                 translate, systemLanguage,
+                                 conversationId)
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
 

@@ -517,6 +517,7 @@ def createServerAlice(path: str, domain: str, port: int,
         testEventTime = None
         testLocation = None
         testIsArticle = False
+        conversationId = None
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
@@ -529,7 +530,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -542,7 +543,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -556,7 +557,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
@@ -648,6 +649,7 @@ def createServerBob(path: str, domain: str, port: int,
         testEventTime = None
         testLocation = None
         testIsArticle = False
+        conversationId = None
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -660,7 +662,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -674,7 +676,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -687,7 +689,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
@@ -2353,6 +2355,7 @@ def _testCreatePerson():
     commentsEnabled = True
     attachImageFilename = None
     mediaType = None
+    conversationId = None
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      content, followersOnly, saveToFile, clientToServer,
                      commentsEnabled, attachImageFilename, mediaType,
@@ -2360,7 +2363,7 @@ def _testCreatePerson():
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, systemLanguage)
+                     testIsArticle, systemLanguage, conversationId)
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -2495,6 +2498,7 @@ def testClientToServer():
     cachedWebfingers = {}
     personCache = {}
     password = 'alicepass'
+    conversationId = None
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
     inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
     assert len([name for name in os.listdir(outboxPath)
@@ -2511,7 +2515,8 @@ def testClientToServer():
                           attachedImageFilename, mediaType,
                           attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
-                          systemLanguage, True, None, None, None)
+                          systemLanguage, True, None, None,
+                          conversationId, None)
     print('sendResult: ' + str(sendResult))
 
     for i in range(30):
@@ -3753,6 +3758,7 @@ def _testReplyToPublicPost() -> None:
     testEventTime = None
     testLocation = None
     testIsArticle = False
+    conversationId = None
     reply = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
@@ -3762,7 +3768,7 @@ def _testReplyToPublicPost() -> None:
                          testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -4283,6 +4289,7 @@ def _testLinksWithinPost() -> None:
     testEventTime = None
     testLocation = None
     testIsArticle = False
+    conversationId = None
 
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
@@ -4293,7 +4300,7 @@ def _testLinksWithinPost() -> None:
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
 
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -4329,7 +4336,7 @@ def _testLinksWithinPost() -> None:
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage)
+                         testIsArticle, systemLanguage, conversationId)
     assert postJsonObject['object']['content'] == content
     assert postJsonObject['object']['contentMap'][systemLanguage] == content
 
