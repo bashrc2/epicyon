@@ -5190,7 +5190,7 @@ def _testGetPriceFromString() -> None:
 
 
 def _translateOntology() -> None:
-    ontologyTypes = ('food', 'clothes', 'tool')
+    ontologyTypes = ('food', 'clothes', 'tool', 'medical')
     url = 'https://translate.astian.org'
     apiKey = None
     ltLangList = libretranslateLanguages(url, apiKey)

@@ -44,7 +44,7 @@ from content import getPriceFromString
 def _dfcProductTypes() -> []:
     # this list should match the ontology json files
     # eg. ontology/foodTypes.json
-    return ['food', 'tool', 'clothes']
+    return ['food', 'tool', 'clothes', 'medical']
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str,
