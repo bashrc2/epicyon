@@ -364,7 +364,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        categoryTypes = getCategoryTypes()
+        categoryTypes = getCategoryTypes(baseDir)
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 
