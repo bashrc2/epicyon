@@ -1598,7 +1598,8 @@ def _getReservedWords() -> str:
             'bookmark', 'bookmarks', 'tlbookmarks',
             'ignores', 'linksmobile', 'newswiremobile',
             'minimal', 'search', 'eventdelete',
-            'searchemoji', 'catalog')
+            'searchemoji', 'catalog', 'conversationId',
+            'mention', 'http', 'https')
 
 
 def getNicknameValidationPattern() -> str:
