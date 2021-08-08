@@ -2810,3 +2810,19 @@ def getSupportedLanguages(baseDir: str) -> []:
                 languagesStr.append(lang)
         break
     return languagesStr
+
+
+def getCategoryTypes(baseDir: str) -> []:
+    """Returns the list of ontologies
+    """
+    ontologyDir = baseDir + '/ontology'
+    categories = []
+    for subdir, dirs, files in os.walk(ontologyDir):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            ontologyFilename = f.split('.')[0]
+            if 'Types' in ontologyFilename:
+                categories.append(ontologyFilename.replace('Types', ''))
+        break
+    return categories

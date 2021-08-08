@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import getCategoryTypes
 from utils import getSupportedLanguages
 from utils import setConfigParam
 from utils import isGroupActor
@@ -5190,7 +5191,8 @@ def _testGetPriceFromString() -> None:
 
 
 def _translateOntology() -> None:
-    ontologyTypes = ('food', 'clothes', 'tool', 'medical')
+    baseDir = os.getcwd()
+    ontologyTypes = getCategoryTypes(baseDir)
     url = 'https://translate.astian.org'
     apiKey = None
     ltLangList = libretranslateLanguages(url, apiKey)

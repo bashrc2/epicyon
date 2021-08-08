@@ -15,6 +15,7 @@ from utils import getMediaFormats
 from utils import getConfigParam
 from utils import acctDir
 from utils import getCurrencies
+from utils import getCategoryTypes
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -363,7 +364,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        categoryTypes = ("food", "clothes", "tool", "medical")
+        categoryTypes = getCategoryTypes()
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 

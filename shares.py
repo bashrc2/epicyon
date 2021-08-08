@@ -35,16 +35,11 @@ from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acctDir
 from utils import isfloat
+from utils import getCategoryTypes
 from media import processMetaData
 from filters import isFilteredGlobally
 from siteactive import siteIsActive
 from content import getPriceFromString
-
-
-def _dfcProductTypes() -> []:
-    # this list should match the ontology json files
-    # eg. ontology/foodTypes.json
-    return ['food', 'tool', 'clothes', 'medical']
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str,
@@ -168,13 +163,14 @@ def _addShareDurationSec(duration: str, published: int) -> int:
     return 0
 
 
-def _dfcProductTypeFromCategory(itemCategory: str, translate: {}) -> str:
+def _dfcProductTypeFromCategory(baseDir: str,
+                                itemCategory: str, translate: {}) -> str:
     """Does the shared item category match a DFC product type?
     If so then return the product type.
     This will be used to select an appropriate ontology file
     such as ontology/foodTypes.json
     """
-    productTypesList = _dfcProductTypes()
+    productTypesList = getCategoryTypes(baseDir)
     categoryLower = itemCategory.lower()
     for productType in productTypesList:
         if translate.get(productType):
@@ -195,7 +191,8 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
     """
     # does the category field match any prodyct type ontology
     # files in the ontology subdirectory?
-    matchedProductType = _dfcProductTypeFromCategory(itemCategory, translate)
+    matchedProductType = \
+        _dfcProductTypeFromCategory(baseDir, itemCategory, translate)
     if not matchedProductType:
         itemType = itemType.replace(' ', '_')
         itemType = itemType.replace('.', '')
@@ -1452,7 +1449,7 @@ def _dfcToSharesFormat(catalogJson: {},
     sharesJson = {}
 
     dfcIds = {}
-    productTypesList = _dfcProductTypes()
+    productTypesList = getCategoryTypes(baseDir)
     for productType in productTypesList:
         dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType)
 
