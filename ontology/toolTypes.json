@@ -6382,7 +6382,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#multimeter",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6457,7 +6457,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-power-supply",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6532,7 +6532,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#capacitance-meter",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6607,7 +6607,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oscilloscope",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6682,7 +6682,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oscilloscope-probes",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6832,7 +6832,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mains-transformer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -7732,7 +7732,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#thermal-camera",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#camera",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8107,7 +8107,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#laptop",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9832,7 +9832,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#paintbrush",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#painting",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9907,7 +9907,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#paint-roller",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#painting",
       "@type": "dfc-p:ProductType"
     },
     {
