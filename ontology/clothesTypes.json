@@ -382,7 +382,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#dress",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1432,7 +1432,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sari",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1582,7 +1582,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shawl",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1657,7 +1657,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#skirt",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2257,7 +2257,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sherwani",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#mens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2332,7 +2332,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shalwar-kameez",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2407,7 +2407,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#cheongsam",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2632,7 +2632,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#halter-top",
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
