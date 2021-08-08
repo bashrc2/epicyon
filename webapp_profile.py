@@ -23,6 +23,7 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import getImageFormats
 from utils import acctDir
+from utils import getSupportedLanguages
 from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
@@ -1688,19 +1689,10 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     return editProfileForm
 
 
-def _getSupportedLanguages(baseDir: str) -> str:
+def _getSupportedLanguagesSorted(baseDir: str) -> str:
     """Returns a list of supported languages
     """
-    langList = []
-    for subdir, dirs, files in os.walk(baseDir + '/translations'):
-        for f in files:
-            if not f.endswith('.json'):
-                continue
-            langStr = f.split('.')[0]
-            if len(langStr) != 2:
-                continue
-            langList.append(langStr)
-        break
+    langList = getSupportedLanguages(baseDir)
     if not langList:
         return ''
     langList.sort()
@@ -1769,7 +1761,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm += \
         editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
 
-    languagesListStr = _getSupportedLanguages(baseDir)
+    languagesListStr = _getSupportedLanguagesSorted(baseDir)
     showLanguages = getActorLanguages(actorJson)
     editProfileForm += \
         editTextField(translate['Languages'], 'showLanguages',

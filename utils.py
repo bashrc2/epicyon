@@ -2793,3 +2793,19 @@ def getCurrencies() -> {}:
         "₫": "VND",
         "Z$": "ZQD"
     }
+
+
+def getSupportedLanguages(baseDir: str) -> []:
+    """Returns a list of supported languages
+    """
+    translationsDir = baseDir + '/translations'
+    languagesStr = []
+    for subdir, dirs, files in os.walk(translationsDir):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            lang = f.split('.')[0]
+            if len(lang) == 2:
+                languagesStr.append(lang)
+        break
+    return languagesStr

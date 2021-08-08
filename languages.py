@@ -108,16 +108,18 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
     if libretranslateUrl:
         libretranslateApiKey = getConfigParam(baseDir, "libretranslateApiKey")
         langList = \
-            _libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
+            libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
         for lang in langList:
             if msgObject['contentMap'].get(lang):
                 return True
     return False
 
 
-def _libretranslateLanguages(url: str, apiKey: str = None) -> []:
+def libretranslateLanguages(url: str, apiKey: str = None) -> []:
     """Returns a list of supported languages
     """
+    if not url:
+        return []
     if not url.endswith('/languages'):
         if not url.endswith('/'):
             url += "/languages"
@@ -204,10 +206,13 @@ def addLinksToContent(content: str, links: {}) -> str:
     return content
 
 
-def _libretranslate(url: str, text: str,
-                    source: str, target: str, apiKey: str = None) -> str:
+def libretranslate(url: str, text: str,
+                   source: str, target: str, apiKey: str = None) -> str:
     """Translate string using libretranslate
     """
+    if not url:
+        return None
+
     if not url.endswith('/translate'):
         if not url.endswith('/'):
             url += "/translate"
@@ -273,14 +278,14 @@ def autoTranslatePost(baseDir: str, postJsonObject: {},
         return ''
     libretranslateApiKey = getConfigParam(baseDir, "libretranslateApiKey")
     langList = \
-        _libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
+        libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
     for lang in langList:
         if msgObject['contentMap'].get(lang):
             content = msgObject['contentMap'][lang]
             translatedText = \
-                _libretranslate(libretranslateUrl, content,
-                                lang, systemLanguage,
-                                libretranslateApiKey)
+                libretranslate(libretranslateUrl, content,
+                               lang, systemLanguage,
+                               libretranslateApiKey)
             if translatedText:
                 if removeHtml(translatedText) == removeHtml(content):
                     return content

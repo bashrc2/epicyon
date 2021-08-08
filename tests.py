@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import getSupportedLanguages
 from utils import setConfigParam
 from utils import isGroupActor
 from utils import dateStringToSeconds
@@ -137,6 +138,8 @@ from languages import setActorLanguages
 from languages import getActorLanguages
 from languages import getLinksFromContent
 from languages import addLinksToContent
+from languages import libretranslate
+from languages import libretranslateLanguages
 from shares import authorizeSharedItems
 from shares import generateSharedItemFederationTokens
 from shares import createSharedItemFederationToken
@@ -3371,8 +3374,9 @@ def _testValidContentWarning():
 
 def _testTranslations():
     print('testTranslations')
-    languagesStr = ('ar', 'ca', 'cy', 'de', 'es', 'fr', 'ga',
-                    'hi', 'it', 'ja', 'oc', 'pt', 'ru', 'zh')
+    baseDir = os.getcwd()
+    languagesStr = getSupportedLanguages(baseDir)
+    assert languagesStr
 
     # load all translations into a dict
     langDict = {}
@@ -5178,9 +5182,65 @@ def _testGetPriceFromString() -> None:
     assert curr == "USD"
 
 
+def _translateOntology() -> None:
+    ontologyTypes = ('food', 'clothes', 'tool')
+    url = 'https://translate.astian.org'
+    apiKey = None
+    ltLangList = libretranslateLanguages(url, apiKey)
+    baseDir = os.getcwd()
+    languagesStr = getSupportedLanguages(baseDir)
+    assert languagesStr
+
+    for oType in ontologyTypes:
+        changed = False
+        filename = baseDir + '/ontology/' + oType + 'Types.json'
+        if not os.path.isfile(filename):
+            continue
+        ontologyJson = loadJson(filename)
+        if not ontologyJson:
+            continue
+        index = -1
+        for item in ontologyJson['@graph']:
+            index += 1
+            if "rdfs:label" not in item:
+                continue
+            englishStr = None
+            languagesFound = []
+            for label in item["rdfs:label"]:
+                if '@language' not in label:
+                    continue
+                languagesFound.append(label['@language'])
+                if '@value' not in label:
+                    continue
+                if label['@language'] == 'en':
+                    englishStr = label['@value']
+            if not englishStr:
+                continue
+            for lang in languagesStr:
+                if lang not in languagesFound:
+                    translatedStr = None
+                    if url and lang in ltLangList:
+                        translatedStr = \
+                            libretranslate(url, englishStr, 'en', lang, apiKey)
+                    if not translatedStr:
+                        translatedStr = englishStr
+                    else:
+                        translatedStr = translatedStr.replace('<p>', '')
+                        translatedStr = translatedStr.replace('</p>', '')
+                    ontologyJson['@graph'][index]["rdfs:label"].append({
+                        "@value": translatedStr,
+                        "@language": lang
+                    })
+                    changed = True
+        if not changed:
+            continue
+        saveJson(ontologyJson, filename + '.new')
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
+    _translateOntology()
     _testGetPriceFromString()
     _testFunctions()
     _testDateConversions()
