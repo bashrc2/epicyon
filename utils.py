@@ -2821,9 +2821,10 @@ def getCategoryTypes(baseDir: str) -> []:
         for f in files:
             if not f.endswith('.json'):
                 continue
+            if f.startswith('custom'):
+                continue
             ontologyFilename = f.split('.')[0]
-            if 'Types' in ontologyFilename and \
-               not ontologyFilename.startswith('custom'):
+            if 'Types' in ontologyFilename:
                 categories.append(ontologyFilename.replace('Types', ''))
         break
     return categories
