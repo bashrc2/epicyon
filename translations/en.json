@@ -460,5 +460,6 @@
     "List of domains which can access the shared items catalog": "List of domains which can access the shared items catalog",
     "Shares Catalog": "Shares Catalog",
     "tool": "tool",
-    "clothes": "clothes"
+    "clothes": "clothes",
+    "medical": "medical"
 }

@@ -460,5 +460,6 @@
     "List of domains which can access the shared items catalog": "Список доменов, которые могут получить доступ к каталогу общих пунктов",
     "Shares Catalog": "Акции каталог",
     "tool": "орудие труда",
-    "clothes": "одежда"
+    "clothes": "одежда",
+    "medical": "медицинский"
 }

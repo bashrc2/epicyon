@@ -460,5 +460,6 @@
     "List of domains which can access the shared items catalog": "共有項目カタログにアクセスできるドメインのリスト",
     "Shares Catalog": "カタログを共有します",
     "tool": "道具",
-    "clothes": "服"
+    "clothes": "服",
+    "medical": "医学"
 }

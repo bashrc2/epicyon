@@ -460,5 +460,6 @@
     "List of domains which can access the shared items catalog": "Lista de dominios que pueden acceder al catálogo de artículos compartidos",
     "Shares Catalog": "Catálogo de acciones",
     "tool": "herramienta",
-    "clothes": "ropa"
+    "clothes": "ropa",
+    "medical": "médica"
 }
