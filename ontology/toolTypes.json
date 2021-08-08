@@ -82,7 +82,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-trowel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -157,7 +157,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#watering-can",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -232,7 +232,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#auger",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -307,7 +307,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#backpack-sprayer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sprayer",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -382,7 +382,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#border-spade",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -457,7 +457,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bow-rake",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -532,7 +532,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#broadfork",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -607,7 +607,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#budding-knife",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -682,7 +682,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bulb-planter",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -757,7 +757,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#compost-bin",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#container",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -832,7 +832,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#compost-fork",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -907,7 +907,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#core-aerator",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -982,7 +982,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drum-aerators",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1057,7 +1057,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#edging-shears",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1132,7 +1132,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electric-edger",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1207,7 +1207,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#flat-rake",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1282,7 +1282,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-fork",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1357,7 +1357,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-hoe",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1432,7 +1432,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#garden-shovel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1507,7 +1507,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gas-powered-lawn-edger",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1582,7 +1582,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening-gloves",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1657,7 +1657,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hand-cultivator",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1732,7 +1732,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#handheld-sprayer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1807,7 +1807,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hand-seeder",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1882,7 +1882,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hedge-shears",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -1957,7 +1957,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hoe",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2032,7 +2032,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kneeler",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2107,7 +2107,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#lawn-mower",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2182,7 +2182,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#leaf-blower",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2257,7 +2257,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#leaf-rake",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2332,7 +2332,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#machete",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2407,7 +2407,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#manual-edger",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2482,7 +2482,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pick-mattock",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2632,7 +2632,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#planting-dibble",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2707,7 +2707,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pointed-shovel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2782,7 +2782,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pole-pruner",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2857,7 +2857,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#post-hole-pincer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -2932,7 +2932,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#potato-fork",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3007,7 +3007,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#powered-chainsaw",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3082,7 +3082,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#powered-edger",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3157,7 +3157,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pruning-knife",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3232,7 +3232,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pruning-saw",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3307,7 +3307,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pruning-shears",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3382,7 +3382,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#rake",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3457,7 +3457,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#rotary-tiller",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3532,7 +3532,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#round-point-shovel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -3607,7 +3607,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#scoop-shovel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -4357,7 +4357,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#square-point-shovel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -4732,7 +4732,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#trench-shovel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -5782,7 +5782,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#floor-standing-pillar-drill",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -5932,7 +5932,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#table-saw",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6007,7 +6007,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mitre-saw",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6157,7 +6157,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wood-vice",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#vice",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6232,7 +6232,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#metal-vice",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#vice",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6307,7 +6307,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#woodturning-lathe",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#lathe",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6907,7 +6907,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -6982,7 +6982,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-pillar-drill",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -7132,7 +7132,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electronic-hotplate",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -7282,7 +7282,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soldering-iron",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soldering",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -7357,7 +7357,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#solder-reflow-oven",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -7432,7 +7432,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spot-welder",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#welding",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8182,7 +8182,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#desktop-computer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8257,7 +8257,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-monitor",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8332,7 +8332,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-mouse",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8407,7 +8407,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-trackball",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8482,7 +8482,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-drawing-tablet",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-drawing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8557,7 +8557,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-webcam",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8632,7 +8632,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-microphone",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8707,7 +8707,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-keyboard",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8782,7 +8782,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mobile-phone",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#telecoms",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8857,7 +8857,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#dect-phone",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#telecoms",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -8932,7 +8932,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#dect-base-station",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#telecoms",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9007,7 +9007,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#network-router",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9082,7 +9082,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wifi-router",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9307,7 +9307,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#microcontroller",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9382,7 +9382,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#single-board-computer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9682,7 +9682,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill-bit",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9982,7 +9982,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#water-barrel",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#container",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10057,7 +10057,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#thermostat",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10132,7 +10132,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#thermometer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10207,7 +10207,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gas-sensor",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10282,7 +10282,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fire-alarm",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10357,7 +10357,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kettle",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kitchen",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10432,7 +10432,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#coffee-machine",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kitchen",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10507,7 +10507,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electric-heater",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10582,7 +10582,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fire-extinguisher",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#safety",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10657,7 +10657,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#blow-torch",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10732,7 +10732,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bunsen-burner",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10807,7 +10807,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#oven",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -10957,7 +10957,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#solder-sucker",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soldering",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -11032,7 +11032,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#mains-extension-cable",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cable",
       "@type": "dfc-p:ProductType"
     }
   ]
