@@ -3682,7 +3682,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#scuffle-hoe",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -4132,7 +4132,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spiked-aerating-shoes",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shoes",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -4582,7 +4582,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#trailer-sprayer",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sprayer",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -4657,7 +4657,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#transplant-spade",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -5407,7 +5407,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bandsaw",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -5557,7 +5557,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-scroll-saw",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
       "@type": "dfc-p:ProductType"
     },
     {
