@@ -1350,7 +1350,8 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # check if replying is permitted
     commentsEnabled = True
-    if 'commentsEnabled' in postJsonObject['object']:
+    if isinstance(postJsonObject['object'], dict) and \
+       'commentsEnabled' in postJsonObject['object']:
         if postJsonObject['object']['commentsEnabled'] is False:
             commentsEnabled = False
         elif 'rejectReplies' in postJsonObject['object']:
@@ -1358,8 +1359,10 @@ def individualPostAsHtml(allowDownloads: bool,
                 commentsEnabled = False
 
     conversationId = None
-    if postJsonObject['object']['conversation']:
-        conversationId = postJsonObject['object']['conversation']
+    if isinstance(postJsonObject['object'], dict) and \
+       'conversation' in postJsonObject['object']:
+        if postJsonObject['object']['conversation']:
+            conversationId = postJsonObject['object']['conversation']
 
     replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
                                  showIcons, commentsEnabled,
