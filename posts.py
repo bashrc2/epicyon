@@ -1269,8 +1269,6 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
 
     # the type of post to be made
     postObjectType = 'Note'
-    if eventUUID:
-        postObjectType = 'Event'
     if isArticle:
         postObjectType = 'Article'
 
