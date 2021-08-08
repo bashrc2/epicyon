@@ -578,7 +578,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if conversationId:
         newPostForm += \
             '    <input type="hidden" name="conversationId" value="' + \
-            conversationId + '">'
+            conversationId + '">\n'
     newPostForm += '  <div class="vertical-center">\n'
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
