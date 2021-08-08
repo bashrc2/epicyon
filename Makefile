@@ -5,6 +5,8 @@ all:
 debug:
 source:
 	rm -f *.*~ *~
+	rm -f ontology/*~
+	rm -f ontology/*.new
 	rm -f translations/*~
 	rm -f orgs/*~
 	rm -f scripts/*~
@@ -17,6 +19,8 @@ source:
 clean:
 	rm -f *.*~ *~ *.dot
 	rm -f orgs/*~
+	rm -f ontology/*~
+	rm -f ontology/*.new
 	rm -f defaultwelcome/*~
 	rm -f theme/indymediaclassic/welcome/*~
 	rm -f theme/indymediamodern/welcome/*~
