@@ -13489,7 +13489,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname, self.server.domain)
                 conversationId = None
-                if fields['conversationId']:
+                if fields.get('conversationId'):
                     conversationId = fields['conversationId']
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -13567,7 +13567,7 @@ class PubServer(BaseHTTPRequestHandler):
                 clientToServer = False
                 city = None
                 conversationId = None
-                if fields['conversationId']:
+                if fields.get('conversationId'):
                     conversationId = fields['conversationId']
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
@@ -13702,7 +13702,7 @@ class PubServer(BaseHTTPRequestHandler):
                 clientToServer = False
 
                 conversationId = None
-                if fields['conversationId']:
+                if fields.get('conversationId'):
                     conversationId = fields['conversationId']
 
                 messageJson = \
@@ -13748,7 +13748,7 @@ class PubServer(BaseHTTPRequestHandler):
                 clientToServer = False
 
                 conversationId = None
-                if fields['conversationId']:
+                if fields.get('conversationId'):
                     conversationId = fields['conversationId']
 
                 messageJson = \
@@ -13799,7 +13799,7 @@ class PubServer(BaseHTTPRequestHandler):
                     clientToServer = False
 
                     conversationId = None
-                    if fields['conversationId']:
+                    if fields.get('conversationId'):
                         conversationId = fields['conversationId']
 
                     messageJson = \
