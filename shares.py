@@ -737,6 +737,220 @@ def sendUndoShareViaServer(baseDir: str, session,
     return undoShareJson
 
 
+def sendWantedViaServer(baseDir, session,
+                        fromNickname: str, password: str,
+                        fromDomain: str, fromPort: int,
+                        httpPrefix: str, displayName: str,
+                        summary: str, imageFilename: str,
+                        itemQty: float, itemType: str, itemCategory: str,
+                        location: str, duration: str,
+                        cachedWebfingers: {}, personCache: {},
+                        debug: bool, projectVersion: str,
+                        itemMaxPrice: str, itemCurrency: str) -> {}:
+    """Creates a wanted item via c2s
+    """
+    if not session:
+        print('WARN: No session for sendWantedViaServer')
+        return 6
+
+    # convert $4.23 to 4.23 USD
+    newItemMaxPrice, newItemCurrency = getPriceFromString(itemMaxPrice)
+    if newItemMaxPrice != itemMaxPrice:
+        itemMaxPrice = newItemMaxPrice
+        if not itemCurrency:
+            if newItemCurrency != itemCurrency:
+                itemCurrency = newItemCurrency
+
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://' + fromDomainFull + \
+        '/users/' + fromNickname + '/followers'
+
+    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    newShareJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Add',
+        'actor': actor,
+        'target': actor + '/wanted',
+        'object': {
+            "type": "Offer",
+            "displayName": displayName,
+            "summary": summary,
+            "itemQty": float(itemQty),
+            "itemType": itemType,
+            "category": itemCategory,
+            "location": location,
+            "duration": duration,
+            "itemPrice": itemMaxPrice,
+            "itemCurrency": itemCurrency,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        },
+        'to': [toUrl],
+        'cc': [ccUrl]
+    }
+
+    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix,
+                        cachedWebfingers,
+                        fromDomain, projectVersion, debug, False)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: share webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: wanted webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache, projectVersion,
+                                            httpPrefix, fromNickname,
+                                            fromDomain, postToBox,
+                                            83653)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: wanted no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: wanted no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    if imageFilename:
+        headers = {
+            'host': fromDomain,
+            'Authorization': authHeader
+        }
+        postResult = \
+            postImage(session, imageFilename, [],
+                      inboxUrl.replace('/' + postToBox, '/wanted'),
+                      headers)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = \
+        postJson(httpPrefix, fromDomainFull,
+                 session, newShareJson, [], inboxUrl, headers, 30, True)
+    if not postResult:
+        if debug:
+            print('DEBUG: POST wanted failed for c2s to ' + inboxUrl)
+#        return 5
+
+    if debug:
+        print('DEBUG: c2s POST wanted item success')
+
+    return newShareJson
+
+
+def sendUndoWantedViaServer(baseDir: str, session,
+                            fromNickname: str, password: str,
+                            fromDomain: str, fromPort: int,
+                            httpPrefix: str, displayName: str,
+                            cachedWebfingers: {}, personCache: {},
+                            debug: bool, projectVersion: str) -> {}:
+    """Undoes a wanted item via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUndoWantedViaServer')
+        return 6
+
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://' + fromDomainFull + \
+        '/users/' + fromNickname + '/followers'
+
+    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    undoShareJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Remove',
+        'actor': actor,
+        'target': actor + '/wanted',
+        'object': {
+            "type": "Offer",
+            "displayName": displayName,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        },
+        'to': [toUrl],
+        'cc': [ccUrl]
+    }
+
+    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        fromDomain, projectVersion, debug, False)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: unwant webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: unwant webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache, projectVersion,
+                                            httpPrefix, fromNickname,
+                                            fromDomain, postToBox,
+                                            12663)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: unwant no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: unwant no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = \
+        postJson(httpPrefix, fromDomainFull,
+                 session, undoShareJson, [], inboxUrl,
+                 headers, 30, True)
+    if not postResult:
+        if debug:
+            print('DEBUG: POST unwant failed for c2s to ' + inboxUrl)
+#        return 5
+
+    if debug:
+        print('DEBUG: c2s POST unwant success')
+
+    return undoShareJson
+
+
 def getSharedItemsCatalogViaServer(baseDir, session,
                                    nickname: str, password: str,
                                    domain: str, port: int,

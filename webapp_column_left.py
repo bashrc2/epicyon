@@ -404,7 +404,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     if '/users/' not in path:
         return ''
     path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '')
+    path = path.replace('/shares', '').replace('/wanted', '')
 
     nickname = getNicknameFromActor(path)
     if not nickname:

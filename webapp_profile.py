@@ -521,6 +521,7 @@ def htmlProfile(rssIconAtTop: bool,
     rolesButton = 'button'
     skillsButton = 'button'
     sharesButton = 'button'
+    wantedButton = 'button'
     if selected == 'posts':
         postsButton = 'buttonselected'
     elif selected == 'following':
@@ -533,6 +534,8 @@ def htmlProfile(rssIconAtTop: bool,
         skillsButton = 'buttonselected'
     elif selected == 'shares':
         sharesButton = 'buttonselected'
+    elif selected == 'wanted':
+        wantedButton = 'buttonselected'
     loginButton = ''
 
     followApprovalsSection = ''
@@ -802,6 +805,10 @@ def htmlProfile(rssIconAtTop: bool,
         '    <a href="' + usersPath + '/shares#buttonheader">' + \
         '<button class="' + sharesButton + '"><span>' + \
         translate['Shares'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/wanted#buttonheader">' + \
+        '<button class="' + wantedButton + '"><span>' + \
+        translate['Wanted'] + ' </span></button></a>'
     profileStr += logoutStr + editProfileStr
     profileStr += '  </center>'
     profileStr += '</div>'
@@ -1820,7 +1827,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '')
+    path = path.replace('/shares', '').replace('/wanted', '')
     nickname = getNicknameFromActor(path)
     if not nickname:
         return ''

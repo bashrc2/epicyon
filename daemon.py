@@ -10202,6 +10202,7 @@ class PubServer(BaseHTTPRequestHandler):
                        path.endswith('/followers') or \
                        path.endswith('/skills') or \
                        path.endswith('/roles') or \
+                       path.endswith('/wanted') or \
                        path.endswith('/shares'):
                         divertToLoginScreen = False
 
@@ -14577,6 +14578,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('/tlblogs/', '/tlblogs')
             self.path = self.path.replace('/inbox/', '/inbox')
             self.path = self.path.replace('/shares/', '/shares')
+            self.path = self.path.replace('/wanted/', '/wanted')
             self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
 
         if self.path == '/inbox':
@@ -15021,7 +15023,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 15)
 
-        if self.path.endswith('/outbox') or self.path.endswith('/shares'):
+        if self.path.endswith('/outbox') or \
+           self.path.endswith('/wanted') or \
+           self.path.endswith('/shares'):
             if usersInPath:
                 if authorized:
                     self.outboxAuthenticated = True
@@ -15038,6 +15042,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the post is to an expected path
         if not (self.path.endswith('/outbox') or
                 self.path.endswith('/inbox') or
+                self.path.endswith('/wanted') or
                 self.path.endswith('/shares') or
                 self.path.endswith('/moderationaction') or
                 self.path == '/sharedInbox'):
