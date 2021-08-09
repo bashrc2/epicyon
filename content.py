@@ -932,6 +932,16 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     Returns the filename and attachment type
     """
     if not mediaBytes:
+        if filenameBase:
+            # remove any existing files
+            extensionTypes = getImageExtensions()
+            for ex in extensionTypes:
+                possibleOtherFormat = filenameBase + '.' + ex
+                if os.path.isfile(possibleOtherFormat):
+                    os.remove(possibleOtherFormat)
+            if os.path.isfile(filenameBase):
+                os.remove(filenameBase)
+
         if debug:
             print('DEBUG: No media found within POST')
         return None, None
