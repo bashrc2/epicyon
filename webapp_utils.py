@@ -1273,7 +1273,7 @@ def editTextArea(label: str, name: str, value: str = "",
 def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                           httpPrefix: str, domainFull: str,
                           contactNickname: str, itemID: str,
-                          actor: str) -> str:
+                          actor: str, sharesFileType: str) -> str:
     """Returns the html for an individual shared item
     """
     sharedItemsForm = '<div class="container">\n'
@@ -1334,10 +1334,16 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                 showRemoveButton = True
 
     if showRemoveButton:
-        sharedItemsForm += \
-            ' <a href="' + actor + '?rmshare=' + \
-            itemID + '"><button class="button">' + \
-            translate['Remove'] + '</button></a>\n'
+        if sharesFileType == 'shares':
+            sharedItemsForm += \
+                ' <a href="' + actor + '?rmshare=' + \
+                itemID + '"><button class="button">' + \
+                translate['Remove'] + '</button></a>\n'
+        else:
+            sharedItemsForm += \
+                ' <a href="' + actor + '?rmwanted=' + \
+                itemID + '"><button class="button">' + \
+                translate['Remove'] + '</button></a>\n'
     sharedItemsForm += '</p></div>\n'
     return sharedItemsForm
 
@@ -1412,7 +1418,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     shareStr += \
         htmlSearchResultShare(baseDir, sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
-                              actor)
+                              actor, sharesFileType)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

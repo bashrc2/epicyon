@@ -161,8 +161,8 @@ def _htmlSharesResult(baseDir: str,
                       searchStrLowerList: [], currPage: int, ctr: int,
                       callingDomain: str, httpPrefix: str, domainFull: str,
                       contactNickname: str, actor: str,
-                      resultsExist: bool, searchStrLower: str,
-                      translate: {}) -> (bool, int, int, str):
+                      resultsExist: bool, searchStrLower: str, translate: {},
+                      sharesFileType: str) -> (bool, int, int, str):
     """Result for shared items search
     """
     sharedItemsForm = ''
@@ -177,7 +177,7 @@ def _htmlSharesResult(baseDir: str,
                     htmlSearchResultShare(baseDir, sharedItem, translate,
                                           httpPrefix, domainFull,
                                           contactNickname,
-                                          name, actor)
+                                          name, actor, sharesFileType)
                 if not resultsExist and currPage > 1:
                     # show the previous page button
                     sharedItemsForm += \
@@ -259,7 +259,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                             domainFull,
                                             contactNickname,
                                             actor, resultsExist,
-                                            searchStrLower, translate)
+                                            searchStrLower, translate,
+                                            sharesFileType)
             sharedItemsForm += resultStr
 
             if currPage > pageNumber:
@@ -296,7 +297,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                                 domainFull,
                                                 contactNickname,
                                                 actor, resultsExist,
-                                                searchStrLower, translate)
+                                                searchStrLower, translate,
+                                                sharesFileType)
                 sharedItemsForm += resultStr
 
                 if currPage > pageNumber:
