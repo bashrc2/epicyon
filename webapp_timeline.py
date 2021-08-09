@@ -921,7 +921,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     """
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
-                           baseDir, maxSharesPerAccount,
+                           baseDir, domain, nickname, maxSharesPerAccount,
                            sharedItemsFederatedDomains)
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname

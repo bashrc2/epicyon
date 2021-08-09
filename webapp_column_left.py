@@ -29,7 +29,7 @@ def _linksExist(baseDir: str) -> bool:
 
 
 def _getLeftColumnShares(baseDir: str,
-                         httpPrefix: str, domainFull: str,
+                         httpPrefix: str, domain: str, domainFull: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
                          translate: {},
@@ -42,7 +42,7 @@ def _getLeftColumnShares(baseDir: str,
     # shared items is large
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           baseDir, maxSharesInLeftColumn,
+                           baseDir, domain, nickname, maxSharesInLeftColumn,
                            sharedItemsFederatedDomains)
     if not sharesJson:
         return []
@@ -162,7 +162,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         maxSharesInLeftColumn = 3
         sharesList = \
             _getLeftColumnShares(baseDir,
-                                 httpPrefix, domainFull, nickname,
+                                 httpPrefix, domain, domainFull, nickname,
                                  maxSharesInLeftColumn, translate,
                                  sharedItemsFederatedDomains)
         if linksList and sharesList:

@@ -27,6 +27,7 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 from person import getPersonAvatarUrl
 from posts import isModerator
+from blocking import isBlocked
 
 
 def getBrokenLinkSubstitute() -> str:
@@ -337,7 +338,8 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 
 
 def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
-                       baseDir: str, maxSharesPerAccount: int,
+                       baseDir: str, domain: str, nickname: str,
+                       maxSharesPerAccount: int,
                        sharedItemsFederatedDomains: []) -> ({}, bool):
     """Get a page on the shared items timeline as json
     maxSharesPerAccount helps to avoid one person dominating the timeline
@@ -355,9 +357,14 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
             sharesJson = loadJson(sharesFilename)
             if not sharesJson:
                 continue
-            nickname = handle.split('@')[0]
+            accountNickname = handle.split('@')[0]
+            # Don't include shared items from blocked accounts
+            if accountNickname != nickname:
+                if isBlocked(baseDir, nickname, domain,
+                             accountNickname, domain, None):
+                    continue
             # actor who owns this share
-            owner = actor.split('/users/')[0] + '/users/' + nickname
+            owner = actor.split('/users/')[0] + '/users/' + accountNickname
             ctr = 0
             for itemID, item in sharesJson.items():
                 # assign owner to the item
@@ -387,11 +394,15 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                     ctr = 0
                     for itemID, item in sharesJson.items():
                         # assign owner to the item
-                        shareActor = ''
-                        if '--shareditems--' in itemID:
-                            shareActor = itemID.split('--shareditems--')[0]
-                            shareActor = shareActor.replace('___', '://')
-                            shareActor = shareActor.replace('--', '/')
+                        if '--shareditems--' not in itemID:
+                            continue
+                        shareActor = itemID.split('--shareditems--')[0]
+                        shareActor = shareActor.replace('___', '://')
+                        shareActor = shareActor.replace('--', '/')
+                        shareNickname = getNicknameFromActor(shareActor)
+                        if isBlocked(baseDir, nickname, domain,
+                                     shareNickname, federatedDomain, None):
+                            continue
                         item['actor'] = shareActor
                         item['shareId'] = itemID
                         allSharesJson[str(item['published'])] = item
