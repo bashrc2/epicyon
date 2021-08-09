@@ -871,7 +871,12 @@ def htmlProfile(rssIconAtTop: bool,
         profileStr += \
             _htmlProfileShares(actor, translate,
                                nickname, domainFull,
-                               extraJson) + licenseStr
+                               extraJson, 'shares') + licenseStr
+    elif selected == 'wanted':
+        profileStr += \
+            _htmlProfileShares(actor, translate,
+                               nickname, domainFull,
+                               extraJson, 'wanted') + licenseStr
     # end of #timeline
     profileStr += '</div>'
 
@@ -1044,13 +1049,15 @@ def _htmlProfileSkills(translate: {}, nickname: str, domain: str,
 
 
 def _htmlProfileShares(actor: str, translate: {},
-                       nickname: str, domain: str, sharesJson: {}) -> str:
+                       nickname: str, domain: str, sharesJson: {},
+                       sharesFileType: str) -> str:
     """Shows shares on the profile screen
     """
     profileStr = ''
     for item in sharesJson['orderedItems']:
         profileStr += htmlIndividualShare(domain, item['shareId'],
-                                          actor, item, translate, False, False)
+                                          actor, item, translate, False, False,
+                                          sharesFileType)
     if len(profileStr) > 0:
         profileStr = '<div class="share-title">' + profileStr + '</div>\n'
     return profileStr
