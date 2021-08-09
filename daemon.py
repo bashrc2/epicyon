@@ -15072,9 +15072,9 @@ class PubServer(BaseHTTPRequestHandler):
 
             postRedirect = self.server.defaultTimeline
             if currPostType == 'newshare':
-                postRedirect = 'shares'
+                postRedirect = 'tlshares'
             elif currPostType == 'newwanted':
-                postRedirect = 'wanted'
+                postRedirect = 'tlwanted'
 
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
