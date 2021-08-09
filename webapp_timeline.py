@@ -609,6 +609,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # shares, bookmarks and events buttons
     sharesButtonStr = ''
+    wantedButtonStr = ''
     bookmarksButtonStr = ''
     eventsButtonStr = ''
     if not minimal:
