@@ -66,6 +66,44 @@ def _getLeftColumnShares(baseDir: str,
     return linksList
 
 
+def _getLeftColumnWanted(baseDir: str,
+                         httpPrefix: str, domain: str, domainFull: str,
+                         nickname: str,
+                         maxSharesInLeftColumn: int,
+                         translate: {},
+                         sharedItemsFederatedDomains: []) -> []:
+    """get any wanted items and turn them into the left column links format
+    """
+    pageNumber = 1
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    # NOTE: this could potentially be slow if the number of federated
+    # wanted items is large
+    sharesJson, lastPage = \
+        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
+                           baseDir, domain, nickname, maxSharesInLeftColumn,
+                           sharedItemsFederatedDomains, 'wanted')
+    if not sharesJson:
+        return []
+
+    linksList = []
+    ctr = 0
+    for published, item in sharesJson.items():
+        sharedesc = item['displayName']
+        if '<' in sharedesc or '?' in sharedesc:
+            continue
+        shareId = item['shareId']
+        # selecting this link calls htmlShowShare
+        shareLink = actor + '?showwanted=' + shareId
+        linksList.append(sharedesc + ' ' + shareLink)
+        ctr += 1
+        if ctr >= maxSharesInLeftColumn:
+            break
+
+    if linksList:
+        linksList = ['* ' + translate['Wanted']] + linksList
+    return linksList
+
+
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
                          editor: bool,
@@ -168,6 +206,14 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if linksList and sharesList:
             linksList = sharesList + linksList
 
+        wantedList = \
+            _getLeftColumnWanted(baseDir,
+                                 httpPrefix, domain, domainFull, nickname,
+                                 maxSharesInLeftColumn, translate,
+                                 sharedItemsFederatedDomains)
+        if linksList and wantedList:
+            linksList = wantedList + linksList
+
     newTabStr = ' target="_blank" rel="nofollow noopener noreferrer"'
     if linksList:
         htmlStr += '<nav>\n'
@@ -219,7 +265,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     if lineStr.endswith(','):
                         lineStr = lineStr[:len(lineStr)-1]
                     # add link to the returned html
-                    if '?showshare=' not in linkStr:
+                    if '?showshare=' not in linkStr and \
+                       '?showwarning=' not in linkStr:
                         htmlStr += \
                             '      <p><a href="' + linkStr + \
                             '"' + newTabStr + '>' + \
@@ -234,7 +281,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     lineStr = lineStr.replace('=> ', '')
                     lineStr = lineStr.replace(linkStr, '')
                     # add link to the returned html
-                    if '?showshare=' not in linkStr:
+                    if '?showshare=' not in linkStr and \
+                       '?showwarning=' not in linkStr:
                         htmlStr += \
                             '      <p><a href="' + linkStr + \
                             '"' + newTabStr + '>' + \
