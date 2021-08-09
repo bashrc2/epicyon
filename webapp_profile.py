@@ -867,16 +867,16 @@ def htmlProfile(rssIconAtTop: bool,
     elif selected == 'skills':
         profileStr += \
             _htmlProfileSkills(translate, nickname, domainFull, extraJson)
-    elif selected == 'shares':
-        profileStr += \
-            _htmlProfileShares(actor, translate,
-                               nickname, domainFull,
-                               extraJson, 'shares') + licenseStr
-    elif selected == 'wanted':
-        profileStr += \
-            _htmlProfileShares(actor, translate,
-                               nickname, domainFull,
-                               extraJson, 'wanted') + licenseStr
+#    elif selected == 'shares':
+#        profileStr += \
+#            _htmlProfileShares(actor, translate,
+#                               nickname, domainFull,
+#                               extraJson, 'shares') + licenseStr
+#    elif selected == 'wanted':
+#        profileStr += \
+#            _htmlProfileShares(actor, translate,
+#                               nickname, domainFull,
+#                               extraJson, 'wanted') + licenseStr
     # end of #timeline
     profileStr += '</div>'
 
