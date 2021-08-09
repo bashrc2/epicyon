@@ -40,6 +40,7 @@ from media import processMetaData
 from filters import isFilteredGlobally
 from siteactive import siteIsActive
 from content import getPriceFromString
+from blocking import isBlocked
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str,
@@ -245,6 +246,7 @@ def _getshareTypeFromDfcId(dfcUri: str, dfcIds: {}) -> str:
 
 
 def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
+                               nickname: str, domain: str,
                                domainFull: str) -> None:
     """Indicate to each account that a new share is available
     """
@@ -256,11 +258,16 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
             newShareFile = accountDir + '/.newShare'
             if os.path.isfile(newShareFile):
                 continue
-            nickname = handle.split('@')[0]
+            accountNickname = handle.split('@')[0]
+            # does this account block you?
+            if accountNickname != nickname:
+                if isBlocked(baseDir, accountNickname, domain,
+                             nickname, domain, None):
+                    continue
             try:
                 with open(newShareFile, 'w+') as fp:
                     fp.write(httpPrefix + '://' + domainFull +
-                             '/users/' + nickname + '/tlshares')
+                             '/users/' + accountNickname + '/tlshares')
             except BaseException:
                 pass
         break
@@ -347,7 +354,8 @@ def addShare(baseDir: str,
 
     saveJson(sharesJson, sharesFilename)
 
-    _indicateNewShareAvailable(baseDir, httpPrefix, domainFull)
+    _indicateNewShareAvailable(baseDir, httpPrefix,
+                               nickname, domain, domainFull)
 
 
 def expireShares(baseDir: str) -> None:
