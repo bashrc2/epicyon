@@ -3172,7 +3172,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           httpPrefix,
                                           domainFull,
                                           actorStr, callingDomain,
-                                          sharedItemsFederatedDomains)
+                                          sharedItemsFederatedDomains,
+                                          'shares')
                 if sharedItemsStr:
                     msg = sharedItemsStr.encode('utf-8')
                     msglen = len(msg)
@@ -3390,7 +3391,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shareDomain, sharePort = getDomainFromActor(shareActor)
                     removeSharedItem(baseDir,
                                      shareNickname, shareDomain, itemID,
-                                     httpPrefix, domainFull)
+                                     httpPrefix, domainFull, 'shares')
 
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
@@ -9488,12 +9489,12 @@ class PubServer(BaseHTTPRequestHandler):
                         onionDomain: str, i2pDomain: str,
                         GETstartTime, GETtimings: {},
                         proxyType: str, cookie: str,
-                        debug: str) -> bool:
+                        debug: str, sharesFileType: str) -> bool:
         """Shows the shares feed
         """
         shares = \
             getSharesFeedForPerson(baseDir, domain, port, path,
-                                   httpPrefix, sharesPerPage)
+                                   httpPrefix, sharesFileType, sharesPerPage)
         if shares:
             if self._requestHTTP():
                 pageNumber = 1
@@ -9503,7 +9504,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shares = \
                         getSharesFeedForPerson(baseDir, domain, port,
                                                path + '?page=true',
-                                               httpPrefix,
+                                               httpPrefix, sharesFileType,
                                                sharesPerPage)
                 else:
                     pageNumberStr = path.split('?page=')[1]
@@ -9514,7 +9515,7 @@ class PubServer(BaseHTTPRequestHandler):
                     searchPath = path.split('?page=')[0]
                 getPerson = \
                     personLookup(domain,
-                                 searchPath.replace('/shares', ''),
+                                 searchPath.replace('/' + sharesFileType, ''),
                                  baseDir)
                 if getPerson:
                     if not self.server.session:
@@ -9549,7 +9550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.projectVersion,
                                     baseDir, httpPrefix,
                                     authorized,
-                                    getPerson, 'shares',
+                                    getPerson, sharesFileType,
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
@@ -10865,7 +10866,7 @@ class PubServer(BaseHTTPRequestHandler):
                             sharesCatalogEndpoint(self.server.baseDir,
                                                   self.server.httpPrefix,
                                                   self.server.domainFull,
-                                                  self.path)
+                                                  self.path, 'shares')
                     else:
                         domainFull = self.server.domainFull
                         httpPrefix = self.server.httpPrefix
@@ -10881,7 +10882,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                          self.server.domain,
                                                          domainFull,
                                                          self.path,
-                                                         self.server.debug)
+                                                         self.server.debug,
+                                                         'shares')
                     msg = json.dumps(catalogJson,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -10895,7 +10897,8 @@ class PubServer(BaseHTTPRequestHandler):
                         sharesCatalogCSVEndpoint(self.server.baseDir,
                                                  self.server.httpPrefix,
                                                  self.server.domainFull,
-                                                 self.path).encode('utf-8')
+                                                 self.path,
+                                                 'shares').encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
                                       msglen, None, callingDomain)
@@ -11363,7 +11366,7 @@ class PubServer(BaseHTTPRequestHandler):
                               itemID, self.server.translate,
                               self.server.sharedItemsFederatedDomains,
                               self.server.defaultTimeline,
-                              self.server.themeName)
+                              self.server.themeName, 'shares')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -11396,7 +11399,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.translate,
                                               self.server.baseDir,
                                               actor, itemID,
-                                              callingDomain)
+                                              callingDomain, 'shares')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -13145,7 +13148,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.i2pDomain,
                                 GETstartTime, GETtimings,
                                 self.server.proxyType,
-                                cookie, self.server.debug):
+                                cookie, self.server.debug, 'shares'):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -14009,7 +14012,7 @@ class PubServer(BaseHTTPRequestHandler):
                          self.server.debug,
                          city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
-                         self.server.translate)
+                         self.server.translate, 'shares')
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)

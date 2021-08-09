@@ -699,7 +699,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
                                     baseDir, actor, nickname, domain, port,
                                     maxSharesPerAccount, httpPrefix,
-                                    sharedItemsFederatedDomains) +
+                                    sharedItemsFederatedDomains, 'shares') +
                 _htmlTimelineEnd(baseDir, nickname, domainFull,
                                  httpPrefix, translate,
                                  moderator, editor,
@@ -916,13 +916,14 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                         baseDir: str, actor: str,
                         nickname: str, domain: str, port: int,
                         maxSharesPerAccount: int, httpPrefix: str,
-                        sharedItemsFederatedDomains: []) -> str:
+                        sharedItemsFederatedDomains: [],
+                        sharesFileType: str) -> str:
     """Show shared items timeline as html
     """
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
                            baseDir, domain, nickname, maxSharesPerAccount,
-                           sharedItemsFederatedDomains)
+                           sharedItemsFederatedDomains, sharesFileType)
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -935,7 +936,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if pageNumber > 1:
         timelineStr += \
             '  <center>\n' + \
-            '    <a href="' + actor + '/tlshares?page=' + \
+            '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + translate['Page up'] + \
@@ -968,12 +969,12 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         ctr += 1
 
     if ctr == 0:
-        timelineStr += _getHelpForTimeline(baseDir, 'tlshares')
+        timelineStr += _getHelpForTimeline(baseDir, 'tl' + sharesFileType)
 
     if not lastPage:
         timelineStr += \
             '  <center>\n' + \
-            '    <a href="' + actor + '/tlshares?page=' + \
+            '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + translate['Page down'] + \

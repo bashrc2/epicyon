@@ -210,7 +210,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           httpPrefix: str,
                           domainFull: str, actor: str,
                           callingDomain: str,
-                          sharedItemsFederatedDomains: []) -> str:
+                          sharedItemsFederatedDomains: [],
+                          sharesFileType: str) -> str:
     """Search results for shared items
     """
     currPage = 1
@@ -227,11 +228,13 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
         getConfigParam(baseDir, 'instanceTitle')
     sharedItemsForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    if sharesFileType == 'shares':
+        titleStr = translate['Shared Items Search']
+    else:
+        titleStr = translate['Wanted Items Search']
     sharedItemsForm += \
         '<center><h1>' + \
-        '<a href="' + actor + '/search">' + \
-        translate['Shared Items Search'] + \
-        '</a></h1></center>'
+        '<a href="' + actor + '/search">' + titleStr + '</a></h1></center>'
     resultsExist = False
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
@@ -239,7 +242,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                 continue
             contactNickname = handle.split('@')[0]
             sharesFilename = baseDir + '/accounts/' + handle + \
-                '/shares.json'
+                '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
 
@@ -264,13 +267,16 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
         break
 
     # search federated shared items
-    catalogsDir = baseDir + '/cache/catalogs'
+    if sharesFileType == 'shares':
+        catalogsDir = baseDir + '/cache/catalogs'
+    else:
+        catalogsDir = baseDir + '/cache/wantedItems'
     if currPage <= pageNumber and os.path.isdir(catalogsDir):
         for subdir, dirs, files in os.walk(catalogsDir):
             for f in files:
                 if '#' in f:
                     continue
-                if not f.endswith('.shares.json'):
+                if not f.endswith('.' + sharesFileType + '.json'):
                     continue
                 federatedDomain = f.split('.')[0]
                 if federatedDomain not in sharedItemsFederatedDomains:

@@ -2830,3 +2830,9 @@ def getCategoryTypes(baseDir: str) -> []:
                 categories.append(ontologyFilename.replace('Types', ''))
         break
     return categories
+
+
+def getSharesFilesList() -> []:
+    """Returns the possible shares files
+    """
+    return ('shares', 'wanted')

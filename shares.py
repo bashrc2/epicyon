@@ -36,6 +36,7 @@ from utils import isAccountDir
 from utils import acctDir
 from utils import isfloat
 from utils import getCategoryTypes
+from utils import getSharesFilesList
 from media import processMetaData
 from filters import isFilteredGlobally
 from siteactive import siteIsActive
@@ -113,17 +114,22 @@ def _getValidSharedItemID(actor: str, displayName: str) -> str:
 
 def removeSharedItem(baseDir: str, nickname: str, domain: str,
                      itemID: str,
-                     httpPrefix: str, domainFull: str) -> None:
+                     httpPrefix: str, domainFull: str,
+                     sharesFileType: str) -> None:
     """Removes a share for a person
     """
-    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
+    sharesFilename = \
+        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
-        print('ERROR: missing shares.json ' + sharesFilename)
+        print('ERROR: remove shared item, missing ' +
+              sharesFileType + '.json ' + sharesFilename)
         return
 
     sharesJson = loadJson(sharesFilename)
     if not sharesJson:
-        print('ERROR: shares.json could not be loaded from ' + sharesFilename)
+        print('ERROR: remove shared item, ' +
+              sharesFileType + '.json could not be loaded from ' +
+              sharesFilename)
         return
 
     if sharesJson.get(itemID):
@@ -279,7 +285,8 @@ def addShare(baseDir: str,
              itemQty: float, itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool, city: str,
              price: str, currency: str,
-             systemLanguage: str, translate: {}) -> None:
+             systemLanguage: str, translate: {},
+             sharesFileType: str) -> None:
     """Adds a new share
     """
     if isFilteredGlobally(baseDir,
@@ -287,7 +294,8 @@ def addShare(baseDir: str,
                           itemType + ' ' + itemCategory):
         print('Shared item was filtered due to content')
         return
-    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
+    sharesFilename = \
+        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
         sharesJson = loadJson(sharesFilename, 1, 2)
@@ -367,16 +375,20 @@ def expireShares(baseDir: str) -> None:
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
-            _expireSharesForAccount(baseDir, nickname, domain)
+            for sharesFileType in getSharesFilesList():
+                _expireSharesForAccount(baseDir, nickname, domain,
+                                        sharesFileType)
         break
 
 
-def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
+def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
+                            sharesFileType: str) -> None:
     """Removes expired items from shares for a particular account
     """
     handleDomain = removeDomainPort(domain)
     handle = nickname + '@' + handleDomain
-    sharesFilename = baseDir + '/accounts/' + handle + '/shares.json'
+    sharesFilename = \
+        baseDir + '/accounts/' + handle + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         return
     sharesJson = loadJson(sharesFilename, 1, 2)
@@ -403,10 +415,11 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
 def getSharesFeedForPerson(baseDir: str,
                            domain: str, port: int,
                            path: str, httpPrefix: str,
-                           sharesPerPage=12) -> {}:
+                           sharesFileType: str,
+                           sharesPerPage: int = 12) -> {}:
     """Returns the shares for an account from GET requests
     """
-    if '/shares' not in path:
+    if '/' + sharesFileType not in path:
         return None
     # handle page numbers
     headerOnly = True
@@ -423,13 +436,15 @@ def getSharesFeedForPerson(baseDir: str,
         path = path.split('?page=')[0]
         headerOnly = False
 
-    if not path.endswith('/shares'):
+    if not path.endswith('/' + sharesFileType):
         return None
     nickname = None
     if path.startswith('/users/'):
-        nickname = path.replace('/users/', '', 1).replace('/shares', '')
+        nickname = \
+            path.replace('/users/', '', 1).replace('/' + sharesFileType, '')
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace('/shares', '')
+        nickname = \
+            path.replace('/@', '', 1).replace('/' + sharesFileType, '')
     if not nickname:
         return None
     if not validNickname(domain, nickname):
@@ -438,7 +453,9 @@ def getSharesFeedForPerson(baseDir: str,
     domain = getFullDomain(domain, port)
 
     handleDomain = removeDomainPort(domain)
-    sharesFilename = acctDir(baseDir, nickname, handleDomain) + '/shares.json'
+    sharesFilename = \
+        acctDir(baseDir, nickname, handleDomain) + '/' + \
+        sharesFileType + '.json'
 
     if headerOnly:
         noOfShares = 0
@@ -449,8 +466,8 @@ def getSharesFeedForPerson(baseDir: str,
         idStr = httpPrefix + '://' + domain + '/users/' + nickname
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': idStr + '/shares?page=1',
-            'id': idStr + '/shares',
+            'first': idStr + '/' + sharesFileType + '?page=1',
+            'id': idStr + '/' + sharesFileType,
             'totalItems': str(noOfShares),
             'type': 'OrderedCollection'
         }
@@ -463,15 +480,14 @@ def getSharesFeedForPerson(baseDir: str,
     idStr = httpPrefix + '://' + domain + '/users/' + nickname
     shares = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': idStr + '/shares?page=' + str(pageNumber),
+        'id': idStr + '/' + sharesFileType + '?page=' + str(pageNumber),
         'orderedItems': [],
-        'partOf': idStr + '/shares',
+        'partOf': idStr + '/' + sharesFileType,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
 
     if not os.path.isfile(sharesFilename):
-        print("test5")
         return shares
     currPage = 1
     pageCtr = 0
@@ -495,7 +511,7 @@ def getSharesFeedForPerson(baseDir: str,
     if nextPageNumber > lastPage:
         shares['next'] = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
-            '/shares?page=' + str(lastPage)
+            '/' + sharesFileType + '?page=' + str(lastPage)
     return shares
 
 
@@ -816,7 +832,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              debug, city,
              messageJson['object']['itemPrice'],
              messageJson['object']['itemCurrency'],
-             systemLanguage, translate)
+             systemLanguage, translate, 'shares')
     if debug:
         print('DEBUG: shared item received via c2s')
 
@@ -847,7 +863,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
     domainFull = getFullDomain(domain, port)
     removeSharedItem(baseDir, nickname, domain,
                      messageJson['object']['displayName'],
-                     httpPrefix, domainFull)
+                     httpPrefix, domainFull, 'shares')
     if debug:
         print('DEBUG: shared item removed via c2s')
 
@@ -886,7 +902,8 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
 def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  nickname: str, domain: str,
                                  domainFull: str,
-                                 path: str, debug: bool) -> {}:
+                                 path: str, debug: bool,
+                                 sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
     """
@@ -896,7 +913,10 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     dfcPtUrl = \
         "http://static.datafoodconsortium.org/data/productTypes.rdf#"
     owner = httpPrefix + '://' + domainFull + '/users/' + nickname
-    dfcInstanceId = owner + '/catalog'
+    if sharesFileType == 'shares':
+        dfcInstanceId = owner + '/catalog'
+    else:
+        dfcInstanceId = owner + '/wantedItems'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
@@ -911,10 +931,11 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     currDate = datetime.datetime.utcnow()
     currDateStr = currDate.strftime("%Y-%m-%d")
 
-    sharesFilename = acctDir(baseDir, nickname, domain) + '/shares.json'
+    sharesFilename = \
+        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         if debug:
-            print('shares.json file not found: ' + sharesFilename)
+            print(sharesFileType + '.json file not found: ' + sharesFilename)
         return endpoint
     sharesJson = loadJson(sharesFilename, 1, 2)
     if not sharesJson:
@@ -970,7 +991,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
 
 def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           domainFull: str,
-                          path: str) -> {}:
+                          path: str, sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
     """
@@ -1003,7 +1024,8 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
             owner = httpPrefix + '://' + domainFull + '/users/' + nickname
 
             sharesFilename = \
-                acctDir(baseDir, nickname, domain) + '/shares.json'
+                acctDir(baseDir, nickname, domain) + '/' + \
+                sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
             print('Test 78363 ' + sharesFilename)
@@ -1056,11 +1078,12 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
 
 def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
                              domainFull: str,
-                             path: str) -> str:
+                             path: str, sharesFileType: str) -> str:
     """Returns a CSV version of the shares catalog
     """
     catalogJson = \
-        sharesCatalogEndpoint(baseDir, httpPrefix, domainFull, path)
+        sharesCatalogEndpoint(baseDir, httpPrefix, domainFull, path,
+                              sharesFileType)
     if not catalogJson:
         return ''
     if not catalogJson.get('DFC:supplies'):
@@ -1257,7 +1280,8 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
                                 baseDir: str, domainFull: str,
                                 httpPrefix: str,
                                 tokensJson: {}, debug: bool,
-                                systemLanguage: str) -> None:
+                                systemLanguage: str,
+                                sharesFileType: str) -> None:
     """Updates the cache of federated shares for the instance.
     This enables shared items to be available even when other instances
     might not be online
@@ -1266,7 +1290,10 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
     cacheDir = baseDir + '/cache'
     if not os.path.isdir(cacheDir):
         os.mkdir(cacheDir)
-    catalogsDir = cacheDir + '/catalogs'
+    if sharesFileType == 'shares':
+        catalogsDir = cacheDir + '/catalogs'
+    else:
+        catalogsDir = cacheDir + '/wantedItems'
     if not os.path.isdir(catalogsDir):
         os.mkdir(catalogsDir)
 
@@ -1285,7 +1312,10 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
             continue
         if not siteIsActive(httpPrefix + '://' + federatedDomainFull):
             continue
-        url = httpPrefix + '://' + federatedDomainFull + '/catalog'
+        if sharesFileType == 'shares':
+            url = httpPrefix + '://' + federatedDomainFull + '/catalog'
+        else:
+            url = httpPrefix + '://' + federatedDomainFull + '/wantedItems'
         asHeader['Authorization'] = tokensJson[federatedDomainFull]
         catalogJson = getJson(session, url, asHeader, None,
                               debug, __version__, httpPrefix, None)
@@ -1300,7 +1330,8 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
                                             baseDir, systemLanguage)
             if sharesJson:
                 sharesFilename = \
-                    catalogsDir + '/' + federatedDomainFull + '.shares.json'
+                    catalogsDir + '/' + federatedDomainFull + '.' + \
+                    sharesFileType + '.json'
                 saveJson(sharesJson, sharesFilename)
                 print('Converted shares catalog for ' + federatedDomainFull)
         else:
@@ -1441,9 +1472,11 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
             continue
 
         session = createSession(proxyType)
-        _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
-                                    baseDir, domainFull, httpPrefix,
-                                    tokensJson, debug, systemLanguage)
+        for sharesFileType in getSharesFilesList():
+            _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
+                                        baseDir, domainFull, httpPrefix,
+                                        tokensJson, debug, systemLanguage,
+                                        sharesFileType)
         time.sleep(secondsPerHour * 6)
 
 

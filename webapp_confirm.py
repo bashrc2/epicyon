@@ -105,19 +105,21 @@ def htmlConfirmDelete(cssCache: {},
 
 def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
                                 actor: str, itemID: str,
-                                callingDomain: str) -> str:
+                                callingDomain: str,
+                                sharesFileType: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
-    sharesFile = acctDir(baseDir, nickname, domain) + '/shares.json'
+    sharesFile = \
+        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFile):
-        print('ERROR: no shares file ' + sharesFile)
+        print('ERROR: no ' + sharesFileType + ' file ' + sharesFile)
         return None
     sharesJson = loadJson(sharesFile)
     if not sharesJson:
-        print('ERROR: unable to load shares.json')
+        print('ERROR: unable to load ' + sharesFileType + '.json')
         return None
     if not sharesJson.get(itemID):
         print('ERROR: share named "' + itemID + '" is not in ' + sharesFile)
@@ -148,7 +150,12 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>\n'
     postActor = getAltPath(actor, domainFull, callingDomain)
-    sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">\n'
+    if sharesFileType == 'shares':
+        endpoint = 'rmshare'
+    else:
+        endpoint = 'rmwanted'
+    sharesStr += \
+        '  <form method="POST" action="' + postActor + '/' + endpoint + '">\n'
     sharesStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     sharesStr += '    <input type="hidden" name="itemID" value="' + \

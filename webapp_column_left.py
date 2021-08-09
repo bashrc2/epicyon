@@ -43,7 +43,7 @@ def _getLeftColumnShares(baseDir: str,
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
                            baseDir, domain, nickname, maxSharesInLeftColumn,
-                           sharedItemsFederatedDomains)
+                           sharedItemsFederatedDomains, 'shares')
     if not sharesJson:
         return []
 

@@ -340,7 +340,8 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                        baseDir: str, domain: str, nickname: str,
                        maxSharesPerAccount: int,
-                       sharedItemsFederatedDomains: []) -> ({}, bool):
+                       sharedItemsFederatedDomains: [],
+                       sharesFileType: str) -> ({}, bool):
     """Get a page on the shared items timeline as json
     maxSharesPerAccount helps to avoid one person dominating the timeline
     by sharing a large number of things
@@ -351,7 +352,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
             if not isAccountDir(handle):
                 continue
             accountDir = baseDir + '/accounts/' + handle
-            sharesFilename = accountDir + '/shares.json'
+            sharesFilename = accountDir + '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
             sharesJson = loadJson(sharesFilename)
@@ -376,13 +377,16 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                     break
         break
     if sharedItemsFederatedDomains:
-        catalogsDir = baseDir + '/cache/catalogs'
+        if sharesFileType == 'shares':
+            catalogsDir = baseDir + '/cache/catalogs'
+        else:
+            catalogsDir = baseDir + '/cache/wantedItems'
         if os.path.isdir(catalogsDir):
             for subdir, dirs, files in os.walk(catalogsDir):
                 for f in files:
                     if '#' in f:
                         continue
-                    if not f.endswith('.shares.json'):
+                    if not f.endswith('.' + sharesFileType + '.json'):
                         continue
                     federatedDomain = f.split('.')[0]
                     if federatedDomain not in sharedItemsFederatedDomains:
@@ -1342,7 +1346,8 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
                   httpPrefix: str, domainFull: str,
                   itemID: str, translate: {},
                   sharedItemsFederatedDomains: [],
-                  defaultTimeline: str, theme: str) -> str:
+                  defaultTimeline: str, theme: str,
+                  sharesFileType: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
     sharesJson = None
@@ -1355,20 +1360,24 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     if '://' + domainFull + '/' in shareUrl:
         # shared item on this instance
         sharesFilename = \
-            acctDir(baseDir, contactNickname, domain) + '/shares.json'
+            acctDir(baseDir, contactNickname, domain) + '/' + \
+            sharesFileType + '.json'
         if not os.path.isfile(sharesFilename):
             return None
         sharesJson = loadJson(sharesFilename)
     else:
         # federated shared item
-        catalogsDir = baseDir + '/cache/catalogs'
+        if sharesFileType == 'shares':
+            catalogsDir = baseDir + '/cache/catalogs'
+        else:
+            catalogsDir = baseDir + '/cache/wantedItems'
         if not os.path.isdir(catalogsDir):
             return None
         for subdir, dirs, files in os.walk(catalogsDir):
             for f in files:
                 if '#' in f:
                     continue
-                if not f.endswith('.shares.json'):
+                if not f.endswith('.' + sharesFileType + '.json'):
                     continue
                 federatedDomain = f.split('.')[0]
                 if federatedDomain not in sharedItemsFederatedDomains:
