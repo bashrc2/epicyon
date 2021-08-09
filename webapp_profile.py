@@ -751,10 +751,6 @@ def htmlProfile(rssIconAtTop: bool,
         htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
     menuSkills = \
         htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
-    menuShares = \
-        htmlHideFromScreenReader('🤝') + ' ' + translate['Shares']
-    menuWanted = \
-        htmlHideFromScreenReader('⛱') + ' ' + translate['Wanted']
     menuLogout = \
         htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
     navLinks = {
@@ -764,8 +760,6 @@ def htmlProfile(rssIconAtTop: bool,
         menuFollowers: userPathStr + '/followers#timeline',
         menuRoles: userPathStr + '/roles#timeline',
         menuSkills: userPathStr + '/skills#timeline',
-        menuShares: userPathStr + '/shares#timeline',
-        menuWanted: userPathStr + '/wanted#timeline',
         menuLogout: '/logout'
     }
     navAccessKeys = {}
@@ -801,14 +795,14 @@ def htmlProfile(rssIconAtTop: bool,
         '    <a href="' + usersPath + '/skills#buttonheader">' + \
         '<button class="' + skillsButton + '"><span>' + \
         translate['Skills'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/shares#buttonheader">' + \
-        '<button class="' + sharesButton + '"><span>' + \
-        translate['Shares'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/wanted#buttonheader">' + \
-        '<button class="' + wantedButton + '"><span>' + \
-        translate['Wanted'] + ' </span></button></a>'
+#    profileStr += \
+#        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+#        '<button class="' + sharesButton + '"><span>' + \
+#        translate['Shares'] + ' </span></button></a>'
+#    profileStr += \
+#        '    <a href="' + usersPath + '/wanted#buttonheader">' + \
+#        '<button class="' + wantedButton + '"><span>' + \
+#        translate['Wanted'] + ' </span></button></a>'
     profileStr += logoutStr + editProfileStr
     profileStr += '  </center>'
     profileStr += '</div>'
