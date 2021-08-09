@@ -461,5 +461,15 @@
     "Shares Catalog": "Condivide il catalogo",
     "tool": "attrezzo",
     "clothes": "abiti",
-    "medical": "medica"
+    "medical": "medica",
+    "Wanted": "Ricercata",
+    "Describe something wanted": "Descrivi qualcosa di ricercato",
+    "Enter the details for your wanted item below.": "Inserisci i dettagli per l'articolo desiderato di seguito.",
+    "Name of the wanted item": "Nome dell'articolo desiderato",
+    "Description of the item wanted": "Descrizione dell'articolo desiderato",
+    "Type of wanted item. eg. hat": "Tipo di articolo desiderato. per esempio. cappello",
+    "Category of wanted item. eg. clothes": "Categoria dell'oggetto ricercato. per esempio. Abiti",
+    "City or location of the wanted item": "Città o posizione dell'articolo desiderato",
+    "Maximum Price": "Prezzo massimo",
+    "Create a new wanted item": "Crea un nuovo oggetto ricercato"
 }

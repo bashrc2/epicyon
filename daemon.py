@@ -157,6 +157,7 @@ from webapp_confirm import htmlConfirmRemoveSharedItem
 from webapp_confirm import htmlConfirmUnblock
 from webapp_person_options import htmlPersonOptions
 from webapp_timeline import htmlShares
+from webapp_timeline import htmlWanted
 from webapp_timeline import htmlInbox
 from webapp_timeline import htmlBookmarks
 from webapp_timeline import htmlInboxDMs
@@ -3398,6 +3399,73 @@ class PubServer(BaseHTTPRequestHandler):
         elif (callingDomain.endswith('.i2p') and i2pDomain):
             originPathStr = 'http://' + i2pDomain + usersPath
         self._redirect_headers(originPathStr + '/tlshares',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _removeWanted(self, callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str,
+                      onionDomain: str, i2pDomain: str,
+                      debug: bool) -> None:
+        """Removes a wanted item
+        """
+        usersPath = path.split('/rmwanted')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            removeShareConfirmParams = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST removeShareConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST removeShareConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST removeShareConfirmParams rfile.read failed, ' +
+                  str(e))
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in removeShareConfirmParams and authorized:
+            removeShareConfirmParams = \
+                removeShareConfirmParams.replace('+', ' ').strip()
+            removeShareConfirmParams = \
+                urllib.parse.unquote_plus(removeShareConfirmParams)
+            shareActor = removeShareConfirmParams.split('actor=')[1]
+            if '&' in shareActor:
+                shareActor = shareActor.split('&')[0]
+            adminNickname = getConfigParam(baseDir, 'admin')
+            adminActor = \
+                httpPrefix + '://' + domainFull + '/users' + adminNickname
+            actor = originPathStr
+            actorNickname = getNicknameFromActor(actor)
+            if actor == shareActor or actor == adminActor or \
+               isModerator(baseDir, actorNickname):
+                itemID = removeShareConfirmParams.split('itemID=')[1]
+                if '&' in itemID:
+                    itemID = itemID.split('&')[0]
+                shareNickname = getNicknameFromActor(shareActor)
+                if shareNickname:
+                    shareDomain, sharePort = getDomainFromActor(shareActor)
+                    removeSharedItem(baseDir,
+                                     shareNickname, shareDomain, itemID,
+                                     httpPrefix, domainFull, 'wanted')
+
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr + '/tlwanted',
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -9099,6 +9167,87 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
+    def _showWantedTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the wanted timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlwanted', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
+                    msg = \
+                        htmlWanted(self.server.cssCache,
+                                   self.server.defaultTimeline,
+                                   self.server.recentPostsCache,
+                                   self.server.maxRecentPosts,
+                                   self.server.translate,
+                                   pageNumber, maxPostsInFeed,
+                                   self.server.session,
+                                   baseDir,
+                                   self.server.cachedWebfingers,
+                                   self.server.personCache,
+                                   nickname,
+                                   domain,
+                                   port,
+                                   self.server.allowDeletion,
+                                   httpPrefix,
+                                   self.server.projectVersion,
+                                   self.server.YTReplacementDomain,
+                                   self.server.showPublishedDateOnly,
+                                   self.server.newswire,
+                                   self.server.positiveVoting,
+                                   self.server.showPublishAsIcon,
+                                   self.server.fullWidthTimelineButtonHeader,
+                                   self.server.iconsAsButtons,
+                                   self.server.rssIconAtTop,
+                                   self.server.publishButtonAtTop,
+                                   authorized, self.server.themeName,
+                                   self.server.peertubeInstances,
+                                   self.server.allowLocalNetworkAccess,
+                                   self.server.textModeBanner,
+                                   accessKeys,
+                                   self.server.systemLanguage,
+                                   self.server.maxLikeCount,
+                                   self.server.sharedItemsFederatedDomains)
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/html', msglen,
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show wanted 2')
+                    self.server.GETbusy = False
+                    return True
+        # not the shares timeline
+        if debug:
+            print('DEBUG: GET access to wanted timeline is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
     def _showBookmarksTimeline(self, authorized: bool,
                                callingDomain: str, path: str,
                                baseDir: str, httpPrefix: str,
@@ -10447,7 +10596,7 @@ class PubServer(BaseHTTPRequestHandler):
             newPostEnd = ('newpost', 'newblog', 'newunlisted',
                           'newfollowers', 'newdm', 'newreminder',
                           'newreport', 'newquestion',
-                          'newshare')
+                          'newshare', 'newwanted')
             for postType in newPostEnd:
                 if path.endswith('/' + postType):
                     isNewPostEndpoint = True
@@ -11387,6 +11536,40 @@ class PubServer(BaseHTTPRequestHandler):
                                       'htmlShowShare')
             return
 
+        # after selecting a wanted item from the left column then show it
+        if htmlGET and '?showwanted=' in self.path and '/users/' in self.path:
+            itemID = self.path.split('?showwanted=')[1]
+            usersPath = self.path.split('?showwanted=')[0]
+            nickname = usersPath.replace('/users/', '')
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            msg = \
+                htmlShowShare(self.server.baseDir,
+                              self.server.domain, nickname,
+                              self.server.httpPrefix, self.server.domainFull,
+                              itemID, self.server.translate,
+                              self.server.sharedItemsFederatedDomains,
+                              self.server.defaultTimeline,
+                              self.server.themeName, 'wanted')
+            if not msg:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'http://' + self.server.i2pDomain + usersPath
+                self._redirect_headers(actor + '/tlwanted',
+                                       cookie, callingDomain)
+                return
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'htmlShowWanted')
+            return
+
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             itemID = self.path.split('?rmshare=')[1]
@@ -11408,6 +11591,39 @@ class PubServer(BaseHTTPRequestHandler):
                       self.server.i2pDomain):
                     actor = 'http://' + self.server.i2pDomain + usersPath
                 self._redirect_headers(actor + '/tlshares',
+                                       cookie, callingDomain)
+                return
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'remove shared item')
+            return
+
+        # remove a wanted item
+        if htmlGET and '?rmwanted=' in self.path:
+            itemID = self.path.split('?rmwanted=')[1]
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            usersPath = self.path.split('?rmwanted=')[0]
+            actor = \
+                self.server.httpPrefix + '://' + \
+                self.server.domainFull + usersPath
+            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+                                              self.server.translate,
+                                              self.server.baseDir,
+                                              actor, itemID,
+                                              callingDomain, 'wanted')
+            if not msg:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'http://' + self.server.i2pDomain + usersPath
+                self._redirect_headers(actor + '/tlwanted',
                                        cookie, callingDomain)
                 return
             msg = msg.encode('utf-8')
@@ -12996,6 +13212,22 @@ class PubServer(BaseHTTPRequestHandler):
                                         cookie, self.server.debug):
                 return
 
+        # get the wanted items timeline for a given person
+        if self.path.endswith('/tlwanted') or '/tlwanted?page=' in self.path:
+            if self._showWantedTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show blogs 2 done',
                                   'show shares 2 done')
@@ -13955,7 +14187,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
                 return -1
-            elif postType == 'newshare':
+            elif postType == 'newshare' or postType == 'newwanted':
                 if not fields.get('itemQty'):
                     print(postType + ' no itemQty')
                     return -1
@@ -13997,7 +14229,12 @@ class PubServer(BaseHTTPRequestHandler):
                         getPriceFromString(fields['itemPrice'])
                 if fields['itemCurrency']:
                     itemCurrency = fields['itemCurrency']
-                print('Adding shared item')
+                if postType == 'newshare':
+                    print('Adding shared item')
+                    sharesFileType = 'shares'
+                else:
+                    print('Adding wanted item')
+                    sharesFileType = 'wanted'
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
@@ -14012,7 +14249,7 @@ class PubServer(BaseHTTPRequestHandler):
                          self.server.debug,
                          city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
-                         self.server.translate, 'shares')
+                         self.server.translate, sharesFileType)
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)
@@ -14540,6 +14777,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug)
                 return
 
+            # removes a wanted item
+            if self.path.endswith('/rmwanted'):
+                self._removeWanted(callingDomain, cookie,
+                                   authorized, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug)
+                return
+
             self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
 
             # removes a post
@@ -14717,8 +14967,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
-                     "newdm", "newreport", "newshare", "newquestion",
-                     "editblogpost", "newreminder")
+                     "newdm", "newreport", "newshare", "newwanted",
+                     "newquestion", "editblogpost", "newreminder")
         for currPostType in postTypes:
             if not authorized:
                 if self.server.debug:
@@ -14728,6 +14978,8 @@ class PubServer(BaseHTTPRequestHandler):
             postRedirect = self.server.defaultTimeline
             if currPostType == 'newshare':
                 postRedirect = 'shares'
+            elif currPostType == 'newwanted':
+                postRedirect = 'wanted'
 
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
@@ -15233,8 +15485,9 @@ def runDaemon(maxLikeCount: int,
         'menuOutbox': 's',
         'menuBookmarks': 'q',
         'menuShares': 'h',
+        'menuWanted': 'w',
         'menuBlogs': 'b',
-        'menuNewswire': 'w',
+        'menuNewswire': 'u',
         'menuLinks': 'l',
         'menuMedia': 'm',
         'menuModeration': 'o',

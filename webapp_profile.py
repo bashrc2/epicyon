@@ -750,6 +750,8 @@ def htmlProfile(rssIconAtTop: bool,
         htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
     menuShares = \
         htmlHideFromScreenReader('🤝') + ' ' + translate['Shares']
+    menuWanted = \
+        htmlHideFromScreenReader('⛱') + ' ' + translate['Wanted']
     menuLogout = \
         htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
     navLinks = {
@@ -760,6 +762,7 @@ def htmlProfile(rssIconAtTop: bool,
         menuRoles: userPathStr + '/roles#timeline',
         menuSkills: userPathStr + '/skills#timeline',
         menuShares: userPathStr + '/shares#timeline',
+        menuWanted: userPathStr + '/wanted#timeline',
         menuLogout: '/logout'
     }
     navAccessKeys = {}

@@ -461,5 +461,15 @@
     "Shares Catalog": "Inashiriki orodha",
     "tool": "chombo",
     "clothes": "nguo",
-    "medical": "matibabu"
+    "medical": "matibabu",
+    "Wanted": "Alitaka",
+    "Describe something wanted": "Eleza kitu kinachotaka",
+    "Enter the details for your wanted item below.": "Ingiza maelezo ya kitu unachotafuta hapa chini.",
+    "Name of the wanted item": "Jina la kitu kinachotafutwa",
+    "Description of the item wanted": "Maelezo ya bidhaa inayotakiwa",
+    "Type of wanted item. eg. hat": "Aina ya bidhaa inayotafutwa. km. kofia",
+    "Category of wanted item. eg. clothes": "Jamii ya bidhaa inayotafutwa. km. nguo",
+    "City or location of the wanted item": "Jiji au eneo la kitu kinachotafutwa",
+    "Maximum Price": "Bei ya juu",
+    "Create a new wanted item": "Unda kipengee kipya kinachotafutwa"
 }

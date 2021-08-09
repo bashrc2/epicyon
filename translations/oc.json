@@ -457,5 +457,15 @@
     "Shares Catalog": "Shares Catalog",
     "tool": "tool",
     "clothes": "clothes",
-    "medical": "medical"
+    "medical": "medical",
+    "Wanted": "Wanted",
+    "Describe something wanted": "Describe something wanted",
+    "Enter the details for your wanted item below.": "Enter the details for your wanted item below.",
+    "Name of the wanted item": "Name of the wanted item",
+    "Description of the item wanted": "Description of the item wanted",
+    "Type of wanted item. eg. hat": "Type of wanted item. eg. hat",
+    "Category of wanted item. eg. clothes": "Category of wanted item. eg. clothes",
+    "City or location of the wanted item": "City or location of the wanted item",
+    "Maximum Price": "Maximum Price",
+    "Create a new wanted item": "Create a new wanted item"
 }

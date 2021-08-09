@@ -461,5 +461,15 @@
     "Shares Catalog": "Kataloga Shares",
     "tool": "hacet",
     "clothes": "lebas",
-    "medical": "pizişkî"
+    "medical": "pizişkî",
+    "Wanted": "Xwestin",
+    "Describe something wanted": "Tiştek xwestin diyar bikin",
+    "Enter the details for your wanted item below.": "Li jêr hûrguliyên tiştê ku we dixwest binivîsin.",
+    "Name of the wanted item": "Navê tiştê tê xwestin",
+    "Description of the item wanted": "Danasîna tiştê xwestî",
+    "Type of wanted item. eg. hat": "Tîpa tiştê xwestî. mînak. kûm",
+    "Category of wanted item. eg. clothes": "Kategoriya tiştê xwestî. mînak. cilan",
+    "City or location of the wanted item": "Bajar an cîhê tiştê xwestî",
+    "Maximum Price": "Maximum Price",
+    "Create a new wanted item": "Tiştek xwestî ya nû biafirînin"
 }

@@ -461,5 +461,15 @@
     "Shares Catalog": "カタログを共有します",
     "tool": "道具",
     "clothes": "服",
-    "medical": "医学"
+    "medical": "医学",
+    "Wanted": "欲しかった",
+    "Describe something wanted": "必要なものを説明してください",
+    "Enter the details for your wanted item below.": "必要なアイテムの詳細を以下に入力してください。",
+    "Name of the wanted item": "欲しいアイテムの名前",
+    "Description of the item wanted": "欲しいアイテムの説明",
+    "Type of wanted item. eg. hat": "欲しいアイテムの種類。 例えば。 帽子",
+    "Category of wanted item. eg. clothes": "欲しいアイテムのカテゴリー。 例えば。 服",
+    "City or location of the wanted item": "欲しいアイテムの都市または場所",
+    "Maximum Price": "最高価格",
+    "Create a new wanted item": "新しい欲しいアイテムを作成する"
 }

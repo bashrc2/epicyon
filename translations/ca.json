@@ -461,5 +461,15 @@
     "Shares Catalog": "Catàleg d'accions",
     "tool": "eina",
     "clothes": "roba",
-    "medical": "mèdic"
+    "medical": "mèdic",
+    "Wanted": "Volia",
+    "Describe something wanted": "Descriviu alguna cosa que volgués",
+    "Enter the details for your wanted item below.": "Introduïu els detalls de l'article que voleu a continuació.",
+    "Name of the wanted item": "Nom de l'element desitjat",
+    "Description of the item wanted": "Descripció de l'element desitjat",
+    "Type of wanted item. eg. hat": "Tipus d'article desitjat. per exemple. barret",
+    "Category of wanted item. eg. clothes": "Categoria de l'article desitjat. per exemple. roba",
+    "City or location of the wanted item": "Ciutat o ubicació de l’article desitjat",
+    "Maximum Price": "Preu màxim",
+    "Create a new wanted item": "Creeu un element desitjat"
 }

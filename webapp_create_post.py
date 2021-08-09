@@ -165,6 +165,13 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             translate['Describe a shared item'] + '</a></li>\n'
         dropDownContent += \
             '<li><a href="' + pathBase + \
+            '/newwanted" accesskey="' + accessKeys['menuWanted'] + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
+            'icons/scope_wanted.png"/><b>' + \
+            translate['Wanted'] + '</b><br>' + \
+            translate['Describe something wanted'] + '</a></li>\n'
+        dropDownContent += \
+            '<li><a href="' + pathBase + \
             '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_question.png"/><b>' + \
             translate['Question'] + '</b><br>' + \
@@ -198,7 +205,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
 
-    if not path.endswith('/newshare'):
+    if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
                 newPostText = '<h1>' + \
@@ -251,10 +258,16 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 ' <a href="/terms">' + \
                 translate['Terms of Service'] + '</a></p>\n'
     else:
-        newPostText = \
-            '<h1>' + \
-            translate['Enter the details for your shared item below.'] + \
-            '</h1>\n'
+        if path.endswith('/newshare'):
+            newPostText = \
+                '<h1>' + \
+                translate['Enter the details for your shared item below.'] + \
+                '</h1>\n'
+        else:
+            newPostText = \
+                '<h1>' + \
+                translate['Enter the details for your wanted item below.'] + \
+                '</h1>\n'
 
     if path.endswith('/newquestion'):
         newPostText = \
@@ -275,7 +288,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         path = path.split('?')[0]
     pathBase = path.replace('/newreport', '').replace('/newpost', '')
     pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
-    pathBase = pathBase.replace('/newunlisted', '')
+    pathBase = pathBase.replace('/newunlisted', '').replace('/newwanted', '')
     pathBase = pathBase.replace('/newreminder', '')
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
@@ -415,6 +428,71 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '  </select>\n'
 
         extraFields += '</div>\n'
+    elif path.endswith('/newwanted'):
+        scopeIcon = 'scope_wanted.png'
+        scopeDescription = translate['Wanted']
+        placeholderSubject = translate['Name of the wanted item'] + '...'
+        placeholderMessage = \
+            translate['Description of the item wanted'] + '...'
+        endpoint = 'newwanted'
+        extraFields = '<div class="container">\n'
+        extraFields += \
+            editNumberField(translate['Quantity'],
+                            'itemQty', 1, 1, 999999, 1)
+        extraFields += '<br>' + \
+            editTextField(translate['Type of wanted item. eg. hat'] + ':',
+                          'itemType', '', '', True)
+        categoryTypes = getCategoryTypes(baseDir)
+        catStr = translate['Category of wanted item. eg. clothes']
+        extraFields += '<label class="labels">' + catStr + '</label><br>\n'
+
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="category" class="theme">\n'
+        for category in categoryTypes:
+            translatedCategory = "food"
+            if translate.get(category):
+                translatedCategory = translate[category]
+            extraFields += '    <option value="' + \
+                translatedCategory + '">' + \
+                translatedCategory + '</option>\n'
+
+        extraFields += '  </select><br>\n'
+        extraFields += \
+            editNumberField(translate['Duration of listing in days'],
+                            'duration', 14, 1, 365, 1)
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
+        cityOrLocStr = translate['City or location of the wanted item']
+        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
+        extraFields += \
+            editCurrencyField(translate['Maximum Price'] + ':',
+                              'itemPrice', '0.00', '0.00', True)
+        extraFields += '<br>'
+        extraFields += \
+            '<label class="labels">' + translate['Currency'] + '</label><br>\n'
+        currencies = getCurrencies()
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="itemCurrency" class="theme">\n'
+        currencyList = []
+        for symbol, currName in currencies.items():
+            currencyList.append(currName + ' ' + symbol)
+        currencyList.sort()
+        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+        if not defaultCurrency:
+            defaultCurrency = "EUR"
+        for currName in currencyList:
+            if defaultCurrency not in currName:
+                extraFields += '    <option value="' + \
+                    currName + '">' + currName + '</option>\n'
+            else:
+                extraFields += '    <option value="' + \
+                    currName + '" selected="selected">' + \
+                    currName + '</option>\n'
+        extraFields += '  </select>\n'
+
+        extraFields += '</div>\n'
 
     citationsStr = ''
     if endpoint == 'newblog':
@@ -444,6 +522,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     dateAndLocation = ''
     if endpoint != 'newshare' and \
+       endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
         dateAndLocation = \

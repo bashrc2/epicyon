@@ -34,6 +34,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                           minimal: bool,
                           sentButton: str,
                           sharesButtonStr: str,
+                          wantedButtonStr: str,
                           bookmarksButtonStr: str,
                           eventsButtonStr: str,
                           moderationButtonStr: str,
@@ -210,7 +211,8 @@ def headerButtonsTimeline(defaultTimeline: str,
 
         # add other buttons
         tlStr += \
-            sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
+            sharesButtonStr + wantedButtonStr + bookmarksButtonStr + \
+            eventsButtonStr + \
             moderationButtonStr + happeningStr + newPostButtonStr
 
     if not featuresHeader:

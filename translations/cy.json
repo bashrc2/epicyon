@@ -461,5 +461,15 @@
     "Shares Catalog": "Catalog Cyfranddaliadau",
     "tool": "hofferyn",
     "clothes": "ddillad",
-    "medical": "meddygol"
+    "medical": "meddygol",
+    "Wanted": "Am",
+    "Describe something wanted": "Disgrifio rhywbeth ei eisiau",
+    "Enter the details for your wanted item below.": "Rhowch y manylion ar gyfer eich eitem eisiau isod.",
+    "Name of the wanted item": "Enw'r eitem sydd ei eisiau",
+    "Description of the item wanted": "Disgrifiad o'r eitem eisiau",
+    "Type of wanted item. eg. hat": "Math o eitem eisiau. ee. het",
+    "Category of wanted item. eg. clothes": "Categori yr eitem sydd ei eisiau. ee. dillad",
+    "City or location of the wanted item": "Dinas neu leoliad yr eitem sydd ei eisiau",
+    "Maximum Price": "Uchafswm Pris",
+    "Create a new wanted item": "Creu eitem newydd ei heisiau"
 }

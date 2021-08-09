@@ -461,5 +461,15 @@
     "Shares Catalog": "Scaireanna Catalóg",
     "tool": "uirlis",
     "clothes": "éadaí",
-    "medical": "scrúdú dochtúra"
+    "medical": "scrúdú dochtúra",
+    "Wanted": "Theastaigh",
+    "Describe something wanted": "Déan cur síos ar rud éigin a theastaíonn",
+    "Enter the details for your wanted item below.": "Iontráil sonraí do mhír atá uait.",
+    "Name of the wanted item": "Ainm an earra a theastaigh",
+    "Description of the item wanted": "Tuairisc ar an mír a theastaigh",
+    "Type of wanted item. eg. hat": "Cineál earra a theastaigh. m.sh. hata",
+    "Category of wanted item. eg. clothes": "Catagóir an earra a theastaigh. m.sh. éadaí",
+    "City or location of the wanted item": "Cathair nó suíomh an earra a theastaigh",
+    "Maximum Price": "Uasphraghas",
+    "Create a new wanted item": "Cruthaigh mír nua a theastaigh"
 }

@@ -461,5 +461,15 @@
     "Shares Catalog": "Aktienkatalog",
     "tool": "werkzeug",
     "clothes": "kleidung",
-    "medical": "medizinisch"
+    "medical": "medizinisch",
+    "Wanted": "Gesucht",
+    "Describe something wanted": "Beschreibe etwas gewünscht",
+    "Enter the details for your wanted item below.": "Geben Sie unten die Details zu Ihrem gewünschten Artikel ein.",
+    "Name of the wanted item": "Name des gesuchten Artikels",
+    "Description of the item wanted": "Beschreibung des gesuchten Artikels",
+    "Type of wanted item. eg. hat": "Art des gesuchten Artikels. z.B. Hut",
+    "Category of wanted item. eg. clothes": "Kategorie des gesuchten Artikels. z.B. Kleidung",
+    "City or location of the wanted item": "Stadt oder Ort des gesuchten Artikels",
+    "Maximum Price": "Höchstpreis",
+    "Create a new wanted item": "Erstelle einen neuen gesuchten Artikel"
 }

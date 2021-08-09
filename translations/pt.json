@@ -461,5 +461,15 @@
     "Shares Catalog": "Catálogo de ações",
     "tool": "ferramenta",
     "clothes": "roupas",
-    "medical": "médica"
+    "medical": "médica",
+    "Wanted": "Procurada",
+    "Describe something wanted": "Descreva algo queria",
+    "Enter the details for your wanted item below.": "Insira os detalhes do item desejado abaixo.",
+    "Name of the wanted item": "Nome do item desejado",
+    "Description of the item wanted": "Descrição do item desejado",
+    "Type of wanted item. eg. hat": "Tipo de item desejado. por exemplo. chapéu",
+    "Category of wanted item. eg. clothes": "Categoria do item desejado. por exemplo. roupas",
+    "City or location of the wanted item": "Cidade ou localização do item desejado",
+    "Maximum Price": "Preço Máximo",
+    "Create a new wanted item": "Crie um novo item desejado"
 }

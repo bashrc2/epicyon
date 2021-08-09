@@ -461,5 +461,15 @@
     "Shares Catalog": "शेयर कैटलॉग",
     "tool": "साधन",
     "clothes": "कपड़े",
-    "medical": "मेडिकल"
+    "medical": "मेडिकल",
+    "Wanted": "वांछित",
+    "Describe something wanted": "कुछ चाहते थे का वर्णन करें",
+    "Enter the details for your wanted item below.": "अपनी वांछित वस्तु का विवरण नीचे दर्ज करें।",
+    "Name of the wanted item": "वांछित वस्तु का नाम",
+    "Description of the item wanted": "वांछित वस्तु का विवरण",
+    "Type of wanted item. eg. hat": "वांछित वस्तु का प्रकार। उदाहरण के लिए टोपी",
+    "Category of wanted item. eg. clothes": "वांछित वस्तु की श्रेणी। उदाहरण के लिए कपड़े",
+    "City or location of the wanted item": "वांछित वस्तु का शहर या स्थान",
+    "Maximum Price": "अधिकतम मूल्य",
+    "Create a new wanted item": "एक नई वांछित वस्तु बनाएँ"
 }

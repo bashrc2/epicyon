@@ -461,5 +461,15 @@
     "Shares Catalog": "كتالوج الأسهم",
     "tool": "أداة",
     "clothes": "ملابس",
-    "medical": "طبي"
+    "medical": "طبي",
+    "Wanted": "مطلوب",
+    "Describe something wanted": "وصف شيء مطلوب",
+    "Enter the details for your wanted item below.": "أدخل تفاصيل العنصر المطلوب أدناه.",
+    "Name of the wanted item": "اسم العنصر المطلوب",
+    "Description of the item wanted": "وصف العنصر المطلوب",
+    "Type of wanted item. eg. hat": "نوع الشيء المطلوب. على سبيل المثال قبعة",
+    "Category of wanted item. eg. clothes": "فئة العنصر المطلوب. على سبيل المثال ملابس",
+    "City or location of the wanted item": "مدينة أو موقع العنصر المطلوب",
+    "Maximum Price": "السعر الأقصى",
+    "Create a new wanted item": "قم بإنشاء عنصر مطلوب جديد"
 }

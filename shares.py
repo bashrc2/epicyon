@@ -253,7 +253,7 @@ def _getshareTypeFromDfcId(dfcUri: str, dfcIds: {}) -> str:
 
 def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
                                nickname: str, domain: str,
-                               domainFull: str) -> None:
+                               domainFull: str, sharesFileType: str) -> None:
     """Indicate to each account that a new share is available
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
@@ -261,7 +261,10 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
             if not isAccountDir(handle):
                 continue
             accountDir = baseDir + '/accounts/' + handle
-            newShareFile = accountDir + '/.newShare'
+            if sharesFileType == 'shares':
+                newShareFile = accountDir + '/.newShare'
+            else:
+                newShareFile = accountDir + '/.newWanted'
             if os.path.isfile(newShareFile):
                 continue
             accountNickname = handle.split('@')[0]
@@ -272,8 +275,12 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
                     continue
             try:
                 with open(newShareFile, 'w+') as fp:
-                    fp.write(httpPrefix + '://' + domainFull +
-                             '/users/' + accountNickname + '/tlshares')
+                    if sharesFileType == 'shares':
+                        fp.write(httpPrefix + '://' + domainFull +
+                                 '/users/' + accountNickname + '/tlshares')
+                    else:
+                        fp.write(httpPrefix + '://' + domainFull +
+                                 '/users/' + accountNickname + '/tlwanted')
             except BaseException:
                 pass
         break
@@ -363,7 +370,8 @@ def addShare(baseDir: str,
     saveJson(sharesJson, sharesFilename)
 
     _indicateNewShareAvailable(baseDir, httpPrefix,
-                               nickname, domain, domainFull)
+                               nickname, domain, domainFull,
+                               sharesFileType)
 
 
 def expireShares(baseDir: str) -> None:
