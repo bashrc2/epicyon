@@ -11059,6 +11059,99 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return
 
+        # wanted items catalog for this instance
+        # this is only accessible to instance members or to
+        # other instances which present an authorization token
+        if self.path.startswith('/wantedItems') or \
+           (self.path.startswith('/users/') and '/wantedItems' in self.path):
+            catalogAuthorized = authorized
+            if not catalogAuthorized:
+                if self.server.debug:
+                    print('Wanted catalog access is not authorized. ' +
+                          'Checking Authorization header')
+                # Check the authorization token
+                if self.headers.get('Origin') and \
+                   self.headers.get('Authorization'):
+                    permittedDomains = \
+                        self.server.sharedItemsFederatedDomains
+                    sharedItemTokens = self.server.sharedItemFederationTokens
+                    if authorizeSharedItems(permittedDomains,
+                                            self.server.baseDir,
+                                            self.headers['Origin'],
+                                            callingDomain,
+                                            self.headers['Authorization'],
+                                            self.server.debug,
+                                            sharedItemTokens):
+                        catalogAuthorized = True
+                    elif self.server.debug:
+                        print('Authorization token refused for ' +
+                              'wanted items federation')
+                elif self.server.debug:
+                    print('No Authorization header is available for ' +
+                          'wanted items federation')
+            # show wanted items catalog for federation
+            if self._hasAccept(callingDomain) and catalogAuthorized:
+                catalogType = 'json'
+                if self.path.endswith('.csv') or self._requestCSV():
+                    catalogType = 'csv'
+                elif self.path.endswith('.json') or not self._requestHTTP():
+                    catalogType = 'json'
+                if self.server.debug:
+                    print('Preparing DFC wanted catalog in format ' +
+                          catalogType)
+
+                if catalogType == 'json':
+                    # catalog as a json
+                    if not self.path.startswith('/users/'):
+                        if self.server.debug:
+                            print('Wanted catalog for the instance')
+                        catalogJson = \
+                            sharesCatalogEndpoint(self.server.baseDir,
+                                                  self.server.httpPrefix,
+                                                  self.server.domainFull,
+                                                  self.path, 'wanted')
+                    else:
+                        domainFull = self.server.domainFull
+                        httpPrefix = self.server.httpPrefix
+                        nickname = self.path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.debug:
+                            print('Wanted catalog for account: ' + nickname)
+                        catalogJson = \
+                            sharesCatalogAccountEndpoint(self.server.baseDir,
+                                                         httpPrefix,
+                                                         nickname,
+                                                         self.server.domain,
+                                                         domainFull,
+                                                         self.path,
+                                                         self.server.debug,
+                                                         'wanted')
+                    msg = json.dumps(catalogJson,
+                                     ensure_ascii=False).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json',
+                                      msglen, None, callingDomain)
+                    self._write(msg)
+                    return
+                elif catalogType == 'csv':
+                    # catalog as a CSV file for import into a spreadsheet
+                    msg = \
+                        sharesCatalogCSVEndpoint(self.server.baseDir,
+                                                 self.server.httpPrefix,
+                                                 self.server.domainFull,
+                                                 self.path,
+                                                 'wanted').encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/csv',
+                                      msglen, None, callingDomain)
+                    self._write(msg)
+                    return
+                self._404()
+                return
+            self._400()
+            return
+
         # minimal mastodon api
         if self._mastoApi(self.path, callingDomain, authorized,
                           self.server.httpPrefix,
