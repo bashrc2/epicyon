@@ -87,6 +87,8 @@ from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from shares import sendShareViaServer
 from shares import sendUndoShareViaServer
+from shares import sendWantedViaServer
+from shares import sendUndoWantedViaServer
 from shares import addShare
 from theme import setTheme
 from announce import sendAnnounceViaServer
@@ -568,6 +570,12 @@ parser.add_argument('--itemName', dest='itemName', type=str,
 parser.add_argument('--undoItemName', dest='undoItemName', type=str,
                     default=None,
                     help='Name of an shared item to remove')
+parser.add_argument('--wantedItemName', dest='wantedItemName', type=str,
+                    default=None,
+                    help='Name of a wanted item')
+parser.add_argument('--undoWantedItemName', dest='undoWantedItemName',
+                    type=str, default=None,
+                    help='Name of a wanted item to remove')
 parser.add_argument('--summary', dest='summary', type=str,
                     default=None,
                     help='Description of an item being shared')
@@ -1287,7 +1295,7 @@ if args.itemName:
         sys.exit()
 
     if not args.location:
-        print('Specify a location or city where theshared ' +
+        print('Specify a location or city where the shared ' +
               'item resides with the --location option')
         sys.exit()
 
@@ -1345,6 +1353,100 @@ if args.undoItemName:
                            args.undoItemName,
                            cachedWebfingers, personCache,
                            debug, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.wantedItemName:
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.summary:
+        print('Specify a description for your shared item ' +
+              'with the --summary option')
+        sys.exit()
+
+    if not args.itemQty:
+        print('Specify a quantity of shared items with the --itemQty option')
+        sys.exit()
+
+    if not args.itemType:
+        print('Specify a type of shared item with the --itemType option')
+        sys.exit()
+
+    if not args.itemCategory:
+        print('Specify a category of shared item ' +
+              'with the --itemCategory option')
+        sys.exit()
+
+    if not args.location:
+        print('Specify a location or city where the wanted ' +
+              'item resides with the --location option')
+        sys.exit()
+
+    if not args.duration:
+        print('Specify a duration to share the object ' +
+              'with the --duration option')
+        sys.exit()
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending wanted item: ' + args.wantedItemName)
+
+    sendWantedViaServer(baseDir, session,
+                        args.nickname, args.password,
+                        domain, port,
+                        httpPrefix,
+                        args.wantedItemName,
+                        args.summary,
+                        args.itemImage,
+                        args.itemQty,
+                        args.itemType,
+                        args.itemCategory,
+                        args.location,
+                        args.duration,
+                        cachedWebfingers, personCache,
+                        debug, __version__,
+                        args.itemPrice, args.itemCurrency)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.undoWantedItemName:
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo of wanted item: ' + args.undoWantedItemName)
+
+    sendUndoWantedViaServer(baseDir, session,
+                            args.nickname, args.password,
+                            domain, port,
+                            httpPrefix,
+                            args.undoWantedItemName,
+                            cachedWebfingers, personCache,
+                            debug, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
