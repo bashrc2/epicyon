@@ -471,5 +471,6 @@
     "Category of wanted item. eg. clothes": "Catégorie de l'article recherché. par exemple. vêtements",
     "City or location of the wanted item": "Ville ou lieu de l'article recherché",
     "Maximum Price": "Prix maximum",
-    "Create a new wanted item": "Créer un nouvel article recherché"
+    "Create a new wanted item": "Créer un nouvel article recherché",
+    "Wanted Items Search": "Recherche d'objets recherchés"
 }
