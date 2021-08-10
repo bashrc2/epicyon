@@ -3160,6 +3160,29 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
+            elif searchStr.startswith('.'):
+                # wanted items search
+                sharedItemsFederatedDomains = \
+                    self.server.sharedItemsFederatedDomains
+                wantedItemsStr = \
+                    htmlSearchSharedItems(self.server.cssCache,
+                                          self.server.translate,
+                                          baseDir,
+                                          searchStr[1:], pageNumber,
+                                          maxPostsInFeed,
+                                          httpPrefix,
+                                          domainFull,
+                                          actorStr, callingDomain,
+                                          sharedItemsFederatedDomains,
+                                          'wanted')
+                if wantedItemsStr:
+                    msg = wantedItemsStr.encode('utf-8')
+                    msglen = len(msg)
+                    self._login_headers('text/html',
+                                        msglen, callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
             else:
                 # shared items search
                 sharedItemsFederatedDomains = \
