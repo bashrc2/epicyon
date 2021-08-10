@@ -405,10 +405,8 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
-    idx = "Enter an address, shared item, 'history, #hashtag, " + \
-        '*skill or :emoji: to search for'
     followStr += \
-        '  <p class="followText">' + translate[idx] + '</p>\n'
+        '  <p class="followText">' + translate['Search screen text'] + '</p>\n'
     followStr += '  <form role="search" method="POST" ' + \
         'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
     followStr += \
