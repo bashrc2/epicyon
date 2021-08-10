@@ -2784,6 +2784,81 @@
       ],
       "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#kilt",
+      "rdfs:label": [
+        {
+          "@value": "Kilt",
+          "@language": "en"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "ar"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "ku"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "es"
+        },
+        {
+          "@value": "Chilometraggio",
+          "@language": "it"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "de"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "sw"
+        },
+        {
+          "@value": "Fornos industriais",
+          "@language": "pt"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "oc"
+        },
+        {
+          "@value": "Килт",
+          "@language": "ru"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "cy"
+        },
+        {
+          "@value": "キルト",
+          "@language": "ja"
+        },
+        {
+          "@value": "Inis dúinn, le do thoil...",
+          "@language": "ga"
+        },
+        {
+          "@value": "किल",
+          "@language": "hi"
+        },
+        {
+          "@value": "杀害",
+          "@language": "zh"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "fr"
+        },
+        {
+          "@value": "Kilt",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#kilt",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }

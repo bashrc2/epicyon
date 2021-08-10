@@ -9007,7 +9007,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9082,7 +9082,1207 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#outdoor-router",
+      "rdfs:label": [
+        {
+          "@value": "Outdoor Router",
+          "@language": "en"
+        },
+        {
+          "@value": "في الهواء الطلق",
+          "@language": "ar"
+        },
+        {
+          "@value": "Outdoor Router",
+          "@language": "ku"
+        },
+        {
+          "@value": "Router exterior",
+          "@language": "es"
+        },
+        {
+          "@value": "Router all'aperto",
+          "@language": "it"
+        },
+        {
+          "@value": "Router im Freien",
+          "@language": "de"
+        },
+        {
+          "@value": "Outdoor Router",
+          "@language": "sw"
+        },
+        {
+          "@value": "Roteador ao ar livre",
+          "@language": "pt"
+        },
+        {
+          "@value": "Outdoor Router",
+          "@language": "oc"
+        },
+        {
+          "@value": "Открытый маршрутизатор",
+          "@language": "ru"
+        },
+        {
+          "@value": "Outdoor Router",
+          "@language": "cy"
+        },
+        {
+          "@value": "屋外のルーター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "आउटडोर रूटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "户外区",
+          "@language": "zh"
+        },
+        {
+          "@value": "Routeur extérieur",
+          "@language": "fr"
+        },
+        {
+          "@value": "Outdoor Router",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#poe-adapter",
+      "rdfs:label": [
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "en"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Adaptador Power Over Ethernet",
+          "@language": "es"
+        },
+        {
+          "@value": "Adattatore di potenza su Ethernet",
+          "@language": "it"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "de"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Alimentação sobre adaptador Ethernet",
+          "@language": "pt"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Мощность над адаптером Ethernet",
+          "@language": "ru"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "cy"
+        },
+        {
+          "@value": "イーサネット アダプター上の力",
+          "@language": "ja"
+        },
+        {
+          "@value": "Cumhacht Thar Ethernet Adapter",
+          "@language": "ga"
+        },
+        {
+          "@value": "ईथरनेट एडाप्टर पर पावर",
+          "@language": "hi"
+        },
+        {
+          "@value": "权力",
+          "@language": "zh"
+        },
+        {
+          "@value": "Adaptateur Ethernet Power Over",
+          "@language": "fr"
+        },
+        {
+          "@value": "Power Over Ethernet Adapter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#network-adapter",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#network-adapter",
+      "rdfs:label": [
+        {
+          "@value": "Network Adapter",
+          "@language": "en"
+        },
+        {
+          "@value": "الشبكة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Network Adapter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Adaptador de redes",
+          "@language": "es"
+        },
+        {
+          "@value": "Adattatore di rete",
+          "@language": "it"
+        },
+        {
+          "@value": "Netzwerkadapter",
+          "@language": "de"
+        },
+        {
+          "@value": "Network Adapter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Adaptador de rede",
+          "@language": "pt"
+        },
+        {
+          "@value": "Network Adapter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Сетевой адаптер",
+          "@language": "ru"
+        },
+        {
+          "@value": "Network Adapter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ネットワークアダプタ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Líonra Adapter",
+          "@language": "ga"
+        },
+        {
+          "@value": "नेटवर्क एडाप्टर",
+          "@language": "hi"
+        },
+        {
+          "@value": "网络",
+          "@language": "zh"
+        },
+        {
+          "@value": "Adaptateur réseau",
+          "@language": "fr"
+        },
+        {
+          "@value": "Network Adapter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable-crimper",
+      "rdfs:label": [
+        {
+          "@value": "Cable Crimper",
+          "@language": "en"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "es"
+        },
+        {
+          "@value": "Cavo di bloccaggio",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabel Crimper",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "sw"
+        },
+        {
+          "@value": "Máquina de montagem automática",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабель Crimper",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルクリンパー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Cábla Crimper",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल Crimper",
+          "@language": "hi"
+        },
+        {
+          "@value": "可起诉的犯罪",
+          "@language": "zh"
+        },
+        {
+          "@value": "Crimper câble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Crimper",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable-stripper",
+      "rdfs:label": [
+        {
+          "@value": "Cable Stripper",
+          "@language": "en"
+        },
+        {
+          "@value": "جهاز لاصق",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Stripper",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cable Stripper",
+          "@language": "es"
+        },
+        {
+          "@value": "Stripper cavi",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabelabstreifer",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Stripper",
+          "@language": "sw"
+        },
+        {
+          "@value": "Stripper de cabo",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Stripper",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабель Stripper",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Stripper",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルストリッパー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Cábla Stripper",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल स्ट्रिपर",
+          "@language": "hi"
+        },
+        {
+          "@value": "加沙地带",
+          "@language": "zh"
+        },
+        {
+          "@value": "Striptease de câble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Stripper",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable-tester",
+      "rdfs:label": [
+        {
+          "@value": "Cable Tester",
+          "@language": "en"
+        },
+        {
+          "@value": "اختبارات الكبل",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Tester",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tester de cable",
+          "@language": "es"
+        },
+        {
+          "@value": "Tester del cavo",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabelprüfgerät",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Tester",
+          "@language": "sw"
+        },
+        {
+          "@value": "Teste de cabo",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Tester",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабельный тестер",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Tester",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルテスター",
+          "@language": "ja"
+        },
+        {
+          "@value": "An bhfuil a fhios agat na buntáistí a bhaineann...",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल परीक्षक",
+          "@language": "hi"
+        },
+        {
+          "@value": "可预测的年份",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cable Tester",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Tester",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#scissors",
+      "rdfs:label": [
+        {
+          "@value": "Scissors",
+          "@language": "en"
+        },
+        {
+          "@value": "المقص",
+          "@language": "ar"
+        },
+        {
+          "@value": "Scissors",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tijeras",
+          "@language": "es"
+        },
+        {
+          "@value": "Forbici",
+          "@language": "it"
+        },
+        {
+          "@value": "Scheren",
+          "@language": "de"
+        },
+        {
+          "@value": "Scissors",
+          "@language": "sw"
+        },
+        {
+          "@value": "Tesoura",
+          "@language": "pt"
+        },
+        {
+          "@value": "Scissors",
+          "@language": "oc"
+        },
+        {
+          "@value": "Сцензии",
+          "@language": "ru"
+        },
+        {
+          "@value": "Scissors",
+          "@language": "cy"
+        },
+        {
+          "@value": "シザーズ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "कैंची",
+          "@language": "hi"
+        },
+        {
+          "@value": "提名",
+          "@language": "zh"
+        },
+        {
+          "@value": "Ciseaux",
+          "@language": "fr"
+        },
+        {
+          "@value": "Scissors",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#tweesers",
+      "rdfs:label": [
+        {
+          "@value": "Tweesers",
+          "@language": "en"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "ar"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "es"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "it"
+        },
+        {
+          "@value": "Tweeser",
+          "@language": "de"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "sw"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "pt"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "oc"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "ru"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "cy"
+        },
+        {
+          "@value": "ツイート",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "ट्वीटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "泰韦尔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "fr"
+        },
+        {
+          "@value": "Tweesers",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tweesers",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#electrical-tape",
+      "rdfs:label": [
+        {
+          "@value": "Electrical Tape",
+          "@language": "en"
+        },
+        {
+          "@value": "تاب كهربائي",
+          "@language": "ar"
+        },
+        {
+          "@value": "Electrical Tape",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tapa eléctrica",
+          "@language": "es"
+        },
+        {
+          "@value": "Nastro elettrico",
+          "@language": "it"
+        },
+        {
+          "@value": "Elektrisches Band",
+          "@language": "de"
+        },
+        {
+          "@value": "Electrical Tape",
+          "@language": "sw"
+        },
+        {
+          "@value": "Fita elétrica",
+          "@language": "pt"
+        },
+        {
+          "@value": "Electrical Tape",
+          "@language": "oc"
+        },
+        {
+          "@value": "Электрическая лента",
+          "@language": "ru"
+        },
+        {
+          "@value": "Electrical Tape",
+          "@language": "cy"
+        },
+        {
+          "@value": "電気テープ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Téip Leictreach",
+          "@language": "ga"
+        },
+        {
+          "@value": "विद्युत टेप",
+          "@language": "hi"
+        },
+        {
+          "@value": "电力塔普",
+          "@language": "zh"
+        },
+        {
+          "@value": "Tape électrique",
+          "@language": "fr"
+        },
+        {
+          "@value": "Electrical Tape",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#masking-tape",
+      "rdfs:label": [
+        {
+          "@value": "Masking Tape",
+          "@language": "en"
+        },
+        {
+          "@value": "تايب",
+          "@language": "ar"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "ku"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "es"
+        },
+        {
+          "@value": "Nastro di mascheramento",
+          "@language": "it"
+        },
+        {
+          "@value": "Maskenband",
+          "@language": "de"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "sw"
+        },
+        {
+          "@value": "Fita de mascaramento",
+          "@language": "pt"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "oc"
+        },
+        {
+          "@value": "Маскивая лента",
+          "@language": "ru"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "cy"
+        },
+        {
+          "@value": "マスキングテープ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Téip Masking",
+          "@language": "ga"
+        },
+        {
+          "@value": "मास्किंग टेप",
+          "@language": "hi"
+        },
+        {
+          "@value": "马塞·塔普",
+          "@language": "zh"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "fr"
+        },
+        {
+          "@value": "Masking Tape",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#plumbers-tape",
+      "rdfs:label": [
+        {
+          "@value": "Plumbers Tape",
+          "@language": "en"
+        },
+        {
+          "@value": "سائل",
+          "@language": "ar"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "ku"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "es"
+        },
+        {
+          "@value": "Nastro di legno",
+          "@language": "it"
+        },
+        {
+          "@value": "Klempnerband",
+          "@language": "de"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "sw"
+        },
+        {
+          "@value": "Fita de Encanadores",
+          "@language": "pt"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "oc"
+        },
+        {
+          "@value": "Пломберы лента",
+          "@language": "ru"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "cy"
+        },
+        {
+          "@value": "配管テープ",
+          "@language": "ja"
+        },
+        {
+          "@value": "taiseachas aeir: fliuch",
+          "@language": "ga"
+        },
+        {
+          "@value": "प्लंबर टेप",
+          "@language": "hi"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "zh"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "fr"
+        },
+        {
+          "@value": "Plumbers Tape",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#duct-tape",
+      "rdfs:label": [
+        {
+          "@value": "Duct Tape",
+          "@language": "en"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "ar"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "ku"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "es"
+        },
+        {
+          "@value": "Nastro del condotto",
+          "@language": "it"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "de"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "sw"
+        },
+        {
+          "@value": "Fita adesiva",
+          "@language": "pt"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "oc"
+        },
+        {
+          "@value": "Duct лента",
+          "@language": "ru"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "cy"
+        },
+        {
+          "@value": "ダクトテープ",
+          "@language": "ja"
+        },
+        {
+          "@value": "taiseachas aeir: fliuch",
+          "@language": "ga"
+        },
+        {
+          "@value": "डक्ट टेप",
+          "@language": "hi"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "zh"
+        },
+        {
+          "@value": "Robinet de canal",
+          "@language": "fr"
+        },
+        {
+          "@value": "Duct Tape",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#chordless-drill",
+      "rdfs:label": [
+        {
+          "@value": "Chordless Drill",
+          "@language": "en"
+        },
+        {
+          "@value": "Drill",
+          "@language": "ar"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "ku"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "es"
+        },
+        {
+          "@value": "Trapano senza coro",
+          "@language": "it"
+        },
+        {
+          "@value": "Chorfreier Bohrer",
+          "@language": "de"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "sw"
+        },
+        {
+          "@value": "Broca sem fio",
+          "@language": "pt"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "oc"
+        },
+        {
+          "@value": "Безсловная дрель",
+          "@language": "ru"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "cy"
+        },
+        {
+          "@value": "Chordlessのドリル",
+          "@language": "ja"
+        },
+        {
+          "@value": "Druileáil Chordless",
+          "@language": "ga"
+        },
+        {
+          "@value": "ताररहित ड्रिल",
+          "@language": "hi"
+        },
+        {
+          "@value": "选择无缝的D钻井",
+          "@language": "zh"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "fr"
+        },
+        {
+          "@value": "Chordless Drill",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#nails",
+      "rdfs:label": [
+        {
+          "@value": "Nails",
+          "@language": "en"
+        },
+        {
+          "@value": "النيل",
+          "@language": "ar"
+        },
+        {
+          "@value": "Nails",
+          "@language": "ku"
+        },
+        {
+          "@value": "Nails",
+          "@language": "es"
+        },
+        {
+          "@value": "Unghie",
+          "@language": "it"
+        },
+        {
+          "@value": "Nägel",
+          "@language": "de"
+        },
+        {
+          "@value": "Nails",
+          "@language": "sw"
+        },
+        {
+          "@value": "Unhas",
+          "@language": "pt"
+        },
+        {
+          "@value": "Nails",
+          "@language": "oc"
+        },
+        {
+          "@value": "Гвозди",
+          "@language": "ru"
+        },
+        {
+          "@value": "Nails",
+          "@language": "cy"
+        },
+        {
+          "@value": "ネイル",
+          "@language": "ja"
+        },
+        {
+          "@value": "taiseachas aeir: fliuch",
+          "@language": "ga"
+        },
+        {
+          "@value": "नाखून",
+          "@language": "hi"
+        },
+        {
+          "@value": "Nails",
+          "@language": "zh"
+        },
+        {
+          "@value": "Nails",
+          "@language": "fr"
+        },
+        {
+          "@value": "Nails",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#screws",
+      "rdfs:label": [
+        {
+          "@value": "Screws",
+          "@language": "en"
+        },
+        {
+          "@value": "اللعنة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Screws",
+          "@language": "ku"
+        },
+        {
+          "@value": "Mierda.",
+          "@language": "es"
+        },
+        {
+          "@value": "Viti",
+          "@language": "it"
+        },
+        {
+          "@value": "Schrauben",
+          "@language": "de"
+        },
+        {
+          "@value": "Screws",
+          "@language": "sw"
+        },
+        {
+          "@value": "Parafusos",
+          "@language": "pt"
+        },
+        {
+          "@value": "Screws",
+          "@language": "oc"
+        },
+        {
+          "@value": "Винты",
+          "@language": "ru"
+        },
+        {
+          "@value": "Screws",
+          "@language": "cy"
+        },
+        {
+          "@value": "ネジ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "पेंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "Screws",
+          "@language": "zh"
+        },
+        {
+          "@value": "Screws",
+          "@language": "fr"
+        },
+        {
+          "@value": "Screws",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bolts",
+      "rdfs:label": [
+        {
+          "@value": "Bolts",
+          "@language": "en"
+        },
+        {
+          "@value": "الفول",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "es"
+        },
+        {
+          "@value": "Bulloni",
+          "@language": "it"
+        },
+        {
+          "@value": "Bolzen",
+          "@language": "de"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "sw"
+        },
+        {
+          "@value": "Parafusos",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "oc"
+        },
+        {
+          "@value": "Болты",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "cy"
+        },
+        {
+          "@value": "ボルト",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "बोल्ट",
+          "@language": "hi"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bolts",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
@@ -9533,6 +10733,681 @@
         }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spanner",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#vise-grips",
+      "rdfs:label": [
+        {
+          "@value": "Vise Grips",
+          "@language": "en"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "ar"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "ku"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "es"
+        },
+        {
+          "@value": "Griglia di vise",
+          "@language": "it"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "de"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "sw"
+        },
+        {
+          "@value": "Apertos de Vise",
+          "@language": "pt"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "oc"
+        },
+        {
+          "@value": "Вис Грипс",
+          "@language": "ru"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "cy"
+        },
+        {
+          "@value": "ヴァイズグリップ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 签证",
+          "@language": "zh"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "fr"
+        },
+        {
+          "@value": "Vise Grips",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pliers",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#adjustable-spanner",
+      "rdfs:label": [
+        {
+          "@value": "Adjustable Spanner",
+          "@language": "en"
+        },
+        {
+          "@value": "Spanner",
+          "@language": "ar"
+        },
+        {
+          "@value": "Adjustable Spanner",
+          "@language": "ku"
+        },
+        {
+          "@value": "Spanner ajustable",
+          "@language": "es"
+        },
+        {
+          "@value": "Spanner regolabile",
+          "@language": "it"
+        },
+        {
+          "@value": "Einstellbare Spannvorrichtung",
+          "@language": "de"
+        },
+        {
+          "@value": "Adjustable Spanner",
+          "@language": "sw"
+        },
+        {
+          "@value": "Spanner ajustável",
+          "@language": "pt"
+        },
+        {
+          "@value": "Adjustable Spanner",
+          "@language": "oc"
+        },
+        {
+          "@value": "Регулируемый Spanner",
+          "@language": "ru"
+        },
+        {
+          "@value": "Adjustable Spanner",
+          "@language": "cy"
+        },
+        {
+          "@value": "調節可能なスパナー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Spanner inchoigeartaithe",
+          "@language": "ga"
+        },
+        {
+          "@value": "समायोज्य स्पैनर",
+          "@language": "hi"
+        },
+        {
+          "@value": "A. 合理的扩大能力",
+          "@language": "zh"
+        },
+        {
+          "@value": "Spanner réglable",
+          "@language": "fr"
+        },
+        {
+          "@value": "Adjustable Spanner",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spanner",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hose-clamp",
+      "rdfs:label": [
+        {
+          "@value": "Hose Clamp",
+          "@language": "en"
+        },
+        {
+          "@value": "مشبك هوس",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "ku"
+        },
+        {
+          "@value": "Abrazadera de manguera",
+          "@language": "es"
+        },
+        {
+          "@value": "Morsetto per tubi",
+          "@language": "it"
+        },
+        {
+          "@value": "Schlauchklemme",
+          "@language": "de"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "sw"
+        },
+        {
+          "@value": "Braçadeira de mangueira",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "oc"
+        },
+        {
+          "@value": "Шланг Зажим",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "cy"
+        },
+        {
+          "@value": "ホースクランプ",
+          "@language": "ja"
+        },
+        {
+          "@value": "riachtanais uisce: measartha",
+          "@language": "ga"
+        },
+        {
+          "@value": "नली क्लैंप",
+          "@language": "hi"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "zh"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hose Clamp",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#antenna-mast",
+      "rdfs:label": [
+        {
+          "@value": "Antenna Mast",
+          "@language": "en"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "ar"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "ku"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "es"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "it"
+        },
+        {
+          "@value": "Antenne Mast",
+          "@language": "de"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "sw"
+        },
+        {
+          "@value": "Mastro de antena",
+          "@language": "pt"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "oc"
+        },
+        {
+          "@value": "Антенна Маст",
+          "@language": "ru"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "cy"
+        },
+        {
+          "@value": "アンテナ マスト",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "एंटीना मस्त",
+          "@language": "hi"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "zh"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "fr"
+        },
+        {
+          "@value": "Antenna Mast",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#washers",
+      "rdfs:label": [
+        {
+          "@value": "Washers",
+          "@language": "en"
+        },
+        {
+          "@value": "الغسالات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Washers",
+          "@language": "ku"
+        },
+        {
+          "@value": "Lavadoras",
+          "@language": "es"
+        },
+        {
+          "@value": "Rondelle",
+          "@language": "it"
+        },
+        {
+          "@value": "Unterlegscheiben",
+          "@language": "de"
+        },
+        {
+          "@value": "Washers",
+          "@language": "sw"
+        },
+        {
+          "@value": "Arruelas",
+          "@language": "pt"
+        },
+        {
+          "@value": "Washers",
+          "@language": "oc"
+        },
+        {
+          "@value": "Стиральная",
+          "@language": "ru"
+        },
+        {
+          "@value": "Washers",
+          "@language": "cy"
+        },
+        {
+          "@value": "ウォッシャー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "वाशर",
+          "@language": "hi"
+        },
+        {
+          "@value": "什图尔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Lave-linge",
+          "@language": "fr"
+        },
+        {
+          "@value": "Washers",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#zip-ties",
+      "rdfs:label": [
+        {
+          "@value": "Zip Ties",
+          "@language": "en"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "ar"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tintes de cremallera",
+          "@language": "es"
+        },
+        {
+          "@value": "Cerniera",
+          "@language": "it"
+        },
+        {
+          "@value": "Zangen-Kissen",
+          "@language": "de"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "sw"
+        },
+        {
+          "@value": "Ties de zíper",
+          "@language": "pt"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "oc"
+        },
+        {
+          "@value": "Зип Тиси",
+          "@language": "ru"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "cy"
+        },
+        {
+          "@value": "ジップタイズ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Ties le Zip",
+          "@language": "ga"
+        },
+        {
+          "@value": "ज़िप टाई",
+          "@language": "hi"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "zh"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "fr"
+        },
+        {
+          "@value": "Zip Ties",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable-staples",
+      "rdfs:label": [
+        {
+          "@value": "Cable Staples",
+          "@language": "en"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "es"
+        },
+        {
+          "@value": "Cavi di ricambio",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabeleinführungen",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "sw"
+        },
+        {
+          "@value": "Conjuntos de cabos",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабельные скобы",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルのステープル",
+          "@language": "ja"
+        },
+        {
+          "@value": "Uirlisí ilchuspóireacha",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल स्टेपल",
+          "@language": "hi"
+        },
+        {
+          "@value": "可核查的物质",
+          "@language": "zh"
+        },
+        {
+          "@value": "Agrafes de câble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Staples",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable-clip",
+      "rdfs:label": [
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "en"
+        },
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "ku"
+        },
+        {
+          "@value": "Clip de cable de separación",
+          "@language": "es"
+        },
+        {
+          "@value": "Clip di fissaggio del cavo",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabelverbinder Clip",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "sw"
+        },
+        {
+          "@value": "Clipe de fixação de cabo",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабель Fastener Clip",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルの締める物クリップ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seirbhís do Chustaiméirí",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल फास्टनर क्लिप",
+          "@language": "hi"
+        },
+        {
+          "@value": "可兑换Fsten Clip",
+          "@language": "zh"
+        },
+        {
+          "@value": "Câble de fixation Clip",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Fastener Clip",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hand-truck",
+      "rdfs:label": [
+        {
+          "@value": "Hand Truck",
+          "@language": "en"
+        },
+        {
+          "@value": "شاحنة يدوية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "ku"
+        },
+        {
+          "@value": "Camión de mano",
+          "@language": "es"
+        },
+        {
+          "@value": "camion della mano",
+          "@language": "it"
+        },
+        {
+          "@value": "Handwagen",
+          "@language": "de"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "sw"
+        },
+        {
+          "@value": "Caminhão de mão",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "oc"
+        },
+        {
+          "@value": "Ручная тележка",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "cy"
+        },
+        {
+          "@value": "ハンドトラック",
+          "@language": "ja"
+        },
+        {
+          "@value": "Truck Hand",
+          "@language": "ga"
+        },
+        {
+          "@value": "हाथ ट्रक",
+          "@language": "hi"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "zh"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hand Truck",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#trolley",
       "@type": "dfc-p:ProductType"
     },
     {
