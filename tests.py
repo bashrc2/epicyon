@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import getActorLanguagesList
 from utils import getCategoryTypes
 from utils import getSupportedLanguages
 from utils import setConfigParam
@@ -5084,10 +5085,12 @@ def _testSetActorLanguages():
     assert len(actorJson['attachment']) == 1
     assert actorJson['attachment'][0]['name'] == 'Languages'
     assert actorJson['attachment'][0]['type'] == 'PropertyValue'
-    assert len(actorJson['attachment'][0]['value']) == 3
-    assert 'en' in actorJson['attachment'][0]['value']
-    assert 'fr' in actorJson['attachment'][0]['value']
-    assert 'es' in actorJson['attachment'][0]['value']
+    assert isinstance(actorJson['attachment'][0]['value'], str)
+    assert ',' in actorJson['attachment'][0]['value']
+    langList = getActorLanguagesList(actorJson)
+    assert 'en' in langList
+    assert 'fr' in langList
+    assert 'es' in langList
     languagesStr = getActorLanguages(actorJson)
     assert languagesStr == 'en / es / fr'
 

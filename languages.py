@@ -47,15 +47,21 @@ def setActorLanguages(baseDir: str, actorJson: {}, languagesStr: str) -> None:
     elif ' ' in languagesStr:
         separator = ' '
     langList = languagesStr.lower().split(separator)
-    langList2 = []
+    langList2 = ''
     for lang in langList:
         lang = lang.strip()
         if baseDir:
             languageFilename = baseDir + '/translations/' + lang + '.json'
             if os.path.isfile(languageFilename):
-                langList2.append(lang)
+                if langList2:
+                    langList2 += ', ' + lang.strip()
+                else:
+                    langList2 += lang.strip()
         else:
-            langList2.append(lang)
+            if langList2:
+                langList2 += ', ' + lang.strip()
+            else:
+                langList2 += lang.strip()
 
     # remove any existing value
     propertyFound = None
