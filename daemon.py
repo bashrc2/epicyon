@@ -2298,13 +2298,13 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitBlock=' in optionsConfirmParams:
             print('Adding block by ' + chooserNickname +
                   ' of ' + optionsActor)
-            addBlock(baseDir, chooserNickname,
-                     domain,
-                     optionsNickname, optionsDomainFull)
-            # send block activity
-            self._sendBlock(httpPrefix,
-                            chooserNickname, domainFull,
-                            optionsNickname, optionsDomainFull)
+            if addBlock(baseDir, chooserNickname,
+                        domain,
+                        optionsNickname, optionsDomainFull):
+                # send block activity
+                self._sendBlock(httpPrefix,
+                                chooserNickname, domainFull,
+                                optionsNickname, optionsDomainFull)
 
         # person options screen, unblock button
         # See htmlPersonOptions
@@ -2772,14 +2772,14 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Adding block by ' + blockerNickname +
                       ' of ' + blockingActor)
-                addBlock(baseDir, blockerNickname,
-                         domain,
-                         blockingNickname,
-                         blockingDomainFull)
-                # send block activity
-                self._sendBlock(httpPrefix,
-                                blockerNickname, domainFull,
-                                blockingNickname, blockingDomainFull)
+                if addBlock(baseDir, blockerNickname,
+                            domain,
+                            blockingNickname,
+                            blockingDomainFull):
+                    # send block activity
+                    self._sendBlock(httpPrefix,
+                                    blockerNickname, domainFull,
+                                    blockingNickname, blockingDomainFull)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):

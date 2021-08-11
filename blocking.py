@@ -64,8 +64,31 @@ def addBlock(baseDir: str, nickname: str, domain: str,
     blockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
     blockHandle = blockNickname + '@' + blockDomain
     if os.path.isfile(blockingFilename):
-        if blockHandle in open(blockingFilename).read():
+        if blockHandle + '\n' in open(blockingFilename).read():
             return False
+
+    # if we are following then unfollow
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    if os.path.isfile(followingFilename):
+        if blockHandle + '\n' in open(followingFilename).read():
+            followingStr = ''
+            with open(followingFilename, 'r') as followingFile:
+                followingStr = followingFile.read()
+                followingStr = followingStr.replace(blockHandle + '\n', '')
+            with open(followingFilename, 'w+') as followingFile:
+                followingFile.write(followingStr)
+
+    # if they are a follower then remove them
+    followersFilename = acctDir(baseDir, nickname, domain) + '/followers.txt'
+    if os.path.isfile(followersFilename):
+        if blockHandle + '\n' in open(followersFilename).read():
+            followersStr = ''
+            with open(followersFilename, 'r') as followersFile:
+                followersStr = followersFile.read()
+                followersStr = followersStr.replace(blockHandle + '\n', '')
+            with open(followersFilename, 'w+') as followersFile:
+                followersFile.write(followersStr)
+
     with open(blockingFilename, 'a+') as blockFile:
         blockFile.write(blockHandle + '\n')
     return True
@@ -352,6 +375,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
 
     addBlock(baseDir, nickname, domain,
              nicknameBlocked, domainBlockedFull)
+    # TODO send block activity
 
     if debug:
         print('DEBUG: post blocked via c2s - ' + postFilename)
