@@ -753,7 +753,7 @@ class PubServer(BaseHTTPRequestHandler):
                 etagHeader = 'If-none-match'
 
         if self.headers.get(etagHeader):
-            oldEtag = self.headers['If-None-Match']
+            oldEtag = self.headers[etagHeader].replace('"', '')
             if os.path.isfile(mediaFilename + '.etag'):
                 # load the etag from file
                 currEtag = ''
