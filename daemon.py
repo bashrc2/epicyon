@@ -686,13 +686,15 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-type', fileFormat)
         if length > -1:
             self.send_header('Content-Length', str(length))
-        if cookie and not permissive:
+        if permissive:
+            return
+        if cookie:
             cookieStr = cookie
             if 'HttpOnly;' not in cookieStr:
                 if self.server.httpPrefix == 'https':
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
-            self.send_header('Cookie', cookieStr)
+        self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('Origin', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
