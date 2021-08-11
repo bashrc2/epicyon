@@ -136,6 +136,8 @@
     --containericons-horizontal-spacing: 1%;
     --containericons-horizontal-spacing-mobile: 3%;
     --containericons-horizontal-offset: -1%;
+    --containericons-vertical-align: 0.5%;
+    --containericons-vertical-align-mobile: 1%;
     --likes-count-offset: 5px;
     --likes-count-offset-mobile: 10px;
     --publish-button-vertical-offset: 10px;
@@ -1309,7 +1311,7 @@ div.container {
         float: var(--icons-side);
         max-width: 200px;
         width: 3%;
-        margin: 0px var(--containericons-horizontal-spacing);
+        margin: var(--containericons-vertical-align) var(--containericons-horizontal-spacing);
         margin-right: 0px;
         border-radius: 0%;
     }
@@ -1970,7 +1972,7 @@ div.container {
         float: var(--icons-side);
         max-width: 200px;
         width: 7%;
-        margin: 1% var(--containericons-horizontal-spacing-mobile);
+        margin: var(--containericons-vertical-align-mobile) var(--containericons-horizontal-spacing-mobile);
         margin-right: 0px;
         border-radius: 0%;
     }
