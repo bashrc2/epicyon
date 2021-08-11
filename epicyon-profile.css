@@ -1310,7 +1310,7 @@ div.container {
     .containericons img {
         float: var(--icons-side);
         max-width: 200px;
-        width: 3%;
+        width: 25px;
         margin: var(--containericons-vertical-align) var(--containericons-horizontal-spacing);
         margin-right: 0px;
         border-radius: 0%;
