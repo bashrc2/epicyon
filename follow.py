@@ -70,7 +70,6 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
                         httpPrefix + '://' + domain + '/users/' + nickname
                     lastSeenFilename = \
                         lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
-                    print('lastSeenFilename: ' + lastSeenFilename)
                     if not os.path.isfile(lastSeenFilename):
                         with open(lastSeenFilename, 'w+') as fp:
                             fp.write(str(100))
