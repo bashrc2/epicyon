@@ -60,6 +60,10 @@ def addBlock(baseDir: str, nickname: str, domain: str,
              blockNickname: str, blockDomain: str) -> bool:
     """Block the given account
     """
+    if blockDomain.startswith(domain) and nickname == blockNickname:
+        # don't block self
+        return False
+
     domain = removeDomainPort(domain)
     blockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
     blockHandle = blockNickname + '@' + blockDomain
