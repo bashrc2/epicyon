@@ -19,7 +19,7 @@ from functools import partial
 import pyqrcode
 # for saving images
 from hashlib import sha256
-from hashlib import sha1
+from hashlib import md5
 from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
@@ -731,7 +731,7 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
         if not etag:
-            etag = sha1(data).hexdigest()  # nosec
+            etag = md5(data).hexdigest()  # nosec
             try:
                 with open(mediaFilename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
@@ -13687,7 +13687,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            etag = sha1(mediaBinary).hexdigest()  # nosec
+                            etag = md5(mediaBinary).hexdigest()  # nosec
                             try:
                                 with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
