@@ -6252,7 +6252,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers_etag(mediaFilename, mediaFileType,
                                            mediaBinary, None,
-                                           self.server.domainFull, True)
+                                           callingDomain, True)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show emoji done',
@@ -10542,10 +10542,9 @@ class PubServer(BaseHTTPRequestHandler):
         mediaImageType = getImageMimeType(avatarFile)
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
-            self._set_headers_etag(avatarFilename,
-                                   mediaImageType,
+            self._set_headers_etag(avatarFilename, mediaImageType,
                                    mediaBinary, None,
-                                   self.server.domainFull, True)
+                                   callingDomain, True)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'icon shown done',
