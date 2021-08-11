@@ -10544,7 +10544,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         t = os.path.getmtime(avatarFilename)
         lastModifiedTime = datetime.datetime.fromtimestamp(t)
-        lastModifiedTimeStr = modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        lastModifiedTimeStr = lastModifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         mediaImageType = getImageMimeType(avatarFile)
         with open(avatarFilename, 'rb') as avFile:
