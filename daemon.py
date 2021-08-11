@@ -695,7 +695,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.httpPrefix == 'https':
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
-        self.send_header('Cookie', cookieStr)
+            self.send_header('Cookie', cookieStr)
         self.send_header('Origin', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
@@ -10542,6 +10542,10 @@ class PubServer(BaseHTTPRequestHandler):
             # The file has not changed
             self._304()
             return True
+        t = os.path.getmtime(avatarFilename)
+        lastModifiedTime = datetime.datetime.fromtimestamp(t)
+        lastModifiedTimeStr = modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+
         mediaImageType = getImageMimeType(avatarFile)
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
