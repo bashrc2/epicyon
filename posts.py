@@ -2804,7 +2804,7 @@ def sendToFollowers(session, baseDir: str,
             print('Post to followers did not resolve any domains')
         return
     print('Post to followers resolved domains')
-    print(str(grouped))
+    # print(str(grouped))
 
     # this is after the message has arrived at the server
     clientToServer = False
