@@ -681,12 +681,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
-                          callingDomain: str) -> None:
+                          callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         if length > -1:
             self.send_header('Content-Length', str(length))
-        if cookie:
+        if cookie and not permissive:
             cookieStr = cookie
             if 'HttpOnly;' not in cookieStr:
                 if self.server.httpPrefix == 'https':
@@ -700,21 +700,25 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'public')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
-                     callingDomain: str) -> None:
-        self._set_headers_base(fileFormat, length, cookie, callingDomain)
+                     callingDomain: str, permissive: bool) -> None:
+        self._set_headers_base(fileFormat, length, cookie, callingDomain,
+                               permissive)
         self.end_headers()
 
     def _set_headers_head(self, fileFormat: str, length: int, etag: str,
-                          callingDomain: str) -> None:
-        self._set_headers_base(fileFormat, length, None, callingDomain)
+                          callingDomain: str, permissive: bool) -> None:
+        self._set_headers_base(fileFormat, length, None, callingDomain,
+                               permissive)
         if etag:
             self.send_header('ETag', etag)
         self.end_headers()
 
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
-                          data, cookie: str, callingDomain: str) -> None:
+                          data, cookie: str, callingDomain: str,
+                          permissive: bool) -> None:
         datalen = len(data)
-        self._set_headers_base(fileFormat, datalen, cookie, callingDomain)
+        self._set_headers_base(fileFormat, datalen, cookie, callingDomain,
+                               permissive)
         # self.send_header('Cache-Control', 'public, max-age=86400')
         etag = None
         if os.path.isfile(mediaFilename + '.etag'):
@@ -881,7 +885,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/plain; charset=utf-8', msglen,
-                          None, self.server.domainFull)
+                          None, self.server.domainFull, True)
         self._write(msg)
         return True
 
@@ -942,13 +946,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                 else:
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, True)
             self._write(msg)
             if sendJsonStr:
                 print(sendJsonStr)
@@ -1011,13 +1015,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                 else:
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, True)
             self._write(msg)
             print('nodeinfo sent')
             return True
@@ -1049,7 +1053,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = wfResult.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/xrd+xml', msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, True)
                 self._write(msg)
                 return True
             self._404()
@@ -1081,13 +1085,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._hasAccept(callingDomain):
                     if 'application/ld+json' in self.headers['Accept']:
                         self._set_headers('application/ld+json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, True)
                     else:
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, True)
                 else:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                 self._write(msg)
                 return True
             self._404()
@@ -1104,7 +1108,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = json.dumps(wfResult).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/jrd+json', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
         else:
             if self.server.debug:
@@ -2308,7 +2312,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2327,7 +2331,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2345,7 +2349,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2385,7 +2389,7 @@ class PubServer(BaseHTTPRequestHandler):
                               conversationId).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2409,7 +2413,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.systemLanguage).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self.server.POSTbusy = False
                 return
@@ -2498,7 +2502,7 @@ class PubServer(BaseHTTPRequestHandler):
                               conversationId).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -5685,7 +5689,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
         if self.server.debug:
             print('Sent manifest: ' + callingDomain)
@@ -5734,7 +5738,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(faviconFilename,
                                    favType,
                                    favBinary, None,
-                                   self.server.domainFull)
+                                   self.server.domainFull, False)
             self._write(favBinary)
             if debug:
                 print('Sent favicon from cache: ' + callingDomain)
@@ -5746,7 +5750,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(faviconFilename,
                                            favType,
                                            favBinary, None,
-                                           self.server.domainFull)
+                                           self.server.domainFull, False)
                     self._write(favBinary)
                     self.server.iconsCache[favFilename] = favBinary
                     if self.server.debug:
@@ -5775,7 +5779,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
 
     def _getExportedTheme(self, callingDomain: str, path: str,
@@ -5791,7 +5795,7 @@ class PubServer(BaseHTTPRequestHandler):
                 exportType = 'application/zip'
                 self._set_headers_etag(filename, exportType,
                                        exportBinary, None,
-                                       domainFull)
+                                       domainFull, False)
                 self._write(exportBinary)
         self._404()
 
@@ -5824,7 +5828,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(fontFilename,
                                        fontType,
                                        fontBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(fontBinary)
                 if debug:
                     print('font sent from cache: ' +
@@ -5840,7 +5844,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(fontFilename,
                                                fontType,
                                                fontBinary, None,
-                                               self.server.domainFull)
+                                               self.server.domainFull,
+                                               False)
                         self._write(fontBinary)
                         self.server.fontsCache[fontStr] = fontBinary
                     if debug:
@@ -5894,7 +5899,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/xml', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                     self._write(msg)
                     if debug:
                         print('Sent rss2 feed: ' +
@@ -5955,7 +5960,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 feed: ' +
@@ -5995,7 +6000,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 newswire feed: ' +
@@ -6031,7 +6036,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 categories feed: ' +
@@ -6077,7 +6082,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/plain; charset=utf-8',
-                                      msglen, None, callingDomain)
+                                      msglen, None, callingDomain, True)
                     self._write(msg)
                     if self.server.debug:
                         print('Sent rss3 feed: ' +
@@ -6201,7 +6206,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'registered devices done',
@@ -6247,7 +6252,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers_etag(mediaFilename, mediaFileType,
                                            mediaBinary, None,
-                                           self.server.domainFull)
+                                           self.server.domainFull, True)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show emoji done',
@@ -6275,7 +6280,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(emojiFilename,
                                            mediaImageType,
                                            mediaBinary, None,
-                                           self.server.domainFull)
+                                           self.server.domainFull, False)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'background shown done',
@@ -6311,7 +6316,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeTypeStr,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(mediaBinary)
                 return
             else:
@@ -6322,7 +6327,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(mediaFilename,
                                                mimeType,
                                                mediaBinary, None,
-                                               self.server.domainFull)
+                                               self.server.domainFull, False)
                         self._write(mediaBinary)
                         self.server.iconsCache[mediaStr] = mediaBinary
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -6365,7 +6370,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(mediaBinary)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'show files done',
@@ -6390,7 +6395,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'icon shown done',
@@ -6456,7 +6461,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
         else:
             originPathStr = path.split('/tags/')[0]
@@ -6512,7 +6517,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
         else:
             originPathStr = path.split('/tags/rss2/')[0]
@@ -7398,7 +7403,7 @@ class PubServer(BaseHTTPRequestHandler):
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(deleteStr.encode('utf-8'))
                 self.server.GETbusy = False
                 return
@@ -7608,7 +7613,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 if self._fetchAuthenticated():
@@ -7617,7 +7622,7 @@ class PubServer(BaseHTTPRequestHandler):
                     protocolStr = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocolStr, msglen, None,
-                                      callingDomain)
+                                      callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -7698,7 +7703,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime,
                                           GETtimings,
@@ -7712,7 +7717,7 @@ class PubServer(BaseHTTPRequestHandler):
                     protocolStr = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocolStr, msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -7801,7 +7806,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'post replies done',
@@ -7814,7 +7819,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -7905,7 +7910,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
-                                                  cookie, callingDomain)
+                                                  cookie, callingDomain, False)
                                 self._write(msg)
                                 self._benchmarkGETtimings(GETstartTime,
                                                           GETtimings,
@@ -7922,7 +7927,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 msglen = len(msg)
                                 self._set_headers('application/json',
                                                   msglen, None,
-                                                  callingDomain)
+                                                  callingDomain, False)
                                 self._write(msg)
                             else:
                                 self._404()
@@ -8039,7 +8044,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime,
                                       GETtimings,
@@ -8054,7 +8059,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -8259,7 +8264,7 @@ class PubServer(BaseHTTPRequestHandler):
                             msg = msg.encode('utf-8')
                             msglen = len(msg)
                             self._set_headers('text/html', msglen,
-                                              cookie, callingDomain)
+                                              cookie, callingDomain, False)
                             self._write(msg)
 
                         if GETstartTime:
@@ -8273,7 +8278,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -8394,7 +8399,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show inbox done',
@@ -8407,7 +8412,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msglen = len(msg)
                         self._set_headers('application/json',
                                           msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -8528,7 +8533,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show dms done',
@@ -8541,7 +8546,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8661,7 +8666,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show replies 2 done',
@@ -8674,7 +8679,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8794,7 +8799,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show media 2 done',
@@ -8808,7 +8813,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8936,7 +8941,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -8950,7 +8955,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -9076,7 +9081,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -9090,7 +9095,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -9175,7 +9180,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -9256,7 +9261,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -9374,7 +9379,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show shares 2 done',
@@ -9387,7 +9392,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -9504,7 +9509,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show events done',
@@ -9516,7 +9521,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9624,7 +9629,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show outbox done',
@@ -9637,7 +9642,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -9744,7 +9749,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show moderation done',
@@ -9758,7 +9763,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9860,7 +9865,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     followsPerPage).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
-                                      msglen, cookie, callingDomain)
+                                      msglen, cookie, callingDomain, False)
                     self._write(msg)
                     self.server.GETbusy = False
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -9873,7 +9878,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9976,7 +9981,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     followsPerPage).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self.server.GETbusy = False
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -9989,7 +9994,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -10013,7 +10018,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
 
     def _getFeaturedTagsCollection(self, callingDomain: str,
@@ -10041,7 +10046,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
 
     def _showPersonProfile(self, authorized: bool,
@@ -10113,7 +10118,7 @@ class PubServer(BaseHTTPRequestHandler):
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'show profile 4 done',
@@ -10126,13 +10131,13 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 if 'application/ld+json' in acceptStr:
                     self._set_headers('application/ld+json', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                 elif 'application/jrd+json' in acceptStr:
                     self._set_headers('application/jrd+json', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                 else:
                     self._set_headers('application/activity+json', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10190,7 +10195,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog view done', 'blog page')
@@ -10281,7 +10286,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = css.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/css', msglen,
-                              None, callingDomain)
+                              None, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'show login screen done',
@@ -10320,7 +10325,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(qrFilename)
                 self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'login screen logo done',
@@ -10359,7 +10364,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -10400,7 +10405,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -10446,7 +10451,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers_etag(bgFilename,
                                                    'image/' + ext,
                                                    bgBinary, None,
-                                                   self.server.domainFull)
+                                                   self.server.domainFull,
+                                                   False)
                             self._write(bgBinary)
                             self._benchmarkGETtimings(GETstartTime,
                                                       GETtimings,
@@ -10483,7 +10489,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(mediaFilename,
                                    mediaFileType,
                                    mediaBinary, None,
-                                   self.server.domainFull)
+                                   self.server.domainFull, False)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show media done',
@@ -10539,7 +10545,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(avatarFilename,
                                    mediaImageType,
                                    mediaBinary, None,
-                                   self.server.domainFull)
+                                   self.server.domainFull, True)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'icon shown done',
@@ -10599,7 +10605,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
-                          cookie, callingDomain)
+                          cookie, callingDomain, False)
         self._write(msg)
         self.server.GETbusy = False
         return True
@@ -10658,7 +10664,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.GETbusy = False
             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -10703,7 +10709,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10737,7 +10743,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10772,7 +10778,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10808,7 +10814,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10836,7 +10842,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json',
-                          msglen, None, callingDomain)
+                          msglen, None, callingDomain, False)
         self._write(msg)
 
     def do_GET(self):
@@ -11061,7 +11067,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
-                                      msglen, None, callingDomain)
+                                      msglen, None, callingDomain, False)
                     self._write(msg)
                     return
                 elif catalogType == 'csv':
@@ -11074,7 +11080,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'shares').encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
-                                      msglen, None, callingDomain)
+                                      msglen, None, callingDomain, False)
                     self._write(msg)
                     return
                 self._404()
@@ -11154,7 +11160,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
-                                      msglen, None, callingDomain)
+                                      msglen, None, callingDomain, False)
                     self._write(msg)
                     return
                 elif catalogType == 'csv':
@@ -11167,7 +11173,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'wanted').encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
-                                      msglen, None, callingDomain)
+                                      msglen, None, callingDomain, False)
                     self._write(msg)
                     return
                 self._404()
@@ -11398,7 +11404,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = xmlStr.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/xrd+xml', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
             return
 
@@ -11447,7 +11453,7 @@ class PubServer(BaseHTTPRequestHandler):
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json',
-                              msglen, None, callingDomain)
+                              msglen, None, callingDomain, False)
             self._write(msg)
             return
 
@@ -11506,7 +11512,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'rss3 done', 'blog view')
@@ -11553,7 +11559,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'blog page',
@@ -11606,7 +11612,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'person options done',
@@ -11646,7 +11652,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog post 2 done',
@@ -11680,7 +11686,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog post 2 done',
@@ -11713,7 +11719,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog post 2 done',
@@ -11746,7 +11752,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog post 2 done',
@@ -12018,7 +12024,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(mediaFilename)
                     self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
-                                           self.server.domainFull)
+                                           self.server.domainFull, False)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'profile.css done',
@@ -12059,7 +12065,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(screenFilename)
                     self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
-                                           self.server.domainFull)
+                                           self.server.domainFull, False)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'manifest logo done',
@@ -12101,7 +12107,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(iconFilename,
                                            mimeTypeStr,
                                            mediaBinary, cookie,
-                                           self.server.domainFull)
+                                           self.server.domainFull, False)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show screenshot done',
@@ -12375,7 +12381,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self.server.GETbusy = False
                 return
@@ -12414,7 +12420,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       accessKeys,
                                       sharedItemsDomains).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
                 self.server.GETbusy = False
                 return
@@ -12498,7 +12505,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.textModeBanner,
                                  accessKeys).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
                 self.server.GETbusy = False
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12516,7 +12524,8 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
             self.server.GETbusy = False
             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12549,7 +12558,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.textModeBanner,
                                    accessKeys).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
                 self.server.GETbusy = False
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12591,7 +12601,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.path).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self.server.GETbusy = False
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12988,7 +12998,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self.server.GETbusy = False
                         return
@@ -13590,7 +13600,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'authenticated fetch',
@@ -13655,7 +13665,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
-                               etag, callingDomain)
+                               etag, callingDomain, False)
 
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str,
@@ -13902,7 +13912,7 @@ class PubServer(BaseHTTPRequestHandler):
                         messageJsonLen = len(messageJson)
                         self._set_headers('text/html',
                                           messageJsonLen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(messageJson)
                         return 1
                     else:
@@ -14580,7 +14590,7 @@ class PubServer(BaseHTTPRequestHandler):
             msglen = len(msg)
             self._set_headers('application/json',
                               msglen,
-                              None, callingDomain)
+                              None, callingDomain, False)
             self._write(msg)
             return True
         return False
