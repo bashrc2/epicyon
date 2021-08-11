@@ -38,8 +38,14 @@ def setActorLanguages(baseDir: str, actorJson: {}, languagesStr: str) -> None:
     separator = ','
     if '/' in languagesStr:
         separator = '/'
+    elif ',' in languagesStr:
+        separator = ','
     elif ';' in languagesStr:
         separator = ';'
+    elif '+' in languagesStr:
+        separator = '+'
+    elif ' ' in languagesStr:
+        separator = ' '
     langList = languagesStr.lower().split(separator)
     langList2 = []
     for lang in langList:
