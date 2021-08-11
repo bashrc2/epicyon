@@ -694,6 +694,7 @@ class PubServer(BaseHTTPRequestHandler):
                 cookieStr += '; HttpOnly; SameSite=Strict'
             self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
+        self.send_header('Origin', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         self.send_header('Cache-Control', 'max-age=0')
