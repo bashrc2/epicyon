@@ -2296,12 +2296,15 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, block button
         # See htmlPersonOptions
         if '&submitBlock=' in optionsConfirmParams:
-            if debug:
-                print('Adding block by ' + chooserNickname +
-                      ' of ' + optionsActor)
+            print('Adding block by ' + chooserNickname +
+                  ' of ' + optionsActor)
             addBlock(baseDir, chooserNickname,
                      domain,
                      optionsNickname, optionsDomainFull)
+            # send block activity
+            self._sendBlock(httpPrefix,
+                            chooserNickname, domainFull,
+                            optionsNickname, optionsDomainFull)
 
         # person options screen, unblock button
         # See htmlPersonOptions
@@ -2767,13 +2770,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     print('You cannot block yourself!')
             else:
-                if debug:
-                    print('Adding block by ' + blockerNickname +
-                          ' of ' + blockingActor)
+                print('Adding block by ' + blockerNickname +
+                      ' of ' + blockingActor)
                 addBlock(baseDir, blockerNickname,
                          domain,
                          blockingNickname,
                          blockingDomainFull)
+                # send block activity
+                self._sendBlock(httpPrefix,
+                                blockerNickname, domainFull,
+                                blockingNickname, blockingDomainFull)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
@@ -10872,6 +10878,33 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json',
                           msglen, None, callingDomain, False)
         self._write(msg)
+
+    def _sendBlock(self, httpPrefix: str,
+                   blockerNickname: str, blockerDomainFull: str,
+                   blockingNickname: str, blockingDomainFull: str) -> bool:
+        if blockerDomainFull == blockingDomainFull:
+            if blockerNickname == blockingNickname:
+                # don't block self
+                return False
+        blockActor = \
+            httpPrefix + '://' + blockerDomainFull + '/users/' + \
+            blockerNickname
+        toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+        ccUrl = blockActor + '/followers'
+
+        blockedUrl = \
+            httpPrefix + '://' + blockingDomainFull + \
+            '/@' + blockingNickname
+        blockJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Block',
+            'actor': blockActor,
+            'object': blockedUrl,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        }
+        self._postToOutbox(blockJson, self.server.projectVersion)
+        return True
 
     def do_GET(self):
         callingDomain = self.server.domainFull
