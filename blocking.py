@@ -328,25 +328,25 @@ def isBlocked(baseDir: str, nickname: str, domain: str,
 
 def outboxBlock(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, port: int,
-                messageJson: {}, debug: bool) -> None:
+                messageJson: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
         if debug:
             print('DEBUG: block - no type')
-        return
+        return False
     if not messageJson['type'] == 'Block':
         if debug:
             print('DEBUG: not a block')
-        return
+        return False
     if not messageJson.get('object'):
         if debug:
             print('DEBUG: no object in block')
-        return
+        return False
     if not isinstance(messageJson['object'], str):
         if debug:
             print('DEBUG: block object is not string')
-        return
+        return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
 
@@ -354,31 +354,31 @@ def outboxBlock(baseDir: str, httpPrefix: str,
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s block object is not a status')
-        return
+        return False
     if not hasUsersPath(messageId):
         if debug:
             print('DEBUG: c2s block object has no nickname')
-        return
+        return False
     domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s block post not found in inbox or outbox')
             print(messageId)
-        return
+        return False
     nicknameBlocked = getNicknameFromActor(messageJson['object'])
     if not nicknameBlocked:
         print('WARN: unable to find nickname in ' + messageJson['object'])
-        return
+        return False
     domainBlocked, portBlocked = getDomainFromActor(messageJson['object'])
     domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
 
     addBlock(baseDir, nickname, domain,
              nicknameBlocked, domainBlockedFull)
-    # TODO send block activity
 
     if debug:
         print('DEBUG: post blocked via c2s - ' + postFilename)
+    return True
 
 
 def outboxUndoBlock(baseDir: str, httpPrefix: str,
