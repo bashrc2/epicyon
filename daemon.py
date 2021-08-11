@@ -762,7 +762,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currEtag = etagFile.read()
                 except BaseException:
                     pass
-                if oldEtag == currEtag:
+                if currEtag and oldEtag == currEtag:
                     # The file has not changed
                     return True
         return False
