@@ -713,7 +713,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_base(fileFormat, length, None, callingDomain,
                                permissive)
         if etag:
-            self.send_header('ETag', etag)
+            self.send_header('ETag', '"' + etag + '"')
         self.end_headers()
 
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
@@ -738,7 +738,7 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
         if etag:
-            self.send_header('ETag', etag)
+            self.send_header('ETag', '"' + etag + '"')
         if lastModified:
             self.send_header('last-modified', lastModified)
         self.end_headers()
