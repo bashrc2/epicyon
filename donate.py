@@ -8,14 +8,14 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def _getDonationTypes() -> str:
+def _getDonationTypes() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
             'subscribestar')
 
 
-def _getWebsiteStrings() -> str:
-    return ('www', 'website', 'web', 'homepage')
+def _getWebsiteStrings() -> []:
+    return ['www', 'website', 'web', 'homepage']
 
 
 def getDonationUrl(actorJson: {}) -> str:
@@ -43,12 +43,13 @@ def getDonationUrl(actorJson: {}) -> str:
     return ''
 
 
-def getWebsite(actorJson: {}) -> str:
+def getWebsite(actorJson: {}, translate: {}) -> str:
     """Returns a web address link
     """
     if not actorJson.get('attachment'):
         return ''
     matchStrings = _getWebsiteStrings()
+    matchStrings.append(translate['Website'])
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -129,7 +130,7 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
     actorJson['attachment'].append(newDonate)
 
 
-def setWebsite(actorJson: {}, websiteUrl: str) -> None:
+def setWebsite(actorJson: {}, websiteUrl: str, translate: {}) -> None:
     """Sets a web address
     """
     notUrl = False
@@ -146,6 +147,7 @@ def setWebsite(actorJson: {}, websiteUrl: str) -> None:
         actorJson['attachment'] = []
 
     matchStrings = _getWebsiteStrings()
+    matchStrings.append(translate['Website'])
 
     # remove any existing value
     propertyFound = None

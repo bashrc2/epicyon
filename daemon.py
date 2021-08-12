@@ -4837,15 +4837,17 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change website
-                    currentWebsite = getWebsite(actorJson)
+                    currentWebsite = getWebsite(actorJson,
+                                                self.server.translate)
                     if fields.get('websiteUrl'):
                         if fields['websiteUrl'] != currentWebsite:
                             setWebsite(actorJson,
-                                       fields['websiteUrl'])
+                                       fields['websiteUrl'],
+                                       self.server.translate)
                             actorChanged = True
                     else:
                         if currentWebsite:
-                            setWebsite(actorJson, '')
+                            setWebsite(actorJson, '', self.server.translate)
                             actorChanged = True
 
                     # account moved to new address
@@ -6184,7 +6186,7 @@ class PubServer(BaseHTTPRequestHandler):
                     movedTo = actorJson['movedTo']
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
-                websiteUrl = getWebsite(actorJson)
+                websiteUrl = getWebsite(actorJson, self.server.translate)
                 xmppAddress = getXmppAddress(actorJson)
                 matrixAddress = getMatrixAddress(actorJson)
                 ssbAddress = getSSBAddress(actorJson)

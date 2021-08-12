@@ -548,7 +548,7 @@ def htmlProfile(rssIconAtTop: bool,
 
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
-    websiteUrl = getWebsite(profileJson)
+    websiteUrl = getWebsite(profileJson, translate)
     PGPpubKey = getPGPpubKey(profileJson)
     PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
@@ -1774,7 +1774,8 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
                       donateUrl, 'https://...')
 
     editProfileForm += \
-        editTextField('Website', 'websiteUrl', websiteUrl, 'https://...')
+        editTextField(translate['Website'], 'websiteUrl',
+                      websiteUrl, 'https://...')
 
     editProfileForm += \
         editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
@@ -1863,7 +1864,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         if actorJson.get('movedTo'):
             movedTo = actorJson['movedTo']
         donateUrl = getDonationUrl(actorJson)
-        websiteUrl = getWebsite(actorJson)
+        websiteUrl = getWebsite(actorJson, translate)
         xmppAddress = getXmppAddress(actorJson)
         matrixAddress = getMatrixAddress(actorJson)
         ssbAddress = getSSBAddress(actorJson)
