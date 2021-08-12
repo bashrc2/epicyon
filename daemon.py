@@ -1330,6 +1330,8 @@ class PubServer(BaseHTTPRequestHandler):
         headersDict['signature'] = self.headers['signature']
         if self.headers.get('Date'):
             headersDict['Date'] = self.headers['Date']
+        elif self.headers.get('date'):
+            headersDict['Date'] = self.headers['date']
         if self.headers.get('digest'):
             headersDict['digest'] = self.headers['digest']
         if self.headers.get('Collection-Synchronization'):
