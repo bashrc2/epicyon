@@ -28,6 +28,8 @@ from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acctDir
+from conversation import muteConversation
+from conversation import unmuteConversation
 
 
 def addGlobalBlock(baseDir: str,
@@ -468,6 +470,11 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
     if hasObjectDict(postJsonObject):
         domainFull = getFullDomain(domain, port)
         actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+        if postJsonObject['object'].get('conversation'):
+            muteConversation(baseDir, nickname, domain,
+                             postJsonObject['object']['conversation'])
+
         # does this post have ignores on it from differenent actors?
         if not postJsonObject['object'].get('ignores'):
             if debug:
@@ -546,6 +553,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         print('UNMUTE: ' + muteFilename + ' file removed')
 
     if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('conversation'):
+            unmuteConversation(baseDir, nickname, domain,
+                               postJsonObject['object']['conversation'])
+
         if postJsonObject['object'].get('ignores'):
             domainFull = getFullDomain(domain, port)
             actor = httpPrefix + '://' + domainFull + '/users/' + nickname

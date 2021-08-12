@@ -1487,6 +1487,38 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
                 f.write(newlines)
 
 
+def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
+                            postJsonObject: {}) -> None:
+    """Deletes a post from a conversation
+    """
+    if not hasObjectDict(postJsonObject):
+        return False
+    if not postJsonObject['object'].get('conversation'):
+        return False
+    if not postJsonObject['object'].get('id'):
+        return False
+    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    conversationId = postJsonObject['object']['conversation']
+    conversationId = conversationId.replace('/', '#')
+    postId = postJsonObject['object']['id']
+    conversationFilename = conversationDir + '/' + conversation
+    if not os.path.isfile(conversationFilename):
+        return False
+    conversationStr = ''
+    with open(conversationFilename, 'r') as fp:
+        conversationStr = fp.read()
+    if postId + '\n' not in conversationStr:
+        return False
+    conversationStr = conversationStr.replace(postId + '\n', '')
+    if conversationStr:
+        with open(conversationFilename, 'w+') as fp:
+            fp.write(conversationStr)
+    else:
+        if os.path.isfile(conversationFilename + '.muted'):
+            os.remove(conversationFilename + '.muted')
+        os.remove(conversationFilename)
+
+
 def deletePost(baseDir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool, recentPostsCache: {}) -> None:
@@ -1513,6 +1545,9 @@ def deletePost(baseDir: str, httpPrefix: str,
 
     # remove from recent posts cache in memory
     removePostFromCache(postJsonObject, recentPostsCache)
+
+    # remove from conversation index
+    _deleteConversationPost(baseDir, nickname, domain, postJsonObject)
 
     # remove any attachment
     _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)

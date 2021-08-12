@@ -4321,9 +4321,16 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
     return None
 
 
-def isMuted(baseDir: str, nickname: str, domain: str, postId: str) -> bool:
+def isMuted(baseDir: str, nickname: str, domain: str, postId: str,
+            conversationId: str) -> bool:
     """Returns true if the given post is muted
     """
+    if conversationId:
+        convMutedFilename = \
+            acctDir(baseDir, nickname, domain) + '/conversation/' + \
+            conversationId.replace('/', '#') + '.muted'
+        if os.path.isfile(convMutedFilename):
+            return True
     postFilename = locatePost(baseDir, nickname, domain, postId)
     if not postFilename:
         return False

@@ -91,6 +91,7 @@ from speaker import updateSpeaker
 from announce import isSelfAnnounce
 from announce import createAnnounce
 from notifyOnPost import notifyWhenPersonPosts
+from conversation import updateConversation
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2483,12 +2484,18 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
+
+                    conversationId = None
+                    if postJsonObject['object'].get('conversation'):
+                        conversationId = \
+                            postJsonObject['object']['conversation']
+
                     if postJsonObject['object'].get('inReplyTo'):
                         inReplyTo = postJsonObject['object']['inReplyTo']
                         if inReplyTo:
                             if isinstance(inReplyTo, str):
                                 if not isMuted(baseDir, nickname, domain,
-                                               inReplyTo):
+                                               inReplyTo, conversationId):
                                     _replyNotify(baseDir, handle,
                                                  httpPrefix + '://' + domain +
                                                  '/users/' + nickname +
@@ -2585,9 +2592,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   ' post as html to cache in ' +
                                   timeDiff + ' mS')
 
+            handleName = handle.split('@')[0]
+            updateConversation(baseDir, handleName, domain, postJsonObject)
+
             _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
-            handleName = handle.split('@')[0]
             storeHashTags(baseDir, handleName, postJsonObject)
 
             # send the post out to group members
