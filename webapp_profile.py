@@ -1667,7 +1667,8 @@ def _htmlEditProfileContactInfo(nickname: str,
     return editProfileForm
 
 
-def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
+def _htmlEditProfileOptions(isAdmin: bool,
+                            manuallyApprovesFollowers: str,
                             isBot: str, isGroup: str,
                             followDMs: str, removeTwitter: str,
                             notifyLikes: str, hideLikeButton: str,
@@ -1681,9 +1682,10 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     editProfileForm += \
         editCheckBox(translate['This is a bot account'],
                      'isBot', isBot)
-    editProfileForm += \
-        editCheckBox(translate['This is a group account'],
-                     'isGroup', isGroup)
+    if isAdmin:
+        editProfileForm += \
+            editCheckBox(translate['This is a group account'],
+                         'isGroup', isGroup)
     editProfileForm += \
         editCheckBox(translate['Only people I follow can send me DMs'],
                      'followDMs', followDMs)
@@ -1932,8 +1934,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
        path.startswith('/users/' + str(adminNickname) + '/'):
         graphicsStr = _htmlEditProfileGraphicDesign(baseDir, translate)
 
+    isAdmin = False
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
+            isAdmin = True
             # shared items section
             sharesFederationStr = \
                 _htmlEditProfileSharedItems(baseDir, nickname,
@@ -1982,7 +1986,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # Option checkboxes
     editProfileForm += \
-        _htmlEditProfileOptions(manuallyApprovesFollowers,
+        _htmlEditProfileOptions(isAdmin, manuallyApprovesFollowers,
                                 isBot, isGroup, followDMs, removeTwitter,
                                 notifyLikes, hideLikeButton, translate)
 

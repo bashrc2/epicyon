@@ -5383,8 +5383,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('isGroup'):
                             if fields['isGroup'] == 'on':
                                 if actorJson['type'] != 'Group':
-                                    actorJson['type'] = 'Group'
-                                    actorChanged = True
+                                    # only allow admin to create groups
+                                    if path.startswith('/users/' +
+                                                       adminNickname + '/'):
+                                        actorJson['type'] = 'Group'
+                                        actorChanged = True
                         else:
                             # this account is a person (default)
                             if actorJson['type'] != 'Person':
