@@ -1876,18 +1876,6 @@ def _groupHandle(baseDir: str, handle: str) -> bool:
     return actorJson['type'] == 'Group'
 
 
-def _getGroupName(baseDir: str, handle: str) -> str:
-    """Returns the preferred name of a group
-    """
-    actorFile = baseDir + '/accounts/' + handle + '.json'
-    if not os.path.isfile(actorFile):
-        return False
-    actorJson = loadJson(actorFile)
-    if not actorJson:
-        return 'Group'
-    return actorJson['name']
-
-
 def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         postJsonObject: {},
                         httpPrefix: str, federationList: [],

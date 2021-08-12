@@ -2787,6 +2787,17 @@ def isGroupActor(baseDir: str, actor: str, personCache: {},
     return False
 
 
+def isGroupAccount(baseDir: str, nickname: str, domain: str) -> bool:
+    """Returns true if the given account is a group
+    """
+    accountFilename = acctDir(baseDir, nickname, domain) + '.json'
+    if not os.path.isfile(accountFilename):
+        return False
+    if '"type": "Group"' in open(accountFilename).read():
+        return True
+    return False
+
+
 def getCurrencies() -> {}:
     """Returns a dictionary of currencies
     """

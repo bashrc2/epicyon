@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import isGroupAccount
 from utils import getActorLanguagesList
 from utils import getCategoryTypes
 from utils import getSupportedLanguages
@@ -1291,6 +1292,7 @@ def testFollowBetweenServers():
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
     assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
+    assert not isGroupAccount(aliceDir, 'alice', aliceDomain)
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
@@ -1485,6 +1487,7 @@ def testSharedItemsFederation():
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
     assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
+    assert not isGroupAccount(bobDir, 'bob', bobDomain)
 
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
@@ -1914,6 +1917,8 @@ def testGroupFollow():
         print('Alice following.txt does not contain !testgroup@' +
               testgroupDomain + ':' + str(testgroupPort))
     assert isGroupActor(aliceDir, testgroupActor, alicePersonCache)
+    assert not isGroupAccount(aliceDir, 'alice', aliceDomain)
+    assert isGroupAccount(testgroupDir, 'testgroup', testgroupDomain)
     assert '!testgroup' in followingStr
     assert testgroupHandle in open(aliceFollowingFilename).read()
     assert testgroupHandle in open(aliceFollowingCalendarFilename).read()

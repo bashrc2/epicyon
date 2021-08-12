@@ -29,6 +29,7 @@ from utils import isAccountDir
 from utils import getUserPaths
 from utils import acctDir
 from utils import hasGroupType
+from utils import isGroupAccount
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -750,6 +751,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
 
         groupAccount = \
             hasGroupType(baseDir, messageJson['actor'], personCache)
+        if groupAccount and isGroupAccount(baseDir, nickname, domain):
+            print('Group cannot follow a group')
+            return False
 
         print('Storing follow request for approval')
         return _storeFollowRequest(baseDir,
@@ -791,6 +795,10 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                     if debug:
                         print(approveHandle + ' / ' + messageJson['actor'] +
                               ' is Group: ' + str(groupAccount))
+                    if groupAccount and \
+                       isGroupAccount(baseDir, nickname, domain):
+                        print('Group cannot follow a group')
+                        return False
                     try:
                         with open(followersFilename, 'r+') as followersFile:
                             content = followersFile.read()

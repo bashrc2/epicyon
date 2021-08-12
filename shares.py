@@ -1584,7 +1584,12 @@ def _generateNextSharesTokenUpdate(baseDir: str,
     """Creates a file containing the next date when the shared items token
     for this instance will be updated
     """
-    tokenUpdateFilename = baseDir + '/accounts/.tokenUpdate'
+    tokenUpdateDir = baseDir + '/accounts'
+    if not os.path.isdir(baseDir):
+        os.mkdir(baseDir)
+    if not os.path.isdir(tokenUpdateDir):
+        os.mkdir(tokenUpdateDir)
+    tokenUpdateFilename = tokenUpdateDir + '/.tokenUpdate'
     nextUpdateSec = None
     if os.path.isfile(tokenUpdateFilename):
         with open(tokenUpdateFilename, 'r') as fp:
