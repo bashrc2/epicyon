@@ -559,7 +559,7 @@ def htmlProfile(rssIconAtTop: bool,
     briarAddress = getBriarAddress(profileJson)
     jamiAddress = getJamiAddress(profileJson)
     cwtchAddress = getCwtchAddress(profileJson)
-    if donateUrl or xmppAddress or matrixAddress or \
+    if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
        jamiAddress or cwtchAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
@@ -570,6 +570,10 @@ def htmlProfile(rssIconAtTop: bool,
                 '    <p><a href="' + donateUrl + \
                 '"><button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
+        if websiteUrl:
+            donateSection += \
+                '<p>' + translate['Website'] + ': <a href="' + \
+                websiteUrl + '">' + websiteUrl + '</a></p>\n'
         if emailAddress:
             donateSection += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
@@ -1854,7 +1858,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     isBot = isGroup = followDMs = removeTwitter = ''
     notifyLikes = hideLikeButton = mediaInstanceStr = ''
     blogsInstanceStr = newsInstanceStr = movedTo = ''
-    bioStr = donateUrl = emailAddress = PGPpubKey = ''
+    bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
     cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
