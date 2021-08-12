@@ -687,7 +687,7 @@ class PubServer(BaseHTTPRequestHandler):
             # use lower case
             self.send_header('content-type', fileFormat)
             if length > -1:
-                self.send_header('content-Length', str(length))
+                self.send_header('content-length', str(length))
             self.send_header('host', callingDomain)
             return
         self.send_header('Content-type', fileFormat)
