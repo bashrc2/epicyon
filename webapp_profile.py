@@ -34,6 +34,7 @@ from webfinger import webfingerHandle
 from posts import parseUserFeed
 from posts import getPersonBox
 from donate import getDonationUrl
+from donate import getWebsite
 from xmpp import getXmppAddress
 from matrix import getMatrixAddress
 from ssb import getSSBAddress
@@ -547,6 +548,7 @@ def htmlProfile(rssIconAtTop: bool,
 
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
+    websiteUrl = getWebsite(profileJson)
     PGPpubKey = getPGPpubKey(profileJson)
     PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
@@ -1719,7 +1721,7 @@ def _getSupportedLanguagesSorted(baseDir: str) -> str:
 
 
 def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
-                         movedTo: str, donateUrl: str,
+                         movedTo: str, donateUrl: str, websiteUrl: str,
                          blogAddress: str, actorJson: {},
                          translate: {}) -> str:
     """main info on edit profile screen
@@ -1770,6 +1772,9 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm += \
         editTextField(translate['Donations link'], 'donateUrl',
                       donateUrl, 'https://...')
+
+    editProfileForm += \
+        editTextField('Website', 'websiteUrl', websiteUrl, 'https://...')
 
     editProfileForm += \
         editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
@@ -1858,6 +1863,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         if actorJson.get('movedTo'):
             movedTo = actorJson['movedTo']
         donateUrl = getDonationUrl(actorJson)
+        websiteUrl = getWebsite(actorJson)
         xmppAddress = getXmppAddress(actorJson)
         matrixAddress = getMatrixAddress(actorJson)
         ssbAddress = getSSBAddress(actorJson)
@@ -1981,7 +1987,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     # main info
     editProfileForm += \
         _htmlEditProfileMain(baseDir, displayNickname, bioStr,
-                             movedTo, donateUrl,
+                             movedTo, donateUrl, websiteUrl,
                              blogAddress, actorJson, translate)
 
     # Option checkboxes

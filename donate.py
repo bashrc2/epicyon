@@ -14,6 +14,10 @@ def _getDonationTypes() -> str:
             'subscribestar')
 
 
+def _getWebsiteStrings() -> str:
+    return ('www', 'website', 'web', 'homepage')
+
+
 def getDonationUrl(actorJson: {}) -> str:
     """Returns a link used for donations
     """
@@ -36,6 +40,27 @@ def getDonationUrl(actorJson: {}) -> str:
         donateUrl = propertyValue['value'].split('<a href="')[1]
         if '"' in donateUrl:
             return donateUrl.split('"')[0]
+    return ''
+
+
+def getWebsite(actorJson: {}) -> str:
+    """Returns a web address link
+    """
+    if not actorJson.get('attachment'):
+        return ''
+    matchStrings = _getWebsiteStrings()
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if propertyValue['name'].lower() not in matchStrings:
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        return propertyValue['value']
     return ''
 
 
@@ -102,3 +127,57 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
         "value": donateValue
     }
     actorJson['attachment'].append(newDonate)
+
+
+def setWebsite(actorJson: {}, websiteUrl: str) -> None:
+    """Sets a web address
+    """
+    notUrl = False
+    if '.' not in websiteUrl:
+        notUrl = True
+    if '://' not in websiteUrl:
+        notUrl = True
+    if ' ' in websiteUrl:
+        notUrl = True
+    if '<' in websiteUrl:
+        notUrl = True
+
+    if not actorJson.get('attachment'):
+        actorJson['attachment'] = []
+
+    matchStrings = _getWebsiteStrings()
+
+    # remove any existing value
+    propertyFound = None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower() not in matchStrings:
+            continue
+        propertyFound = propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyFound)
+    if notUrl:
+        return
+
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower() not in matchStrings:
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        propertyValue['value'] = websiteUrl
+        return
+
+    newEntry = {
+        "name": 'Website',
+        "type": "PropertyValue",
+        "value": websiteUrl
+    }
+    actorJson['attachment'].append(newEntry)

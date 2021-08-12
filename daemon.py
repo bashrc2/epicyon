@@ -50,6 +50,8 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from donate import getWebsite
+from donate import setWebsite
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
@@ -4834,6 +4836,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setDonationUrl(actorJson, '')
                             actorChanged = True
 
+                    # change website
+                    currentWebsite = getWebsite(actorJson)
+                    if fields.get('websiteUrl'):
+                        if fields['websiteUrl'] != currentWebsite:
+                            setWebsite(actorJson,
+                                       fields['websiteUrl'])
+                            actorChanged = True
+                    else:
+                        if currentWebsite:
+                            setWebsite(actorJson, '')
+                            actorChanged = True
+
                     # account moved to new address
                     movedTo = ''
                     if actorJson.get('movedTo'):
@@ -6146,6 +6160,7 @@ class PubServer(BaseHTTPRequestHandler):
             if len(optionsList) > 3:
                 optionsLink = optionsList[3]
             donateUrl = None
+            websiteUrl = None
             PGPpubKey = None
             PGPfingerprint = None
             xmppAddress = None
@@ -6169,6 +6184,7 @@ class PubServer(BaseHTTPRequestHandler):
                     movedTo = actorJson['movedTo']
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
+                websiteUrl = getWebsite(actorJson)
                 xmppAddress = getXmppAddress(actorJson)
                 matrixAddress = getMatrixAddress(actorJson)
                 ssbAddress = getSSBAddress(actorJson)
@@ -6207,7 +6223,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsActor,
                                     optionsProfileUrl,
                                     optionsLink,
-                                    pageNumber, donateUrl,
+                                    pageNumber, donateUrl, websiteUrl,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
                                     toxAddress, briarAddress,
