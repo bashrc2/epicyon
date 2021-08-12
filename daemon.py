@@ -4839,11 +4839,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # change website
                     currentWebsite = \
                         getWebsite(actorJson, self.server.translate)
-                    print('websiteUrl: 0')
                     if fields.get('websiteUrl'):
-                        print('websiteUrl: 1 ' + fields['websiteUrl'])
                         if fields['websiteUrl'] != currentWebsite:
-                            print('websiteUrl: 2 ' + fields['websiteUrl'])
                             setWebsite(actorJson,
                                        fields['websiteUrl'],
                                        self.server.translate)
