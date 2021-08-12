@@ -1922,7 +1922,6 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     if not hasObjectDict(postJsonObject):
         return
     nickname = handle.split('@')[0].replace('!', '')
-#    groupname = _getGroupName(baseDir, handle)
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
     groupActor = httpPrefix + '://' + domainFull + '/users/' + nickname

@@ -749,7 +749,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                       messageJson['actor'])
 
         groupAccount = \
-            hasGroupType(baseDir, messageJson['object'], personCache)
+            hasGroupType(baseDir, messageJson['actor'], personCache)
 
         print('Storing follow request for approval')
         return _storeFollowRequest(baseDir,
@@ -786,8 +786,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
                     groupAccount = \
-                        hasGroupType(baseDir, messageJson['actor'],
-                                     personCache)
+                        hasGroupType(baseDir,
+                                     messageJson['actor'], personCache)
                     if debug:
                         print(approveHandle + ' / ' + messageJson['actor'] +
                               ' is Group: ' + str(groupAccount))
