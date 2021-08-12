@@ -1501,7 +1501,7 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
     conversationId = postJsonObject['object']['conversation']
     conversationId = conversationId.replace('/', '#')
     postId = postJsonObject['object']['id']
-    conversationFilename = conversationDir + '/' + conversation
+    conversationFilename = conversationDir + '/' + conversationId
     if not os.path.isfile(conversationFilename):
         return False
     conversationStr = ''

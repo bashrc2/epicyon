@@ -50,7 +50,7 @@ def muteConversation(baseDir: str, nickname: str, domain: str,
                      conversationId: str) -> None:
     """Mutes the given conversation
     """
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'    
+    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
     conversationFilename = \
         conversationDir + '/' + conversationId.replace('/', '#')
     if not os.path.isfile(conversationFilename):

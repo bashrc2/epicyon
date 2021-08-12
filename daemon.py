@@ -683,17 +683,12 @@ class PubServer(BaseHTTPRequestHandler):
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
                           callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
-        if permissive:
-            # use lower case
-            self.send_header('content-type', fileFormat)
-            if length > -1:
-                self.send_header('content-length', str(length))
-            self.send_header('host', callingDomain)
-            return
         self.send_header('Content-type', fileFormat)
         if length > -1:
             self.send_header('Content-Length', str(length))
         self.send_header('Host', callingDomain)
+        if permissive:
+            return
         if cookie:
             cookieStr = cookie
             if 'HttpOnly;' not in cookieStr:
@@ -718,10 +713,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_base(fileFormat, length, None, callingDomain,
                                permissive)
         if etag:
-            if permissive:
-                self.send_header('etag', '"' + etag + '"')
-            else:
-                self.send_header('ETag', '"' + etag + '"')
+            self.send_header('ETag', '"' + etag + '"')
         self.end_headers()
 
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
@@ -746,10 +738,7 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
         if etag:
-            if permissive:
-                self.send_header('etag', '"' + etag + '"')
-            else:
-                self.send_header('ETag', '"' + etag + '"')
+            self.send_header('ETag', '"' + etag + '"')
         if lastModified:
             self.send_header('last-modified', lastModified)
         self.end_headers()
