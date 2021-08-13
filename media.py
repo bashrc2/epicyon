@@ -96,20 +96,21 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
          camMake, camModel, camSerialNumber) = \
             spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
                              decoySeed, None, None)
-        os.system('exiftool -artist="' + nickname + '" ' +
-                  '-Make="' + camMake + '" ' +
-                  '-Model="' + camModel + '" ' +
-                  '-Comment="' + str(camSerialNumber) + '" ' +
-                  '-DateTimeOriginal="' + published + '" ' +
-                  '-FileModifyDate="' + published + '" ' +
-                  '-CreateDate="' + published + '" ' +
-                  '-GPSLongitudeRef=' + longitudeRef + ' ' +
-                  '-GPSAltitude=0 ' +
-                  '-GPSLongitude=' + str(longitude) + ' ' +
-                  '-GPSLatitudeRef=' + latitudeRef + ' ' +
-                  '-GPSLatitude=' + str(latitude) + ' ' +
-                  '-Comment="" ' +
-                  outputFilename)  # nosec
+        if os.system('exiftool -artist="' + nickname + '" ' +
+                     '-Make="' + camMake + '" ' +
+                     '-Model="' + camModel + '" ' +
+                     '-Comment="' + str(camSerialNumber) + '" ' +
+                     '-DateTimeOriginal="' + published + '" ' +
+                     '-FileModifyDate="' + published + '" ' +
+                     '-CreateDate="' + published + '" ' +
+                     '-GPSLongitudeRef=' + longitudeRef + ' ' +
+                     '-GPSAltitude=0 ' +
+                     '-GPSLongitude=' + str(longitude) + ' ' +
+                     '-GPSLatitudeRef=' + latitudeRef + ' ' +
+                     '-GPSLatitude=' + str(latitude) + ' ' +
+                     '-Comment="" ' +
+                     outputFilename) != 0:  # nosec
+            print('ERROR: exiftool failed to run')
     else:
         print('ERROR: exiftool is not installed')
         return
