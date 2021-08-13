@@ -116,7 +116,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         return
 
 
-def _convertImageToLowBandwidth(imageFilename: str) -> None:
+def convertImageToLowBandwidth(imageFilename: str) -> None:
     """Converts an image to a low bandwidth version
     """
     lowBandwidthFilename = imageFilename + '.low'
@@ -136,9 +136,9 @@ def _convertImageToLowBandwidth(imageFilename: str) -> None:
     ctr = 0
     while not os.path.isfile(lowBandwidthFilename):
         print('Waiting for low bandwidth image conversion ' + str(ctr))
-        time.sleep(0.5)
+        time.sleep(0.2)
         ctr += 1
-        if ctr > 20:
+        if ctr > 100:
             print('WARN: timed out waiting for low bandwidth image conversion')
             break
     if os.path.isfile(lowBandwidthFilename):
@@ -303,7 +303,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
     if baseDir:
         if mediaType.startswith('image/'):
             if lowBandwidth:
-                _convertImageToLowBandwidth(imageFilename)
+                convertImageToLowBandwidth(imageFilename)
             processMetaData(baseDir, nickname, domain,
                             imageFilename, mediaFilename, city)
         else:

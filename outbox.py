@@ -192,7 +192,8 @@ def postMessageToOutbox(session, translate: {},
                         allowLocalNetworkAccess: bool,
                         city: str, systemLanguage: str,
                         sharedItemsFederatedDomains: [],
-                        sharedItemFederationTokens: {}) -> bool:
+                        sharedItemFederationTokens: {},
+                        lowBandwidth: bool) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -554,7 +555,7 @@ def postMessageToOutbox(session, translate: {},
         print('DEBUG: handle share uploads')
     outboxShareUpload(baseDir, httpPrefix, postToNickname, domain,
                       port, messageJson, debug, city,
-                      systemLanguage, translate)
+                      systemLanguage, translate, lowBandwidth)
 
     if debug:
         print('DEBUG: handle undo share uploads')

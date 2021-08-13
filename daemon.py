@@ -112,6 +112,8 @@ from auth import authorizeBasic
 from auth import storeBasicCredentials
 from threads import threadWithTrace
 from threads import removeDormantThreads
+from media import processMetaData
+from media import convertImageToLowBandwidth
 from media import replaceYouTube
 from media import attachMedia
 from media import pathIsVideo
@@ -286,7 +288,6 @@ from content import addHtmlTags
 from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
 from content import extractTextFieldsInPOST
-from media import processMetaData
 from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
@@ -1165,7 +1166,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowLocalNetworkAccess,
                                    city, self.server.systemLanguage,
                                    self.server.sharedItemsFederatedDomains,
-                                   self.server.sharedItemFederationTokens)
+                                   self.server.sharedItemFederationTokens,
+                                   self.server.lowBandwidth)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -4286,6 +4288,8 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       baseDir, nickname, domain)
 
+                if self.server.lowBandwidth:
+                    convertImageToLowBandwidth(filename)
                 processMetaData(baseDir, nickname, domain,
                                 filename, postImageFilename, city)
                 if os.path.isfile(postImageFilename):
@@ -13846,6 +13850,8 @@ class PubServer(BaseHTTPRequestHandler):
                     city = getSpoofedCity(self.server.city,
                                           self.server.baseDir,
                                           nickname, self.server.domain)
+                    if self.server.lowBandwidth:
+                        convertImageToLowBandwidth(filename)
                     processMetaData(self.server.baseDir,
                                     nickname, self.server.domain,
                                     filename, postImageFilename, city)
@@ -14488,7 +14494,8 @@ class PubServer(BaseHTTPRequestHandler):
                          self.server.debug,
                          city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
-                         self.server.translate, sharesFileType)
+                         self.server.translate, sharesFileType,
+                         self.server.lowBandwidth)
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)

@@ -114,7 +114,8 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.allowLocalNetworkAccess,
                                        httpd.city, httpd.systemLanguage,
                                        httpd.sharedItemsFederatedDomains,
-                                       httpd.sharedItemFederationTokens):
+                                       httpd.sharedItemFederationTokens,
+                                       httpd.lowBandwidth):
                 indexLines.remove(line)
                 os.remove(postFilename)
                 continue

@@ -38,6 +38,7 @@ from utils import isfloat
 from utils import getCategoryTypes
 from utils import getSharesFilesList
 from media import processMetaData
+from media import convertImageToLowBandwidth
 from filters import isFilteredGlobally
 from siteactive import siteIsActive
 from content import getPriceFromString
@@ -293,7 +294,7 @@ def addShare(baseDir: str,
              duration: str, debug: bool, city: str,
              price: str, currency: str,
              systemLanguage: str, translate: {},
-             sharesFileType: str) -> None:
+             sharesFileType: str, lowBandwidth: bool) -> None:
     """Adds a new share
     """
     if isFilteredGlobally(baseDir,
@@ -343,6 +344,8 @@ def addShare(baseDir: str,
             for ext in formats:
                 if not imageFilename.endswith('.' + ext):
                     continue
+                if lowBandwidth:
+                    convertImageToLowBandwidth(imageFilename)
                 processMetaData(baseDir, nickname, domain,
                                 imageFilename, itemIDfile + '.' + ext,
                                 city)
@@ -989,7 +992,8 @@ def getSharedItemsCatalogViaServer(baseDir, session,
 def outboxShareUpload(baseDir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
                       messageJson: {}, debug: bool, city: str,
-                      systemLanguage: str, translate: {}) -> None:
+                      systemLanguage: str, translate: {},
+                      lowBandwidth: bool) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -1054,7 +1058,8 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
              debug, city,
              messageJson['object']['itemPrice'],
              messageJson['object']['itemCurrency'],
-             systemLanguage, translate, 'shares')
+             systemLanguage, translate, 'shares',
+             lowBandwidth)
     if debug:
         print('DEBUG: shared item received via c2s')
 
