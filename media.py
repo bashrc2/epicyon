@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+import time
 import datetime
 import subprocess
 from random import randint
@@ -118,12 +119,27 @@ def _convertImageToLowBandwidth(imageFilename: str) -> None:
     """Converts an image to a low bandwidth version
     """
     lowBandwidthFilename = imageFilename + '.low'
+    if os.path.isfile(lowBandwidthFilename):
+        try:
+            os.remove(lowBandwidthFilename)
+        except BaseException:
+            pass
+
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
         '-monochrome  ' + imageFilename + ' ' + lowBandwidthFilename
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
+    # wait for conversion to happen
+    ctr = 0
+    while not os.path.isfile(lowBandwidthFilename):
+        print('Waiting for low bandwidth image conversion ' + str(ctr))
+        time.sleep(0.5)
+        ctr += 1
+        if ctr > 20:
+            print('WARN: timed out waiting for low bandwidth image conversion')
+            break
     if os.path.isfile(lowBandwidthFilename):
         copyfile(lowBandwidthFilename, imageFilename)
         try:
@@ -283,7 +299,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     if baseDir:
         if mediaType.startswith('image/'):
-            if lowBandwidth:                
+            if lowBandwidth:
                 _convertImageToLowBandwidth(imageFilename)
             processMetaData(baseDir, nickname, domain,
                             imageFilename, mediaFilename, city)
