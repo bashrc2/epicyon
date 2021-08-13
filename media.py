@@ -141,11 +141,13 @@ def _convertImageToLowBandwidth(imageFilename: str) -> None:
             print('WARN: timed out waiting for low bandwidth image conversion')
             break
     if os.path.isfile(lowBandwidthFilename):
-        copyfile(lowBandwidthFilename, imageFilename)
         try:
-            os.remove(lowBandwidthFilename)
+            os.remove(imageFilename)
         except BaseException:
             pass
+        os.rename(lowBandwidthFilename, imageFilename)
+        if os.path.isfile(imageFilename):
+            print('Image converted to low bandwidth ' + imageFilename)
     else:
         print('Low bandwidth converted image not found: ' +
               lowBandwidthFilename)
