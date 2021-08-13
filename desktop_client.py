@@ -416,7 +416,8 @@ def _desktopReplyToPost(session, postId: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, subject: str,
                         screenreader: str, systemLanguage: str,
-                        espeak, conversationId: str) -> None:
+                        espeak, conversationId: str,
+                        lowBandwidth: bool) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in postId:
@@ -469,7 +470,8 @@ def _desktopReplyToPost(session, postId: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         systemLanguage, debug, postId, postId,
+                         systemLanguage, lowBandwidth,
+                         debug, postId, postId,
                          conversationId, subject) == 0:
         sayStr = 'Reply sent'
     else:
@@ -483,7 +485,7 @@ def _desktopNewPost(session,
                     cachedWebfingers: {}, personCache: {},
                     debug: bool,
                     screenreader: str, systemLanguage: str,
-                    espeak) -> None:
+                    espeak, lowBandwidth: bool) -> None:
     """Use the desktop client to create a new post
     """
     conversationId = None
@@ -532,7 +534,8 @@ def _desktopNewPost(session,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         systemLanguage, debug, None, None,
+                         systemLanguage, lowBandwidth,
+                         debug, None, None,
                          conversationId, subject) == 0:
         sayStr = 'Post sent'
     else:
@@ -1108,7 +1111,7 @@ def _desktopNewDM(session, toHandle: str,
                   cachedWebfingers: {}, personCache: {},
                   debug: bool,
                   screenreader: str, systemLanguage: str,
-                  espeak) -> None:
+                  espeak, lowBandwidth: bool) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
@@ -1129,7 +1132,7 @@ def _desktopNewDM(session, toHandle: str,
                           cachedWebfingers, personCache,
                           debug,
                           screenreader, systemLanguage,
-                          espeak)
+                          espeak, lowBandwidth)
 
 
 def _desktopNewDMbase(session, toHandle: str,
@@ -1138,7 +1141,7 @@ def _desktopNewDMbase(session, toHandle: str,
                       cachedWebfingers: {}, personCache: {},
                       debug: bool,
                       screenreader: str, systemLanguage: str,
-                      espeak) -> None:
+                      espeak, lowBandwidth: bool) -> None:
     """Use the desktop client to create a new direct message
     """
     conversationId = None
@@ -1226,7 +1229,8 @@ def _desktopNewDMbase(session, toHandle: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         systemLanguage, debug, None, None,
+                         systemLanguage, lowBandwidth,
+                         debug, None, None,
                          conversationId, subject) == 0:
         sayStr = 'Direct message sent'
     else:
@@ -1292,7 +1296,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                      storeInboxPosts: bool,
                      showNewPosts: bool,
                      language: str,
-                     debug: bool) -> None:
+                     debug: bool, lowBandwidth: bool) -> None:
     """Runs the desktop and screen reader client,
     which announces new inbox items
     """
@@ -1683,7 +1687,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             cachedWebfingers, personCache,
                                             debug, subject,
                                             screenreader, systemLanguage,
-                                            espeak, conversationId)
+                                            espeak, conversationId,
+                                            lowBandwidth)
                 refreshTimeline = True
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or
@@ -1717,7 +1722,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       cachedWebfingers, personCache,
                                       debug,
                                       screenreader, systemLanguage,
-                                      espeak)
+                                      espeak, lowBandwidth)
                         refreshTimeline = True
                 else:
                     # public post
@@ -1727,7 +1732,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     cachedWebfingers, personCache,
                                     debug,
                                     screenreader, systemLanguage,
-                                    espeak)
+                                    espeak, lowBandwidth)
                     refreshTimeline = True
                 print('')
             elif commandStr == 'like' or commandStr.startswith('like '):

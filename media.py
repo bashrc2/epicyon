@@ -114,6 +114,16 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         return
 
 
+def _convertImageToLowBandwidth(imageFilename: str) -> None:
+    """Converts an image to a low bandwidth version
+    """
+    cmd = \
+        '/usr/bin/convert -resize 50% +noise Multiplicative ' + \
+        '-evaluate median 10% -dither Floyd-Steinberg ' + \
+        '-monochrome  ' + imageFilename + ' ' + imageFilename
+    subprocess.call(cmd, shell=True)
+
+
 def processMetaData(baseDir: str, nickname: str, domain: str,
                     imageFilename: str, outputFilename: str,
                     city: str) -> None:
@@ -209,7 +219,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str,
-                city: str) -> {}:
+                city: str, lowBandwidth: bool) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -262,6 +272,8 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     if baseDir:
         if mediaType.startswith('image/'):
+            if lowBandwidth:
+                _convertImageToLowBandwidth(imageFilename)
             processMetaData(baseDir, nickname, domain,
                             imageFilename, mediaFilename, city)
         else:

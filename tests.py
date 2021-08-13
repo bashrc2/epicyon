@@ -491,6 +491,7 @@ def createServerAlice(path: str, domain: str, port: int,
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
+    lowBandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(path, nickname, domain, port, httpPrefix, True,
                      False, password)
@@ -533,7 +534,8 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -546,7 +548,8 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -560,7 +563,8 @@ def createServerAlice(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
@@ -582,7 +586,7 @@ def createServerAlice(path: str, domain: str, port: int,
     userAgentsBlocked = []
     maxLikeCount = 10
     print('Server running: Alice')
-    runDaemon(maxLikeCount,
+    runDaemon(lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -626,6 +630,7 @@ def createServerBob(path: str, domain: str, port: int,
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
+    lowBandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(path, nickname, domain, port, httpPrefix, True,
                      False, password)
@@ -665,7 +670,8 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -679,7 +685,8 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -692,7 +699,8 @@ def createServerBob(path: str, domain: str, port: int,
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
@@ -714,7 +722,7 @@ def createServerBob(path: str, domain: str, port: int,
     userAgentsBlocked = []
     maxLikeCount = 10
     print('Server running: Bob')
-    runDaemon(maxLikeCount,
+    runDaemon(lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -777,8 +785,9 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     logLoginFailures = False
     userAgentsBlocked = []
     maxLikeCount = 10
+    lowBandwidth = True
     print('Server running: Eve')
-    runDaemon(maxLikeCount,
+    runDaemon(lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -843,8 +852,9 @@ def createServerGroup(path: str, domain: str, port: int,
     logLoginFailures = False
     userAgentsBlocked = []
     maxLikeCount = 10
+    lowBandwidth = True
     print('Server running: Group')
-    runDaemon(maxLikeCount,
+    runDaemon(lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -967,7 +977,7 @@ def testPostMessageBetweenServers():
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
     assert len([name for name in os.listdir(outboxPath)
                 if os.path.isfile(os.path.join(outboxPath, name))]) == 0
-
+    lowBandwidth = False
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
@@ -981,7 +991,7 @@ def testPostMessageBetweenServers():
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens,
+                 aliceSharedItemFederationTokens, lowBandwidth,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -1304,6 +1314,7 @@ def testFollowBetweenServers():
     alicePostLog = []
     isArticle = False
     city = 'London, England'
+    lowBandwidth = False
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
@@ -1314,7 +1325,7 @@ def testFollowBetweenServers():
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens,
+                 aliceSharedItemFederationTokens, lowBandwidth,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -1621,6 +1632,7 @@ def testSharedItemsFederation():
     alicePostLog = []
     isArticle = False
     city = 'London, England'
+    lowBandwidth = False
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
@@ -1631,7 +1643,7 @@ def testSharedItemsFederation():
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens, True,
+                 aliceSharedItemFederationTokens, lowBandwidth, True,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -2012,6 +2024,7 @@ def testGroupFollow():
     alicePostLog = []
     isArticle = False
     city = 'London, England'
+    lowBandwidth = False
     sendResult = \
         sendPost(__version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
@@ -2022,7 +2035,7 @@ def testGroupFollow():
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens,
+                 aliceSharedItemFederationTokens, lowBandwidth,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -2363,6 +2376,7 @@ def _testCreatePerson():
     attachImageFilename = None
     mediaType = None
     conversationId = None
+    lowBandwidth = True
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      content, followersOnly, saveToFile, clientToServer,
                      commentsEnabled, attachImageFilename, mediaType,
@@ -2370,7 +2384,8 @@ def _testCreatePerson():
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, systemLanguage, conversationId)
+                     testIsArticle, systemLanguage, conversationId,
+                     lowBandwidth)
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
@@ -2428,6 +2443,7 @@ def testClientToServer():
     httpPrefix = 'http'
     proxyType = None
     federationList = []
+    lowBandwidth = False
 
     baseDir = os.getcwd()
     if os.path.isdir(baseDir + '/.tests'):
@@ -2522,7 +2538,8 @@ def testClientToServer():
                           attachedImageFilename, mediaType,
                           attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
-                          systemLanguage, True, None, None,
+                          systemLanguage, lowBandwidth,
+                          True, None, None,
                           conversationId, None)
     print('sendResult: ' + str(sendResult))
 
@@ -3766,6 +3783,7 @@ def _testReplyToPublicPost() -> None:
     testLocation = None
     testIsArticle = False
     conversationId = None
+    lowBandwidth = True
     reply = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
@@ -3775,7 +3793,8 @@ def _testReplyToPublicPost() -> None:
                          testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -4297,6 +4316,7 @@ def _testLinksWithinPost() -> None:
     testLocation = None
     testIsArticle = False
     conversationId = None
+    lowBandwidth = True
 
     postJsonObject = \
         createPublicPost(baseDir, nickname, domain, port, httpPrefix,
@@ -4307,7 +4327,8 @@ def _testLinksWithinPost() -> None:
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
 
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -4343,7 +4364,8 @@ def _testLinksWithinPost() -> None:
                          testInReplyTo, testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
-                         testIsArticle, systemLanguage, conversationId)
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
     assert postJsonObject['object']['content'] == content
     assert postJsonObject['object']['contentMap'][systemLanguage] == content
 

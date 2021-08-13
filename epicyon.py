@@ -331,6 +331,11 @@ parser.add_argument("--rssIconAtTop",
                     const=True, default=True,
                     help="Whether to show the rss icon at teh top or bottom" +
                     "of the timeline")
+parser.add_argument("--lowBandwidth",
+                    dest='lowBandwidth',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Whether to use low bandwidth images")
 parser.add_argument("--publishButtonAtTop",
                     dest='publishButtonAtTop',
                     type=str2bool, nargs='?',
@@ -1190,7 +1195,7 @@ if args.message:
                       args.commentsEnabled, attach, mediaType,
                       attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
-                      args.language, args.debug,
+                      args.language, args.lowBandwidth, args.debug,
                       replyTo, replyTo, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
@@ -2265,7 +2270,7 @@ if args.desktop:
                      storeInboxPosts,
                      args.notifyShowNewPosts,
                      args.language,
-                     args.debug)
+                     args.debug, args.lowBandwidth)
     sys.exit()
 
 if federationList:
@@ -2515,6 +2520,7 @@ if args.testdata:
     testLocation = None
     testIsArticle = False
     conversationId = None
+    lowBandwidth = False
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",
@@ -2527,7 +2533,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2539,7 +2546,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2551,7 +2559,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2563,7 +2572,8 @@ if args.testdata:
                      'someone', testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -2576,7 +2586,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2588,7 +2599,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2600,7 +2612,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2612,7 +2625,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle, args.language, conversationId)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
@@ -2815,7 +2829,7 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(args.maxLikeCount,
+    runDaemon(args.lowBandwidth, args.maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               args.logLoginFailures,

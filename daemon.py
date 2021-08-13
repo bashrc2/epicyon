@@ -446,7 +446,8 @@ class PubServer(BaseHTTPRequestHandler):
                              eventTime,
                              location, False,
                              self.server.systemLanguage,
-                             conversationId)
+                             conversationId,
+                             self.server.lowBandwidth)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -13957,7 +13958,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['eventDate'], fields['eventTime'],
                                      fields['location'], False,
                                      self.server.systemLanguage,
-                                     conversationId)
+                                     conversationId,
+                                     self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -14036,7 +14038,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['eventTime'],
                                    fields['location'],
                                    self.server.systemLanguage,
-                                   conversationId)
+                                   conversationId,
+                                   self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -14120,7 +14123,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             filename,
                                             attachmentMediaType,
                                             imgDescription,
-                                            city)
+                                            city,
+                                            self.server.lowBandwidth)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain,
@@ -14174,7 +14178,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['eventTime'],
                                        fields['location'],
                                        self.server.systemLanguage,
-                                       conversationId)
+                                       conversationId,
+                                       self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -14222,7 +14227,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventTime'],
                                             fields['location'],
                                             self.server.systemLanguage,
-                                            conversationId)
+                                            conversationId,
+                                            self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -14274,7 +14280,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['eventTime'],
                                                 fields['location'],
                                                 self.server.systemLanguage,
-                                                conversationId)
+                                                conversationId,
+                                                self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -14324,7 +14331,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventTime'],
                                             fields['location'],
                                             self.server.systemLanguage,
-                                            conversationId)
+                                            conversationId,
+                                            self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -14357,7 +14365,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['imageDescription'],
                                      city,
                                      self.server.debug, fields['subject'],
-                                     self.server.systemLanguage)
+                                     self.server.systemLanguage,
+                                     self.server.lowBandwidth)
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
@@ -14395,7 +14404,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        city,
                                        fields['subject'],
                                        intDuration,
-                                       self.server.systemLanguage)
+                                       self.server.systemLanguage,
+                                       self.server.lowBandwidth)
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -15592,7 +15602,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(maxLikeCount: int,
+def runDaemon(lowBandwidth: bool,
+              maxLikeCount: int,
               sharedItemsFederatedDomains: [],
               userAgentsBlocked: [],
               logLoginFailures: bool,
@@ -15721,6 +15732,9 @@ def runDaemon(maxLikeCount: int,
     }
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
+
+    # wheither to use low bandwidth images
+    httpd.lowBandwidth = lowBandwidth
 
     # list of blocked user agent types within the User-Agent header
     httpd.userAgentsBlocked = userAgentsBlocked
