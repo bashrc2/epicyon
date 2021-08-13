@@ -117,12 +117,22 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
 def _convertImageToLowBandwidth(imageFilename: str) -> None:
     """Converts an image to a low bandwidth version
     """
+    lowBandwidthFilename = imageFilename + '.low'
     cmd = \
         '/usr/bin/convert -resize 50% +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
-        '-monochrome  ' + imageFilename + ' ' + imageFilename
+        '-monochrome  ' + imageFilename + ' ' + lowBandwidthFilename
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
+    if os.path.isfile(lowBandwidthFilename):
+        copyfile(lowBandwidthFilename, imageFilename)
+        try:
+            os.remove(lowBandwidthFilename)
+        except BaseException:
+            pass
+    else:
+        print('Low bandwidth converted image not found: ' +
+              lowBandwidthFilename)
 
 
 def processMetaData(baseDir: str, nickname: str, domain: str,
