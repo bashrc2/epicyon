@@ -121,6 +121,7 @@ def _convertImageToLowBandwidth(imageFilename: str) -> None:
         '/usr/bin/convert -resize 50% +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
         '-monochrome  ' + imageFilename + ' ' + imageFilename
+    print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
 
 
@@ -272,7 +273,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     if baseDir:
         if mediaType.startswith('image/'):
-            if lowBandwidth:
+            if lowBandwidth:                
                 _convertImageToLowBandwidth(imageFilename)
             processMetaData(baseDir, nickname, domain,
                             imageFilename, mediaFilename, city)
