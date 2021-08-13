@@ -119,7 +119,7 @@ def _convertImageToLowBandwidth(imageFilename: str) -> None:
     """
     lowBandwidthFilename = imageFilename + '.low'
     cmd = \
-        '/usr/bin/convert -resize 50% +noise Multiplicative ' + \
+        '/usr/bin/convert +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
         '-monochrome  ' + imageFilename + ' ' + lowBandwidthFilename
     print('Low bandwidth image conversion: ' + cmd)
