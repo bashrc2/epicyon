@@ -2773,6 +2773,11 @@ showNodeInfoVersion = \
 if showNodeInfoVersion is not None:
     args.showNodeInfoVersion = bool(showNodeInfoVersion)
 
+lowBandwidth = \
+    getConfigParam(baseDir, 'lowBandwidth')
+if lowBandwidth is not None:
+    args.lowBandwidth = bool(lowBandwidth)
+
 userAgentsBlocked = []
 if args.userAgentBlocks:
     userAgentsBlockedStr = args.userAgentBlocks

@@ -1111,6 +1111,12 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
 
     graphicsStr = beginEditSection(translate['Graphic Design'])
 
+    lowBandwidth = getConfigParam(baseDir, 'lowBandwidth')
+    if not lowBandwidth:
+        lowBandwidth = False
+    graphicsStr += \
+        editCheckBox(translate['Low Bandwidth'], 'lowBandwidth',
+                     bool(lowBandwidth))
     graphicsStr += _htmlThemesDropdown(baseDir, translate)
     graphicsStr += \
         '      <label class="labels">' + \

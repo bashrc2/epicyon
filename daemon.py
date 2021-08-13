@@ -5424,6 +5424,20 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             disableGrayscale(baseDir)
 
+                    # low bandwidth images checkbox
+                    if path.startswith('/users/' + adminNickname + '/') or \
+                       isArtist(baseDir, nickname):
+                        currLowBandwidth = \
+                            getConfigParam(baseDir, 'lowBandwidth')
+                        lowBandwidth = False
+                        if fields.get('lowBandwidth'):
+                            if fields['lowBandwidth'] == 'on':
+                                lowBandwidth = True
+                        if currLowBandwidth != lowBandwidth:
+                            setConfigParam(baseDir, 'lowBandwidth',
+                                           lowBandwidth)
+                            self.server.lowBandwidth = lowBandwidth
+
                     # save filtered words list
                     filterFilename = \
                         acctDir(baseDir, nickname, domain) + \
