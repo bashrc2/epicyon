@@ -1126,7 +1126,7 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
         translate['Export Theme'] + '</label><br>\n'
     graphicsStr += \
         '      <button type="submit" class="button" ' + \
-        'name="submitExportTheme">➤</button>\n'
+        'name="submitExportTheme">➤</button><br>\n'
     graphicsStr += \
         editCheckBox(translate['Low Bandwidth'], 'lowBandwidth',
                      bool(lowBandwidth))
