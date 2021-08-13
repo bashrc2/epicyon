@@ -690,6 +690,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Content-Length', str(length))
         self.send_header('Host', callingDomain)
         if permissive:
+            self.send_header('Access-Control-Allow-Origin', '*')
             return
         if cookie:
             cookieStr = cookie
