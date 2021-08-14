@@ -499,7 +499,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                 followStr = follow.replace('\n', '').replace('\r', '')
                 replaceDomain = followStr.split('@')[1]
                 recipientActor = httpPrefix + "://" + \
-                    replaceDomain + "/users/" + possibleNickname
+                    replaceDomain + "/@" + possibleNickname
                 if recipientActor not in recipients:
                     recipients.append(recipientActor)
                 tags[wordStr] = {
@@ -526,7 +526,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                     replaceNickname = followStr.split('@')[0]
                     replaceDomain = followStr.split('@')[1]
                     recipientActor = httpPrefix + "://" + \
-                        replaceDomain + "/users/" + replaceNickname
+                        replaceDomain + "/@" + replaceNickname
                     if recipientActor not in recipients:
                         recipients.append(recipientActor)
                     tags[wordStr] = {
@@ -558,7 +558,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
             if follow.replace('\n', '').replace('\r', '') != possibleHandle:
                 continue
             recipientActor = httpPrefix + "://" + \
-                possibleDomain + "/users/" + possibleNickname
+                possibleDomain + "/@" + possibleNickname
             if recipientActor not in recipients:
                 recipients.append(recipientActor)
             tags[wordStr] = {
@@ -576,7 +576,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
     if not (possibleDomain == 'localhost' or '.' in possibleDomain):
         return False
     recipientActor = httpPrefix + "://" + \
-        possibleDomain + "/users/" + possibleNickname
+        possibleDomain + "/@" + possibleNickname
     if recipientActor not in recipients:
         recipients.append(recipientActor)
     tags[wordStr] = {
