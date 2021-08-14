@@ -1040,7 +1040,8 @@ def sendFollowRequestViaServer(baseDir: str, session,
     followDomainFull = getFullDomain(followDomain, followPort)
 
     followActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    followedId = localActorUrl(httpPrefix, followNickname, followDomainFull)
+    followedId = \
+        httpPrefix + '://' + followDomainFull + '/@' + followNickname
 
     statusNumber, published = getStatusNumber()
     newFollowJson = {
@@ -1124,7 +1125,8 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     followDomainFull = getFullDomain(followDomain, followPort)
 
     followActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    followedId = localActorUrl(httpPrefix, followNickname, followDomainFull)
+    followedId = \
+        httpPrefix + '://' + followDomainFull + '/@' + followNickname
     statusNumber, published = getStatusNumber()
 
     unfollowJson = {
