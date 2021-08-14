@@ -768,5 +768,6 @@
     "pine64": "pine64",
     "void": "void",
     "openbsd": "openbsd",
-    "freebsd": "freebsd"
+    "freebsd": "freebsd",
+    "orgmode": "orgmode"
 }
