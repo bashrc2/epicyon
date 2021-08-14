@@ -18,6 +18,7 @@ from utils import followPerson
 from utils import hasObjectDict
 from utils import acctDir
 from utils import hasGroupType
+from utils import localActorUrl
 
 
 def _createAcceptReject(baseDir: str, federationList: [],
@@ -41,7 +42,7 @@ def _createAcceptReject(baseDir: str, federationList: [],
     newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
-        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, domain),
         'to': [toUrl],
         'cc': [],
         'object': objectJson

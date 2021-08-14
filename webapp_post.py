@@ -48,6 +48,7 @@ from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import acctDir
+from utils import localActorUrl
 from content import limitRepeatedWords
 from content import replaceEmojiFromTags
 from content import htmlReplaceQuoteMarks
@@ -1547,8 +1548,7 @@ def individualPostAsHtml(allowDownloads: bool,
             postJsonObject['object']['content']
 
     domainFull = getFullDomain(domain, port)
-    personUrl = \
-        httpPrefix + '://' + domainFull + '/users/' + nickname
+    personUrl = localActorUrl(httpPrefix, nickname, domainFull)
     actorJson = \
         getPersonFromCache(baseDir, personUrl, personCache, False)
     languagesUnderstood = []

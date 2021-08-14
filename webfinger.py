@@ -20,6 +20,7 @@ from utils import getProtocolPrefixes
 from utils import removeDomainPort
 from utils import getUserPaths
 from utils import getGroupPaths
+from utils import localActorUrl
 
 
 def _parseHandle(handle: str) -> (str, str, bool):
@@ -145,7 +146,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     domain = getFullDomain(domain, port)
 
     personName = nickname
-    personId = httpPrefix + "://" + domain + "/users/" + personName
+    personId = localActorUrl(httpPrefix, personName, domain)
     if not groupAccount:
         subjectStr = "acct:" + personName + "@" + originalDomain
     else:
@@ -158,7 +159,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
-    actor = httpPrefix + "://" + domain + "/users/" + nickname
+    actor = localActorUrl(httpPrefix, nickname, domain)
     account = {
         "aliases": [
             httpPrefix + "://" + domain + "/@" + personName,

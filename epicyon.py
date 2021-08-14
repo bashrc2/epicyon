@@ -1166,7 +1166,6 @@ if args.message:
             toDomain = 'public'
             toPort = port
 
-    # ccUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/followers'
     ccUrl = None
     sendMessage = args.message
     followersOnly = args.followersonly

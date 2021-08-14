@@ -24,6 +24,7 @@ from utils import getConfigParam
 from utils import getImageFormats
 from utils import acctDir
 from utils import getSupportedLanguages
+from utils import localActorUrl
 from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
@@ -345,7 +346,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         otherAccountsHtml = \
             '    <p>' + translate['Other accounts'] + ': '
 
-        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
         ctr = 0
         if isinstance(alsoKnownAs, list):
             for altActor in alsoKnownAs:
@@ -654,10 +655,10 @@ def htmlProfile(rssIconAtTop: bool,
                             if '://' in followerHandle:
                                 followerActor = followerHandle
                             else:
+                                nick = followerHandle.split('@')[0]
+                                dom = followerHandle.split('@')[1]
                                 followerActor = \
-                                    httpPrefix + '://' + \
-                                    followerHandle.split('@')[1] + \
-                                    '/users/' + followerHandle.split('@')[0]
+                                    localActorUrl(httpPrefix, nick, dom)
                             basePath = '/users/' + nickname
                             followApprovalsSection += '<div class="container">'
                             followApprovalsSection += \

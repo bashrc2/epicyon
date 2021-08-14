@@ -54,6 +54,7 @@ from utils import isImageFile
 from utils import acctDir
 from utils import getUserPaths
 from utils import getGroupPaths
+from utils import localActorUrl
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -138,8 +139,8 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     if personJson:
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
-            httpPrefix + '://' + fullDomain + '/users/' + \
-            nickname + '/' + iconFilename
+            localActorUrl(httpPrefix, nickname, fullDomain) + \
+            '/' + iconFilename
         saveJson(personJson, personFilename)
 
         cmd = \
@@ -251,7 +252,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
     # Enable follower approval by default
     approveFollowers = manualFollowerApproval
     personName = nickname
-    personId = httpPrefix + '://' + domain + '/users/' + nickname
+    personId = localActorUrl(httpPrefix, nickname, domain)
     inboxStr = personId + '/inbox'
     personUrl = httpPrefix + '://' + domain + '/@' + personName
     if nickname == 'inbox':

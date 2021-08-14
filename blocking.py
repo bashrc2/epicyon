@@ -28,6 +28,7 @@ from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acctDir
+from utils import localActorUrl
 from conversation import muteConversation
 from conversation import unmuteConversation
 
@@ -469,7 +470,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
 
     if hasObjectDict(postJsonObject):
         domainFull = getFullDomain(domain, port)
-        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
 
         if postJsonObject['object'].get('conversation'):
             muteConversation(baseDir, nickname, domain,
@@ -559,7 +560,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
 
         if postJsonObject['object'].get('ignores'):
             domainFull = getFullDomain(domain, port)
-            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+            actor = localActorUrl(httpPrefix, nickname, domainFull)
             totalItems = 0
             if postJsonObject['object']['ignores'].get('totalItems'):
                 totalItems = \

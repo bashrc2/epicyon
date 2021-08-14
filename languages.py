@@ -14,6 +14,7 @@ from utils import getActorLanguagesList
 from utils import removeHtml
 from utils import hasObjectDict
 from utils import getConfigParam
+from utils import localActorUrl
 from cache import getPersonFromCache
 
 
@@ -104,7 +105,7 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
         return True
     if msgObject['contentMap'].get(systemLanguage):
         return True
-    personUrl = httpPrefix + '://' + domainFull + '/users/' + nickname
+    personUrl = localActorUrl(httpPrefix, nickname, domainFull)
     actorJson = getPersonFromCache(baseDir, personUrl, personCache, False)
     if not actorJson:
         print('WARN: unable to load actor to check languages ' + personUrl)

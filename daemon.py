@@ -225,6 +225,7 @@ from shares import sharesCatalogCSVEndpoint
 from categories import setHashtagCategory
 from languages import getActorLanguages
 from languages import setActorLanguages
+from utils import localActorUrl
 from utils import isfloat
 from utils import validPassword
 from utils import removeLineEndings
@@ -2586,8 +2587,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print(followerNickname + ' stops following ' +
                           followingActor)
                 followActor = \
-                    httpPrefix + '://' + domainFull + \
-                    '/users/' + followerNickname
+                    localActorUrl(httpPrefix, followerNickname, domainFull)
                 statusNumber, published = getStatusNumber()
                 followId = followActor + '/statuses/' + str(statusNumber)
                 unfollowJson = {
@@ -3091,10 +3091,11 @@ class PubServer(BaseHTTPRequestHandler):
                         searchNickname = getNicknameFromActor(searchStr)
                         searchDomain, searchPort = \
                             getDomainFromActor(searchStr)
+                        searchDomainFull = \
+                            getFullDomain(searchDomain, searchPort)
                         actor = \
-                            httpPrefix + '://' + \
-                            getFullDomain(searchDomain, searchPort) + \
-                            '/users/' + searchNickname
+                            localActorUrl(httpPrefix, searchNickname,
+                                          searchDomainFull)
                     else:
                         actor = searchStr
                     avatarUrl = \
@@ -6660,8 +6661,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self.server.actorRepeat = path.split('?actor=')[1]
         announceToStr = \
-            httpPrefix + '://' + domainFull + '/users/' + \
-            self.postToNickname + '/followers'
+            localActorUrl(httpPrefix, self.postToNickname, domainFull) + \
+            '/followers'
         if not repeatPrivate:
             announceToStr = 'https://www.w3.org/ns/activitystreams#Public'
         announceJson = \
@@ -7066,8 +7067,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         likeActor = \
-            httpPrefix + '://' + \
-            domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -7165,7 +7165,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         undoActor = \
-            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -7263,7 +7263,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         bookmarkActor = \
-            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         ccList = []
         bookmark(self.server.recentPostsCache,
                  self.server.session,
@@ -7349,7 +7349,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         undoActor = \
-            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         ccList = []
         undoBookmark(self.server.recentPostsCache,
                      self.server.session,
@@ -7616,15 +7616,15 @@ class PubServer(BaseHTTPRequestHandler):
                 'https://www.w3.org/ns/activitystreams'
 
             firstStr = \
-                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                localActorUrl(httpPrefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies?page=true'
 
             idStr = \
-                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                localActorUrl(httpPrefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies'
 
             lastStr = \
-                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                localActorUrl(httpPrefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies?page=true'
 
             repliesJson = {
@@ -7701,13 +7701,12 @@ class PubServer(BaseHTTPRequestHandler):
             contextStr = 'https://www.w3.org/ns/activitystreams'
 
             idStr = \
-                httpPrefix + '://' + domainFull + \
-                '/users/' + nickname + '/statuses/' + \
-                statusNumber + '?page=true'
+                localActorUrl(httpPrefix, nickname, domainFull) + \
+                '/statuses/' + statusNumber + '?page=true'
 
             partOfStr = \
-                httpPrefix + '://' + domainFull + \
-                '/users/' + nickname + '/statuses/' + statusNumber
+                localActorUrl(httpPrefix, nickname, domainFull) + \
+                '/statuses/' + statusNumber
 
             repliesJson = {
                 '@context': contextStr,
@@ -10879,8 +10878,8 @@ class PubServer(BaseHTTPRequestHandler):
             postId = path.split('/editnewspost=')[1]
             if '?' in postId:
                 postId = postId.split('?')[0]
-            postUrl = httpPrefix + '://' + domainFull + \
-                '/users/' + postActor + '/statuses/' + postId
+            postUrl = localActorUrl(httpPrefix, postActor, domainFull) + \
+                '/statuses/' + postId
             path = path.split('/editnewspost=')[0]
             msg = htmlEditNewsPost(self.server.cssCache,
                                    translate, baseDir,
@@ -10930,8 +10929,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # don't block self
                 return False
         blockActor = \
-            httpPrefix + '://' + blockerDomainFull + '/users/' + \
-            blockerNickname
+            localActorUrl(httpPrefix, blockerNickname, blockerDomainFull)
         toUrl = 'https://www.w3.org/ns/activitystreams#Public'
         ccUrl = blockActor + '/followers'
 
@@ -13090,8 +13088,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = getNicknameFromActor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + '/users/' + nickname + \
+                        localActorUrl(self.server.httpPrefix, nickname,
+                                      self.server.domainFull) + \
                         '/statuses/' + messageId
                     msg = htmlEditBlog(self.server.mediaInstance,
                                        self.server.translate,
@@ -15243,23 +15241,25 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorPathStr = \
-                        'http://' + self.server.onionDomain + \
-                        '/users/' + nickname + '/' + postRedirect + \
+                        localActorUrl('http', nickname,
+                                      self.server.onionDomain) + \
+                        '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)
                 elif (callingDomain.endswith('.i2p') and
                       self.server.i2pDomain):
                     actorPathStr = \
-                        'http://' + self.server.i2pDomain + \
-                        '/users/' + nickname + '/' + postRedirect + \
+                        localActorUrl('http', nickname,
+                                      self.server.i2pDomain) + \
+                        '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)
                 else:
                     actorPathStr = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + '/users/' + nickname + \
+                        localActorUrl(self.server.httpPrefix, nickname,
+                                      self.server.domainFull) + \
                         '/' + postRedirect + '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)

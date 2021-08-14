@@ -46,6 +46,7 @@ from utils import saveJson
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import hasGroupType
+from utils import localActorUrl
 from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
@@ -401,8 +402,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
         if actor:
             postId = actor + '/statuses/' + statusNumber
         else:
-            postId = httpPrefix + '://' + originalDomain + \
-                '/users/' + nickname + '/statuses/' + statusNumber
+            postId = localActorUrl(httpPrefix, nickname, originalDomain) + \
+                '/statuses/' + statusNumber
 
     # NOTE: don't change postJsonObject['id'] before signature check
 
@@ -1912,7 +1913,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
-    groupActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    groupActor = localActorUrl(httpPrefix, nickname, domainFull)
     if groupActor not in postJsonObject['to']:
         return
     cc = ''
@@ -2148,8 +2149,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
     if not os.path.isfile(followDMsFilename):
         # dm index will be updated
         updateIndexList.append('dm')
-        _dmNotify(baseDir, handle,
-                  httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+        actUrl = localActorUrl(httpPrefix, nickname, domain)
+        _dmNotify(baseDir, handle, actUrl + '/dm')
         return True
 
     # get the file containing following handles
@@ -2216,8 +2217,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
 
     # dm index will be updated
     updateIndexList.append('dm')
-    _dmNotify(baseDir, handle,
-              httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+    actUrl = localActorUrl(httpPrefix, nickname, domain)
+    _dmNotify(baseDir, handle, actUrl + '/dm')
     return True
 
 
@@ -2465,7 +2466,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     return False
 
             # get the actor being replied to
-            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+            actor = localActorUrl(httpPrefix, nickname, domainFull)
 
             # create a reply notification file if needed
             if not postIsDM and isReply(postJsonObject, actor):
@@ -2484,10 +2485,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             if isinstance(inReplyTo, str):
                                 if not isMuted(baseDir, nickname, domain,
                                                inReplyTo, conversationId):
+                                    actUrl = \
+                                        localActorUrl(httpPrefix,
+                                                      nickname, domain)
                                     _replyNotify(baseDir, handle,
-                                                 httpPrefix + '://' + domain +
-                                                 '/users/' + nickname +
-                                                 '/tlreplies')
+                                                 actUrl + '/tlreplies')
                                 else:
                                     isReplyToMutedPost = True
 
@@ -2523,10 +2525,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         if notifyWhenPersonPosts(baseDir, nickname, domain,
                                                  fromNickname, fromDomainFull):
                             postId = removeIdEnding(jsonObj['id'])
+                            domFull = getFullDomain(domain, port)
                             postLink = \
-                                httpPrefix + '://' + \
-                                getFullDomain(domain, port) + \
-                                '/users/' + nickname + \
+                                localActorUrl(httpPrefix,
+                                              nickname, domFull) + \
                                 '?notifypost=' + postId.replace('/', '-')
                             _notifyPostArrival(baseDir, handle, postLink)
 

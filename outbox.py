@@ -27,6 +27,7 @@ from utils import isFeaturedWriter
 from utils import loadJson
 from utils import saveJson
 from utils import acctDir
+from utils import localActorUrl
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -100,8 +101,8 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         if debug:
             print('DEBUG: c2s actor update id is not a string')
         return
-    actor = \
-        httpPrefix + '://' + getFullDomain(domain, port) + '/users/' + nickname
+    domainFull = getFullDomain(domain, port)
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     if len(messageJson['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +
@@ -393,7 +394,7 @@ def postMessageToOutbox(session, translate: {},
         if messageJson['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
-                httpPrefix + '://' + domainFull + '/users/' + postToNickname
+                localActorUrl(httpPrefix, postToNickname, domainFull)
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue

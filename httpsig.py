@@ -24,6 +24,7 @@ from time import gmtime, strftime
 import datetime
 from utils import getFullDomain
 from utils import getSHA256
+from utils import localActorUrl
 
 
 def messageContentDigest(messageBodyJsonStr: str) -> str:
@@ -48,7 +49,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
 
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-    keyID = httpPrefix + '://' + domain + '/users/' + nickname + '#main-key'
+    keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
     if not messageBodyJsonStr:
         headers = {
             '(request-target)': f'post {path}',
@@ -125,7 +126,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
         currTime = datetime.datetime.strptime(dateStr, timeFormat)
     secondsSinceEpoch = \
         int((currTime - datetime.datetime(1970, 1, 1)).total_seconds())
-    keyID = httpPrefix + '://' + domain + '/users/' + nickname + '#main-key'
+    keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
     if not messageBodyJsonStr:
         headers = {
             '*request-target': f'post {path}',

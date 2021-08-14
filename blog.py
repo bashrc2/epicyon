@@ -17,6 +17,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_utils import editTextArea
 from webapp_media import addEmbeddedElements
+from utils import localActorUrl
 from utils import getActorLanguagesList
 from utils import getBaseContentFromPost
 from utils import getContentFromPost
@@ -242,8 +243,7 @@ def _htmlBlogPostContent(authorized: bool,
     if attachmentStr:
         blogStr += '<br><center>' + attachmentStr + '</center>'
 
-    personUrl = \
-        httpPrefix + '://' + domainFull + '/users/' + nickname
+    personUrl = localActorUrl(httpPrefix, nickname, domainFull)
     actorJson = \
         getPersonFromCache(baseDir, personUrl, personCache, False)
     languagesUnderstood = []
@@ -288,8 +288,8 @@ def _htmlBlogPostContent(authorized: bool,
 
     if not linkedAuthor:
         blogStr += '<p class="about"><a class="about" href="' + \
-            httpPrefix + '://' + domainFull + \
-            '/users/' + nickname + '">' + translate['About the author'] + \
+            localActorUrl(httpPrefix, nickname, domainFull) + \
+            '">' + translate['About the author'] + \
             '</a></p>\n'
 
     replies = _noOfBlogReplies(baseDir, httpPrefix, translate,
@@ -902,8 +902,8 @@ def pathContainsBlogLink(baseDir: str,
         return None, None
     if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
         return None, None
-    messageId = httpPrefix + '://' + domainFull + \
-        '/users/' + nickname + '/statuses/' + userEnding2[1]
+    messageId = localActorUrl(httpPrefix, nickname, domainFull) + \
+        '/statuses/' + userEnding2[1]
     return locatePost(baseDir, nickname, domain, messageId), nickname
 
 

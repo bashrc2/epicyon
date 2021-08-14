@@ -25,6 +25,7 @@ from utils import firstParagraphFromString
 from utils import searchBoxPosts
 from utils import getAltPath
 from utils import acctDir
+from utils import localActorUrl
 from skills import noOfActorSkills
 from skills import getSkillsFromList
 from categories import getHashtagCategory
@@ -597,7 +598,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
 
     # add the page title
     domainFull = getFullDomain(domain, port)
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     historySearchTitle = '🔍 ' + translate['Your Posts']
     if boxName == 'bookmarks':
         historySearchTitle = '🔍 ' + translate['Bookmarks']

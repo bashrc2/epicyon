@@ -33,6 +33,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from utils import clearFromPostCaches
 from utils import dangerousMarkup
+from utils import localActorUrl
 from inbox import storeHashTags
 from session import createSession
 
@@ -547,8 +548,8 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
-            httpPrefix + '://' + domain + \
-            '/users/news/statuses/' + statusNumber
+            localActorUrl(httpPrefix, 'news', domain) + \
+            '/statuses/' + statusNumber
 
         # file where the post is stored
         filename = basePath + '/' + newPostId.replace('/', '#') + '.json'
@@ -613,7 +614,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 continue
 
         idStr = \
-            httpPrefix + '://' + domain + '/users/news' + \
+            localActorUrl(httpPrefix, 'news', domain) + \
             '/statuses/' + statusNumber + '/replies'
         blog['news'] = True
 

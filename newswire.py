@@ -30,6 +30,7 @@ from utils import containsInvalidChars
 from utils import removeHtml
 from utils import isAccountDir
 from utils import acctDir
+from utils import localActorUrl
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
@@ -68,8 +69,9 @@ def rss2Header(httpPrefix: str,
     else:
         rssStr += \
             '    <title>' + translate[title] + '</title>' + \
-            '    <link>' + httpPrefix + '://' + domainFull + \
-            '/users/' + nickname + '/rss.xml' + '</link>'
+            '    <link>' + \
+            localActorUrl(httpPrefix, nickname, domainFull) + \
+            '/rss.xml' + '</link>'
     return rssStr
 
 

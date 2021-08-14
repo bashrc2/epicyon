@@ -28,6 +28,12 @@ invalidCharacters = (
 )
 
 
+def localActorUrl(httpPrefix: str, nickname: str, domainFull: str) -> str:
+    """Returns the url for an actor on this instance
+    """
+    return httpPrefix + '://' + domainFull + '/users/' + nickname
+
+
 def getActorLanguagesList(actorJson: {}) -> []:
     """Returns a list containing languages used by the given actor
     """

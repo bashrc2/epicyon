@@ -19,6 +19,7 @@ from utils import locatePost
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import hasGroupType
+from utils import localActorUrl
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -75,7 +76,7 @@ def _like(recentPostsCache: {},
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -139,7 +140,7 @@ def likePost(recentPostsCache: {},
     """
     likeDomain = getFullDomain(likeDomain, likePort)
 
-    actorLiked = httpPrefix + '://' + likeDomain + '/users/' + likeNickname
+    actorLiked = localActorUrl(httpPrefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
     return _like(recentPostsCache,
@@ -163,7 +164,7 @@ def sendLikeViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -241,7 +242,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
 
     newUndoLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

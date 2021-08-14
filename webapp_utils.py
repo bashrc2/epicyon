@@ -22,6 +22,7 @@ from utils import isfloat
 from utils import getAudioExtensions
 from utils import getVideoExtensions
 from utils import getImageExtensions
+from utils import localActorUrl
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -692,7 +693,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
                                           systemLanguage)
 
-    authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    authorUrl = localActorUrl(httpPrefix, nickname, domain)
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
 
     # license for content on the site may be different from
@@ -1310,7 +1311,7 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                     ' ' + sharedItem['itemCurrency']
     sharedItemsForm += '</p>\n'
     contactActor = \
-        httpPrefix + '://' + domainFull + '/users/' + contactNickname
+        localActorUrl(httpPrefix, contactNickname, domainFull)
     sharedItemsForm += \
         '<p>' + \
         '<a href="' + actor + '?replydm=sharedesc:' + \
@@ -1401,7 +1402,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     if not sharesJson.get(itemID):
         return None
     sharedItem = sharesJson[itemID]
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \

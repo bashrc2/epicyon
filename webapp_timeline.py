@@ -17,6 +17,7 @@ from utils import isEditor
 from utils import removeIdEnding
 from utils import acctDir
 from utils import isfloat
+from utils import localActorUrl
 from follow import followerApprovalActive
 from person import isPersonSnoozed
 from markdown import markdownToHtml
@@ -996,12 +997,12 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                            baseDir, domain, nickname, maxSharesPerAccount,
                            sharedItemsFederatedDomains, sharesFileType)
     domainFull = getFullDomain(domain, port)
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     adminNickname = getConfigParam(baseDir, 'admin')
     adminActor = ''
     if adminNickname:
         adminActor = \
-            httpPrefix + '://' + domainFull + '/users/' + adminNickname
+            localActorUrl(httpPrefix, adminNickname, domainFull)
     timelineStr = ''
 
     if pageNumber > 1:

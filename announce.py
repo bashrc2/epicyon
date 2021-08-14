@@ -22,6 +22,7 @@ from utils import locatePost
 from utils import saveJson
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
+from utils import localActorUrl
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -136,11 +137,11 @@ def createAnnounce(session, baseDir: str, federationList: [],
     statusNumber, published = getStatusNumber()
     newAnnounceId = httpPrefix + '://' + fullDomain + \
         '/users/' + nickname + '/statuses/' + statusNumber
-    atomUriStr = httpPrefix + '://' + fullDomain + '/users/' + nickname + \
+    atomUriStr = localActorUrl(httpPrefix, nickname, fullDomain) + \
         '/statuses/' + statusNumber
     newAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
         'atomUri': atomUriStr,
         'cc': [],
         'id': newAnnounceId + '/activity',
@@ -193,8 +194,7 @@ def announcePublic(session, baseDir: str, federationList: [],
     fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomain + '/users/' + nickname + \
-        '/followers'
+    ccUrl = localActorUrl(httpPrefix, nickname, fromDomain) + '/followers'
     return createAnnounce(session, baseDir, federationList,
                           nickname, domain, port,
                           toUrl, ccUrl, httpPrefix,
@@ -219,13 +219,11 @@ def sendAnnounceViaServer(baseDir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname + \
-        '/followers'
+    actorStr = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    ccUrl = actorStr + '/followers'
 
     statusNumber, published = getStatusNumber()
-    newAnnounceId = httpPrefix + '://' + fromDomainFull + '/users/' + \
-        fromNickname + '/statuses/' + statusNumber
-    actorStr = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    newAnnounceId = actorStr + '/statuses/' + statusNumber
     newAnnounceJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': actorStr,
@@ -308,7 +306,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
 
     domainFull = getFullDomain(domain, port)
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     handle = actor.replace('/users/', '/@')
 
     statusNumber, published = getStatusNumber()
