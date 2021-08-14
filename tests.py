@@ -3804,16 +3804,14 @@ def _testReplyToPublicPost() -> None:
     reply['object']['contentMap'][systemLanguage] = reply['object']['content']
     assert reply['object']['tag'][0]['type'] == 'Mention'
     assert reply['object']['tag'][0]['name'] == '@ninjarodent@rat.site'
-    assert reply['object']['tag'][0]['href'] == \
-        'https://rat.site/users/ninjarodent'
+    assert reply['object']['tag'][0]['href'] == 'https://rat.site/@ninjarodent'
     assert len(reply['object']['to']) == 1
     assert reply['object']['to'][0].endswith('#Public')
     assert len(reply['object']['cc']) >= 1
     assert reply['object']['cc'][0].endswith(nickname + '/followers')
     assert len(reply['object']['tag']) == 1
     assert len(reply['object']['cc']) == 2
-    assert reply['object']['cc'][1] == \
-        httpPrefix + '://rat.site/users/ninjarodent'
+    assert reply['object']['cc'][1] == httpPrefix + '://rat.site/@ninjarodent'
 
 
 def _getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
