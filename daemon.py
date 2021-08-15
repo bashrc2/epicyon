@@ -16132,8 +16132,11 @@ def runDaemon(lowBandwidth: bool,
                             args=(projectVersion, httpd), daemon=True)
         httpd.thrFederatedSharesWatchdog.start()
     else:
+        print('Starting inbox queue')
         httpd.thrInboxQueue.start()
+        print('Starting scheduled posts daemon')
         httpd.thrPostSchedule.start()
+        print('Starting federated shares daemon')
         httpd.thrFederatedSharesDaemon.start()
 
     if clientToServer:
