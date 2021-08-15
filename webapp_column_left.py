@@ -12,6 +12,7 @@ from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
 from utils import removeDomainPort
+from utils import localActorUrl
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
@@ -29,18 +30,21 @@ def _linksExist(baseDir: str) -> bool:
 
 
 def _getLeftColumnShares(baseDir: str,
-                         httpPrefix: str, domainFull: str,
+                         httpPrefix: str, domain: str, domainFull: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
-                         translate: {}) -> []:
+                         translate: {},
+                         sharedItemsFederatedDomains: []) -> []:
     """get any shares and turn them into the left column links format
     """
     pageNumber = 1
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    # NOTE: this could potentially be slow if the number of federated
+    # shared items is large
     sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber,
-                           maxSharesInLeftColumn,
-                           baseDir, maxSharesInLeftColumn)
+        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
+                           baseDir, domain, nickname, maxSharesInLeftColumn,
+                           sharedItemsFederatedDomains, 'shares')
     if not sharesJson:
         return []
 
@@ -50,9 +54,9 @@ def _getLeftColumnShares(baseDir: str,
         sharedesc = item['displayName']
         if '<' in sharedesc or '?' in sharedesc:
             continue
-        contactActor = item['actor']
-        shareLink = actor + '?replydm=sharedesc:' + \
-            sharedesc.replace(' ', '_') + '?mention=' + contactActor
+        shareId = item['shareId']
+        # selecting this link calls htmlShowShare
+        shareLink = actor + '?showshare=' + shareId
         linksList.append(sharedesc + ' ' + shareLink)
         ctr += 1
         if ctr >= maxSharesInLeftColumn:
@@ -63,13 +67,52 @@ def _getLeftColumnShares(baseDir: str,
     return linksList
 
 
+def _getLeftColumnWanted(baseDir: str,
+                         httpPrefix: str, domain: str, domainFull: str,
+                         nickname: str,
+                         maxSharesInLeftColumn: int,
+                         translate: {},
+                         sharedItemsFederatedDomains: []) -> []:
+    """get any wanted items and turn them into the left column links format
+    """
+    pageNumber = 1
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    # NOTE: this could potentially be slow if the number of federated
+    # wanted items is large
+    sharesJson, lastPage = \
+        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
+                           baseDir, domain, nickname, maxSharesInLeftColumn,
+                           sharedItemsFederatedDomains, 'wanted')
+    if not sharesJson:
+        return []
+
+    linksList = []
+    ctr = 0
+    for published, item in sharesJson.items():
+        sharedesc = item['displayName']
+        if '<' in sharedesc or '?' in sharedesc:
+            continue
+        shareId = item['shareId']
+        # selecting this link calls htmlShowShare
+        shareLink = actor + '?showwanted=' + shareId
+        linksList.append(sharedesc + ' ' + shareLink)
+        ctr += 1
+        if ctr >= maxSharesInLeftColumn:
+            break
+
+    if linksList:
+        linksList = ['* ' + translate['Wanted']] + linksList
+    return linksList
+
+
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
                          editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool, theme: str,
-                         accessKeys: {}) -> str:
+                         accessKeys: {},
+                         sharedItemsFederatedDomains: []) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -158,11 +201,21 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         maxSharesInLeftColumn = 3
         sharesList = \
             _getLeftColumnShares(baseDir,
-                                 httpPrefix, domainFull, nickname,
-                                 maxSharesInLeftColumn, translate)
+                                 httpPrefix, domain, domainFull, nickname,
+                                 maxSharesInLeftColumn, translate,
+                                 sharedItemsFederatedDomains)
         if linksList and sharesList:
             linksList = sharesList + linksList
 
+        wantedList = \
+            _getLeftColumnWanted(baseDir,
+                                 httpPrefix, domain, domainFull, nickname,
+                                 maxSharesInLeftColumn, translate,
+                                 sharedItemsFederatedDomains)
+        if linksList and wantedList:
+            linksList = wantedList + linksList
+
+    newTabStr = ' target="_blank" rel="nofollow noopener noreferrer"'
     if linksList:
         htmlStr += '<nav>\n'
         for lineStr in linksList:
@@ -213,22 +266,32 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     if lineStr.endswith(','):
                         lineStr = lineStr[:len(lineStr)-1]
                     # add link to the returned html
-                    htmlStr += \
-                        '      <p><a href="' + linkStr + \
-                        '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        lineStr + '</a></p>\n'
+                    if '?showshare=' not in linkStr and \
+                       '?showwarning=' not in linkStr:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '"' + newTabStr + '>' + \
+                            lineStr + '</a></p>\n'
+                    else:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '">' + lineStr + '</a></p>\n'
                     linksFileContainsEntries = True
                 elif lineStr.startswith('=> '):
                     # gemini style link
                     lineStr = lineStr.replace('=> ', '')
                     lineStr = lineStr.replace(linkStr, '')
                     # add link to the returned html
-                    htmlStr += \
-                        '      <p><a href="' + linkStr + \
-                        '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        lineStr.strip() + '</a></p>\n'
+                    if '?showshare=' not in linkStr and \
+                       '?showwarning=' not in linkStr:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '"' + newTabStr + '>' + \
+                            lineStr.strip() + '</a></p>\n'
+                    else:
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + \
+                            '">' + lineStr.strip() + '</a></p>\n'
                     linksFileContainsEntries = True
             else:
                 if lineStr.startswith('#') or lineStr.startswith('*'):
@@ -247,6 +310,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if firstSeparatorAdded:
         htmlStr += separatorStr
+    htmlStr += \
+        '<p class="login-text"><a href="/users/' + nickname + \
+        '/catalog.csv">' + translate['Shares Catalog'] + '</a></p>'
     htmlStr += \
         '<p class="login-text"><a href="/users/' + \
         nickname + '/accesskeys" accesskey="' + \
@@ -272,7 +338,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     rssIconAtTop: bool,
                     iconsAsButtons: bool,
                     defaultTimeline: str,
-                    theme: str, accessKeys: {}) -> str:
+                    theme: str, accessKeys: {},
+                    sharedItemsFederatedDomains: []) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -314,7 +381,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False,
-                                 theme, accessKeys)
+                                 theme, accessKeys,
+                                 sharedItemsFederatedDomains)
     else:
         if editor:
             htmlStr += '<br><br><br>\n<center>\n  '
@@ -337,7 +405,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     if '/users/' not in path:
         return ''
     path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '')
+    path = path.replace('/shares', '').replace('/wanted', '')
 
     nickname = getNicknameFromActor(path)
     if not nickname:

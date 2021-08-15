@@ -54,6 +54,8 @@ from follow import clearFollows
 from follow import followerOfPerson
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from tests import testSharedItemsFederation
+from tests import testGroupFollow
 from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
@@ -85,6 +87,8 @@ from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from shares import sendShareViaServer
 from shares import sendUndoShareViaServer
+from shares import sendWantedViaServer
+from shares import sendUndoWantedViaServer
 from shares import addShare
 from theme import setTheme
 from announce import sendAnnounceViaServer
@@ -110,6 +114,20 @@ parser = argparse.ArgumentParser(description='ActivityPub Server')
 parser.add_argument('--userAgentBlocks', type=str,
                     default=None,
                     help='List of blocked user agents, separated by commas')
+parser.add_argument('--libretranslate', dest='libretranslateUrl', type=str,
+                    default=None,
+                    help='URL for LibreTranslate service')
+parser.add_argument('--conversationId', dest='conversationId', type=str,
+                    default=None,
+                    help='Conversation Id which can be added ' +
+                    'when sending a post')
+parser.add_argument('--libretranslateApiKey',
+                    dest='libretranslateApiKey', type=str,
+                    default=None,
+                    help='API key for LibreTranslate service')
+parser.add_argument('--defaultCurrency', dest='defaultCurrency', type=str,
+                    default=None,
+                    help='Default currency EUR/GBP/USD...')
 parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
                     help='Nickname of the account to use')
@@ -257,6 +275,10 @@ parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
+parser.add_argument('--federateshares', nargs='+',
+                    dest='sharedItemsFederatedDomains',
+                    help='Specify federation list for shared items, ' +
+                    'separated by spaces')
 parser.add_argument("--following", "--followingList",
                     dest='followingList',
                     type=str2bool, nargs='?',
@@ -309,6 +331,11 @@ parser.add_argument("--rssIconAtTop",
                     const=True, default=True,
                     help="Whether to show the rss icon at teh top or bottom" +
                     "of the timeline")
+parser.add_argument("--lowBandwidth",
+                    dest='lowBandwidth',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Whether to use low bandwidth images")
 parser.add_argument("--publishButtonAtTop",
                     dest='publishButtonAtTop',
                     type=str2bool, nargs='?',
@@ -437,6 +464,9 @@ parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                     default=1,
                     help='Minimum number of votes to remove or add' +
                     ' a newswire item')
+parser.add_argument('--maxLikeCount', dest='maxLikeCount', type=int,
+                    default=10,
+                    help='Maximum number of likes displayed on a post')
 parser.add_argument('--votingtime', dest='votingtime', type=int,
                     default=1440,
                     help='Time to vote on newswire items in minutes')
@@ -545,12 +575,27 @@ parser.add_argument('--itemName', dest='itemName', type=str,
 parser.add_argument('--undoItemName', dest='undoItemName', type=str,
                     default=None,
                     help='Name of an shared item to remove')
+parser.add_argument('--wantedItemName', dest='wantedItemName', type=str,
+                    default=None,
+                    help='Name of a wanted item')
+parser.add_argument('--undoWantedItemName', dest='undoWantedItemName',
+                    type=str, default=None,
+                    help='Name of a wanted item to remove')
 parser.add_argument('--summary', dest='summary', type=str,
                     default=None,
                     help='Description of an item being shared')
 parser.add_argument('--itemImage', dest='itemImage', type=str,
                     default=None,
                     help='Filename of an image for an item being shared')
+parser.add_argument('--itemQty', dest='itemQty', type=float,
+                    default=1,
+                    help='Quantity of items being shared')
+parser.add_argument('--itemPrice', dest='itemPrice', type=str,
+                    default="0.00",
+                    help='Total price of items being shared')
+parser.add_argument('--itemCurrency', dest='itemCurrency', type=str,
+                    default="EUR",
+                    help='Currency of items being shared')
 parser.add_argument('--itemType', dest='itemType', type=str,
                     default=None,
                     help='Type of item being shared')
@@ -588,6 +633,8 @@ if args.tests:
     sys.exit()
 if args.testsnetwork:
     print('Network Tests')
+    testSharedItemsFederation()
+    testGroupFollow()
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
@@ -605,6 +652,14 @@ baseDir = args.baseDir
 if baseDir.endswith('/'):
     print("--path option should not end with '/'")
     sys.exit()
+
+# automatic translations
+if args.libretranslateUrl:
+    if '://' in args.libretranslateUrl and \
+       '.' in args.libretranslateUrl:
+        setConfigParam(baseDir, 'libretranslateUrl', args.libretranslateUrl)
+if args.libretranslateApiKey:
+    setConfigParam(baseDir, 'libretranslateApiKey', args.libretranslateApiKey)
 
 if args.posts:
     if '@' not in args.posts:
@@ -631,9 +686,11 @@ if args.posts:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
+    if not args.language:
+        args.language = 'en'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__)
+                           __version__, args.language)
     sys.exit()
 
 if args.postDomains:
@@ -663,12 +720,15 @@ if args.postDomains:
         proxyType = 'gnunet'
     wordFrequency = {}
     domainList = []
+    if not args.language:
+        args.language = 'en'
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__,
-                                      wordFrequency, domainList)
+                                      wordFrequency, domainList,
+                                      args.language)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -703,12 +763,15 @@ if args.postDomainsBlocked:
         proxyType = 'gnunet'
     wordFrequency = {}
     domainList = []
+    if not args.language:
+        args.language = 'en'
     domainList = getPublicPostDomainsBlocked(None,
                                              baseDir, nickname, domain,
                                              proxyType, args.port,
                                              httpPrefix, debug,
                                              __version__,
-                                             wordFrequency, domainList)
+                                             wordFrequency, domainList,
+                                             args.language)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -741,12 +804,14 @@ if args.checkDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     maxBlockedDomains = 0
+    if not args.language:
+        args.language = 'en'
     checkDomains(None,
                  baseDir, nickname, domain,
                  proxyType, args.port,
                  httpPrefix, debug,
                  __version__,
-                 maxBlockedDomains, False)
+                 maxBlockedDomains, False, args.language)
     sys.exit()
 
 if args.socnet:
@@ -758,10 +823,12 @@ if args.socnet:
     if not args.http:
         args.port = 443
     proxyType = 'tor'
+    if not args.language:
+        args.language = 'en'
     dotGraph = instancesGraph(baseDir, args.socnet,
                               proxyType, args.port,
                               httpPrefix, debug,
-                              __version__)
+                              __version__, args.language)
     try:
         with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
@@ -785,9 +852,11 @@ if args.postsraw:
         proxyType = 'i2p'
     elif args.gnunet:
         proxyType = 'gnunet'
+    if not args.language:
+        args.language = 'en'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__)
+                           __version__, args.language)
     sys.exit()
 
 if args.json:
@@ -892,6 +961,8 @@ if not args.language:
     languageCode = getConfigParam(baseDir, 'language')
     if languageCode:
         args.language = languageCode
+    else:
+        args.language = 'en'
 
 # maximum number of new registrations
 if not args.maxRegistrations:
@@ -1095,7 +1166,6 @@ if args.message:
             toDomain = 'public'
             toPort = port
 
-    # ccUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/followers'
     ccUrl = None
     sendMessage = args.message
     followersOnly = args.followersonly
@@ -1124,7 +1194,8 @@ if args.message:
                       args.commentsEnabled, attach, mediaType,
                       attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
-                      args.debug, replyTo, replyTo, subject)
+                      args.language, args.lowBandwidth, args.debug,
+                      replyTo, replyTo, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1214,6 +1285,10 @@ if args.itemName:
               'with the --summary option')
         sys.exit()
 
+    if not args.itemQty:
+        print('Specify a quantity of shared items with the --itemQty option')
+        sys.exit()
+
     if not args.itemType:
         print('Specify a type of shared item with the --itemType option')
         sys.exit()
@@ -1224,7 +1299,7 @@ if args.itemName:
         sys.exit()
 
     if not args.location:
-        print('Specify a location or city where theshared ' +
+        print('Specify a location or city where the shared ' +
               'item resides with the --location option')
         sys.exit()
 
@@ -1245,12 +1320,14 @@ if args.itemName:
                        args.itemName,
                        args.summary,
                        args.itemImage,
+                       args.itemQty,
                        args.itemType,
                        args.itemCategory,
                        args.location,
                        args.duration,
                        cachedWebfingers, personCache,
-                       debug, __version__)
+                       debug, __version__,
+                       args.itemPrice, args.itemCurrency)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1280,6 +1357,100 @@ if args.undoItemName:
                            args.undoItemName,
                            cachedWebfingers, personCache,
                            debug, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.wantedItemName:
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.summary:
+        print('Specify a description for your shared item ' +
+              'with the --summary option')
+        sys.exit()
+
+    if not args.itemQty:
+        print('Specify a quantity of shared items with the --itemQty option')
+        sys.exit()
+
+    if not args.itemType:
+        print('Specify a type of shared item with the --itemType option')
+        sys.exit()
+
+    if not args.itemCategory:
+        print('Specify a category of shared item ' +
+              'with the --itemCategory option')
+        sys.exit()
+
+    if not args.location:
+        print('Specify a location or city where the wanted ' +
+              'item resides with the --location option')
+        sys.exit()
+
+    if not args.duration:
+        print('Specify a duration to share the object ' +
+              'with the --duration option')
+        sys.exit()
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending wanted item: ' + args.wantedItemName)
+
+    sendWantedViaServer(baseDir, session,
+                        args.nickname, args.password,
+                        domain, port,
+                        httpPrefix,
+                        args.wantedItemName,
+                        args.summary,
+                        args.itemImage,
+                        args.itemQty,
+                        args.itemType,
+                        args.itemCategory,
+                        args.location,
+                        args.duration,
+                        cachedWebfingers, personCache,
+                        debug, __version__,
+                        args.itemPrice, args.itemCurrency)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.undoWantedItemName:
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo of wanted item: ' + args.undoWantedItemName)
+
+    sendUndoWantedViaServer(baseDir, session,
+                            args.nickname, args.password,
+                            domain, port,
+                            httpPrefix,
+                            args.undoWantedItemName,
+                            cachedWebfingers, personCache,
+                            debug, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1674,6 +1845,10 @@ if args.followers:
             nickname = args.followers.split('/u/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.followers.split('/u/')[0]
+        elif '/c/' in args.followers:
+            nickname = args.followers.split('/c/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/c/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.followers:
@@ -1710,7 +1885,7 @@ if args.followers:
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug)
+                                None, __version__, debug, False)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
@@ -1739,6 +1914,7 @@ if args.followers:
         personUrl = personUrl.replace('/channel/', '/actor/')
         personUrl = personUrl.replace('/profile/', '/actor/')
         personUrl = personUrl.replace('/u/', '/actor/')
+        personUrl = personUrl.replace('/c/', '/actor/')
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain
@@ -1817,6 +1993,9 @@ if args.addgroup:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+    if nickname.startswith('!'):
+        # remove preceding group indicator
+        nickname = nickname[1:]
     if not validNickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
@@ -2090,11 +2269,27 @@ if args.desktop:
                      storeInboxPosts,
                      args.notifyShowNewPosts,
                      args.language,
-                     args.debug)
+                     args.debug, args.lowBandwidth)
     sys.exit()
 
 if federationList:
     print('Federating with: ' + str(federationList))
+if args.sharedItemsFederatedDomains:
+    print('Federating shared items with: ' +
+          args.sharedItemsFederatedDomains)
+
+sharedItemsFederatedDomains = []
+if args.sharedItemsFederatedDomains:
+    sharedItemsFederatedDomainsStr = args.sharedItemsFederatedDomains
+    setConfigParam(baseDir, 'sharedItemsFederatedDomains',
+                   sharedItemsFederatedDomainsStr)
+else:
+    sharedItemsFederatedDomainsStr = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+if sharedItemsFederatedDomainsStr:
+    sharedItemsFederatedDomainsList = sharedItemsFederatedDomainsStr.split(',')
+    for sharedFederatedDomain in sharedItemsFederatedDomainsList:
+        sharedItemsFederatedDomains.append(sharedFederatedDomain.strip())
 
 if args.block:
     if not nickname:
@@ -2245,6 +2440,7 @@ if args.unfilterStr:
     sys.exit()
 
 if args.testdata:
+    args.language = 'en'
     city = 'London, England'
     nickname = 'testuser567'
     password = 'boringpassword'
@@ -2287,21 +2483,21 @@ if args.testdata:
              "spanner",
              "It's a spanner",
              "img/shares1.png",
-             "tool",
+             1, "tool",
              "mechanical",
-             "City",
+             "City", "0", "GBP",
              "2 months",
-             debug, city)
+             debug, city, args.language, {}, 'shares', args.lowBandwidth)
     addShare(baseDir,
              httpPrefix, nickname, domain, port,
              "witch hat",
              "Spooky",
              "img/shares2.png",
-             "hat",
+             1, "hat",
              "clothing",
-             "City",
+             "City", "0", "GBP",
              "3 months",
-             debug, city)
+             debug, city, args.language, {}, 'shares', args.lowBandwidth)
 
     deleteAllPosts(baseDir, nickname, domain, 'inbox')
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
@@ -2322,6 +2518,8 @@ if args.testdata:
     testEventTime = None
     testLocation = None
     testIsArticle = False
+    conversationId = None
+    lowBandwidth = False
 
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like this is totally just a #test man",
@@ -2334,7 +2532,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2346,7 +2545,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2358,7 +2558,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2370,7 +2571,8 @@ if args.testdata:
                      'someone', testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -2383,7 +2585,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2395,7 +2598,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2407,7 +2611,8 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2419,21 +2624,22 @@ if args.testdata:
                      testInReplyTo, testInReplyToAtomUri,
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
-                     testIsArticle)
+                     testIsArticle, args.language, conversationId,
+                     lowBandwidth)
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followPerson(baseDir, nickname, domain, 'ultrapancake', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followPerson(baseDir, nickname, domain, 'sausagedog', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followPerson(baseDir, nickname, domain, 'drokk', domainFull,
-                 federationList, False)
+                 federationList, False, False)
     followerOfPerson(baseDir, nickname, domain, 'drokk', domainFull,
-                     federationList, False)
+                     federationList, False, False)
     followerOfPerson(baseDir, nickname, domain, 'maxboardroom', domainFull,
-                     federationList, False)
+                     federationList, False, False)
     setConfigParam(baseDir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions
@@ -2506,6 +2712,11 @@ sendThreadsTimeoutMins = \
 if sendThreadsTimeoutMins is not None:
     args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
 
+maxLikeCount = \
+    getConfigParam(baseDir, 'maxLikeCount')
+if maxLikeCount is not None:
+    args.maxLikeCount = int(maxLikeCount)
+
 showPublishAsIcon = \
     getConfigParam(baseDir, 'showPublishAsIcon')
 if showPublishAsIcon is not None:
@@ -2561,6 +2772,11 @@ showNodeInfoVersion = \
 if showNodeInfoVersion is not None:
     args.showNodeInfoVersion = bool(showNodeInfoVersion)
 
+lowBandwidth = \
+    getConfigParam(baseDir, 'lowBandwidth')
+if lowBandwidth is not None:
+    args.lowBandwidth = bool(lowBandwidth)
+
 userAgentsBlocked = []
 if args.userAgentBlocks:
     userAgentsBlockedStr = args.userAgentBlocks
@@ -2608,8 +2824,18 @@ if args.registration:
         setConfigParam(baseDir, 'registration', 'closed')
         print('New registrations closed')
 
+defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+if not defaultCurrency:
+    setConfigParam(baseDir, 'defaultCurrency', 'EUR')
+if args.defaultCurrency:
+    if args.defaultCurrency == args.defaultCurrency.upper():
+        setConfigParam(baseDir, 'defaultCurrency', args.defaultCurrency)
+        print('Default currency set to ' + args.defaultCurrency)
+
 if __name__ == "__main__":
-    runDaemon(userAgentsBlocked,
+    runDaemon(args.lowBandwidth, args.maxLikeCount,
+              sharedItemsFederatedDomains,
+              userAgentsBlocked,
               args.logLoginFailures,
               args.city,
               args.showNodeInfoAccounts,

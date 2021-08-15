@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 ENV DOMAIN=localhost
 RUN apt-get update && \
     apt-get -y install \

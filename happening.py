@@ -55,6 +55,9 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     See https://framagit.org/framasoft/mobilizon/-/blob/
     master/lib/federation/activity_stream/converter/event.ex
     """
+    if not os.path.isdir(baseDir + '/accounts/' + handle):
+        print('WARN: Account does not exist at ' +
+              baseDir + '/accounts/' + handle)
     calendarPath = baseDir + '/accounts/' + handle + '/calendar'
     if not os.path.isdir(calendarPath):
         os.mkdir(calendarPath)

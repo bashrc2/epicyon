@@ -14,7 +14,7 @@
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "vertical-between-posts": "10px",
-    "time-vertical-align": "10px",
+    "time-vertical-align": "0%",
     "button-corner-radius": "5px",
     "timeline-border-radius": "5px",
     "newswire-publish-icon": "True",

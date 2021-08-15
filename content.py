@@ -21,6 +21,8 @@ from utils import dangerousMarkup
 from utils import isPGPEncrypted
 from utils import containsPGPPublicKey
 from utils import acctDir
+from utils import isfloat
+from utils import getCurrencies
 from petnames import getPetName
 
 
@@ -497,7 +499,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                 followStr = follow.replace('\n', '').replace('\r', '')
                 replaceDomain = followStr.split('@')[1]
                 recipientActor = httpPrefix + "://" + \
-                    replaceDomain + "/users/" + possibleNickname
+                    replaceDomain + "/@" + possibleNickname
                 if recipientActor not in recipients:
                     recipients.append(recipientActor)
                 tags[wordStr] = {
@@ -524,7 +526,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                     replaceNickname = followStr.split('@')[0]
                     replaceDomain = followStr.split('@')[1]
                     recipientActor = httpPrefix + "://" + \
-                        replaceDomain + "/users/" + replaceNickname
+                        replaceDomain + "/@" + replaceNickname
                     if recipientActor not in recipients:
                         recipients.append(recipientActor)
                     tags[wordStr] = {
@@ -556,7 +558,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
             if follow.replace('\n', '').replace('\r', '') != possibleHandle:
                 continue
             recipientActor = httpPrefix + "://" + \
-                possibleDomain + "/users/" + possibleNickname
+                possibleDomain + "/@" + possibleNickname
             if recipientActor not in recipients:
                 recipients.append(recipientActor)
             tags[wordStr] = {
@@ -574,7 +576,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
     if not (possibleDomain == 'localhost' or '.' in possibleDomain):
         return False
     recipientActor = httpPrefix + "://" + \
-        possibleDomain + "/users/" + possibleNickname
+        possibleDomain + "/@" + possibleNickname
     if recipientActor not in recipients:
         recipients.append(recipientActor)
     tags[wordStr] = {
@@ -930,6 +932,16 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     Returns the filename and attachment type
     """
     if not mediaBytes:
+        if filenameBase:
+            # remove any existing files
+            extensionTypes = getImageExtensions()
+            for ex in extensionTypes:
+                possibleOtherFormat = filenameBase + '.' + ex
+                if os.path.isfile(possibleOtherFormat):
+                    os.remove(possibleOtherFormat)
+            if os.path.isfile(filenameBase):
+                os.remove(filenameBase)
+
         if debug:
             print('DEBUG: No media found within POST')
         return None, None
@@ -951,6 +963,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'flac': 'audio/flac',
         'zip': 'application/zip'
     }
     detectedExtension = None
@@ -1085,3 +1098,21 @@ def limitRepeatedWords(text: str, maxRepeats: int) -> str:
     for word, item in replacements.items():
         text = text.replace(item[0], item[1])
     return text
+
+
+def getPriceFromString(priceStr: str) -> (str, str):
+    """Returns the item price and currency
+    """
+    currencies = getCurrencies()
+    for symbol, name in currencies.items():
+        if symbol in priceStr:
+            price = priceStr.replace(symbol, '')
+            if isfloat(price):
+                return price, name
+        elif name in priceStr:
+            price = priceStr.replace(name, '')
+            if isfloat(price):
+                return price, name
+    if isfloat(priceStr):
+        return priceStr, "EUR"
+    return "0.00", "EUR"

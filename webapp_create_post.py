@@ -11,13 +11,17 @@ import os
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getImageFormats
 from utils import getMediaFormats
 from utils import getConfigParam
 from utils import acctDir
+from utils import getCurrencies
+from utils import getCategoryTypes
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import editTextField
+from webapp_utils import editNumberField
+from webapp_utils import editCurrencyField
 
 
 def _htmlFollowingDataList(baseDir: str, nickname: str,
@@ -72,7 +76,6 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
                          dropdownFollowersSuffix: str,
                          dropdownDMSuffix: str,
                          dropdownReminderSuffix: str,
-                         dropdownEventSuffix: str,
                          dropdownReportSuffix: str,
                          noDropDown: bool,
                          accessKeys: {}) -> str:
@@ -162,6 +165,13 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             translate['Describe a shared item'] + '</a></li>\n'
         dropDownContent += \
             '<li><a href="' + pathBase + \
+            '/newwanted" accesskey="' + accessKeys['menuWanted'] + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
+            'icons/scope_wanted.png"/><b>' + \
+            translate['Wanted'] + '</b><br>' + \
+            translate['Describe something wanted'] + '</a></li>\n'
+        dropDownContent += \
+            '<li><a href="' + pathBase + \
             '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_question.png"/><b>' + \
             translate['Question'] + '</b><br>' + \
@@ -182,7 +192,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
                 theme: str, noDropDown: bool,
-                accessKeys: {}, customSubmitText: str) -> str:
+                accessKeys: {}, customSubmitText: str,
+                conversationId: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -194,7 +205,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
 
-    if not path.endswith('/newshare'):
+    if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
                 newPostText = '<h1>' + \
@@ -247,10 +258,16 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 ' <a href="/terms">' + \
                 translate['Terms of Service'] + '</a></p>\n'
     else:
-        newPostText = \
-            '<h1>' + \
-            translate['Enter the details for your shared item below.'] + \
-            '</h1>\n'
+        if path.endswith('/newshare'):
+            newPostText = \
+                '<h1>' + \
+                translate['Enter the details for your shared item below.'] + \
+                '</h1>\n'
+        else:
+            newPostText = \
+                '<h1>' + \
+                translate['Enter the details for your wanted item below.'] + \
+                '</h1>\n'
 
     if path.endswith('/newquestion'):
         newPostText = \
@@ -271,36 +288,18 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         path = path.split('?')[0]
     pathBase = path.replace('/newreport', '').replace('/newpost', '')
     pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
-    pathBase = pathBase.replace('/newunlisted', '')
-    pathBase = pathBase.replace('/newevent', '')
+    pathBase = pathBase.replace('/newunlisted', '').replace('/newwanted', '')
     pathBase = pathBase.replace('/newreminder', '')
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
     newPostImageSection = '    <div class="container">'
-    if not path.endswith('/newevent'):
-        newPostImageSection += \
-            '      <label class="labels">' + \
-            translate['Image description'] + '</label>\n'
-    else:
-        newPostImageSection += \
-            '      <label class="labels">' + \
-            translate['Event banner image description'] + '</label>\n'
     newPostImageSection += \
-        '      <input type="text" name="imageDescription">\n'
+        editTextField(translate['Image description'], 'imageDescription', '')
 
-    if path.endswith('/newevent'):
-        newPostImageSection += \
-            '      <label class="labels">' + \
-            translate['Banner image'] + '</label>\n'
-        newPostImageSection += \
-            '      <input type="file" id="attachpic" name="attachpic"'
-        newPostImageSection += \
-            '            accept="' + getImageFormats() + '">\n'
-    else:
-        newPostImageSection += \
-            '      <input type="file" id="attachpic" name="attachpic"'
-        newPostImageSection += \
-            '            accept="' + getMediaFormats() + '">\n'
+    newPostImageSection += \
+        '      <input type="file" id="attachpic" name="attachpic"'
+    newPostImageSection += \
+        '            accept="' + getMediaFormats() + '">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
@@ -341,12 +340,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         scopeIcon = 'scope_reminder.png'
         scopeDescription = translate['Reminder']
         endpoint = 'newreminder'
-    elif path.endswith('/newevent'):
-        scopeIcon = 'scope_event.png'
-        scopeDescription = translate['Event']
-        endpoint = 'newevent'
-        placeholderSubject = translate['Event name']
-        placeholderMessage = translate['Describe the event'] + '...'
     elif path.endswith('/newreport'):
         scopeIcon = 'scope_report.png'
         scopeDescription = translate['Report']
@@ -379,26 +372,126 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         endpoint = 'newshare'
         extraFields = '<div class="container">\n'
         extraFields += \
-            '  <label class="labels">' + \
-            translate['Type of shared item. eg. hat'] + ':</label>\n'
+            editNumberField(translate['Quantity'],
+                            'itemQty', 1, 1, 999999, 1)
+        extraFields += '<br>' + \
+            editTextField(translate['Type of shared item. eg. hat'] + ':',
+                          'itemType', '', '', True)
+        categoryTypes = getCategoryTypes(baseDir)
+        catStr = translate['Category of shared item. eg. clothing']
+        extraFields += '<label class="labels">' + catStr + '</label><br>\n'
+
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="category" class="theme">\n'
+        for category in categoryTypes:
+            translatedCategory = "food"
+            if translate.get(category):
+                translatedCategory = translate[category]
+            extraFields += '    <option value="' + \
+                translatedCategory + '">' + \
+                translatedCategory + '</option>\n'
+
+        extraFields += '  </select><br>\n'
         extraFields += \
-            '  <input type="text" class="itemType" name="itemType">\n'
-        extraFields += \
-            '  <br><label class="labels">' + \
-            translate['Category of shared item. eg. clothing'] + ':</label>\n'
-        extraFields += \
-            '  <input type="text" class="category" name="category">\n'
-        extraFields += \
-            '  <br><label class="labels">' + \
-            translate['Duration of listing in days'] + ':</label>\n'
-        extraFields += '  <input type="number" name="duration" ' + \
-            'min="1" max="365" step="1" value="14">\n'
+            editNumberField(translate['Duration of listing in days'],
+                            'duration', 14, 1, 365, 1)
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
+        cityOrLocStr = translate['City or location of the shared item']
+        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
         extraFields += \
-            '<label class="labels">' + \
-            translate['City or location of the shared item'] + ':</label>\n'
-        extraFields += '<input type="text" name="location">\n'
+            editCurrencyField(translate['Price'] + ':', 'itemPrice', '0.00',
+                              '0.00', True)
+        extraFields += '<br>'
+        extraFields += \
+            '<label class="labels">' + translate['Currency'] + '</label><br>\n'
+        currencies = getCurrencies()
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="itemCurrency" class="theme">\n'
+        currencyList = []
+        for symbol, currName in currencies.items():
+            currencyList.append(currName + ' ' + symbol)
+        currencyList.sort()
+        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+        if not defaultCurrency:
+            defaultCurrency = "EUR"
+        for currName in currencyList:
+            if defaultCurrency not in currName:
+                extraFields += '    <option value="' + \
+                    currName + '">' + currName + '</option>\n'
+            else:
+                extraFields += '    <option value="' + \
+                    currName + '" selected="selected">' + \
+                    currName + '</option>\n'
+        extraFields += '  </select>\n'
+
+        extraFields += '</div>\n'
+    elif path.endswith('/newwanted'):
+        scopeIcon = 'scope_wanted.png'
+        scopeDescription = translate['Wanted']
+        placeholderSubject = translate['Name of the wanted item'] + '...'
+        placeholderMessage = \
+            translate['Description of the item wanted'] + '...'
+        endpoint = 'newwanted'
+        extraFields = '<div class="container">\n'
+        extraFields += \
+            editNumberField(translate['Quantity'],
+                            'itemQty', 1, 1, 999999, 1)
+        extraFields += '<br>' + \
+            editTextField(translate['Type of wanted item. eg. hat'] + ':',
+                          'itemType', '', '', True)
+        categoryTypes = getCategoryTypes(baseDir)
+        catStr = translate['Category of wanted item. eg. clothes']
+        extraFields += '<label class="labels">' + catStr + '</label><br>\n'
+
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="category" class="theme">\n'
+        for category in categoryTypes:
+            translatedCategory = "food"
+            if translate.get(category):
+                translatedCategory = translate[category]
+            extraFields += '    <option value="' + \
+                translatedCategory + '">' + \
+                translatedCategory + '</option>\n'
+
+        extraFields += '  </select><br>\n'
+        extraFields += \
+            editNumberField(translate['Duration of listing in days'],
+                            'duration', 14, 1, 365, 1)
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
+        cityOrLocStr = translate['City or location of the wanted item']
+        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
+        extraFields += \
+            editCurrencyField(translate['Maximum Price'] + ':',
+                              'itemPrice', '0.00', '0.00', True)
+        extraFields += '<br>'
+        extraFields += \
+            '<label class="labels">' + translate['Currency'] + '</label><br>\n'
+        currencies = getCurrencies()
+        extraFields += '  <select id="themeDropdown" ' + \
+            'name="itemCurrency" class="theme">\n'
+        currencyList = []
+        for symbol, currName in currencies.items():
+            currencyList.append(currName + ' ' + symbol)
+        currencyList.sort()
+        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+        if not defaultCurrency:
+            defaultCurrency = "EUR"
+        for currName in currencyList:
+            if defaultCurrency not in currName:
+                extraFields += '    <option value="' + \
+                    currName + '">' + currName + '</option>\n'
+            else:
+                extraFields += '    <option value="' + \
+                    currName + '" selected="selected">' + \
+                    currName + '</option>\n'
+        extraFields += '  </select>\n'
+
         extraFields += '</div>\n'
 
     citationsStr = ''
@@ -429,71 +522,14 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     dateAndLocation = ''
     if endpoint != 'newshare' and \
+       endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = '<div class="container">\n'
-
-        if endpoint == 'newevent':
-            # event status
-            dateAndLocation += '<label class="labels">' + \
-                translate['Status of the event'] + ':</label><br>\n'
-            dateAndLocation += '<input type="radio" id="tentative" ' + \
-                'name="eventStatus" value="tentative">\n'
-            dateAndLocation += '<label class="labels" for="tentative">' + \
-                translate['Tentative'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="confirmed" ' + \
-                'name="eventStatus" value="confirmed" checked>\n'
-            dateAndLocation += '<label class="labels" for="confirmed">' + \
-                translate['Confirmed'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="cancelled" ' + \
-                'name="eventStatus" value="cancelled">\n'
-            dateAndLocation += '<label class="labels" for="cancelled">' + \
-                translate['Cancelled'] + '</label><br>\n'
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            # maximum attendees
-            dateAndLocation += '<label class="labels" ' + \
-                'for="maximumAttendeeCapacity">' + \
-                translate['Maximum attendees'] + ':</label>\n'
-            dateAndLocation += '<input type="number" ' + \
-                'id="maximumAttendeeCapacity" ' + \
-                'name="maximumAttendeeCapacity" min="1" max="999999" ' + \
-                'value="100">\n'
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            # event joining options
-            dateAndLocation += '<label class="labels">' + \
-                translate['Joining'] + ':</label><br>\n'
-            dateAndLocation += '<input type="radio" id="free" ' + \
-                'name="joinMode" value="free" checked>\n'
-            dateAndLocation += '<label class="labels" for="free">' + \
-                translate['Anyone can join'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="restricted" ' + \
-                'name="joinMode" value="restricted">\n'
-            dateAndLocation += '<label class="labels" for="female">' + \
-                translate['Apply to join'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="invite" ' + \
-                'name="joinMode" value="invite">\n'
-            dateAndLocation += '<label class="labels" for="other">' + \
-                translate['Invitation only'] + '</label>\n'
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            # Event posts don't allow replies - they're just an announcement.
-            # They also have a few more checkboxes
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="privateEvent"><label class="labels"> ' + \
-                translate['This is a private event.'] + '</label></p>\n'
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="anonymousParticipationEnabled">' + \
-                '<label class="labels"> ' + \
-                translate['Allow anonymous participation.'] + '</label></p>\n'
-        else:
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="commentsEnabled" checked><label class="labels"> ' + \
-                translate['Allow replies.'] + '</label></p>\n'
+        dateAndLocation = \
+            '<div class="container">\n' + \
+            '<p><input type="checkbox" class="profilecheckbox" ' + \
+            'name="commentsEnabled" checked><label class="labels"> ' + \
+            translate['Allow replies.'] + '</label></p>\n'
 
         if endpoint == 'newpost':
             dateAndLocation += \
@@ -501,76 +537,29 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 'name="pinToProfile"><label class="labels"> ' + \
                 translate['Pin this post to your profile.'] + '</label></p>\n'
 
-        if not inReplyTo and endpoint != 'newevent':
+        if not inReplyTo:
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
                 'name="schedulePost"><label class="labels"> ' + \
                 translate['This is a scheduled post.'] + '</label></p>\n'
 
-        if endpoint != 'newevent':
-            dateAndLocation += \
-                '<p><img loading="lazy" alt="" title="" ' + \
-                'class="emojicalendar" src="/' + \
-                'icons/calendar.png"/>\n'
-            # select a date and time for this post
-            dateAndLocation += '<label class="labels">' + \
-                translate['Date'] + ': </label>\n'
-            dateAndLocation += '<input type="date" name="eventDate">\n'
-            dateAndLocation += '<label class="labelsright">' + \
-                translate['Time'] + ':'
-            dateAndLocation += \
-                '<input type="time" name="eventTime"></label></p>\n'
-        else:
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            dateAndLocation += \
-                '<p><img loading="lazy" alt="" title="" ' + \
-                'class="emojicalendar" src="/' + \
-                'icons/calendar.png"/>\n'
-            # select start time for the event
-            dateAndLocation += '<label class="labels">' + \
-                translate['Start Date'] + ': </label>\n'
-            dateAndLocation += '<input type="date" name="eventDate">\n'
-            dateAndLocation += '<label class="labelsright">' + \
-                translate['Time'] + ':'
-            dateAndLocation += \
-                '<input type="time" name="eventTime"></label></p>\n'
-            # select end time for the event
-            dateAndLocation += \
-                '<br><img loading="lazy" alt="" title="" ' + \
-                'class="emojicalendar" src="/' + \
-                'icons/calendar.png"/>\n'
-            dateAndLocation += '<label class="labels">' + \
-                translate['End Date'] + ': </label>\n'
-            dateAndLocation += '<input type="date" name="endDate">\n'
-            dateAndLocation += '<label class="labelsright">' + \
-                translate['Time'] + ':'
-            dateAndLocation += \
-                '<input type="time" name="endTime"></label>\n'
+        dateAndLocation += \
+            '<p><img loading="lazy" alt="" title="" ' + \
+            'class="emojicalendar" src="/' + \
+            'icons/calendar.png"/>\n'
+        # select a date and time for this post
+        dateAndLocation += '<label class="labels">' + \
+            translate['Date'] + ': </label>\n'
+        dateAndLocation += '<input type="date" name="eventDate">\n'
+        dateAndLocation += '<label class="labelsright">' + \
+            translate['Time'] + ':'
+        dateAndLocation += \
+            '<input type="time" name="eventTime"></label></p>\n'
 
-        if endpoint == 'newevent':
-            dateAndLocation += '</div>\n'
-            dateAndLocation += '<div class="container">\n'
-            dateAndLocation += '<br><label class="labels">' + \
-                translate['Moderation policy or code of conduct'] + \
-                ': </label>\n'
-            dateAndLocation += \
-                '    <textarea id="message" ' + \
-                'name="repliesModerationOption" style="height:' + \
-                str(messageBoxHeight) + 'px" spellcheck="true" ' + \
-                'autocomplete="on"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
-        dateAndLocation += '<label class="labels">' + \
-            translate['Location'] + ': </label>\n'
-        dateAndLocation += '<input type="text" name="location">\n'
-        if endpoint == 'newevent':
-            dateAndLocation += '<br><label class="labels">' + \
-                translate['Ticket URL'] + ': </label>\n'
-            dateAndLocation += '<input type="text" name="ticketUrl">\n'
-            dateAndLocation += '<br><label class="labels">' + \
-                translate['Categories'] + ': </label>\n'
-            dateAndLocation += '<input type="text" name="category">\n'
+        dateAndLocation += \
+            editTextField(translate['Location'], 'location', '')
         dateAndLocation += '</div>\n'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
@@ -610,7 +599,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     dropdownUnlistedSuffix = '/newunlisted'
     dropdownFollowersSuffix = '/newfollowers'
     dropdownDMSuffix = '/newdm'
-    dropdownEventSuffix = '/newevent'
     dropdownReminderSuffix = '/newreminder'
     dropdownReportSuffix = '/newreport'
     if inReplyTo or mentions:
@@ -619,7 +607,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropdownUnlistedSuffix = ''
         dropdownFollowersSuffix = ''
         dropdownDMSuffix = ''
-        dropdownEventSuffix = ''
         dropdownReminderSuffix = ''
         dropdownReportSuffix = ''
     if inReplyTo:
@@ -635,6 +622,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropdownFollowersSuffix += '?mention=' + mentionedActor
         dropdownDMSuffix += '?mention=' + mentionedActor
         dropdownReportSuffix += '?mention=' + mentionedActor
+    if conversationId and inReplyTo:
+        dropdownNewPostSuffix += '?conversationId=' + conversationId
+        dropdownNewBlogSuffix += '?conversationId=' + conversationId
+        dropdownUnlistedSuffix += '?conversationId=' + conversationId
+        dropdownFollowersSuffix += '?conversationId=' + conversationId
+        dropdownDMSuffix += '?conversationId=' + conversationId
 
     dropDownContent = ''
     if not reportUrl and not shareDescription:
@@ -651,7 +644,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                  dropdownFollowersSuffix,
                                  dropdownDMSuffix,
                                  dropdownReminderSuffix,
-                                 dropdownEventSuffix,
                                  dropdownReportSuffix,
                                  noDropDown, accessKeys)
     else:
@@ -663,6 +655,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + \
         path + '?' + endpoint + '?page=' + str(pageNumber) + '">\n'
+    if conversationId:
+        newPostForm += \
+            '    <input type="hidden" name="conversationId" value="' + \
+            conversationId + '">\n'
     newPostForm += '  <div class="vertical-center">\n'
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
@@ -712,13 +708,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if mediaInstance and not replyStr:
         newPostForm += newPostImageSection
 
-    newPostForm += \
-        '    <label class="labels">' + placeholderSubject + '</label><br>'
     if not shareDescription:
         shareDescription = ''
     newPostForm += \
-        '    <input type="text" name="subject" value="' + \
-        shareDescription + '">'
+        editTextField(placeholderSubject, 'subject', shareDescription)
     newPostForm += ''
 
     selectedStr = ' selected'

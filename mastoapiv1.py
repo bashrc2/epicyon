@@ -140,6 +140,9 @@ def mastoApiV1Response(path: str, callingDomain: str,
                     _getMastoApiV1Account(baseDir, pathNickname, domain)
                 sendJsonStr = 'masto API account sent for ' + nickname
 
+    # NOTE: adding support for '/api/v1/directory seems to create
+    # federation problems, so avoid implementing that
+
     if path.startswith('/api/v1/blocks'):
         sendJson = []
         sendJsonStr = 'masto API instance blocks sent'

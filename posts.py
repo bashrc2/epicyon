@@ -31,6 +31,9 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from languages import understoodPostLanguage
+from utils import hasGroupType
+from utils import getBaseContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import hasObjectDict
@@ -60,6 +63,7 @@ from utils import votesOnNewswireItem
 from utils import removeHtml
 from utils import dangerousMarkup
 from utils import acctDir
+from utils import localActorUrl
 from media import attachMedia
 from media import replaceYouTube
 from content import limitRepeatedWords
@@ -181,18 +185,28 @@ def getUserUrl(wfRequest: {}, sourceId: int = 0, debug: bool = False) -> str:
 
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
-                  domain: str, depth=0) -> {}:
+                  domain: str, debug: bool, depth: int = 0) -> []:
     if depth > 10:
+        if debug:
+            print('Maximum search depth reached')
         return None
 
+    if debug:
+        print('Getting user feed for ' + feedUrl)
+        print('User feed header ' + str(asHeader))
     feedJson = getJson(session, feedUrl, asHeader, None,
                        False, projectVersion, httpPrefix, domain)
     if not feedJson:
+        if debug:
+            print('No user feed was returned')
         return None
 
+    if debug:
+        print('User feed:')
+        pprint(feedJson)
+
     if 'orderedItems' in feedJson:
-        for item in feedJson['orderedItems']:
-            yield item
+        return feedJson['orderedItems']
 
     nextUrl = None
     if 'first' in feedJson:
@@ -200,28 +214,61 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
     elif 'next' in feedJson:
         nextUrl = feedJson['next']
 
+    if debug:
+        print('User feed next url: ' + str(nextUrl))
+
     if nextUrl:
         if isinstance(nextUrl, str):
             if '?max_id=0' not in nextUrl:
                 userFeed = \
                     parseUserFeed(session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
-                                  domain, depth + 1)
+                                  domain, debug, depth + 1)
                 if userFeed:
-                    for item in userFeed:
-                        yield item
+                    return userFeed
         elif isinstance(nextUrl, dict):
             userFeed = nextUrl
             if userFeed.get('orderedItems'):
-                for item in userFeed['orderedItems']:
-                    yield item
+                return userFeed['orderedItems']
+    return None
+
+
+def _getPersonBoxActor(session, baseDir: str, actor: str,
+                       profileStr: str, asHeader: {},
+                       debug: bool, projectVersion: str,
+                       httpPrefix: str, domain: str,
+                       personCache: {}) -> {}:
+    """Returns the actor json for the given actor url
+    """
+    personJson = \
+        getPersonFromCache(baseDir, actor, personCache, True)
+    if personJson:
+        return personJson
+
+    if '/channel/' in actor or '/accounts/' in actor:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+    personJson = getJson(session, actor, asHeader, None,
+                         debug, projectVersion, httpPrefix, domain)
+    if personJson:
+        return personJson
+    asHeader = {
+        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    }
+    personJson = getJson(session, actor, asHeader, None,
+                         debug, projectVersion, httpPrefix, domain)
+    if personJson:
+        return personJson
+    print('Unable to get actor for ' + actor)
+    return None
 
 
 def getPersonBox(baseDir: str, session, wfRequest: {},
                  personCache: {},
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
-                 boxName='inbox',
+                 boxName: str = 'inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, str):
     debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
@@ -232,7 +279,9 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         print('No webfinger given')
         return None, None, None, None, None, None, None
 
+    # get the actor / personUrl
     if not wfRequest.get('errors'):
+        # get the actor url from webfinger links
         personUrl = getUserUrl(wfRequest, sourceId, debug)
     else:
         if nickname == 'dev':
@@ -243,27 +292,22 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
         else:
-            personUrl = httpPrefix + '://' + domain + '/users/' + nickname
+            # the final fallback is a mastodon style url
+            personUrl = localActorUrl(httpPrefix, nickname, domain)
     if not personUrl:
         return None, None, None, None, None, None, None
+
+    # get the actor json from the url
     personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, True)
+        _getPersonBoxActor(session, baseDir, personUrl,
+                           profileStr, asHeader,
+                           debug, projectVersion,
+                           httpPrefix, domain,
+                           personCache)
     if not personJson:
-        if '/channel/' in personUrl or '/accounts/' in personUrl:
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
-            }
-        personJson = getJson(session, personUrl, asHeader, None,
-                             debug, projectVersion, httpPrefix, domain)
-        if not personJson:
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
-            }
-            personJson = getJson(session, personUrl, asHeader, None,
-                                 debug, projectVersion, httpPrefix, domain)
-            if not personJson:
-                print('Unable to get actor for ' + personUrl)
-                return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None
+
+    # get the url for the box/collection
     boxJson = None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
@@ -271,7 +315,6 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                 boxJson = personJson['endpoints'][boxName]
     else:
         boxJson = personJson[boxName]
-
     if not boxJson:
         return None, None, None, None, None, None, None
 
@@ -322,9 +365,11 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               personCache: {}, raw: bool,
               simple: bool, debug: bool,
               projectVersion: str, httpPrefix: str,
-              domain: str) -> {}:
+              domain: str, systemLanguage: str) -> {}:
     """Gets public posts from an outbox
     """
+    if debug:
+        print('Getting outbox posts for ' + outboxUrl)
     personPosts = {}
     if not outboxUrl:
         return personPosts
@@ -337,10 +382,12 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
     if raw:
+        if debug:
+            print('Returning the raw feed')
         result = []
         i = 0
         userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                                 projectVersion, httpPrefix, domain)
+                                 projectVersion, httpPrefix, domain, debug)
         for item in userFeed:
             result.append(item)
             i += 1
@@ -349,9 +396,14 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         pprint(result)
         return None
 
-    i = 0
+    if debug:
+        print('Returning a human readable version of the feed')
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain)
+                             projectVersion, httpPrefix, domain, debug)
+    if not userFeed:
+        return personPosts
+
+    i = 0
     for item in userFeed:
         if not item.get('id'):
             if debug:
@@ -361,111 +413,124 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             if debug:
                 print('No type')
             continue
-        if item['type'] != 'Create':
+        if item['type'] != 'Create' and item['type'] != 'Announce':
             if debug:
                 print('Not Create type')
             continue
-        if not hasObjectDict(item):
+        if not isinstance(item, dict):
             if debug:
                 print('item object is not a dict')
+                pprint(item)
             continue
-        if not item['object'].get('published'):
-            if debug:
-                print('No published attribute')
-            continue
+        if item.get('object'):
+            if isinstance(item['object'], dict):
+                if not item['object'].get('published'):
+                    if debug:
+                        print('No published attribute')
+                    continue
+            elif isinstance(item['object'], str):
+                if not item.get('published'):
+                    if debug:
+                        print('No published attribute')
+                    continue
+            else:
+                if debug:
+                    print('object is not a dict or string')
+                continue
         if not personPosts.get(item['id']):
             # check that this is a public post
             # #Public should appear in the "to" list
-            if item['object'].get('to'):
-                isPublic = False
-                for recipient in item['object']['to']:
-                    if recipient.endswith('#Public'):
-                        isPublic = True
-                        break
-                if not isPublic:
-                    continue
+            if isinstance(item['object'], dict):
+                if item['object'].get('to'):
+                    isPublic = False
+                    for recipient in item['object']['to']:
+                        if recipient.endswith('#Public'):
+                            isPublic = True
+                            break
+                    if not isPublic:
+                        continue
+            elif isinstance(item['object'], str):
+                if item.get('to'):
+                    isPublic = False
+                    for recipient in item['to']:
+                        if recipient.endswith('#Public'):
+                            isPublic = True
+                            break
+                    if not isPublic:
+                        continue
 
-            content = \
-                item['object']['content'].replace('&apos;', "'")
+            content = getBaseContentFromPost(item, systemLanguage)
+            content = content.replace('&apos;', "'")
 
             mentions = []
             emoji = {}
-            if item['object'].get('tag'):
-                for tagItem in item['object']['tag']:
-                    tagType = tagItem['type'].lower()
-                    if tagType == 'emoji':
-                        if tagItem.get('name') and tagItem.get('icon'):
-                            if tagItem['icon'].get('url'):
-                                # No emoji from non-permitted domains
-                                if urlPermitted(tagItem['icon']['url'],
-                                                federationList,
-                                                "objects:read"):
-                                    emojiName = tagItem['name']
-                                    emojiIcon = tagItem['icon']['url']
-                                    emoji[emojiName] = emojiIcon
+            summary = ''
+            inReplyTo = ''
+            attachment = []
+            sensitive = False
+            if isinstance(item['object'], dict):
+                if item['object'].get('tag'):
+                    for tagItem in item['object']['tag']:
+                        tagType = tagItem['type'].lower()
+                        if tagType == 'emoji':
+                            if tagItem.get('name') and tagItem.get('icon'):
+                                if tagItem['icon'].get('url'):
+                                    # No emoji from non-permitted domains
+                                    if urlPermitted(tagItem['icon']['url'],
+                                                    federationList):
+                                        emojiName = tagItem['name']
+                                        emojiIcon = tagItem['icon']['url']
+                                        emoji[emojiName] = emojiIcon
+                                    else:
+                                        if debug:
+                                            print('url not permitted ' +
+                                                  tagItem['icon']['url'])
+                        if tagType == 'mention':
+                            if tagItem.get('name'):
+                                if tagItem['name'] not in mentions:
+                                    mentions.append(tagItem['name'])
+                if len(mentions) > maxMentions:
+                    if debug:
+                        print('max mentions reached')
+                    continue
+                if len(emoji) > maxEmoji:
+                    if debug:
+                        print('max emojis reached')
+                    continue
+
+                if item['object'].get('summary'):
+                    if item['object']['summary']:
+                        summary = item['object']['summary']
+
+                if item['object'].get('inReplyTo'):
+                    if item['object']['inReplyTo']:
+                        if isinstance(item['object']['inReplyTo'], str):
+                            # No replies to non-permitted domains
+                            if not urlPermitted(item['object']['inReplyTo'],
+                                                federationList):
+                                if debug:
+                                    print('url not permitted ' +
+                                          item['object']['inReplyTo'])
+                                continue
+                            inReplyTo = item['object']['inReplyTo']
+
+                if item['object'].get('attachment'):
+                    if item['object']['attachment']:
+                        for attach in item['object']['attachment']:
+                            if attach.get('name') and attach.get('url'):
+                                # no attachments from non-permitted domains
+                                if urlPermitted(attach['url'],
+                                                federationList):
+                                    attachment.append([attach['name'],
+                                                       attach['url']])
                                 else:
                                     if debug:
                                         print('url not permitted ' +
-                                              tagItem['icon']['url'])
-                    if tagType == 'mention':
-                        if tagItem.get('name'):
-                            if tagItem['name'] not in mentions:
-                                mentions.append(tagItem['name'])
-            if len(mentions) > maxMentions:
-                if debug:
-                    print('max mentions reached')
-                continue
-            if len(emoji) > maxEmoji:
-                if debug:
-                    print('max emojis reached')
-                continue
+                                              attach['url'])
 
-            summary = ''
-            if item['object'].get('summary'):
-                if item['object']['summary']:
-                    summary = item['object']['summary']
-
-            inReplyTo = ''
-            if item['object'].get('inReplyTo'):
-                if item['object']['inReplyTo']:
-                    if isinstance(item['object']['inReplyTo'], str):
-                        # No replies to non-permitted domains
-                        if not urlPermitted(item['object']['inReplyTo'],
-                                            federationList,
-                                            "objects:read"):
-                            if debug:
-                                print('url not permitted ' +
-                                      item['object']['inReplyTo'])
-                            continue
-                        inReplyTo = item['object']['inReplyTo']
-
-            conversation = ''
-            if item['object'].get('conversation'):
-                if item['object']['conversation']:
-                    # no conversations originated in non-permitted domains
-                    if urlPermitted(item['object']['conversation'],
-                                    federationList, "objects:read"):
-                        conversation = item['object']['conversation']
-
-            attachment = []
-            if item['object'].get('attachment'):
-                if item['object']['attachment']:
-                    for attach in item['object']['attachment']:
-                        if attach.get('name') and attach.get('url'):
-                            # no attachments from non-permitted domains
-                            if urlPermitted(attach['url'],
-                                            federationList,
-                                            "objects:read"):
-                                attachment.append([attach['name'],
-                                                   attach['url']])
-                            else:
-                                if debug:
-                                    print('url not permitted ' +
-                                          attach['url'])
-
-            sensitive = False
-            if item['object'].get('sensitive'):
-                sensitive = item['object']['sensitive']
+                sensitive = False
+                if item['object'].get('sensitive'):
+                    sensitive = item['object']['sensitive']
 
             if simple:
                 print(_cleanHtml(content) + '\n')
@@ -479,8 +544,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     "plaintext": _cleanHtml(content),
                     "attachment": attachment,
                     "mentions": mentions,
-                    "emoji": emoji,
-                    "conversation": conversation
+                    "emoji": emoji
                 }
         i += 1
 
@@ -489,24 +553,38 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
     return personPosts
 
 
-def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
-    """Creates a dictionary containing words and the number of times
-    that they appear
+def _getCommonWords() -> str:
+    """Returns a list of common words
     """
-    plainText = removeHtml(content)
-    removeChars = ('.', ';', '?')
-    for ch in removeChars:
-        plainText = plainText.replace(ch, ' ')
-    wordsList = plainText.split(' ')
-    commonWords = (
+    return (
         'that', 'some', 'about', 'then', 'they', 'were',
         'also', 'from', 'with', 'this', 'have', 'more',
         'need', 'here', 'would', 'these', 'into', 'very',
         'well', 'when', 'what', 'your', 'there', 'which',
         'even', 'there', 'such', 'just', 'those', 'only',
         'will', 'much', 'than', 'them', 'each', 'goes',
-        'been', 'over', 'their', 'where', 'could', 'though'
+        'been', 'over', 'their', 'where', 'could', 'though',
+        'like', 'think', 'same', 'maybe', 'really', 'thing',
+        'something', 'possible', 'actual', 'actually',
+        'because', 'around', 'having', 'especially', 'other',
+        'making', 'made', 'make', 'makes', 'including',
+        'includes', 'know', 'knowing', 'knows', 'things',
+        'say', 'says', 'saying', 'many', 'somewhat',
+        'problem', 'problems', 'idea', 'ideas',
+        'using', 'uses', 'https', 'still', 'want', 'wants'
     )
+
+
+def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
+    """Creates a dictionary containing words and the number of times
+    that they appear
+    """
+    plainText = removeHtml(content)
+    removeChars = ('.', ';', '?', '\n', ':')
+    for ch in removeChars:
+        plainText = plainText.replace(ch, ' ')
+    wordsList = plainText.split(' ')
+    commonWords = _getCommonWords()
     for word in wordsList:
         wordLen = len(word)
         if wordLen < 3:
@@ -517,10 +595,10 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         if '&' in word or \
            '"' in word or \
            '@' in word or \
-           '://' in word:
+           "'" in word or \
+           "--" in word or \
+           '//' in word:
             continue
-        if word.endswith(':'):
-            word = word.replace(':', '')
         if word.lower() in commonWords:
             continue
         if wordFrequency.get(word):
@@ -538,7 +616,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    projectVersion: str, httpPrefix: str,
                    domain: str,
                    wordFrequency: {},
-                   domainList=[]) -> []:
+                   domainList: [], systemLanguage: str) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -556,16 +634,16 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
 
     i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain)
+                             projectVersion, httpPrefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
             break
         if not hasObjectDict(item):
             continue
-        if item['object'].get('content'):
-            _updateWordFrequency(item['object']['content'],
-                                 wordFrequency)
+        contentStr = getBaseContentFromPost(item, systemLanguage)
+        if contentStr:
+            _updateWordFrequency(contentStr, wordFrequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
@@ -611,7 +689,7 @@ def _getPostsForBlockedDomains(baseDir: str,
 
     i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain)
+                             projectVersion, httpPrefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -689,7 +767,7 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
     if not postId:
         statusNumber, published = getStatusNumber()
         postId = \
-            httpPrefix + '://' + originalDomain + '/users/' + nickname + \
+            localActorUrl(httpPrefix, nickname, originalDomain) + \
             '/statuses/' + statusNumber
         postJsonObject['id'] = postId + '/activity'
     if hasObjectDict(postJsonObject):
@@ -838,17 +916,20 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
                    tags: [], attachImageFilename: str,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
-                   inReplyToAtomUri: str) -> {}:
+                   inReplyToAtomUri: str, systemLanguage: str,
+                   conversationId: str, lowBandwidth: bool) -> {}:
     """Creates a new server-to-server post
     """
-    actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    actorUrl = localActorUrl(httpPrefix, nickname, domain)
     idStr = \
-        httpPrefix + '://' + domain + '/users/' + nickname + \
+        localActorUrl(httpPrefix, nickname, domain) + \
         '/statuses/' + statusNumber + '/replies'
     newPostUrl = \
         httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
     newPostAttributedTo = \
-        httpPrefix + '://' + domain + '/users/' + nickname
+        localActorUrl(httpPrefix, nickname, domain)
+    if not conversationId:
+        conversationId = newPostId
     newPost = {
         '@context': postContext,
         'id': newPostId + '/activity',
@@ -859,6 +940,7 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
         'cc': toCC,
         'object': {
             'id': newPostId,
+            'conversation': conversationId,
             'type': postObjectType,
             'summary': summary,
             'inReplyTo': inReplyTo,
@@ -875,7 +957,7 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
-                'en': content
+                systemLanguage: content
             },
             'attachment': [],
             'tag': tags,
@@ -894,7 +976,7 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
         newPost['object'] = \
             attachMedia(baseDir, httpPrefix, nickname, domain, port,
                         newPost['object'], attachImageFilename,
-                        mediaType, imageDescription, city)
+                        mediaType, imageDescription, city, lowBandwidth)
     return newPost
 
 
@@ -906,23 +988,28 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
                    tags: [], attachImageFilename: str,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
-                   inReplyToAtomUri: str) -> {}:
+                   inReplyToAtomUri: str, systemLanguage: str,
+                   conversationId: str, lowBandwidth: str) -> {}:
     """Creates a new client-to-server post
     """
+    domainFull = getFullDomain(domain, port)
     idStr = \
-        httpPrefix + '://' + domain + '/users/' + nickname + \
+        localActorUrl(httpPrefix, nickname, domainFull) + \
         '/statuses/' + statusNumber + '/replies'
     newPostUrl = \
         httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
+    if not conversationId:
+        conversationId = newPostId
     newPost = {
         "@context": postContext,
         'id': newPostId,
+        'conversation': conversationId,
         'type': postObjectType,
         'summary': summary,
         'inReplyTo': inReplyTo,
         'published': published,
         'url': newPostUrl,
-        'attributedTo': httpPrefix + '://' + domain + '/users/' + nickname,
+        'attributedTo': localActorUrl(httpPrefix, nickname, domainFull),
         'to': toRecipients,
         'cc': toCC,
         'sensitive': sensitive,
@@ -933,7 +1020,7 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
         'mediaType': 'text/html',
         'content': content,
         'contentMap': {
-            'en': content
+            systemLanguage: content
         },
         'attachment': [],
         'tag': tags,
@@ -951,7 +1038,7 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
         newPost = \
             attachMedia(baseDir, httpPrefix, nickname, domain, port,
                         newPost, attachImageFilename,
-                        mediaType, imageDescription, city)
+                        mediaType, imageDescription, city, lowBandwidth)
     return newPost
 
 
@@ -1075,7 +1162,9 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     maximumAttendeeCapacity: int,
                     repliesModerationOption: str,
                     anonymousParticipationEnabled: bool,
-                    eventStatus: str, ticketUrl: str) -> {}:
+                    eventStatus: str, ticketUrl: str,
+                    systemLanguage: str,
+                    conversationId: str, lowBandwidth: bool) -> {}:
     """Creates a message
     """
     content = removeInvalidChars(content)
@@ -1118,8 +1207,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
 
     statusNumber, published = getStatusNumber()
     newPostId = \
-        httpPrefix + '://' + domain + '/users/' + \
-        nickname + '/statuses/' + statusNumber
+        localActorUrl(httpPrefix, nickname, domain) + \
+        '/statuses/' + statusNumber
 
     sensitive = False
     summary = None
@@ -1191,8 +1280,6 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
 
     # the type of post to be made
     postObjectType = 'Note'
-    if eventUUID:
-        postObjectType = 'Event'
     if isArticle:
         postObjectType = 'Article'
 
@@ -1206,7 +1293,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                            tags, attachImageFilename,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
-                           inReplyToAtomUri)
+                           inReplyToAtomUri, systemLanguage,
+                           conversationId, lowBandwidth)
     else:
         newPost = \
             _createPostC2S(baseDir, nickname, domain, port,
@@ -1217,7 +1305,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                            tags, attachImageFilename,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
-                           inReplyToAtomUri)
+                           inReplyToAtomUri, systemLanguage,
+                           conversationId, lowBandwidth)
 
     _createPostMentions(ccUrl, newPost, toRecipients, tags)
 
@@ -1260,7 +1349,7 @@ def outboxMessageCreateWrap(httpPrefix: str,
     if messageJson.get('published'):
         published = messageJson['published']
     newPostId = \
-        httpPrefix + '://' + domain + '/users/' + nickname + \
+        localActorUrl(httpPrefix, nickname, domain) + \
         '/statuses/' + statusNumber
     cc = []
     if messageJson.get('cc'):
@@ -1269,7 +1358,7 @@ def outboxMessageCreateWrap(httpPrefix: str,
         "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId + '/activity',
         'type': 'Create',
-        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, domain),
         'published': published,
         'to': messageJson['to'],
         'cc': cc,
@@ -1279,7 +1368,7 @@ def outboxMessageCreateWrap(httpPrefix: str,
     newPost['object']['url'] = \
         httpPrefix + '://' + domain + '/@' + nickname + '/' + statusNumber
     newPost['object']['atomUri'] = \
-        httpPrefix + '://' + domain + '/users/' + nickname + \
+        localActorUrl(httpPrefix, nickname, domain) + \
         '/statuses/' + statusNumber
     return newPost
 
@@ -1308,8 +1397,8 @@ def _postIsAddressedToFollowers(baseDir: str,
         if postJsonObject.get('cc'):
             ccList = postJsonObject['cc']
 
-    followersUrl = httpPrefix + '://' + domainFull + '/users/' + \
-        nickname + '/followers'
+    followersUrl = \
+        localActorUrl(httpPrefix, nickname, domainFull) + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
     addressedToFollowers = False
@@ -1341,13 +1430,13 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
 
 def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
                         nickname: str, domain: str,
-                        domainFull: str) -> {}:
+                        domainFull: str, systemLanguage: str) -> {}:
     """Returns the pinned profile post as json
     """
     accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedPostJson = {}
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     if os.path.isfile(pinnedFilename):
         pinnedContent = None
         with open(pinnedFilename, 'r') as pinFile:
@@ -1362,7 +1451,7 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
                 ],
                 'content': pinnedContent,
                 'contentMap': {
-                    'en': pinnedContent
+                    systemLanguage: pinnedContent
                 },
                 'id': actor + '/pinned',
                 'inReplyTo': None,
@@ -1381,18 +1470,18 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
 
 def jsonPinPost(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str,
-                domainFull: str) -> {}:
+                domainFull: str, systemLanguage: str) -> {}:
     """Returns a pinned post as json
     """
     pinnedPostJson = \
         getPinnedPostAsJson(baseDir, httpPrefix,
                             nickname, domain,
-                            domainFull)
+                            domainFull, systemLanguage)
     itemsList = []
     if pinnedPostJson:
         itemsList = [pinnedPostJson]
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     return {
         '@context': [
             'https://www.w3.org/ns/activitystreams',
@@ -1413,6 +1502,37 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
     }
 
 
+def regenerateIndexForBox(baseDir: str,
+                          nickname: str, domain: str, boxName: str) -> None:
+    """Generates an index for the given box if it doesn't exist
+    Used by unit tests to artificially create an index
+    """
+    boxDir = acctDir(baseDir, nickname, domain) + '/' + boxName
+    boxIndexFilename = boxDir + '.index'
+
+    if not os.path.isdir(boxDir):
+        return
+    if os.path.isfile(boxIndexFilename):
+        return
+
+    indexLines = []
+    for subdir, dirs, files in os.walk(boxDir):
+        for f in files:
+            if ':##' not in f:
+                continue
+            indexLines.append(f)
+        break
+
+    indexLines.sort(reverse=True)
+
+    result = ''
+    with open(boxIndexFilename, 'w+') as fp:
+        for line in indexLines:
+            result += line + '\n'
+            fp.write(line + '\n')
+    print('Index generated for ' + boxName + '\n' + result)
+
+
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
@@ -1424,7 +1544,9 @@ def createPublicPost(baseDir: str,
                      schedulePost: bool,
                      eventDate: str, eventTime: str,
                      location: str,
-                     isArticle: bool) -> {}:
+                     isArticle: bool,
+                     systemLanguage: str,
+                     conversationId: str, lowBandwidth: bool) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)
@@ -1439,10 +1561,10 @@ def createPublicPost(baseDir: str,
     anonymousParticipationEnabled = None
     eventStatus = None
     ticketUrl = None
+    localActor = localActorUrl(httpPrefix, nickname, domainFull)
     return _createPostBase(baseDir, nickname, domain, port,
                            'https://www.w3.org/ns/activitystreams#Public',
-                           httpPrefix + '://' + domainFull + '/users/' +
-                           nickname + '/followers',
+                           localActor + '/followers',
                            httpPrefix, content, followersOnly, saveToFile,
                            clientToServer, commentsEnabled,
                            attachImageFilename, mediaType,
@@ -1454,7 +1576,8 @@ def createPublicPost(baseDir: str,
                            maximumAttendeeCapacity,
                            repliesModerationOption,
                            anonymousParticipationEnabled,
-                           eventStatus, ticketUrl)
+                           eventStatus, ticketUrl, systemLanguage,
+                           conversationId, lowBandwidth)
 
 
 def _appendCitationsToBlogPost(baseDir: str,
@@ -1496,7 +1619,8 @@ def createBlogPost(baseDir: str,
                    inReplyTo: str, inReplyToAtomUri: str,
                    subject: str, schedulePost: bool,
                    eventDate: str, eventTime: str,
-                   location: str) -> {}:
+                   location: str, systemLanguage: str,
+                   conversationId: str, lowBandwidth: bool) -> {}:
     blogJson = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
@@ -1506,7 +1630,9 @@ def createBlogPost(baseDir: str,
                          imageDescription, city,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
-                         eventDate, eventTime, location, True)
+                         eventDate, eventTime, location,
+                         True, systemLanguage, conversationId,
+                         lowBandwidth)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
@@ -1519,7 +1645,8 @@ def createNewsPost(baseDir: str,
                    content: str, followersOnly: bool, saveToFile: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, city: str,
-                   subject: str) -> {}:
+                   subject: str, systemLanguage: str,
+                   conversationId: str, lowBandwidth: bool) -> {}:
     clientToServer = False
     inReplyTo = None
     inReplyToAtomUri = None
@@ -1536,7 +1663,9 @@ def createNewsPost(baseDir: str,
                          imageDescription, city,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
-                         eventDate, eventTime, location, True)
+                         eventDate, eventTime, location,
+                         True, systemLanguage, conversationId,
+                         lowBandwidth)
     blog['object']['type'] = 'Article'
     return blog
 
@@ -1548,15 +1677,16 @@ def createQuestionPost(baseDir: str,
                        clientToServer: bool, commentsEnabled: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, city: str,
-                       subject: str, durationDays: int) -> {}:
+                       subject: str, durationDays: int,
+                       systemLanguage: str, lowBandwidth: bool) -> {}:
     """Question post with multiple choice options
     """
     domainFull = getFullDomain(domain, port)
+    localActor = localActorUrl(httpPrefix, nickname, domainFull)
     messageJson = \
         _createPostBase(baseDir, nickname, domain, port,
                         'https://www.w3.org/ns/activitystreams#Public',
-                        httpPrefix + '://' + domainFull + '/users/' +
-                        nickname + '/followers',
+                        localActor + '/followers',
                         httpPrefix, content, followersOnly, saveToFile,
                         clientToServer, commentsEnabled,
                         attachImageFilename, mediaType,
@@ -1564,7 +1694,8 @@ def createQuestionPost(baseDir: str,
                         False, False, None, None, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None)
+                        None, None, None, None, None, systemLanguage,
+                        None, lowBandwidth)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1595,13 +1726,14 @@ def createUnlistedPost(baseDir: str,
                        inReplyTo: str, inReplyToAtomUri: str,
                        subject: str, schedulePost: bool,
                        eventDate: str, eventTime: str,
-                       location: str) -> {}:
+                       location: str, systemLanguage: str,
+                       conversationId: str, lowBandwidth: bool) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domainFull = getFullDomain(domain, port)
+    localActor = localActorUrl(httpPrefix, domainFull, nickname)
     return _createPostBase(baseDir, nickname, domain, port,
-                           httpPrefix + '://' + domainFull + '/users/' +
-                           nickname + '/followers',
+                           localActor + '/followers',
                            'https://www.w3.org/ns/activitystreams#Public',
                            httpPrefix, content, followersOnly, saveToFile,
                            clientToServer, commentsEnabled,
@@ -1611,7 +1743,8 @@ def createUnlistedPost(baseDir: str,
                            inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
-                           None, None, None, None, None)
+                           None, None, None, None, None, systemLanguage,
+                           conversationId, lowBandwidth)
 
 
 def createFollowersOnlyPost(baseDir: str,
@@ -1626,13 +1759,14 @@ def createFollowersOnlyPost(baseDir: str,
                             inReplyToAtomUri: str,
                             subject: str, schedulePost: bool,
                             eventDate: str, eventTime: str,
-                            location: str) -> {}:
+                            location: str, systemLanguage: str,
+                            conversationId: str, lowBandwidth: bool) -> {}:
     """Followers only post
     """
     domainFull = getFullDomain(domain, port)
+    localActor = localActorUrl(httpPrefix, domainFull, nickname)
     return _createPostBase(baseDir, nickname, domain, port,
-                           httpPrefix + '://' + domainFull + '/users/' +
-                           nickname + '/followers',
+                           localActor + '/followers',
                            None,
                            httpPrefix, content, followersOnly, saveToFile,
                            clientToServer, commentsEnabled,
@@ -1642,7 +1776,8 @@ def createFollowersOnlyPost(baseDir: str,
                            inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
-                           None, None, None, None, None)
+                           None, None, None, None, None, systemLanguage,
+                           conversationId, lowBandwidth)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
@@ -1675,8 +1810,7 @@ def getMentionedPeople(baseDir: str, httpPrefix: str,
         if not validNickname(mentionedDomain, mentionedNickname):
             continue
         actor = \
-            httpPrefix + '://' + handle.split('@')[1] + \
-            '/users/' + mentionedNickname
+            localActorUrl(httpPrefix, mentionedNickname, handle.split('@')[1])
         mentions.append(actor)
     return mentions
 
@@ -1694,7 +1828,8 @@ def createDirectMessagePost(baseDir: str,
                             subject: str, debug: bool,
                             schedulePost: bool,
                             eventDate: str, eventTime: str,
-                            location: str) -> {}:
+                            location: str, systemLanguage: str,
+                            conversationId: str, lowBandwidth: bool) -> {}:
     """Direct Message post
     """
     content = resolvePetnames(baseDir, nickname, domain, content)
@@ -1717,7 +1852,8 @@ def createDirectMessagePost(baseDir: str,
                         inReplyTo, inReplyToAtomUri, subject,
                         schedulePost, eventDate, eventTime, location,
                         None, None, None, None, None,
-                        None, None, None, None, None)
+                        None, None, None, None, None, systemLanguage,
+                        conversationId, lowBandwidth)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
     messageJson['object']['to'] = messageJson['to']
@@ -1735,7 +1871,8 @@ def createReportPost(baseDir: str,
                      clientToServer: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
-                     debug: bool, subject: str = None) -> {}:
+                     debug: bool, subject: str, systemLanguage: str,
+                     lowBandwidth: bool) -> {}:
     """Send a report to moderators
     """
     domainFull = getFullDomain(domain, port)
@@ -1762,8 +1899,9 @@ def createReportPost(baseDir: str,
                 if line.startswith('@'):
                     line = line[1:]
                 if '@' in line:
-                    moderatorActor = httpPrefix + '://' + domainFull + \
-                        '/users/' + line.split('@')[0]
+                    nick = line.split('@')[0]
+                    moderatorActor = \
+                        localActorUrl(httpPrefix, nick, domainFull)
                     if moderatorActor not in moderatorsList:
                         moderatorsList.append(moderatorActor)
                     continue
@@ -1774,16 +1912,16 @@ def createReportPost(baseDir: str,
                             moderatorsList.append(line)
                 else:
                     if '/' not in line:
-                        moderatorActor = httpPrefix + '://' + domainFull + \
-                            '/users/' + line
+                        moderatorActor = \
+                            localActorUrl(httpPrefix, line, domainFull)
                         if moderatorActor not in moderatorsList:
                             moderatorsList.append(moderatorActor)
     if len(moderatorsList) == 0:
         # if there are no moderators then the admin becomes the moderator
         adminNickname = getConfigParam(baseDir, 'admin')
         if adminNickname:
-            moderatorsList.append(httpPrefix + '://' + domainFull +
-                                  '/users/' + adminNickname)
+            localActor = localActorUrl(httpPrefix, adminNickname, domainFull)
+            moderatorsList.append(localActor)
     if not moderatorsList:
         return None
     if debug:
@@ -1807,7 +1945,8 @@ def createReportPost(baseDir: str,
                             True, False, None, None, subject,
                             False, None, None, None, None, None,
                             None, None, None,
-                            None, None, None, None, None)
+                            None, None, None, None, None, systemLanguage,
+                            None, lowBandwidth)
         if not postJsonObject:
             continue
 
@@ -1864,8 +2003,12 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         if debug:
             # save the log file
             postLogFilename = baseDir + '/post.log'
-            with open(postLogFilename, 'a+') as logFile:
-                logFile.write(logStr + '\n')
+            if os.path.isfile(postLogFilename):
+                with open(postLogFilename, 'a+') as logFile:
+                    logFile.write(logStr + '\n')
+            else:
+                with open(postLogFilename, 'w+') as logFile:
+                    logFile.write(logStr + '\n')
 
         if postResult:
             if debug:
@@ -1891,12 +2034,16 @@ def sendPost(projectVersion: str,
              imageDescription: str, city: str,
              federationList: [], sendThreads: [], postLog: [],
              cachedWebfingers: {}, personCache: {},
-             isArticle: bool,
+             isArticle: bool, systemLanguage: str,
+             sharedItemsFederatedDomains: [],
+             sharedItemFederationTokens: {},
+             lowBandwidth: bool,
              debug: bool = False, inReplyTo: str = None,
              inReplyToAtomUri: str = None, subject: str = None) -> int:
-    """Post to another inbox
+    """Post to another inbox. Used by unit tests.
     """
     withDigest = True
+    conversationId = None
 
     if toNickname == 'inbox':
         # shared inbox actor on @domain@domain
@@ -1909,7 +2056,7 @@ def sendPost(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         return 1
     if not isinstance(wfRequest, dict):
@@ -1952,7 +2099,8 @@ def sendPost(projectVersion: str,
                         inReplyToAtomUri, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None)
+                        None, None, None, None, None, systemLanguage,
+                        conversationId, lowBandwidth)
 
     # get the senders private key
     privateKeyPem = _getPersonKey(nickname, domain, baseDir, 'private')
@@ -1981,6 +2129,26 @@ def sendPost(projectVersion: str,
         createSignedHeader(privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
                            postPath, httpPrefix, withDigest, postJsonStr)
+
+    # if the "to" domain is within the shared items
+    # federation list then send the token for this domain
+    # so that it can request a catalog
+    if toDomain in sharedItemsFederatedDomains:
+        domainFull = getFullDomain(domain, port)
+        if sharedItemFederationTokens.get(domainFull):
+            signatureHeaderJson['Origin'] = domainFull
+            signatureHeaderJson['SharesCatalog'] = \
+                sharedItemFederationTokens[domainFull]
+            if debug:
+                print('SharesCatalog added to header')
+        elif debug:
+            print(domainFull + ' not in sharedItemFederationTokens')
+    elif debug:
+        print(toDomain + ' not in sharedItemsFederatedDomains ' +
+              str(sharedItemsFederatedDomains))
+
+    if debug:
+        print('signatureHeaderJson: ' + str(signatureHeaderJson))
 
     # Keep the number of threads being used small
     while len(sendThreads) > 1000:
@@ -2011,9 +2179,12 @@ def sendPostViaServer(projectVersion: str,
                       attachImageFilename: str, mediaType: str,
                       imageDescription: str, city: str,
                       cachedWebfingers: {}, personCache: {},
-                      isArticle: bool, debug: bool = False,
+                      isArticle: bool, systemLanguage: str,
+                      lowBandwidth: bool,
+                      debug: bool = False,
                       inReplyTo: str = None,
                       inReplyToAtomUri: str = None,
+                      conversationId: str = None,
                       subject: str = None) -> int:
     """Send a post via a proxy (c2s)
     """
@@ -2021,14 +2192,14 @@ def sendPostViaServer(projectVersion: str,
         print('WARN: No session for sendPostViaServer')
         return 6
 
-    fromDomain = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    handle = httpPrefix + '://' + fromDomain + '/@' + fromNickname
+    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug)
+                        fromDomainFull, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
@@ -2049,7 +2220,7 @@ def sendPostViaServer(projectVersion: str,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname,
-                                            fromDomain, postToBox,
+                                            fromDomainFull, postToBox,
                                             82796)
     if not inboxUrl:
         if debug:
@@ -2067,19 +2238,17 @@ def sendPostViaServer(projectVersion: str,
     clientToServer = True
     if toDomain.lower().endswith('public'):
         toPersonId = 'https://www.w3.org/ns/activitystreams#Public'
-        fromDomainFull = getFullDomain(fromDomain, fromPort)
-        cc = httpPrefix + '://' + fromDomainFull + '/users/' + \
-            fromNickname + '/followers'
+        cc = localActorUrl(httpPrefix, fromNickname, fromDomainFull) + \
+            '/followers'
     else:
         if toDomain.lower().endswith('followers') or \
            toDomain.lower().endswith('followersonly'):
             toPersonId = \
-                httpPrefix + '://' + \
-                fromDomainFull + '/users/' + fromNickname + '/followers'
+                localActorUrl(httpPrefix, fromNickname, fromDomainFull) + \
+                '/followers'
         else:
             toDomainFull = getFullDomain(toDomain, toPort)
-            toPersonId = httpPrefix + '://' + toDomainFull + \
-                '/users/' + toNickname
+            toPersonId = localActorUrl(httpPrefix, toNickname, toDomainFull)
 
     postJsonObject = \
         _createPostBase(baseDir,
@@ -2093,13 +2262,14 @@ def sendPostViaServer(projectVersion: str,
                         inReplyToAtomUri, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None)
+                        None, None, None, None, None, systemLanguage,
+                        conversationId, lowBandwidth)
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 
     if attachImageFilename:
         headers = {
-            'host': fromDomain,
+            'host': fromDomainFull,
             'Authorization': authHeader
         }
         postResult = \
@@ -2111,7 +2281,7 @@ def sendPostViaServer(projectVersion: str,
 #            return 9
 
     headers = {
-        'host': fromDomain,
+        'host': fromDomainFull,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
@@ -2189,7 +2359,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                    httpPrefix: str, saveToFile: bool, clientToServer: bool,
                    federationList: [],
                    sendThreads: [], postLog: [], cachedWebfingers: {},
-                   personCache: {}, debug: bool, projectVersion: str) -> int:
+                   personCache: {}, debug: bool, projectVersion: str,
+                   sharedItemsToken: str, groupAccount: bool) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2202,11 +2373,9 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     if toDomain.endswith('.onion') or toDomain.endswith('.i2p'):
         httpPrefix = 'http'
 
-#    sharedInbox = False
     if toNickname == 'inbox':
         # shared inbox actor on @domain@domain
         toNickname = toDomain
-#        sharedInbox = True
 
     toDomain = getFullDomain(toDomain, toPort)
 
@@ -2227,7 +2396,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, groupAccount)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2314,6 +2483,13 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         createSignedHeader(privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
                            postPath, httpPrefix, withDigest, postJsonStr)
+    # optionally add a token so that the receiving instance may access
+    # your shared items catalog
+    if sharedItemsToken:
+        signatureHeaderJson['Origin'] = getFullDomain(domain, port)
+        signatureHeaderJson['SharesCatalog'] = sharedItemsToken
+    elif debug:
+        print('Not sending shared items federation token')
 
     # Keep the number of threads being used small
     while len(sendThreads) > 1000:
@@ -2424,7 +2600,9 @@ def sendToNamedAddresses(session, baseDir: str,
                          sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          postJsonObject: {}, debug: bool,
-                         projectVersion: str) -> None:
+                         projectVersion: str,
+                         sharedItemsFederatedDomains: [],
+                         sharedItemFederationTokens: {}) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -2530,23 +2708,38 @@ def sendToNamedAddresses(session, baseDir: str,
         # another onion domain then switch the clearnet
         # domain for the onion one
         fromDomain = domain
+        fromDomainFull = getFullDomain(domain, port)
         fromHttpPrefix = httpPrefix
         if onionDomain:
             if toDomain.endswith('.onion'):
                 fromDomain = onionDomain
+                fromDomainFull = onionDomain
                 fromHttpPrefix = 'http'
         elif i2pDomain:
             if toDomain.endswith('.i2p'):
                 fromDomain = i2pDomain
+                fromDomainFull = i2pDomain
                 fromHttpPrefix = 'http'
         cc = []
+
+        # if the "to" domain is within the shared items
+        # federation list then send the token for this domain
+        # so that it can request a catalog
+        sharedItemsToken = None
+        if toDomain in sharedItemsFederatedDomains:
+            if sharedItemFederationTokens.get(fromDomainFull):
+                sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
+
+        groupAccount = hasGroupType(baseDir, address, personCache)
+
         sendSignedJson(postJsonObject, session, baseDir,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
                        cc, fromHttpPrefix, True, clientToServer,
                        federationList,
                        sendThreads, postLog, cachedWebfingers,
-                       personCache, debug, projectVersion)
+                       personCache, debug, projectVersion,
+                       sharedItemsToken, groupAccount)
 
 
 def _hasSharedInbox(session, httpPrefix: str, domain: str,
@@ -2554,13 +2747,13 @@ def _hasSharedInbox(session, httpPrefix: str, domain: str,
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
-    tryHandles = [
-        domain + '@' + domain,
-        'inbox@' + domain
-    ]
+    tryHandles = []
+    if ':' not in domain:
+        tryHandles.append(domain + '@' + domain)
+    tryHandles.append('inbox@' + domain)
     for handle in tryHandles:
         wfRequest = webfingerHandle(session, handle, httpPrefix, {},
-                                    None, __version__, debug)
+                                    None, __version__, debug, False)
         if wfRequest:
             if isinstance(wfRequest, dict):
                 if not wfRequest.get('errors'):
@@ -2594,7 +2787,9 @@ def sendToFollowers(session, baseDir: str,
                     sendThreads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
                     postJsonObject: {}, debug: bool,
-                    projectVersion: str) -> None:
+                    projectVersion: str,
+                    sharedItemsFederatedDomains: [],
+                    sharedItemFederationTokens: {}) -> None:
     """sends a post to the followers of the given nickname
     """
     print('sendToFollowers')
@@ -2615,7 +2810,7 @@ def sendToFollowers(session, baseDir: str,
             print('Post to followers did not resolve any domains')
         return
     print('Post to followers resolved domains')
-    print(str(grouped))
+    # print(str(grouped))
 
     # this is after the message has arrived at the server
     clientToServer = False
@@ -2633,6 +2828,15 @@ def sendToFollowers(session, baseDir: str,
 
         if debug:
             pprint(followerHandles)
+
+        # if the followers domain is within the shared items
+        # federation list then send the token for this domain
+        # so that it can request a catalog
+        sharedItemsToken = None
+        if followerDomain in sharedItemsFederatedDomains:
+            domainFull = getFullDomain(domain, port)
+            if sharedItemFederationTokens.get(domainFull):
+                sharedItemsToken = sharedItemFederationTokens[domainFull]
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
@@ -2677,6 +2881,11 @@ def sendToFollowers(session, baseDir: str,
         if withSharedInbox:
             toNickname = followerHandles[index].split('@')[0]
 
+            groupAccount = False
+            if toNickname.startswith('!'):
+                groupAccount = True
+                toNickname = toNickname[1:]
+
             # if there are more than one followers on the domain
             # then send the post to the shared inbox
             if len(followerHandles) > 1:
@@ -2698,12 +2907,18 @@ def sendToFollowers(session, baseDir: str,
                            cc, fromHttpPrefix, True, clientToServer,
                            federationList,
                            sendThreads, postLog, cachedWebfingers,
-                           personCache, debug, projectVersion)
+                           personCache, debug, projectVersion,
+                           sharedItemsToken, groupAccount)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
                 print('Sending post to followers ' + handle)
                 toNickname = handle.split('@')[0]
+
+                groupAccount = False
+                if toNickname.startswith('!'):
+                    groupAccount = True
+                    toNickname = toNickname[1:]
 
                 if postJsonObject['type'] != 'Update':
                     print('Sending post to followers from ' +
@@ -2720,7 +2935,8 @@ def sendToFollowers(session, baseDir: str,
                                cc, fromHttpPrefix, True, clientToServer,
                                federationList,
                                sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, projectVersion)
+                               personCache, debug, projectVersion,
+                               sharedItemsToken, groupAccount)
 
         time.sleep(4)
 
@@ -2740,7 +2956,9 @@ def sendToFollowersThread(session, baseDir: str,
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
-                          projectVersion: str):
+                          projectVersion: str,
+                          sharedItemsFederatedDomains: [],
+                          sharedItemFederationTokens: {}):
     """Returns a thread used to send a post to followers
     """
     sendThread = \
@@ -2752,7 +2970,9 @@ def sendToFollowersThread(session, baseDir: str,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,
                               postJsonObject.copy(), debug,
-                              projectVersion), daemon=True)
+                              projectVersion,
+                              sharedItemsFederatedDomains,
+                              sharedItemFederationTokens), daemon=True)
     try:
         sendThread.start()
     except SocketError as e:
@@ -2867,7 +3087,7 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
         pageNumber = 1
 
     pageStr = '?page=' + str(pageNumber)
-    boxUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/' + boxname
+    boxUrl = localActorUrl(httpPrefix, nickname, domain) + '/' + boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'first': boxUrl + '?page=true',
@@ -2926,7 +3146,9 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
-                 recentPostsCache: {}, debug: bool) -> bool:
+                 recentPostsCache: {}, debug: bool,
+                 systemLanguage: str,
+                 domainFull: str, personCache: {}) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2936,7 +3158,9 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              __version__, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache, debug)
+                             recentPostsCache, debug,
+                             systemLanguage,
+                             domainFull, personCache)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3033,7 +3257,7 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
         if not force:
             # If not authorized and it's a private post
             # then just don't show it within timelines
-            if not isPublicPost(postObj):
+            if not isPublicPost(postJsonObject):
                 return False
     else:
         postObj = postJsonObject
@@ -3121,6 +3345,7 @@ def _createBoxIndexed(recentPostsCache: {},
        boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks':
+        print('ERROR: invalid boxname ' + boxname)
         return None
 
     # bookmarks and events timelines are like the inbox
@@ -3135,9 +3360,10 @@ def _createBoxIndexed(recentPostsCache: {},
         indexBoxName = boxname
         timelineNickname = 'news'
 
+    originalDomain = domain
     domain = getFullDomain(domain, port)
 
-    boxActor = httpPrefix + '://' + domain + '/users/' + nickname
+    boxActor = localActorUrl(httpPrefix, nickname, domain)
 
     pageStr = '?page=true'
     if pageNumber:
@@ -3147,7 +3373,7 @@ def _createBoxIndexed(recentPostsCache: {},
             pageStr = '?page=' + str(pageNumber)
         except BaseException:
             pass
-    boxUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/' + boxname
+    boxUrl = localActorUrl(httpPrefix, nickname, domain) + '/' + boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'first': boxUrl + '?page=true',
@@ -3168,7 +3394,7 @@ def _createBoxIndexed(recentPostsCache: {},
     postsInBox = []
 
     indexFilename = \
-        baseDir + '/accounts/' + timelineNickname + '@' + domain + \
+        acctDir(baseDir, timelineNickname, originalDomain) + \
         '/' + indexBoxName + '.index'
     totalPostsCount = 0
     postsAddedToTimeline = 0
@@ -3216,11 +3442,13 @@ def _createBoxIndexed(recentPostsCache: {},
                                 totalPostsCount += 1
                                 postsAddedToTimeline += 1
                                 continue
+                            else:
+                                print('Post not added to timeline')
 
                 # read the post from file
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
-                               domain, postUrl, False)
+                               originalDomain, postUrl, False)
                 if fullPostFilename:
                     # has the post been rejected?
                     if os.path.isfile(fullPostFilename + '.reject'):
@@ -3239,7 +3467,7 @@ def _createBoxIndexed(recentPostsCache: {},
                         # if this is the features timeline
                         fullPostFilename = \
                             locatePost(baseDir, timelineNickname,
-                                       domain, postUrl, False)
+                                       originalDomain, postUrl, False)
                         if fullPostFilename:
                             if _addPostToTimeline(fullPostFilename, boxname,
                                                   postsInBox, boxActor):
@@ -3266,8 +3494,8 @@ def _createBoxIndexed(recentPostsCache: {},
         if lastPage < 1:
             lastPage = 1
         boxHeader['last'] = \
-            httpPrefix + '://' + domain + '/users/' + \
-            nickname + '/' + boxname + '?page=' + str(lastPage)
+            localActorUrl(httpPrefix, nickname, domain) + \
+            '/' + boxname + '?page=' + str(lastPage)
 
     if headerOnly:
         boxHeader['totalItems'] = len(postsInBox)
@@ -3275,13 +3503,13 @@ def _createBoxIndexed(recentPostsCache: {},
         if pageNumber > 1:
             prevPageStr = str(pageNumber - 1)
         boxHeader['prev'] = \
-            httpPrefix + '://' + domain + '/users/' + \
-            nickname + '/' + boxname + '?page=' + prevPageStr
+            localActorUrl(httpPrefix, nickname, domain) + \
+            '/' + boxname + '?page=' + prevPageStr
 
         nextPageStr = str(pageNumber + 1)
         boxHeader['next'] = \
-            httpPrefix + '://' + domain + '/users/' + \
-            nickname + '/' + boxname + '?page=' + nextPageStr
+            localActorUrl(httpPrefix, nickname, domain) + \
+            '/' + boxname + '?page=' + nextPageStr
         return boxHeader
 
     for postStr in postsInBox:
@@ -3494,29 +3722,40 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
 def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                            raw: bool, simple: bool, proxyType: str,
                            port: int, httpPrefix: str,
-                           debug: bool, projectVersion: str) -> None:
+                           debug: bool, projectVersion: str,
+                           systemLanguage: str) -> None:
     """ This is really just for test purposes
     """
     print('Starting new session for getting public posts')
     session = createSession(proxyType)
     if not session:
+        if debug:
+            print('Session was not created')
         return
     personCache = {}
     cachedWebfingers = {}
     federationList = []
-
+    groupAccount = False
+    if nickname.startswith('!'):
+        nickname = nickname[1:]
+        groupAccount = True
     domainFull = getFullDomain(domain, port)
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
+
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, groupAccount)
     if not wfRequest:
+        if debug:
+            print('No webfinger result was returned for ' + handle)
         sys.exit()
     if not isinstance(wfRequest, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
               str(wfRequest))
         sys.exit()
 
+    if debug:
+        print('Getting the outbox for ' + handle)
     (personUrl, pubKeyId, pubKey,
      personId, shaedInbox,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
@@ -3524,19 +3763,23 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                                             projectVersion, httpPrefix,
                                             nickname, domain, 'outbox',
                                             62524)
+    if debug:
+        print('Actor url: ' + personId)
+
     maxMentions = 10
     maxEmoji = 10
     maxAttachments = 5
     _getPosts(session, personUrl, 30, maxMentions, maxEmoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
-              projectVersion, httpPrefix, domain)
+              projectVersion, httpPrefix, domain, systemLanguage)
 
 
 def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
-                         wordFrequency: {}, domainList=[]) -> []:
+                         wordFrequency: {}, domainList: [],
+                         systemLanguage: str) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -3551,7 +3794,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         return domainList
     if not isinstance(wfRequest, dict):
@@ -3574,7 +3817,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                        maxAttachments, federationList,
                        personCache, debug,
                        projectVersion, httpPrefix, domain,
-                       wordFrequency, domainList)
+                       wordFrequency, domainList, systemLanguage)
     postDomains.sort()
     return postDomains
 
@@ -3616,7 +3859,7 @@ def downloadFollowCollection(followType: str,
 def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                       proxyType: str, port: int, httpPrefix: str,
                       debug: bool, projectVersion: str,
-                      wordFrequency: {}) -> []:
+                      wordFrequency: {}, systemLanguage: str) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -3631,7 +3874,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         return {}
     if not isinstance(wfRequest, dict):
@@ -3655,7 +3898,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                        maxAttachments, federationList,
                        personCache, debug,
                        projectVersion, httpPrefix, domain,
-                       wordFrequency, [])
+                       wordFrequency, [], systemLanguage)
     postDomains.sort()
     domainsInfo = {}
     for d in postDomains:
@@ -3681,7 +3924,8 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
                                 nickname: str, domain: str,
                                 proxyType: str, port: int, httpPrefix: str,
                                 debug: bool, projectVersion: str,
-                                wordFrequency: {}, domainList=[]) -> []:
+                                wordFrequency: {}, domainList: [],
+                                systemLanguage: str) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
@@ -3689,7 +3933,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
         getPublicPostDomains(session, baseDir, nickname, domain,
                              proxyType, port, httpPrefix,
                              debug, projectVersion,
-                             wordFrequency, domainList)
+                             wordFrequency, domainList, systemLanguage)
     if not postDomains:
         return []
 
@@ -3737,7 +3981,8 @@ def checkDomains(session, baseDir: str,
                  nickname: str, domain: str,
                  proxyType: str, port: int, httpPrefix: str,
                  debug: bool, projectVersion: str,
-                 maxBlockedDomains: int, singleCheck: bool) -> None:
+                 maxBlockedDomains: int, singleCheck: bool,
+                 systemLanguage: str) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
     wordFrequency = {}
@@ -3765,7 +4010,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
                                             debug, projectVersion,
-                                            wordFrequency, [])
+                                            wordFrequency, [],
+                                            systemLanguage)
             if blockedDomains:
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += handle + '\n'
@@ -3785,7 +4031,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
                                             debug, projectVersion,
-                                            wordFrequency, [])
+                                            wordFrequency, [],
+                                            systemLanguage)
             if blockedDomains:
                 print(handle)
                 for d in blockedDomains:
@@ -3883,7 +4130,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {}, YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     recentPostsCache: {}, debug: bool) -> {}:
+                     recentPostsCache: {}, debug: bool,
+                     systemLanguage: str,
+                     domainFull: str, personCache: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -4011,7 +4260,11 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
             return None
-
+        if not understoodPostLanguage(baseDir, nickname, domain,
+                                      announcedJson, systemLanguage,
+                                      httpPrefix, domainFull,
+                                      personCache):
+            return None
         # Check the content of the announce
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):
@@ -4068,15 +4321,22 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                                 recentPostsCache)
                 return None
         postJsonObject = announcedJson
-        replaceYouTube(postJsonObject, YTReplacementDomain)
+        replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
         if saveJson(postJsonObject, announceFilename):
             return postJsonObject
     return None
 
 
-def isMuted(baseDir: str, nickname: str, domain: str, postId: str) -> bool:
+def isMuted(baseDir: str, nickname: str, domain: str, postId: str,
+            conversationId: str) -> bool:
     """Returns true if the given post is muted
     """
+    if conversationId:
+        convMutedFilename = \
+            acctDir(baseDir, nickname, domain) + '/conversation/' + \
+            conversationId.replace('/', '#') + '.muted'
+        if os.path.isfile(convMutedFilename):
+            return True
     postFilename = locatePost(baseDir, nickname, domain, postId)
     if not postFilename:
         return False
@@ -4099,11 +4359,10 @@ def sendBlockViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
+    blockActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + \
-        fromNickname + '/followers'
+    ccUrl = blockActor + '/followers'
 
-    blockActor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
     newBlockJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Block',
@@ -4118,7 +4377,7 @@ def sendBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: block webfinger failed for ' + handle)
@@ -4180,7 +4439,7 @@ def sendMuteViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
     handle = actor.replace('/users/', '/@')
 
     newMuteJson = {
@@ -4194,7 +4453,7 @@ def sendMuteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: mute webfinger failed for ' + handle)
@@ -4256,7 +4515,7 @@ def sendUndoMuteViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
     handle = actor.replace('/users/', '/@')
 
     undoMuteJson = {
@@ -4275,7 +4534,7 @@ def sendUndoMuteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: undo mute webfinger failed for ' + handle)
@@ -4338,11 +4597,10 @@ def sendUndoBlockViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
+    blockActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + \
-        fromNickname + '/followers'
+    ccUrl = blockActor + '/followers'
 
-    blockActor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
     newBlockJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
@@ -4361,7 +4619,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unblock webfinger failed for ' + handle)
@@ -4446,7 +4704,7 @@ def c2sBoxJson(baseDir: str, session,
         return None
 
     domainFull = getFullDomain(domain, port)
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
 
     authHeader = createBasicAuthHeader(nickname, password)
 

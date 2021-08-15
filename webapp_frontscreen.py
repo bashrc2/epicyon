@@ -32,7 +32,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           showPublishedDateOnly: bool,
                           peertubeInstances: [],
                           allowLocalNetworkAccess: bool,
-                          themeName: str) -> str:
+                          themeName: str, systemLanguage: str,
+                          maxLikeCount: int) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -73,7 +74,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -98,6 +100,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
                     accessKeys: {},
+                    systemLanguage: str, maxLikeCount: int,
+                    sharedItemsFederatedDomains: [],
                     extraJson: {} = None,
                     pageNumber: int = None,
                     maxItemsPerPage: int = None) -> str:
@@ -142,7 +146,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False, None, rssIconAtTop, True,
-                             True, theme, accessKeys)
+                             True, theme, accessKeys,
+                             sharedItemsFederatedDomains)
     profileHeaderStr += \
         '      </td>\n' + \
         '      <td valign="top" class="col-center">\n'
@@ -167,7 +172,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
-                              theme) + licenseStr
+                              theme, systemLanguage,
+                              maxLikeCount) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

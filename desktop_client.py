@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import getBaseContentFromPost
 from utils import hasObjectDict
 from utils import getFullDomain
 from utils import isDM
@@ -24,6 +25,7 @@ from utils import removeHtml
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isPGPEncrypted
+from utils import localActorUrl
 from session import createSession
 from speaker import speakableText
 from speaker import getSpeakerPitch
@@ -415,7 +417,8 @@ def _desktopReplyToPost(session, postId: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, subject: str,
                         screenreader: str, systemLanguage: str,
-                        espeak) -> None:
+                        espeak, conversationId: str,
+                        lowBandwidth: bool) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in postId:
@@ -468,7 +471,9 @@ def _desktopReplyToPost(session, postId: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         debug, postId, postId, subject) == 0:
+                         systemLanguage, lowBandwidth,
+                         debug, postId, postId,
+                         conversationId, subject) == 0:
         sayStr = 'Reply sent'
     else:
         sayStr = 'Reply failed'
@@ -481,9 +486,10 @@ def _desktopNewPost(session,
                     cachedWebfingers: {}, personCache: {},
                     debug: bool,
                     screenreader: str, systemLanguage: str,
-                    espeak) -> None:
+                    espeak, lowBandwidth: bool) -> None:
     """Use the desktop client to create a new post
     """
+    conversationId = None
     sayStr = 'Create new post'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     sayStr = 'Type your post, then press Enter.'
@@ -529,7 +535,9 @@ def _desktopNewPost(session,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         debug, None, None, subject) == 0:
+                         systemLanguage, lowBandwidth,
+                         debug, None, None,
+                         conversationId, subject) == 0:
         sayStr = 'Post sent'
     else:
         sayStr = 'Post failed'
@@ -652,7 +660,8 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                       pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
                       screenreader: str, espeak,
-                      translate: {}, yourActor: str) -> {}:
+                      translate: {}, yourActor: str,
+                      domainFull: str, personCache: {}) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -687,15 +696,17 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              __version__, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache, False)
+                             recentPostsCache, False,
+                             systemLanguage,
+                             domainFull, personCache)
         if postJsonObject2:
             if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
                    postJsonObject2['object'].get('content'):
                     attributedTo = postJsonObject2['object']['attributedTo']
-                    content = postJsonObject2['object']['content']
-                    if isinstance(attributedTo, str) and \
-                       isinstance(content, str):
+                    content = \
+                        getBaseContentFromPost(postJsonObject2, systemLanguage)
+                    if isinstance(attributedTo, str) and content:
                         actor = attributedTo
                         nameStr += ' ' + translate['announces'] + ' ' + \
                             getNicknameFromActor(actor)
@@ -719,7 +730,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     attributedTo = postJsonObject['object']['attributedTo']
     if not attributedTo:
         return {}
-    content = postJsonObject['object']['content']
+    content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if not isinstance(attributedTo, str) or \
        not isinstance(content, str):
         return {}
@@ -1042,7 +1053,8 @@ def _desktopShowBox(indent: str,
 
         published = _formatPublished(postJsonObject['published'])
 
-        content = _textOnlyContent(postJsonObject['object']['content'])
+        contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+        content = _textOnlyContent(contentStr)
         if boxName != 'dm':
             if isDM(postJsonObject):
                 content = '📧' + content
@@ -1100,7 +1112,7 @@ def _desktopNewDM(session, toHandle: str,
                   cachedWebfingers: {}, personCache: {},
                   debug: bool,
                   screenreader: str, systemLanguage: str,
-                  espeak) -> None:
+                  espeak, lowBandwidth: bool) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
@@ -1121,7 +1133,7 @@ def _desktopNewDM(session, toHandle: str,
                           cachedWebfingers, personCache,
                           debug,
                           screenreader, systemLanguage,
-                          espeak)
+                          espeak, lowBandwidth)
 
 
 def _desktopNewDMbase(session, toHandle: str,
@@ -1130,9 +1142,10 @@ def _desktopNewDMbase(session, toHandle: str,
                       cachedWebfingers: {}, personCache: {},
                       debug: bool,
                       screenreader: str, systemLanguage: str,
-                      espeak) -> None:
+                      espeak, lowBandwidth: bool) -> None:
     """Use the desktop client to create a new direct message
     """
+    conversationId = None
     toPort = port
     if '://' in toHandle:
         toNickname = getNicknameFromActor(toHandle)
@@ -1217,7 +1230,9 @@ def _desktopNewDMbase(session, toHandle: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         debug, None, None, subject) == 0:
+                         systemLanguage, lowBandwidth,
+                         debug, None, None,
+                         conversationId, subject) == 0:
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'
@@ -1282,7 +1297,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                      storeInboxPosts: bool,
                      showNewPosts: bool,
                      language: str,
-                     debug: bool) -> None:
+                     debug: bool, lowBandwidth: bool) -> None:
     """Runs the desktop and screen reader client,
     which announces new inbox items
     """
@@ -1360,7 +1375,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 systemLanguage, espeak)
 
     domainFull = getFullDomain(domain, port)
-    yourActor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    yourActor = localActorUrl(httpPrefix, nickname, domainFull)
     actorJson = None
 
     notifyJson = {
@@ -1590,7 +1605,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, baseDir, currTimeline,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
-                                          espeak, translate, yourActor)
+                                          espeak, translate, yourActor,
+                                          domainFull, personCache)
                     print('')
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlightText(sayStr)
@@ -1661,6 +1677,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         subject = None
                         if postJsonObject['object'].get('summary'):
                             subject = postJsonObject['object']['summary']
+                        conversationId = None
+                        if postJsonObject['object'].get('conversation'):
+                            conversationId = \
+                                postJsonObject['object']['conversation']
                         sessionReply = createSession(proxyType)
                         _desktopReplyToPost(sessionReply, postId,
                                             baseDir, nickname, password,
@@ -1668,7 +1688,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             cachedWebfingers, personCache,
                                             debug, subject,
                                             screenreader, systemLanguage,
-                                            espeak)
+                                            espeak, conversationId,
+                                            lowBandwidth)
                 refreshTimeline = True
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or
@@ -1702,7 +1723,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       cachedWebfingers, personCache,
                                       debug,
                                       screenreader, systemLanguage,
-                                      espeak)
+                                      espeak, lowBandwidth)
                         refreshTimeline = True
                 else:
                     # public post
@@ -1712,7 +1733,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     cachedWebfingers, personCache,
                                     debug,
                                     screenreader, systemLanguage,
-                                    espeak)
+                                    espeak, lowBandwidth)
                     refreshTimeline = True
                 print('')
             elif commandStr == 'like' or commandStr.startswith('like '):
@@ -1929,8 +1950,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 blockDomain = blockHandle.split('@')[1]
                                 blockNickname = blockHandle.split('@')[0]
                                 blockActor = \
-                                    httpPrefix + '://' + blockDomain + \
-                                    '/users/' + blockNickname
+                                    localActorUrl(httpPrefix,
+                                                  blockNickname, blockDomain)
                 if currIndex > 0 and boxJson and not blockActor:
                     postJsonObject = \
                         _desktopGetBoxPostObject(boxJson, currIndex)
@@ -2318,11 +2339,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              __version__, translate,
                                              YTReplacementDomain,
                                              allowLocalNetworkAccess,
-                                             recentPostsCache, False)
+                                             recentPostsCache, False,
+                                             systemLanguage,
+                                             domainFull, personCache)
                         if postJsonObject2:
                             postJsonObject = postJsonObject2
                 if postJsonObject:
-                    content = postJsonObject['object']['content']
+                    content = \
+                        getBaseContentFromPost(postJsonObject, systemLanguage)
                     messageStr, detectedLinks = \
                         speakableText(baseDir, content, translate)
                     linkOpened = False
@@ -2378,7 +2402,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                             print('')
                             if postJsonObject['object'].get('summary'):
                                 print(postJsonObject['object']['summary'])
-                            print(postJsonObject['object']['content'])
+                            contentStr = getBaseContentFromPost(postJsonObject,
+                                                                systemLanguage)
+                            print(contentStr)
                             print('')
                             sayStr = 'Confirm delete, yes or no?'
                             _sayCommand(sayStr, sayStr, screenreader,

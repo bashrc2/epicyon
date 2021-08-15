@@ -86,7 +86,7 @@ def getHashtagCategories(baseDir: str,
     return hashtagCategories
 
 
-def _updateHashtagCategories(baseDir: str) -> None:
+def updateHashtagCategories(baseDir: str) -> None:
     """Regenerates the list of hashtag categories
     """
     categoryListFilename = baseDir + '/accounts/categoryList.txt'
@@ -129,7 +129,7 @@ def _validHashtagCategory(category: str) -> bool:
 
 
 def setHashtagCategory(baseDir: str, hashtag: str, category: str,
-                       force: bool = False) -> bool:
+                       update: bool, force: bool = False) -> bool:
     """Sets the category for the hashtag
     """
     if not _validHashtagCategory(category):
@@ -155,7 +155,8 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
             return False
     with open(categoryFilename, 'w+') as fp:
         fp.write(category)
-        _updateHashtagCategories(baseDir)
+        if update:
+            updateHashtagCategories(baseDir)
         return True
 
     return False

@@ -25,6 +25,7 @@ from newswire import getDictFromNewswire
 from posts import createNewsPost
 from posts import archivePostsForPerson
 from content import validHashTag
+from utils import getBaseContentFromPost
 from utils import removeHtml
 from utils import getFullDomain
 from utils import loadJson
@@ -32,6 +33,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from utils import clearFromPostCaches
 from utils import dangerousMarkup
+from utils import localActorUrl
 from inbox import storeHashTags
 from session import createSession
 
@@ -279,7 +281,7 @@ def hashtagRuleTree(operators: [],
 
 def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
                 postJsonObject: {},
-                actionStr: str, hashtags: []) -> None:
+                actionStr: str, hashtags: [], systemLanguage: str) -> None:
     """Adds a hashtag via a hashtag rule
     """
     addHashtag = actionStr.split('add ', 1)[1].strip()
@@ -313,7 +315,7 @@ def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
     hashtagHtml = \
         " <a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = postJsonObject['object']['content']
+    content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if hashtagHtml in content:
         return
 
@@ -328,7 +330,7 @@ def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
 
 
 def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
-                   actionStr: str, hashtags: []) -> None:
+                   actionStr: str, hashtags: [], systemLanguage: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
     rmHashtag = actionStr.split('remove ', 1)[1].strip()
@@ -343,10 +345,11 @@ def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
     hashtagHtml = \
         "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = postJsonObject['object']['content']
+    content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if hashtagHtml in content:
         content = content.replace(hashtagHtml, '').replace('  ', ' ')
         postJsonObject['object']['content'] = content
+        postJsonObject['object']['contentMap'][systemLanguage] = content
     rmTagObject = None
     for t in postJsonObject['object']['tag']:
         if t.get('type') and t.get('name'):
@@ -365,7 +368,8 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                                cachedWebfingers: {},
                                federationList: [],
                                sendThreads: [], postLog: [],
-                               moderated: bool, url: str) -> bool:
+                               moderated: bool, url: str,
+                               systemLanguage: str) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -382,7 +386,7 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     # get the full text content of the post
     content = ''
     if postJsonObject['object'].get('content'):
-        content += postJsonObject['object']['content']
+        content += getBaseContentFromPost(postJsonObject, systemLanguage)
     if postJsonObject['object'].get('summary'):
         content += ' ' + postJsonObject['object']['summary']
     content = content.lower()
@@ -409,11 +413,11 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         if actionStr.startswith('add '):
             # add a hashtag
             _hashtagAdd(baseDir, httpPrefix, domainFull,
-                        postJsonObject, actionStr, hashtags)
+                        postJsonObject, actionStr, hashtags, systemLanguage)
         elif actionStr.startswith('remove '):
             # remove a hashtag
             _hashtagRemove(httpPrefix, domainFull, postJsonObject,
-                           actionStr, hashtags)
+                           actionStr, hashtags, systemLanguage)
         elif actionStr.startswith('block') or actionStr.startswith('drop'):
             # Block this item
             return False
@@ -516,7 +520,9 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                              federationList: [],
                              sendThreads: [], postLog: [],
                              maxMirroredArticles: int,
-                             allowLocalNetworkAccess: bool) -> None:
+                             allowLocalNetworkAccess: bool,
+                             systemLanguage: str,
+                             lowBandwidth: bool) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -542,8 +548,8 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
-            httpPrefix + '://' + domain + \
-            '/users/news/statuses/' + statusNumber
+            localActorUrl(httpPrefix, 'news', domain) + \
+            '/statuses/' + statusNumber
 
         # file where the post is stored
         filename = basePath + '/' + newPostId.replace('/', '#') + '.json'
@@ -590,13 +596,15 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         mediaType = None
         imageDescription = None
         city = 'London, England'
+        conversationId = None
         blog = createNewsPost(baseDir,
                               domain, port, httpPrefix,
                               rssDescription,
                               followersOnly, saveToFile,
                               attachImageFilename, mediaType,
                               imageDescription, city,
-                              rssTitle)
+                              rssTitle, systemLanguage,
+                              conversationId, lowBandwidth)
         if not blog:
             continue
 
@@ -606,7 +614,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 continue
 
         idStr = \
-            httpPrefix + '://' + domain + '/users/news' + \
+            localActorUrl(httpPrefix, 'news', domain) + \
             '/statuses/' + statusNumber + '/replies'
         blog['news'] = True
 
@@ -626,7 +634,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['published'] = dateStr
 
         blog['object']['content'] = rssDescription
-        blog['object']['contentMap']['en'] = rssDescription
+        blog['object']['contentMap'][systemLanguage] = rssDescription
 
         domainFull = getFullDomain(domain, port)
 
@@ -641,7 +649,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                                               personCache, cachedWebfingers,
                                               federationList,
                                               sendThreads, postLog,
-                                              moderated, url)
+                                              moderated, url, systemLanguage)
 
         # save the post and update the index
         if savePost:
@@ -663,7 +671,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"
-                content = blog['object']['content']
+                content = getBaseContentFromPost(blog, systemLanguage)
                 if hashtagHtml not in content:
                     if content.endswith('</p>'):
                         content = \
@@ -672,6 +680,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     else:
                         content += hashtagHtml
                     blog['object']['content'] = content
+                    blog['object']['contentMap'][systemLanguage] = content
 
             # update the newswire tags if new ones have been found by
             # _newswireHashtagProcessing
@@ -748,7 +757,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.maxTags,
                                 httpd.maxFeedItemSizeKb,
                                 httpd.maxNewswirePosts,
-                                httpd.maxCategoriesFeedItemSizeKb)
+                                httpd.maxCategoriesFeedItemSizeKb,
+                                httpd.systemLanguage)
 
         if not httpd.newswire:
             if os.path.isfile(newswireStateFilename):
@@ -773,7 +783,9 @@ def runNewswireDaemon(baseDir: str, httpd,
                                  httpd.sendThreads,
                                  httpd.postLog,
                                  httpd.maxMirroredArticles,
-                                 httpd.allowLocalNetworkAccess)
+                                 httpd.allowLocalNetworkAccess,
+                                 httpd.systemLanguage,
+                                 httpd.lowBandwidth)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.maxNewsPosts > 0:

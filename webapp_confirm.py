@@ -20,7 +20,6 @@ from utils import acctDir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
-from shares import getValidSharedItemID
 
 
 def htmlConfirmDelete(cssCache: {},
@@ -34,7 +33,8 @@ def htmlConfirmDelete(cssCache: {},
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str) -> str:
+                      themeName: str, systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -75,7 +75,7 @@ def htmlConfirmDelete(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances, allowLocalNetworkAccess,
-                             themeName,
+                             themeName, systemLanguage, maxLikeCount,
                              False, False, False, False, False)
     deletePostStr += '<center>'
     deletePostStr += \
@@ -104,21 +104,22 @@ def htmlConfirmDelete(cssCache: {},
 
 
 def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
-                                actor: str, shareName: str,
-                                callingDomain: str) -> str:
+                                actor: str, itemID: str,
+                                callingDomain: str,
+                                sharesFileType: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
-    itemID = getValidSharedItemID(shareName)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
-    sharesFile = acctDir(baseDir, nickname, domain) + '/shares.json'
+    sharesFile = \
+        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFile):
-        print('ERROR: no shares file ' + sharesFile)
+        print('ERROR: no ' + sharesFileType + ' file ' + sharesFile)
         return None
     sharesJson = loadJson(sharesFile)
     if not sharesJson:
-        print('ERROR: unable to load shares.json')
+        print('ERROR: unable to load ' + sharesFileType + '.json')
         return None
     if not sharesJson.get(itemID):
         print('ERROR: share named "' + itemID + '" is not in ' + sharesFile)
@@ -149,11 +150,16 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>\n'
     postActor = getAltPath(actor, domainFull, callingDomain)
-    sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">\n'
+    if sharesFileType == 'shares':
+        endpoint = 'rmshare'
+    else:
+        endpoint = 'rmwanted'
+    sharesStr += \
+        '  <form method="POST" action="' + postActor + '/' + endpoint + '">\n'
     sharesStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
-    sharesStr += '    <input type="hidden" name="shareName" value="' + \
-        shareName + '">\n'
+    sharesStr += '    <input type="hidden" name="itemID" value="' + \
+        itemID + '">\n'
     sharesStr += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'

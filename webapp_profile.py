@@ -23,6 +23,9 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import getImageFormats
 from utils import acctDir
+from utils import getSupportedLanguages
+from utils import localActorUrl
+from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson
@@ -32,6 +35,7 @@ from webfinger import webfingerHandle
 from posts import parseUserFeed
 from posts import getPersonBox
 from donate import getDonationUrl
+from donate import getWebsite
 from xmpp import getXmppAddress
 from matrix import getMatrixAddress
 from ssb import getSSBAddress
@@ -54,6 +58,11 @@ from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
+from webapp_utils import editCheckBox
+from webapp_utils import editTextField
+from webapp_utils import editTextArea
+from webapp_utils import beginEditSection
+from webapp_utils import endEditSection
 from blog import getBlogAddress
 from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
@@ -73,7 +82,9 @@ def htmlProfileAfterSearch(cssCache: {},
                            peertubeInstances: [],
                            allowLocalNetworkAccess: bool,
                            themeName: str,
-                           accessKeys: {}) -> str:
+                           accessKeys: {},
+                           systemLanguage: str,
+                           maxLikeCount: int) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -195,7 +206,10 @@ def htmlProfileAfterSearch(cssCache: {},
     domainFull = getFullDomain(domain, port)
 
     followIsPermitted = True
-    if searchNickname == 'news' and searchDomainFull == domainFull:
+    if not profileJson.get('followers'):
+        # no followers collection specified within actor
+        followIsPermitted = False
+    elif searchNickname == 'news' and searchDomainFull == domainFull:
         # currently the news actor is not something you can follow
         followIsPermitted = False
     elif searchNickname == nickname and searchDomainFull == domainFull:
@@ -203,54 +217,70 @@ def htmlProfileAfterSearch(cssCache: {},
         followIsPermitted = False
 
     if followIsPermitted:
-        profileStr += '<div class="container">\n'
-        profileStr += '  <form method="POST" action="' + \
-            backUrl + '/followconfirm">\n'
-        profileStr += '    <center>\n'
         profileStr += \
+            '<div class="container">\n' + \
+            '  <form method="POST" action="' + \
+            backUrl + '/followconfirm">\n' + \
+            '    <center>\n' + \
             '      <input type="hidden" name="actor" value="' + \
-            personUrl + '">\n'
-        profileStr += \
+            personUrl + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate['Follow'] + '</button>\n'
-        profileStr += \
+            translate['Follow'] + '</button>\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + accessKeys['viewButton'] + '">' + \
-            translate['View'] + '</button>\n'
-        profileStr += '    </center>\n'
-        profileStr += '  </form>\n'
-        profileStr += '</div>\n'
-
-    i = 0
-    for item in parseUserFeed(session, outboxUrl, asHeader,
-                              projectVersion, httpPrefix, domain):
-        if not item.get('actor'):
-            continue
-        if item['actor'] != personUrl:
-            continue
-        if not item.get('type'):
-            continue
-        if item['type'] != 'Create':
-            continue
-        if not hasObjectDict(item):
-            continue
-
+            translate['View'] + '</button>\n' + \
+            '    </center>\n' + \
+            '  </form>\n' + \
+            '</div>\n'
+    else:
         profileStr += \
-            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                 translate, None, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 nickname, domain, port,
-                                 item, avatarUrl, False, False,
-                                 httpPrefix, projectVersion, 'inbox',
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances, allowLocalNetworkAccess,
-                                 themeName,
-                                 False, False, False, False, False)
-        i += 1
-        if i >= 20:
-            break
+            '<div class="container">\n' + \
+            '  <form method="POST" action="' + \
+            backUrl + '/followconfirm">\n' + \
+            '    <center>\n' + \
+            '      <input type="hidden" name="actor" value="' + \
+            personUrl + '">\n' + \
+            '      <button type="submit" class="button" name="submitView" ' + \
+            'accesskey="' + accessKeys['viewButton'] + '">' + \
+            translate['View'] + '</button>\n' + \
+            '    </center>\n' + \
+            '  </form>\n' + \
+            '</div>\n'
+
+    userFeed = \
+        parseUserFeed(session, outboxUrl, asHeader, projectVersion,
+                      httpPrefix, domain, debug)
+    if userFeed:
+        i = 0
+        for item in userFeed:
+            if not item.get('actor'):
+                continue
+            if item['actor'] != personUrl:
+                continue
+            if not item.get('type'):
+                continue
+            if item['type'] != 'Create':
+                continue
+            if not hasObjectDict(item):
+                continue
+
+            profileStr += \
+                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                                     translate, None, baseDir,
+                                     session, cachedWebfingers, personCache,
+                                     nickname, domain, port,
+                                     item, avatarUrl, False, False,
+                                     httpPrefix, projectVersion, 'inbox',
+                                     YTReplacementDomain,
+                                     showPublishedDateOnly,
+                                     peertubeInstances,
+                                     allowLocalNetworkAccess,
+                                     themeName, systemLanguage, maxLikeCount,
+                                     False, False, False, False, False)
+            i += 1
+            if i >= 20:
+                break
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -275,15 +305,15 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     """The header of the profile screen, containing background
     image and avatar
     """
-    htmlStr = '\n\n    <figure class="profileHeader">\n'
-    htmlStr += '      <a href="/users/' + \
+    htmlStr = \
+        '\n\n    <figure class="profileHeader">\n' + \
+        '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '">\n'
-    htmlStr += '        <img class="profileBackground" ' + \
+        translate['Switch to timeline view'] + '">\n' + \
+        '        <img class="profileBackground" ' + \
         'alt="" ' + \
-        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
-    htmlStr += '      <figcaption>\n'
-    htmlStr += \
+        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n' + \
+        '      <figcaption>\n' + \
         '        <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
@@ -316,7 +346,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         otherAccountsHtml = \
             '    <p>' + translate['Other accounts'] + ': '
 
-        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
         ctr = 0
         if isinstance(alsoKnownAs, list):
             for altActor in alsoKnownAs:
@@ -342,13 +372,13 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
         '<img class="qrcode" alt="' + translate['QR Code'] + \
-        '" src="/icons/qrcode.png" /></a></p>\n'
-    htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
-    htmlStr += loginButton
+        '" src="/icons/qrcode.png" /></a></p>\n' + \
+        '        <p>' + profileDescriptionShort + '</p>\n' + loginButton
     if pinnedContent:
         htmlStr += pinnedContent.replace('<p>', '<p>📎', 1)
-    htmlStr += '      </figcaption>\n'
-    htmlStr += '    </figure>\n\n'
+    htmlStr += \
+        '      </figcaption>\n' + \
+        '    </figure>\n\n'
     return htmlStr
 
 
@@ -368,24 +398,25 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     """The header of a searched for handle, containing background
     image and avatar
     """
-    htmlStr = '\n\n    <figure class="profileHeader">\n'
-    htmlStr += '      <a href="/users/' + \
+    htmlStr = \
+        '\n\n    <figure class="profileHeader">\n' + \
+        '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
-    htmlStr += '        <img class="profileBackground" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">\n' + \
+        '        <img class="profileBackground" ' + \
         'alt="" ' + \
-        'src="' + imageUrl + '" /></a>\n'
-    htmlStr += '      <figcaption>\n'
+        'src="' + imageUrl + '" /></a>\n' + \
+        '      <figcaption>\n'
     if avatarUrl:
-        htmlStr += '      <a href="/users/' + \
-            nickname + '/' + defaultTimeline + '" title="' + \
-            translate['Switch to timeline view'] + '">\n'
         htmlStr += \
+            '      <a href="/users/' + \
+            nickname + '/' + defaultTimeline + '" title="' + \
+            translate['Switch to timeline view'] + '">\n' + \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
             'alt="" class="title"></a>\n'
-    htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
+        '        <h1>' + displayName + '</h1>\n' + \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
     if joinedDate:
         htmlStr += '        <p>' + translate['Joined'] + ' ' + \
@@ -426,9 +457,10 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         if ctr > 0:
             htmlStr += otherAccountshtml
 
-    htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
-    htmlStr += '      </figcaption>\n'
-    htmlStr += '    </figure>\n\n'
+    htmlStr += \
+        '        <p>' + profileDescriptionShort + '</p>\n' + \
+        '      </figcaption>\n' + \
+        '    </figure>\n\n'
     return htmlStr
 
 
@@ -447,6 +479,8 @@ def htmlProfile(rssIconAtTop: bool,
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
+                systemLanguage: str, maxLikeCount: int,
+                sharedItemsFederatedDomains: [],
                 extraJson: {} = None, pageNumber: int = None,
                 maxItemsPerPage: int = None) -> str:
     """Show the profile page as html
@@ -467,6 +501,8 @@ def htmlProfile(rssIconAtTop: bool,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
+                               systemLanguage, maxLikeCount,
+                               sharedItemsFederatedDomains,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])
@@ -487,6 +523,7 @@ def htmlProfile(rssIconAtTop: bool,
     rolesButton = 'button'
     skillsButton = 'button'
     sharesButton = 'button'
+    wantedButton = 'button'
     if selected == 'posts':
         postsButton = 'buttonselected'
     elif selected == 'following':
@@ -499,6 +536,8 @@ def htmlProfile(rssIconAtTop: bool,
         skillsButton = 'buttonselected'
     elif selected == 'shares':
         sharesButton = 'buttonselected'
+    elif selected == 'wanted':
+        wantedButton = 'buttonselected'
     loginButton = ''
 
     followApprovalsSection = ''
@@ -510,6 +549,7 @@ def htmlProfile(rssIconAtTop: bool,
 
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
+    websiteUrl = getWebsite(profileJson, translate)
     PGPpubKey = getPGPpubKey(profileJson)
     PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
@@ -520,7 +560,7 @@ def htmlProfile(rssIconAtTop: bool,
     briarAddress = getBriarAddress(profileJson)
     jamiAddress = getJamiAddress(profileJson)
     cwtchAddress = getCwtchAddress(profileJson)
-    if donateUrl or xmppAddress or matrixAddress or \
+    if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
        jamiAddress or cwtchAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
@@ -531,6 +571,10 @@ def htmlProfile(rssIconAtTop: bool,
                 '    <p><a href="' + donateUrl + \
                 '"><button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
+        if websiteUrl:
+            donateSection += \
+                '<p>' + translate['Website'] + ': <a href="' + \
+                websiteUrl + '">' + websiteUrl + '</a></p>\n'
         if emailAddress:
             donateSection += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
@@ -611,10 +655,10 @@ def htmlProfile(rssIconAtTop: bool,
                             if '://' in followerHandle:
                                 followerActor = followerHandle
                             else:
+                                nick = followerHandle.split('@')[0]
+                                dom = followerHandle.split('@')[1]
                                 followerActor = \
-                                    httpPrefix + '://' + \
-                                    followerHandle.split('@')[1] + \
-                                    '/users/' + followerHandle.split('@')[0]
+                                    localActorUrl(httpPrefix, nick, dom)
                             basePath = '/users/' + nickname
                             followApprovalsSection += '<div class="container">'
                             followApprovalsSection += \
@@ -714,8 +758,6 @@ def htmlProfile(rssIconAtTop: bool,
         htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
     menuSkills = \
         htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
-    menuShares = \
-        htmlHideFromScreenReader('🤝') + ' ' + translate['Shares']
     menuLogout = \
         htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
     navLinks = {
@@ -725,7 +767,6 @@ def htmlProfile(rssIconAtTop: bool,
         menuFollowers: userPathStr + '/followers#timeline',
         menuRoles: userPathStr + '/roles#timeline',
         menuSkills: userPathStr + '/skills#timeline',
-        menuShares: userPathStr + '/shares#timeline',
         menuLogout: '/logout'
     }
     navAccessKeys = {}
@@ -761,10 +802,14 @@ def htmlProfile(rssIconAtTop: bool,
         '    <a href="' + usersPath + '/skills#buttonheader">' + \
         '<button class="' + skillsButton + '"><span>' + \
         translate['Skills'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/shares#buttonheader">' + \
-        '<button class="' + sharesButton + '"><span>' + \
-        translate['Shares'] + ' </span></button></a>'
+#    profileStr += \
+#        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+#        '<button class="' + sharesButton + '"><span>' + \
+#        translate['Shares'] + ' </span></button></a>'
+#    profileStr += \
+#        '    <a href="' + usersPath + '/wanted#buttonheader">' + \
+#        '<button class="' + wantedButton + '"><span>' + \
+#        translate['Wanted'] + ' </span></button></a>'
     profileStr += logoutStr + editProfileStr
     profileStr += '  </center>'
     profileStr += '</div>'
@@ -796,7 +841,8 @@ def htmlProfile(rssIconAtTop: bool,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
-                              theme) + licenseStr
+                              theme, systemLanguage,
+                              maxLikeCount) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -822,11 +868,16 @@ def htmlProfile(rssIconAtTop: bool,
     elif selected == 'skills':
         profileStr += \
             _htmlProfileSkills(translate, nickname, domainFull, extraJson)
-    elif selected == 'shares':
-        profileStr += \
-            _htmlProfileShares(actor, translate,
-                               nickname, domainFull,
-                               extraJson) + licenseStr
+#    elif selected == 'shares':
+#        profileStr += \
+#            _htmlProfileShares(actor, translate,
+#                               nickname, domainFull,
+#                               extraJson, 'shares') + licenseStr
+#    elif selected == 'wanted':
+#        profileStr += \
+#            _htmlProfileShares(actor, translate,
+#                               nickname, domainFull,
+#                               extraJson, 'wanted') + licenseStr
     # end of #timeline
     profileStr += '</div>'
 
@@ -850,7 +901,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str) -> str:
+                      themeName: str, systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -890,7 +942,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -997,12 +1050,15 @@ def _htmlProfileSkills(translate: {}, nickname: str, domain: str,
 
 
 def _htmlProfileShares(actor: str, translate: {},
-                       nickname: str, domain: str, sharesJson: {}) -> str:
+                       nickname: str, domain: str, sharesJson: {},
+                       sharesFileType: str) -> str:
     """Shows shares on the profile screen
     """
     profileStr = ''
     for item in sharesJson['orderedItems']:
-        profileStr += htmlIndividualShare(actor, item, translate, False, False)
+        profileStr += htmlIndividualShare(domain, item['shareId'],
+                                          actor, item, translate, False, False,
+                                          sharesFileType)
     if len(profileStr) > 0:
         profileStr = '<div class="share-title">' + profileStr + '</div>\n'
     return profileStr
@@ -1021,13 +1077,9 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
     themes = getThemesList(baseDir)
     themesDropdown = '  <label class="labels">' + \
         translate['Theme'] + '</label><br>\n'
-    grayscale = ''
-    if _grayscaleEnabled(baseDir):
-        grayscale = 'checked'
+    grayscale = _grayscaleEnabled(baseDir)
     themesDropdown += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="grayscale" ' + grayscale + \
-        '> ' + translate['Grayscale'] + '<br>'
+        editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
     themesDropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for themeName in themes:
@@ -1043,9 +1095,8 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
        os.path.isfile(baseDir + '/fonts/custom.otf') or \
        os.path.isfile(baseDir + '/fonts/custom.ttf'):
         themesDropdown += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="removeCustomFont"> ' + \
-            translate['Remove the custom font'] + '<br>'
+            editCheckBox(translate['Remove the custom font'],
+                         'removeCustomFont', False)
     themeName = getConfigParam(baseDir, 'theme')
     themesDropdown = \
         themesDropdown.replace('<option value="' + themeName + '">',
@@ -1059,9 +1110,11 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
     """
     themeFormats = '.zip, .gz'
 
-    graphicsStr = '<details><summary class="cw">' + \
-        translate['Graphic Design'] + '</summary>\n'
-    graphicsStr += '<div class="container">'
+    graphicsStr = beginEditSection(translate['Graphic Design'])
+
+    lowBandwidth = getConfigParam(baseDir, 'lowBandwidth')
+    if not lowBandwidth:
+        lowBandwidth = False
     graphicsStr += _htmlThemesDropdown(baseDir, translate)
     graphicsStr += \
         '      <label class="labels">' + \
@@ -1074,9 +1127,12 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
         translate['Export Theme'] + '</label><br>\n'
     graphicsStr += \
         '      <button type="submit" class="button" ' + \
-        'name="submitExportTheme">➤</button>\n'
+        'name="submitExportTheme">➤</button><br>\n'
+    graphicsStr += \
+        editCheckBox(translate['Low Bandwidth'], 'lowBandwidth',
+                     bool(lowBandwidth))
 
-    graphicsStr += '    </div></details>\n'
+    graphicsStr += endEditSection()
     return graphicsStr
 
 
@@ -1084,7 +1140,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
                              peertubeInstances: [],
                              mediaInstanceStr: str,
                              blogsInstanceStr: str,
-                             newsInstanceStr: str) -> (str, str, str):
+                             newsInstanceStr: str) -> (str, str, str, str):
     """Edit profile instance settings
     """
     imageFormats = getImageFormats()
@@ -1099,65 +1155,29 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
 
-    instanceStr = '<details><summary class="cw">' + \
-        translate['Instance Settings'] + '</summary>\n'
-    instanceStr += '<div class="container">'
-    instanceStr += \
-        '  <label class="labels">' + \
-        translate['Instance Title'] + '</label>'
-    if instanceTitle:
-        instanceStr += \
-            '  <input type="text" name="instanceTitle" value="' + \
-            instanceTitle + '"><br>'
-    else:
-        instanceStr += \
-            '  <input type="text" name="instanceTitle" value=""><br>'
-    instanceStr += \
-        '  <label class="labels">' + \
-        translate['Instance Short Description'] + '</label>'
-    if instanceDescriptionShort:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="instanceDescriptionShort" value="' + \
-            instanceDescriptionShort + '"><br>'
-    else:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="instanceDescriptionShort" value=""><br>'
-    instanceStr += \
-        '  <label class="labels">' + \
-        translate['Instance Description'] + '</label>'
-    if instanceDescription:
-        instanceStr += \
-            '  <textarea id="message" name="instanceDescription" ' + \
-            'style="height:200px" spellcheck="true">' + \
-            instanceDescription + '</textarea>'
-    else:
-        instanceStr += \
-            '  <textarea id="message" name="instanceDescription" ' + \
-            'style="height:200px" spellcheck="true"></textarea>'
+    instanceStr = beginEditSection(translate['Instance Settings'])
 
     instanceStr += \
-        '  <label class="labels">' + \
-        translate['Custom post submit button text'] + '</label>'
-    if customSubmitText:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="customSubmitText" value="' + \
-            customSubmitText + '"><br>'
-    else:
-        instanceStr += \
-            '  <input type="text" ' + \
-            'name="customSubmitText" value=""><br>'
-
+        editTextField(translate['Instance Title'],
+                      'instanceTitle', instanceTitle)
+    instanceStr += '<br>\n'
+    instanceStr += \
+        editTextField(translate['Instance Short Description'],
+                      'instanceDescriptionShort', instanceDescriptionShort)
+    instanceStr += '<br>\n'
+    instanceStr += \
+        editTextArea(translate['Instance Description'],
+                     'instanceDescription', instanceDescription, 200,
+                     '', True)
+    instanceStr += \
+        editTextField(translate['Custom post submit button text'],
+                      'customSubmitText', customSubmitText)
+    instanceStr += '<br>\n'
     instanceStr += \
         '  <label class="labels">' + \
-        translate['Instance Logo'] + '</label>'
-    instanceStr += \
-        '  <input type="file" id="instanceLogo" name="instanceLogo"'
-    instanceStr += '      accept="' + imageFormats + '"><br>\n'
-
-    instanceStr += \
+        translate['Instance Logo'] + '</label>' + \
+        '  <input type="file" id="instanceLogo" name="instanceLogo"' + \
+        '      accept="' + imageFormats + '"><br>\n' + \
         '  <br><label class="labels">' + \
         translate['Security'] + '</label><br>\n'
 
@@ -1165,67 +1185,51 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         translate['Show numbers of accounts within instance metadata']
     if getConfigParam(baseDir, "showNodeInfoAccounts"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoAccounts" checked> ' + \
-            nodeInfoStr + '<br>\n'
+            editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoAccounts"> ' + \
-            nodeInfoStr + '<br>\n'
+            editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', False)
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
     if getConfigParam(baseDir, "showNodeInfoVersion"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoVersion" checked> ' + \
-            nodeInfoStr + '<br>\n'
+            editCheckBox(nodeInfoStr, 'showNodeInfoVersion', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="showNodeInfoVersion"> ' + \
-            nodeInfoStr + '<br>\n'
+            editCheckBox(nodeInfoStr, 'showNodeInfoVersion', False)
 
     if getConfigParam(baseDir, "verifyAllSignatures"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="verifyallsignatures" checked> ' + \
-            translate['Verify all signatures'] + '<br>\n'
+            editCheckBox(translate['Verify all signatures'],
+                         'verifyallsignatures', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="verifyallsignatures"> ' + \
-            translate['Verify all signatures'] + '<br>\n'
+            editCheckBox(translate['Verify all signatures'],
+                         'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
     if getConfigParam(baseDir, "brochMode"):
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="brochMode" checked> ' + \
-            translate['Broch mode'] + '<br>\n'
+            editCheckBox(translate['Broch mode'], 'brochMode', True)
     else:
         instanceStr += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="brochMode"> ' + \
-            translate['Broch mode'] + '<br>\n'
+            editCheckBox(translate['Broch mode'], 'brochMode', False)
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
         translate['Type of instance'] + '</label><br>\n'
     instanceStr += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-        translate['This is a media instance'] + '<br>\n'
+        editCheckBox(translate['This is a media instance'],
+                     'mediaInstance', mediaInstanceStr)
     instanceStr += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
-        translate['This is a blogging instance'] + '<br>\n'
+        editCheckBox(translate['This is a blogging instance'],
+                     'blogsInstance', blogsInstanceStr)
     instanceStr += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="newsInstance" ' + newsInstanceStr + '> ' + \
-        translate['This is a news instance'] + '<br>\n'
-    instanceStr += '    </div></details>\n'
+        editCheckBox(translate['This is a news instance'],
+                     'newsInstance', newsInstanceStr)
+
+    instanceStr += endEditSection()
 
     # Role assignments section
     moderators = ''
@@ -1234,14 +1238,12 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         with open(moderatorsFile, 'r') as f:
             moderators = f.read()
     # site moderators
-    roleAssignStr = '<details><summary class="cw">' + \
-        translate['Role Assignment'] + '</summary>\n'
-    roleAssignStr += '<div class="container">'
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Moderators'] + '</label></b><br>\n'
-    roleAssignStr += '  ' + \
-        translate['A list of moderator nicknames. One per line.']
-    roleAssignStr += \
+    roleAssignStr = \
+        beginEditSection(translate['Role Assignment']) + \
+        '  <b><label class="labels">' + \
+        translate['Moderators'] + '</label></b><br>\n' + \
+        '  ' + \
+        translate['A list of moderator nicknames. One per line.'] + \
         '  <textarea id="message" name="moderators" placeholder="' + \
         translate['List of moderator nicknames'] + \
         '..." style="height:200px" spellcheck="false">' + \
@@ -1253,11 +1255,11 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if os.path.isfile(editorsFile):
         with open(editorsFile, 'r') as f:
             editors = f.read()
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Site Editors'] + '</label></b><br>\n'
-    roleAssignStr += '  ' + \
-        translate['A list of editor nicknames. One per line.']
     roleAssignStr += \
+        '  <b><label class="labels">' + \
+        translate['Site Editors'] + '</label></b><br>\n' + \
+        '  ' + \
+        translate['A list of editor nicknames. One per line.'] + \
         '  <textarea id="message" name="editors" placeholder="" ' + \
         'style="height:200px" spellcheck="false">' + \
         editors + '</textarea>'
@@ -1268,13 +1270,9 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if os.path.isfile(counselorsFile):
         with open(counselorsFile, 'r') as f:
             counselors = f.read()
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Counselors'] + '</label></b><br>\n'
     roleAssignStr += \
-        '  <textarea id="message" name="counselors" ' + \
-        'placeholder="" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        counselors + '</textarea>'
+        editTextArea(translate['Counselors'], 'counselors', counselors,
+                     200, '', False)
 
     # artists
     artists = ''
@@ -1282,60 +1280,53 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
     if os.path.isfile(artistsFile):
         with open(artistsFile, 'r') as f:
             artists = f.read()
-    roleAssignStr += '  <b><label class="labels">' + \
-        translate['Artists'] + '</label></b><br>\n'
     roleAssignStr += \
-        '  <textarea id="message" name="artists" ' + \
-        'placeholder="" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        artists + '</textarea>'
-    roleAssignStr += '    </div></details>\n'
+        editTextArea(translate['Artists'], 'artists', artists,
+                     200, '', False)
+    roleAssignStr += endEditSection()
 
     # Video section
-    peertubeStr = '    <details><summary class="cw">' + \
-        translate['Video Settings'] + '</summary>\n'
-    peertubeStr += '    <div class="container">\n'
-    peertubeStr += \
-        '      <b><label class="labels">' + \
-        translate['Peertube Instances'] + '</label></b>\n'
-    idx = 'Show video previews for the following Peertube sites.'
-    peertubeStr += \
-        '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
+    peertubeStr = beginEditSection(translate['Video Settings'])
     peertubeInstancesStr = ''
     for url in peertubeInstances:
         peertubeInstancesStr += url + '\n'
     peertubeStr += \
-        '      <textarea id="message" name="ptInstances" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        peertubeInstancesStr + '</textarea>\n'
+        editTextArea(translate['Peertube Instances'], 'ptInstances',
+                     peertubeInstancesStr, 200, '', False)
     peertubeStr += \
-        '      <br><b><label class="labels">' + \
-        translate['YouTube Replacement Domain'] + '</label></b>\n'
+        '      <br>\n'
     YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
     if not YTReplacementDomain:
         YTReplacementDomain = ''
     peertubeStr += \
-        '      <input type="text" name="ytdomain" value="' + \
-        YTReplacementDomain + '">\n'
-    peertubeStr += '    </div></details>\n'
+        editTextField(translate['YouTube Replacement Domain'],
+                      'ytdomain', YTReplacementDomain)
+    peertubeStr += endEditSection()
 
-    return instanceStr, roleAssignStr, peertubeStr
+    libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
+    libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
+    libretranslateStr = \
+        _htmlEditProfileLibreTranslate(translate,
+                                       libretranslateUrl,
+                                       libretranslateApiKey)
+
+    return instanceStr, roleAssignStr, peertubeStr, libretranslateStr
 
 
 def _htmlEditProfileDangerZone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    editProfileForm = '    <details><summary class="cw">' + \
-        translate['Danger Zone'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += '      <b><label class="labels">' + \
-        translate['Danger Zone'] + '</label></b><br>\n'
+    editProfileForm = beginEditSection(translate['Danger Zone'])
+
     editProfileForm += \
-        '      <input type="checkbox" class=dangercheckbox" ' + \
-        'name="deactivateThisAccount"> ' + \
-        translate['Deactivate this account'] + '<br>\n'
-    editProfileForm += '    </div></details>\n'
+        '      <b><label class="labels">' + \
+        translate['Danger Zone'] + '</label></b><br>\n'
+
+    editProfileForm += \
+        editCheckBox(translate['Deactivate this account'],
+                     'deactivateThisAccount', False)
+
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1353,8 +1344,7 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
             skillsStr += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
                 ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
-                '" value="' + skillDesc + '" style="width:40%">'
-            skillsStr += \
+                '" value="' + skillDesc + '" style="width:40%">' + \
                 '<input type="range" min="1" max="100" ' + \
                 'class="slider" name="skillValue' + \
                 str(skillCtr) + '" value="' + str(skillValue) + '"></p>'
@@ -1363,26 +1353,21 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
     skillsStr += \
         '<p><input type="text" placeholder="Skill ' + str(skillCtr) + \
         '" name="skillName' + str(skillCtr) + \
-        '" value="" style="width:40%">'
-    skillsStr += \
+        '" value="" style="width:40%">' + \
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>'
-    skillsStr += '    </div></details>\n'
+        str(skillCtr) + '" value="50"></p>' + endEditSection()
 
-    editProfileForm = '<details><summary class="cw">' + \
-        translate['Skills'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
-        '      <b><label class="labels">' + \
-        translate['Skills'] + '</label></b><br>\n'
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
-    editProfileForm += '      <label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += skillsStr
+    editProfileForm = \
+        beginEditSection(translate['Skills']) + \
+        '      <b><label class="labels">' + \
+        translate['Skills'] + '</label></b><br>\n' + \
+        '      <label class="labels">' + \
+        translate[idx] + '</label>\n' + skillsStr
     return editProfileForm
 
 
@@ -1397,18 +1382,34 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
 
-    editProfileForm = '<details><summary class="cw">' + \
-        translate['Git Projects'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
+    editProfileForm = beginEditSection(translate['Git Projects'])
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
-        '      <label class="labels">' + \
-        translate[idx] + '</label>\n'
+        editTextArea(translate[idx], 'gitProjects', gitProjectsStr,
+                     100, '', False)
+    editProfileForm += endEditSection()
+    return editProfileForm
+
+
+def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
+                                translate: {}) -> str:
+    """shared items section of edit profile screen
+    """
+    sharedItemsStr = ''
+    sharedItemsFederatedDomainsStr = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+    if sharedItemsFederatedDomainsStr:
+        sharedItemsFederatedDomainsList = \
+            sharedItemsFederatedDomainsStr.split(',')
+        for sharedFederatedDomain in sharedItemsFederatedDomainsList:
+            sharedItemsStr += sharedFederatedDomain.strip() + '\n'
+
+    editProfileForm = beginEditSection(translate['Shares'])
+    idx = 'List of domains which can access the shared items catalog'
     editProfileForm += \
-        '      <textarea id="message" name="gitProjects" ' + \
-        'style="height:100px" spellcheck="false">' + \
-        gitProjectsStr + '</textarea>\n'
-    editProfileForm += '    </div></details>\n'
+        editTextArea(translate[idx], 'shareDomainList',
+                     sharedItemsStr, 200, '', False)
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1465,15 +1466,14 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
 
-    editProfileForm = '<details><summary class="cw">' + \
-        translate['Filtering and Blocking'] + '</summary>\n'
-    editProfileForm += '    <div class="container">\n'
+    editProfileForm = beginEditSection(translate['Filtering and Blocking'])
 
     editProfileForm += \
         '<label class="labels">' + \
         translate['City for spoofed GPS image metadata'] + \
         '</label><br>\n'
 
+    city = ''
     cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
@@ -1494,8 +1494,9 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         citySelected = ''
         cityName = cityName.split(':')[0]
         cityName = cityName.lower()
-        if city in cityName:
-            citySelected = ' selected'
+        if city:
+            if city in cityName:
+                citySelected = ' selected'
         editProfileForm += \
             '    <option value="' + cityName + \
             '"' + citySelected.title() + '>' + \
@@ -1504,71 +1505,49 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
 
     editProfileForm += \
         '      <b><label class="labels">' + \
-        translate['Filtered words'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">' + \
-        translate['One per line'] + '</label>\n'
-    editProfileForm += '      <textarea id="message" ' + \
+        translate['Filtered words'] + '</label></b>\n' + \
+        '      <br><label class="labels">' + \
+        translate['One per line'] + '</label>\n' + \
+        '      <textarea id="message" ' + \
         'name="filteredWords" style="height:200px" spellcheck="false">' + \
-        filterStr + '</textarea>\n'
-
-    editProfileForm += \
+        filterStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
-        translate['Word Replacements'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
-    editProfileForm += \
+        translate['Word Replacements'] + '</label></b>\n' + \
+        '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="switchWords" ' + \
         'style="height:200px" spellcheck="false">' + \
-        switchStr + '</textarea>\n'
-
-    editProfileForm += \
+        switchStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
-        translate['Autogenerated Hashtags'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">A -> #B</label>\n'
-    editProfileForm += \
+        translate['Autogenerated Hashtags'] + '</label></b>\n' + \
+        '      <br><label class="labels">A -> #B</label>\n' + \
         '      <textarea id="message" name="autoTags" ' + \
         'style="height:200px" spellcheck="false">' + \
-        autoTags + '</textarea>\n'
-
-    editProfileForm += \
+        autoTags + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
-        translate['Autogenerated Content Warnings'] + '</label></b>\n'
-    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
-    editProfileForm += \
+        translate['Autogenerated Content Warnings'] + '</label></b>\n' + \
+        '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="autoCW" ' + \
         'style="height:200px" spellcheck="true">' + autoCW + '</textarea>\n'
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Blocked accounts'] + '</label></b>\n'
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     editProfileForm += \
-        '      <br><label class="labels">' + translate[idx] + '</label>\n'
-    editProfileForm += \
-        '      <textarea id="message" name="blocked" style="height:200px" ' + \
-        'spellcheck="false">' + blockedStr + '</textarea>\n'
+        editTextArea(translate['Blocked accounts'], 'blocked', blockedStr,
+                     200, '', False)
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Direct Message permitted instances'] + '</label></b>\n'
     idx = 'Direct messages are always allowed from these instances.'
     editProfileForm += \
-        '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += \
-        '      <textarea id="message" name="dmAllowedInstances" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        dmAllowedInstancesStr + '</textarea>\n'
+        editTextArea(translate['Direct Message permitted instances'],
+                     'dmAllowedInstances', dmAllowedInstancesStr,
+                     200, '', False)
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Federation list'] + '</label></b>\n'
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
     editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Federation list'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
-    editProfileForm += \
+        translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="allowedInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
@@ -1579,14 +1558,11 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
             userAgentsBlockedStr += '\n'
         userAgentsBlockedStr += ua
     editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Blocked User Agents'] + '</label></b>\n'
-    editProfileForm += \
-        '      <textarea id="message" name="userAgentsBlockedStr" ' + \
-        'style="height:200px" spellcheck="false">' + \
-        userAgentsBlockedStr + '</textarea>\n'
+        editTextArea(translate['Blocked User Agents'],
+                     'userAgentsBlockedStr', userAgentsBlockedStr,
+                     200, '', False)
 
-    editProfileForm += '    </div></details>\n'
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1594,17 +1570,32 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
     """Change password section of edit profile screen
     """
     editProfileForm = \
-        '    <details><summary class="cw">' + \
-        translate['Change Password'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        beginEditSection(translate['Change Password']) + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
-        '      <input type="text" name="password" ' + \
+        '      <input type="password" name="password" ' + \
         'value=""><br>\n' + \
         '<label class="labels">' + translate['Confirm Password'] + \
         '</label><br>\n' + \
-        '      <input type="text" name="passwordconfirm" value="">\n' + \
-        '    </div></details>\n'
+        '      <input type="password" name="passwordconfirm" value="">\n' + \
+        endEditSection()
+    return editProfileForm
+
+
+def _htmlEditProfileLibreTranslate(translate: {},
+                                   libretranslateUrl: str,
+                                   libretranslateApiKey: str) -> str:
+    """Change automatic translation settings
+    """
+    editProfileForm = beginEditSection('LibreTranslate')
+
+    editProfileForm += \
+        editTextField('URL', 'libretranslateUrl', libretranslateUrl,
+                      'http://0.0.0.0:5000')
+    editProfileForm += \
+        editTextField('API Key', 'libretranslateApiKey', libretranslateApiKey)
+
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1614,9 +1605,7 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm = \
-        '    <details><summary class="cw">' + \
-        translate['Background Images'] + '</summary>\n' + \
-        '    <div class="container">\n' + \
+        beginEditSection(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not newsInstance:
@@ -1625,36 +1614,28 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
             '      <label class="labels">' + \
             translate['Background image'] + '</label>\n' + \
             '      <input type="file" id="image" name="image"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Timeline banner image'] + '</label>\n' + \
             '      <input type="file" id="banner" name="banner"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Search banner image'] + '</label>\n' + \
             '      <input type="file" id="search_banner" ' + \
             'name="search_banner"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Left column image'] + '</label>\n' + \
             '      <input type="file" id="left_col_image" ' + \
             'name="left_col_image"' + \
-            '            accept="' + imageFormats + '">\n'
-
-        editProfileForm += \
+            '            accept="' + imageFormats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Right column image'] + '</label>\n' + \
             '      <input type="file" id="right_col_image" ' + \
             'name="right_col_image"' + \
             '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '    </div></details>\n'
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
@@ -1672,67 +1653,35 @@ def _htmlEditProfileContactInfo(nickname: str,
                                 translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = '    <details><summary class="cw">' + \
-        translate['Contact Details'] + '</summary>\n'
-    editProfileForm += '<div class="container">'
-    editProfileForm += '<label class="labels">' + \
-        translate['Email'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="email" value="' + emailAddress + '">\n'
-    editProfileForm += \
-        '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="xmppAddress" value="' + \
-        xmppAddress + '">\n'
-    editProfileForm += '<label class="labels">' + \
-        translate['Matrix'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="matrixAddress" value="' + \
-        matrixAddress + '">\n'
+    editProfileForm = beginEditSection(translate['Contact Details'])
 
+    editProfileForm += editTextField(translate['Email'],
+                                     'email', emailAddress)
+    editProfileForm += editTextField(translate['XMPP'],
+                                     'xmppAddress', xmppAddress)
+    editProfileForm += editTextField(translate['Matrix'],
+                                     'matrixAddress', matrixAddress)
+    editProfileForm += editTextField('SSB', 'ssbAddress', ssbAddress)
+    editProfileForm += editTextField('Tox', 'toxAddress', toxAddress)
+    editProfileForm += editTextField('Briar', 'briarAddress', briarAddress)
+    editProfileForm += editTextField('Jami', 'jamiAddress', jamiAddress)
+    editProfileForm += editTextField('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += editTextField(translate['PGP Fingerprint'],
+                                     'openpgp', PGPfingerprint)
     editProfileForm += \
-        '<label class="labels">SSB</label><br>\n' + \
-        '      <input type="text" name="ssbAddress" value="' + \
-        ssbAddress + '">\n'
-
+        editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
+                     '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
     editProfileForm += \
-        '<label class="labels">Tox</label><br>\n' + \
-        '      <input type="text" name="toxAddress" value="' + \
-        toxAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">Briar</label><br>\n' + \
-        '      <input type="text" name="briarAddress" value="' + \
-        briarAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">Jami</label><br>\n' + \
-        '      <input type="text" name="jamiAddress" value="' + \
-        jamiAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">Cwtch</label><br>\n' + \
-        '      <input type="text" name="cwtchAddress" value="' + \
-        cwtchAddress + '">\n'
-
-    editProfileForm += \
-        '<label class="labels">' + \
-        translate['PGP Fingerprint'] + '</label><br>\n' + \
-        '      <input type="text" name="openpgp" value="' + \
-        PGPfingerprint + '">\n' + \
-        '<label class="labels">' + translate['PGP'] + '</label><br>\n' + \
-        '      <textarea id="message" placeholder=' + \
-        '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:600px" spellcheck="false">' + \
-        PGPpubKey + '</textarea>\n' + \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>\n' + \
-        '    </div></details>\n'
+        translate['Following'] + '</label></a><br>\n'
+
+    editProfileForm += endEditSection()
     return editProfileForm
 
 
-def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
+def _htmlEditProfileOptions(isAdmin: bool,
+                            manuallyApprovesFollowers: str,
                             isBot: str, isGroup: str,
                             followDMs: str, removeTwitter: str,
                             notifyLikes: str, hideLikeButton: str,
@@ -1741,39 +1690,49 @@ def _htmlEditProfileOptions(manuallyApprovesFollowers: str,
     """
     editProfileForm = '    <div class="container">\n'
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '> ' + translate['Approve follower requests'] + '<br>\n'
+        editCheckBox(translate['Approve follower requests'],
+                     'approveFollowers', manuallyApprovesFollowers)
     editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isBot" ' + \
-        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
+        editCheckBox(translate['This is a bot account'],
+                     'isBot', isBot)
+    if isAdmin:
+        editProfileForm += \
+            editCheckBox(translate['This is a group account'],
+                         'isGroup', isGroup)
     editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
-        translate['This is a group account'] + '<br>\n'
+        editCheckBox(translate['Only people I follow can send me DMs'],
+                     'followDMs', followDMs)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="followDMs" ' + followDMs + '> ' + \
-        translate['Only people I follow can send me DMs'] + '<br>\n'
+        editCheckBox(translate['Remove Twitter posts'],
+                     'removeTwitter', removeTwitter)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="removeTwitter" ' + removeTwitter + '> ' + \
-        translate['Remove Twitter posts'] + '<br>\n'
+        editCheckBox(translate['Notify when posts are liked'],
+                     'notifyLikes', notifyLikes)
     editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="notifyLikes" ' + notifyLikes + '> ' + \
-        translate['Notify when posts are liked'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
-        translate["Don't show the Like button"] + '<br>\n'
+        editCheckBox(translate["Don't show the Like button"],
+                     'hideLikeButton', hideLikeButton)
     editProfileForm += '    </div>\n'
     return editProfileForm
 
 
-def _htmlEditProfileMain(displayNickname: str, bioStr: str,
-                         movedTo: str, donateUrl: str,
+def _getSupportedLanguagesSorted(baseDir: str) -> str:
+    """Returns a list of supported languages
+    """
+    langList = getSupportedLanguages(baseDir)
+    if not langList:
+        return ''
+    langList.sort()
+    languagesStr = ''
+    for lang in langList:
+        if languagesStr:
+            languagesStr += ' / ' + lang
+        else:
+            languagesStr = lang
+    return languagesStr
+
+
+def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
+                         movedTo: str, donateUrl: str, websiteUrl: str,
                          blogAddress: str, actorJson: {},
                          translate: {}) -> str:
     """main info on edit profile screen
@@ -1783,16 +1742,11 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
     editProfileForm = '    <div class="container">\n'
 
     editProfileForm += \
-        '      <label class="labels">' + \
-        translate['Nickname'] + '</label>\n' + \
-        '      <input type="text" name="displayNickname" value="' + \
-        displayNickname + '"><br>\n'
+        editTextField(translate['Nickname'], 'displayNickname',
+                      displayNickname)
 
     editProfileForm += \
-        '      <label class="labels">' + \
-        translate['Your bio'] + '</label>\n' + \
-        '      <textarea id="message" name="bio" style="height:200px" ' + \
-        'spellcheck="true">' + bioStr + '</textarea>\n'
+        editTextArea(translate['Your bio'], 'bio', bioStr, 200, '', True)
 
     editProfileForm += \
         '      <label class="labels">' + translate['Avatar image'] + \
@@ -1805,10 +1759,8 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
         occupationName = getOccupationName(actorJson)
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Occupation'] + ':</label><br>\n' + \
-        '      <input type="text" ' + \
-        'name="occupationName" value="' + occupationName + '">\n'
+        editTextField(translate['Occupation'], 'occupationName',
+                      occupationName)
 
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):
@@ -1821,28 +1773,31 @@ def _htmlEditProfileMain(displayNickname: str, bioStr: str,
             alsoKnownAsStr += altActor
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Other accounts'] + ':</label><br>\n' + \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
+        editTextField(translate['Other accounts'], 'alsoKnownAs',
+                      alsoKnownAsStr, 'https://...')
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Moved to new account address'] + ':</label><br>\n' + \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="movedTo" value="' + movedTo + '">\n'
+        editTextField(translate['Moved to new account address'], 'movedTo',
+                      movedTo, 'https://...')
 
     editProfileForm += \
-        '<label class="labels">' + \
-        translate['Donations link'] + '</label><br>\n' + \
-        '      <input type="text" placeholder="https://..." ' + \
-        'name="donateUrl" value="' + donateUrl + '">\n'
+        editTextField(translate['Donations link'], 'donateUrl',
+                      donateUrl, 'https://...')
 
     editProfileForm += \
-        '<label class="labels">Blog</label><br>\n' + \
-        '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">\n' + \
-        '    </div>\n'
+        editTextField(translate['Website'], 'websiteUrl',
+                      websiteUrl, 'https://...')
+
+    editProfileForm += \
+        editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
+
+    languagesListStr = _getSupportedLanguagesSorted(baseDir)
+    showLanguages = getActorLanguages(actorJson)
+    editProfileForm += \
+        editTextField(translate['Languages'], 'showLanguages',
+                      showLanguages, languagesListStr)
+
+    editProfileForm += '    </div>\n'
     return editProfileForm
 
 
@@ -1876,9 +1831,8 @@ def _htmlEditProfileTopBanner(baseDir: str,
     if scheduledPostsExist(baseDir, nickname, domain):
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="removeScheduledPosts"> ' + \
-            translate['Remove scheduled posts'] + '<br>\n'
+            editCheckBox(translate['Remove scheduled posts'],
+                         'removeScheduledPosts', False)
         editProfileForm += '    </div>\n'
     return editProfileForm
 
@@ -1893,7 +1847,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '')
+    path = path.replace('/shares', '').replace('/wanted', '')
     nickname = getNicknameFromActor(path)
     if not nickname:
         return ''
@@ -1911,7 +1865,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     isBot = isGroup = followDMs = removeTwitter = ''
     notifyLikes = hideLikeButton = mediaInstanceStr = ''
     blogsInstanceStr = newsInstanceStr = movedTo = ''
-    bioStr = donateUrl = emailAddress = PGPpubKey = ''
+    bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
     cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
@@ -1921,6 +1875,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         if actorJson.get('movedTo'):
             movedTo = actorJson['movedTo']
         donateUrl = getDonationUrl(actorJson)
+        websiteUrl = getWebsite(actorJson, translate)
         xmppAddress = getXmppAddress(actorJson)
         matrixAddress = getMatrixAddress(actorJson)
         ssbAddress = getSSBAddress(actorJson)
@@ -1987,6 +1942,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     instanceStr = ''
     roleAssignStr = ''
     peertubeStr = ''
+    libretranslateStr = ''
+    graphicsStr = ''
+    sharesFederationStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
 
@@ -1994,17 +1952,22 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
        path.startswith('/users/' + str(adminNickname) + '/'):
         graphicsStr = _htmlEditProfileGraphicDesign(baseDir, translate)
 
+    isAdmin = False
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
-            instanceStr, roleAssignStr, peertubeStr = \
+            isAdmin = True
+            # shared items section
+            sharesFederationStr = \
+                _htmlEditProfileSharedItems(baseDir, nickname,
+                                            domain, translate)
+            instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
                 _htmlEditProfileInstance(baseDir, translate,
                                          peertubeInstances,
                                          mediaInstanceStr,
                                          blogsInstanceStr,
                                          newsInstanceStr)
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # keyboard navigation
@@ -2035,12 +1998,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # main info
     editProfileForm += \
-        _htmlEditProfileMain(displayNickname, bioStr, movedTo, donateUrl,
+        _htmlEditProfileMain(baseDir, displayNickname, bioStr,
+                             movedTo, donateUrl, websiteUrl,
                              blogAddress, actorJson, translate)
 
     # Option checkboxes
     editProfileForm += \
-        _htmlEditProfileOptions(manuallyApprovesFollowers,
+        _htmlEditProfileOptions(isAdmin, manuallyApprovesFollowers,
                                 isBot, isGroup, followDMs, removeTwitter,
                                 notifyLikes, hideLikeButton, translate)
 
@@ -2059,6 +2023,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     # Change password
     editProfileForm += _htmlEditProfileChangePassword(translate)
 
+    # automatic translations
+    editProfileForm += libretranslateStr
+
     # Filtering and blocking section
     editProfileForm += \
         _htmlEditProfileFiltering(baseDir, nickname, domain,
@@ -2072,7 +2039,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         _htmlEditProfileSkills(baseDir, nickname, domain, translate)
 
-    editProfileForm += roleAssignStr + peertubeStr + graphicsStr + instanceStr
+    editProfileForm += roleAssignStr + peertubeStr + graphicsStr
+    editProfileForm += sharesFederationStr + instanceStr
 
     # danger zone section
     editProfileForm += _htmlEditProfileDangerZone(translate)
@@ -2118,7 +2086,7 @@ def _individualFollowAsHtml(translate: {},
     followUrlWf = \
         webfingerHandle(session, followUrlHandle, httpPrefix,
                         cachedWebfingers,
-                        domain, __version__, debug)
+                        domain, __version__, debug, False)
 
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,

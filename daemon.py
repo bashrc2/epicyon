@@ -19,7 +19,7 @@ from functools import partial
 import pyqrcode
 # for saving images
 from hashlib import sha256
-from hashlib import sha1
+from hashlib import md5
 from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
@@ -50,6 +50,8 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from donate import getWebsite
+from donate import setWebsite
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
@@ -92,7 +94,6 @@ from inbox import runInboxQueue
 from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
-from inbox import getPersonPubKey
 from follow import isFollowingActor
 from follow import getFollowingFeed
 from follow import sendFollowRequest
@@ -111,6 +112,8 @@ from auth import authorizeBasic
 from auth import storeBasicCredentials
 from threads import threadWithTrace
 from threads import removeDormantThreads
+from media import processMetaData
+from media import convertImageToLowBandwidth
 from media import replaceYouTube
 from media import attachMedia
 from media import pathIsVideo
@@ -147,6 +150,7 @@ from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
 from webapp_utils import setBlogAddress
+from webapp_utils import htmlShowShare
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
@@ -157,6 +161,7 @@ from webapp_confirm import htmlConfirmRemoveSharedItem
 from webapp_confirm import htmlConfirmUnblock
 from webapp_person_options import htmlPersonOptions
 from webapp_timeline import htmlShares
+from webapp_timeline import htmlWanted
 from webapp_timeline import htmlInbox
 from webapp_timeline import htmlBookmarks
 from webapp_timeline import htmlInboxDMs
@@ -203,11 +208,29 @@ from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
 from webapp_welcome_final import htmlWelcomeFinal
+from shares import mergeSharedItemTokens
+from shares import runFederatedSharesDaemon
+from shares import runFederatedSharesWatchdog
+from shares import updateSharedItemFederationToken
+from shares import createSharedItemFederationToken
+from shares import authorizeSharedItems
+from shares import generateSharedItemFederationTokens
 from shares import getSharesFeedForPerson
 from shares import addShare
-from shares import removeShare
+from shares import removeSharedItem
 from shares import expireShares
+from shares import sharesCatalogEndpoint
+from shares import sharesCatalogAccountEndpoint
+from shares import sharesCatalogCSVEndpoint
 from categories import setHashtagCategory
+from categories import updateHashtagCategories
+from languages import getActorLanguages
+from languages import setActorLanguages
+from utils import localActorUrl
+from utils import isfloat
+from utils import validPassword
+from utils import removeLineEndings
+from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
 from utils import getImageMimeType
@@ -257,18 +280,20 @@ from utils import isSuspended
 from utils import dangerousMarkup
 from utils import refreshNewswire
 from utils import isImageFile
+from utils import hasGroupType
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
+from content import getPriceFromString
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
 from content import extractTextFieldsInPOST
-from media import processMetaData
 from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
+from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
 from theme import importTheme
 from theme import exportTheme
@@ -402,6 +427,7 @@ class PubServer(BaseHTTPRequestHandler):
         eventDate = None
         eventTime = None
         location = None
+        conversationId = None
         city = getSpoofedCity(self.server.city,
                               self.server.baseDir,
                               nickname, self.server.domain)
@@ -421,7 +447,10 @@ class PubServer(BaseHTTPRequestHandler):
                              schedulePost,
                              eventDate,
                              eventTime,
-                             location, False)
+                             location, False,
+                             self.server.systemLanguage,
+                             conversationId,
+                             self.server.lowBandwidth)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -508,6 +537,16 @@ class PubServer(BaseHTTPRequestHandler):
             if blockedUA:
                 print('Blocked User agent: ' + agentDomain)
         return blockedUA
+
+    def _requestCSV(self) -> bool:
+        """Should a csv response be given?
+        """
+        if not self.headers.get('Accept'):
+            return False
+        acceptStr = self.headers['Accept']
+        if 'text/csv' in acceptStr:
+            return True
+        return False
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
@@ -648,11 +687,15 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
-                          callingDomain: str) -> None:
+                          callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         if length > -1:
             self.send_header('Content-Length', str(length))
+        self.send_header('Host', callingDomain)
+        if permissive:
+            self.send_header('Access-Control-Allow-Origin', '*')
+            return
         if cookie:
             cookieStr = cookie
             if 'HttpOnly;' not in cookieStr:
@@ -660,28 +703,32 @@ class PubServer(BaseHTTPRequestHandler):
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
             self.send_header('Cookie', cookieStr)
-        self.send_header('Host', callingDomain)
+        self.send_header('Origin', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         self.send_header('Cache-Control', 'max-age=0')
         self.send_header('Cache-Control', 'public')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
-                     callingDomain: str) -> None:
-        self._set_headers_base(fileFormat, length, cookie, callingDomain)
+                     callingDomain: str, permissive: bool) -> None:
+        self._set_headers_base(fileFormat, length, cookie, callingDomain,
+                               permissive)
         self.end_headers()
 
     def _set_headers_head(self, fileFormat: str, length: int, etag: str,
-                          callingDomain: str) -> None:
-        self._set_headers_base(fileFormat, length, None, callingDomain)
+                          callingDomain: str, permissive: bool) -> None:
+        self._set_headers_base(fileFormat, length, None, callingDomain,
+                               permissive)
         if etag:
-            self.send_header('ETag', etag)
+            self.send_header('ETag', '"' + etag + '"')
         self.end_headers()
 
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
-                          data, cookie: str, callingDomain: str) -> None:
+                          data, cookie: str, callingDomain: str,
+                          permissive: bool, lastModified: str) -> None:
         datalen = len(data)
-        self._set_headers_base(fileFormat, datalen, cookie, callingDomain)
+        self._set_headers_base(fileFormat, datalen, cookie, callingDomain,
+                               permissive)
         # self.send_header('Cache-Control', 'public, max-age=86400')
         etag = None
         if os.path.isfile(mediaFilename + '.etag'):
@@ -691,14 +738,16 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
         if not etag:
-            etag = sha1(data).hexdigest()  # nosec
+            etag = md5(data).hexdigest()  # nosec
             try:
                 with open(mediaFilename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
             except BaseException:
                 pass
         if etag:
-            self.send_header('ETag', etag)
+            self.send_header('ETag', '"' + etag + '"')
+        if lastModified:
+            self.send_header('last-modified', lastModified)
         self.end_headers()
 
     def _etag_exists(self, mediaFilename: str) -> bool:
@@ -711,7 +760,7 @@ class PubServer(BaseHTTPRequestHandler):
                 etagHeader = 'If-none-match'
 
         if self.headers.get(etagHeader):
-            oldEtag = self.headers['If-None-Match']
+            oldEtag = self.headers[etagHeader].replace('"', '')
             if os.path.isfile(mediaFilename + '.etag'):
                 # load the etag from file
                 currEtag = ''
@@ -720,7 +769,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currEtag = etagFile.read()
                 except BaseException:
                     pass
-                if oldEtag == currEtag:
+                if currEtag and oldEtag == currEtag:
                     # The file has not changed
                     return True
         return False
@@ -848,7 +897,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/plain; charset=utf-8', msglen,
-                          None, self.server.domainFull)
+                          None, self.server.domainFull, True)
         self._write(msg)
         return True
 
@@ -909,13 +958,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                 else:
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, True)
             self._write(msg)
             if sendJsonStr:
                 print(sendJsonStr)
@@ -978,13 +1027,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                 else:
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, True)
             self._write(msg)
             print('nodeinfo sent')
             return True
@@ -1016,12 +1065,20 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = wfResult.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/xrd+xml', msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, True)
                 self._write(msg)
                 return True
             self._404()
             return True
-        if self.path.startswith('/.well-known/nodeinfo'):
+        if self.path.startswith('/api/statusnet') or \
+           self.path.startswith('/api/gnusocial') or \
+           self.path.startswith('/siteinfo') or \
+           self.path.startswith('/poco') or \
+           self.path.startswith('/friendi'):
+            self._404()
+            return True
+        if self.path.startswith('/.well-known/nodeinfo') or \
+           self.path.startswith('/.well-known/x-nodeinfo'):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 wfResult = \
@@ -1040,13 +1097,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._hasAccept(callingDomain):
                     if 'application/ld+json' in self.headers['Accept']:
                         self._set_headers('application/ld+json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, True)
                     else:
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, True)
                 else:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                 self._write(msg)
                 return True
             self._404()
@@ -1063,7 +1120,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = json.dumps(wfResult).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/jrd+json', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
         else:
             if self.server.debug:
@@ -1109,7 +1166,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.YTReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.allowLocalNetworkAccess,
-                                   city)
+                                   city, self.server.systemLanguage,
+                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.sharedItemFederationTokens,
+                                   self.server.lowBandwidth)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -1267,6 +1327,8 @@ class PubServer(BaseHTTPRequestHandler):
         headersDict['signature'] = self.headers['signature']
         if self.headers.get('Date'):
             headersDict['Date'] = self.headers['Date']
+        elif self.headers.get('date'):
+            headersDict['Date'] = self.headers['date']
         if self.headers.get('digest'):
             headersDict['digest'] = self.headers['digest']
         if self.headers.get('Collection-Synchronization'):
@@ -1307,7 +1369,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  headersDict,
                                  self.path,
                                  self.server.debug,
-                                 self.server.blockedCache)
+                                 self.server.blockedCache,
+                                 self.server.systemLanguage)
         if queueFilename:
             # add json to the queue
             if queueFilename not in self.server.inboxQueue:
@@ -1484,6 +1547,22 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self.server.lastLoginTime = int(time.time())
             if register:
+                if not validPassword(loginPassword):
+                    self.server.POSTbusy = False
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        self._redirect_headers('http://' + onionDomain +
+                                               '/login', cookie,
+                                               callingDomain)
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        self._redirect_headers('http://' + i2pDomain +
+                                               '/login', cookie,
+                                               callingDomain)
+                    else:
+                        self._redirect_headers(httpPrefix + '://' +
+                                               domainFull + '/login',
+                                               cookie, callingDomain)
+                    return
+
                 if not registerAccount(baseDir, httpPrefix, domain, port,
                                        loginNickname, loginPassword,
                                        self.server.manualFollowerApproval):
@@ -1695,7 +1774,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain,
                                             self.server.port,
                                             searchHandle,
-                                            self.server.debug)
+                                            self.server.debug,
+                                            self.server.systemLanguage)
                     else:
                         msg = \
                             htmlModerationInfo(self.server.cssCache,
@@ -2226,12 +2306,15 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, block button
         # See htmlPersonOptions
         if '&submitBlock=' in optionsConfirmParams:
-            if debug:
-                print('Adding block by ' + chooserNickname +
-                      ' of ' + optionsActor)
-            addBlock(baseDir, chooserNickname,
-                     domain,
-                     optionsNickname, optionsDomainFull)
+            print('Adding block by ' + chooserNickname +
+                  ' of ' + optionsActor)
+            if addBlock(baseDir, chooserNickname,
+                        domain,
+                        optionsNickname, optionsDomainFull):
+                # send block activity
+                self._sendBlock(httpPrefix,
+                                chooserNickname, domainFull,
+                                optionsNickname, optionsDomainFull)
 
         # person options screen, unblock button
         # See htmlPersonOptions
@@ -2247,7 +2330,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2266,7 +2349,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2284,7 +2367,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2305,7 +2388,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
             customSubmitText = getConfigParam(baseDir, 'customSubmitText')
-
+            conversationId = None
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2320,10 +2403,11 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.newswire,
                               self.server.themeName,
                               True, accessKeys,
-                              customSubmitText).encode('utf-8')
+                              customSubmitText,
+                              conversationId).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2343,10 +2427,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     domain,
                                     self.server.port,
                                     optionsActor,
-                                    self.server.debug).encode('utf-8')
+                                    self.server.debug,
+                                    self.server.systemLanguage).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self.server.POSTbusy = False
                 return
@@ -2417,7 +2502,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
             customSubmitText = getConfigParam(baseDir, 'customSubmitText')
-
+            conversationId = None
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               baseDir,
@@ -2431,10 +2516,11 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.newswire,
                               self.server.themeName,
                               True, accessKeys,
-                              customSubmitText).encode('utf-8')
+                              customSubmitText,
+                              conversationId).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2502,8 +2588,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print(followerNickname + ' stops following ' +
                           followingActor)
                 followActor = \
-                    httpPrefix + '://' + domainFull + \
-                    '/users/' + followerNickname
+                    localActorUrl(httpPrefix, followerNickname, domainFull)
                 statusNumber, published = getStatusNumber()
                 followId = followActor + '/statuses/' + str(statusNumber)
                 unfollowJson = {
@@ -2520,9 +2605,13 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
+                groupAccount = hasGroupType(self.server.baseDir,
+                                            followingActor,
+                                            self.server.personCache)
                 unfollowAccount(self.server.baseDir, self.postToNickname,
                                 self.server.domain,
-                                followingNickname, followingDomainFull)
+                                followingNickname, followingDomainFull,
+                                self.server.debug, groupAccount)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onionDomain:
@@ -2690,13 +2779,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     print('You cannot block yourself!')
             else:
-                if debug:
-                    print('Adding block by ' + blockerNickname +
-                          ' of ' + blockingActor)
-                addBlock(baseDir, blockerNickname,
-                         domain,
-                         blockingNickname,
-                         blockingDomainFull)
+                print('Adding block by ' + blockerNickname +
+                      ' of ' + blockingActor)
+                if addBlock(baseDir, blockerNickname,
+                            domain,
+                            blockingNickname,
+                            blockingDomainFull):
+                    # send block activity
+                    self._sendBlock(httpPrefix,
+                                    blockerNickname, domainFull,
+                                    blockingNickname, blockingDomainFull)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
@@ -2866,7 +2958,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
-                                      self.server.themeName)
+                                      self.server.themeName,
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
@@ -2895,10 +2989,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-            elif searchStr.startswith('!'):
+            elif searchStr.startswith("'"):
                 # your post history search
                 nickname = getNicknameFromActor(actorStr)
-                searchStr = searchStr.replace('!', '', 1).strip()
+                searchStr = searchStr.replace("'", '', 1).strip()
                 historyStr = \
                     htmlHistorySearch(self.server.cssCache,
                                       self.server.translate,
@@ -2920,7 +3014,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
-                                      self.server.themeName, 'outbox')
+                                      self.server.themeName, 'outbox',
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
@@ -2954,7 +3050,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
-                                      self.server.themeName, 'bookmarks')
+                                      self.server.themeName, 'bookmarks',
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount)
                 if bookmarksStr:
                     msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
@@ -2994,10 +3092,11 @@ class PubServer(BaseHTTPRequestHandler):
                         searchNickname = getNicknameFromActor(searchStr)
                         searchDomain, searchPort = \
                             getDomainFromActor(searchStr)
+                        searchDomainFull = \
+                            getFullDomain(searchDomain, searchPort)
                         actor = \
-                            httpPrefix + '://' + \
-                            getFullDomain(searchDomain, searchPort) + \
-                            '/users/' + searchNickname
+                            localActorUrl(httpPrefix, searchNickname,
+                                          searchDomainFull)
                     else:
                         actor = searchStr
                     avatarUrl = \
@@ -3048,7 +3147,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.peertubeInstances,
                                                allowLocalNetworkAccess,
                                                self.server.themeName,
-                                               accessKeys)
+                                               accessKeys,
+                                               self.server.systemLanguage,
+                                               self.server.maxLikeCount)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -3084,8 +3185,33 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
+            elif searchStr.startswith('.'):
+                # wanted items search
+                sharedItemsFederatedDomains = \
+                    self.server.sharedItemsFederatedDomains
+                wantedItemsStr = \
+                    htmlSearchSharedItems(self.server.cssCache,
+                                          self.server.translate,
+                                          baseDir,
+                                          searchStr[1:], pageNumber,
+                                          maxPostsInFeed,
+                                          httpPrefix,
+                                          domainFull,
+                                          actorStr, callingDomain,
+                                          sharedItemsFederatedDomains,
+                                          'wanted')
+                if wantedItemsStr:
+                    msg = wantedItemsStr.encode('utf-8')
+                    msglen = len(msg)
+                    self._login_headers('text/html',
+                                        msglen, callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
             else:
                 # shared items search
+                sharedItemsFederatedDomains = \
+                    self.server.sharedItemsFederatedDomains
                 sharedItemsStr = \
                     htmlSearchSharedItems(self.server.cssCache,
                                           self.server.translate,
@@ -3094,7 +3220,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInFeed,
                                           httpPrefix,
                                           domainFull,
-                                          actorStr, callingDomain)
+                                          actorStr, callingDomain,
+                                          sharedItemsFederatedDomains,
+                                          'shares')
                 if sharedItemsStr:
                     msg = sharedItemsStr.encode('utf-8')
                     msglen = len(msg)
@@ -3289,7 +3417,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        if '&submitYes=' in removeShareConfirmParams:
+        if '&submitYes=' in removeShareConfirmParams and authorized:
             removeShareConfirmParams = \
                 removeShareConfirmParams.replace('+', ' ').strip()
             removeShareConfirmParams = \
@@ -3297,20 +3425,95 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            shareName = removeShareConfirmParams.split('shareName=')[1]
-            if '&' in shareName:
-                shareName = shareName.split('&')[0]
-            shareNickname = getNicknameFromActor(shareActor)
-            if shareNickname:
-                shareDomain, sharePort = getDomainFromActor(shareActor)
-                removeShare(baseDir,
-                            shareNickname, shareDomain, shareName)
+            adminNickname = getConfigParam(baseDir, 'admin')
+            adminActor = \
+                httpPrefix + '://' + domainFull + '/users' + adminNickname
+            actor = originPathStr
+            actorNickname = getNicknameFromActor(actor)
+            if actor == shareActor or actor == adminActor or \
+               isModerator(baseDir, actorNickname):
+                itemID = removeShareConfirmParams.split('itemID=')[1]
+                if '&' in itemID:
+                    itemID = itemID.split('&')[0]
+                shareNickname = getNicknameFromActor(shareActor)
+                if shareNickname:
+                    shareDomain, sharePort = getDomainFromActor(shareActor)
+                    removeSharedItem(baseDir,
+                                     shareNickname, shareDomain, itemID,
+                                     httpPrefix, domainFull, 'shares')
 
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
             originPathStr = 'http://' + i2pDomain + usersPath
         self._redirect_headers(originPathStr + '/tlshares',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _removeWanted(self, callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str,
+                      onionDomain: str, i2pDomain: str,
+                      debug: bool) -> None:
+        """Removes a wanted item
+        """
+        usersPath = path.split('/rmwanted')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            removeShareConfirmParams = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST removeShareConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST removeShareConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST removeShareConfirmParams rfile.read failed, ' +
+                  str(e))
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in removeShareConfirmParams and authorized:
+            removeShareConfirmParams = \
+                removeShareConfirmParams.replace('+', ' ').strip()
+            removeShareConfirmParams = \
+                urllib.parse.unquote_plus(removeShareConfirmParams)
+            shareActor = removeShareConfirmParams.split('actor=')[1]
+            if '&' in shareActor:
+                shareActor = shareActor.split('&')[0]
+            adminNickname = getConfigParam(baseDir, 'admin')
+            adminActor = \
+                httpPrefix + '://' + domainFull + '/users' + adminNickname
+            actor = originPathStr
+            actorNickname = getNicknameFromActor(actor)
+            if actor == shareActor or actor == adminActor or \
+               isModerator(baseDir, actorNickname):
+                itemID = removeShareConfirmParams.split('itemID=')[1]
+                if '&' in itemID:
+                    itemID = itemID.split('&')[0]
+                shareNickname = getNicknameFromActor(shareActor)
+                if shareNickname:
+                    shareDomain, sharePort = getDomainFromActor(shareActor)
+                    removeSharedItem(baseDir,
+                                     shareNickname, shareDomain, itemID,
+                                     httpPrefix, domainFull, 'wanted')
+
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr + '/tlwanted',
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -3606,7 +3809,7 @@ class PubServer(BaseHTTPRequestHandler):
                 categoryStr = fields['hashtagCategory'].lower()
                 if not isBlockedHashtag(baseDir, categoryStr) and \
                    not isFiltered(baseDir, nickname, domain, categoryStr):
-                    setHashtagCategory(baseDir, hashtag, categoryStr)
+                    setHashtagCategory(baseDir, hashtag, categoryStr, False)
             else:
                 categoryFilename = baseDir + '/tags/' + hashtag + '.category'
                 if os.path.isfile(categoryFilename):
@@ -3905,6 +4108,8 @@ class PubServer(BaseHTTPRequestHandler):
                         newsPostTitle
                     postJsonObject['object']['content'] = \
                         newsPostContent
+                    contentMap = postJsonObject['object']['contentMap']
+                    contentMap[self.server.systemLanguage] = newsPostContent
                     # update newswire
                     pubDate = postJsonObject['object']['published']
                     publishedDate = \
@@ -4085,6 +4290,8 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       baseDir, nickname, domain)
 
+                if self.server.lowBandwidth:
+                    convertImageToLowBandwidth(filename)
                 processMetaData(baseDir, nickname, domain,
                                 filename, postImageFilename, city)
                 if os.path.isfile(postImageFilename):
@@ -4214,24 +4421,26 @@ class PubServer(BaseHTTPRequestHandler):
                         setActorSkillLevel(actorJson,
                                            skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
+                        skillsStr = skillsStr.lower()
                         setHashtagCategory(baseDir, skillName,
-                                           skillsStr.lower())
+                                           skillsStr, False)
                         skillCtr += 1
                     if noOfActorSkills(actorJson) != \
                        actorSkillsCtr:
                         actorChanged = True
 
                     # change password
-                    if fields.get('password'):
-                        if fields.get('passwordconfirm'):
-                            if actorJson['password'] == \
-                               fields['passwordconfirm']:
-                                if len(actorJson['password']) > 2:
-                                    # set password
-                                    pwd = actorJson['password']
-                                    storeBasicCredentials(baseDir,
-                                                          nickname,
-                                                          pwd)
+                    if fields.get('password') and \
+                       fields.get('passwordconfirm'):
+                        fields['password'] = \
+                            removeLineEndings(fields['password'])
+                        fields['passwordconfirm'] = \
+                            removeLineEndings(fields['passwordconfirm'])
+                        if validPassword(fields['password']) and \
+                           fields['password'] == fields['passwordconfirm']:
+                            # set password
+                            storeBasicCredentials(baseDir, nickname,
+                                                  fields['password'])
 
                     # change city
                     if fields.get('cityDropdown'):
@@ -4417,7 +4626,41 @@ class PubServer(BaseHTTPRequestHandler):
                                 setConfigParam(baseDir,
                                                'customSubmitText', '')
 
-                        # change instance description
+                        # libretranslate URL
+                        currLibretranslateUrl = \
+                            getConfigParam(baseDir,
+                                           'libretranslateUrl')
+                        if fields.get('libretranslateUrl'):
+                            if fields['libretranslateUrl'] != \
+                               currLibretranslateUrl:
+                                ltUrl = fields['libretranslateUrl']
+                                if '://' in ltUrl and \
+                                   '.' in ltUrl:
+                                    setConfigParam(baseDir,
+                                                   'libretranslateUrl',
+                                                   ltUrl)
+                        else:
+                            if currLibretranslateUrl:
+                                setConfigParam(baseDir,
+                                               'libretranslateUrl', '')
+
+                        # libretranslate API Key
+                        currLibretranslateApiKey = \
+                            getConfigParam(baseDir,
+                                           'libretranslateApiKey')
+                        if fields.get('libretranslateApiKey'):
+                            if fields['libretranslateApiKey'] != \
+                               currLibretranslateApiKey:
+                                ltApiKey = fields['libretranslateApiKey']
+                                setConfigParam(baseDir,
+                                               'libretranslateApiKey',
+                                               ltApiKey)
+                        else:
+                            if currLibretranslateApiKey:
+                                setConfigParam(baseDir,
+                                               'libretranslateApiKey', '')
+
+                        # change instance short description
                         currInstanceDescriptionShort = \
                             getConfigParam(baseDir,
                                            'instanceDescriptionShort')
@@ -4432,6 +4675,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if currInstanceDescriptionShort:
                                 setConfigParam(baseDir,
                                                'instanceDescriptionShort', '')
+
+                        # change instance description
                         currInstanceDescription = \
                             getConfigParam(baseDir, 'instanceDescription')
                         if fields.get('instanceDescription'):
@@ -4502,6 +4747,18 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if currentBlogAddress:
                             setBlogAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change Languages address
+                    currentShowLanguages = getActorLanguages(actorJson)
+                    if fields.get('showLanguages'):
+                        if fields['showLanguages'] != currentShowLanguages:
+                            setActorLanguages(baseDir, actorJson,
+                                              fields['showLanguages'])
+                            actorChanged = True
+                    else:
+                        if currentShowLanguages:
+                            setActorLanguages(baseDir, actorJson, '')
                             actorChanged = True
 
                     # change tox address
@@ -4586,6 +4843,20 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if currentDonateUrl:
                             setDonationUrl(actorJson, '')
+                            actorChanged = True
+
+                    # change website
+                    currentWebsite = \
+                        getWebsite(actorJson, self.server.translate)
+                    if fields.get('websiteUrl'):
+                        if fields['websiteUrl'] != currentWebsite:
+                            setWebsite(actorJson,
+                                       fields['websiteUrl'],
+                                       self.server.translate)
+                            actorChanged = True
+                    else:
+                        if currentWebsite:
+                            setWebsite(actorJson, '', self.server.translate)
                             actorChanged = True
 
                     # account moved to new address
@@ -4722,6 +4993,51 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.domainFull,
                                              brochMode)
                                 setConfigParam(baseDir, "brochMode", brochMode)
+
+                            # shared item federation domains
+                            siDomainUpdated = False
+                            sharedItemsFederatedDomainsStr = \
+                                getConfigParam(baseDir,
+                                               "sharedItemsFederatedDomains")
+                            if not sharedItemsFederatedDomainsStr:
+                                sharedItemsFederatedDomainsStr = ''
+                            sharedItemsFormStr = ''
+                            if fields.get('shareDomainList'):
+                                sharedItemsList = \
+                                    sharedItemsFederatedDomainsStr.split(',')
+                                for sharedFederatedDomain in sharedItemsList:
+                                    sharedItemsFormStr += \
+                                        sharedFederatedDomain.strip() + '\n'
+
+                                shareDomainList = fields['shareDomainList']
+                                if shareDomainList != \
+                                   sharedItemsFormStr:
+                                    sharedItemsFormStr2 = \
+                                        shareDomainList.replace('\n', ',')
+                                    sharedItemsField = \
+                                        "sharedItemsFederatedDomains"
+                                    setConfigParam(baseDir, sharedItemsField,
+                                                   sharedItemsFormStr2)
+                                    siDomainUpdated = True
+                            else:
+                                if sharedItemsFederatedDomainsStr:
+                                    sharedItemsField = \
+                                        "sharedItemsFederatedDomains"
+                                    setConfigParam(baseDir, sharedItemsField,
+                                                   '')
+                                    siDomainUpdated = True
+                            if siDomainUpdated:
+                                siDomains = sharedItemsFormStr.split('\n')
+                                siTokens = \
+                                    self.server.sharedItemFederationTokens
+                                self.server.sharedItemsFederatedDomains = \
+                                    siDomains
+                                domainFull = self.server.domainFull
+                                self.server.sharedItemFederationTokens = \
+                                    mergeSharedItemTokens(self.server.baseDir,
+                                                          domainFull,
+                                                          siDomains,
+                                                          siTokens)
 
                         # change moderators list
                         if fields.get('moderators'):
@@ -5092,8 +5408,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('isGroup'):
                             if fields['isGroup'] == 'on':
                                 if actorJson['type'] != 'Group':
-                                    actorJson['type'] = 'Group'
-                                    actorChanged = True
+                                    # only allow admin to create groups
+                                    if path.startswith('/users/' +
+                                                       adminNickname + '/'):
+                                        actorJson['type'] = 'Group'
+                                        actorChanged = True
                         else:
                             # this account is a person (default)
                             if actorJson['type'] != 'Person':
@@ -5111,6 +5430,20 @@ class PubServer(BaseHTTPRequestHandler):
                             enableGrayscale(baseDir)
                         else:
                             disableGrayscale(baseDir)
+
+                    # low bandwidth images checkbox
+                    if path.startswith('/users/' + adminNickname + '/') or \
+                       isArtist(baseDir, nickname):
+                        currLowBandwidth = \
+                            getConfigParam(baseDir, 'lowBandwidth')
+                        lowBandwidth = False
+                        if fields.get('lowBandwidth'):
+                            if fields['lowBandwidth'] == 'on':
+                                lowBandwidth = True
+                        if currLowBandwidth != lowBandwidth:
+                            setConfigParam(baseDir, 'lowBandwidth',
+                                           lowBandwidth)
+                            self.server.lowBandwidth = lowBandwidth
 
                     # save filtered words list
                     filterFilename = \
@@ -5411,7 +5744,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
         if self.server.debug:
             print('Sent manifest: ' + callingDomain)
@@ -5460,7 +5793,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(faviconFilename,
                                    favType,
                                    favBinary, None,
-                                   self.server.domainFull)
+                                   self.server.domainFull,
+                                   False, None)
             self._write(favBinary)
             if debug:
                 print('Sent favicon from cache: ' + callingDomain)
@@ -5472,7 +5806,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(faviconFilename,
                                            favType,
                                            favBinary, None,
-                                           self.server.domainFull)
+                                           self.server.domainFull,
+                                           False, None)
                     self._write(favBinary)
                     self.server.iconsCache[favFilename] = favBinary
                     if self.server.debug:
@@ -5501,7 +5836,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
 
     def _getExportedTheme(self, callingDomain: str, path: str,
@@ -5517,7 +5852,7 @@ class PubServer(BaseHTTPRequestHandler):
                 exportType = 'application/zip'
                 self._set_headers_etag(filename, exportType,
                                        exportBinary, None,
-                                       domainFull)
+                                       domainFull, False, None)
                 self._write(exportBinary)
         self._404()
 
@@ -5550,7 +5885,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(fontFilename,
                                        fontType,
                                        fontBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull, False, None)
                 self._write(fontBinary)
                 if debug:
                     print('font sent from cache: ' +
@@ -5566,7 +5901,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(fontFilename,
                                                fontType,
                                                fontBinary, None,
-                                               self.server.domainFull)
+                                               self.server.domainFull,
+                                               False, None)
                         self._write(fontBinary)
                         self.server.fontsCache[fontStr] = fontBinary
                     if debug:
@@ -5614,12 +5950,13 @@ class PubServer(BaseHTTPRequestHandler):
                                      domain,
                                      port,
                                      maxPostsInRSSFeed, 1,
-                                     True)
+                                     True,
+                                     self.server.systemLanguage)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/xml', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, True)
                     self._write(msg)
                     if debug:
                         print('Sent rss2 feed: ' +
@@ -5669,7 +6006,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      domain,
                                      port,
                                      maxPostsInRSSFeed, 1,
-                                     False)
+                                     False,
+                                     self.server.systemLanguage)
             break
         if msg:
             msg = rss2Header(httpPrefix,
@@ -5679,7 +6017,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 feed: ' +
@@ -5719,7 +6057,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 newswire feed: ' +
@@ -5755,7 +6093,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain)
+                              None, callingDomain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 categories feed: ' +
@@ -5771,7 +6109,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, port: int, proxyType: str,
                      GETstartTime, GETtimings: {},
-                     debug: bool) -> None:
+                     debug: bool, systemLanguage: str) -> None:
         """Returns an RSS3 feed
         """
         nickname = path.split('/blog/')[1]
@@ -5795,12 +6133,13 @@ class PubServer(BaseHTTPRequestHandler):
                                      baseDir, httpPrefix,
                                      self.server.translate,
                                      nickname, domain, port,
-                                     maxPostsInRSSFeed, 1)
+                                     maxPostsInRSSFeed, 1,
+                                     systemLanguage)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/plain; charset=utf-8',
-                                      msglen, None, callingDomain)
+                                      msglen, None, callingDomain, True)
                     self._write(msg)
                     if self.server.debug:
                         print('Sent rss3 feed: ' +
@@ -5846,6 +6185,7 @@ class PubServer(BaseHTTPRequestHandler):
             if len(optionsList) > 3:
                 optionsLink = optionsList[3]
             donateUrl = None
+            websiteUrl = None
             PGPpubKey = None
             PGPfingerprint = None
             xmppAddress = None
@@ -5869,6 +6209,7 @@ class PubServer(BaseHTTPRequestHandler):
                     movedTo = actorJson['movedTo']
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
+                websiteUrl = getWebsite(actorJson, self.server.translate)
                 xmppAddress = getXmppAddress(actorJson)
                 matrixAddress = getMatrixAddress(actorJson)
                 ssbAddress = getSSBAddress(actorJson)
@@ -5907,7 +6248,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsActor,
                                     optionsProfileUrl,
                                     optionsLink,
-                                    pageNumber, donateUrl,
+                                    pageNumber, donateUrl, websiteUrl,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
                                     toxAddress, briarAddress,
@@ -5924,7 +6265,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'registered devices done',
@@ -5966,11 +6307,17 @@ class PubServer(BaseHTTPRequestHandler):
 
                 mediaFileType = mediaFileMimeType(mediaFilename)
 
+                t = os.path.getmtime(mediaFilename)
+                lastModifiedTime = datetime.datetime.fromtimestamp(t)
+                lastModifiedTimeStr = \
+                    lastModifiedTime.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self._set_headers_etag(mediaFilename, mediaFileType,
                                            mediaBinary, None,
-                                           self.server.domainFull)
+                                           callingDomain, True,
+                                           lastModifiedTimeStr)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show emoji done',
@@ -5998,7 +6345,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(emojiFilename,
                                            mediaImageType,
                                            mediaBinary, None,
-                                           self.server.domainFull)
+                                           self.server.domainFull,
+                                           False, None)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'background shown done',
@@ -6034,7 +6382,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeTypeStr,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull,
+                                       False, None)
                 self._write(mediaBinary)
                 return
             else:
@@ -6045,7 +6394,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(mediaFilename,
                                                mimeType,
                                                mediaBinary, None,
-                                               self.server.domainFull)
+                                               self.server.domainFull,
+                                               False, None)
                         self._write(mediaBinary)
                         self.server.iconsCache[mediaStr] = mediaBinary
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -6088,7 +6438,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull,
+                                       False, None)
                 self._write(mediaBinary)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'show files done',
@@ -6113,7 +6464,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull,
+                                       False, None)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'icon shown done',
@@ -6172,12 +6524,14 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
                               self.server.allowLocalNetworkAccess,
-                              self.server.themeName)
+                              self.server.themeName,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
         else:
             originPathStr = path.split('/tags/')[0]
@@ -6227,12 +6581,13 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.personCache,
                              httpPrefix,
                              self.server.projectVersion,
-                             self.server.YTReplacementDomain)
+                             self.server.YTReplacementDomain,
+                             self.server.systemLanguage)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
         else:
             originPathStr = path.split('/tags/rss2/')[0]
@@ -6308,8 +6663,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self.server.actorRepeat = path.split('?actor=')[1]
         announceToStr = \
-            httpPrefix + '://' + domainFull + '/users/' + \
-            self.postToNickname + '/followers'
+            localActorUrl(httpPrefix, self.postToNickname, domainFull) + \
+            '/followers'
         if not repeatPrivate:
             announceToStr = 'https://www.w3.org/ns/activitystreams#Public'
         announceJson = \
@@ -6714,8 +7069,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         likeActor = \
-            httpPrefix + '://' + \
-            domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -6813,7 +7167,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         undoActor = \
-            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -6911,7 +7265,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         bookmarkActor = \
-            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         ccList = []
         bookmark(self.server.recentPostsCache,
                  self.server.session,
@@ -6997,7 +7351,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
         undoActor = \
-            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
         ccList = []
         undoBookmark(self.server.recentPostsCache,
                      self.server.session,
@@ -7112,11 +7466,13 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.showPublishedDateOnly,
                                   self.server.peertubeInstances,
                                   self.server.allowLocalNetworkAccess,
-                                  self.server.themeName)
+                                  self.server.themeName,
+                                  self.server.systemLanguage,
+                                  self.server.maxLikeCount)
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(deleteStr.encode('utf-8'))
                 self.server.GETbusy = False
                 return
@@ -7262,15 +7618,15 @@ class PubServer(BaseHTTPRequestHandler):
                 'https://www.w3.org/ns/activitystreams'
 
             firstStr = \
-                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                localActorUrl(httpPrefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies?page=true'
 
             idStr = \
-                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                localActorUrl(httpPrefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies'
 
             lastStr = \
-                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                localActorUrl(httpPrefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies?page=true'
 
             repliesJson = {
@@ -7320,11 +7676,13 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.showPublishedDateOnly,
                                     peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
-                                    self.server.themeName)
+                                    self.server.themeName,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 if self._fetchAuthenticated():
@@ -7333,7 +7691,7 @@ class PubServer(BaseHTTPRequestHandler):
                     protocolStr = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocolStr, msglen, None,
-                                      callingDomain)
+                                      callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -7345,13 +7703,12 @@ class PubServer(BaseHTTPRequestHandler):
             contextStr = 'https://www.w3.org/ns/activitystreams'
 
             idStr = \
-                httpPrefix + '://' + domainFull + \
-                '/users/' + nickname + '/statuses/' + \
-                statusNumber + '?page=true'
+                localActorUrl(httpPrefix, nickname, domainFull) + \
+                '/statuses/' + statusNumber + '?page=true'
 
             partOfStr = \
-                httpPrefix + '://' + domainFull + \
-                '/users/' + nickname + '/statuses/' + statusNumber
+                localActorUrl(httpPrefix, nickname, domainFull) + \
+                '/statuses/' + statusNumber
 
             repliesJson = {
                 '@context': contextStr,
@@ -7408,11 +7765,13 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.showPublishedDateOnly,
                                     peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
-                                    self.server.themeName)
+                                    self.server.themeName,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime,
                                           GETtimings,
@@ -7426,7 +7785,7 @@ class PubServer(BaseHTTPRequestHandler):
                     protocolStr = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocolStr, msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -7506,12 +7865,16 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
                                     self.server.debug,
-                                    accessKeys, city, rolesList,
+                                    accessKeys, city,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount,
+                                    self.server.sharedItemsFederatedDomains,
+                                    rolesList,
                                     None, None)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'post replies done',
@@ -7524,7 +7887,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -7581,6 +7944,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 city = getSpoofedCity(self.server.city,
                                                       baseDir,
                                                       nickname, domain)
+                                sharedItemsFederatedDomains = \
+                                    self.server.sharedItemsFederatedDomains
                                 msg = \
                                     htmlProfile(self.server.rssIconAtTop,
                                                 self.server.cssCache,
@@ -7604,12 +7969,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
-                                                accessKeys, city, skills,
+                                                accessKeys, city,
+                                                self.server.systemLanguage,
+                                                self.server.maxLikeCount,
+                                                sharedItemsFederatedDomains,
+                                                skills,
                                                 None, None)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
-                                                  cookie, callingDomain)
+                                                  cookie, callingDomain, False)
                                 self._write(msg)
                                 self._benchmarkGETtimings(GETstartTime,
                                                           GETtimings,
@@ -7626,7 +7995,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 msglen = len(msg)
                                 self._set_headers('application/json',
                                                   msglen, None,
-                                                  callingDomain)
+                                                  callingDomain, False)
                                 self._write(msg)
                             else:
                                 self._404()
@@ -7737,11 +8106,13 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.showPublishedDateOnly,
                                    self.server.peertubeInstances,
                                    self.server.allowLocalNetworkAccess,
-                                   self.server.themeName)
+                                   self.server.themeName,
+                                   self.server.systemLanguage,
+                                   self.server.maxLikeCount)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime,
                                       GETtimings,
@@ -7756,7 +8127,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -7914,6 +8285,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = htmlInbox(self.server.cssCache,
                                         defaultTimeline,
                                         recentPostsCache,
@@ -7946,7 +8319,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.peertubeInstances,
                                         self.server.allowLocalNetworkAccess,
                                         self.server.textModeBanner,
-                                        accessKeys)
+                                        accessKeys,
+                                        self.server.systemLanguage,
+                                        self.server.maxLikeCount,
+                                        sharedItemsFederatedDomains)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -7956,7 +8332,7 @@ class PubServer(BaseHTTPRequestHandler):
                             msg = msg.encode('utf-8')
                             msglen = len(msg)
                             self._set_headers('text/html', msglen,
-                                              cookie, callingDomain)
+                                              cookie, callingDomain, False)
                             self._write(msg)
 
                         if GETstartTime:
@@ -7970,7 +8346,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -8050,6 +8426,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -8082,11 +8460,14 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.peertubeInstances,
                                          self.server.allowLocalNetworkAccess,
                                          self.server.textModeBanner,
-                                         accessKeys)
+                                         accessKeys,
+                                         self.server.systemLanguage,
+                                         self.server.maxLikeCount,
+                                         sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show inbox done',
@@ -8099,7 +8480,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msglen = len(msg)
                         self._set_headers('application/json',
                                           msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -8179,6 +8560,8 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
 
+                    sharedItemsFederatedDomains = \
+                        self.server.sharedItemsFederatedDomains
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -8211,11 +8594,14 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.peertubeInstances,
                                          self.server.allowLocalNetworkAccess,
                                          self.server.textModeBanner,
-                                         accessKeys)
+                                         accessKeys,
+                                         self.server.systemLanguage,
+                                         self.server.maxLikeCount,
+                                         sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show dms done',
@@ -8228,7 +8614,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8341,11 +8727,14 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.peertubeInstances,
                                        self.server.allowLocalNetworkAccess,
                                        self.server.textModeBanner,
-                                       accessKeys)
+                                       accessKeys,
+                                       self.server.systemLanguage,
+                                       self.server.maxLikeCount,
+                                       self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show replies 2 done',
@@ -8358,7 +8747,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8471,11 +8860,14 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.peertubeInstances,
                                        self.server.allowLocalNetworkAccess,
                                        self.server.textModeBanner,
-                                       accessKeys)
+                                       accessKeys,
+                                       self.server.systemLanguage,
+                                       self.server.maxLikeCount,
+                                       self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show media 2 done',
@@ -8489,7 +8881,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8610,11 +9002,14 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allowLocalNetworkAccess,
                                       self.server.textModeBanner,
-                                      accessKeys)
+                                      accessKeys,
+                                      self.server.systemLanguage,
+                                      self.server.maxLikeCount,
+                                      self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -8628,7 +9023,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8712,6 +9107,8 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
 
+                    sharedItemsFederatedDomains = \
+                        self.server.sharedItemsFederatedDomains
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -8745,11 +9142,14 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.peertubeInstances,
                                           self.server.allowLocalNetworkAccess,
                                           self.server.textModeBanner,
-                                          accessKeys)
+                                          accessKeys,
+                                          self.server.systemLanguage,
+                                          self.server.maxLikeCount,
+                                          sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -8763,7 +9163,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 self.server.GETbusy = False
                 return True
@@ -8841,11 +9241,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.peertubeInstances,
                                    self.server.allowLocalNetworkAccess,
                                    self.server.textModeBanner,
-                                   accessKeys)
+                                   accessKeys,
+                                   self.server.systemLanguage,
+                                   self.server.maxLikeCount,
+                                   self.server.sharedItemsFederatedDomains)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
@@ -8855,6 +9258,87 @@ class PubServer(BaseHTTPRequestHandler):
         # not the shares timeline
         if debug:
             print('DEBUG: GET access to shares timeline is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
+    def _showWantedTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the wanted timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlwanted', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+
+                    accessKeys = self.server.accessKeys
+                    if self.server.keyShortcuts.get(nickname):
+                        accessKeys = \
+                            self.server.keyShortcuts[nickname]
+
+                    msg = \
+                        htmlWanted(self.server.cssCache,
+                                   self.server.defaultTimeline,
+                                   self.server.recentPostsCache,
+                                   self.server.maxRecentPosts,
+                                   self.server.translate,
+                                   pageNumber, maxPostsInFeed,
+                                   self.server.session,
+                                   baseDir,
+                                   self.server.cachedWebfingers,
+                                   self.server.personCache,
+                                   nickname,
+                                   domain,
+                                   port,
+                                   self.server.allowDeletion,
+                                   httpPrefix,
+                                   self.server.projectVersion,
+                                   self.server.YTReplacementDomain,
+                                   self.server.showPublishedDateOnly,
+                                   self.server.newswire,
+                                   self.server.positiveVoting,
+                                   self.server.showPublishAsIcon,
+                                   self.server.fullWidthTimelineButtonHeader,
+                                   self.server.iconsAsButtons,
+                                   self.server.rssIconAtTop,
+                                   self.server.publishButtonAtTop,
+                                   authorized, self.server.themeName,
+                                   self.server.peertubeInstances,
+                                   self.server.allowLocalNetworkAccess,
+                                   self.server.textModeBanner,
+                                   accessKeys,
+                                   self.server.systemLanguage,
+                                   self.server.maxLikeCount,
+                                   self.server.sharedItemsFederatedDomains)
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/html', msglen,
+                                      cookie, callingDomain, False)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show wanted 2')
+                    self.server.GETbusy = False
+                    return True
+        # not the shares timeline
+        if debug:
+            print('DEBUG: GET access to wanted timeline is unauthorized')
         self.send_response(405)
         self.end_headers()
         self.server.GETbusy = False
@@ -8921,6 +9405,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -8954,11 +9440,14 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.peertubeInstances,
                                           self.server.allowLocalNetworkAccess,
                                           self.server.textModeBanner,
-                                          accessKeys)
+                                          accessKeys,
+                                          self.server.systemLanguage,
+                                          self.server.maxLikeCount,
+                                          sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show shares 2 done',
@@ -8971,7 +9460,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -9003,41 +9492,44 @@ class PubServer(BaseHTTPRequestHandler):
         outboxFeed = \
             personBoxJson(self.server.recentPostsCache,
                           self.server.session,
-                          baseDir, domain,
-                          port, path,
-                          httpPrefix,
-                          maxPostsInFeed, 'outbox',
+                          baseDir, domain, port, path,
+                          httpPrefix, maxPostsInFeed, 'outbox',
                           authorized,
                           self.server.newswireVotesThreshold,
                           self.server.positiveVoting,
                           self.server.votingTimeMins)
         if outboxFeed:
-            if self._requestHTTP():
-                nickname = \
-                    path.replace('/users/', '').replace('/outbox', '')
+            nickname = \
+                path.replace('/users/', '').replace('/outbox', '')
+            pageNumber = 0
+            if '?page=' in nickname:
+                pageNumber = nickname.split('?page=')[1]
+                nickname = nickname.split('?page=')[0]
+                if pageNumber.isdigit():
+                    pageNumber = int(pageNumber)
+                else:
+                    pageNumber = 1
+            else:
+                if self._requestHTTP():
+                    pageNumber = 1
+            if authorized and pageNumber >= 1:
+                # if a page wasn't specified then show the first one
+                pageStr = '?page=' + str(pageNumber)
+                outboxFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir, domain, port,
+                                  path + pageStr,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'outbox',
+                                  authorized,
+                                  self.server.newswireVotesThreshold,
+                                  self.server.positiveVoting,
+                                  self.server.votingTimeMins)
+            else:
                 pageNumber = 1
-                if '?page=' in nickname:
-                    pageNumber = nickname.split('?page=')[1]
-                    nickname = nickname.split('?page=')[0]
-                    if pageNumber.isdigit():
-                        pageNumber = int(pageNumber)
-                    else:
-                        pageNumber = 1
-                if 'page=' not in path:
-                    # if a page wasn't specified then show the first one
-                    outboxFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      baseDir,
-                                      domain,
-                                      port,
-                                      path + '?page=1',
-                                      httpPrefix,
-                                      maxPostsInFeed, 'outbox',
-                                      authorized,
-                                      self.server.newswireVotesThreshold,
-                                      self.server.positiveVoting,
-                                      self.server.votingTimeMins)
+
+            if self._requestHTTP():
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
                 minimalNick = isMinimal(baseDir, domain, nickname)
@@ -9058,9 +9550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                baseDir,
                                self.server.cachedWebfingers,
                                self.server.personCache,
-                               nickname,
-                               domain,
-                               port,
+                               nickname, domain, port,
                                outboxFeed,
                                self.server.allowDeletion,
                                httpPrefix,
@@ -9080,11 +9570,14 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.peertubeInstances,
                                self.server.allowLocalNetworkAccess,
                                self.server.textModeBanner,
-                               accessKeys)
+                               accessKeys,
+                               self.server.systemLanguage,
+                               self.server.maxLikeCount,
+                               self.server.sharedItemsFederatedDomains)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show events done',
@@ -9096,7 +9589,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9163,6 +9656,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
+                        sharedItemsFederatedDomains = \
+                            self.server.sharedItemsFederatedDomains
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
@@ -9195,11 +9690,14 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.peertubeInstances,
                                            self.server.allowLocalNetworkAccess,
                                            self.server.textModeBanner,
-                                           accessKeys)
+                                           accessKeys,
+                                           self.server.systemLanguage,
+                                           self.server.maxLikeCount,
+                                           sharedItemsFederatedDomains)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show outbox done',
@@ -9212,7 +9710,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain)
+                                          None, callingDomain, False)
                         self._write(msg)
                     self.server.GETbusy = False
                     return True
@@ -9236,12 +9734,12 @@ class PubServer(BaseHTTPRequestHandler):
                         onionDomain: str, i2pDomain: str,
                         GETstartTime, GETtimings: {},
                         proxyType: str, cookie: str,
-                        debug: str) -> bool:
+                        debug: str, sharesFileType: str) -> bool:
         """Shows the shares feed
         """
         shares = \
             getSharesFeedForPerson(baseDir, domain, port, path,
-                                   httpPrefix, sharesPerPage)
+                                   httpPrefix, sharesFileType, sharesPerPage)
         if shares:
             if self._requestHTTP():
                 pageNumber = 1
@@ -9251,7 +9749,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shares = \
                         getSharesFeedForPerson(baseDir, domain, port,
                                                path + '?page=true',
-                                               httpPrefix,
+                                               httpPrefix, sharesFileType,
                                                sharesPerPage)
                 else:
                     pageNumberStr = path.split('?page=')[1]
@@ -9262,7 +9760,7 @@ class PubServer(BaseHTTPRequestHandler):
                     searchPath = path.split('?page=')[0]
                 getPerson = \
                     personLookup(domain,
-                                 searchPath.replace('/shares', ''),
+                                 searchPath.replace('/' + sharesFileType, ''),
                                  baseDir)
                 if getPerson:
                     if not self.server.session:
@@ -9297,7 +9795,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.projectVersion,
                                     baseDir, httpPrefix,
                                     authorized,
-                                    getPerson, 'shares',
+                                    getPerson, sharesFileType,
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
@@ -9311,12 +9809,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount,
+                                    self.server.sharedItemsFederatedDomains,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show moderation done',
@@ -9330,7 +9831,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9424,12 +9925,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount,
+                                    self.server.sharedItemsFederatedDomains,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
-                                      msglen, cookie, callingDomain)
+                                      msglen, cookie, callingDomain, False)
                     self._write(msg)
                     self.server.GETbusy = False
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -9442,7 +9946,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9537,12 +10041,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount,
+                                    self.server.sharedItemsFederatedDomains,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self.server.GETbusy = False
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -9555,7 +10062,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
                 else:
                     self._404()
@@ -9568,18 +10075,18 @@ class PubServer(BaseHTTPRequestHandler):
                                path: str,
                                httpPrefix: str,
                                nickname: str, domain: str,
-                               domainFull: str):
+                               domainFull: str, systemLanguage: str):
         """Returns the featured posts collections in
         actor/collections/featured
         """
         featuredCollection = \
             jsonPinPost(baseDir, httpPrefix,
-                        nickname, domain, domainFull)
+                        nickname, domain, domainFull, systemLanguage)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
 
     def _getFeaturedTagsCollection(self, callingDomain: str,
@@ -9607,7 +10114,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain)
+                          None, callingDomain, False)
         self._write(msg)
 
     def _showPersonProfile(self, authorized: bool,
@@ -9673,21 +10180,32 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.textModeBanner,
                             self.server.debug,
                             accessKeys, city,
+                            self.server.systemLanguage,
+                            self.server.maxLikeCount,
+                            self.server.sharedItemsFederatedDomains,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'show profile 4 done',
                                       'show profile posts')
         else:
             if self._fetchAuthenticated():
+                acceptStr = self.headers['Accept']
                 msgStr = json.dumps(actorJson, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/ld+json', msglen,
-                                  cookie, callingDomain)
+                if 'application/ld+json' in acceptStr:
+                    self._set_headers('application/ld+json', msglen,
+                                      cookie, callingDomain, False)
+                elif 'application/jrd+json' in acceptStr:
+                    self._set_headers('application/jrd+json', msglen,
+                                      cookie, callingDomain, False)
+                else:
+                    self._set_headers('application/activity+json', msglen,
+                                      cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -9738,12 +10256,14 @@ class PubServer(BaseHTTPRequestHandler):
                            nickname,
                            domain, port,
                            maxPostsInBlogsFeed, pageNumber,
-                           self.server.peertubeInstances)
+                           self.server.peertubeInstances,
+                           self.server.systemLanguage,
+                           self.server.personCache)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog view done', 'blog page')
@@ -9778,6 +10298,7 @@ class PubServer(BaseHTTPRequestHandler):
                        path.endswith('/followers') or \
                        path.endswith('/skills') or \
                        path.endswith('/roles') or \
+                       path.endswith('/wanted') or \
                        path.endswith('/shares'):
                         divertToLoginScreen = False
 
@@ -9833,7 +10354,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = css.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/css', msglen,
-                              None, callingDomain)
+                              None, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'show login screen done',
@@ -9872,7 +10393,8 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(qrFilename)
                 self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull,
+                                       False, None)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'login screen logo done',
@@ -9911,7 +10433,8 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull,
+                                       False, None)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -9952,7 +10475,8 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull)
+                                       self.server.domainFull,
+                                       False, None)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -9998,7 +10522,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers_etag(bgFilename,
                                                    'image/' + ext,
                                                    bgBinary, None,
-                                                   self.server.domainFull)
+                                                   self.server.domainFull,
+                                                   False, None)
                             self._write(bgBinary)
                             self._benchmarkGETtimings(GETstartTime,
                                                       GETtimings,
@@ -10019,8 +10544,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         mediaStr = path.split('/sharefiles/')[1]
-        mediaFilename = \
-            baseDir + '/sharefiles/' + mediaStr
+        mediaFilename = baseDir + '/sharefiles/' + mediaStr
         if not os.path.isfile(mediaFilename):
             self._404()
             return True
@@ -10036,7 +10560,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(mediaFilename,
                                    mediaFileType,
                                    mediaBinary, None,
-                                   self.server.domainFull)
+                                   self.server.domainFull,
+                                   False, None)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show media done',
@@ -10086,13 +10611,19 @@ class PubServer(BaseHTTPRequestHandler):
             # The file has not changed
             self._304()
             return True
+
+        t = os.path.getmtime(avatarFilename)
+        lastModifiedTime = datetime.datetime.fromtimestamp(t)
+        lastModifiedTimeStr = \
+            lastModifiedTime.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
         mediaImageType = getImageMimeType(avatarFile)
         with open(avatarFilename, 'rb') as avFile:
             mediaBinary = avFile.read()
-            self._set_headers_etag(avatarFilename,
-                                   mediaImageType,
+            self._set_headers_etag(avatarFilename, mediaImageType,
                                    mediaBinary, None,
-                                   self.server.domainFull)
+                                   callingDomain, True,
+                                   lastModifiedTimeStr)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'icon shown done',
@@ -10152,7 +10683,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
-                          cookie, callingDomain)
+                          cookie, callingDomain, False)
         self._write(msg)
         self.server.GETbusy = False
         return True
@@ -10164,7 +10695,7 @@ class PubServer(BaseHTTPRequestHandler):
                      shareDescription: str, replyPageNumber: int,
                      domain: str, domainFull: str,
                      GETstartTime, GETtimings: {}, cookie,
-                     noDropDown: bool) -> bool:
+                     noDropDown: bool, conversationId: str) -> bool:
         """Shows the new post screen
         """
         isNewPostEndpoint = False
@@ -10173,7 +10704,7 @@ class PubServer(BaseHTTPRequestHandler):
             newPostEnd = ('newpost', 'newblog', 'newunlisted',
                           'newfollowers', 'newdm', 'newreminder',
                           'newreport', 'newquestion',
-                          'newshare')
+                          'newshare', 'newwanted')
             for postType in newPostEnd:
                 if path.endswith('/' + postType):
                     isNewPostEndpoint = True
@@ -10202,7 +10733,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.newswire,
                               self.server.themeName,
                               noDropDown, accessKeys,
-                              customSubmitText).encode('utf-8')
+                              customSubmitText,
+                              conversationId).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -10210,7 +10742,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
             self._write(msg)
             self.server.GETbusy = False
             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -10255,7 +10787,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10289,7 +10821,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10324,7 +10856,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10348,18 +10880,19 @@ class PubServer(BaseHTTPRequestHandler):
             postId = path.split('/editnewspost=')[1]
             if '?' in postId:
                 postId = postId.split('?')[0]
-            postUrl = httpPrefix + '://' + domainFull + \
-                '/users/' + postActor + '/statuses/' + postId
+            postUrl = localActorUrl(httpPrefix, postActor, domainFull) + \
+                '/statuses/' + postId
             path = path.split('/editnewspost=')[0]
             msg = htmlEditNewsPost(self.server.cssCache,
                                    translate, baseDir,
                                    path, domain, port,
                                    httpPrefix,
-                                   postUrl).encode('utf-8')
+                                   postUrl,
+                                   self.server.systemLanguage).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -10387,8 +10920,34 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json',
-                          msglen, None, callingDomain)
+                          msglen, None, callingDomain, False)
         self._write(msg)
+
+    def _sendBlock(self, httpPrefix: str,
+                   blockerNickname: str, blockerDomainFull: str,
+                   blockingNickname: str, blockingDomainFull: str) -> bool:
+        if blockerDomainFull == blockingDomainFull:
+            if blockerNickname == blockingNickname:
+                # don't block self
+                return False
+        blockActor = \
+            localActorUrl(httpPrefix, blockerNickname, blockerDomainFull)
+        toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+        ccUrl = blockActor + '/followers'
+
+        blockedUrl = \
+            httpPrefix + '://' + blockingDomainFull + \
+            '/@' + blockingNickname
+        blockJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Block',
+            'actor': blockActor,
+            'object': blockedUrl,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        }
+        self._postToOutbox(blockJson, self.server.projectVersion)
+        return True
 
     def do_GET(self):
         callingDomain = self.server.domainFull
@@ -10506,7 +11065,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'get cookie')
 
-        # manifest for progressive web apps
         if '/manifest.json' in self.path:
             if self._hasAccept(callingDomain):
                 if not self._requestHTTP():
@@ -10541,6 +11099,191 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'isAuthorized')
+
+        # shared items catalog for this instance
+        # this is only accessible to instance members or to
+        # other instances which present an authorization token
+        if self.path.startswith('/catalog') or \
+           (self.path.startswith('/users/') and '/catalog' in self.path):
+            catalogAuthorized = authorized
+            if not catalogAuthorized:
+                if self.server.debug:
+                    print('Catalog access is not authorized. ' +
+                          'Checking Authorization header')
+                # Check the authorization token
+                if self.headers.get('Origin') and \
+                   self.headers.get('Authorization'):
+                    permittedDomains = \
+                        self.server.sharedItemsFederatedDomains
+                    sharedItemTokens = self.server.sharedItemFederationTokens
+                    if authorizeSharedItems(permittedDomains,
+                                            self.server.baseDir,
+                                            self.headers['Origin'],
+                                            callingDomain,
+                                            self.headers['Authorization'],
+                                            self.server.debug,
+                                            sharedItemTokens):
+                        catalogAuthorized = True
+                    elif self.server.debug:
+                        print('Authorization token refused for ' +
+                              'shared items federation')
+                elif self.server.debug:
+                    print('No Authorization header is available for ' +
+                          'shared items federation')
+            # show shared items catalog for federation
+            if self._hasAccept(callingDomain) and catalogAuthorized:
+                catalogType = 'json'
+                if self.path.endswith('.csv') or self._requestCSV():
+                    catalogType = 'csv'
+                elif self.path.endswith('.json') or not self._requestHTTP():
+                    catalogType = 'json'
+                if self.server.debug:
+                    print('Preparing DFC catalog in format ' + catalogType)
+
+                if catalogType == 'json':
+                    # catalog as a json
+                    if not self.path.startswith('/users/'):
+                        if self.server.debug:
+                            print('Catalog for the instance')
+                        catalogJson = \
+                            sharesCatalogEndpoint(self.server.baseDir,
+                                                  self.server.httpPrefix,
+                                                  self.server.domainFull,
+                                                  self.path, 'shares')
+                    else:
+                        domainFull = self.server.domainFull
+                        httpPrefix = self.server.httpPrefix
+                        nickname = self.path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.debug:
+                            print('Catalog for account: ' + nickname)
+                        catalogJson = \
+                            sharesCatalogAccountEndpoint(self.server.baseDir,
+                                                         httpPrefix,
+                                                         nickname,
+                                                         self.server.domain,
+                                                         domainFull,
+                                                         self.path,
+                                                         self.server.debug,
+                                                         'shares')
+                    msg = json.dumps(catalogJson,
+                                     ensure_ascii=False).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json',
+                                      msglen, None, callingDomain, False)
+                    self._write(msg)
+                    return
+                elif catalogType == 'csv':
+                    # catalog as a CSV file for import into a spreadsheet
+                    msg = \
+                        sharesCatalogCSVEndpoint(self.server.baseDir,
+                                                 self.server.httpPrefix,
+                                                 self.server.domainFull,
+                                                 self.path,
+                                                 'shares').encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/csv',
+                                      msglen, None, callingDomain, False)
+                    self._write(msg)
+                    return
+                self._404()
+                return
+            self._400()
+            return
+
+        # wanted items catalog for this instance
+        # this is only accessible to instance members or to
+        # other instances which present an authorization token
+        if self.path.startswith('/wantedItems') or \
+           (self.path.startswith('/users/') and '/wantedItems' in self.path):
+            catalogAuthorized = authorized
+            if not catalogAuthorized:
+                if self.server.debug:
+                    print('Wanted catalog access is not authorized. ' +
+                          'Checking Authorization header')
+                # Check the authorization token
+                if self.headers.get('Origin') and \
+                   self.headers.get('Authorization'):
+                    permittedDomains = \
+                        self.server.sharedItemsFederatedDomains
+                    sharedItemTokens = self.server.sharedItemFederationTokens
+                    if authorizeSharedItems(permittedDomains,
+                                            self.server.baseDir,
+                                            self.headers['Origin'],
+                                            callingDomain,
+                                            self.headers['Authorization'],
+                                            self.server.debug,
+                                            sharedItemTokens):
+                        catalogAuthorized = True
+                    elif self.server.debug:
+                        print('Authorization token refused for ' +
+                              'wanted items federation')
+                elif self.server.debug:
+                    print('No Authorization header is available for ' +
+                          'wanted items federation')
+            # show wanted items catalog for federation
+            if self._hasAccept(callingDomain) and catalogAuthorized:
+                catalogType = 'json'
+                if self.path.endswith('.csv') or self._requestCSV():
+                    catalogType = 'csv'
+                elif self.path.endswith('.json') or not self._requestHTTP():
+                    catalogType = 'json'
+                if self.server.debug:
+                    print('Preparing DFC wanted catalog in format ' +
+                          catalogType)
+
+                if catalogType == 'json':
+                    # catalog as a json
+                    if not self.path.startswith('/users/'):
+                        if self.server.debug:
+                            print('Wanted catalog for the instance')
+                        catalogJson = \
+                            sharesCatalogEndpoint(self.server.baseDir,
+                                                  self.server.httpPrefix,
+                                                  self.server.domainFull,
+                                                  self.path, 'wanted')
+                    else:
+                        domainFull = self.server.domainFull
+                        httpPrefix = self.server.httpPrefix
+                        nickname = self.path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if self.server.debug:
+                            print('Wanted catalog for account: ' + nickname)
+                        catalogJson = \
+                            sharesCatalogAccountEndpoint(self.server.baseDir,
+                                                         httpPrefix,
+                                                         nickname,
+                                                         self.server.domain,
+                                                         domainFull,
+                                                         self.path,
+                                                         self.server.debug,
+                                                         'wanted')
+                    msg = json.dumps(catalogJson,
+                                     ensure_ascii=False).encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json',
+                                      msglen, None, callingDomain, False)
+                    self._write(msg)
+                    return
+                elif catalogType == 'csv':
+                    # catalog as a CSV file for import into a spreadsheet
+                    msg = \
+                        sharesCatalogCSVEndpoint(self.server.baseDir,
+                                                 self.server.httpPrefix,
+                                                 self.server.domainFull,
+                                                 self.path,
+                                                 'wanted').encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/csv',
+                                      msglen, None, callingDomain, False)
+                    self._write(msg)
+                    return
+                self._404()
+                return
+            self._400()
+            return
 
         # minimal mastodon api
         if self._mastoApi(self.path, callingDomain, authorized,
@@ -10703,7 +11446,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               self.server.proxyType,
                               GETstartTime, GETtimings,
-                              self.server.debug)
+                              self.server.debug,
+                              self.server.systemLanguage)
             return
 
         usersInPath = False
@@ -10764,7 +11508,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = xmlStr.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/xrd+xml', msglen,
-                                      None, callingDomain)
+                                      None, callingDomain, False)
                     self._write(msg)
             return
 
@@ -10794,7 +11538,8 @@ class PubServer(BaseHTTPRequestHandler):
                 getPinnedPostAsJson(self.server.baseDir,
                                     self.server.httpPrefix,
                                     nickname, self.server.domain,
-                                    self.server.domainFull)
+                                    self.server.domainFull,
+                                    self.server.systemLanguage)
             messageJson = {}
             if pinnedPostJson:
                 postId = pinnedPostJson['id']
@@ -10812,7 +11557,7 @@ class PubServer(BaseHTTPRequestHandler):
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json',
-                              msglen, None, callingDomain)
+                              msglen, None, callingDomain, False)
             self._write(msg)
             return
 
@@ -10826,7 +11571,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.path,
                                         self.server.httpPrefix,
                                         nickname, self.server.domain,
-                                        self.server.domainFull)
+                                        self.server.domainFull,
+                                        self.server.systemLanguage)
             return
 
         if not htmlGET and \
@@ -10863,12 +11609,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain,
                                    self.server.port,
                                    maxPostsInBlogsFeed,
-                                   self.server.peertubeInstances)
+                                   self.server.peertubeInstances,
+                                   self.server.systemLanguage,
+                                   self.server.personCache)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain)
+                                      cookie, callingDomain, False)
                     self._write(msg)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'rss3 done', 'blog view')
@@ -10915,7 +11663,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'blog page',
@@ -10962,12 +11710,13 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        postJsonObject,
                                        self.server.peertubeInstances,
-                                       self.server.systemLanguage)
+                                       self.server.systemLanguage,
+                                       self.server.personCache)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'person options done',
@@ -10980,19 +11729,20 @@ class PubServer(BaseHTTPRequestHandler):
                                   'person options done',
                                   'blog post 2 done')
 
-        # remove a shared item
-        if htmlGET and '?rmshare=' in self.path:
-            shareName = self.path.split('?rmshare=')[1]
-            shareName = urllib.parse.unquote_plus(shareName.strip())
-            usersPath = self.path.split('?rmshare=')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
-                                              self.server.translate,
-                                              self.server.baseDir,
-                                              actor, shareName,
-                                              callingDomain).encode('utf-8')
+        # after selecting a shared item from the left column then show it
+        if htmlGET and '?showshare=' in self.path and '/users/' in self.path:
+            itemID = self.path.split('?showshare=')[1]
+            usersPath = self.path.split('?showshare=')[0]
+            nickname = usersPath.replace('/users/', '')
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            msg = \
+                htmlShowShare(self.server.baseDir,
+                              self.server.domain, nickname,
+                              self.server.httpPrefix, self.server.domainFull,
+                              itemID, self.server.translate,
+                              self.server.sharedItemsFederatedDomains,
+                              self.server.defaultTimeline,
+                              self.server.themeName, 'shares')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -11003,9 +11753,110 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/tlshares',
                                        cookie, callingDomain)
                 return
+            msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain)
+                              cookie, callingDomain, False)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'htmlShowShare')
+            return
+
+        # after selecting a wanted item from the left column then show it
+        if htmlGET and '?showwanted=' in self.path and '/users/' in self.path:
+            itemID = self.path.split('?showwanted=')[1]
+            usersPath = self.path.split('?showwanted=')[0]
+            nickname = usersPath.replace('/users/', '')
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            msg = \
+                htmlShowShare(self.server.baseDir,
+                              self.server.domain, nickname,
+                              self.server.httpPrefix, self.server.domainFull,
+                              itemID, self.server.translate,
+                              self.server.sharedItemsFederatedDomains,
+                              self.server.defaultTimeline,
+                              self.server.themeName, 'wanted')
+            if not msg:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'http://' + self.server.i2pDomain + usersPath
+                self._redirect_headers(actor + '/tlwanted',
+                                       cookie, callingDomain)
+                return
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain, False)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'htmlShowWanted')
+            return
+
+        # remove a shared item
+        if htmlGET and '?rmshare=' in self.path:
+            itemID = self.path.split('?rmshare=')[1]
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            usersPath = self.path.split('?rmshare=')[0]
+            actor = \
+                self.server.httpPrefix + '://' + \
+                self.server.domainFull + usersPath
+            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+                                              self.server.translate,
+                                              self.server.baseDir,
+                                              actor, itemID,
+                                              callingDomain, 'shares')
+            if not msg:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'http://' + self.server.i2pDomain + usersPath
+                self._redirect_headers(actor + '/tlshares',
+                                       cookie, callingDomain)
+                return
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain, False)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'remove shared item')
+            return
+
+        # remove a wanted item
+        if htmlGET and '?rmwanted=' in self.path:
+            itemID = self.path.split('?rmwanted=')[1]
+            itemID = urllib.parse.unquote_plus(itemID.strip())
+            usersPath = self.path.split('?rmwanted=')[0]
+            actor = \
+                self.server.httpPrefix + '://' + \
+                self.server.domainFull + usersPath
+            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+                                              self.server.translate,
+                                              self.server.baseDir,
+                                              actor, itemID,
+                                              callingDomain, 'wanted')
+            if not msg:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'http://' + self.server.i2pDomain + usersPath
+                self._redirect_headers(actor + '/tlwanted',
+                                       cookie, callingDomain)
+                return
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain, False)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'blog post 2 done',
@@ -11277,7 +12128,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(mediaFilename)
                     self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
-                                           self.server.domainFull)
+                                           self.server.domainFull,
+                                           False, None)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'profile.css done',
@@ -11318,7 +12170,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(screenFilename)
                     self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
-                                           self.server.domainFull)
+                                           self.server.domainFull,
+                                           False, None)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'manifest logo done',
@@ -11360,7 +12213,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(iconFilename,
                                            mimeTypeStr,
                                            mediaBinary, cookie,
-                                           self.server.domainFull)
+                                           self.server.domainFull,
+                                           False, None)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show screenshot done',
@@ -11634,7 +12488,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self.server.GETbusy = False
                 return
@@ -11657,6 +12511,8 @@ class PubServer(BaseHTTPRequestHandler):
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 iconsAsButtons = self.server.iconsAsButtons
                 defaultTimeline = self.server.defaultTimeline
+                sharedItemsDomains = \
+                    self.server.sharedItemsFederatedDomains
                 msg = htmlLinksMobile(self.server.cssCache,
                                       self.server.baseDir, nickname,
                                       self.server.domainFull,
@@ -11668,9 +12524,11 @@ class PubServer(BaseHTTPRequestHandler):
                                       iconsAsButtons,
                                       defaultTimeline,
                                       self.server.themeName,
-                                      accessKeys).encode('utf-8')
+                                      accessKeys,
+                                      sharedItemsDomains).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
                 self.server.GETbusy = False
                 return
@@ -11754,7 +12612,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.textModeBanner,
                                  accessKeys).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
                 self.server.GETbusy = False
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11772,7 +12631,8 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
             self.server.GETbusy = False
             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11805,7 +12665,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.textModeBanner,
                                    accessKeys).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain)
+                self._set_headers('text/html', msglen, cookie, callingDomain,
+                                  False)
                 self._write(msg)
                 self.server.GETbusy = False
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11847,7 +12708,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.path).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
+                                  cookie, callingDomain, False)
                 self._write(msg)
                 self.server.GETbusy = False
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12123,8 +12984,13 @@ class PubServer(BaseHTTPRequestHandler):
         replyToList = []
         replyPageNumber = 1
         shareDescription = None
+        conversationId = None
 #        replytoActor = None
         if htmlGET:
+            if '?conversationId=' in self.path:
+                conversationId = self.path.split('?conversationId=')[1]
+                if '?' in conversationId:
+                    conversationId = conversationId.split('?')[0]
             # public reply
             if '?replyto=' in self.path:
                 inReplyToUrl = self.path.split('?replyto=')[1]
@@ -12224,8 +13090,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = getNicknameFromActor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + '/users/' + nickname + \
+                        localActorUrl(self.server.httpPrefix, nickname,
+                                      self.server.domainFull) + \
                         '/statuses/' + messageId
                     msg = htmlEditBlog(self.server.mediaInstance,
                                        self.server.translate,
@@ -12234,12 +13100,12 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.path,
                                        replyPageNumber,
                                        nickname, self.server.domain,
-                                       postUrl)
+                                       postUrl, self.server.systemLanguage)
                     if msg:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(msg)
                         self.server.GETbusy = False
                         return
@@ -12296,7 +13162,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  GETstartTime, GETtimings,
-                                 cookie, noDropDown):
+                                 cookie, noDropDown, conversationId):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12580,6 +13446,22 @@ class PubServer(BaseHTTPRequestHandler):
                                         cookie, self.server.debug):
                 return
 
+        # get the wanted items timeline for a given person
+        if self.path.endswith('/tlwanted') or '/tlwanted?page=' in self.path:
+            if self._showWantedTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show blogs 2 done',
                                   'show shares 2 done')
@@ -12612,7 +13494,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.port,
                                 searchHandle,
-                                self.server.debug)
+                                self.server.debug,
+                                self.server.systemLanguage)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -12646,7 +13529,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.port,
                                 searchHandle,
-                                self.server.debug)
+                                self.server.debug,
+                                self.server.systemLanguage)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -12678,19 +13562,21 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show bookmarks 2 done')
 
         # outbox timeline
-        if self._showOutboxTimeline(authorized,
-                                    callingDomain, self.path,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    self.server.domain,
-                                    self.server.domainFull,
-                                    self.server.port,
-                                    self.server.onionDomain,
-                                    self.server.i2pDomain,
-                                    GETstartTime, GETtimings,
-                                    self.server.proxyType,
-                                    cookie, self.server.debug):
-            return
+        if self.path.endswith('/outbox') or \
+           '/outbox?page=' in self.path:
+            if self._showOutboxTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show events done',
@@ -12728,7 +13614,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.i2pDomain,
                                 GETstartTime, GETtimings,
                                 self.server.proxyType,
-                                cookie, self.server.debug):
+                                cookie, self.server.debug, 'shares'):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12821,7 +13707,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain)
+                                  None, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'authenticated fetch',
@@ -12877,7 +13763,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            etag = sha1(mediaBinary).hexdigest()  # nosec
+                            etag = md5(mediaBinary).hexdigest()  # nosec
                             try:
                                 with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
@@ -12886,7 +13772,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
-                               etag, callingDomain)
+                               etag, callingDomain, False)
 
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str,
@@ -12964,6 +13850,8 @@ class PubServer(BaseHTTPRequestHandler):
                     city = getSpoofedCity(self.server.city,
                                           self.server.baseDir,
                                           nickname, self.server.domain)
+                    if self.server.lowBandwidth:
+                        convertImageToLowBandwidth(filename)
                     processMetaData(self.server.baseDir,
                                     nickname, self.server.domain,
                                     filename, postImageFilename, city)
@@ -13071,6 +13959,9 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       self.server.baseDir,
                                       nickname, self.server.domain)
+                conversationId = None
+                if fields.get('conversationId'):
+                    conversationId = fields['conversationId']
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
@@ -13085,14 +13976,19 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
-                                     fields['location'], False)
+                                     fields['location'], False,
+                                     self.server.systemLanguage,
+                                     conversationId,
+                                     self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
                     if pinToProfile:
+                        contentStr = \
+                            getBaseContentFromPost(messageJson,
+                                                   self.server.systemLanguage)
                         pinPost(self.server.baseDir,
-                                nickname, self.server.domain,
-                                messageJson['object']['content'])
+                                nickname, self.server.domain, contentStr)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -13126,7 +14022,7 @@ class PubServer(BaseHTTPRequestHandler):
                         messageJsonLen = len(messageJson)
                         self._set_headers('text/html',
                                           messageJsonLen,
-                                          cookie, callingDomain)
+                                          cookie, callingDomain, False)
                         self._write(messageJson)
                         return 1
                     else:
@@ -13142,6 +14038,9 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 clientToServer = False
                 city = None
+                conversationId = None
+                if fields.get('conversationId'):
+                    conversationId = fields['conversationId']
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
                                    self.server.domain, self.server.port,
@@ -13157,7 +14056,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['schedulePost'],
                                    fields['eventDate'],
                                    fields['eventTime'],
-                                   fields['location'])
+                                   fields['location'],
+                                   self.server.systemLanguage,
+                                   conversationId,
+                                   self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13218,6 +14120,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                  tags, 'content')
 
                         postJsonObject['object']['content'] = fields['message']
+                        contentMap = postJsonObject['object']['contentMap']
+                        contentMap[self.server.systemLanguage] = \
+                            fields['message']
 
                         imgDescription = ''
                         if fields.get('imageDescription'):
@@ -13238,10 +14143,12 @@ class PubServer(BaseHTTPRequestHandler):
                                             filename,
                                             attachmentMediaType,
                                             imgDescription,
-                                            city)
+                                            city,
+                                            self.server.lowBandwidth)
 
                         replaceYouTube(postJsonObject,
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.systemLanguage)
                         saveJson(postJsonObject, postFilename)
                         # also save to the news actor
                         if nickname != 'news':
@@ -13267,6 +14174,11 @@ class PubServer(BaseHTTPRequestHandler):
                 followersOnly = False
                 saveToFile = False
                 clientToServer = False
+
+                conversationId = None
+                if fields.get('conversationId'):
+                    conversationId = fields['conversationId']
+
                 messageJson = \
                     createUnlistedPost(self.server.baseDir,
                                        nickname,
@@ -13284,7 +14196,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['schedulePost'],
                                        fields['eventDate'],
                                        fields['eventTime'],
-                                       fields['location'])
+                                       fields['location'],
+                                       self.server.systemLanguage,
+                                       conversationId,
+                                       self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13306,6 +14221,11 @@ class PubServer(BaseHTTPRequestHandler):
                 followersOnly = True
                 saveToFile = False
                 clientToServer = False
+
+                conversationId = None
+                if fields.get('conversationId'):
+                    conversationId = fields['conversationId']
+
                 messageJson = \
                     createFollowersOnlyPost(self.server.baseDir,
                                             nickname,
@@ -13325,7 +14245,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['schedulePost'],
                                             fields['eventDate'],
                                             fields['eventTime'],
-                                            fields['location'])
+                                            fields['location'],
+                                            self.server.systemLanguage,
+                                            conversationId,
+                                            self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13350,6 +14273,11 @@ class PubServer(BaseHTTPRequestHandler):
                     followersOnly = True
                     saveToFile = False
                     clientToServer = False
+
+                    conversationId = None
+                    if fields.get('conversationId'):
+                        conversationId = fields['conversationId']
+
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
@@ -13370,7 +14298,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 True, fields['schedulePost'],
                                                 fields['eventDate'],
                                                 fields['eventTime'],
-                                                fields['location'])
+                                                fields['location'],
+                                                self.server.systemLanguage,
+                                                conversationId,
+                                                self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13400,6 +14331,7 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 clientToServer = False
                 commentsEnabled = False
+                conversationId = None
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
@@ -13417,7 +14349,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             True, fields['schedulePost'],
                                             fields['eventDate'],
                                             fields['eventTime'],
-                                            fields['location'])
+                                            fields['location'],
+                                            self.server.systemLanguage,
+                                            conversationId,
+                                            self.server.lowBandwidth)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -13449,7 +14384,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
                                      city,
-                                     self.server.debug, fields['subject'])
+                                     self.server.debug, fields['subject'],
+                                     self.server.systemLanguage,
+                                     self.server.lowBandwidth)
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
@@ -13472,6 +14409,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname,
                                       self.server.domain)
+                intDuration = int(fields['duration'])
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
                                        nickname,
@@ -13485,24 +14423,37 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['imageDescription'],
                                        city,
                                        fields['subject'],
-                                       int(fields['duration']))
+                                       intDuration,
+                                       self.server.systemLanguage,
+                                       self.server.lowBandwidth)
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
                     if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
                 return -1
-            elif postType == 'newshare':
+            elif postType == 'newshare' or postType == 'newwanted':
+                if not fields.get('itemQty'):
+                    print(postType + ' no itemQty')
+                    return -1
                 if not fields.get('itemType'):
+                    print(postType + ' no itemType')
+                    return -1
+                if 'itemPrice' not in fields:
+                    print(postType + ' no itemPrice')
+                    return -1
+                if 'itemCurrency' not in fields:
+                    print(postType + ' no itemCurrency')
                     return -1
                 if not fields.get('category'):
-                    return -1
-                if not fields.get('location'):
+                    print(postType + ' no category')
                     return -1
                 if not fields.get('duration'):
+                    print(postType + ' no duratio')
                     return -1
                 if attachmentMediaType:
                     if attachmentMediaType != 'image':
+                        print('Attached media is not an image')
                         return -1
                 durationStr = fields['duration']
                 if durationStr:
@@ -13512,6 +14463,23 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       nickname,
                                       self.server.domain)
+                itemQty = 1
+                if fields['itemQty']:
+                    if isfloat(fields['itemQty']):
+                        itemQty = float(fields['itemQty'])
+                itemPrice = "0.00"
+                itemCurrency = "EUR"
+                if fields['itemPrice']:
+                    itemPrice, itemCurrency = \
+                        getPriceFromString(fields['itemPrice'])
+                if fields['itemCurrency']:
+                    itemCurrency = fields['itemCurrency']
+                if postType == 'newshare':
+                    print('Adding shared item')
+                    sharesFileType = 'shares'
+                else:
+                    print('Adding wanted item')
+                    sharesFileType = 'wanted'
                 addShare(self.server.baseDir,
                          self.server.httpPrefix,
                          nickname,
@@ -13519,12 +14487,15 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['subject'],
                          fields['message'],
                          filename,
-                         fields['itemType'],
+                         itemQty, fields['itemType'],
                          fields['category'],
                          fields['location'],
                          durationStr,
                          self.server.debug,
-                         city)
+                         city, itemPrice, itemCurrency,
+                         self.server.systemLanguage,
+                         self.server.translate, sharesFileType,
+                         self.server.lowBandwidth)
                 if filename:
                     if os.path.isfile(filename):
                         os.remove(filename)
@@ -13738,7 +14709,7 @@ class PubServer(BaseHTTPRequestHandler):
             msglen = len(msg)
             self._set_headers('application/json',
                               msglen,
-                              None, callingDomain)
+                              None, callingDomain, False)
             self._write(msg)
             return True
         return False
@@ -13852,6 +14823,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('/tlblogs/', '/tlblogs')
             self.path = self.path.replace('/inbox/', '/inbox')
             self.path = self.path.replace('/shares/', '/shares')
+            self.path = self.path.replace('/wanted/', '/wanted')
             self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
 
         if self.path == '/inbox':
@@ -14052,6 +15024,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug)
                 return
 
+            # removes a wanted item
+            if self.path.endswith('/rmwanted'):
+                self._removeWanted(callingDomain, cookie,
+                                   authorized, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug)
+                return
+
             self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
 
             # removes a post
@@ -14182,12 +15167,55 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.defaultTimeline)
                 return
 
+        # update the shared item federation token for the calling domain
+        # if it is within the permitted federation
+        if self.headers.get('Origin') and \
+           self.headers.get('SharesCatalog'):
+            if self.server.debug:
+                print('SharesCatalog header: ' + self.headers['SharesCatalog'])
+            if not self.server.sharedItemsFederatedDomains:
+                siDomainsStr = getConfigParam(self.server.baseDir,
+                                              'sharedItemsFederatedDomains')
+                if siDomainsStr:
+                    if self.server.debug:
+                        print('Loading shared items federated domains list')
+                    siDomainsList = siDomainsStr.split(',')
+                    domainsList = self.server.sharedItemsFederatedDomains
+                    for siDomain in siDomainsList:
+                        domainsList.append(siDomain.strip())
+            originDomain = self.headers.get('Origin')
+            if originDomain != self.server.domainFull and \
+               originDomain != self.server.onionDomain and \
+               originDomain != self.server.i2pDomain and \
+               originDomain in self.server.sharedItemsFederatedDomains:
+                if self.server.debug:
+                    print('DEBUG: ' +
+                          'POST updating shared item federation ' +
+                          'token for ' + originDomain + ' to ' +
+                          self.server.domainFull)
+                sharedItemTokens = self.server.sharedItemFederationTokens
+                sharesToken = self.headers['SharesCatalog']
+                self.server.sharedItemFederationTokens = \
+                    updateSharedItemFederationToken(self.server.baseDir,
+                                                    originDomain,
+                                                    sharesToken,
+                                                    self.server.debug,
+                                                    sharedItemTokens)
+            elif self.server.debug:
+                if originDomain not in self.server.sharedItemsFederatedDomains:
+                    print('originDomain is not in federated domains list ' +
+                          originDomain)
+                else:
+                    print('originDomain is not a different instance. ' +
+                          originDomain + ' ' + self.server.domainFull + ' ' +
+                          str(self.server.sharedItemsFederatedDomains))
+
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
 
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
-                     "newdm", "newreport", "newshare", "newquestion",
-                     "editblogpost", "newreminder")
+                     "newdm", "newreport", "newshare", "newwanted",
+                     "newquestion", "editblogpost", "newreminder")
         for currPostType in postTypes:
             if not authorized:
                 if self.server.debug:
@@ -14196,7 +15224,9 @@ class PubServer(BaseHTTPRequestHandler):
 
             postRedirect = self.server.defaultTimeline
             if currPostType == 'newshare':
-                postRedirect = 'shares'
+                postRedirect = 'tlshares'
+            elif currPostType == 'newwanted':
+                postRedirect = 'tlwanted'
 
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
@@ -14213,23 +15243,25 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorPathStr = \
-                        'http://' + self.server.onionDomain + \
-                        '/users/' + nickname + '/' + postRedirect + \
+                        localActorUrl('http', nickname,
+                                      self.server.onionDomain) + \
+                        '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)
                 elif (callingDomain.endswith('.i2p') and
                       self.server.i2pDomain):
                     actorPathStr = \
-                        'http://' + self.server.i2pDomain + \
-                        '/users/' + nickname + '/' + postRedirect + \
+                        localActorUrl('http', nickname,
+                                      self.server.i2pDomain) + \
+                        '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)
                 else:
                     actorPathStr = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + '/users/' + nickname + \
+                        localActorUrl(self.server.httpPrefix, nickname,
+                                      self.server.domainFull) + \
                         '/' + postRedirect + '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)
@@ -14238,7 +15270,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 15)
 
-        if self.path.endswith('/outbox') or self.path.endswith('/shares'):
+        if self.path.endswith('/outbox') or \
+           self.path.endswith('/wanted') or \
+           self.path.endswith('/shares'):
             if usersInPath:
                 if authorized:
                     self.outboxAuthenticated = True
@@ -14255,6 +15289,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the post is to an expected path
         if not (self.path.endswith('/outbox') or
                 self.path.endswith('/inbox') or
+                self.path.endswith('/wanted') or
                 self.path.endswith('/shares') or
                 self.path.endswith('/moderationaction') or
                 self.path == '/sharedInbox'):
@@ -14590,7 +15625,10 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(userAgentsBlocked: [],
+def runDaemon(lowBandwidth: bool,
+              maxLikeCount: int,
+              sharedItemsFederatedDomains: [],
+              userAgentsBlocked: [],
               logLoginFailures: bool,
               city: str,
               showNodeInfoAccounts: bool,
@@ -14700,8 +15738,9 @@ def runDaemon(userAgentsBlocked: [],
         'menuOutbox': 's',
         'menuBookmarks': 'q',
         'menuShares': 'h',
+        'menuWanted': 'w',
         'menuBlogs': 'b',
-        'menuNewswire': 'w',
+        'menuNewswire': 'u',
         'menuLinks': 'l',
         'menuMedia': 'm',
         'menuModeration': 'o',
@@ -14716,6 +15755,9 @@ def runDaemon(userAgentsBlocked: [],
     }
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
+
+    # wheither to use low bandwidth images
+    httpd.lowBandwidth = lowBandwidth
 
     # list of blocked user agent types within the User-Agent header
     httpd.userAgentsBlocked = userAgentsBlocked
@@ -14754,6 +15796,9 @@ def runDaemon(userAgentsBlocked: [],
     if not unitTest:
         httpd.translate, httpd.systemLanguage = \
             loadTranslationsFromFile(baseDir, language)
+        if not httpd.systemLanguage:
+            print('ERROR: no system language loaded')
+            sys.exit()
         print('System language: ' + httpd.systemLanguage)
         if not httpd.translate:
             print('ERROR: no translations were loaded')
@@ -14825,6 +15870,13 @@ def runDaemon(userAgentsBlocked: [],
     # for it to be considered dormant?
     httpd.dormantMonths = dormantMonths
 
+    # maximum number of likes to display on a post
+    httpd.maxLikeCount = maxLikeCount
+    if httpd.maxLikeCount < 0:
+        httpd.maxLikeCount = 0
+    elif httpd.maxLikeCount > 16:
+        httpd.maxLikeCount = 16
+
     httpd.followingItemsPerPage = 12
     if registration == 'open':
         httpd.registration = True
@@ -14849,6 +15901,7 @@ def runDaemon(userAgentsBlocked: [],
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
+    httpd.sharedItemsFederatedDomains = sharedItemsFederatedDomains.copy()
     httpd.baseDir = baseDir
     httpd.instanceId = instanceId
     httpd.personCache = {}
@@ -14945,6 +15998,10 @@ def runDaemon(userAgentsBlocked: [],
         print('Creating archive')
         os.mkdir(archiveDir)
 
+    if not os.path.isdir(baseDir + '/sharefiles'):
+        print('Creating shared item files directory')
+        os.mkdir(baseDir + '/sharefiles')
+
     print('Creating cache expiry thread')
     httpd.thrCache = \
         threadWithTrace(target=expireCache,
@@ -14987,6 +16044,14 @@ def runDaemon(userAgentsBlocked: [],
     httpd.iconsCache = {}
     httpd.fontsCache = {}
 
+    # create tokens used for shared item federation
+    httpd.sharedItemFederationTokens = \
+        generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
+                                           baseDir)
+    httpd.sharedItemFederationTokens = \
+        createSharedItemFederationToken(baseDir, httpd.domainFull, False,
+                                        httpd.sharedItemFederationTokens)
+
     # load peertube instances from file into a list
     httpd.peertubeInstances = []
     loadPeertubeInstances(baseDir, httpd.peertubeInstances)
@@ -15013,7 +16078,9 @@ def runDaemon(userAgentsBlocked: [],
                               httpd.allowLocalNetworkAccess,
                               httpd.peertubeInstances,
                               verifyAllSignatures,
-                              httpd.themeName), daemon=True)
+                              httpd.themeName,
+                              httpd.systemLanguage,
+                              httpd.maxLikeCount), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
@@ -15027,9 +16094,19 @@ def runDaemon(userAgentsBlocked: [],
                               httpPrefix, domain, port,
                               httpd.translate), daemon=True)
 
+    print('Creating federated shares thread')
+    httpd.thrFederatedSharesDaemon = \
+        threadWithTrace(target=runFederatedSharesDaemon,
+                        args=(baseDir, httpd,
+                              httpPrefix, httpd.domainFull,
+                              proxyType, debug,
+                              httpd.systemLanguage), daemon=True)
+
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
     httpd.restartInboxQueue = False
+
+    updateHashtagCategories(baseDir)
 
     print('Adding hashtag categories for language ' + httpd.systemLanguage)
     loadHashtagCategories(baseDir, httpd.systemLanguage)
@@ -15052,9 +16129,19 @@ def runDaemon(userAgentsBlocked: [],
             threadWithTrace(target=runNewswireWatchdog,
                             args=(projectVersion, httpd), daemon=True)
         httpd.thrNewswireWatchdog.start()
+
+        print('Creating federated shares watchdog')
+        httpd.thrFederatedSharesWatchdog = \
+            threadWithTrace(target=runFederatedSharesWatchdog,
+                            args=(projectVersion, httpd), daemon=True)
+        httpd.thrFederatedSharesWatchdog.start()
     else:
+        print('Starting inbox queue')
         httpd.thrInboxQueue.start()
+        print('Starting scheduled posts daemon')
         httpd.thrPostSchedule.start()
+        print('Starting federated shares daemon')
+        httpd.thrFederatedSharesDaemon.start()
 
     if clientToServer:
         print('Running ActivityPub client on ' +

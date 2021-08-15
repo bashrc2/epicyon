@@ -11,6 +11,7 @@ import os
 from datetime import datetime
 from content import removeLongWords
 from content import limitRepeatedWords
+from utils import getBaseContentFromPost
 from utils import removeHtml
 from utils import locatePost
 from utils import loadJson
@@ -524,7 +525,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     if '/users/' not in path:
         return ''
     path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '')
+    path = path.replace('/shares', '').replace('/wanted', '')
 
     nickname = getNicknameFromActor(path)
     if not nickname:
@@ -636,7 +637,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
 def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int,
-                     httpPrefix: str, postUrl: str) -> str:
+                     httpPrefix: str, postUrl: str,
+                     systemLanguage: str) -> str:
     """Edits a news post on the news/features timeline
     """
     if '/users/' not in path:
@@ -696,7 +698,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
         '  <input type="text" name="newsPostTitle" value="' + \
         newsPostTitle + '"><br>\n'
 
-    newsPostContent = postJsonObject['object']['content']
+    newsPostContent = getBaseContentFromPost(postJsonObject, systemLanguage)
     editNewsPostForm += \
         '  <textarea id="message" name="editedNewsPost" ' + \
         'style="height:600px" spellcheck="true">' + \

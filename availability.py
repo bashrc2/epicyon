@@ -18,6 +18,7 @@ from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
 from utils import acctDir
+from utils import localActorUrl
 
 
 def setAvailability(baseDir: str, nickname: str, domain: str,
@@ -90,13 +91,12 @@ def sendAvailabilityViaServer(baseDir: str, session,
 
     domainFull = getFullDomain(domain, port)
 
-    toUrl = httpPrefix + '://' + domainFull + '/users/' + nickname
-    ccUrl = httpPrefix + '://' + domainFull + '/users/' + nickname + \
-        '/followers'
+    toUrl = localActorUrl(httpPrefix, nickname, domainFull)
+    ccUrl = toUrl + '/followers'
 
     newAvailabilityJson = {
         'type': 'Availability',
-        'actor': httpPrefix + '://' + domainFull + '/users/' + nickname,
+        'actor': toUrl,
         'object': '"' + status + '"',
         'to': [toUrl],
         'cc': [ccUrl]
@@ -107,7 +107,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: availability webfinger failed for ' + handle)

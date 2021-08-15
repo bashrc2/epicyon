@@ -18,6 +18,8 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
+from utils import hasGroupType
+from utils import localActorUrl
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -74,7 +76,7 @@ def _like(recentPostsCache: {},
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -85,13 +87,20 @@ def _like(recentPostsCache: {},
     likedPostNickname = None
     likedPostDomain = None
     likedPostPort = None
+    groupAccount = False
     if actorLiked:
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
+        groupAccount = hasGroupType(baseDir, actorLiked, personCache)
     else:
         if hasUsersPath(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
             likedPostDomain, likedPostPort = getDomainFromActor(objectUrl)
+            if '/' + str(likedPostNickname) + '/' in objectUrl:
+                actorLiked = \
+                    objectUrl.split('/' + likedPostNickname + '/')[0] + \
+                    '/' + likedPostNickname
+                groupAccount = hasGroupType(baseDir, actorLiked, personCache)
 
     if likedPostNickname:
         postFilename = locatePost(baseDir, nickname, domain, objectUrl)
@@ -113,7 +122,7 @@ def _like(recentPostsCache: {},
                        'https://www.w3.org/ns/activitystreams#Public',
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion)
+                       debug, projectVersion, None, groupAccount)
 
     return newLikeJson
 
@@ -131,7 +140,7 @@ def likePost(recentPostsCache: {},
     """
     likeDomain = getFullDomain(likeDomain, likePort)
 
-    actorLiked = httpPrefix + '://' + likeDomain + '/users/' + likeNickname
+    actorLiked = localActorUrl(httpPrefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
     return _like(recentPostsCache,
@@ -155,7 +164,7 @@ def sendLikeViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -169,7 +178,7 @@ def sendLikeViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: like webfinger failed for ' + handle)
@@ -233,7 +242,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
 
     newUndoLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -251,7 +260,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unlike webfinger failed for ' + handle)

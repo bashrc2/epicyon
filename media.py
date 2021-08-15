@@ -8,11 +8,13 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+import time
 import datetime
 import subprocess
 from random import randint
 from hashlib import sha1
 from auth import createPassword
+from utils import getBaseContentFromPost
 from utils import getFullDomain
 from utils import getImageExtensions
 from utils import getVideoExtensions
@@ -26,7 +28,8 @@ from shutil import move
 from city import spoofGeolocation
 
 
-def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
+def replaceYouTube(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
@@ -36,11 +39,13 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
         return
     if not postJsonObject['object'].get('content'):
         return
-    if 'www.youtube.com' not in postJsonObject['object']['content']:
+    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+    if 'www.youtube.com' not in contentStr:
         return
-    postJsonObject['object']['content'] = \
-        postJsonObject['object']['content'].replace('www.youtube.com',
-                                                    replacementDomain)
+    contentStr = contentStr.replace('www.youtube.com', replacementDomain)
+    postJsonObject['object']['content'] = contentStr
+    if postJsonObject['object'].get('contentMap'):
+        postJsonObject['object']['contentMap'][systemLanguage] = contentStr
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
@@ -91,23 +96,62 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
          camMake, camModel, camSerialNumber) = \
             spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
                              decoySeed, None, None)
-        os.system('exiftool -artist="' + nickname + '" ' +
-                  '-Make="' + camMake + '" ' +
-                  '-Model="' + camModel + '" ' +
-                  '-Comment="' + str(camSerialNumber) + '" ' +
-                  '-DateTimeOriginal="' + published + '" ' +
-                  '-FileModifyDate="' + published + '" ' +
-                  '-CreateDate="' + published + '" ' +
-                  '-GPSLongitudeRef=' + longitudeRef + ' ' +
-                  '-GPSAltitude=0 ' +
-                  '-GPSLongitude=' + str(longitude) + ' ' +
-                  '-GPSLatitudeRef=' + latitudeRef + ' ' +
-                  '-GPSLatitude=' + str(latitude) + ' ' +
-                  '-Comment="" ' +
-                  outputFilename)  # nosec
+        if os.system('exiftool -artist="' + nickname + '" ' +
+                     '-Make="' + camMake + '" ' +
+                     '-Model="' + camModel + '" ' +
+                     '-Comment="' + str(camSerialNumber) + '" ' +
+                     '-DateTimeOriginal="' + published + '" ' +
+                     '-FileModifyDate="' + published + '" ' +
+                     '-CreateDate="' + published + '" ' +
+                     '-GPSLongitudeRef=' + longitudeRef + ' ' +
+                     '-GPSAltitude=0 ' +
+                     '-GPSLongitude=' + str(longitude) + ' ' +
+                     '-GPSLatitudeRef=' + latitudeRef + ' ' +
+                     '-GPSLatitude=' + str(latitude) + ' ' +
+                     '-Comment="" ' +
+                     outputFilename) != 0:  # nosec
+            print('ERROR: exiftool failed to run')
     else:
         print('ERROR: exiftool is not installed')
         return
+
+
+def convertImageToLowBandwidth(imageFilename: str) -> None:
+    """Converts an image to a low bandwidth version
+    """
+    lowBandwidthFilename = imageFilename + '.low'
+    if os.path.isfile(lowBandwidthFilename):
+        try:
+            os.remove(lowBandwidthFilename)
+        except BaseException:
+            pass
+
+    cmd = \
+        '/usr/bin/convert +noise Multiplicative ' + \
+        '-evaluate median 10% -dither Floyd-Steinberg ' + \
+        '-monochrome  ' + imageFilename + ' ' + lowBandwidthFilename
+    print('Low bandwidth image conversion: ' + cmd)
+    subprocess.call(cmd, shell=True)
+    # wait for conversion to happen
+    ctr = 0
+    while not os.path.isfile(lowBandwidthFilename):
+        print('Waiting for low bandwidth image conversion ' + str(ctr))
+        time.sleep(0.2)
+        ctr += 1
+        if ctr > 100:
+            print('WARN: timed out waiting for low bandwidth image conversion')
+            break
+    if os.path.isfile(lowBandwidthFilename):
+        try:
+            os.remove(imageFilename)
+        except BaseException:
+            pass
+        os.rename(lowBandwidthFilename, imageFilename)
+        if os.path.isfile(imageFilename):
+            print('Image converted to low bandwidth ' + imageFilename)
+    else:
+        print('Low bandwidth converted image not found: ' +
+              lowBandwidthFilename)
 
 
 def processMetaData(baseDir: str, nickname: str, domain: str,
@@ -205,7 +249,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str,
-                city: str) -> {}:
+                city: str, lowBandwidth: bool) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -258,6 +302,8 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     if baseDir:
         if mediaType.startswith('image/'):
+            if lowBandwidth:
+                convertImageToLowBandwidth(imageFilename)
             processMetaData(baseDir, nickname, domain,
                             imageFilename, mediaFilename, city)
         else:

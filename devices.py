@@ -34,6 +34,7 @@ import os
 from utils import loadJson
 from utils import saveJson
 from utils import acctDir
+from utils import localActorUrl
 
 
 def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
@@ -142,7 +143,7 @@ def E2EEdevicesCollection(baseDir: str, nickname: str, domain: str,
     personDir = acctDir(baseDir, nickname, domain)
     if not os.path.isdir(personDir):
         return {}
-    personId = httpPrefix + '://' + domainFull + '/users/' + nickname
+    personId = localActorUrl(httpPrefix, nickname, domainFull)
     if not os.path.isdir(personDir + '/devices'):
         os.mkdir(personDir + '/devices')
     deviceList = []

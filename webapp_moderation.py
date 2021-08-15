@@ -15,6 +15,7 @@ from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getConfigParam
+from utils import localActorUrl
 from posts import downloadFollowCollection
 from posts import getPublicPostInfo
 from posts import isModerator
@@ -47,7 +48,9 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    theme: str, peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
-                   accessKeys: {}) -> str:
+                   accessKeys: {}, systemLanguage: str,
+                   maxLikeCount: int,
+                   sharedItemsFederatedDomains: []) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -63,13 +66,15 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allowLocalNetworkAccess,
-                        textModeBanner, accessKeys)
+                        textModeBanner, accessKeys, systemLanguage,
+                        maxLikeCount, sharedItemsFederatedDomains)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},
                     baseDir: str, httpPrefix: str,
                     nickname: str, domain: str, port: int,
-                    searchHandle: str, debug: bool) -> str:
+                    searchHandle: str, debug: bool,
+                    systemLanguage: str) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
@@ -90,7 +95,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     searchHandle = searchNickname + '@' + searchDomain
     searchActor = \
-        httpPrefix + '://' + searchDomain + '/users/' + searchNickname
+        localActorUrl(httpPrefix, searchNickname, searchDomain)
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
         translate['Account Information'] + ':</a> <a href="' + searchActor + \
@@ -111,7 +116,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                                    baseDir, searchNickname, searchDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
-                                   __version__, wordFrequency)
+                                   __version__, wordFrequency, systemLanguage)
 
     # get a list of any blocked followers
     followersList = \
@@ -144,7 +149,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     ctr = 1
     for postDomain, blockedPostUrls in domainDict.items():
         infoForm += '<a href="' + \
-            httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
+            httpPrefix + '://' + postDomain + '" ' + \
+            'target="_blank" rel="nofollow noopener noreferrer">' + \
+            postDomain + '</a> '
         if isBlockedDomain(baseDir, postDomain):
             blockedPostsLinks = ''
             urlCtr = 0
@@ -152,7 +159,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 if urlCtr > 0:
                     blockedPostsLinks += '<br>'
                 blockedPostsLinks += \
-                    '<a href="' + url + '">' + url + '</a>'
+                    '<a href="' + url + '" ' + \
+                    'target="_blank" rel="nofollow noopener noreferrer">' + \
+                    url + '</a>'
                 urlCtr += 1
             blockedPostsHtml = ''
             if blockedPostsLinks:
@@ -193,7 +202,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             followingDomain, followingPort = getDomainFromActor(actor)
             followingDomainFull = \
                 getFullDomain(followingDomain, followingPort)
-            infoForm += '<a href="' + actor + '">' + \
+            infoForm += '<a href="' + actor + '" ' + \
+                'target="_blank" rel="nofollow noopener noreferrer">' + \
                 followingNickname + '@' + followingDomainFull + \
                 '</a><br><br>\n'
         infoForm += '</div>\n'
@@ -210,7 +220,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             followerNickname = getNicknameFromActor(actor)
             followerDomain, followerPort = getDomainFromActor(actor)
             followerDomainFull = getFullDomain(followerDomain, followerPort)
-            infoForm += '<a href="' + actor + '">' + \
+            infoForm += '<a href="' + actor + '" ' + \
+                'target="_blank" rel="nofollow noopener noreferrer">' + \
                 followerNickname + '@' + followerDomainFull + '</a><br><br>\n'
         infoForm += '</div>\n'
 

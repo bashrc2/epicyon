@@ -10,9 +10,11 @@ __module_group__ = "Core"
 import os
 import datetime
 from session import urlExists
+from session import getJson
 from utils import loadJson
 from utils import saveJson
 from utils import getFileCaseInsensitive
+from utils import getUserPaths
 
 
 def _removePersonFromCache(baseDir: str, personUrl: str,
@@ -132,3 +134,52 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
     if cachedWebfingers.get(handle):
         return cachedWebfingers[handle]
     return None
+
+
+def getPersonPubKey(baseDir: str, session, personUrl: str,
+                    personCache: {}, debug: bool,
+                    projectVersion: str, httpPrefix: str,
+                    domain: str, onionDomain: str) -> str:
+    if not personUrl:
+        return None
+    personUrl = personUrl.replace('#main-key', '')
+    usersPaths = getUserPaths()
+    for possibleUsersPath in usersPaths:
+        if personUrl.endswith(possibleUsersPath + 'inbox'):
+            if debug:
+                print('DEBUG: Obtaining public key for shared inbox')
+            personUrl = \
+                personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
+            break
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, True)
+    if not personJson:
+        if debug:
+            print('DEBUG: Obtaining public key for ' + personUrl)
+        personDomain = domain
+        if onionDomain:
+            if '.onion/' in personUrl:
+                personDomain = onionDomain
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        asHeader = {
+            'Accept': 'application/activity+json; profile="' + profileStr + '"'
+        }
+        personJson = \
+            getJson(session, personUrl, asHeader, None, debug,
+                    projectVersion, httpPrefix, personDomain)
+        if not personJson:
+            return None
+    pubKey = None
+    if personJson.get('publicKey'):
+        if personJson['publicKey'].get('publicKeyPem'):
+            pubKey = personJson['publicKey']['publicKeyPem']
+    else:
+        if personJson.get('publicKeyPem'):
+            pubKey = personJson['publicKeyPem']
+
+    if not pubKey:
+        if debug:
+            print('DEBUG: Public key not found for ' + personUrl)
+
+    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
+    return pubKey

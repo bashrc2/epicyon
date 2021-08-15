@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from utils import hasGroupType
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import removeIdEnding
@@ -21,6 +22,7 @@ from utils import locatePost
 from utils import saveJson
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
+from utils import localActorUrl
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -135,11 +137,11 @@ def createAnnounce(session, baseDir: str, federationList: [],
     statusNumber, published = getStatusNumber()
     newAnnounceId = httpPrefix + '://' + fullDomain + \
         '/users/' + nickname + '/statuses/' + statusNumber
-    atomUriStr = httpPrefix + '://' + fullDomain + '/users/' + nickname + \
+    atomUriStr = localActorUrl(httpPrefix, nickname, fullDomain) + \
         '/statuses/' + statusNumber
     newAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
         'atomUri': atomUriStr,
         'cc': [],
         'id': newAnnounceId + '/activity',
@@ -159,9 +161,16 @@ def createAnnounce(session, baseDir: str, federationList: [],
     announceNickname = None
     announceDomain = None
     announcePort = None
+    groupAccount = False
     if hasUsersPath(objectUrl):
         announceNickname = getNicknameFromActor(objectUrl)
         announceDomain, announcePort = getDomainFromActor(objectUrl)
+        if '/' + str(announceNickname) + '/' in objectUrl:
+            announceActor = \
+                objectUrl.split('/' + announceNickname + '/')[0] + \
+                '/' + announceNickname
+            if hasGroupType(baseDir, announceActor, personCache):
+                groupAccount = True
 
     if announceNickname and announceDomain:
         sendSignedJson(newAnnounce, session, baseDir,
@@ -169,7 +178,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
                        announceNickname, announceDomain, announcePort, None,
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion)
+                       debug, projectVersion, None, groupAccount)
 
     return newAnnounce
 
@@ -185,8 +194,7 @@ def announcePublic(session, baseDir: str, federationList: [],
     fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomain + '/users/' + nickname + \
-        '/followers'
+    ccUrl = localActorUrl(httpPrefix, nickname, fromDomain) + '/followers'
     return createAnnounce(session, baseDir, federationList,
                           nickname, domain, port,
                           toUrl, ccUrl, httpPrefix,
@@ -211,13 +219,11 @@ def sendAnnounceViaServer(baseDir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname + \
-        '/followers'
+    actorStr = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    ccUrl = actorStr + '/followers'
 
     statusNumber, published = getStatusNumber()
-    newAnnounceId = httpPrefix + '://' + fromDomainFull + '/users/' + \
-        fromNickname + '/statuses/' + statusNumber
-    actorStr = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    newAnnounceId = actorStr + '/statuses/' + statusNumber
     newAnnounceJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': actorStr,
@@ -235,7 +241,7 @@ def sendAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug)
+                                fromDomain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -300,7 +306,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
 
     domainFull = getFullDomain(domain, port)
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     handle = actor.replace('/users/', '/@')
 
     statusNumber, published = getStatusNumber()
@@ -315,7 +321,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: undo announce webfinger failed for ' + handle)

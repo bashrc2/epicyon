@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 from utils import getConfigParam
+from utils import localActorUrl
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from markdown import markdownToHtml
@@ -44,8 +45,7 @@ def htmlTermsOfService(cssCache: {}, baseDir: str,
     TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     TOSForm += '<div class="container">' + TOSText + '</div>\n'
     if adminNickname:
-        adminActor = httpPrefix + '://' + domainFull + \
-            '/users/' + adminNickname
+        adminActor = localActorUrl(httpPrefix, adminNickname, domainFull)
         TOSForm += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">Administered by <a href="' + \

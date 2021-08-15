@@ -22,6 +22,9 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getActorLanguagesList
+from utils import getBaseContentFromPost
+from utils import getContentFromPost
 from utils import hasObjectDict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
@@ -44,8 +47,8 @@ from utils import updateRecentPostsCache
 from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import isEventPost
 from utils import acctDir
+from utils import localActorUrl
 from content import limitRepeatedWords
 from content import replaceEmojiFromTags
 from content import htmlReplaceQuoteMarks
@@ -72,6 +75,7 @@ from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
 from speaker import updateSpeaker
+from languages import autoTranslatePost
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -273,7 +277,8 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
 def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       postJsonObject: {}, pageNumberParam: str,
-                      translate: {}) -> str:
+                      translate: {}, systemLanguage: str,
+                      conversationId: str) -> str:
     """Returns html for the reply icon/button
     """
     replyStr = ''
@@ -286,9 +291,9 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
                 '?mention=' + postJsonObject['object']['attributedTo']
-    if postJsonObject['object'].get('content'):
-        mentionedActors = \
-            getMentionsFromHtml(postJsonObject['object']['content'])
+    content = getBaseContentFromPost(postJsonObject, systemLanguage)
+    if content:
+        mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:
             for actorUrl in mentionedActors:
                 if '?mention=' + actorUrl not in replyToLink:
@@ -299,11 +304,15 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
 
     replyStr = ''
     replyToThisPostStr = translate['Reply to this post']
+    conversationStr = ''
+    if conversationId:
+        conversationStr = '?conversationId=' + conversationId
     if isPublicRepeat:
         replyStr += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyto=' + replyToLink + \
             '?actor=' + postJsonObject['actor'] + \
+            conversationStr + \
             '" title="' + replyToThisPostStr + '">\n'
     else:
         if isDM(postJsonObject):
@@ -312,6 +321,7 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replydm=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
+                conversationStr + \
                 '" title="' + replyToThisPostStr + '">\n'
         else:
             replyStr += \
@@ -319,6 +329,7 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replyfollowers=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
+                conversationStr + \
                 '" title="' + replyToThisPostStr + '">\n'
 
     replyStr += \
@@ -457,7 +468,8 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                      postStartTime,
                      translate: {}, pageNumberParam: str,
                      timelinePostBookmark: str,
-                     boxName: str) -> str:
+                     boxName: str,
+                     maxLikeCount: int) -> str:
     """Returns html for like icon/button
     """
     likeStr = ''
@@ -472,10 +484,10 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
 
         likeCountStr = ''
         if likeCount > 0:
-            if likeCount <= 10:
+            if likeCount <= maxLikeCount:
                 likeCountStr = ' (' + str(likeCount) + ')'
             else:
-                likeCountStr = ' (10+)'
+                likeCountStr = ' (' + str(maxLikeCount) + '+)'
             if likedByPerson(postJsonObject, nickname, domainFull):
                 if likeCount == 1:
                     # liked by the reader only
@@ -690,7 +702,7 @@ def _getBlogCitationsHtml(boxName: str,
     return citationsStr
 
 
-def _boostOwnTootHtml(translate: {}) -> str:
+def _boostOwnPostHtml(translate: {}) -> str:
     """The html title for announcing your own post
     """
     return '        <img loading="lazy" title="' + \
@@ -713,22 +725,6 @@ def _announceUnattributedHtml(translate: {},
         '      <a href="' + \
         postJsonObject['object']['id'] + \
         '" class="announceOrReply">@unattributed</a>\n'
-
-
-def _announceWithoutDisplayNameHtml(translate: {},
-                                    announceNickname: str,
-                                    announceDomain: str,
-                                    postJsonObject: {}) -> str:
-    """Returns html for an announce title where there is no display name
-    only a handle nick@domain
-    """
-    return '    <img loading="lazy" title="' + \
-        translate['announces'] + '" alt="' + translate['announces'] + \
-        '" src="/icons/repeat_inactive.png" ' + \
-        'class="announceOrReply"/>\n' + \
-        '      <a href="' + postJsonObject['object']['id'] + '" ' + \
-        'class="announceOrReply">@' + \
-        announceNickname + '@' + announceDomain + '</a>\n'
 
 
 def _announceWithDisplayNameHtml(translate: {},
@@ -769,84 +765,73 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     """
     titleStr = ''
     replyAvatarImageInPost = ''
+    objJson = postJsonObject['object']
 
-    if postJsonObject['object'].get('attributedTo'):
-        attributedTo = ''
-        if isinstance(postJsonObject['object']['attributedTo'], str):
-            attributedTo = postJsonObject['object']['attributedTo']
+    # has no attribution
+    if not objJson.get('attributedTo'):
+        titleStr += _announceUnattributedHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
 
-        if attributedTo.startswith(postActor):
-            titleStr += _boostOwnTootHtml(translate)
-        else:
-            # boosting another person's post
-            _logPostTiming(enableTimingLog, postStartTime, '13.2')
-            announceNickname = None
-            if attributedTo:
-                announceNickname = getNicknameFromActor(attributedTo)
-            if announceNickname:
-                announceDomain, announcePort = \
-                    getDomainFromActor(attributedTo)
-                getPersonFromCache(baseDir, attributedTo,
-                                   personCache, allowDownloads)
-                announceDisplayName = \
-                    getDisplayName(baseDir, attributedTo, personCache)
-                if announceDisplayName:
-                    _logPostTiming(enableTimingLog, postStartTime, '13.3')
+    attributedTo = ''
+    if isinstance(objJson['attributedTo'], str):
+        attributedTo = objJson['attributedTo']
 
-                    # add any emoji to the display name
-                    if ':' in announceDisplayName:
-                        announceDisplayName = \
-                            addEmojiToDisplayName(baseDir, httpPrefix,
-                                                  nickname, domain,
-                                                  announceDisplayName,
-                                                  False)
-                    _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
-                    titleStr += \
-                        _announceWithDisplayNameHtml(translate,
-                                                     postJsonObject,
-                                                     announceDisplayName)
-                    # show avatar of person replied to
-                    announceActor = \
-                        postJsonObject['object']['attributedTo']
-                    announceAvatarUrl = \
-                        getPersonAvatarUrl(baseDir, announceActor,
-                                           personCache, allowDownloads)
+    # boosting your own post
+    if attributedTo.startswith(postActor):
+        titleStr += _boostOwnPostHtml(translate)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
 
-                    _logPostTiming(enableTimingLog, postStartTime, '13.4')
+    # boosting another person's post
+    _logPostTiming(enableTimingLog, postStartTime, '13.2')
+    announceNickname = None
+    if attributedTo:
+        announceNickname = getNicknameFromActor(attributedTo)
+    if not announceNickname:
+        titleStr += _announceUnattributedHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
 
-                    if announceAvatarUrl:
-                        idx = 'Show options for this person'
-                        if '/users/news/' not in announceAvatarUrl:
-                            replyAvatarImageInPost = \
-                                '        ' \
-                                '<div class=' + \
-                                '"timeline-avatar-reply">\n' \
-                                '            ' + \
-                                '<a class="imageAnchor" ' + \
-                                'href="/users/' + nickname + \
-                                '?options=' + \
-                                announceActor + ';' + \
-                                str(pageNumber) + \
-                                ';' + announceAvatarUrl + \
-                                messageIdStr + '">' \
-                                '<img loading="lazy" src="' + \
-                                announceAvatarUrl + '" ' + \
-                                'title="' + translate[idx] + \
-                                '" alt=" "' + avatarPosition + \
-                                getBrokenLinkSubstitute() + \
-                                '/></a>\n    </div>\n'
-                else:
-                    titleStr += \
-                        _announceWithoutDisplayNameHtml(translate,
-                                                        announceNickname,
-                                                        announceDomain,
-                                                        postJsonObject)
-            else:
-                titleStr += \
-                    _announceUnattributedHtml(translate, postJsonObject)
-    else:
-        titleStr += \
-            _announceUnattributedHtml(translate, postJsonObject)
+    announceDomain, announcePort = getDomainFromActor(attributedTo)
+    getPersonFromCache(baseDir, attributedTo, personCache, allowDownloads)
+    announceDisplayName = getDisplayName(baseDir, attributedTo, personCache)
+    if not announceDisplayName:
+        announceDisplayName = announceNickname + '@' + announceDomain
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.3')
+
+    # add any emoji to the display name
+    if ':' in announceDisplayName:
+        announceDisplayName = \
+            addEmojiToDisplayName(baseDir, httpPrefix, nickname, domain,
+                                  announceDisplayName, False)
+    _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
+    titleStr += \
+        _announceWithDisplayNameHtml(translate, postJsonObject,
+                                     announceDisplayName)
+    # show avatar of person replied to
+    announceActor = attributedTo
+    announceAvatarUrl = \
+        getPersonAvatarUrl(baseDir, announceActor,
+                           personCache, allowDownloads)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.4')
+
+    if not announceAvatarUrl:
+        announceAvatarUrl = ''
+
+    idx = 'Show options for this person'
+    if '/users/news/' not in announceAvatarUrl:
+        replyAvatarImageInPost = \
+            '        <div class="timeline-avatar-reply">\n' \
+            '            <a class="imageAnchor" ' + \
+            'href="/users/' + nickname + '?options=' + \
+            announceActor + ';' + str(pageNumber) + \
+            ';' + announceAvatarUrl + messageIdStr + '">' \
+            '<img loading="lazy" src="' + announceAvatarUrl + '" ' + \
+            'title="' + translate[idx] + '" alt=" "' + avatarPosition + \
+            getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
@@ -907,21 +892,6 @@ def _getReplyHtml(translate: {},
         replyDisplayName + '</a>\n'
 
 
-def _getReplyWithoutDisplayName(translate: {},
-                                inReplyTo: str,
-                                replyNickname: str, replyDomain: str) -> str:
-    """Returns html for a reply without a display name,
-    only a handle nick@domain
-    """
-    return '        ' + \
-        '<img loading="lazy" title="' + translate['replying to'] + \
-        '" alt="' + translate['replying to'] + \
-        '" src="/icons/reply.png" ' + \
-        'class="announceOrReply"/>\n' + '        <a href="' + \
-        inReplyTo + '" class="announceOrReply">@' + \
-        replyNickname + '@' + replyDomain + '</a>\n'
-
-
 def _getPostTitleReplyHtml(baseDir: str,
                            httpPrefix: str,
                            nickname: str, domain: str,
@@ -945,98 +915,25 @@ def _getPostTitleReplyHtml(baseDir: str,
     """
     titleStr = ''
     replyAvatarImageInPost = ''
+    objJson = postJsonObject['object']
 
-    if not postJsonObject['object'].get('inReplyTo'):
+    # not a reply
+    if not objJson.get('inReplyTo'):
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
     containerClassIcons = 'containericons darker'
     containerClass = 'container darker'
-    if postJsonObject['object']['inReplyTo'].startswith(postActor):
+
+    # reply to self
+    if objJson['inReplyTo'].startswith(postActor):
         titleStr += _replyToYourselfHtml(translate)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    if '/statuses/' in postJsonObject['object']['inReplyTo']:
-        inReplyTo = postJsonObject['object']['inReplyTo']
-        replyActor = inReplyTo.split('/statuses/')[0]
-        replyNickname = getNicknameFromActor(replyActor)
-        if replyNickname:
-            replyDomain, replyPort = \
-                getDomainFromActor(replyActor)
-            if replyNickname and replyDomain:
-                getPersonFromCache(baseDir, replyActor,
-                                   personCache,
-                                   allowDownloads)
-                replyDisplayName = \
-                    getDisplayName(baseDir, replyActor,
-                                   personCache)
-                if replyDisplayName:
-                    # add emoji to the display name
-                    if ':' in replyDisplayName:
-                        _logPostTiming(enableTimingLog, postStartTime, '13.5')
-
-                        replyDisplayName = \
-                            addEmojiToDisplayName(baseDir,
-                                                  httpPrefix,
-                                                  nickname,
-                                                  domain,
-                                                  replyDisplayName,
-                                                  False)
-                        _logPostTiming(enableTimingLog, postStartTime, '13.6')
-
-                    titleStr += \
-                        _getReplyHtml(translate, inReplyTo, replyDisplayName)
-
-                    _logPostTiming(enableTimingLog, postStartTime, '13.7')
-
-                    # show avatar of person replied to
-                    replyAvatarUrl = \
-                        getPersonAvatarUrl(baseDir,
-                                           replyActor,
-                                           personCache,
-                                           allowDownloads)
-
-                    _logPostTiming(enableTimingLog, postStartTime, '13.8')
-
-                    if replyAvatarUrl:
-                        replyAvatarImageInPost = \
-                            '        <div class=' + \
-                            '"timeline-avatar-reply">\n'
-                        replyAvatarImageInPost += \
-                            '          ' + \
-                            '<a class="imageAnchor" ' + \
-                            'href="/users/' + nickname + \
-                            '?options=' + replyActor + \
-                            ';' + str(pageNumber) + ';' + \
-                            replyAvatarUrl + \
-                            messageIdStr + '">\n'
-                        replyAvatarImageInPost += \
-                            '          ' + \
-                            '<img loading="lazy" src="' + \
-                            replyAvatarUrl + '" '
-                        replyAvatarImageInPost += \
-                            'title="' + \
-                            translate['Show profile']
-                        replyAvatarImageInPost += \
-                            '" alt=" "' + \
-                            avatarPosition + \
-                            getBrokenLinkSubstitute() + \
-                            '/></a>\n        </div>\n'
-                else:
-                    inReplyTo = \
-                        postJsonObject['object']['inReplyTo']
-                    titleStr += \
-                        _getReplyWithoutDisplayName(translate,
-                                                    inReplyTo,
-                                                    replyNickname,
-                                                    replyDomain)
-        else:
-            titleStr += \
-                _replyToUnknownHtml(translate, postJsonObject)
-    else:
-        postDomain = \
-            postJsonObject['object']['inReplyTo']
+    # has a reply
+    if '/statuses/' not in objJson['inReplyTo']:
+        postDomain = objJson['inReplyTo']
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             postDomain = postDomain.replace(prefix, '')
@@ -1046,6 +943,58 @@ def _getPostTitleReplyHtml(baseDir: str,
             titleStr += \
                 _replyWithUnknownPathHtml(translate,
                                           postJsonObject, postDomain)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    inReplyTo = objJson['inReplyTo']
+    replyActor = inReplyTo.split('/statuses/')[0]
+    replyNickname = getNicknameFromActor(replyActor)
+    if not replyNickname:
+        titleStr += _replyToUnknownHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    replyDomain, replyPort = getDomainFromActor(replyActor)
+    if not (replyNickname and replyDomain):
+        titleStr += _replyToUnknownHtml(translate, postJsonObject)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    getPersonFromCache(baseDir, replyActor, personCache, allowDownloads)
+    replyDisplayName = getDisplayName(baseDir, replyActor, personCache)
+    if not replyDisplayName:
+        replyDisplayName = replyNickname + '@' + replyDomain
+
+    # add emoji to the display name
+    if ':' in replyDisplayName:
+        _logPostTiming(enableTimingLog, postStartTime, '13.5')
+
+        replyDisplayName = \
+            addEmojiToDisplayName(baseDir, httpPrefix, nickname, domain,
+                                  replyDisplayName, False)
+        _logPostTiming(enableTimingLog, postStartTime, '13.6')
+
+    titleStr += _getReplyHtml(translate, inReplyTo, replyDisplayName)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.7')
+
+    # show avatar of person replied to
+    replyAvatarUrl = \
+        getPersonAvatarUrl(baseDir, replyActor, personCache, allowDownloads)
+
+    _logPostTiming(enableTimingLog, postStartTime, '13.8')
+
+    if replyAvatarUrl:
+        replyAvatarImageInPost = \
+            '        <div class="timeline-avatar-reply">\n' + \
+            '          <a class="imageAnchor" ' + \
+            'href="/users/' + nickname + '?options=' + replyActor + \
+            ';' + str(pageNumber) + ';' + replyAvatarUrl + \
+            messageIdStr + '">\n' + \
+            '          <img loading="lazy" src="' + replyAvatarUrl + '" ' + \
+            'title="' + translate['Show profile'] + \
+            '" alt=" "' + avatarPosition + getBrokenLinkSubstitute() + \
+            '/></a>\n        </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
@@ -1072,11 +1021,11 @@ def _getPostTitleHtml(baseDir: str,
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
-    titleStr = ''
-    replyAvatarImageInPost = ''
-    if not showRepeatIcon:
-        return (titleStr, replyAvatarImageInPost,
-                containerClassIcons, containerClass)
+    if not isAnnounced and boxName == 'search' and \
+       postJsonObject.get('object'):
+        if postJsonObject['object'].get('attributedTo'):
+            if postJsonObject['object']['attributedTo'] != postActor:
+                isAnnounced = True
 
     if isAnnounced:
         return _getPostTitleAnnounceHtml(baseDir,
@@ -1160,7 +1109,8 @@ def individualPostAsHtml(allowDownloads: bool,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
-                         themeName: str,
+                         themeName: str, systemLanguage: str,
+                         maxLikeCount: int,
                          showRepeats: bool = True,
                          showIcons: bool = False,
                          manuallyApprovesFollowers: bool = False,
@@ -1243,7 +1193,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorWf = \
             webfingerHandle(session, postActorHandle, httpPrefix,
                             cachedWebfingers,
-                            domain, __version__, False)
+                            domain, __version__, False, False)
 
         avatarUrl2 = None
         displayName = None
@@ -1309,7 +1259,9 @@ def individualPostAsHtml(allowDownloads: bool,
                              projectVersion, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache, False)
+                             recentPostsCache, False,
+                             systemLanguage,
+                             domainFull, personCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
@@ -1318,8 +1270,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postJsonObject = postJsonAnnounce
 
         announceFilename = \
-            locatePost(baseDir, nickname, domain,
-                       postJsonObject['id'])
+            locatePost(baseDir, nickname, domain, postJsonObject['id'])
         if announceFilename:
             updateAnnounceCollection(recentPostsCache,
                                      baseDir, announceFilename,
@@ -1400,27 +1351,33 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # check if replying is permitted
     commentsEnabled = True
-    if 'commentsEnabled' in postJsonObject['object']:
+    if isinstance(postJsonObject['object'], dict) and \
+       'commentsEnabled' in postJsonObject['object']:
         if postJsonObject['object']['commentsEnabled'] is False:
             commentsEnabled = False
         elif 'rejectReplies' in postJsonObject['object']:
             if postJsonObject['object']['rejectReplies']:
                 commentsEnabled = False
 
+    conversationId = None
+    if isinstance(postJsonObject['object'], dict) and \
+       'conversation' in postJsonObject['object']:
+        if postJsonObject['object']['conversation']:
+            conversationId = postJsonObject['object']['conversation']
+
     replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
-                                 translate)
+                                 translate, systemLanguage,
+                                 conversationId)
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
 
-    isEvent = isEventPost(postJsonObject)
-
-    _logPostTiming(enableTimingLog, postStartTime, '11')
-
     editStr = _getEditIconHtml(baseDir, nickname, domainFull,
                                postJsonObject, actorNickname,
-                               translate, isEvent)
+                               translate, False)
+
+    _logPostTiming(enableTimingLog, postStartTime, '11')
 
     announceStr = \
         _getAnnounceIconHtml(isAnnounced,
@@ -1453,7 +1410,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                postStartTime,
                                translate, pageNumberParam,
                                timelinePostBookmark,
-                               boxName)
+                               boxName, maxLikeCount)
 
     _logPostTiming(enableTimingLog, postStartTime, '12.5')
 
@@ -1587,21 +1544,36 @@ def individualPostAsHtml(allowDownloads: bool,
     if postJsonObject['object'].get('cipherText'):
         postJsonObject['object']['content'] = \
             E2EEdecryptMessageFromDevice(postJsonObject['object'])
+        postJsonObject['object']['contentMap'][systemLanguage] = \
+            postJsonObject['object']['content']
 
-    if not postJsonObject['object'].get('content'):
-        return ''
+    domainFull = getFullDomain(domain, port)
+    personUrl = localActorUrl(httpPrefix, nickname, domainFull)
+    actorJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, False)
+    languagesUnderstood = []
+    if actorJson:
+        languagesUnderstood = getActorLanguagesList(actorJson)
+    contentStr = getContentFromPost(postJsonObject, systemLanguage,
+                                    languagesUnderstood)
+    if not contentStr:
+        contentStr = \
+            autoTranslatePost(baseDir, postJsonObject,
+                              systemLanguage, translate)
+        if not contentStr:
+            return ''
 
     isPatch = isGitPatch(baseDir, nickname, domain,
                          postJsonObject['object']['type'],
                          postJsonObject['object']['summary'],
-                         postJsonObject['object']['content'])
+                         contentStr)
 
     _logPostTiming(enableTimingLog, postStartTime, '16')
 
-    if not isPGPEncrypted(postJsonObject['object']['content']):
+    if not isPGPEncrypted(contentStr):
         if not isPatch:
             objectContent = \
-                removeLongWords(postJsonObject['object']['content'], 40, [])
+                removeLongWords(contentStr, 40, [])
             objectContent = removeTextFormatting(objectContent)
             objectContent = limitRepeatedWords(objectContent, 6)
             objectContent = \
@@ -1609,8 +1581,7 @@ def individualPostAsHtml(allowDownloads: bool,
             objectContent = htmlReplaceEmailQuote(objectContent)
             objectContent = htmlReplaceQuoteMarks(objectContent)
         else:
-            objectContent = \
-                postJsonObject['object']['content']
+            objectContent = contentStr
     else:
         objectContent = '🔒 ' + translate['Encrypted']
 
@@ -1719,7 +1690,8 @@ def htmlIndividualPost(cssCache: {},
                        showPublishedDateOnly: bool,
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
-                       themeName: str) -> str:
+                       themeName: str, systemLanguage: str,
+                       maxLikeCount: int) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1761,6 +1733,7 @@ def htmlIndividualPost(cssCache: {},
                              showPublishedDateOnly,
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
+                             systemLanguage, maxLikeCount,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1788,7 +1761,8 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1819,7 +1793,8 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
-                                         themeName,
+                                         themeName, systemLanguage,
+                                         maxLikeCount,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1842,7 +1817,8 @@ def htmlPostReplies(cssCache: {},
                     showPublishedDateOnly: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
-                    themeName: str) -> str:
+                    themeName: str, systemLanguage: str,
+                    maxLikeCount: int) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1861,7 +1837,8 @@ def htmlPostReplies(cssCache: {},
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
-                                     themeName,
+                                     themeName, systemLanguage,
+                                     maxLikeCount,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'
