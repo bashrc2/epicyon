@@ -293,7 +293,8 @@ def _xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
         hashtagList = hashtagListStr.split(' ')
         if not isBlockedHashtag(baseDir, categoryStr):
             for hashtag in hashtagList:
-                setHashtagCategory(baseDir, hashtag, categoryStr, force)
+                setHashtagCategory(baseDir, hashtag, categoryStr,
+                                   False, force)
 
 
 def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,

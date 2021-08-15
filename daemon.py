@@ -223,6 +223,7 @@ from shares import sharesCatalogEndpoint
 from shares import sharesCatalogAccountEndpoint
 from shares import sharesCatalogCSVEndpoint
 from categories import setHashtagCategory
+from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from utils import localActorUrl
@@ -3808,7 +3809,7 @@ class PubServer(BaseHTTPRequestHandler):
                 categoryStr = fields['hashtagCategory'].lower()
                 if not isBlockedHashtag(baseDir, categoryStr) and \
                    not isFiltered(baseDir, nickname, domain, categoryStr):
-                    setHashtagCategory(baseDir, hashtag, categoryStr)
+                    setHashtagCategory(baseDir, hashtag, categoryStr, False)
             else:
                 categoryFilename = baseDir + '/tags/' + hashtag + '.category'
                 if os.path.isfile(categoryFilename):
@@ -4421,7 +4422,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
                         setHashtagCategory(baseDir, skillName,
-                                           skillsStr.lower())
+                                           skillsStr.lower(), False)
                         skillCtr += 1
                     if noOfActorSkills(actorJson) != \
                        actorSkillsCtr:
@@ -16103,6 +16104,8 @@ def runDaemon(lowBandwidth: bool,
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
     httpd.restartInboxQueue = False
+
+    updateHashtagCategories(baseDir)
 
     print('Adding hashtag categories for language ' + httpd.systemLanguage)
     loadHashtagCategories(baseDir, httpd.systemLanguage)

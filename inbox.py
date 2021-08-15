@@ -156,7 +156,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
             categoryStr = \
                 guessHashtagCategory(tagName, hashtagCategories)
             if categoryStr:
-                setHashtagCategory(baseDir, tagName, categoryStr)
+                setHashtagCategory(baseDir, tagName, categoryStr, False)
 
 
 def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
