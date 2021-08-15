@@ -4421,8 +4421,9 @@ class PubServer(BaseHTTPRequestHandler):
                         setActorSkillLevel(actorJson,
                                            skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
+                        skillsStr = skillsStr.lower()
                         setHashtagCategory(baseDir, skillName,
-                                           skillsStr.lower(), False)
+                                           skillsStr, False)
                         skillCtr += 1
                     if noOfActorSkills(actorJson) != \
                        actorSkillsCtr:
