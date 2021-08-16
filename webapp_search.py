@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import getBaseContentFromPost
 from utils import isAccountDir
 from utils import getConfigParam
 from utils import getFullDomain
@@ -24,6 +25,7 @@ from utils import firstParagraphFromString
 from utils import searchBoxPosts
 from utils import getAltPath
 from utils import acctDir
+from utils import localActorUrl
 from skills import noOfActorSkills
 from skills import getSkillsFromList
 from categories import getHashtagCategory
@@ -34,6 +36,7 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile
 from webapp_utils import htmlPostSeparator
+from webapp_utils import htmlSearchResultShare
 from webapp_post import individualPostAsHtml
 from webapp_hashtagswarm import htmlHashTagSwarm
 
@@ -100,13 +103,116 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
     return emojiForm
 
 
+def _matchSharedItem(searchStrLowerList: [],
+                     sharedItem: {}) -> bool:
+    """Returns true if the shared item matches search criteria
+    """
+    for searchSubstr in searchStrLowerList:
+        searchSubstr = searchSubstr.strip()
+        if sharedItem.get('location'):
+            if searchSubstr in sharedItem['location'].lower():
+                return True
+        elif searchSubstr in sharedItem['summary'].lower():
+            return True
+        elif searchSubstr in sharedItem['displayName'].lower():
+            return True
+        elif searchSubstr in sharedItem['category'].lower():
+            return True
+    return False
+
+
+def _htmlSearchResultSharePage(actor: str, domainFull: str,
+                               callingDomain: str, pageNumber: int,
+                               searchStrLower: str, translate: {},
+                               previous: bool) -> str:
+    """Returns the html for the previous button on shared items search results
+    """
+    postActor = getAltPath(actor, domainFull, callingDomain)
+    # previous page link, needs to be a POST
+    if previous:
+        pageNumber -= 1
+        titleStr = translate['Page up']
+        imageUrl = 'pageup.png'
+    else:
+        pageNumber += 1
+        titleStr = translate['Page down']
+        imageUrl = 'pagedown.png'
+    sharedItemsForm = \
+        '<form method="POST" action="' + postActor + '/searchhandle?page=' + \
+        str(pageNumber) + '">\n'
+    sharedItemsForm += \
+        '  <input type="hidden" ' + 'name="actor" value="' + actor + '">\n'
+    sharedItemsForm += \
+        '  <input type="hidden" ' + 'name="searchtext" value="' + \
+        searchStrLower + '"><br>\n'
+    sharedItemsForm += \
+        '  <center>\n' + '    <a href="' + actor + \
+        '" type="submit" name="submitSearch">\n'
+    sharedItemsForm += \
+        '    <img loading="lazy" ' + 'class="pageicon" src="/icons' + \
+        '/' + imageUrl + '" title="' + titleStr + \
+        '" alt="' + titleStr + '"/></a>\n'
+    sharedItemsForm += '  </center>\n'
+    sharedItemsForm += '</form>\n'
+    return sharedItemsForm
+
+
+def _htmlSharesResult(baseDir: str,
+                      sharesJson: {}, pageNumber: int, resultsPerPage: int,
+                      searchStrLowerList: [], currPage: int, ctr: int,
+                      callingDomain: str, httpPrefix: str, domainFull: str,
+                      contactNickname: str, actor: str,
+                      resultsExist: bool, searchStrLower: str, translate: {},
+                      sharesFileType: str) -> (bool, int, int, str):
+    """Result for shared items search
+    """
+    sharedItemsForm = ''
+    if currPage > pageNumber:
+        return resultsExist, currPage, ctr, sharedItemsForm
+
+    for name, sharedItem in sharesJson.items():
+        if _matchSharedItem(searchStrLowerList, sharedItem):
+            if currPage == pageNumber:
+                # show individual search result
+                sharedItemsForm += \
+                    htmlSearchResultShare(baseDir, sharedItem, translate,
+                                          httpPrefix, domainFull,
+                                          contactNickname,
+                                          name, actor, sharesFileType)
+                if not resultsExist and currPage > 1:
+                    # show the previous page button
+                    sharedItemsForm += \
+                        _htmlSearchResultSharePage(actor, domainFull,
+                                                   callingDomain,
+                                                   pageNumber,
+                                                   searchStrLower,
+                                                   translate, True)
+                resultsExist = True
+            ctr += 1
+            if ctr >= resultsPerPage:
+                currPage += 1
+                if currPage > pageNumber:
+                    # show the next page button
+                    sharedItemsForm += \
+                        _htmlSearchResultSharePage(actor, domainFull,
+                                                   callingDomain,
+                                                   pageNumber,
+                                                   searchStrLower,
+                                                   translate, False)
+                    return resultsExist, currPage, ctr, sharedItemsForm
+                ctr = 0
+    return resultsExist, currPage, ctr, sharedItemsForm
+
+
 def htmlSearchSharedItems(cssCache: {}, translate: {},
                           baseDir: str, searchStr: str,
                           pageNumber: int,
                           resultsPerPage: int,
                           httpPrefix: str,
                           domainFull: str, actor: str,
-                          callingDomain: str) -> str:
+                          callingDomain: str,
+                          sharedItemsFederatedDomains: [],
+                          sharesFileType: str) -> str:
     """Search results for shared items
     """
     currPage = 1
@@ -123,19 +229,21 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
         getConfigParam(baseDir, 'instanceTitle')
     sharedItemsForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    if sharesFileType == 'shares':
+        titleStr = translate['Shared Items Search']
+    else:
+        titleStr = translate['Wanted Items Search']
     sharedItemsForm += \
         '<center><h1>' + \
-        '<a href="' + actor + '/search">' + \
-        translate['Shared Items Search'] + \
-        '</a></h1></center>'
+        '<a href="' + actor + '/search">' + titleStr + '</a></h1></center>'
     resultsExist = False
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
+            if not isAccountDir(handle):
                 continue
             contactNickname = handle.split('@')[0]
             sharesFilename = baseDir + '/accounts/' + handle + \
-                '/shares.json'
+                '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
 
@@ -143,130 +251,61 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
             if not sharesJson:
                 continue
 
-            for name, sharedItem in sharesJson.items():
-                matched = True
-                for searchSubstr in searchStrLowerList:
-                    subStrMatched = False
-                    searchSubstr = searchSubstr.strip()
-                    if searchSubstr in sharedItem['location'].lower():
-                        subStrMatched = True
-                    elif searchSubstr in sharedItem['summary'].lower():
-                        subStrMatched = True
-                    elif searchSubstr in sharedItem['displayName'].lower():
-                        subStrMatched = True
-                    elif searchSubstr in sharedItem['category'].lower():
-                        subStrMatched = True
-                    if not subStrMatched:
-                        matched = False
-                        break
-                if matched:
-                    if currPage == pageNumber:
-                        sharedItemsForm += '<div class="container">\n'
-                        sharedItemsForm += \
-                            '<p class="share-title">' + \
-                            sharedItem['displayName'] + '</p>\n'
-                        if sharedItem.get('imageUrl'):
-                            sharedItemsForm += \
-                                '<a href="' + \
-                                sharedItem['imageUrl'] + '">\n'
-                            sharedItemsForm += \
-                                '<img loading="lazy" src="' + \
-                                sharedItem['imageUrl'] + \
-                                '" alt="Item image"></a>\n'
-                        sharedItemsForm += \
-                            '<p>' + sharedItem['summary'] + '</p>\n'
-                        sharedItemsForm += \
-                            '<p><b>' + translate['Type'] + \
-                            ':</b> ' + sharedItem['itemType'] + ' '
-                        sharedItemsForm += \
-                            '<b>' + translate['Category'] + \
-                            ':</b> ' + sharedItem['category'] + ' '
-                        sharedItemsForm += \
-                            '<b>' + translate['Location'] + \
-                            ':</b> ' + sharedItem['location'] + '</p>\n'
-                        contactActor = \
-                            httpPrefix + '://' + domainFull + \
-                            '/users/' + contactNickname
-                        sharedItemsForm += \
-                            '<p><a href="' + actor + \
-                            '?replydm=sharedesc:' + \
-                            sharedItem['displayName'] + \
-                            '?mention=' + contactActor + \
-                            '"><button class="button">' + \
-                            translate['Contact'] + '</button></a>\n'
-                        if actor.endswith('/users/' + contactNickname):
-                            sharedItemsForm += \
-                                ' <a href="' + actor + '?rmshare=' + \
-                                name + '"><button class="button">' + \
-                                translate['Remove'] + '</button></a>\n'
-                        sharedItemsForm += '</p></div>\n'
-                        if not resultsExist and currPage > 1:
-                            postActor = \
-                                getAltPath(actor, domainFull,
-                                           callingDomain)
-                            # previous page link, needs to be a POST
-                            sharedItemsForm += \
-                                '<form method="POST" action="' + \
-                                postActor + \
-                                '/searchhandle?page=' + \
-                                str(pageNumber - 1) + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="actor" value="' + actor + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="searchtext" value="' + \
-                                searchStrLower + '"><br>\n'
-                            sharedItemsForm += \
-                                '  <center>\n' + \
-                                '    <a href="' + actor + \
-                                '" type="submit" name="submitSearch">\n'
-                            sharedItemsForm += \
-                                '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/icons' + \
-                                '/pageup.png" title="' + \
-                                translate['Page up'] + \
-                                '" alt="' + translate['Page up'] + \
-                                '"/></a>\n'
-                            sharedItemsForm += '  </center>\n'
-                            sharedItemsForm += '</form>\n'
-                        resultsExist = True
-                    ctr += 1
-                    if ctr >= resultsPerPage:
-                        currPage += 1
-                        if currPage > pageNumber:
-                            postActor = \
-                                getAltPath(actor, domainFull,
-                                           callingDomain)
-                            # next page link, needs to be a POST
-                            sharedItemsForm += \
-                                '<form method="POST" action="' + \
-                                postActor + \
-                                '/searchhandle?page=' + \
-                                str(pageNumber + 1) + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="actor" value="' + actor + '">\n'
-                            sharedItemsForm += \
-                                '  <input type="hidden" ' + \
-                                'name="searchtext" value="' + \
-                                searchStrLower + '"><br>\n'
-                            sharedItemsForm += \
-                                '  <center>\n' + \
-                                '    <a href="' + actor + \
-                                '" type="submit" name="submitSearch">\n'
-                            sharedItemsForm += \
-                                '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/icons' + \
-                                '/pagedown.png" title="' + \
-                                translate['Page down'] + \
-                                '" alt="' + translate['Page down'] + \
-                                '"/></a>\n'
-                            sharedItemsForm += '  </center>\n'
-                            sharedItemsForm += '</form>\n'
-                            break
-                        ctr = 0
+            (resultsExist, currPage, ctr,
+             resultStr) = _htmlSharesResult(baseDir, sharesJson, pageNumber,
+                                            resultsPerPage,
+                                            searchStrLowerList,
+                                            currPage, ctr,
+                                            callingDomain, httpPrefix,
+                                            domainFull,
+                                            contactNickname,
+                                            actor, resultsExist,
+                                            searchStrLower, translate,
+                                            sharesFileType)
+            sharedItemsForm += resultStr
+
+            if currPage > pageNumber:
+                break
         break
+
+    # search federated shared items
+    if sharesFileType == 'shares':
+        catalogsDir = baseDir + '/cache/catalogs'
+    else:
+        catalogsDir = baseDir + '/cache/wantedItems'
+    if currPage <= pageNumber and os.path.isdir(catalogsDir):
+        for subdir, dirs, files in os.walk(catalogsDir):
+            for f in files:
+                if '#' in f:
+                    continue
+                if not f.endswith('.' + sharesFileType + '.json'):
+                    continue
+                federatedDomain = f.split('.')[0]
+                if federatedDomain not in sharedItemsFederatedDomains:
+                    continue
+                sharesFilename = catalogsDir + '/' + f
+                sharesJson = loadJson(sharesFilename)
+                if not sharesJson:
+                    continue
+
+                (resultsExist, currPage, ctr,
+                 resultStr) = _htmlSharesResult(baseDir, sharesJson,
+                                                pageNumber,
+                                                resultsPerPage,
+                                                searchStrLowerList,
+                                                currPage, ctr,
+                                                callingDomain, httpPrefix,
+                                                domainFull,
+                                                contactNickname,
+                                                actor, resultsExist,
+                                                searchStrLower, translate,
+                                                sharesFileType)
+                sharedItemsForm += resultStr
+
+                if currPage > pageNumber:
+                    break
+            break
+
     if not resultsExist:
         sharedItemsForm += \
             '<center><h5>' + translate['No results'] + '</h5></center>\n'
@@ -367,10 +406,8 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
-    idx = 'Enter an address, shared item, !history, #hashtag, ' + \
-        '*skill or :emoji: to search for'
     followStr += \
-        '  <p class="followText">' + translate[idx] + '</p>\n'
+        '  <p class="followText">' + translate['Search screen text'] + '</p>\n'
     followStr += '  <form role="search" method="POST" ' + \
         'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
     followStr += \
@@ -536,10 +573,12 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str, boxName: str) -> str:
+                      themeName: str, boxName: str,
+                      systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Show a page containing search results for your post history
     """
-    if historysearch.startswith('!'):
+    if historysearch.startswith("'"):
         historysearch = historysearch[1:].strip()
 
     historysearch = historysearch.lower().strip('\n').strip('\r')
@@ -559,7 +598,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
 
     # add the page title
     domainFull = getFullDomain(domain, port)
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     historySearchTitle = '🔍 ' + translate['Your Posts']
     if boxName == 'bookmarks':
         historySearchTitle = '🔍 ' + translate['Bookmarks']
@@ -616,7 +655,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
-                                 themeName,
+                                 themeName, systemLanguage, maxLikeCount,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -640,8 +679,10 @@ def htmlHashtagSearch(cssCache: {},
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
-                      themeName: str) -> str:
+                      themeName: str, systemLanguage: str,
+                      maxLikeCount: int) -> str:
     """Show a page containing search results for a hashtag
+    or after selecting a hashtag from the swarm
     """
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
@@ -790,7 +831,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
-                                 themeName,
+                                 themeName, systemLanguage, maxLikeCount,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
@@ -820,7 +861,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                      postsPerPage: int,
                      session, cachedWebfingers: {}, personCache: {},
                      httpPrefix: str, projectVersion: str,
-                     YTReplacementDomain: str) -> str:
+                     YTReplacementDomain: str, systemLanguage: str) -> str:
     """Show an rss feed for a hashtag
     """
     if hashtag.startswith('#'):
@@ -901,7 +942,8 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                         '         <title>' + \
                         postJsonObject['object']['summary'] + \
                         '</title>'
-                description = postJsonObject['object']['content']
+                description = \
+                    getBaseContentFromPost(postJsonObject, systemLanguage)
                 description = firstParagraphFromString(description)
                 hashtagFeed += \
                     '         <description>' + description + '</description>'

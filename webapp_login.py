@@ -12,6 +12,7 @@ import time
 from shutil import copyfile
 from utils import getConfigParam
 from utils import noOfAccounts
+from utils import getNicknameValidationPattern
 from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import htmlKeyboardNavigation
@@ -152,6 +153,7 @@ def htmlLogin(cssCache: {}, translate: {},
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     httpPrefix, domain,
                                     systemLanguage)
+    nicknamePattern = getNicknameValidationPattern()
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     loginForm += \
         '<br>\n' + \
@@ -167,14 +169,15 @@ def htmlLogin(cssCache: {}, translate: {},
         '    <label for="nickname"><b>' + \
         translate['Nickname'] + '</b></label>\n' + \
         '    <input type="text" ' + autocompleteStr + ' placeholder="' + \
-        translate['Enter Nickname'] + \
-        '" name="username" required autofocus>\n' + \
+        translate['Enter Nickname'] + '" ' + \
+        'pattern="' + nicknamePattern + '" name="username" ' + \
+        'required autofocus>\n' + \
         '\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
         '    <input type="password" ' + autocompleteStr + \
-        ' placeholder="' + translate['Enter Password'] + \
-        '" name="password" required>\n' + \
+        ' placeholder="' + translate['Enter Password'] + '" ' + \
+        'pattern="{8,256}" name="password" required>\n' + \
         loginButtonStr + registerButtonStr + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \

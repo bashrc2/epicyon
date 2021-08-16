@@ -17,7 +17,8 @@ from utils import getFullDomain
 def instancesGraph(baseDir: str, handles: str,
                    proxyType: str,
                    port: int, httpPrefix: str,
-                   debug: bool, projectVersion: str) -> str:
+                   debug: bool, projectVersion: str,
+                   systemLanguage: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
@@ -53,7 +54,7 @@ def instancesGraph(baseDir: str, handles: str,
         wfRequest = \
             webfingerHandle(session, handle, httpPrefix,
                             cachedWebfingers,
-                            domain, projectVersion, debug)
+                            domain, projectVersion, debug, False)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):
@@ -74,7 +75,7 @@ def instancesGraph(baseDir: str, handles: str,
                            maxAttachments, federationList,
                            personCache, debug,
                            projectVersion, httpPrefix, domain,
-                           wordFrequency, [])
+                           wordFrequency, [], systemLanguage)
         postDomains.sort()
         for fedDomain in postDomains:
             dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'

@@ -124,7 +124,8 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
             else:
                 print('WARN: getJson url: ' + url +
                       ' failed with error code ' +
-                      str(result.status_code))
+                      str(result.status_code) +
+                      ' headers: ' + str(sessionHeaders))
         return result.json()
     except requests.exceptions.RequestException as e:
         sessionHeaders2 = sessionHeaders.copy()

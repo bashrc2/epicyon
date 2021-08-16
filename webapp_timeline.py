@@ -16,6 +16,8 @@ from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
 from utils import acctDir
+from utils import isfloat
+from utils import localActorUrl
 from follow import followerApprovalActive
 from person import isPersonSnoozed
 from markdown import markdownToHtml
@@ -144,6 +146,20 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
                 '<a href="' + usersPath + '/newshare?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlwanted':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newwanted?nodropdown"><img loading="lazy" src="/' + \
+                'icons/newpost.png" title="' + \
+                translate['Create a new wanted item'] + '" alt="| ' + \
+                translate['Create a new wanted item'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newwanted?nodropdown">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
@@ -259,7 +275,8 @@ def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
 
 def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
                           nickname: str, newCalendarEvent: bool,
-                          newDM: bool, newReply: bool, newShare: bool,
+                          newDM: bool, newReply: bool,
+                          newShare: bool, newWanted: bool,
                           followApprovals: bool,
                           accessKeys: {}, translate: {}) -> str:
     """Returns html for timeline keyboard navigation
@@ -276,6 +293,9 @@ def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
     sharesStr = translate['Shares']
     if newShare:
         sharesStr = '<strong>' + sharesStr + '</strong>'
+    wantedStr = translate['Wanted']
+    if newWanted:
+        wantedStr = '<strong>' + wantedStr + '</strong>'
     menuProfile = \
         htmlHideFromScreenReader('👤') + ' ' + \
         translate['Switch to profile view']
@@ -296,6 +316,8 @@ def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
         htmlHideFromScreenReader('🔖') + ' ' + translate['Bookmarks']
     menuShares = \
         htmlHideFromScreenReader('🤝') + ' ' + sharesStr
+    menuWanted = \
+        htmlHideFromScreenReader('⛱') + ' ' + wantedStr
     menuBlogs = \
         htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
     menuNewswire = \
@@ -317,6 +339,7 @@ def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
         menuOutbox: usersPath + '/outbox#timelineposts',
         menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
         menuShares: usersPath + '/tlshares#timelineposts',
+        menuWanted: usersPath + '/tlwanted#timelineposts',
         menuBlogs: usersPath + '/tlblogs#timelineposts',
         menuNewswire: usersPath + '/newswiremobile',
         menuLinks: usersPath + '/linksmobile'
@@ -330,6 +353,46 @@ def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
     return htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
                                   None, usersPath, translate, followApprovals)
+
+
+def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
+                     httpPrefix: str, translate: {},
+                     moderator: bool, editor: bool,
+                     newswire: {}, positiveVoting: bool,
+                     showPublishAsIcon: bool,
+                     rssIconAtTop: bool, publishButtonAtTop: bool,
+                     authorized: bool, theme: str,
+                     defaultTimeline: str, accessKeys: {},
+                     boxName: str,
+                     enableTimingLog: bool, timelineStartTime) -> str:
+    """Ending of the timeline, containing the right column
+    """
+    # end of timeline-posts
+    tlStr = '  </div>\n'
+
+    # end of column-center
+    tlStr += '  </td>\n'
+
+    # right column
+    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
+                                           httpPrefix, translate,
+                                           moderator, editor,
+                                           newswire, positiveVoting,
+                                           False, None, True,
+                                           showPublishAsIcon,
+                                           rssIconAtTop, publishButtonAtTop,
+                                           authorized, True, theme,
+                                           defaultTimeline, accessKeys)
+    tlStr += '  <td valign="top" class="col-right" ' + \
+        'id="newswire" tabindex="-1">' + \
+        rightColumnStr + '  </td>\n'
+    tlStr += '  </tr>\n'
+
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
+
+    tlStr += '  </tbody>\n'
+    tlStr += '</table>\n'
+    return tlStr
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
@@ -358,7 +421,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
                  textModeBanner: str,
-                 accessKeys: {}) -> str:
+                 accessKeys: {}, systemLanguage: str,
+                 maxLikeCount: int,
+                 sharedItemsFederatedDomains: []) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -402,6 +467,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         newShare = True
         if boxName == 'tlshares':
             os.remove(newShareFile)
+
+    # should the Wanted button be highlighted?
+    newWanted = False
+    newWantedFile = accountDir + '/.newWanted'
+    if os.path.isfile(newWantedFile):
+        newWanted = True
+        if boxName == 'tlwanted':
+            os.remove(newWantedFile)
 
     # should the Moderation/reports button be highlighted?
     newReport = False
@@ -454,6 +527,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     sharesButton = 'button'
     if newShare:
         sharesButton = 'buttonhighlighted'
+    wantedButton = 'button'
+    if newWanted:
+        wantedButton = 'buttonhighlighted'
     moderationButton = 'button'
     if newReport:
         moderationButton = 'buttonhighlighted'
@@ -485,6 +561,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         sharesButton = 'buttonselected'
         if newShare:
             sharesButton = 'buttonselectedhighlighted'
+    elif boxName == 'tlwanted':
+        wantedButton = 'buttonselected'
+        if newWanted:
+            wantedButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
 
@@ -530,6 +610,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # shares, bookmarks and events buttons
     sharesButtonStr = ''
+    wantedButtonStr = ''
     bookmarksButtonStr = ''
     eventsButtonStr = ''
     if not minimal:
@@ -537,6 +618,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '<a href="' + usersPath + '/tlshares"><button class="' + \
             sharesButton + '"><span>' + \
             htmlHighlightLabel(translate['Shares'], newShare) + \
+            '</span></button></a>'
+
+        wantedButtonStr = \
+            '<a href="' + usersPath + '/tlwanted"><button class="' + \
+            wantedButton + '"><span>' + \
+            htmlHighlightLabel(translate['Wanted'], newWanted) + \
             '</span></button></a>'
 
         bookmarksButtonStr = \
@@ -569,7 +656,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # keyboard navigation
     tlStr += \
         _htmlTimelineKeyboard(moderator, textModeBanner, usersPath, nickname,
-                              newCalendarEvent, newDM, newReply, newShare,
+                              newCalendarEvent, newDM, newReply,
+                              newShare, newWanted,
                               followApprovals, accessKeys, translate)
 
     # banner and row of buttons
@@ -591,7 +679,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   newsButton, inboxButton,
                                   dmButton, newDM, repliesButton,
                                   newReply, minimal, sentButton,
-                                  sharesButtonStr, bookmarksButtonStr,
+                                  sharesButtonStr, wantedButtonStr,
+                                  bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
                                   newPostButtonStr, baseDir, nickname,
                                   domain, timelineStartTime,
@@ -617,7 +706,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
-                             True, False, theme, accessKeys)
+                             True, False, theme, accessKeys,
+                             sharedItemsFederatedDomains)
     tlStr += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
@@ -632,7 +722,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   newsButton, inboxButton,
                                   dmButton, newDM, repliesButton,
                                   newReply, minimal, sentButton,
-                                  sharesButtonStr, bookmarksButtonStr,
+                                  sharesButtonStr, wantedButtonStr,
+                                  bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
                                   newPostButtonStr, baseDir, nickname,
                                   domain, timelineStartTime,
@@ -654,7 +745,36 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         return (tlStr +
                 _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
                                     baseDir, actor, nickname, domain, port,
-                                    maxSharesPerAccount, httpPrefix) +
+                                    maxSharesPerAccount, httpPrefix,
+                                    sharedItemsFederatedDomains, 'shares') +
+                _htmlTimelineEnd(baseDir, nickname, domainFull,
+                                 httpPrefix, translate,
+                                 moderator, editor,
+                                 newswire, positiveVoting,
+                                 showPublishAsIcon,
+                                 rssIconAtTop, publishButtonAtTop,
+                                 authorized, theme,
+                                 defaultTimeline, accessKeys,
+                                 boxName,
+                                 enableTimingLog, timelineStartTime) +
+                htmlFooter())
+    elif boxName == 'tlwanted':
+        maxSharesPerAccount = itemsPerPage
+        return (tlStr +
+                _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
+                                    baseDir, actor, nickname, domain, port,
+                                    maxSharesPerAccount, httpPrefix,
+                                    sharedItemsFederatedDomains, 'wanted') +
+                _htmlTimelineEnd(baseDir, nickname, domainFull,
+                                 httpPrefix, translate,
+                                 moderator, editor,
+                                 newswire, positiveVoting,
+                                 showPublishAsIcon,
+                                 rssIconAtTop, publishButtonAtTop,
+                                 authorized, theme,
+                                 defaultTimeline, accessKeys,
+                                 boxName,
+                                 enableTimingLog, timelineStartTime) +
                 htmlFooter())
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
@@ -683,6 +803,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # show the posts
     itemCtr = 0
+    if timelineJson:
+        if 'orderedItems' not in timelineJson:
+            print('ERROR: no orderedItems in timeline for '
+                  + boxName + ' ' + str(timelineJson))
+            return ''
+
     if timelineJson:
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
@@ -743,7 +869,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showPublishedDateOnly,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
-                                             theme,
+                                             theme, systemLanguage,
+                                             maxLikeCount,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -780,37 +907,25 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     elif itemCtr == 0:
         tlStr += _getHelpForTimeline(baseDir, boxName)
 
-    # end of timeline-posts
-    tlStr += '  </div>\n'
-
-    # end of column-center
-    tlStr += '  </td>\n'
-
-    # right column
-    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
-                                           httpPrefix, translate,
-                                           moderator, editor,
-                                           newswire, positiveVoting,
-                                           False, None, True,
-                                           showPublishAsIcon,
-                                           rssIconAtTop, publishButtonAtTop,
-                                           authorized, True, theme,
-                                           defaultTimeline, accessKeys)
-    tlStr += '  <td valign="top" class="col-right" ' + \
-        'id="newswire" tabindex="-1">' + \
-        rightColumnStr + '  </td>\n'
-    tlStr += '  </tr>\n'
-
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
-
-    tlStr += '  </tbody>\n'
-    tlStr += '</table>\n'
+    tlStr += \
+        _htmlTimelineEnd(baseDir, nickname, domainFull,
+                         httpPrefix, translate,
+                         moderator, editor,
+                         newswire, positiveVoting,
+                         showPublishAsIcon,
+                         rssIconAtTop, publishButtonAtTop,
+                         authorized, theme,
+                         defaultTimeline, accessKeys,
+                         boxName,
+                         enableTimingLog, timelineStartTime)
     tlStr += htmlFooter()
     return tlStr
 
 
-def htmlIndividualShare(actor: str, item: {}, translate: {},
-                        showContact: bool, removeButton: bool) -> str:
+def htmlIndividualShare(domain: str, shareId: str,
+                        actor: str, item: {}, translate: {},
+                        showContact: bool, removeButton: bool,
+                        sharesFileType: str) -> str:
     """Returns an individual shared item as html
     """
     profileStr = '<div class="container">\n'
@@ -820,27 +935,51 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
         profileStr += \
             '<img loading="lazy" src="' + item['imageUrl'] + \
             '" alt="' + translate['Item image'] + '">\n</a>\n'
-    profileStr += '<p>' + item['summary'] + '</p>\n'
+    profileStr += '<p>' + item['summary'] + '</p>\n<p>'
+    if item.get('itemQty'):
+        if item['itemQty'] > 1:
+            profileStr += \
+                '<b>' + translate['Quantity'] + ':</b> ' + \
+                str(item['itemQty']) + '<br>'
     profileStr += \
-        '<p><b>' + translate['Type'] + ':</b> ' + item['itemType'] + ' '
+        '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + '<br>'
     profileStr += \
-        '<b>' + translate['Category'] + ':</b> ' + item['category'] + ' '
-    profileStr += \
-        '<b>' + translate['Location'] + ':</b> ' + item['location'] + '</p>\n'
+        '<b>' + translate['Category'] + ':</b> ' + item['category'] + '<br>'
+    if item.get('location'):
+        profileStr += \
+            '<b>' + translate['Location'] + ':</b> ' + \
+            item['location'] + '<br>'
+    if item.get('itemPrice') and item.get('itemCurrency'):
+        if isfloat(item['itemPrice']):
+            if float(item['itemPrice']) > 0:
+                profileStr += ' ' + \
+                    '<b>' + translate['Price'] + ':</b> ' + \
+                    item['itemPrice'] + ' ' + item['itemCurrency']
+    profileStr += '</p>\n'
     sharedesc = item['displayName']
     if '<' not in sharedesc and '?' not in sharedesc:
         if showContact:
             contactActor = item['actor']
             profileStr += \
-                '<p><a href="' + actor + \
+                '<p>' + \
+                '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
                 '?mention=' + contactActor + '"><button class="button">' + \
                 translate['Contact'] + '</button></a>\n'
-        if removeButton:
             profileStr += \
-                ' <a href="' + actor + '?rmshare=' + sharedesc + \
-                '"><button class="button">' + \
-                translate['Remove'] + '</button></a>\n'
+                '<a href="' + contactActor + '"><button class="button">' + \
+                translate['View'] + '</button></a>\n'
+        if removeButton and domain in shareId:
+            if sharesFileType == 'shares':
+                profileStr += \
+                    ' <a href="' + actor + '?rmshare=' + shareId + \
+                    '"><button class="button">' + \
+                    translate['Remove'] + '</button></a>\n'
+            else:
+                profileStr += \
+                    ' <a href="' + actor + '?rmwanted=' + shareId + \
+                    '"><button class="button">' + \
+                    translate['Remove'] + '</button></a>\n'
     profileStr += '</div>\n'
     return profileStr
 
@@ -848,20 +987,28 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
 def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                         baseDir: str, actor: str,
                         nickname: str, domain: str, port: int,
-                        maxSharesPerAccount: int, httpPrefix: str) -> str:
+                        maxSharesPerAccount: int, httpPrefix: str,
+                        sharedItemsFederatedDomains: [],
+                        sharesFileType: str) -> str:
     """Show shared items timeline as html
     """
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
-                           baseDir, maxSharesPerAccount)
+                           baseDir, domain, nickname, maxSharesPerAccount,
+                           sharedItemsFederatedDomains, sharesFileType)
     domainFull = getFullDomain(domain, port)
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    adminNickname = getConfigParam(baseDir, 'admin')
+    adminActor = ''
+    if adminNickname:
+        adminActor = \
+            localActorUrl(httpPrefix, adminNickname, domainFull)
     timelineStr = ''
 
     if pageNumber > 1:
         timelineStr += \
             '  <center>\n' + \
-            '    <a href="' + actor + '/tlshares?page=' + \
+            '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + translate['Page up'] + \
@@ -870,26 +1017,37 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
 
     separatorStr = htmlPostSeparator(baseDir, None)
     ctr = 0
+
+    isAdminAccount = False
+    if adminActor and actor == adminActor:
+        isAdminAccount = True
+    isModeratorAccount = False
+    if isModerator(baseDir, nickname):
+        isModeratorAccount = True
+
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
             showContactButton = True
         showRemoveButton = False
-        if item['actor'] == actor:
-            showRemoveButton = True
+        if '___' + domain in item['shareId']:
+            if item['actor'] == actor or isAdminAccount or isModeratorAccount:
+                showRemoveButton = True
         timelineStr += \
-            htmlIndividualShare(actor, item, translate,
-                                showContactButton, showRemoveButton)
+            htmlIndividualShare(domain, item['shareId'],
+                                actor, item, translate,
+                                showContactButton, showRemoveButton,
+                                sharesFileType)
         timelineStr += separatorStr
         ctr += 1
 
     if ctr == 0:
-        timelineStr += _getHelpForTimeline(baseDir, 'tlshares')
+        timelineStr += _getHelpForTimeline(baseDir, 'tl' + sharesFileType)
 
     if not lastPage:
         timelineStr += \
             '  <center>\n' + \
-            '    <a href="' + actor + '/tlshares?page=' + \
+            '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + translate['Page down'] + \
@@ -919,7 +1077,9 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allowLocalNetworkAccess: bool,
                textModeBanner: str,
-               accessKeys: {}) -> str:
+               accessKeys: {}, systemLanguage: str,
+               maxLikeCount: int,
+               sharedItemsFederatedDomains: []) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -941,7 +1101,56 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
+
+
+def htmlWanted(cssCache: {}, defaultTimeline: str,
+               recentPostsCache: {}, maxRecentPosts: int,
+               translate: {}, pageNumber: int, itemsPerPage: int,
+               session, baseDir: str,
+               cachedWebfingers: {}, personCache: {},
+               nickname: str, domain: str, port: int,
+               allowDeletion: bool,
+               httpPrefix: str, projectVersion: str,
+               YTReplacementDomain: str,
+               showPublishedDateOnly: bool,
+               newswire: {}, positiveVoting: bool,
+               showPublishAsIcon: bool,
+               fullWidthTimelineButtonHeader: bool,
+               iconsAsButtons: bool,
+               rssIconAtTop: bool,
+               publishButtonAtTop: bool,
+               authorized: bool, theme: str,
+               peertubeInstances: [],
+               allowLocalNetworkAccess: bool,
+               textModeBanner: str,
+               accessKeys: {}, systemLanguage: str,
+               maxLikeCount: int,
+               sharedItemsFederatedDomains: []) -> str:
+    """Show the wanted timeline as html
+    """
+    manuallyApproveFollowers = \
+        followerApprovalActive(baseDir, nickname, domain)
+
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir,
+                        cachedWebfingers, personCache,
+                        nickname, domain, port, None,
+                        'tlwanted', allowDeletion,
+                        httpPrefix, projectVersion, manuallyApproveFollowers,
+                        False, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting, showPublishAsIcon,
+                        fullWidthTimelineButtonHeader,
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop,
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess, textModeBanner,
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -964,7 +1173,9 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               peertubeInstances: [],
               allowLocalNetworkAccess: bool,
               textModeBanner: str,
-              accessKeys: {}) -> str:
+              accessKeys: {}, systemLanguage: str,
+              maxLikeCount: int,
+              sharedItemsFederatedDomains: []) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -986,7 +1197,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -1009,7 +1221,9 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   peertubeInstances: [],
                   allowLocalNetworkAccess: bool,
                   textModeBanner: str,
-                  accessKeys: {}) -> str:
+                  accessKeys: {}, systemLanguage: str,
+                  maxLikeCount: int,
+                  sharedItemsFederatedDomains: []) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -1031,7 +1245,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -1054,7 +1269,9 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
                  textModeBanner: str,
-                 accessKeys: {}) -> str:
+                 accessKeys: {}, systemLanguage: str,
+                 maxLikeCount: int,
+                 sharedItemsFederatedDomains: []) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1071,7 +1288,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -1094,7 +1312,9 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      peertubeInstances: [],
                      allowLocalNetworkAccess: bool,
                      textModeBanner: str,
-                     accessKeys: {}) -> str:
+                     accessKeys: {}, systemLanguage: str,
+                     maxLikeCount: int,
+                     sharedItemsFederatedDomains: []) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1112,7 +1332,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -1135,7 +1356,9 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
-                   accessKeys: {}) -> str:
+                   accessKeys: {}, systemLanguage: str,
+                   maxLikeCount: int,
+                   sharedItemsFederatedDomains: []) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1153,7 +1376,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1176,7 +1400,9 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    peertubeInstances: [],
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
-                   accessKeys: {}) -> str:
+                   accessKeys: {}, systemLanguage: str,
+                   maxLikeCount: int,
+                   sharedItemsFederatedDomains: []) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1194,7 +1420,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1218,7 +1445,9 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       textModeBanner: str,
-                      accessKeys: {}) -> str:
+                      accessKeys: {}, systemLanguage: str,
+                      maxLikeCount: int,
+                      sharedItemsFederatedDomains: []) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1236,7 +1465,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1259,7 +1489,9 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   peertubeInstances: [],
                   allowLocalNetworkAccess: bool,
                   textModeBanner: str,
-                  accessKeys: {}) -> str:
+                  accessKeys: {}, systemLanguage: str,
+                  maxLikeCount: int,
+                  sharedItemsFederatedDomains: []) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1277,7 +1509,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1300,7 +1533,9 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allowLocalNetworkAccess: bool,
                textModeBanner: str,
-               accessKeys: {}) -> str:
+               accessKeys: {}, systemLanguage: str,
+               maxLikeCount: int,
+               sharedItemsFederatedDomains: []) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1319,4 +1554,5 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
-                        accessKeys)
+                        accessKeys, systemLanguage, maxLikeCount,
+                        sharedItemsFederatedDomains)

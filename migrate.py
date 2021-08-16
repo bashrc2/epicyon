@@ -12,6 +12,7 @@ from utils import isAccountDir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import acctDir
+from utils import hasGroupType
 from webfinger import webfingerHandle
 from blocking import isBlocked
 from posts import getUserUrl
@@ -58,7 +59,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug)
+                                None, __version__, debug, False)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -102,13 +103,14 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
     if movedToPort:
         if movedToPort != 80 and movedToPort != 443:
             movedToDomainFull = movedToDomain + ':' + str(movedToPort)
+    groupAccount = hasGroupType(baseDir, movedToUrl, None)
     if isBlocked(baseDir, nickname, domain,
                  movedToNickname, movedToDomain):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
         unfollowAccount(baseDir, nickname, domain,
                         movedToNickname, movedToDomainFull,
-                        'following.txt', debug)
+                        debug, groupAccount, 'following.txt')
         return ctr
 
     followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
@@ -134,7 +136,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                         unfollowAccount(baseDir, nickname, domain,
                                         handleNickname,
                                         handleDomain,
-                                        'following.txt', debug)
+                                        debug, groupAccount, 'following.txt')
                         ctr += 1
                         print('Unfollowed ' + handle + ' who has moved to ' +
                               movedToHandle)

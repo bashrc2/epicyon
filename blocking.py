@@ -28,6 +28,9 @@ from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acctDir
+from utils import localActorUrl
+from conversation import muteConversation
+from conversation import unmuteConversation
 
 
 def addGlobalBlock(baseDir: str,
@@ -60,12 +63,39 @@ def addBlock(baseDir: str, nickname: str, domain: str,
              blockNickname: str, blockDomain: str) -> bool:
     """Block the given account
     """
+    if blockDomain.startswith(domain) and nickname == blockNickname:
+        # don't block self
+        return False
+
     domain = removeDomainPort(domain)
     blockingFilename = acctDir(baseDir, nickname, domain) + '/blocking.txt'
     blockHandle = blockNickname + '@' + blockDomain
     if os.path.isfile(blockingFilename):
-        if blockHandle in open(blockingFilename).read():
+        if blockHandle + '\n' in open(blockingFilename).read():
             return False
+
+    # if we are following then unfollow
+    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    if os.path.isfile(followingFilename):
+        if blockHandle + '\n' in open(followingFilename).read():
+            followingStr = ''
+            with open(followingFilename, 'r') as followingFile:
+                followingStr = followingFile.read()
+                followingStr = followingStr.replace(blockHandle + '\n', '')
+            with open(followingFilename, 'w+') as followingFile:
+                followingFile.write(followingStr)
+
+    # if they are a follower then remove them
+    followersFilename = acctDir(baseDir, nickname, domain) + '/followers.txt'
+    if os.path.isfile(followersFilename):
+        if blockHandle + '\n' in open(followersFilename).read():
+            followersStr = ''
+            with open(followersFilename, 'r') as followersFile:
+                followersStr = followersFile.read()
+                followersStr = followersStr.replace(blockHandle + '\n', '')
+            with open(followersFilename, 'w+') as followersFile:
+                followersFile.write(followersStr)
+
     with open(blockingFilename, 'a+') as blockFile:
         blockFile.write(blockHandle + '\n')
     return True
@@ -305,25 +335,25 @@ def isBlocked(baseDir: str, nickname: str, domain: str,
 
 def outboxBlock(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, port: int,
-                messageJson: {}, debug: bool) -> None:
+                messageJson: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
         if debug:
             print('DEBUG: block - no type')
-        return
+        return False
     if not messageJson['type'] == 'Block':
         if debug:
             print('DEBUG: not a block')
-        return
+        return False
     if not messageJson.get('object'):
         if debug:
             print('DEBUG: no object in block')
-        return
+        return False
     if not isinstance(messageJson['object'], str):
         if debug:
             print('DEBUG: block object is not string')
-        return
+        return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
 
@@ -331,22 +361,22 @@ def outboxBlock(baseDir: str, httpPrefix: str,
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s block object is not a status')
-        return
+        return False
     if not hasUsersPath(messageId):
         if debug:
             print('DEBUG: c2s block object has no nickname')
-        return
+        return False
     domain = removeDomainPort(domain)
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s block post not found in inbox or outbox')
             print(messageId)
-        return
+        return False
     nicknameBlocked = getNicknameFromActor(messageJson['object'])
     if not nicknameBlocked:
         print('WARN: unable to find nickname in ' + messageJson['object'])
-        return
+        return False
     domainBlocked, portBlocked = getDomainFromActor(messageJson['object'])
     domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
 
@@ -355,6 +385,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
 
     if debug:
         print('DEBUG: post blocked via c2s - ' + postFilename)
+    return True
 
 
 def outboxUndoBlock(baseDir: str, httpPrefix: str,
@@ -439,7 +470,12 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
 
     if hasObjectDict(postJsonObject):
         domainFull = getFullDomain(domain, port)
-        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
+
+        if postJsonObject['object'].get('conversation'):
+            muteConversation(baseDir, nickname, domain,
+                             postJsonObject['object']['conversation'])
+
         # does this post have ignores on it from differenent actors?
         if not postJsonObject['object'].get('ignores'):
             if debug:
@@ -518,9 +554,13 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         print('UNMUTE: ' + muteFilename + ' file removed')
 
     if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('conversation'):
+            unmuteConversation(baseDir, nickname, domain,
+                               postJsonObject['object']['conversation'])
+
         if postJsonObject['object'].get('ignores'):
             domainFull = getFullDomain(domain, port)
-            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+            actor = localActorUrl(httpPrefix, nickname, domainFull)
             totalItems = 0
             if postJsonObject['object']['ignores'].get('totalItems'):
                 totalItems = \

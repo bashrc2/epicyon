@@ -6,8 +6,9 @@
 
 ## Groups
 
- * Unit test for group creation
  * Groups can be defined as having particular roles/skills
+ * Parse posts from Lemmy groups
+ * Think of a way to display groups. Maybe assign a hashtag and display them like hashtag timelines
 
 ## Questions
 
@@ -19,6 +20,7 @@
 ## Code
 
  * More unit test coverage
+ * Unit test for federated shared items
  * Break up large functions into smaller ones
  * Architecture diagrams
  * Code documentation?

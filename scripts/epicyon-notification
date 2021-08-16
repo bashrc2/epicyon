@@ -279,6 +279,21 @@ function notifications {
             fi
         fi
 
+        # send notifications for new wanted items to XMPP/email users
+        epicyonWantedFile="$epicyonDir/.newWanted"
+        if [ -f "$epicyonWantedFile" ]; then
+            if ! grep -q "##sent##" "$epicyonWantedFile"; then
+                epicyonWantedMessage=$(notification_translate_text 'Wanted')
+                epicyonWantedFileContent=$(echo "$epicyonWantedMessage")" "$(cat "$epicyonWantedFile")
+                if [[ "$epicyonWantedFileContent" == *':'* ]]; then
+                    epicyonWantedMessage="Epicyon: $epicyonWantedFileContent"
+                fi
+                sendNotification "$USERNAME" "Epicyon" "$epicyonWantedMessage"
+                echo "##sent##" > "$epicyonWantedFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonWantedFile"
+            fi
+        fi
+
         # send notifications for follow requests to XMPP/email users
         epicyonFollowFile="$epicyonDir/followrequests.txt"
         epicyonFollowNotificationsFile="$epicyonDir/follownotifications.txt"

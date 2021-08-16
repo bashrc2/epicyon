@@ -136,6 +136,8 @@
     --containericons-horizontal-spacing: 1%;
     --containericons-horizontal-spacing-mobile: 3%;
     --containericons-horizontal-offset: -1%;
+    --containericons-vertical-align: 0.5%;
+    --containericons-vertical-align-mobile: 1%;
     --likes-count-offset: 5px;
     --likes-count-offset-mobile: 10px;
     --publish-button-vertical-offset: 10px;
@@ -1308,8 +1310,8 @@ div.container {
     .containericons img {
         float: var(--icons-side);
         max-width: 200px;
-        width: 3%;
-        margin: 0px var(--containericons-horizontal-spacing);
+        width: 25px;
+        margin: var(--containericons-vertical-align) var(--containericons-horizontal-spacing);
         margin-right: 0px;
         border-radius: 0%;
     }
@@ -1512,7 +1514,7 @@ div.container {
         color: var(--time-color);
         margin: var(--time-vertical-align) 20px;
     }
-    input[type=text], select, textarea {
+    input[type=text], input[type=password], select, textarea {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
@@ -1970,7 +1972,7 @@ div.container {
         float: var(--icons-side);
         max-width: 200px;
         width: 7%;
-        margin: 1% var(--containericons-horizontal-spacing-mobile);
+        margin: var(--containericons-vertical-align-mobile) var(--containericons-horizontal-spacing-mobile);
         margin-right: 0px;
         border-radius: 0%;
     }
@@ -2166,7 +2168,7 @@ div.container {
         color: var(--time-color);
         margin: var(--time-vertical-align-mobile) 20px;
     }
-    input[type=text], select, textarea {
+    input[type=text], input[type=password], select, textarea {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;

@@ -13,6 +13,9 @@ import datetime
 import time
 import random
 from linked_data_sig import verifyJsonSignature
+from languages import understoodPostLanguage
+from utils import getUserPaths
+from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -23,7 +26,6 @@ from utils import getConfigParam
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
-from utils import isEventPost
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import isBlogPost
@@ -43,18 +45,19 @@ from utils import loadJson
 from utils import saveJson
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
+from utils import hasGroupType
+from utils import localActorUrl
 from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
-from session import getJson
 from follow import isFollowingActor
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
 from follow import unfollowerOfAccount
 from pprint import pprint
-from cache import getPersonFromCache
 from cache import storePersonInCache
+from cache import getPersonPubKey
 from acceptreject import receiveAcceptReject
 from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
@@ -87,7 +90,9 @@ from categories import guessHashtagCategory
 from context import hasValidContext
 from speaker import updateSpeaker
 from announce import isSelfAnnounce
+from announce import createAnnounce
 from notifyOnPost import notifyWhenPersonPosts
+from conversation import updateConversation
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -151,7 +156,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
             categoryStr = \
                 guessHashtagCategory(tagName, hashtagCategories)
             if categoryStr:
-                setHashtagCategory(baseDir, tagName, categoryStr)
+                setHashtagCategory(baseDir, tagName, categoryStr, False)
 
 
 def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
@@ -164,7 +169,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                showPublishedDateOnly: bool,
                                peertubeInstances: [],
                                allowLocalNetworkAccess: bool,
-                               themeName: str) -> None:
+                               themeName: str, systemLanguage: str,
+                               maxLikeCount: int) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -182,7 +188,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
-                         themeName,
+                         themeName, systemLanguage, maxLikeCount,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -215,65 +221,23 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
     domain = removeDomainPort(domain)
     inboxDir = acctDir(baseDir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
+        print('Not an inbox directory: ' + inboxDir)
         return True
     expectedStr = expectedDomain + ':' + str(expectedPort)
+    expectedFound = False
     for subdir, dirs, files in os.walk(inboxDir):
         for f in files:
             filename = os.path.join(subdir, f)
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
-            if expectedStr not in filename:
-                print('Expected: ' + expectedStr)
-                print('Invalid filename: ' + filename)
-                return False
+            if expectedStr in filename:
+                expectedFound = True
         break
+    if not expectedFound:
+        print('Expected file was not found: ' + expectedStr)
+        return False
     return True
-
-
-def getPersonPubKey(baseDir: str, session, personUrl: str,
-                    personCache: {}, debug: bool,
-                    projectVersion: str, httpPrefix: str,
-                    domain: str, onionDomain: str) -> str:
-    if not personUrl:
-        return None
-    personUrl = personUrl.replace('#main-key', '')
-    if personUrl.endswith('/users/inbox'):
-        if debug:
-            print('DEBUG: Obtaining public key for shared inbox')
-        personUrl = personUrl.replace('/users/inbox', '/inbox')
-    personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, True)
-    if not personJson:
-        if debug:
-            print('DEBUG: Obtaining public key for ' + personUrl)
-        personDomain = domain
-        if onionDomain:
-            if '.onion/' in personUrl:
-                personDomain = onionDomain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/activity+json; profile="' + profileStr + '"'
-        }
-        personJson = \
-            getJson(session, personUrl, asHeader, None, debug,
-                    projectVersion, httpPrefix, personDomain)
-        if not personJson:
-            return None
-    pubKey = None
-    if personJson.get('publicKey'):
-        if personJson['publicKey'].get('publicKeyPem'):
-            pubKey = personJson['publicKey']['publicKeyPem']
-    else:
-        if personJson.get('publicKeyPem'):
-            pubKey = personJson['publicKeyPem']
-
-    if not pubKey:
-        if debug:
-            print('DEBUG: Public key not found for ' + personUrl)
-
-    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
-    return pubKey
 
 
 def inboxMessageHasParams(messageJson: {}) -> bool:
@@ -351,8 +315,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          messageBytes: str,
                          httpHeaders: {},
                          postPath: str, debug: bool,
-                         blockedCache: []) -> str:
-    """Saves the give json to the inbox queue for the person
+                         blockedCache: [], systemLanguage: str) -> str:
+    """Saves the given json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
     if len(messageBytes) > 10240:
@@ -415,9 +379,9 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                                       replyNickname + '@' + replyDomain)
                             return None
         if postJsonObject['object'].get('content'):
-            if isinstance(postJsonObject['object']['content'], str):
-                if isFiltered(baseDir, nickname, domain,
-                              postJsonObject['object']['content']):
+            contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+            if contentStr:
+                if isFiltered(baseDir, nickname, domain, contentStr):
                     if debug:
                         print('WARN: post was filtered out due to content')
                     return None
@@ -438,8 +402,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
         if actor:
             postId = actor + '/statuses/' + statusNumber
         else:
-            postId = httpPrefix + '://' + originalDomain + \
-                '/users/' + nickname + '/statuses/' + statusNumber
+            postId = localActorUrl(httpPrefix, nickname, originalDomain) + \
+                '/statuses/' + statusNumber
 
     # NOTE: don't change postJsonObject['id'] before signature check
 
@@ -669,10 +633,11 @@ def _receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
+    groupAccount = hasGroupType(baseDir, messageJson['object']['actor'], None)
     if unfollowerOfAccount(baseDir,
                            nicknameFollowing, domainFollowingFull,
                            nicknameFollower, domainFollowerFull,
-                           debug):
+                           debug, groupAccount):
         print(nicknameFollowing + '@' + domainFollowingFull + ': '
               'Follower ' + nicknameFollower + '@' + domainFollowerFull +
               ' was removed')
@@ -712,6 +677,11 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no object type')
         return False
+    if not isinstance(messageJson['object']['type'], str):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] +
+                  ' type within object is not a string')
+        return False
     if not messageJson['object'].get('object'):
         if debug:
             print('DEBUG: ' + messageJson['type'] +
@@ -730,25 +700,6 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
     return False
 
 
-def _receiveEventPost(recentPostsCache: {}, session, baseDir: str,
-                      httpPrefix: str, domain: str, port: int,
-                      sendThreads: [], postLog: [], cachedWebfingers: {},
-                      personCache: {}, messageJson: {}, federationList: [],
-                      nickname: str, debug: bool) -> bool:
-    """Receive a mobilizon-type event activity
-    See https://framagit.org/framasoft/mobilizon/-/blob/
-    master/lib/federation/activity_stream/converter/event.ex
-    """
-    if not isEventPost(messageJson):
-        return
-    print('Receiving event: ' + str(messageJson['object']))
-    handle = getFullDomain(nickname + '@' + domain, port)
-
-    postId = removeIdEnding(messageJson['id']).replace('/', '#')
-
-    saveEventPost(baseDir, handle, postId, messageJson['object'])
-
-
 def _personReceiveUpdate(baseDir: str,
                          domain: str, port: int,
                          updateNickname: str, updateDomain: str,
@@ -762,10 +713,10 @@ def _personReceiveUpdate(baseDir: str,
               ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
-    usersPaths = ('users', 'profile', 'channel', 'accounts', 'u')
+    usersPaths = getUserPaths()
     usersStrFound = False
     for usersStr in usersPaths:
-        actor = updateDomainFull + '/' + usersStr + '/' + updateNickname
+        actor = updateDomainFull + usersStr + updateNickname
         if actor in personJson['id']:
             usersStrFound = True
             break
@@ -882,6 +833,11 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
     if not messageJson['object'].get('type'):
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' object has no type')
+        return False
+    if not isinstance(messageJson['object']['type'], str):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] +
+                  ' object type is not string')
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:
@@ -1305,7 +1261,7 @@ def _receiveAnnounce(recentPostsCache: {},
                      debug: bool, translate: {},
                      YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     themeName: str) -> bool:
+                     themeName: str, systemLanguage: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1385,6 +1341,7 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
+    domainFull = getFullDomain(domain, port)
     postJsonObject = downloadAnnounce(session, baseDir,
                                       httpPrefix,
                                       nickname, domain,
@@ -1392,7 +1349,9 @@ def _receiveAnnounce(recentPostsCache: {},
                                       __version__, translate,
                                       YTReplacementDomain,
                                       allowLocalNetworkAccess,
-                                      recentPostsCache, debug)
+                                      recentPostsCache, debug,
+                                      systemLanguage,
+                                      domainFull, personCache)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1616,7 +1575,10 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
-                      allowLocalNetworkAccess: bool, debug: bool) -> bool:
+                      allowLocalNetworkAccess: bool, debug: bool,
+                      systemLanguage: str,
+                      httpPrefix: str, domainFull: str,
+                      personCache: {}) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1651,27 +1613,27 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         return True
 
-    if dangerousMarkup(messageJson['object']['content'],
-                       allowLocalNetworkAccess):
+    contentStr = getBaseContentFromPost(messageJson, systemLanguage)
+    if dangerousMarkup(contentStr, allowLocalNetworkAccess):
         if messageJson['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
         print('REJECT ARBITRARY HTML: bad string in post - ' +
-              messageJson['object']['content'])
+              contentStr)
         return False
 
     # check (rough) number of mentions
-    mentionsEst = _estimateNumberOfMentions(messageJson['object']['content'])
+    mentionsEst = _estimateNumberOfMentions(contentStr)
     if mentionsEst > maxMentions:
         if messageJson['object'].get('id'):
             print('REJECT HELLTHREAD: ' + messageJson['object']['id'])
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
-              messageJson['object']['content'])
+              contentStr)
         return False
-    if _estimateNumberOfEmoji(messageJson['object']['content']) > maxEmoji:
+    if _estimateNumberOfEmoji(contentStr) > maxEmoji:
         if messageJson['object'].get('id'):
             print('REJECT EMOJI OVERLOAD: ' + messageJson['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
-              messageJson['object']['content'])
+              contentStr)
         return False
     # check number of tags
     if messageJson['object'].get('tag'):
@@ -1684,9 +1646,14 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                 print('REJECT: Too many tags in post - ' +
                       messageJson['object']['tag'])
                 return False
+    # check that the post is in a language suitable for this account
+    if not understoodPostLanguage(baseDir, nickname, domain,
+                                  messageJson, systemLanguage,
+                                  httpPrefix, domainFull,
+                                  personCache):
+        return False
     # check for filtered content
-    if isFiltered(baseDir, nickname, domain,
-                  messageJson['object']['content']):
+    if isFiltered(baseDir, nickname, domain, contentStr):
         print('REJECT: content filtered')
         return False
     if messageJson['object'].get('inReplyTo'):
@@ -1910,90 +1877,69 @@ def _groupHandle(baseDir: str, handle: str) -> bool:
     return actorJson['type'] == 'Group'
 
 
-def _getGroupName(baseDir: str, handle: str) -> str:
-    """Returns the preferred name of a group
-    """
-    actorFile = baseDir + '/accounts/' + handle + '.json'
-    if not os.path.isfile(actorFile):
-        return False
-    actorJson = loadJson(actorFile)
-    if not actorJson:
-        return 'Group'
-    return actorJson['name']
-
-
 def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         postJsonObject: {},
                         httpPrefix: str, federationList: [],
                         sendThreads: [], postLog: [], cachedWebfingers: {},
-                        personCache: {}, debug: bool) -> None:
+                        personCache: {}, debug: bool,
+                        systemLanguage: str,
+                        onionDomain: str, i2pDomain: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
+    if debug:
+        print('\n\n=========================================================')
+        print(handle + ' sending to group members')
+
+    sharedItemFederationTokens = {}
+    sharedItemsFederatedDomains = []
+    sharedItemsFederatedDomainsStr = \
+        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+    if sharedItemsFederatedDomainsStr:
+        siFederatedDomainsList = \
+            sharedItemsFederatedDomainsStr.split(',')
+        for sharedFederatedDomain in siFederatedDomainsList:
+            domainStr = sharedFederatedDomain.strip()
+            sharedItemsFederatedDomains.append(domainStr)
+
     followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFile):
         return
+    if not postJsonObject.get('to'):
+        return
     if not postJsonObject.get('object'):
         return
-    nickname = handle.split('@')[0]
-#    groupname = _getGroupName(baseDir, handle)
+    if not hasObjectDict(postJsonObject):
+        return
+    nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
-    # set sender
+    groupActor = localActorUrl(httpPrefix, nickname, domainFull)
+    if groupActor not in postJsonObject['to']:
+        return
     cc = ''
-    sendingActor = postJsonObject['actor']
-    sendingActorNickname = getNicknameFromActor(sendingActor)
-    sendingActorDomain, sendingActorPort = \
-        getDomainFromActor(sendingActor)
-    sendingActorDomainFull = \
-        getFullDomain(sendingActorDomain, sendingActorPort)
-    senderStr = '@' + sendingActorNickname + '@' + sendingActorDomainFull
-    if not postJsonObject['object']['content'].startswith(senderStr):
-        postJsonObject['object']['content'] = \
-            senderStr + ' ' + postJsonObject['object']['content']
-        # add mention to tag list
-        if not postJsonObject['object']['tag']:
-            postJsonObject['object']['tag'] = []
-        # check if the mention already exists
-        mentionExists = False
-        for mention in postJsonObject['object']['tag']:
-            if mention['type'] == 'Mention':
-                if mention.get('href'):
-                    if mention['href'] == sendingActor:
-                        mentionExists = True
-        if not mentionExists:
-            # add the mention of the original sender
-            postJsonObject['object']['tag'].append({
-                'href': sendingActor,
-                'name': senderStr,
-                'type': 'Mention'
-            })
+    nickname = handle.split('@')[0].replace('!', '')
 
-    postJsonObject['actor'] = \
-        httpPrefix + '://' + domainFull + '/users/' + nickname
-    postJsonObject['to'] = \
-        [postJsonObject['actor'] + '/followers']
-    postJsonObject['cc'] = [cc]
-    postJsonObject['object']['to'] = postJsonObject['to']
-    postJsonObject['object']['cc'] = [cc]
-    # set subject
-    if not postJsonObject['object'].get('summary'):
-        postJsonObject['object']['summary'] = 'General Discussion'
-    domain = removeDomainPort(domain)
-    with open(followersFile, 'r') as groupMembers:
-        for memberHandle in groupMembers:
-            if memberHandle != handle:
-                memberNickname = memberHandle.split('@')[0]
-                memberDomain = memberHandle.split('@')[1]
-                memberPort = port
-                if ':' in memberDomain:
-                    memberPort = getPortFromDomain(memberDomain)
-                    memberDomain = removeDomainPort(memberDomain)
-                sendSignedJson(postJsonObject, session, baseDir,
-                               nickname, domain, port,
-                               memberNickname, memberDomain, memberPort, cc,
-                               httpPrefix, False, False, federationList,
-                               sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, __version__)
+    if debug:
+        print('Group announce: ' + postJsonObject['object']['id'])
+    announceJson = \
+        createAnnounce(session, baseDir, federationList,
+                       nickname, domain, port,
+                       groupActor + '/followers', cc,
+                       httpPrefix,
+                       postJsonObject['object']['id'],
+                       False, False,
+                       sendThreads, postLog,
+                       personCache, cachedWebfingers,
+                       debug, __version__)
+
+    sendToFollowersThread(session, baseDir, nickname, domain,
+                          onionDomain, i2pDomain, port,
+                          httpPrefix, federationList,
+                          sendThreads, postLog,
+                          cachedWebfingers, personCache,
+                          announceJson, debug, __version__,
+                          sharedItemsFederatedDomains,
+                          sharedItemFederationTokens)
 
 
 def _inboxUpdateCalendar(baseDir: str, handle: str,
@@ -2107,7 +2053,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
               sendThreads: [], postLog: [],
               cachedWebfingers: {}, personCache: {},
               translate: {}, debug: bool,
-              lastBounceMessage: []) -> bool:
+              lastBounceMessage: [], systemLanguage: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2126,6 +2072,10 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     lastBounceMessage[0] = currTime
 
     senderNickname = sendingHandle.split('@')[0]
+    groupAccount = False
+    if sendingHandle.startswith('!'):
+        sendingHandle = sendingHandle[1:]
+        groupAccount = True
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
     if ':' in senderDomain:
@@ -2150,6 +2100,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     eventDate = None
     eventTime = None
     location = None
+    conversationId = None
+    lowBandwidth = False
     postJsonObject = \
         createDirectMessagePost(baseDir, nickname, domain, port,
                                 httpPrefix, content, followersOnly,
@@ -2159,7 +2111,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                                 imageDescription, city,
                                 inReplyTo, inReplyToAtomUri,
                                 subject, debug, schedulePost,
-                                eventDate, eventTime, location)
+                                eventDate, eventTime, location,
+                                systemLanguage, conversationId, lowBandwidth)
     if not postJsonObject:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False
@@ -2170,7 +2123,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                    senderNickname, senderDomain, senderPort, cc,
                    httpPrefix, False, False, federationList,
                    sendThreads, postLog, cachedWebfingers,
-                   personCache, debug, __version__)
+                   personCache, debug, __version__, None, groupAccount)
     return True
 
 
@@ -2183,7 +2136,7 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                personCache: {},
                translate: {}, debug: bool,
                lastBounceMessage: [],
-               handle: str) -> bool:
+               handle: str, systemLanguage: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2196,8 +2149,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
     if not os.path.isfile(followDMsFilename):
         # dm index will be updated
         updateIndexList.append('dm')
-        _dmNotify(baseDir, handle,
-                  httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+        actUrl = localActorUrl(httpPrefix, nickname, domain)
+        _dmNotify(baseDir, handle, actUrl + '/dm')
         return True
 
     # get the file containing following handles
@@ -2258,13 +2211,14 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                                       cachedWebfingers,
                                       personCache,
                                       translate, debug,
-                                      lastBounceMessage)
+                                      lastBounceMessage,
+                                      systemLanguage)
                 return False
 
     # dm index will be updated
     updateIndexList.append('dm')
-    _dmNotify(baseDir, handle,
-              httpPrefix + '://' + domain + '/users/' + nickname + '/dm')
+    actUrl = localActorUrl(httpPrefix, nickname, domain)
+    _dmNotify(baseDir, handle, actUrl + '/dm')
     return True
 
 
@@ -2284,7 +2238,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        allowLocalNetworkAccess: bool,
                        peertubeInstances: [],
                        lastBounceMessage: [],
-                       themeName: str) -> bool:
+                       themeName: str, systemLanguage: str,
+                       maxLikeCount: int) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2365,7 +2320,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         debug, translate,
                         YTReplacementDomain,
                         allowLocalNetworkAccess,
-                        themeName):
+                        themeName, systemLanguage):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2412,9 +2367,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     nickname = handle.split('@')[0]
     jsonObj = None
+    domainFull = getFullDomain(domain, port)
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
-                         allowLocalNetworkAccess, debug):
+                         allowLocalNetworkAccess, debug,
+                         systemLanguage, httpPrefix,
+                         domainFull, personCache):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -2447,7 +2405,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(postJsonObject, YTReplacementDomain)
+        replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
@@ -2464,6 +2422,20 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 # if the votes on a question have changed then
                 # send out an update
                 questionJson['type'] = 'Update'
+                sharedItemsFederatedDomains = []
+                sharedItemFederationTokens = {}
+
+                sharedItemFederationTokens = {}
+                sharedItemsFederatedDomains = []
+                sharedItemsFederatedDomainsStr = \
+                    getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+                if sharedItemsFederatedDomainsStr:
+                    siFederatedDomainsList = \
+                        sharedItemsFederatedDomainsStr.split(',')
+                    for sharedFederatedDomain in siFederatedDomainsList:
+                        domainStr = sharedFederatedDomain.strip()
+                        sharedItemsFederatedDomains.append(domainStr)
+
                 sendToFollowersThread(session, baseDir,
                                       nickname, domain,
                                       onionDomain, i2pDomain, port,
@@ -2471,7 +2443,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                       sendThreads, postLog,
                                       cachedWebfingers, personCache,
                                       postJsonObject, debug,
-                                      __version__)
+                                      __version__,
+                                      sharedItemsFederatedDomains,
+                                      sharedItemFederationTokens)
 
         isReplyToMutedPost = False
 
@@ -2488,28 +2462,34 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   personCache,
                                   translate, debug,
                                   lastBounceMessage,
-                                  handle):
+                                  handle, systemLanguage):
                     return False
 
             # get the actor being replied to
-            domainFull = getFullDomain(domain, port)
-            actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+            actor = localActorUrl(httpPrefix, nickname, domainFull)
 
             # create a reply notification file if needed
             if not postIsDM and isReply(postJsonObject, actor):
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
+
+                    conversationId = None
+                    if postJsonObject['object'].get('conversation'):
+                        conversationId = \
+                            postJsonObject['object']['conversation']
+
                     if postJsonObject['object'].get('inReplyTo'):
                         inReplyTo = postJsonObject['object']['inReplyTo']
                         if inReplyTo:
                             if isinstance(inReplyTo, str):
                                 if not isMuted(baseDir, nickname, domain,
-                                               inReplyTo):
+                                               inReplyTo, conversationId):
+                                    actUrl = \
+                                        localActorUrl(httpPrefix,
+                                                      nickname, domain)
                                     _replyNotify(baseDir, handle,
-                                                 httpPrefix + '://' + domain +
-                                                 '/users/' + nickname +
-                                                 '/tlreplies')
+                                                 actUrl + '/tlreplies')
                                 else:
                                     isReplyToMutedPost = True
 
@@ -2517,7 +2497,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             nickname, domain, postJsonObject,
                             translate, YTReplacementDomain,
                             allowLocalNetworkAccess,
-                            recentPostsCache, debug):
+                            recentPostsCache, debug, systemLanguage,
+                            domainFull, personCache):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
@@ -2544,10 +2525,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         if notifyWhenPersonPosts(baseDir, nickname, domain,
                                                  fromNickname, fromDomainFull):
                             postId = removeIdEnding(jsonObj['id'])
+                            domFull = getFullDomain(domain, port)
                             postLink = \
-                                httpPrefix + '://' + \
-                                getFullDomain(domain, port) + \
-                                '/users/' + nickname + \
+                                localActorUrl(httpPrefix,
+                                              nickname, domFull) + \
                                 '?notifypost=' + postId.replace('/', '-')
                             _notifyPostArrival(baseDir, handle, postLink)
 
@@ -2591,7 +2572,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    showPublishedDateOnly,
                                                    peertubeInstances,
                                                    allowLocalNetworkAccess,
-                                                   themeName)
+                                                   themeName, systemLanguage,
+                                                   maxLikeCount)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2600,9 +2582,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   ' post as html to cache in ' +
                                   timeDiff + ' mS')
 
+            handleName = handle.split('@')[0]
+            updateConversation(baseDir, handleName, domain, postJsonObject)
+
             _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
-            handleName = handle.split('@')[0]
             storeHashTags(baseDir, handleName, postJsonObject)
 
             # send the post out to group members
@@ -2611,7 +2595,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                     postJsonObject,
                                     httpPrefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
-                                    debug)
+                                    debug, systemLanguage,
+                                    onionDomain, i2pDomain)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
@@ -2850,7 +2835,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   maxFollowers: int, allowLocalNetworkAccess: bool,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
-                  themeName: str) -> None:
+                  themeName: str, systemLanguage: str,
+                  maxLikeCount: int) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -3122,7 +3108,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 queueJson['post'],
                                 federationList,
                                 debug, projectVersion,
-                                maxFollowers):
+                                maxFollowers, onionDomain):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -3141,23 +3127,6 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                queueJson['post'],
                                federationList, debug):
             print('Queue: Accept/Reject received from ' + keyId)
-            if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
-            if len(queue) > 0:
-                queue.pop(0)
-            continue
-
-        if _receiveEventPost(recentPostsCache, session,
-                             baseDir, httpPrefix,
-                             domain, port,
-                             sendThreads, postLog,
-                             cachedWebfingers,
-                             personCache,
-                             queueJson['post'],
-                             federationList,
-                             queueJson['postNickname'],
-                             debug):
-            print('Queue: Event activity accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -3255,7 +3224,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                allowLocalNetworkAccess,
                                peertubeInstances,
                                lastBounceMessage,
-                               themeName)
+                               themeName, systemLanguage,
+                               maxLikeCount)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')

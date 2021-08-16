@@ -28,6 +28,94 @@ invalidCharacters = (
 )
 
 
+def localActorUrl(httpPrefix: str, nickname: str, domainFull: str) -> str:
+    """Returns the url for an actor on this instance
+    """
+    return httpPrefix + '://' + domainFull + '/users/' + nickname
+
+
+def getActorLanguagesList(actorJson: {}) -> []:
+    """Returns a list containing languages used by the given actor
+    """
+    if not actorJson.get('attachment'):
+        return []
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue['name'].lower().startswith('languages'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        if isinstance(propertyValue['value'], list):
+            langList = propertyValue['value']
+            langList.sort()
+            return langList
+        elif isinstance(propertyValue['value'], str):
+            langStr = propertyValue['value']
+            langListTemp = []
+            if ',' in langStr:
+                langListTemp = langStr.split(',')
+            elif ';' in langStr:
+                langListTemp = langStr.split(';')
+            elif '/' in langStr:
+                langListTemp = langStr.split('/')
+            elif '+' in langStr:
+                langListTemp = langStr.split('+')
+            elif ' ' in langStr:
+                langListTemp = langStr.split(' ')
+            langList = []
+            for lang in langListTemp:
+                lang = lang.strip()
+                if lang not in langList:
+                    langList.append(lang)
+            langList.sort()
+            return langList
+    return []
+
+
+def getContentFromPost(postJsonObject: {}, systemLanguage: str,
+                       languagesUnderstood: []) -> str:
+    """Returns the content from the post in the given language
+    including searching for a matching entry within contentMap
+    """
+    thisPostJson = postJsonObject
+    if hasObjectDict(postJsonObject):
+        thisPostJson = postJsonObject['object']
+    if not thisPostJson.get('content'):
+        return ''
+    content = ''
+    if thisPostJson.get('contentMap'):
+        if isinstance(thisPostJson['contentMap'], dict):
+            if thisPostJson['contentMap'].get(systemLanguage):
+                if isinstance(thisPostJson['contentMap'][systemLanguage], str):
+                    return thisPostJson['contentMap'][systemLanguage]
+            else:
+                # is there a contentMap entry for one of
+                # the understood languages?
+                for lang in languagesUnderstood:
+                    if thisPostJson['contentMap'].get(lang):
+                        return thisPostJson['contentMap'][lang]
+    else:
+        if isinstance(thisPostJson['content'], str):
+            content = thisPostJson['content']
+    return content
+
+
+def getBaseContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
+    """Returns the content from the post in the given language
+    """
+    thisPostJson = postJsonObject
+    if hasObjectDict(postJsonObject):
+        thisPostJson = postJsonObject['object']
+    if not thisPostJson.get('content'):
+        return ''
+    return thisPostJson['content']
+
+
 def acctDir(baseDir: str, nickname: str, domain: str) -> str:
     return baseDir + '/accounts/' + nickname + '@' + domain
 
@@ -96,9 +184,9 @@ def getLockedAccount(actorJson: {}) -> bool:
 def hasUsersPath(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = ('users', 'accounts', 'channel', 'profile', 'u')
+    usersList = getUserPaths()
     for usersStr in usersList:
-        if '/' + usersStr + '/' in pathStr:
+        if usersStr in pathStr:
             return True
     if '://' in pathStr:
         domain = pathStr.split('://')[1]
@@ -234,6 +322,18 @@ def isArtist(baseDir: str, nickname: str) -> bool:
     return False
 
 
+def getVideoExtensions() -> []:
+    """Returns a list of the possible video file extensions
+    """
+    return ('mp4', 'webm', 'ogv')
+
+
+def getAudioExtensions() -> []:
+    """Returns a list of the possible audio file extensions
+    """
+    return ('mp3', 'ogg', 'flac')
+
+
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """
@@ -272,18 +372,6 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
         if contentType.endswith(mimeExt):
             return ext
     return 'png'
-
-
-def getVideoExtensions() -> []:
-    """Returns a list of the possible video file extensions
-    """
-    return ('mp4', 'webm', 'ogv')
-
-
-def getAudioExtensions() -> []:
-    """Returns a list of the possible audio file extensions
-    """
-    return ('mp3', 'ogg')
 
 
 def getMediaExtensions() -> []:
@@ -789,6 +877,8 @@ def _genderFromString(translate: {}, text: str) -> str:
     """Given some text, does it contain a gender description?
     """
     gender = None
+    if not text:
+        return None
     textOrig = text
     text = text.lower()
     if translate['He/Him'].lower() in text or \
@@ -909,8 +999,16 @@ def getNicknameFromActor(actor: str) -> str:
 
 def getUserPaths() -> []:
     """Returns possible user paths
+    e.g. /users/nickname, /channel/nickname
     """
-    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/')
+    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/', '/c/')
+
+
+def getGroupPaths() -> []:
+    """Returns possible group paths
+    e.g. https://lemmy/c/groupname
+    """
+    return ['/c/']
 
 
 def getDomainFromActor(actor: str) -> (str, int):
@@ -978,7 +1076,8 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
 def followPerson(baseDir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federationList: [], debug: bool,
-                 followFile='following.txt') -> bool:
+                 groupAccount: bool,
+                 followFile: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
     followDomainStrLower = followDomain.lower().replace('\n', '')
@@ -1007,6 +1106,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     else:
         handleToFollow = followNickname + '@' + followDomain
 
+    if groupAccount:
+        handleToFollow = '!' + handleToFollow
+
     # was this person previously unfollowed?
     unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
@@ -1024,6 +1126,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     handleToFollow = followNickname + '@' + followDomain
+    if groupAccount:
+        handleToFollow = '!' + handleToFollow
     filename = baseDir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
@@ -1389,6 +1493,38 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
                 f.write(newlines)
 
 
+def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
+                            postJsonObject: {}) -> None:
+    """Deletes a post from a conversation
+    """
+    if not hasObjectDict(postJsonObject):
+        return False
+    if not postJsonObject['object'].get('conversation'):
+        return False
+    if not postJsonObject['object'].get('id'):
+        return False
+    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    conversationId = postJsonObject['object']['conversation']
+    conversationId = conversationId.replace('/', '#')
+    postId = postJsonObject['object']['id']
+    conversationFilename = conversationDir + '/' + conversationId
+    if not os.path.isfile(conversationFilename):
+        return False
+    conversationStr = ''
+    with open(conversationFilename, 'r') as fp:
+        conversationStr = fp.read()
+    if postId + '\n' not in conversationStr:
+        return False
+    conversationStr = conversationStr.replace(postId + '\n', '')
+    if conversationStr:
+        with open(conversationFilename, 'w+') as fp:
+            fp.write(conversationStr)
+    else:
+        if os.path.isfile(conversationFilename + '.muted'):
+            os.remove(conversationFilename + '.muted')
+        os.remove(conversationFilename)
+
+
 def deletePost(baseDir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool, recentPostsCache: {}) -> None:
@@ -1415,6 +1551,9 @@ def deletePost(baseDir: str, httpPrefix: str,
 
     # remove from recent posts cache in memory
     removePostFromCache(postJsonObject, recentPostsCache)
+
+    # remove from conversation index
+    _deleteConversationPost(baseDir, nickname, domain, postJsonObject)
 
     # remove any attachment
     _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
@@ -1501,27 +1640,45 @@ def isValidLanguage(text: str) -> bool:
     return False
 
 
+def _getReservedWords() -> str:
+    return ('inbox', 'dm', 'outbox', 'following',
+            'public', 'followers', 'category',
+            'channel', 'calendar',
+            'tlreplies', 'tlmedia', 'tlblogs',
+            'tlblogs', 'tlfeatures',
+            'moderation', 'moderationaction',
+            'activity', 'undo', 'pinned',
+            'reply', 'replies', 'question', 'like',
+            'likes', 'users', 'statuses', 'tags',
+            'accounts', 'headers',
+            'channels', 'profile', 'u', 'c',
+            'updates', 'repeat', 'announce',
+            'shares', 'fonts', 'icons', 'avatars',
+            'welcome', 'helpimages',
+            'bookmark', 'bookmarks', 'tlbookmarks',
+            'ignores', 'linksmobile', 'newswiremobile',
+            'minimal', 'search', 'eventdelete',
+            'searchemoji', 'catalog', 'conversationId',
+            'mention', 'http', 'https')
+
+
+def getNicknameValidationPattern() -> str:
+    """Returns a html text input validation pattern for nickname
+    """
+    reservedNames = _getReservedWords()
+    pattern = ''
+    for word in reservedNames:
+        if pattern:
+            pattern += '(?!.*\\b' + word + '\\b)'
+        else:
+            pattern = '^(?!.*\\b' + word + '\\b)'
+    return pattern + '.*${1,30}'
+
+
 def _isReservedName(nickname: str) -> bool:
     """Is the given nickname reserved for some special function?
     """
-    reservedNames = ('inbox', 'dm', 'outbox', 'following',
-                     'public', 'followers', 'category',
-                     'channel', 'calendar',
-                     'tlreplies', 'tlmedia', 'tlblogs',
-                     'tlblogs', 'tlfeatures',
-                     'moderation', 'moderationaction',
-                     'activity', 'undo', 'pinned',
-                     'reply', 'replies', 'question', 'like',
-                     'likes', 'users', 'statuses', 'tags',
-                     'accounts', 'headers',
-                     'channels', 'profile', 'u',
-                     'updates', 'repeat', 'announce',
-                     'shares', 'fonts', 'icons', 'avatars',
-                     'welcome', 'helpimages',
-                     'bookmark', 'bookmarks', 'tlbookmarks',
-                     'ignores', 'linksmobile', 'newswiremobile',
-                     'minimal', 'search', 'eventdelete',
-                     'searchemoji')
+    reservedNames = _getReservedWords()
     if nickname in reservedNames:
         return True
     return False
@@ -1530,9 +1687,13 @@ def _isReservedName(nickname: str) -> bool:
 def validNickname(domain: str, nickname: str) -> bool:
     """Is the given nickname valid?
     """
+    if len(nickname) == 0:
+        return False
+    if len(nickname) > 30:
+        return False
     if not isValidLanguage(nickname):
         return False
-    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#')
+    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
     for c in forbiddenChars:
         if c in nickname:
             return False
@@ -1713,41 +1874,6 @@ def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
         return css
 
     return None
-
-
-def isEventPost(messageJson: {}) -> bool:
-    """Is the given post a mobilizon-type event activity?
-    See https://framagit.org/framasoft/mobilizon/-/blob/
-    master/lib/federation/activity_stream/converter/event.ex
-    """
-    if not messageJson.get('id'):
-        return False
-    if not messageJson.get('actor'):
-        return False
-    if not hasObjectDict(messageJson):
-        return False
-    if not messageJson['object'].get('type'):
-        return False
-    if messageJson['object']['type'] != 'Event':
-        return False
-    print('Event arriving')
-    if not messageJson['object'].get('startTime'):
-        print('No event start time')
-        return False
-    if not messageJson['object'].get('actor'):
-        print('No event actor')
-        return False
-    if not messageJson['object'].get('content'):
-        print('No event content')
-        return False
-    if not messageJson['object'].get('name'):
-        print('No event name')
-        return False
-    if not messageJson['object'].get('uuid'):
-        print('No event UUID')
-        return False
-    print('Event detected')
-    return True
 
 
 def isBlogPost(postJsonObject: {}) -> bool:
@@ -2151,6 +2277,7 @@ def mediaFileMimeType(filename: str) -> str:
         'avif': 'image/avif',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
+        'flac': 'audio/flac',
         'mp4': 'video/mp4',
         'ogv': 'video/ogv'
     }
@@ -2578,3 +2705,205 @@ def validUrlPrefix(url: str) -> bool:
         if url.startswith(pre):
             return True
     return False
+
+
+def removeLineEndings(text: str) -> str:
+    """Removes any newline from the end of a string
+    """
+    text = text.replace('\n', '')
+    text = text.replace('\r', '')
+    return text.strip()
+
+
+def validPassword(password: str) -> bool:
+    """Returns true if the given password is valid
+    """
+    if len(password) < 8:
+        return False
+    return True
+
+
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+def dateStringToSeconds(dateStr: str) -> int:
+    """Converts a date string (eg "published") into seconds since epoch
+    """
+    try:
+        expiryTime = \
+            datetime.datetime.strptime(dateStr, '%Y-%m-%dT%H:%M:%SZ')
+    except BaseException:
+        return None
+    return int(datetime.datetime.timestamp(expiryTime))
+
+
+def dateSecondsToString(dateSec: int) -> str:
+    """Converts a date in seconds since epoch to a string
+    """
+    thisDate = datetime.datetime.fromtimestamp(dateSec)
+    return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def hasGroupType(baseDir: str, actor: str, personCache: {},
+                 debug: bool = False) -> bool:
+    """Does the given actor url have a group type?
+    """
+    # does the actor path clearly indicate that this is a group?
+    # eg. https://lemmy/c/groupname
+    groupPaths = getGroupPaths()
+    for grpPath in groupPaths:
+        if grpPath in actor:
+            if debug:
+                print('grpPath ' + grpPath + ' in ' + actor)
+            return True
+    # is there a cached actor which can be examined for Group type?
+    return isGroupActor(baseDir, actor, personCache, debug)
+
+
+def isGroupActor(baseDir: str, actor: str, personCache: {},
+                 debug: bool = False) -> bool:
+    """Is the given actor a group?
+    """
+    if personCache:
+        if personCache.get(actor):
+            if personCache[actor].get('actor'):
+                if personCache[actor]['actor'].get('type'):
+                    if personCache[actor]['actor']['type'] == 'Group':
+                        if debug:
+                            print('Cached actor ' + actor + ' has Group type')
+                        return True
+                return False
+    if debug:
+        print('Actor ' + actor + ' not in cache')
+    cachedActorFilename = \
+        baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+    if not os.path.isfile(cachedActorFilename):
+        if debug:
+            print('Cached actor file not found ' + cachedActorFilename)
+        return False
+    if '"type": "Group"' in open(cachedActorFilename).read():
+        if debug:
+            print('Group type found in ' + cachedActorFilename)
+        return True
+    return False
+
+
+def isGroupAccount(baseDir: str, nickname: str, domain: str) -> bool:
+    """Returns true if the given account is a group
+    """
+    accountFilename = acctDir(baseDir, nickname, domain) + '.json'
+    if not os.path.isfile(accountFilename):
+        return False
+    if '"type": "Group"' in open(accountFilename).read():
+        return True
+    return False
+
+
+def getCurrencies() -> {}:
+    """Returns a dictionary of currencies
+    """
+    return {
+        "CA$": "CAD",
+        "J$": "JMD",
+        "£": "GBP",
+        "€": "EUR",
+        "؋": "AFN",
+        "ƒ": "AWG",
+        "₼": "AZN",
+        "Br": "BYN",
+        "BZ$": "BZD",
+        "$b": "BOB",
+        "KM": "BAM",
+        "P": "BWP",
+        "лв": "BGN",
+        "R$": "BRL",
+        "៛": "KHR",
+        "$U": "UYU",
+        "RD$": "DOP",
+        "$": "USD",
+        "₡": "CRC",
+        "kn": "HRK",
+        "₱": "CUP",
+        "Kč": "CZK",
+        "kr": "NOK",
+        "¢": "GHS",
+        "Q": "GTQ",
+        "L": "HNL",
+        "Ft": "HUF",
+        "Rp": "IDR",
+        "₹": "INR",
+        "﷼": "IRR",
+        "₪": "ILS",
+        "¥": "JPY",
+        "₩": "KRW",
+        "₭": "LAK",
+        "ден": "MKD",
+        "RM": "MYR",
+        "₨": "MUR",
+        "₮": "MNT",
+        "MT": "MZN",
+        "C$": "NIO",
+        "₦": "NGN",
+        "Gs": "PYG",
+        "zł": "PLN",
+        "lei": "RON",
+        "₽": "RUB",
+        "Дин": "RSD",
+        "S": "SOS",
+        "R": "ZAR",
+        "CHF": "CHF",
+        "NT$": "TWD",
+        "฿": "THB",
+        "TT$": "TTD",
+        "₴": "UAH",
+        "Bs": "VEF",
+        "₫": "VND",
+        "Z$": "ZQD"
+    }
+
+
+def getSupportedLanguages(baseDir: str) -> []:
+    """Returns a list of supported languages
+    """
+    translationsDir = baseDir + '/translations'
+    languagesStr = []
+    for subdir, dirs, files in os.walk(translationsDir):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            lang = f.split('.')[0]
+            if len(lang) == 2:
+                languagesStr.append(lang)
+        break
+    return languagesStr
+
+
+def getCategoryTypes(baseDir: str) -> []:
+    """Returns the list of ontologies
+    """
+    ontologyDir = baseDir + '/ontology'
+    categories = []
+    for subdir, dirs, files in os.walk(ontologyDir):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            if '#' in f or '~' in f:
+                continue
+            if f.startswith('custom'):
+                continue
+            ontologyFilename = f.split('.')[0]
+            if 'Types' in ontologyFilename:
+                categories.append(ontologyFilename.replace('Types', ''))
+        break
+    return categories
+
+
+def getSharesFilesList() -> []:
+    """Returns the possible shares files
+    """
+    return ('shares', 'wanted')

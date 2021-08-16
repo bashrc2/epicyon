@@ -37,6 +37,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
+from utils import removeLineEndings
 from utils import removeDomainPort
 from utils import getStatusNumber
 from utils import getFullDomain
@@ -50,8 +51,10 @@ from utils import getProtocolPrefixes
 from utils import hasUsersPath
 from utils import getImageExtensions
 from utils import isImageFile
-from utils import getUserPaths
 from utils import acctDir
+from utils import getUserPaths
+from utils import getGroupPaths
+from utils import localActorUrl
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -136,8 +139,8 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     if personJson:
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
-            httpPrefix + '://' + fullDomain + '/users/' + \
-            nickname + '/' + iconFilename
+            localActorUrl(httpPrefix, nickname, fullDomain) + \
+            '/' + iconFilename
         saveJson(personJson, personFilename)
 
         cmd = \
@@ -226,13 +229,15 @@ def getDefaultPersonContext() -> str:
 def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str, saveToFile: bool,
                       manualFollowerApproval: bool,
-                      password: str = None) -> (str, str, {}, {}):
+                      groupAccount: bool,
+                      password: str) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     privateKeyPem, publicKeyPem = generateRSAKey()
     webfingerEndpoint = \
         createWebfingerEndpoint(nickname, domain, port,
-                                httpPrefix, publicKeyPem)
+                                httpPrefix, publicKeyPem,
+                                groupAccount)
     if saveToFile:
         storeWebfingerEndpoint(nickname, domain, port,
                                baseDir, webfingerEndpoint)
@@ -242,10 +247,12 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
     domain = getFullDomain(domain, port)
 
     personType = 'Person'
+    if groupAccount:
+        personType = 'Group'
     # Enable follower approval by default
     approveFollowers = manualFollowerApproval
     personName = nickname
-    personId = httpPrefix + '://' + domain + '/users/' + nickname
+    personId = localActorUrl(httpPrefix, nickname, domain)
     inboxStr = personId + '/inbox'
     personUrl = httpPrefix + '://' + domain + '/@' + personName
     if nickname == 'inbox':
@@ -294,7 +301,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'followers': personId + '/followers',
         'following': personId + '/following',
         'tts': personId + '/speaker',
-        'shares': personId + '/shares',
+        'shares': personId + '/catalog',
         'hasOccupation': [
             {
                 '@type': 'Occupation',
@@ -396,6 +403,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             print(publicKeyPem, file=text_file)
 
         if password:
+            password = removeLineEndings(password)
             storeBasicCredentials(baseDir, nickname, password)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
@@ -434,8 +442,8 @@ def createGroup(baseDir: str, nickname: str, domain: str, port: int,
      newPerson, webfingerEndpoint) = createPerson(baseDir, nickname,
                                                   domain, port,
                                                   httpPrefix, saveToFile,
-                                                  False, password)
-    newPerson['type'] = 'Group'
+                                                  False, password, True)
+
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
@@ -456,7 +464,8 @@ def savePersonQrcode(baseDir: str,
 def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  httpPrefix: str, saveToFile: bool,
                  manualFollowerApproval: bool,
-                 password: str = None) -> (str, str, {}, {}):
+                 password: str,
+                 groupAccount: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not validNickname(domain, nickname):
@@ -482,6 +491,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                                                        httpPrefix,
                                                        saveToFile,
                                                        manualFollowerApproval,
+                                                       groupAccount,
                                                        password)
     if not getConfigParam(baseDir, 'admin'):
         if nickname != 'news':
@@ -552,7 +562,7 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
     """Generates the shared inbox
     """
     return _createPersonBase(baseDir, nickname, domain, port, httpPrefix,
-                             True, True, None)
+                             True, True, False, None)
 
 
 def createNewsInbox(baseDir: str, domain: str, port: int,
@@ -583,6 +593,11 @@ def personUpgradeActor(baseDir: str, personJson: {},
         statusNumber, published = getStatusNumber()
         personJson['published'] = published
         updateActor = True
+
+    if personJson.get('shares'):
+        if personJson['shares'].endswith('/shares'):
+            personJson['shares'] = personJson['id'] + '/catalog'
+            updateActor = True
 
     occupationName = ''
     if personJson.get('occupationName'):
@@ -746,6 +761,7 @@ def personBoxJson(recentPostsCache: {},
        boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks':
+        print('ERROR: personBoxJson invalid box name ' + boxname)
         return None
 
     if not '/' + boxname in path:
@@ -1186,6 +1202,18 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     return True
 
 
+def _detectUsersPath(url: str) -> str:
+    """Tries to detect the /users/ path
+    """
+    if '/' not in url:
+        return '/users/'
+    usersPaths = getUserPaths()
+    for possibleUsersPath in usersPaths:
+        if possibleUsersPath in url:
+            return possibleUsersPath
+    return '/users/'
+
+
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                  debug: bool, quiet: bool = False) -> ({}, {}):
     """Returns the actor json
@@ -1193,21 +1221,29 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if debug:
         print('getActorJson for ' + handle)
     originalActor = handle
+    groupAccount = False
+
+    # try to determine the users path
+    detectedUsersPath = _detectUsersPath(handle)
     if '/@' in handle or \
-       '/users/' in handle or \
+       detectedUsersPath in handle or \
        handle.startswith('http') or \
        handle.startswith('hyper'):
+        groupPaths = getGroupPaths()
+        if detectedUsersPath in groupPaths:
+            groupAccount = True
         # format: https://domain/@nick
         originalHandle = handle
         if not hasUsersPath(originalHandle):
             if not quiet or debug:
                 print('getActorJson: Expected actor format: ' +
-                      'https://domain/@nick or https://domain/users/nick')
+                      'https://domain/@nick or https://domain' +
+                      detectedUsersPath + 'nick')
             return None, None
         prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
-        handle = handle.replace('/@', '/users/')
+        handle = handle.replace('/@', detectedUsersPath)
         paths = getUserPaths()
         userPathFound = False
         for userPath in paths:
@@ -1234,6 +1270,10 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             return None, None
         if handle.startswith('@'):
             handle = handle[1:]
+        elif handle.startswith('!'):
+            # handle for a group
+            handle = handle[1:]
+            groupAccount = True
         if '@' not in handle:
             if not quiet:
                 print('getActorJsonSyntax: --actor nickname@domain')
@@ -1265,7 +1305,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug)
+                                None, __version__, debug,
+                                groupAccount)
     if not wfRequest:
         if not quiet:
             print('getActorJson Unable to webfinger ' + handle)
@@ -1282,7 +1323,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     personUrl = None
     if wfRequest.get('errors'):
         if not quiet or debug:
-            print('getActorJson wfRequest error: ' + str(wfRequest['errors']))
+            print('getActorJson wfRequest error: ' +
+                  str(wfRequest['errors']))
         if hasUsersPath(handle):
             personUrl = originalActor
         else:

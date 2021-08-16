@@ -15,8 +15,10 @@ from utils import getConfigParam
 from utils import getImageExtensions
 from utils import getImageFormats
 from utils import acctDir
+from utils import localActorUrl
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import editTextField
 from markdown import markdownToHtml
 
 
@@ -74,8 +76,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         if os.path.isfile(avatarFilename):
             break
     avatarUrl = \
-        httpPrefix + '://' + domainFull + \
-        '/users/' + nickname + '/avatar.' + ext
+        localActorUrl(httpPrefix, nickname, domainFull) + '/avatar.' + ext
 
     imageFormats = getImageFormats()
     profileForm += '<div class="container">' + profileText + '</div>\n'
@@ -102,10 +103,9 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     actorJson = loadJson(actorFilename)
     displayNickname = actorJson['name']
     profileForm += '<div class="container">\n'
-    profileForm += '  <label class="labels">' + \
-        translate['Nickname'] + '</label><br>\n'
-    profileForm += '  <input type="text" name="displayNickname" value="' + \
-        displayNickname + '"><br>\n'
+    profileForm += \
+        editTextField(translate['Nickname'], 'displayNickname',
+                      displayNickname)
 
     bioStr = \
         actorJson['summary'].replace('<p>', '').replace('</p>', '')

@@ -89,7 +89,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     """
     if ' ' not in authHeader:
         if debug:
-            print('DEBUG: basic auth - Authorixation header does not ' +
+            print('DEBUG: basic auth - Authorisation header does not ' +
                   'contain a space character')
         return False
     if not hasUsersPath(path):
@@ -132,9 +132,10 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
             print('DEBUG: passwords file missing')
         return False
     providedPassword = plain.split(':')[1]
-    passfile = open(passwordFile, 'r')
-    for line in passfile:
-        if line.startswith(nickname + ':'):
+    with open(passwordFile, 'r') as passfile:
+        for line in passfile:
+            if not line.startswith(nickname + ':'):
+                continue
             storedPassword = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
             success = _verifyPassword(storedPassword, providedPassword)

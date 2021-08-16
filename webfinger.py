@@ -18,32 +18,52 @@ from utils import loadJsonOnionify
 from utils import saveJson
 from utils import getProtocolPrefixes
 from utils import removeDomainPort
+from utils import getUserPaths
+from utils import getGroupPaths
+from utils import localActorUrl
 
 
-def _parseHandle(handle: str) -> (str, str):
+def _parseHandle(handle: str) -> (str, str, bool):
+    """Parses a handle and returns nickname and domain
+    """
+    groupAccount = False
     if '.' not in handle:
-        return None, None
+        return None, None, False
     prefixes = getProtocolPrefixes()
     handleStr = handle
     for prefix in prefixes:
         handleStr = handleStr.replace(prefix, '')
+
+    # try domain/@nick
     if '/@' in handle:
         domain, nickname = handleStr.split('/@')
-    else:
-        if '/users/' in handle:
-            domain, nickname = handleStr.split('/users/')
-        else:
-            if '@' in handle:
-                nickname, domain = handle.split('@')
-            else:
-                return None, None
-    return nickname, domain
+        return nickname, domain, False
+
+    # try nick@domain
+    if '@' in handle:
+        if handle.startswith('!'):
+            handle = handle[1:]
+            groupAccount = True
+        nickname, domain = handle.split('@')
+        return nickname, domain, groupAccount
+
+    # try for different /users/ paths
+    usersPaths = getUserPaths()
+    groupPaths = getGroupPaths()
+    for possibleUsersPath in usersPaths:
+        if possibleUsersPath in handle:
+            if possibleUsersPath in groupPaths:
+                groupAccount = True
+            domain, nickname = handleStr.split(possibleUsersPath)
+            return nickname, domain, groupAccount
+
+    return None, None, False
 
 
 def webfingerHandle(session, handle: str, httpPrefix: str,
                     cachedWebfingers: {},
                     fromDomain: str, projectVersion: str,
-                    debug: bool) -> {}:
+                    debug: bool, groupAccount: bool) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
@@ -51,24 +71,31 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
             print('WARN: No session specified for webfingerHandle')
         return None
 
-    nickname, domain = _parseHandle(handle)
+    nickname, domain, grpAccount = _parseHandle(handle)
     if not nickname:
         return None
+    if grpAccount:
+        groupAccount = True
     wfDomain = removeDomainPort(domain)
 
-    wf = getWebfingerFromCache(nickname + '@' + wfDomain,
-                               cachedWebfingers)
+    wfHandle = nickname + '@' + wfDomain
+    wf = getWebfingerFromCache(wfHandle, cachedWebfingers)
     if wf:
         if debug:
             print('Webfinger from cache: ' + str(wf))
         return wf
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix, domain)
-    par = {
-        'resource': 'acct:{}'.format(nickname + '@' + wfDomain)
-    }
     hdr = {
         'Accept': 'application/jrd+json'
     }
+    if not groupAccount:
+        par = {
+            'resource': 'acct:{}'.format(wfHandle)
+        }
+    else:
+        par = {
+            'resource': 'group:{}'.format(wfHandle)
+        }
     try:
         result = \
             getJson(session, url, hdr, par,
@@ -79,8 +106,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         return None
 
     if result:
-        storeWebfingerInCache(nickname + '@' + wfDomain,
-                              result, cachedWebfingers)
+        storeWebfingerInCache(wfHandle, result, cachedWebfingers)
     else:
         if debug:
             print("WARN: Unable to webfinger " + url + ' ' +
@@ -112,15 +138,19 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
 
 
 def createWebfingerEndpoint(nickname: str, domain: str, port: int,
-                            httpPrefix: str, publicKeyPem) -> {}:
+                            httpPrefix: str, publicKeyPem: str,
+                            groupAccount: bool) -> {}:
     """Creates a webfinger endpoint for a user
     """
     originalDomain = domain
     domain = getFullDomain(domain, port)
 
     personName = nickname
-    personId = httpPrefix + "://" + domain + "/users/" + personName
-    subjectStr = "acct:" + personName + "@" + originalDomain
+    personId = localActorUrl(httpPrefix, personName, domain)
+    if not groupAccount:
+        subjectStr = "acct:" + personName + "@" + originalDomain
+    else:
+        subjectStr = "group:" + personName + "@" + originalDomain
     profilePageHref = httpPrefix + "://" + domain + "/@" + nickname
     if nickname == 'inbox' or nickname == originalDomain:
         personName = 'actor'
@@ -129,7 +159,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
-    actor = httpPrefix + "://" + domain + "/users/" + nickname
+    actor = localActorUrl(httpPrefix, nickname, domain)
     account = {
         "aliases": [
             httpPrefix + "://" + domain + "/@" + personName,
@@ -198,17 +228,20 @@ def webfingerLookup(path: str, baseDir: str,
     if not path.startswith('/.well-known/webfinger?'):
         return None
     handle = None
-    if 'resource=acct:' in path:
-        handle = path.split('resource=acct:')[1].strip()
-        handle = urllib.parse.unquote(handle)
-        if debug:
-            print('DEBUG: WEBFINGER handle ' + handle)
-    else:
-        if 'resource=acct%3A' in path:
-            handle = path.split('resource=acct%3A')[1]
+    resourceTypes = ('acct', 'group')
+    for resType in resourceTypes:
+        if 'resource=' + resType + ':' in path:
+            handle = path.split('resource=' + resType + ':')[1].strip()
+            handle = urllib.parse.unquote(handle)
+            if debug:
+                print('DEBUG: WEBFINGER handle ' + handle)
+            break
+        elif 'resource=' + resType + '%3A' in path:
+            handle = path.split('resource=' + resType + '%3A')[1]
             handle = urllib.parse.unquote(handle.strip())
             if debug:
                 print('DEBUG: WEBFINGER handle ' + handle)
+            break
     if not handle:
         if debug:
             print('DEBUG: WEBFINGER handle missing')

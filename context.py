@@ -14,6 +14,7 @@ validContexts = (
     "https://w3id.org/security/v1",
     "*/apschema/v1.9",
     "*/apschema/v1.21",
+    "*/apschema/v1.20",
     "*/litepub-0.1.jsonld",
     "https://litepub.social/litepub/context.jsonld"
 )
@@ -96,6 +97,43 @@ def getApschemaV1_9() -> {}:
             "diaspora": "https://diasporafoundation.org/ns/",
             "guid": "diaspora:guid",
             "Hashtag": "as:Hashtag"
+        }
+    }
+
+
+def getApschemaV1_20() -> {}:
+    # https://domain/apschema/v1.20
+    return {
+        "@context":
+        {
+            "as": "https://www.w3.org/ns/activitystreams#",
+            "zot": "https://zap.dog/apschema#",
+            "toot": "http://joinmastodon.org/ns#",
+            "ostatus": "http://ostatus.org#",
+            "schema": "http://schema.org#",
+            "litepub": "http://litepub.social/ns#",
+            "sm": "http://smithereen.software/ns#",
+            "conversation": "ostatus:conversation",
+            "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+            "oauthRegistrationEndpoint": "litepub:oauthRegistrationEndpoint",
+            "sensitive": "as:sensitive",
+            "movedTo": "as:movedTo",
+            "copiedTo": "as:copiedTo",
+            "alsoKnownAs": "as:alsoKnownAs",
+            "inheritPrivacy": "as:inheritPrivacy",
+            "EmojiReact": "as:EmojiReact",
+            "commentPolicy": "zot:commentPolicy",
+            "topicalCollection": "zot:topicalCollection",
+            "eventRepeat": "zot:eventRepeat",
+            "emojiReaction": "zot:emojiReaction",
+            "expires": "zot:expires",
+            "directMessage": "zot:directMessage",
+            "Category": "zot:Category",
+            "replyTo": "zot:replyTo",
+            "PropertyValue": "schema:PropertyValue",
+            "value": "schema:value",
+            "discoverable": "toot:discoverable",
+            "wall": "sm:wall"
         }
     }
 

@@ -19,6 +19,7 @@ from utils import loadJson
 from utils import getOccupationSkills
 from utils import setOccupationSkillsList
 from utils import acctDir
+from utils import localActorUrl
 
 
 def setSkillsFromDict(actorJson: {}, skillsDict: {}) -> []:
@@ -185,7 +186,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
 
     domainFull = getFullDomain(domain, port)
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     toUrl = actor
     ccUrl = actor + '/followers'
 
@@ -208,7 +209,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        domain, projectVersion, debug)
+                        domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)

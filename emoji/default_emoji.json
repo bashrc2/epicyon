@@ -519,6 +519,7 @@
     "zorin": "zorin",
     "solus": "solus",
     "fedora": "fedora",
+    "redhat": "redhat",
     "elementary": "elementary",
     "prideflag": "pride",
     "biflag": "biflag",
@@ -671,6 +672,7 @@
     "meownwn": "meownwn",
     "meowderpy": "meowderpy",
     "blobcat": "blobcat",
+    "blobthinksmart": "blobthinksmart",
     "blobcathappy": "blobcathappy",
     "blobcoolcat": "blobcoolcat",
     "blobcatwink": "blobcatwink",
@@ -766,5 +768,6 @@
     "pine64": "pine64",
     "void": "void",
     "openbsd": "openbsd",
-    "freebsd": "freebsd"
+    "freebsd": "freebsd",
+    "orgmode": "orgmode"
 }

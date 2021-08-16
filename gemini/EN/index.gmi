@@ -21,8 +21,8 @@ Epicyon is written in Python with a HTML+CSS web interface and uses no javascrip
 
 Emojis, hashtags, photos, video and audio attachments, instance and account level blocking controls, moderation functions and reports are all supported. Build the community you want and avoid the stuff you don't. No ads. No blockchains or other Silicon Valley garbage.
 
-=> https://epicyon.net/epicyon.tar.gz Download
-=> https://epicyon.net/#install Install
+=> https://libreserver.org/epicyon/epicyon.tar.gz Download
+=> https://libreserver.org/epicyon/#install Install
 => https://gitlab.com/bashrc2/epicyon Repo
 => https://www.patreon.com/freedombone Donate
 => features.gmi Features

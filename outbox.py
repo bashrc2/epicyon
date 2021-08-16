@@ -16,6 +16,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import getBaseContentFromPost
 from utils import hasObjectDict
 from utils import getLocalNetworkAddresses
 from utils import getFullDomain
@@ -26,6 +27,7 @@ from utils import isFeaturedWriter
 from utils import loadJson
 from utils import saveJson
 from utils import acctDir
+from utils import localActorUrl
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -61,7 +63,10 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
 
     if not messageJson.get('type'):
         return
-    print("messageJson['type'] " + messageJson['type'])
+    if not isinstance(messageJson['type'], str):
+        if debug:
+            print('DEBUG: c2s actor update type is not a string')
+        return
     if messageJson['type'] != 'Update':
         return
     if not hasObjectDict(messageJson):
@@ -71,6 +76,10 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     if not messageJson['object'].get('type'):
         if debug:
             print('DEBUG: c2s actor update - no type')
+        return
+    if not isinstance(messageJson['object']['type'], str):
+        if debug:
+            print('DEBUG: c2s actor update object type is not a string')
         return
     if messageJson['object']['type'] != 'Person':
         if debug:
@@ -88,17 +97,21 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         if debug:
             print('DEBUG: c2s actor update has no id field')
         return
-    actor = \
-        httpPrefix + '://' + getFullDomain(domain, port) + '/users/' + nickname
+    if not isinstance(messageJson['id'], str):
+        if debug:
+            print('DEBUG: c2s actor update id is not a string')
+        return
+    domainFull = getFullDomain(domain, port)
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
     if len(messageJson['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +
-                  messageJson['to'])
+                  str(messageJson['to']))
         return
     if messageJson['to'][0] != actor:
         if debug:
             print('DEBUG: c2s actor update - to does not contain actor ' +
-                  messageJson['to'] + ' ' + actor)
+                  str(messageJson['to']) + ' ' + actor)
         return
     if not messageJson['id'].startswith(actor + '#updates/'):
         if debug:
@@ -178,7 +191,10 @@ def postMessageToOutbox(session, translate: {},
                         YTReplacementDomain: str,
                         showPublishedDateOnly: bool,
                         allowLocalNetworkAccess: bool,
-                        city: str) -> bool:
+                        city: str, systemLanguage: str,
+                        sharedItemsFederatedDomains: [],
+                        sharedItemFederationTokens: {},
+                        lowBandwidth: bool) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -201,9 +217,9 @@ def postMessageToOutbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if hasObjectDict(messageJson):
-        if messageJson['object'].get('content'):
-            if dangerousMarkup(messageJson['object']['content'],
-                               allowLocalNetworkAccess):
+        contentStr = getBaseContentFromPost(messageJson, systemLanguage)
+        if contentStr:
+            if dangerousMarkup(contentStr, allowLocalNetworkAccess):
                 print('POST to outbox contains dangerous markup: ' +
                       str(messageJson))
                 return False
@@ -264,7 +280,7 @@ def postMessageToOutbox(session, translate: {},
                 print('DEBUG: domain is blocked: ' + messageJson['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(messageJson, YTReplacementDomain)
+        replaceYouTube(messageJson, YTReplacementDomain, systemLanguage)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):
@@ -378,7 +394,7 @@ def postMessageToOutbox(session, translate: {},
         if messageJson['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
-                httpPrefix + '://' + domainFull + '/users/' + postToNickname
+                localActorUrl(httpPrefix, postToNickname, domainFull)
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue
@@ -390,7 +406,8 @@ def postMessageToOutbox(session, translate: {},
                                     messageJson,
                                     translate, YTReplacementDomain,
                                     allowLocalNetworkAccess,
-                                    recentPostsCache, debug):
+                                    recentPostsCache, debug, systemLanguage,
+                                    domainFull, personCache):
                         inboxUpdateIndex('tlmedia', baseDir,
                                          postToNickname + '@' + domain,
                                          savedFilename, debug)
@@ -449,7 +466,9 @@ def postMessageToOutbox(session, translate: {},
                               cachedWebfingers,
                               personCache,
                               messageJson, debug,
-                              version)
+                              version,
+                              sharedItemsFederatedDomains,
+                              sharedItemFederationTokens)
     followersThreads.append(followersThread)
 
     if debug:
@@ -535,9 +554,9 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle share uploads')
-    outboxShareUpload(baseDir, httpPrefix,
-                      postToNickname, domain,
-                      port, messageJson, debug, city)
+    outboxShareUpload(baseDir, httpPrefix, postToNickname, domain,
+                      port, messageJson, debug, city,
+                      systemLanguage, translate, lowBandwidth)
 
     if debug:
         print('DEBUG: handle undo share uploads')
@@ -571,5 +590,7 @@ def postMessageToOutbox(session, translate: {},
                          cachedWebfingers,
                          personCache,
                          messageJson, debug,
-                         version)
+                         version,
+                         sharedItemsFederatedDomains,
+                         sharedItemFederationTokens)
     return True

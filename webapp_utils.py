@@ -10,17 +10,25 @@ __module_group__ = "Web Interface"
 import os
 from collections import OrderedDict
 from session import getJson
+from utils import isAccountDir
 from utils import removeHtml
-from utils import getImageExtensions
 from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
 from utils import getConfigParam
 from utils import acctDir
+from utils import getNicknameFromActor
+from utils import isfloat
+from utils import getAudioExtensions
+from utils import getVideoExtensions
+from utils import getImageExtensions
+from utils import localActorUrl
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from person import getPersonAvatarUrl
+from posts import isModerator
+from blocking import isBlocked
 
 
 def getBrokenLinkSubstitute() -> str:
@@ -331,7 +339,10 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 
 
 def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
-                       baseDir: str, maxSharesPerAccount: int) -> ({}, bool):
+                       baseDir: str, domain: str, nickname: str,
+                       maxSharesPerAccount: int,
+                       sharedItemsFederatedDomains: [],
+                       sharesFileType: str) -> ({}, bool):
     """Get a page on the shared items timeline as json
     maxSharesPerAccount helps to avoid one person dominating the timeline
     by sharing a large number of things
@@ -339,27 +350,71 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     allSharesJson = {}
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' not in handle:
+            if not isAccountDir(handle):
                 continue
             accountDir = baseDir + '/accounts/' + handle
-            sharesFilename = accountDir + '/shares.json'
+            sharesFilename = accountDir + '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
             sharesJson = loadJson(sharesFilename)
             if not sharesJson:
                 continue
-            nickname = handle.split('@')[0]
+            accountNickname = handle.split('@')[0]
+            # Don't include shared items from blocked accounts
+            if accountNickname != nickname:
+                if isBlocked(baseDir, nickname, domain,
+                             accountNickname, domain, None):
+                    continue
             # actor who owns this share
-            owner = actor.split('/users/')[0] + '/users/' + nickname
+            owner = actor.split('/users/')[0] + '/users/' + accountNickname
             ctr = 0
             for itemID, item in sharesJson.items():
                 # assign owner to the item
                 item['actor'] = owner
+                item['shareId'] = itemID
                 allSharesJson[str(item['published'])] = item
                 ctr += 1
                 if ctr >= maxSharesPerAccount:
                     break
         break
+    if sharedItemsFederatedDomains:
+        if sharesFileType == 'shares':
+            catalogsDir = baseDir + '/cache/catalogs'
+        else:
+            catalogsDir = baseDir + '/cache/wantedItems'
+        if os.path.isdir(catalogsDir):
+            for subdir, dirs, files in os.walk(catalogsDir):
+                for f in files:
+                    if '#' in f:
+                        continue
+                    if not f.endswith('.' + sharesFileType + '.json'):
+                        continue
+                    federatedDomain = f.split('.')[0]
+                    if federatedDomain not in sharedItemsFederatedDomains:
+                        continue
+                    sharesFilename = catalogsDir + '/' + f
+                    sharesJson = loadJson(sharesFilename)
+                    if not sharesJson:
+                        continue
+                    ctr = 0
+                    for itemID, item in sharesJson.items():
+                        # assign owner to the item
+                        if '--shareditems--' not in itemID:
+                            continue
+                        shareActor = itemID.split('--shareditems--')[0]
+                        shareActor = shareActor.replace('___', '://')
+                        shareActor = shareActor.replace('--', '/')
+                        shareNickname = getNicknameFromActor(shareActor)
+                        if isBlocked(baseDir, nickname, domain,
+                                     shareNickname, federatedDomain, None):
+                            continue
+                        item['actor'] = shareActor
+                        item['shareId'] = itemID
+                        allSharesJson[str(item['published'])] = item
+                        ctr += 1
+                        if ctr >= maxSharesPerAccount:
+                            break
+                break
     # sort the shared items in descending order of publication date
     sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
     lastPage = False
@@ -638,7 +693,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
                                           systemLanguage)
 
-    authorUrl = httpPrefix + '://' + domain + '/users/' + nickname
+    authorUrl = localActorUrl(httpPrefix, nickname, domain)
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
 
     # license for content on the site may be different from
@@ -756,15 +811,13 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
 def _isImageMimeType(mimeType: str) -> bool:
     """Is the given mime type an image?
     """
-    imageMimeTypes = (
-        'image/png',
-        'image/jpeg',
-        'image/webp',
-        'image/avif',
-        'image/svg+xml',
-        'image/gif'
-    )
-    if mimeType in imageMimeTypes:
+    if mimeType == 'image/svg+xml':
+        return True
+    if not mimeType.startswith('image/'):
+        return False
+    extensions = getImageExtensions()
+    ext = mimeType.split('/')[1]
+    if ext in extensions:
         return True
     return False
 
@@ -772,12 +825,11 @@ def _isImageMimeType(mimeType: str) -> bool:
 def _isVideoMimeType(mimeType: str) -> bool:
     """Is the given mime type a video?
     """
-    videoMimeTypes = (
-        'video/mp4',
-        'video/webm',
-        'video/ogv'
-    )
-    if mimeType in videoMimeTypes:
+    if not mimeType.startswith('video/'):
+        return False
+    extensions = getVideoExtensions()
+    ext = mimeType.split('/')[1]
+    if ext in extensions:
         return True
     return False
 
@@ -785,11 +837,13 @@ def _isVideoMimeType(mimeType: str) -> bool:
 def _isAudioMimeType(mimeType: str) -> bool:
     """Is the given mime type an audio file?
     """
-    audioMimeTypes = (
-        'audio/mpeg',
-        'audio/ogg'
-    )
-    if mimeType in audioMimeTypes:
+    if mimeType == 'audio/mpeg':
+        return True
+    if not mimeType.startswith('audio/'):
+        return False
+    extensions = getAudioExtensions()
+    ext = mimeType.split('/')[1]
+    if ext in extensions:
         return True
     return False
 
@@ -1111,3 +1165,267 @@ def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
             str(title) + '</a></label></li>\n'
     htmlStr += '</ul></div>\n'
     return htmlStr
+
+
+def beginEditSection(label: str) -> str:
+    """returns the html for begining a dropdown section on edit profile screen
+    """
+    return \
+        '    <details><summary class="cw">' + label + '</summary>\n' + \
+        '<div class="container">'
+
+
+def endEditSection() -> str:
+    """returns the html for ending a dropdown section on edit profile screen
+    """
+    return '    </div></details>\n'
+
+
+def editTextField(label: str, name: str, value: str = "",
+                  placeholder: str = "", required: bool = False) -> str:
+    """Returns html for editing a text field
+    """
+    if value is None:
+        value = ''
+    placeholderStr = ''
+    if placeholder:
+        placeholderStr = ' placeholder="' + placeholder + '"'
+    requiredStr = ''
+    if required:
+        requiredStr = ' required'
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="text" name="' + name + '" value="' + \
+        value + '"' + placeholderStr + requiredStr + '>\n'
+
+
+def editNumberField(label: str, name: str, value: int = 1,
+                    minValue: int = 1, maxValue: int = 999999,
+                    placeholder: int = 1) -> str:
+    """Returns html for editing an integer number field
+    """
+    if value is None:
+        value = ''
+    placeholderStr = ''
+    if placeholder:
+        placeholderStr = ' placeholder="' + str(placeholder) + '"'
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="number" name="' + name + '" value="' + \
+        str(value) + '"' + placeholderStr + ' ' + \
+        'min="' + str(minValue) + '" max="' + str(maxValue) + '" step="1">\n'
+
+
+def editCurrencyField(label: str, name: str, value: str = "0.00",
+                      placeholder: str = "0.00",
+                      required: bool = False) -> str:
+    """Returns html for editing a currency field
+    """
+    if value is None:
+        value = '0.00'
+    placeholderStr = ''
+    if placeholder:
+        if placeholder.isdigit():
+            placeholderStr = ' placeholder="' + str(placeholder) + '"'
+    requiredStr = ''
+    if required:
+        requiredStr = ' required'
+    return \
+        '<label class="labels">' + label + '</label><br>\n' + \
+        '      <input type="text" name="' + name + '" value="' + \
+        str(value) + '"' + placeholderStr + ' ' + \
+        ' pattern="^\\d{1,3}(,\\d{3})*(\\.\\d+)?" data-type="currency"' + \
+        requiredStr + '>\n'
+
+
+def editCheckBox(label: str, name: str, checked: bool = False) -> str:
+    """Returns html for editing a checkbox field
+    """
+    checkedStr = ''
+    if checked:
+        checkedStr = ' checked'
+
+    return \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
+
+
+def editTextArea(label: str, name: str, value: str = "",
+                 height: int = 600,
+                 placeholder: str = "",
+                 spellcheck: bool = False) -> str:
+    """Returns html for editing a textarea field
+    """
+    if value is None:
+        value = ''
+    text = ''
+    if label:
+        text = '<label class="labels">' + label + '</label><br>\n'
+    text += \
+        '      <textarea id="message" placeholder=' + \
+        '"' + placeholder + '" '
+    text += 'name="' + name + '" '
+    text += 'style="height:' + str(height) + 'px" '
+    text += 'spellcheck="' + str(spellcheck).lower() + '">'
+    text += value + '</textarea>\n'
+    return text
+
+
+def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
+                          httpPrefix: str, domainFull: str,
+                          contactNickname: str, itemID: str,
+                          actor: str, sharesFileType: str) -> str:
+    """Returns the html for an individual shared item
+    """
+    sharedItemsForm = '<div class="container">\n'
+    sharedItemsForm += \
+        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
+    if sharedItem.get('imageUrl'):
+        sharedItemsForm += \
+            '<a href="' + sharedItem['imageUrl'] + '">\n'
+        sharedItemsForm += \
+            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
+            '" alt="Item image"></a>\n'
+    sharedItemsForm += '<p>' + sharedItem['summary'] + '</p>\n<p>'
+    if sharedItem.get('itemQty'):
+        if sharedItem['itemQty'] > 1:
+            sharedItemsForm += \
+                '<b>' + translate['Quantity'] + \
+                ':</b> ' + str(sharedItem['itemQty']) + '<br>'
+    sharedItemsForm += \
+        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
+    sharedItemsForm += \
+        '<b>' + translate['Category'] + ':</b> ' + \
+        sharedItem['category'] + '<br>'
+    if sharedItem.get('location'):
+        sharedItemsForm += \
+            '<b>' + translate['Location'] + ':</b> ' + \
+            sharedItem['location'] + '<br>'
+    if sharedItem.get('itemPrice') and \
+       sharedItem.get('itemCurrency'):
+        if isfloat(sharedItem['itemPrice']):
+            if float(sharedItem['itemPrice']) > 0:
+                sharedItemsForm += \
+                    ' <b>' + translate['Price'] + \
+                    ':</b> ' + sharedItem['itemPrice'] + \
+                    ' ' + sharedItem['itemCurrency']
+    sharedItemsForm += '</p>\n'
+    contactActor = \
+        localActorUrl(httpPrefix, contactNickname, domainFull)
+    sharedItemsForm += \
+        '<p>' + \
+        '<a href="' + actor + '?replydm=sharedesc:' + \
+        sharedItem['displayName'] + '?mention=' + contactActor + \
+        '"><button class="button">' + translate['Contact'] + \
+        '</button></a>\n' + \
+        '<a href="' + contactActor + '"><button class="button">' + \
+        translate['View'] + '</button></a>\n'
+
+    # should the remove button be shown?
+    showRemoveButton = False
+    nickname = getNicknameFromActor(actor)
+    if actor.endswith('/users/' + contactNickname):
+        showRemoveButton = True
+    elif isModerator(baseDir, nickname):
+        showRemoveButton = True
+    else:
+        adminNickname = getConfigParam(baseDir, 'admin')
+        if adminNickname:
+            if actor.endswith('/users/' + adminNickname):
+                showRemoveButton = True
+
+    if showRemoveButton:
+        if sharesFileType == 'shares':
+            sharedItemsForm += \
+                ' <a href="' + actor + '?rmshare=' + \
+                itemID + '"><button class="button">' + \
+                translate['Remove'] + '</button></a>\n'
+        else:
+            sharedItemsForm += \
+                ' <a href="' + actor + '?rmwanted=' + \
+                itemID + '"><button class="button">' + \
+                translate['Remove'] + '</button></a>\n'
+    sharedItemsForm += '</p></div>\n'
+    return sharedItemsForm
+
+
+def htmlShowShare(baseDir: str, domain: str, nickname: str,
+                  httpPrefix: str, domainFull: str,
+                  itemID: str, translate: {},
+                  sharedItemsFederatedDomains: [],
+                  defaultTimeline: str, theme: str,
+                  sharesFileType: str) -> str:
+    """Shows an individual shared item after selecting it from the left column
+    """
+    sharesJson = None
+
+    shareUrl = itemID.replace('___', '://').replace('--', '/')
+    contactNickname = getNicknameFromActor(shareUrl)
+    if not contactNickname:
+        return None
+
+    if '://' + domainFull + '/' in shareUrl:
+        # shared item on this instance
+        sharesFilename = \
+            acctDir(baseDir, contactNickname, domain) + '/' + \
+            sharesFileType + '.json'
+        if not os.path.isfile(sharesFilename):
+            return None
+        sharesJson = loadJson(sharesFilename)
+    else:
+        # federated shared item
+        if sharesFileType == 'shares':
+            catalogsDir = baseDir + '/cache/catalogs'
+        else:
+            catalogsDir = baseDir + '/cache/wantedItems'
+        if not os.path.isdir(catalogsDir):
+            return None
+        for subdir, dirs, files in os.walk(catalogsDir):
+            for f in files:
+                if '#' in f:
+                    continue
+                if not f.endswith('.' + sharesFileType + '.json'):
+                    continue
+                federatedDomain = f.split('.')[0]
+                if federatedDomain not in sharedItemsFederatedDomains:
+                    continue
+                sharesFilename = catalogsDir + '/' + f
+                sharesJson = loadJson(sharesFilename)
+                if not sharesJson:
+                    continue
+                if sharesJson.get(itemID):
+                    break
+            break
+
+    if not sharesJson:
+        return None
+    if not sharesJson.get(itemID):
+        return None
+    sharedItem = sharesJson[itemID]
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
+
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
+
+    shareStr = \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '/' + \
+        defaultTimeline + '" title="" alt="">\n'
+    shareStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="" ' + \
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header><br>\n'
+    shareStr += \
+        htmlSearchResultShare(baseDir, sharedItem, translate, httpPrefix,
+                              domainFull, contactNickname, itemID,
+                              actor, sharesFileType)
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        shareStr + htmlFooter()

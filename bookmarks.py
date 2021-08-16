@@ -25,6 +25,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import hasObjectDict
 from utils import acctDir
+from utils import localActorUrl
 from posts import getPersonBox
 from session import postJson
 
@@ -242,7 +243,7 @@ def bookmark(recentPostsCache: {},
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -301,10 +302,10 @@ def undoBookmark(recentPostsCache: {},
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
         'object': {
             'type': 'Bookmark',
-            'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
+            'actor': localActorUrl(httpPrefix, nickname, fullDomain),
             'object': objectUrl
         }
     }
@@ -356,7 +357,7 @@ def sendBookmarkViaServer(baseDir: str, session,
 
     domainFull = getFullDomain(domain, fromPort)
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -376,7 +377,7 @@ def sendBookmarkViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: bookmark webfinger failed for ' + handle)
@@ -441,7 +442,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
 
     domainFull = getFullDomain(domain, fromPort)
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -461,7 +462,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug)
+                                domain, projectVersion, debug, False)
     if not wfRequest:
         if debug:
             print('DEBUG: unbookmark webfinger failed for ' + handle)
