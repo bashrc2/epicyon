@@ -4,5 +4,5 @@ if [ -d /etc/epicyon ]; then
 else
     cd /opt/epicyon || exit 0
 fi
-git remote set-url origin https://code.freedombone.net/bashrc/epicyon.git
+git remote set-url origin https://gitlab.com/bashrc2/epicyon.git
 git checkout main
