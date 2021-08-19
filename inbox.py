@@ -1598,6 +1598,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
     if not validPostDate(messageJson['object']['published'], 90, debug):
         return False
 
+    summary = None
     if messageJson['object'].get('summary'):
         summary = messageJson['object']['summary']
         if not isinstance(summary, str):
@@ -1609,7 +1610,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
 
     if isGitPatch(baseDir, nickname, domain,
                   messageJson['object']['type'],
-                  messageJson['object']['summary'],
+                  summary,
                   messageJson['object']['content']):
         return True
 
