@@ -254,6 +254,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
     if not isinstance(messageJson['actor'], str):
         print('WARN: actor should be a string, but is actually: ' +
               str(messageJson['actor']))
+        pprint(messageJson)
         return False
 
     # type should be a string
