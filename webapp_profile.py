@@ -432,7 +432,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         if newNickname and newDomain:
             newHandle = newNickname + '@' + newDomainFull
             htmlStr += '        <p>' + translate['New account'] + \
-                ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+                ': <a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
     elif alsoKnownAs:
         otherAccountshtml = \
             '        <p>' + translate['Other accounts'] + ': '
