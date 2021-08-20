@@ -2711,7 +2711,7 @@ def testClientToServer():
     assert len([name for name in os.listdir(bobOutboxPath)
                 if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 1
     print(str(len([name for name in os.listdir(aliceInboxPath)
-                   if os.path.isfile(os.path.join(aliceInboxPath, name))])))    
+                   if os.path.isfile(os.path.join(aliceInboxPath, name))])))
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
     assert len([name for name in os.listdir(aliceInboxPath)
