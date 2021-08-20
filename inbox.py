@@ -225,17 +225,26 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
         return True
     expectedStr = expectedDomain + ':' + str(expectedPort)
     expectedFound = False
+    ctr = 0
     for subdir, dirs, files in os.walk(inboxDir):
         for f in files:
             filename = os.path.join(subdir, f)
+            ctr += 1
             if not os.path.isfile(filename):
                 print('filename: ' + filename)
                 return False
             if expectedStr in filename:
                 expectedFound = True
         break
+    if ctr == 0:
+        return True
     if not expectedFound:
         print('Expected file was not found: ' + expectedStr)
+        for subdir, dirs, files in os.walk(inboxDir):
+            for f in files:
+                filename = os.path.join(subdir, f)
+                print(filename)
+            break
         return False
     return True
 
