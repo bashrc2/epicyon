@@ -552,6 +552,7 @@ def htmlProfile(rssIconAtTop: bool,
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
     websiteUrl = getWebsite(profileJson, translate)
+    blogAddress = getBlogAddress(profileJson)
     PGPpubKey = getPGPpubKey(profileJson)
     PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
@@ -581,6 +582,10 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
                 emailAddress + '">' + emailAddress + '</a></p>\n'
+        if blogAddress:
+            donateSection += \
+                '<p>Blog: <a href="' + \
+                blogAddress + '">' + blogAddress + '</a></p>\n'
         if xmppAddress:
             donateSection += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
