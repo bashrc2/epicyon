@@ -6207,6 +6207,8 @@ class PubServer(BaseHTTPRequestHandler):
             if actorJson:
                 if actorJson.get('movedTo'):
                     movedTo = actorJson['movedTo']
+                    if '"' in movedTo:
+                        movedTo = movedTo.split('"')[1]
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
                 websiteUrl = getWebsite(actorJson, self.server.translate)

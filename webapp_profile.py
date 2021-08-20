@@ -125,6 +125,8 @@ def htmlProfileAfterSearch(cssCache: {},
     movedTo = ''
     if profileJson.get('movedTo'):
         movedTo = profileJson['movedTo']
+        if '"' in movedTo:
+            movedTo = movedTo.split('"')[1]
         displayName += ' ⌂'
 
     followsYou = \
@@ -702,6 +704,8 @@ def htmlProfile(rssIconAtTop: bool,
     movedTo = ''
     if profileJson.get('movedTo'):
         movedTo = profileJson['movedTo']
+        if '"' in movedTo:
+            movedTo = movedTo.split('"')[1]
 
     alsoKnownAs = None
     if profileJson.get('alsoKnownAs'):
