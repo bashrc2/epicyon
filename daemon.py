@@ -10415,8 +10415,8 @@ class PubServer(BaseHTTPRequestHandler):
         bannerFilename = \
             acctDir(baseDir, nickname, domain) + '/search_banner.png'
         if not os.path.isfile(bannerFilename):
-            if os.path.isfile(baseDir + '/default/search_banner.png'):
-                copyfile(baseDir + '/default/search_banner.png',
+            if os.path.isfile(baseDir + '/theme/default/search_banner.png'):
+                copyfile(baseDir + '/theme/default/search_banner.png',
                          bannerFilename)
         if os.path.isfile(bannerFilename):
             if self._etag_exists(bannerFilename):
