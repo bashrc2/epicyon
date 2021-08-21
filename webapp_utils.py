@@ -474,6 +474,16 @@ def _getImageFile(baseDir: str, name: str, directory: str,
         if os.path.isfile(bannerFilenameTest):
             bannerFile = name + '_' + theme + '.' + ext
             bannerFilename = bannerFilenameTest
+            return bannerFile, bannerFilename
+    # if not found then use the default image
+    theme = 'default'
+    directory = baseDir + '/' + theme + '/default'
+    for ext in bannerExtensions:
+        bannerFileTest = name + '.' + ext
+        bannerFilenameTest = directory + '/' + bannerFileTest
+        if os.path.isfile(bannerFilenameTest):
+            bannerFile = name + '_' + theme + '.' + ext
+            bannerFilename = bannerFilenameTest
             break
     return bannerFile, bannerFilename
 
