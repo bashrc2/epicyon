@@ -20,6 +20,7 @@ import pyqrcode
 # for saving images
 from hashlib import sha256
 from hashlib import md5
+from shutil import copyfile
 from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
@@ -10413,6 +10414,10 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = getNicknameFromActor(path)
         bannerFilename = \
             acctDir(baseDir, nickname, domain) + '/search_banner.png'
+        if not os.path.isfile(bannerFilename):
+            if os.path.isfile(baseDir + '/default/search_banner.png'):
+                copyfile(baseDir + '/default/search_banner.png',
+                         bannerFilename)
         if os.path.isfile(bannerFilename):
             if self._etag_exists(bannerFilename):
                 # The file has not changed
