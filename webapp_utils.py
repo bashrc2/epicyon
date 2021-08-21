@@ -477,7 +477,7 @@ def _getImageFile(baseDir: str, name: str, directory: str,
             return bannerFile, bannerFilename
     # if not found then use the default image
     theme = 'default'
-    directory = baseDir + '/' + theme + '/default'
+    directory = baseDir + '/theme/' + theme
     for ext in bannerExtensions:
         bannerFileTest = name + '.' + ext
         bannerFilenameTest = directory + '/' + bannerFileTest
