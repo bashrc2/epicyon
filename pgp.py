@@ -481,7 +481,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
         print('Getting actor for ' + handle)
 
     actorJson, asHeader = \
-        getActorJson(domain, handle, False, False, debug, True)
+        getActorJson(domainFull, handle, False, False, debug, True)
     if not actorJson:
         if debug:
             print('No actor returned for ' + handle)
