@@ -227,6 +227,7 @@ from categories import setHashtagCategory
 from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
+from utils import replaceUsersWithAt
 from utils import localActorUrl
 from utils import isfloat
 from utils import validPassword
@@ -11558,7 +11559,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             pinnedPostJson)
                 messageJson['id'] = postId + '/activity'
                 messageJson['object']['id'] = postId
-                messageJson['object']['url'] = postId.replace('/users/', '/@')
+                messageJson['object']['url'] = replaceUsersWithAt(postId)
                 messageJson['object']['atomUri'] = postId
             msg = json.dumps(messageJson,
                              ensure_ascii=False).encode('utf-8')

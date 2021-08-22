@@ -23,6 +23,7 @@ from utils import saveJson
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
 from utils import localActorUrl
+from utils import replaceUsersWithAt
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -307,7 +308,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
     domainFull = getFullDomain(domain, port)
 
     actor = localActorUrl(httpPrefix, nickname, domainFull)
-    handle = actor.replace('/users/', '/@')
+    handle = replaceUsersWithAt(actor)
 
     statusNumber, published = getStatusNumber()
     unAnnounceJson = {

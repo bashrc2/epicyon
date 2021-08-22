@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import replaceUsersWithAt
 from utils import hasGroupType
 from utils import getBaseContentFromPost
 from utils import removeDomainPort
@@ -1463,7 +1464,7 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
                 'tag': [],
                 'to': ['https://www.w3.org/ns/activitystreams#Public'],
                 'type': 'Note',
-                'url': actor.replace('/users/', '/@') + '/pinned'
+                'url': replaceUsersWithAt(actor) + '/pinned'
             }
     return pinnedPostJson
 
@@ -4440,7 +4441,7 @@ def sendMuteViaServer(baseDir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    handle = actor.replace('/users/', '/@')
+    handle = replaceUsersWithAt(actor)
 
     newMuteJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -4516,7 +4517,7 @@ def sendUndoMuteViaServer(baseDir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
-    handle = actor.replace('/users/', '/@')
+    handle = replaceUsersWithAt(actor)
 
     undoMuteJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

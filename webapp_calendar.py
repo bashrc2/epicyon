@@ -22,6 +22,7 @@ from utils import getAltPath
 from utils import removeDomainPort
 from utils import acctDir
 from utils import localActorUrl
+from utils import replaceUsersWithAt
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -175,7 +176,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
             if senderName and eventDescription:
                 # if the sender is also mentioned within the event
                 # description then this is a reminder
-                senderActor2 = senderActor.replace('/users/', '/@')
+                senderActor2 = replaceUsersWithAt(senderActor)
                 if senderActor not in eventDescription and \
                    senderActor2 not in eventDescription:
                     eventDescription = senderName + eventDescription

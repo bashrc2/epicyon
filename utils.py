@@ -2907,3 +2907,14 @@ def getSharesFilesList() -> []:
     """Returns the possible shares files
     """
     return ('shares', 'wanted')
+
+
+def replaceUsersWithAt(actor: str) -> str:
+    """ https://domain/users/nick becomes https://domain/@nick
+    """
+    uPaths = getUserPaths()
+    for path in uPaths:
+        if path in actor:
+            actor = actor.replace(path, '/@')
+            break
+    return actor
