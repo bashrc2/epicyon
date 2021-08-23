@@ -10954,7 +10954,8 @@ class PubServer(BaseHTTPRequestHandler):
             'to': [toUrl],
             'cc': [ccUrl]
         }
-        self._postToOutbox(blockJson, self.server.projectVersion)
+        self._postToOutbox(blockJson, self.server.projectVersion,
+                           blockerNickname)
         return True
 
     def do_GET(self):
