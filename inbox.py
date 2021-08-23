@@ -1338,6 +1338,16 @@ def _receiveAnnounce(recentPostsCache: {},
               actorNickname + '@' + actorDomain)
         return False
 
+    # also check the actor for the url being announced
+    announcedActorNickname = getNicknameFromActor(messageJson['object'])
+    announcedActorDomain, announcedActorPort = \
+        getDomainFromActor(messageJson['object'])
+    if isBlocked(baseDir, nickname, domain,
+                 announcedActorNickname, announcedActorDomain):
+        print('Receive announce blocked for actor: ' +
+              announcedActorNickname + '@' + announcedActorDomain)
+        return False
+
     # is this post in the outbox of the person?
     postFilename = locatePost(baseDir, nickname, domain,
                               messageJson['object'])
