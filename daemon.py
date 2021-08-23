@@ -1131,7 +1131,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _postToOutbox(self, messageJson: {}, version: str,
-                      postToNickname: str = None) -> bool:
+                      postToNickname: str) -> bool:
         """post is received by the outbox
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -7105,7 +7105,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
         # send out the like to followers
-        self._postToOutbox(likeJson, self.server.projectVersion)
+        self._postToOutbox(likeJson, self.server.projectVersion, None)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7202,7 +7202,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
         # send out the undo like to followers
-        self._postToOutbox(undoLikeJson, self.server.projectVersion)
+        self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7289,7 +7289,7 @@ class PubServer(BaseHTTPRequestHandler):
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
-        # self._postToOutbox(bookmarkJson, self.server.projectVersion)
+        # self._postToOutbox(bookmarkJson, self.server.projectVersion, None)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7375,7 +7375,8 @@ class PubServer(BaseHTTPRequestHandler):
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark_inactive.png'):
             del self.server.iconsCache['bookmark_inactive.png']
-        # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
+        # self._postToOutbox(undoBookmarkJson,
+        #                    self.server.projectVersion, None)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -15438,7 +15439,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson, __version__):
+            if self._postToOutbox(messageJson, __version__, None):
                 if messageJson.get('id'):
                     locnStr = removeIdEnding(messageJson['id'])
                     self.headers['Location'] = locnStr
