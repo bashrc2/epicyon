@@ -1344,7 +1344,7 @@ def _receiveAnnounce(recentPostsCache: {},
         getDomainFromActor(messageJson['object'])
     if isBlocked(baseDir, nickname, domain,
                  announcedActorNickname, announcedActorDomain):
-        print('Receive announce blocked for actor: ' +
+        print('Receive announce object blocked for actor: ' +
               announcedActorNickname + '@' + announcedActorDomain)
         return False
 
