@@ -1193,7 +1193,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('Creating outbox thread')
         self.server.outboxThread[accountOutboxThreadName] = \
             threadWithTrace(target=self._postToOutbox,
-                            args=(messageJson.copy(), __version__),
+                            args=(messageJson.copy(), __version__, None),
                             daemon=True)
         print('Starting outbox thread')
         self.server.outboxThread[accountOutboxThreadName].start()
