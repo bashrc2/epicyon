@@ -1,4 +1,4 @@
-This is a mirror of http://code.freedombone.net/bashrc/epicyon
+This is a mirror of http://gitlab.com/bashrc2/epicyon
 
 Add issues on https://gitlab.com/bashrc2/epicyon/-/issues
 
