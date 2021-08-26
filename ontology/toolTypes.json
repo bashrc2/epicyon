@@ -12909,6 +12909,160 @@
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cable",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-pump",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Pump",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-chain-tool",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-tire-lever",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-cleaner",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-repair-stand",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#torque-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Torque Wrench",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#y-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Y Wrench",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-chain-wear-checker",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cable-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Cable Cutter",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-chain-cleaner",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#tape-measure",
+      "rdfs:label": [
+        {
+          "@value": "Tape Measure",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#measuring-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-chain-whip",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#cassette-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Cassette Wrench",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#bicycle-chain-keeper",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "en"
+        },
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
