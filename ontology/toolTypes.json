@@ -13959,6 +13959,681 @@
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#battery-terminal-puller",
+      "rdfs:label": [
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "en"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "ar"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "ku"
+        },
+        {
+          "@value": "Terminal de batería",
+          "@language": "es"
+        },
+        {
+          "@value": "Caricabatterie",
+          "@language": "it"
+        },
+        {
+          "@value": "Batterie Klemmen Puller",
+          "@language": "de"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "sw"
+        },
+        {
+          "@value": "Puxador de terminal de bateria",
+          "@language": "pt"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "oc"
+        },
+        {
+          "@value": "Батарея Терминал Puller",
+          "@language": "ru"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "cy"
+        },
+        {
+          "@value": "バッテリーターミナルプルア",
+          "@language": "ja"
+        },
+        {
+          "@value": "Uirlisí ilchuspóireacha",
+          "@language": "ga"
+        },
+        {
+          "@value": "बैटरी टर्मिनल पुलर",
+          "@language": "hi"
+        },
+        {
+          "@value": "Bttery用语Puller",
+          "@language": "zh"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "fr"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#battery",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#jumper-cables",
+      "rdfs:label": [
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "en"
+        },
+        {
+          "@value": "الكابلات/الرحلات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cables de salto / cuentas",
+          "@language": "es"
+        },
+        {
+          "@value": "Cavi di salto/cavo",
+          "@language": "it"
+        },
+        {
+          "@value": "Jumper Kabel/Stecker",
+          "@language": "de"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "sw"
+        },
+        {
+          "@value": "Cabos de ligação/mangueiras",
+          "@language": "pt"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "oc"
+        },
+        {
+          "@value": "Прыжок кабели/лиды",
+          "@language": "ru"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "cy"
+        },
+        {
+          "@value": "ジャンパーケーブル/鉛",
+          "@language": "ja"
+        },
+        {
+          "@value": "cáblaí / luaidhe Léim",
+          "@language": "ga"
+        },
+        {
+          "@value": "जम्पर केबल/लीड",
+          "@language": "hi"
+        },
+        {
+          "@value": "Jumper电缆/铅",
+          "@language": "zh"
+        },
+        {
+          "@value": "Câbles de saut/perles",
+          "@language": "fr"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#battery",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#tube-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "en"
+        },
+        {
+          "@value": "Hose/ Tube Cutter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "es"
+        },
+        {
+          "@value": "Tubo / Tubo",
+          "@language": "it"
+        },
+        {
+          "@value": "Schlauch / Rohrschneider",
+          "@language": "de"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Mangueira / Cortador de tubos",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Шланг / Tube Cutter",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ホース/管カッター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "ga"
+        },
+        {
+          "@value": "नली / ट्यूब कटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "Hose/ Tube Cutter",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cutter à l &apos; ossature",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#moisture-meter",
+      "rdfs:label": [
+        {
+          "@value": "Moisture Meter",
+          "@language": "en"
+        },
+        {
+          "@value": "قياس الحركة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "es"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "it"
+        },
+        {
+          "@value": "Feuchtemesser",
+          "@language": "de"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Medidor de umidade",
+          "@language": "pt"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Метр влаги",
+          "@language": "ru"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "cy"
+        },
+        {
+          "@value": "湿気のメートル",
+          "@language": "ja"
+        },
+        {
+          "@value": "Méadar taise",
+          "@language": "ga"
+        },
+        {
+          "@value": "नमी मीटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "摩尔·梅雷",
+          "@language": "zh"
+        },
+        {
+          "@value": "Metteur en température",
+          "@language": "fr"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#measuring-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#retrieval-tool",
+      "rdfs:label": [
+        {
+          "@value": "Retrieval Tool",
+          "@language": "en"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "ar"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "ku"
+        },
+        {
+          "@value": "Herramienta de recuperación",
+          "@language": "es"
+        },
+        {
+          "@value": "Strumento di recupero",
+          "@language": "it"
+        },
+        {
+          "@value": "Abrufwerkzeug",
+          "@language": "de"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "sw"
+        },
+        {
+          "@value": "Ferramenta de recuperação",
+          "@language": "pt"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "oc"
+        },
+        {
+          "@value": "Инструмент для поиска",
+          "@language": "ru"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "cy"
+        },
+        {
+          "@value": "リトリバルツール",
+          "@language": "ja"
+        },
+        {
+          "@value": "Uirlisí Retrival",
+          "@language": "ga"
+        },
+        {
+          "@value": "पुनर्प्राप्ति उपकरण",
+          "@language": "hi"
+        },
+        {
+          "@value": "雷瓦尔·托维斯",
+          "@language": "zh"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "fr"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#retrieval-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#hatchet",
+      "rdfs:label": [
+        {
+          "@value": "Hatchet",
+          "@language": "en"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "ku"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "es"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "it"
+        },
+        {
+          "@value": "Hasche",
+          "@language": "de"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "sw"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "oc"
+        },
+        {
+          "@value": "Хатчет",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "cy"
+        },
+        {
+          "@value": "ハチェット",
+          "@language": "ja"
+        },
+        {
+          "@value": "cineál gas: in airde",
+          "@language": "ga"
+        },
+        {
+          "@value": "हैचेट",
+          "@language": "hi"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "zh"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#top-snapper",
+      "rdfs:label": [
+        {
+          "@value": "Top Snapper",
+          "@language": "en"
+        },
+        {
+          "@value": "أعلى",
+          "@language": "ar"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "ku"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "es"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "it"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "de"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "sw"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "pt"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "oc"
+        },
+        {
+          "@value": "Топ Snapper",
+          "@language": "ru"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "cy"
+        },
+        {
+          "@value": "トップスナッパー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Barr an leathanaigh",
+          "@language": "ga"
+        },
+        {
+          "@value": "शीर्ष स्नैपर",
+          "@language": "hi"
+        },
+        {
+          "@value": "例 例",
+          "@language": "zh"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "fr"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#top-snapper",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#rope-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Rope Cutter",
+          "@language": "en"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "es"
+        },
+        {
+          "@value": "Cutter di corda",
+          "@language": "it"
+        },
+        {
+          "@value": "Der Kopf",
+          "@language": "de"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Cortador de corda",
+          "@language": "pt"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Веревка Cutter",
+          "@language": "ru"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ロープカッター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rope cutter",
+          "@language": "ga"
+        },
+        {
+          "@value": "रस्सी कटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "求 力",
+          "@language": "zh"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "fr"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://tools/data/toolTypes.rdf#adjustable-spanner-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "en"
+        },
+        {
+          "@value": "Spanner Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Wrench de Spanner ajustable",
+          "@language": "es"
+        },
+        {
+          "@value": "Avvitatore di ricambio regolabile",
+          "@language": "it"
+        },
+        {
+          "@value": "Einstellbare Spannschraube",
+          "@language": "de"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Chave de spanner ajustável",
+          "@language": "pt"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Регулируемый Spanner Wrench",
+          "@language": "ru"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "調節可能なスパナーレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Inoiriúnaithe Spanner Wrench",
+          "@language": "ga"
+        },
+        {
+          "@value": "समायोज्य स्पैनर रिंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "A. 理应",
+          "@language": "zh"
+        },
+        {
+          "@value": "Ajustable Spanner Wrench",
+          "@language": "fr"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
