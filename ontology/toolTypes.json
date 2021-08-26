@@ -12917,6 +12917,70 @@
           "@value": "Bicycle Pump",
           "@language": "en"
         },
+        {
+          "@value": "مضخة دراجة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bomba de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Pompa per bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradpumpe",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "sw"
+        },
+        {
+          "@value": "Bomba de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедный насос",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車ポンプ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Caidéal Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल पम्प",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 自行车",
+          "@language": "zh"
+        },
+        {
+          "@value": "Pompe à vélo",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -12928,6 +12992,70 @@
           "@value": "Bicycle Chain Tool",
           "@language": "en"
         },
+        {
+          "@value": "دراجة شاين تول",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "ku"
+        },
+        {
+          "@value": "Herramienta de cadena de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Strumento per la catena della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradkette Werkzeug",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "sw"
+        },
+        {
+          "@value": "Ferramenta de cadeia de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедная цепь Инструмент",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーンツール",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Slabhra Uirlis",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन उपकरण",
+          "@language": "hi"
+        },
+        {
+          "@value": "拜多尔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -12939,6 +13067,70 @@
           "@value": "Bicycle Tire Lever",
           "@language": "en"
         },
+        {
+          "@value": "إطار الدراجة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "es"
+        },
+        {
+          "@value": "Bicicletta Tire Lever",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradreifen Lever",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "sw"
+        },
+        {
+          "@value": "Alavanca de pneus de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипед Tire Lever",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車タイヤレバー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Tire Lever",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल टायर लीवर",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 拜 循环",
+          "@language": "zh"
+        },
+        {
+          "@value": "Pneus de vélo Lever",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -12950,6 +13142,70 @@
           "@value": "Bicycle Cleaner",
           "@language": "en"
         },
+        {
+          "@value": "منظف الدراجات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "ku"
+        },
+        {
+          "@value": "Limpiador de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Pulizia della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradreiniger",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "sw"
+        },
+        {
+          "@value": "Limpeza de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "oc"
+        },
+        {
+          "@value": "Уборка велосипедов",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車クリーナー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Glantóir Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल क्लीनर",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 双周期清洁",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -12961,6 +13217,70 @@
           "@value": "Bicycle Repair Stand",
           "@language": "en"
         },
+        {
+          "@value": "اعادة تدوير الدراجات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "es"
+        },
+        {
+          "@value": "Stand di riparazione della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrrad-Reparaturständer",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "sw"
+        },
+        {
+          "@value": "Suporte de reparação de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедный ремонтный стенд",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車修理スタンド",
+          "@language": "ja"
+        },
+        {
+          "@value": "Staid Deisiúchán Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल मरम्मत स्टैंड",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 双周期内",
+          "@language": "zh"
+        },
+        {
+          "@value": "Support de réparation de vélos",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -12972,6 +13292,70 @@
           "@value": "Torque Wrench",
           "@language": "en"
         },
+        {
+          "@value": "Torque Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "es"
+        },
+        {
+          "@value": "Avvolgitore di coppia",
+          "@language": "it"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "de"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Chave de torção",
+          "@language": "pt"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Торке Воскрес",
+          "@language": "ru"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "トルクレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "riachtanais uisce: measartha",
+          "@language": "ga"
+        },
+        {
+          "@value": "टॉर्क रिंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "zh"
+        },
+        {
+          "@value": "Clé de torsion",
+          "@language": "fr"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
       "@type": "dfc-p:ProductType"
@@ -12983,6 +13367,70 @@
           "@value": "Y Wrench",
           "@language": "en"
         },
+        {
+          "@value": "Y Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "es"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "it"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "de"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "pt"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Y Воланч",
+          "@language": "ru"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "Yレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ga"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "hi"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "zh"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "fr"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
       "@type": "dfc-p:ProductType"
@@ -12994,6 +13442,70 @@
           "@value": "Bicycle Chain Wear Checker",
           "@language": "en"
         },
+        {
+          "@value": "دفتر أحذية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "es"
+        },
+        {
+          "@value": "Biciclette a catena",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradkettenbekleidung Checker",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "sw"
+        },
+        {
+          "@value": "Verificador de desgaste de cadeia de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипед Цепь Носить Checker",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーン ウェア チェッカー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Seain Sheiceáil Caith",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन पहनें चेकर",
+          "@language": "hi"
+        },
+        {
+          "@value": "比拜多·查宁·韦尔·查克尔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -13005,6 +13517,70 @@
           "@value": "Cable Cutter",
           "@language": "en"
         },
+        {
+          "@value": "Cable Cutter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "es"
+        },
+        {
+          "@value": "Cutter del cavo",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabelschneider",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Cortador de cabo",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабель Cutter",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルカッター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Cábla cutter",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल कटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "物质",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cutter de câble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
       "@type": "dfc-p:ProductType"
@@ -13016,6 +13592,70 @@
           "@value": "Bicycle Chain Cleaner",
           "@language": "en"
         },
+        {
+          "@value": "منظف الدراجات النارية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "ku"
+        },
+        {
+          "@value": "Limpiador de cadena de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Pulitore di catena per biciclette",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradkettenreiniger",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "sw"
+        },
+        {
+          "@value": "Limpador de corrente de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипед Цепной Уборка",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーンクリーナー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Gluaisrothar Glantóir Slabhra",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन क्लीनर",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 比循环 Chain 清洁",
+          "@language": "zh"
+        },
+        {
+          "@value": "Nettoyeur de chaîne de vélo",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -13027,6 +13667,70 @@
           "@value": "Tape Measure",
           "@language": "en"
         },
+        {
+          "@value": "قياس التايب",
+          "@language": "ar"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "ku"
+        },
+        {
+          "@value": "Medida de cinta",
+          "@language": "es"
+        },
+        {
+          "@value": "Misura del nastro",
+          "@language": "it"
+        },
+        {
+          "@value": "Bandmessung",
+          "@language": "de"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "sw"
+        },
+        {
+          "@value": "Medida de fita",
+          "@language": "pt"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "oc"
+        },
+        {
+          "@value": "Лента Measure",
+          "@language": "ru"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "cy"
+        },
+        {
+          "@value": "テープ測定",
+          "@language": "ja"
+        },
+        {
+          "@value": "Tomhais Téip",
+          "@language": "ga"
+        },
+        {
+          "@value": "टेप उपाय",
+          "@language": "hi"
+        },
+        {
+          "@value": "塔佩克测量",
+          "@language": "zh"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "fr"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#measuring-tool",
       "@type": "dfc-p:ProductType"
@@ -13038,6 +13742,70 @@
           "@value": "Bicycle Chain Whip",
           "@language": "en"
         },
+        {
+          "@value": "درّاجة (شاين ويب)",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "es"
+        },
+        {
+          "@value": "Bicicletta catena Whip",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrrad-Kette Whip",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "sw"
+        },
+        {
+          "@value": "Balope de corrente de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедная цепь Whip",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーンホイップ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Aoire Slabhra Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन विप",
+          "@language": "hi"
+        },
+        {
+          "@value": "比 循环 Chain Whip",
+          "@language": "zh"
+        },
+        {
+          "@value": "chaîne de vélo Whip",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"
@@ -13049,6 +13817,70 @@
           "@value": "Cassette Wrench",
           "@language": "en"
         },
+        {
+          "@value": "Kaette Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "es"
+        },
+        {
+          "@value": "Avvolgica per cassette",
+          "@language": "it"
+        },
+        {
+          "@value": "Das ist ein toller",
+          "@language": "de"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Chave de fenda",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кассета Wrench",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "カセットレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "cliceáil grianghraf a mhéadú",
+          "@language": "ga"
+        },
+        {
+          "@value": "कैसेट रिंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wrench",
       "@type": "dfc-p:ProductType"
@@ -13060,6 +13892,70 @@
           "@value": "Bicycle Chain Keeper",
           "@language": "en"
         },
+        {
+          "@value": "حامض الدراجات النارية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "ku"
+        },
+        {
+          "@value": "Ciclo de cadena de mantenimiento",
+          "@language": "es"
+        },
+        {
+          "@value": "Cuscinetto della catena della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrrad Kettenhalter",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "sw"
+        },
+        {
+          "@value": "Guardador de corrente de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедная цепь Keeper",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーン Keeper",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Slabhra Coimeádaí",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन कीपर",
+          "@language": "hi"
+        },
+        {
+          "@value": "比周期",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "ca"
+        }
       ],
       "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bicycle",
       "@type": "dfc-p:ProductType"

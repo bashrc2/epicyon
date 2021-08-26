@@ -2859,6 +2859,156 @@
       ],
       "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#kilt",
       "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#apron",
+      "rdfs:label": [
+        {
+          "@value": "Apron",
+          "@language": "en"
+        },
+        {
+          "@value": "Apron",
+          "@language": "ar"
+        },
+        {
+          "@value": "Apron",
+          "@language": "ku"
+        },
+        {
+          "@value": "Apron",
+          "@language": "es"
+        },
+        {
+          "@value": "Grembiule",
+          "@language": "it"
+        },
+        {
+          "@value": "Apres",
+          "@language": "de"
+        },
+        {
+          "@value": "Apron",
+          "@language": "sw"
+        },
+        {
+          "@value": "Avental",
+          "@language": "pt"
+        },
+        {
+          "@value": "Apron",
+          "@language": "oc"
+        },
+        {
+          "@value": "Абон",
+          "@language": "ru"
+        },
+        {
+          "@value": "Apron",
+          "@language": "cy"
+        },
+        {
+          "@value": "エプロン",
+          "@language": "ja"
+        },
+        {
+          "@value": "An tAthrú",
+          "@language": "ga"
+        },
+        {
+          "@value": "एप्रन",
+          "@language": "hi"
+        },
+        {
+          "@value": "环境",
+          "@language": "zh"
+        },
+        {
+          "@value": "Apron",
+          "@language": "fr"
+        },
+        {
+          "@value": "Apron",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#apron",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "https://clothes/data/clothesTypes.rdf#corset",
+      "rdfs:label": [
+        {
+          "@value": "Corset",
+          "@language": "en"
+        },
+        {
+          "@value": "Corset",
+          "@language": "ar"
+        },
+        {
+          "@value": "Corset",
+          "@language": "ku"
+        },
+        {
+          "@value": "Corset",
+          "@language": "es"
+        },
+        {
+          "@value": "Corse",
+          "@language": "it"
+        },
+        {
+          "@value": "Korsett",
+          "@language": "de"
+        },
+        {
+          "@value": "Corset",
+          "@language": "sw"
+        },
+        {
+          "@value": "Espartilho",
+          "@language": "pt"
+        },
+        {
+          "@value": "Corset",
+          "@language": "oc"
+        },
+        {
+          "@value": "Корсет",
+          "@language": "ru"
+        },
+        {
+          "@value": "Corset",
+          "@language": "cy"
+        },
+        {
+          "@value": "コルセット",
+          "@language": "ja"
+        },
+        {
+          "@value": "Sraith",
+          "@language": "ga"
+        },
+        {
+          "@value": "कोर्सेट",
+          "@language": "hi"
+        },
+        {
+          "@value": "Cset",
+          "@language": "zh"
+        },
+        {
+          "@value": "Corset",
+          "@language": "fr"
+        },
+        {
+          "@value": "Corset",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#corset",
+      "@type": "dfc-p:ProductType"
     }
   ]
 }
