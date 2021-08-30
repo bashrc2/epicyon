@@ -116,7 +116,7 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
                              params=sessionParams, timeout=timeoutSec)
         if result.status_code != 200:
             if result.status_code == 401:
-                print("WARN: getJson requires secure fetch. url: " + url)
+                print("WARN: getJson requires secure fetch url: " + url)
             elif result.status_code == 403:
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
