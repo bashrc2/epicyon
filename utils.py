@@ -24,7 +24,7 @@ from cryptography.hazmat.primitives import hashes
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
 invalidCharacters = (
-    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ'
+    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
 )
 
 
