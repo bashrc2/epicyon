@@ -84,6 +84,14 @@ def urlExists(session, url: str, timeoutSec: int = 3,
     return False
 
 
+def _getJsonSigned(url: str, sessionHeaders: {},
+                   sessionParams: {}, timeoutSec: int) -> {}:
+    """Authorized fetch
+    """
+    # TODO
+    return None
+
+
 def getJson(session, url: str, headers: {}, params: {}, debug: bool,
             version: str = '1.2.0', httpPrefix: str = 'https',
             domain: str = 'testdomain',
@@ -117,6 +125,8 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: getJson requires secure fetch url: " + url)
+                return _getJsonSigned(url, sessionHeaders,
+                                      sessionParams, timeoutSec)
             elif result.status_code == 403:
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
