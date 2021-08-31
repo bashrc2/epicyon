@@ -742,7 +742,8 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
     if not os.path.isfile(filename):
         return None
     personJson = loadJson(filename)
-    personUpgradeActor(baseDir, personJson, handle, filename)
+    if not isSharedInbox:
+        personUpgradeActor(baseDir, personJson, handle, filename)
     # if not personJson:
     #     personJson={"user": "unknown"}
     return personJson
