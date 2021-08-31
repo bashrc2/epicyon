@@ -11153,11 +11153,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           '/users/' + nickname + '/statuses/')
 
         # instance actor
+        print('actor test 1: ' + self.path)
         if self.path == '/actor' or \
            self.path == '/users/actor' or \
            self.path == '/Actor' or \
            self.path == '/users/Actor':
             self.path = '/users/inbox'
+            print('actor test 2: ' + self.path)
             if self._showInstanceActor(callingDomain, self.path,
                                        self.server.baseDir,
                                        self.server.httpPrefix,
@@ -11170,8 +11172,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.proxyType,
                                        None, self.server.debug,
                                        self.server.enableSharedInbox):
+                print('actor test success')
                 return
             else:
+                print('actor test failed')
                 self._404()
                 return
 
