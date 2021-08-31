@@ -688,9 +688,11 @@ if args.posts:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__, args.language)
+                           __version__, args.language,
+                           signingPrivateKeyPem)
     sys.exit()
 
 if args.postDomains:
@@ -722,13 +724,15 @@ if args.postDomains:
     domainList = []
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__,
                                       wordFrequency, domainList,
-                                      args.language)
+                                      args.language,
+                                      signingPrivateKeyPem)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -765,13 +769,15 @@ if args.postDomainsBlocked:
     domainList = []
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
     domainList = getPublicPostDomainsBlocked(None,
                                              baseDir, nickname, domain,
                                              proxyType, args.port,
                                              httpPrefix, debug,
                                              __version__,
                                              wordFrequency, domainList,
-                                             args.language)
+                                             args.language,
+                                             signingPrivateKeyPem)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -806,12 +812,14 @@ if args.checkDomains:
     maxBlockedDomains = 0
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
     checkDomains(None,
                  baseDir, nickname, domain,
                  proxyType, args.port,
                  httpPrefix, debug,
                  __version__,
-                 maxBlockedDomains, False, args.language)
+                 maxBlockedDomains, False, args.language,
+                 signingPrivateKeyPem)
     sys.exit()
 
 if args.socnet:
@@ -825,10 +833,12 @@ if args.socnet:
     proxyType = 'tor'
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
     dotGraph = instancesGraph(baseDir, args.socnet,
                               proxyType, args.port,
                               httpPrefix, debug,
-                              __version__, args.language)
+                              __version__, args.language,
+                              signingPrivateKeyPem)
     try:
         with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
@@ -854,9 +864,11 @@ if args.postsraw:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__, args.language)
+                           __version__, args.language,
+                           signingPrivateKeyPem)
     sys.exit()
 
 if args.json:
@@ -865,8 +877,9 @@ if args.json:
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
-    testJson = getJson(session, args.json, asHeader, None,
-                       debug, __version__, httpPrefix, None)
+    signingPrivateKeyPem = None
+    testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
+                       None, debug, __version__, httpPrefix, None)
     pprint(testJson)
     sys.exit()
 
@@ -1075,6 +1088,7 @@ if args.approve:
     postLog = []
     cachedWebfingers = {}
     personCache = {}
+    signingPrivateKeyPem = None
     manualApproveFollowRequest(session, baseDir,
                                httpPrefix,
                                args.nickname, domain, port,
@@ -1082,7 +1096,8 @@ if args.approve:
                                federationList,
                                sendThreads, postLog,
                                cachedWebfingers, personCache,
-                               debug, __version__)
+                               debug, __version__,
+                               signingPrivateKeyPem)
     sys.exit()
 
 if args.deny:
@@ -1097,6 +1112,7 @@ if args.deny:
     postLog = []
     cachedWebfingers = {}
     personCache = {}
+    signingPrivateKeyPem = None
     manualDenyFollowRequest(session, baseDir,
                             httpPrefix,
                             args.nickname, domain, port,
@@ -1104,7 +1120,8 @@ if args.deny:
                             federationList,
                             sendThreads, postLog,
                             cachedWebfingers, personCache,
-                            debug, __version__)
+                            debug, __version__,
+                            signingPrivateKeyPem)
     sys.exit()
 
 if args.followerspending:
@@ -1184,9 +1201,10 @@ if args.message:
     replyTo = args.replyto
     followersOnly = False
     isArticle = False
+    signingPrivateKeyPem = None
     print('Sending post to ' + args.sendto)
 
-    sendPostViaServer(__version__,
+    sendPostViaServer(signingPrivateKeyPem, __version__,
                       baseDir, session, args.nickname, args.password,
                       domain, port,
                       toNickname, toDomain, toPort, ccUrl,
@@ -1216,13 +1234,14 @@ if args.announce:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending announce/repeat of ' + args.announce)
 
     sendAnnounceViaServer(baseDir, session, args.nickname, args.password,
                           domain, port,
                           httpPrefix, args.announce,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1255,13 +1274,14 @@ if args.box:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
+    signingPrivateKeyPem = None
 
     session = createSession(proxyType)
     boxJson = c2sBoxJson(baseDir, session,
                          args.nickname, args.password,
                          domain, port, httpPrefix,
                          args.box, args.pageNumber,
-                         args.debug)
+                         args.debug, signingPrivateKeyPem)
     if boxJson:
         pprint(boxJson)
     else:
@@ -1311,6 +1331,7 @@ if args.itemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending shared item: ' + args.itemName)
 
     sendShareViaServer(baseDir, session,
@@ -1327,7 +1348,8 @@ if args.itemName:
                        args.duration,
                        cachedWebfingers, personCache,
                        debug, __version__,
-                       args.itemPrice, args.itemCurrency)
+                       args.itemPrice, args.itemCurrency,
+                       signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1348,6 +1370,7 @@ if args.undoItemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending undo of shared item: ' + args.undoItemName)
 
     sendUndoShareViaServer(baseDir, session,
@@ -1356,7 +1379,7 @@ if args.undoItemName:
                            httpPrefix,
                            args.undoItemName,
                            cachedWebfingers, personCache,
-                           debug, __version__)
+                           debug, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1405,6 +1428,7 @@ if args.wantedItemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending wanted item: ' + args.wantedItemName)
 
     sendWantedViaServer(baseDir, session,
@@ -1421,7 +1445,8 @@ if args.wantedItemName:
                         args.duration,
                         cachedWebfingers, personCache,
                         debug, __version__,
-                        args.itemPrice, args.itemCurrency)
+                        args.itemPrice, args.itemCurrency,
+                        signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1442,6 +1467,7 @@ if args.undoWantedItemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending undo of wanted item: ' + args.undoWantedItemName)
 
     sendUndoWantedViaServer(baseDir, session,
@@ -1450,7 +1476,7 @@ if args.undoWantedItemName:
                             httpPrefix,
                             args.undoWantedItemName,
                             cachedWebfingers, personCache,
-                            debug, __version__)
+                            debug, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1471,6 +1497,7 @@ if args.like:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending like of ' + args.like)
 
     sendLikeViaServer(baseDir, session,
@@ -1478,7 +1505,7 @@ if args.like:
                       domain, port,
                       httpPrefix, args.like,
                       cachedWebfingers, personCache,
-                      True, __version__)
+                      True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1499,6 +1526,7 @@ if args.undolike:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending undo like of ' + args.undolike)
 
     sendUndoLikeViaServer(baseDir, session,
@@ -1506,7 +1534,8 @@ if args.undolike:
                           domain, port,
                           httpPrefix, args.undolike,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__,
+                          signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1527,6 +1556,7 @@ if args.bookmark:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending bookmark of ' + args.bookmark)
 
     sendBookmarkViaServer(baseDir, session,
@@ -1534,7 +1564,8 @@ if args.bookmark:
                           domain, port,
                           httpPrefix, args.bookmark,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__,
+                          signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1555,6 +1586,7 @@ if args.unbookmark:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending undo bookmark of ' + args.unbookmark)
 
     sendUndoBookmarkViaServer(baseDir, session,
@@ -1562,7 +1594,7 @@ if args.unbookmark:
                               domain, port,
                               httpPrefix, args.unbookmark,
                               cachedWebfingers, personCache,
-                              True, __version__)
+                              True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1583,6 +1615,7 @@ if args.delete:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending delete request of ' + args.delete)
 
     sendDeleteViaServer(baseDir, session,
@@ -1590,7 +1623,7 @@ if args.delete:
                         domain, port,
                         httpPrefix, args.delete,
                         cachedWebfingers, personCache,
-                        True, __version__)
+                        True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1623,6 +1656,7 @@ if args.follow:
     followHttpPrefix = httpPrefix
     if args.follow.startswith('https'):
         followHttpPrefix = 'https'
+    signingPrivateKeyPem = None
 
     sendFollowRequestViaServer(baseDir, session,
                                args.nickname, args.password,
@@ -1630,7 +1664,7 @@ if args.follow:
                                followNickname, followDomain, followPort,
                                httpPrefix,
                                cachedWebfingers, personCache,
-                               debug, __version__)
+                               debug, __version__, signingPrivateKeyPem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1664,6 +1698,7 @@ if args.unfollow:
     followHttpPrefix = httpPrefix
     if args.follow.startswith('https'):
         followHttpPrefix = 'https'
+    signingPrivateKeyPem = None
 
     sendUnfollowRequestViaServer(baseDir, session,
                                  args.nickname, args.password,
@@ -1671,7 +1706,7 @@ if args.unfollow:
                                  followNickname, followDomain, followPort,
                                  httpPrefix,
                                  cachedWebfingers, personCache,
-                                 debug, __version__)
+                                 debug, __version__, signingPrivateKeyPem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1694,6 +1729,7 @@ if args.followingList:
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
+    signingPrivateKeyPem = None
 
     followingJson = \
         getFollowingViaServer(baseDir, session,
@@ -1701,7 +1737,7 @@ if args.followingList:
                               domain, port,
                               httpPrefix, args.pageNumber,
                               cachedWebfingers, personCache,
-                              debug, __version__)
+                              debug, __version__, signingPrivateKeyPem)
     if followingJson:
         pprint(followingJson)
     sys.exit()
@@ -1722,6 +1758,7 @@ if args.followersList:
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
+    signingPrivateKeyPem = None
 
     followersJson = \
         getFollowersViaServer(baseDir, session,
@@ -1729,7 +1766,8 @@ if args.followersList:
                               domain, port,
                               httpPrefix, args.pageNumber,
                               cachedWebfingers, personCache,
-                              debug, __version__)
+                              debug, __version__,
+                              signingPrivateKeyPem)
     if followersJson:
         pprint(followersJson)
     sys.exit()
@@ -1750,6 +1788,7 @@ if args.followRequestsList:
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
+    signingPrivateKeyPem = None
 
     followRequestsJson = \
         getFollowRequestsViaServer(baseDir, session,
@@ -1757,7 +1796,7 @@ if args.followRequestsList:
                                    domain, port,
                                    httpPrefix, args.pageNumber,
                                    cachedWebfingers, personCache,
-                                   debug, __version__)
+                                   debug, __version__, signingPrivateKeyPem)
     if followRequestsJson:
         pprint(followRequestsJson)
     sys.exit()
@@ -1797,9 +1836,10 @@ if args.migrations:
         httpPrefix = 'https'
         port = 443
     session = createSession(proxyType)
+    signingPrivateKeyPem = None
     ctr = migrateAccounts(baseDir, session,
                           httpPrefix, cachedWebfingers,
-                          True)
+                          True, signingPrivateKeyPem)
     if ctr == 0:
         print('No followed accounts have moved')
     else:
@@ -1807,7 +1847,9 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    getActorJson(args.domain, args.actor, args.http, args.gnunet, debug)
+    signingPrivateKeyPem = None
+    getActorJson(args.domain, args.actor, args.http, args.gnunet,
+                 debug, False, signingPrivateKeyPem)
     sys.exit()
 
 if args.followers:
@@ -1883,9 +1925,11 @@ if args.followers:
         nickname = domain
 
     handle = nickname + '@' + domain
+    signingPrivateKeyPem = None
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug, False)
+                                None, __version__, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
@@ -1927,9 +1971,10 @@ if args.followers:
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-
+    signingPrivateKeyPem = None
     followersList = \
-        downloadFollowCollection('followers', session,
+        downloadFollowCollection(signingPrivateKeyPem,
+                                 'followers', session,
                                  httpPrefix, personUrl, 1, 3)
     if followersList:
         for actor in followersList:
@@ -2179,6 +2224,7 @@ if args.skill:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending ' + args.skill + ' skill level ' +
           str(args.skillLevelPercent) + ' for ' + nickname)
 
@@ -2188,7 +2234,7 @@ if args.skill:
                        httpPrefix,
                        args.skill, args.skillLevelPercent,
                        cachedWebfingers, personCache,
-                       True, __version__)
+                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2209,6 +2255,7 @@ if args.availability:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending availability status of ' + nickname +
           ' as ' + args.availability)
 
@@ -2217,7 +2264,7 @@ if args.availability:
                               httpPrefix,
                               args.availability,
                               cachedWebfingers, personCache,
-                              True, __version__)
+                              True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2318,13 +2365,14 @@ if args.block:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending block of ' + args.block)
 
     sendBlockViaServer(baseDir, session, nickname, args.password,
                        domain, port,
                        httpPrefix, args.block,
                        cachedWebfingers, personCache,
-                       True, __version__)
+                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2345,13 +2393,14 @@ if args.mute:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending mute of ' + args.mute)
 
     sendMuteViaServer(baseDir, session, nickname, args.password,
                       domain, port,
                       httpPrefix, args.mute,
                       cachedWebfingers, personCache,
-                      True, __version__)
+                      True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2372,13 +2421,14 @@ if args.unmute:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending undo mute of ' + args.unmute)
 
     sendUndoMuteViaServer(baseDir, session, nickname, args.password,
                           domain, port,
                           httpPrefix, args.unmute,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2411,13 +2461,14 @@ if args.unblock:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    signingPrivateKeyPem = None
     print('Sending undo block of ' + args.unblock)
 
     sendUndoBlockViaServer(baseDir, session, nickname, args.password,
                            domain, port,
                            httpPrefix, args.unblock,
                            cachedWebfingers, personCache,
-                           True, __version__)
+                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)

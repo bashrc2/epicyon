@@ -194,7 +194,8 @@ def postMessageToOutbox(session, translate: {},
                         city: str, systemLanguage: str,
                         sharedItemsFederatedDomains: [],
                         sharedItemFederationTokens: {},
-                        lowBandwidth: bool) -> bool:
+                        lowBandwidth: bool,
+                        signingPrivateKeyPem: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -407,7 +408,8 @@ def postMessageToOutbox(session, translate: {},
                                     translate, YTReplacementDomain,
                                     allowLocalNetworkAccess,
                                     recentPostsCache, debug, systemLanguage,
-                                    domainFull, personCache):
+                                    domainFull, personCache,
+                                    signingPrivateKeyPem):
                         inboxUpdateIndex('tlmedia', baseDir,
                                          postToNickname + '@' + domain,
                                          savedFilename, debug)
@@ -468,7 +470,8 @@ def postMessageToOutbox(session, translate: {},
                               messageJson, debug,
                               version,
                               sharedItemsFederatedDomains,
-                              sharedItemFederationTokens)
+                              sharedItemFederationTokens,
+                              signingPrivateKeyPem)
     followersThreads.append(followersThread)
 
     if debug:
@@ -592,5 +595,6 @@ def postMessageToOutbox(session, translate: {},
                          messageJson, debug,
                          version,
                          sharedItemsFederatedDomains,
-                         sharedItemFederationTokens)
+                         sharedItemFederationTokens,
+                         signingPrivateKeyPem)
     return True

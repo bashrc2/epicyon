@@ -34,7 +34,7 @@ def htmlConfirmDelete(cssCache: {},
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int, signingPrivateKeyPem: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -66,7 +66,8 @@ def htmlConfirmDelete(cssCache: {},
         getConfigParam(baseDir, 'instanceTitle')
     deletePostStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     deletePostStr += \
-        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+        individualPostAsHtml(signingPrivateKeyPem,
+                             True, recentPostsCache, maxRecentPosts,
                              translate, pageNumber,
                              baseDir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,

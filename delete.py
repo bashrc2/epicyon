@@ -30,7 +30,8 @@ def sendDeleteViaServer(baseDir: str, session,
                         fromDomain: str, fromPort: int,
                         httpPrefix: str, deleteObjectUrl: str,
                         cachedWebfingers: {}, personCache: {},
-                        debug: bool, projectVersion: str) -> {}:
+                        debug: bool, projectVersion: str,
+                        signingPrivateKeyPem: str) -> {}:
     """Creates a delete request message via c2s
     """
     if not session:
@@ -57,7 +58,8 @@ def sendDeleteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: delete webfinger failed for ' + handle)
@@ -72,7 +74,8 @@ def sendDeleteViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+     displayName) = getPersonBox(signingPrivateKeyPem,
+                                 baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox, 53036)
 

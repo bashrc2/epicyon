@@ -170,7 +170,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                peertubeInstances: [],
                                allowLocalNetworkAccess: bool,
                                themeName: str, systemLanguage: str,
-                               maxLikeCount: int) -> None:
+                               maxLikeCount: int,
+                               signingPrivateKeyPem: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -179,7 +180,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     if boxname != 'outbox':
         boxname = 'inbox'
 
-    individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+    individualPostAsHtml(signingPrivateKeyPem,
+                         True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,
                          baseDir, session, cachedWebfingers,
                          personCache,
@@ -1271,7 +1273,8 @@ def _receiveAnnounce(recentPostsCache: {},
                      debug: bool, translate: {},
                      YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     themeName: str, systemLanguage: str) -> bool:
+                     themeName: str, systemLanguage: str,
+                     signingPrivateKeyPem: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1371,7 +1374,8 @@ def _receiveAnnounce(recentPostsCache: {},
                                       allowLocalNetworkAccess,
                                       recentPostsCache, debug,
                                       systemLanguage,
-                                      domainFull, personCache)
+                                      domainFull, personCache,
+                                      signingPrivateKeyPem)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1422,7 +1426,8 @@ def _receiveAnnounce(recentPostsCache: {},
                         getPersonPubKey(baseDir, session, lookupActor,
                                         personCache, debug,
                                         __version__, httpPrefix,
-                                        domain, onionDomain)
+                                        domain, onionDomain,
+                                        signingPrivateKeyPem)
                     if pubKey:
                         if debug:
                             print('DEBUG: public key obtained for announce: ' +
@@ -1694,7 +1699,8 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
 
 def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
                               domain: str, onionDomain: str, personCache: {},
-                              postJsonObject: {}, debug: bool) -> None:
+                              postJsonObject: {}, debug: bool,
+                              signingPrivateKeyPem: str) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
@@ -1725,7 +1731,7 @@ def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
             getPersonPubKey(baseDir, session, lookupActor,
                             personCache, debug,
                             __version__, httpPrefix,
-                            domain, onionDomain)
+                            domain, onionDomain, signingPrivateKeyPem)
         if pubKey:
             if debug:
                 print('DEBUG: public key obtained for reply: ' + lookupActor)
@@ -1904,7 +1910,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, debug: bool,
                         systemLanguage: str,
-                        onionDomain: str, i2pDomain: str) -> None:
+                        onionDomain: str, i2pDomain: str,
+                        signingPrivateKeyPem: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
@@ -1951,7 +1958,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                        False, False,
                        sendThreads, postLog,
                        personCache, cachedWebfingers,
-                       debug, __version__)
+                       debug, __version__, signingPrivateKeyPem)
 
     sendToFollowersThread(session, baseDir, nickname, domain,
                           onionDomain, i2pDomain, port,
@@ -1960,7 +1967,8 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                           cachedWebfingers, personCache,
                           announceJson, debug, __version__,
                           sharedItemsFederatedDomains,
-                          sharedItemFederationTokens)
+                          sharedItemFederationTokens,
+                          signingPrivateKeyPem)
 
 
 def _inboxUpdateCalendar(baseDir: str, handle: str,
@@ -2074,7 +2082,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
               sendThreads: [], postLog: [],
               cachedWebfingers: {}, personCache: {},
               translate: {}, debug: bool,
-              lastBounceMessage: [], systemLanguage: str) -> bool:
+              lastBounceMessage: [], systemLanguage: str,
+              signingPrivateKeyPem: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2144,7 +2153,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                    senderNickname, senderDomain, senderPort, cc,
                    httpPrefix, False, False, federationList,
                    sendThreads, postLog, cachedWebfingers,
-                   personCache, debug, __version__, None, groupAccount)
+                   personCache, debug, __version__, None, groupAccount,
+                   signingPrivateKeyPem)
     return True
 
 
@@ -2157,7 +2167,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                personCache: {},
                translate: {}, debug: bool,
                lastBounceMessage: [],
-               handle: str, systemLanguage: str) -> bool:
+               handle: str, systemLanguage: str,
+               signingPrivateKeyPem: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2233,7 +2244,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                                       personCache,
                                       translate, debug,
                                       lastBounceMessage,
-                                      systemLanguage)
+                                      systemLanguage,
+                                      signingPrivateKeyPem)
                 return False
 
     # dm index will be updated
@@ -2260,7 +2272,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        peertubeInstances: [],
                        lastBounceMessage: [],
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int) -> bool:
+                       maxLikeCount: int, signingPrivateKeyPem: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2341,7 +2353,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         debug, translate,
                         YTReplacementDomain,
                         allowLocalNetworkAccess,
-                        themeName, systemLanguage):
+                        themeName, systemLanguage,
+                        signingPrivateKeyPem):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2466,7 +2479,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                       postJsonObject, debug,
                                       __version__,
                                       sharedItemsFederatedDomains,
-                                      sharedItemFederationTokens)
+                                      sharedItemFederationTokens,
+                                      signingPrivateKeyPem)
 
         isReplyToMutedPost = False
 
@@ -2483,7 +2497,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   personCache,
                                   translate, debug,
                                   lastBounceMessage,
-                                  handle, systemLanguage):
+                                  handle, systemLanguage,
+                                  signingPrivateKeyPem):
                     return False
 
             # get the actor being replied to
@@ -2519,7 +2534,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             translate, YTReplacementDomain,
                             allowLocalNetworkAccess,
                             recentPostsCache, debug, systemLanguage,
-                            domainFull, personCache):
+                            domainFull, personCache, signingPrivateKeyPem):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
@@ -2529,7 +2544,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         # get the avatar for a reply/announce
         _obtainAvatarForReplyPost(session, baseDir,
                                   httpPrefix, domain, onionDomain,
-                                  personCache, postJsonObject, debug)
+                                  personCache, postJsonObject, debug,
+                                  signingPrivateKeyPem)
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
@@ -2594,7 +2610,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    peertubeInstances,
                                                    allowLocalNetworkAccess,
                                                    themeName, systemLanguage,
-                                                   maxLikeCount)
+                                                   maxLikeCount,
+                                                   signingPrivateKeyPem)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2617,7 +2634,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                     httpPrefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
                                     debug, systemLanguage,
-                                    onionDomain, i2pDomain)
+                                    onionDomain, i2pDomain,
+                                    signingPrivateKeyPem)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
@@ -2857,7 +2875,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
                   themeName: str, systemLanguage: str,
-                  maxLikeCount: int) -> None:
+                  maxLikeCount: int, signingPrivateKeyPem: str) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -3008,7 +3026,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 getPersonPubKey(baseDir, session, keyId,
                                 personCache, debug,
                                 projectVersion, httpPrefix,
-                                domain, onionDomain)
+                                domain, onionDomain, signingPrivateKeyPem)
             if pubKey:
                 if debug:
                     print('DEBUG: public key: ' + str(pubKey))
@@ -3129,7 +3147,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 queueJson['post'],
                                 federationList,
                                 debug, projectVersion,
-                                maxFollowers, onionDomain):
+                                maxFollowers, onionDomain,
+                                signingPrivateKeyPem):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -3246,7 +3265,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                peertubeInstances,
                                lastBounceMessage,
                                themeName, systemLanguage,
-                               maxLikeCount)
+                               maxLikeCount,
+                               signingPrivateKeyPem)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')

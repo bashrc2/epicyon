@@ -18,7 +18,7 @@ def instancesGraph(baseDir: str, handles: str,
                    proxyType: str,
                    port: int, httpPrefix: str,
                    debug: bool, projectVersion: str,
-                   systemLanguage: str) -> str:
+                   systemLanguage: str, signingPrivateKeyPem: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
@@ -54,7 +54,8 @@ def instancesGraph(baseDir: str, handles: str,
         wfRequest = \
             webfingerHandle(session, handle, httpPrefix,
                             cachedWebfingers,
-                            domain, projectVersion, debug, False)
+                            domain, projectVersion, debug, False,
+                            signingPrivateKeyPem)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):
@@ -64,7 +65,8 @@ def instancesGraph(baseDir: str, handles: str,
 
         (personUrl, pubKeyId, pubKey,
          personId, shaedInbox,
-         avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+         avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                                baseDir, session, wfRequest,
                                                 personCache,
                                                 projectVersion, httpPrefix,
                                                 nickname, domain, 'outbox',
@@ -75,7 +77,8 @@ def instancesGraph(baseDir: str, handles: str,
                            maxAttachments, federationList,
                            personCache, debug,
                            projectVersion, httpPrefix, domain,
-                           wordFrequency, [], systemLanguage)
+                           wordFrequency, [], systemLanguage,
+                           signingPrivateKeyPem)
         postDomains.sort()
         for fedDomain in postDomains:
             dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'

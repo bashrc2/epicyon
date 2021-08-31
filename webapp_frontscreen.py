@@ -33,7 +33,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           peertubeInstances: [],
                           allowLocalNetworkAccess: bool,
                           themeName: str, systemLanguage: str,
-                          maxLikeCount: int) -> str:
+                          maxLikeCount: int,
+                          signingPrivateKeyPem: str) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -61,7 +62,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session,
@@ -86,7 +88,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
     return profileStr
 
 
-def htmlFrontScreen(rssIconAtTop: bool,
+def htmlFrontScreen(signingPrivateKeyPem: str,
+                    rssIconAtTop: bool,
                     cssCache: {}, iconsAsButtons: bool,
                     defaultTimeline: str,
                     recentPostsCache: {}, maxRecentPosts: int,
@@ -173,7 +176,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               peertubeInstances,
                               allowLocalNetworkAccess,
                               theme, systemLanguage,
-                              maxLikeCount) + licenseStr
+                              maxLikeCount,
+                              signingPrivateKeyPem) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

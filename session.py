@@ -87,7 +87,7 @@ def urlExists(session, url: str, timeoutSec: int = 3,
 
 def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                     sessionParams: {}, timeoutSec: int,
-                    privateKeyPem: str, quiet: bool, debug: bool) -> {}:
+                    signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
     """http GET for json
     """
     try:
@@ -95,12 +95,12 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                              params=sessionParams, timeout=timeoutSec)
         if result.status_code != 200:
             if result.status_code == 401:
-                if not privateKeyPem:
+                if not signingPrivateKeyPem:
                     print("WARN: getJson requires secure fetch url: " + url)
                 else:
                     return _getJsonSigned(session, url, domainFull,
                                           sessionHeaders, sessionParams,
-                                          timeoutSec, privateKeyPem,
+                                          timeoutSec, signingPrivateKeyPem,
                                           quiet, debug)
             elif result.status_code == 403:
                 print('WARN: getJson Forbidden url: ' + url)
@@ -138,7 +138,7 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
 
 def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                    sessionParams: {}, timeoutSec: int,
-                   privateKeyPem: str, quiet: bool, debug: bool) -> {}:
+                   signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
     """Authorized fetch
     """
     if not domainFull:
@@ -175,27 +175,26 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     nickname = domain
 
     if debug:
-        print('Signed GET privateKeyPem: ' + privateKeyPem)
+        print('Signed GET privateKeyPem: ' + signingPrivateKeyPem)
         print('Signed GET nickname: ' + nickname)
         print('Signed GET domain: ' + domain + ' ' + str(port))
         print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
         print('Signed GET url: ' + url)
         print('Signed GET httpPrefix: ' + httpPrefix)
     signatureHeaderJson = \
-        createSignedHeader(privateKeyPem, nickname, domain, port,
-                           toDomain, toPort,
-                           url, httpPrefix, False, '')
+        createSignedHeader(signingPrivateKeyPem, nickname, domain, port,
+                           toDomain, toPort, url, httpPrefix, False, '')
     for key, value in signatureHeaderJson.items():
         if key == 'Accept' or key == 'User-Agent':
             continue
         sessionHeaders[key] = value
 
     return _getJsonRequest(session, url, domainFull, sessionHeaders,
-                           sessionParams, timeoutSec,
-                           None, quiet, debug)
+                           sessionParams, timeoutSec, None, quiet, debug)
 
 
-def getJson(session, url: str, headers: {}, params: {}, debug: bool,
+def getJson(signingPrivateKeyPem: str,
+            session, url: str, headers: {}, params: {}, debug: bool,
             version: str = '1.2.0', httpPrefix: str = 'https',
             domain: str = 'testdomain',
             timeoutSec: int = 20, quiet: bool = False) -> {}:
@@ -222,10 +221,9 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
     if debug:
         HTTPConnection.debuglevel = 1
 
-    privateKeyPem = 'TODO instance actor private key'
     return _getJsonRequest(session, url, domain, sessionHeaders,
                            sessionParams, timeoutSec,
-                           privateKeyPem, quiet, debug)
+                           signingPrivateKeyPem, quiet, debug)
 
 
 def postJson(httpPrefix: str, domainFull: str,

@@ -232,7 +232,8 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     _setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
 
 
-def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
+def updateAvatarImageCache(signingPrivateKeyPem: str,
+                           session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
                            force: bool = False, debug: bool = False) -> str:
@@ -299,7 +300,7 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
         personJson = \
-            getJson(session, actor, sessionHeaders, None,
+            getJson(signingPrivateKeyPem, session, actor, sessionHeaders, None,
                     debug, __version__, httpPrefix, None)
         if personJson:
             if not personJson.get('id'):
@@ -1113,7 +1114,8 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 def getAvatarImageUrl(session,
                       baseDir: str, httpPrefix: str,
                       postActor: str, personCache: {},
-                      avatarUrl: str, allowDownloads: bool) -> str:
+                      avatarUrl: str, allowDownloads: bool,
+                      signingPrivateKeyPem: str) -> str:
     """Returns the avatar image url
     """
     # get the avatar image url for the post actor
@@ -1122,11 +1124,13 @@ def getAvatarImageUrl(session,
             getPersonAvatarUrl(baseDir, postActor, personCache,
                                allowDownloads)
         avatarUrl = \
-            updateAvatarImageCache(session, baseDir, httpPrefix,
+            updateAvatarImageCache(signingPrivateKeyPem,
+                                   session, baseDir, httpPrefix,
                                    postActor, avatarUrl, personCache,
                                    allowDownloads)
     else:
-        updateAvatarImageCache(session, baseDir, httpPrefix,
+        updateAvatarImageCache(signingPrivateKeyPem,
+                               session, baseDir, httpPrefix,
                                postActor, avatarUrl, personCache,
                                allowDownloads)
 

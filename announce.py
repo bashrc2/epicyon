@@ -122,7 +122,8 @@ def createAnnounce(session, baseDir: str, federationList: [],
                    clientToServer: bool,
                    sendThreads: [], postLog: [],
                    personCache: {}, cachedWebfingers: {},
-                   debug: bool, projectVersion: str) -> {}:
+                   debug: bool, projectVersion: str,
+                   signingPrivateKeyPem: str) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the
@@ -179,7 +180,8 @@ def createAnnounce(session, baseDir: str, federationList: [],
                        announceNickname, announceDomain, announcePort, None,
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion, None, groupAccount)
+                       debug, projectVersion, None, groupAccount,
+                       signingPrivateKeyPem)
 
     return newAnnounce
 
@@ -189,7 +191,8 @@ def announcePublic(session, baseDir: str, federationList: [],
                    objectUrl: str, clientToServer: bool,
                    sendThreads: [], postLog: [],
                    personCache: {}, cachedWebfingers: {},
-                   debug: bool, projectVersion: str) -> {}:
+                   debug: bool, projectVersion: str,
+                   signingPrivateKeyPem: str) -> {}:
     """Makes a public announcement
     """
     fromDomain = getFullDomain(domain, port)
@@ -202,7 +205,8 @@ def announcePublic(session, baseDir: str, federationList: [],
                           objectUrl, True, clientToServer,
                           sendThreads, postLog,
                           personCache, cachedWebfingers,
-                          debug, projectVersion)
+                          debug, projectVersion,
+                          signingPrivateKeyPem)
 
 
 def sendAnnounceViaServer(baseDir: str, session,
@@ -210,7 +214,8 @@ def sendAnnounceViaServer(baseDir: str, session,
                           fromDomain: str, fromPort: int,
                           httpPrefix: str, repeatObjectUrl: str,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str) -> {}:
+                          debug: bool, projectVersion: str,
+                          signingPrivateKeyPem: str) -> {}:
     """Creates an announce message via c2s
     """
     if not session:
@@ -242,7 +247,8 @@ def sendAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False)
+                                fromDomain, projectVersion, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -257,7 +263,8 @@ def sendAnnounceViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
      sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest,
+     displayName) = getPersonBox(signingPrivateKeyPem,
+                                 baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix,
                                  fromNickname, fromDomain,
@@ -298,7 +305,8 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
                               domain: str, port: int,
                               httpPrefix: str, repeatObjectUrl: str,
                               cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str) -> {}:
+                              debug: bool, projectVersion: str,
+                              signingPrivateKeyPem: str) -> {}:
     """Undo an announce message via c2s
     """
     if not session:
@@ -322,7 +330,8 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False)
+                                domain, projectVersion, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: undo announce webfinger failed for ' + handle)
@@ -337,7 +346,8 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
      sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest,
+     displayName) = getPersonBox(signingPrivateKeyPem,
+                                 baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix,
                                  nickname, domain,

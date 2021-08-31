@@ -631,7 +631,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
                          debug: bool, projectVersion: str,
-                         maxFollowers: int, onionDomain: str) -> bool:
+                         maxFollowers: int, onionDomain: str,
+                         signingPrivateKeyPem: str) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -743,7 +744,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             print('Obtaining the following actor: ' + messageJson['actor'])
         if not getPersonPubKey(baseDir, session, messageJson['actor'],
                                personCache, debug, projectVersion,
-                               httpPrefix, domainToFollow, onionDomain):
+                               httpPrefix, domainToFollow, onionDomain,
+                               signingPrivateKeyPem):
             if debug:
                 print('Unable to obtain following actor: ' +
                       messageJson['actor'])
@@ -779,7 +781,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                 print('Obtaining the following actor: ' + messageJson['actor'])
             if not getPersonPubKey(baseDir, session, messageJson['actor'],
                                    personCache, debug, projectVersion,
-                                   httpPrefix, domainToFollow, onionDomain):
+                                   httpPrefix, domainToFollow, onionDomain,
+                                   signingPrivateKeyPem):
                 if debug:
                     print('Unable to obtain following actor: ' +
                           messageJson['actor'])
@@ -824,7 +827,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                                   messageJson['actor'], federationList,
                                   messageJson, sendThreads, postLog,
                                   cachedWebfingers, personCache,
-                                  debug, projectVersion, True)
+                                  debug, projectVersion, True,
+                                  signingPrivateKeyPem)
 
 
 def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
@@ -835,7 +839,8 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                            followJson: {}, sendThreads: [], postLog: [],
                            cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
-                           removeFollowActivity: bool):
+                           removeFollowActivity: bool,
+                           signingPrivateKeyPem: str):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -884,7 +889,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, projectVersion, None,
-                          groupAccount)
+                          groupAccount, signingPrivateKeyPem)
 
 
 def followedAccountRejects(session, baseDir: str, httpPrefix: str,
@@ -894,7 +899,8 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
                            federationList: [],
                            sendThreads: [], postLog: [],
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str):
+                           debug: bool, projectVersion: str,
+                           signingPrivateKeyPem: str):
     """The person receiving a follow request rejects the new follower
     and sends back a Reject activity
     """
@@ -949,7 +955,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, projectVersion, None,
-                          groupAccount)
+                          groupAccount, signingPrivateKeyPem)
 
 
 def sendFollowRequest(session, baseDir: str,
@@ -960,7 +966,7 @@ def sendFollowRequest(session, baseDir: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
                       personCache: {}, debug: bool,
-                      projectVersion: str) -> {}:
+                      projectVersion: str, signingPrivateKeyPem: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain, federationList):
@@ -1016,7 +1022,8 @@ def sendFollowRequest(session, baseDir: str,
                    httpPrefix, True, clientToServer,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
-                   debug, projectVersion, None, groupAccount)
+                   debug, projectVersion, None, groupAccount,
+                   signingPrivateKeyPem)
 
     return newFollowJson
 
@@ -1028,7 +1035,8 @@ def sendFollowRequestViaServer(baseDir: str, session,
                                followPort: int,
                                httpPrefix: str,
                                cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str) -> {}:
+                               debug: bool, projectVersion: str,
+                               signingPrivateKeyPem: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
@@ -1057,7 +1065,8 @@ def sendFollowRequestViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: follow request webfinger failed for ' + handle)
@@ -1072,7 +1081,8 @@ def sendFollowRequestViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+     displayName) = getPersonBox(signingPrivateKeyPem,
+                                 baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox, 52025)
 
@@ -1114,7 +1124,8 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
                                  followPort: int,
                                  httpPrefix: str,
                                  cachedWebfingers: {}, personCache: {},
-                                 debug: bool, projectVersion: str) -> {}:
+                                 debug: bool, projectVersion: str,
+                                 signingPrivateKeyPem: str) -> {}:
     """Creates a unfollow request via c2s
     """
     if not session:
@@ -1147,7 +1158,8 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: unfollow webfinger failed for ' + handle)
@@ -1162,7 +1174,8 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session,
+     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            baseDir, session,
                                             wfRequest, personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname,
@@ -1205,7 +1218,8 @@ def getFollowingViaServer(baseDir: str, session,
                           domain: str, port: int,
                           httpPrefix: str, pageNumber: int,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str) -> {}:
+                          debug: bool, projectVersion: str,
+                          signingPrivateKeyPem: str) -> {}:
     """Gets a page from the following collection as json
     """
     if not session:
@@ -1227,9 +1241,8 @@ def getFollowingViaServer(baseDir: str, session,
         pageNumber = 1
     url = followActor + '/following?page=' + str(pageNumber)
     followingJson = \
-        getJson(session, url, headers, {}, debug,
-                __version__, httpPrefix,
-                domain, 10, True)
+        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
+                __version__, httpPrefix, domain, 10, True)
     if not followingJson:
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
@@ -1246,7 +1259,8 @@ def getFollowersViaServer(baseDir: str, session,
                           domain: str, port: int,
                           httpPrefix: str, pageNumber: int,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str) -> {}:
+                          debug: bool, projectVersion: str,
+                          signingPrivateKeyPem: str) -> {}:
     """Gets a page from the followers collection as json
     """
     if not session:
@@ -1268,7 +1282,7 @@ def getFollowersViaServer(baseDir: str, session,
         pageNumber = 1
     url = followActor + '/followers?page=' + str(pageNumber)
     followersJson = \
-        getJson(session, url, headers, {}, debug,
+        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
                 __version__, httpPrefix, domain, 10, True)
     if not followersJson:
         if debug:
@@ -1286,7 +1300,8 @@ def getFollowRequestsViaServer(baseDir: str, session,
                                domain: str, port: int,
                                httpPrefix: str, pageNumber: int,
                                cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str) -> {}:
+                               debug: bool, projectVersion: str,
+                               signingPrivateKeyPem: str) -> {}:
     """Gets a page from the follow requests collection as json
     """
     if not session:
@@ -1308,7 +1323,7 @@ def getFollowRequestsViaServer(baseDir: str, session,
         pageNumber = 1
     url = followActor + '/followrequests?page=' + str(pageNumber)
     followersJson = \
-        getJson(session, url, headers, {}, debug,
+        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
                 __version__, httpPrefix, domain, 10, True)
     if not followersJson:
         if debug:
@@ -1326,7 +1341,8 @@ def approveFollowRequestViaServer(baseDir: str, session,
                                   domain: str, port: int,
                                   httpPrefix: str, approveHandle: int,
                                   cachedWebfingers: {}, personCache: {},
-                                  debug: bool, projectVersion: str) -> str:
+                                  debug: bool, projectVersion: str,
+                                  signingPrivateKeyPem: str) -> str:
     """Approves a follow request
     This is not exactly via c2s though. It simulates pressing the Approve
     button on the web interface
@@ -1348,7 +1364,7 @@ def approveFollowRequestViaServer(baseDir: str, session,
 
     url = actor + '/followapprove=' + approveHandle
     approveHtml = \
-        getJson(session, url, headers, {}, debug,
+        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
                 __version__, httpPrefix, domain, 10, True)
     if not approveHtml:
         if debug:
@@ -1366,7 +1382,8 @@ def denyFollowRequestViaServer(baseDir: str, session,
                                domain: str, port: int,
                                httpPrefix: str, denyHandle: int,
                                cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str) -> str:
+                               debug: bool, projectVersion: str,
+                               signingPrivateKeyPem: str) -> str:
     """Denies a follow request
     This is not exactly via c2s though. It simulates pressing the Deny
     button on the web interface
@@ -1388,7 +1405,7 @@ def denyFollowRequestViaServer(baseDir: str, session,
 
     url = actor + '/followdeny=' + denyHandle
     denyHtml = \
-        getJson(session, url, headers, {}, debug,
+        getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
                 __version__, httpPrefix, domain, 10, True)
     if not denyHtml:
         if debug:

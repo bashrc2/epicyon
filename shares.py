@@ -535,7 +535,8 @@ def sendShareViaServer(baseDir, session,
                        location: str, duration: str,
                        cachedWebfingers: {}, personCache: {},
                        debug: bool, projectVersion: str,
-                       itemPrice: str, itemCurrency: str) -> {}:
+                       itemPrice: str, itemCurrency: str,
+                       signingPrivateKeyPem: str) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -585,7 +586,8 @@ def sendShareViaServer(baseDir, session,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -600,7 +602,8 @@ def sendShareViaServer(baseDir, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
                                             fromDomain, postToBox,
@@ -652,7 +655,8 @@ def sendUndoShareViaServer(baseDir: str, session,
                            fromDomain: str, fromPort: int,
                            httpPrefix: str, displayName: str,
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str) -> {}:
+                           debug: bool, projectVersion: str,
+                           signingPrivateKeyPem: str) -> {}:
     """Undoes a share via c2s
     """
     if not session:
@@ -685,7 +689,8 @@ def sendUndoShareViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: unshare webfinger failed for ' + handle)
@@ -700,7 +705,8 @@ def sendUndoShareViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
                                             fromDomain, postToBox,
@@ -747,7 +753,8 @@ def sendWantedViaServer(baseDir, session,
                         location: str, duration: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, projectVersion: str,
-                        itemMaxPrice: str, itemCurrency: str) -> {}:
+                        itemMaxPrice: str, itemCurrency: str,
+                        signingPrivateKeyPem: str) -> {}:
     """Creates a wanted item via c2s
     """
     if not session:
@@ -797,7 +804,8 @@ def sendWantedViaServer(baseDir, session,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -812,7 +820,8 @@ def sendWantedViaServer(baseDir, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
                                             fromDomain, postToBox,
@@ -864,7 +873,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
                             fromDomain: str, fromPort: int,
                             httpPrefix: str, displayName: str,
                             cachedWebfingers: {}, personCache: {},
-                            debug: bool, projectVersion: str) -> {}:
+                            debug: bool, projectVersion: str,
+                            signingPrivateKeyPem: str) -> {}:
     """Undoes a wanted item via c2s
     """
     if not session:
@@ -897,7 +907,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: unwant webfinger failed for ' + handle)
@@ -912,7 +923,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
                                             fromDomain, postToBox,
@@ -953,7 +965,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
 def getSharedItemsCatalogViaServer(baseDir, session,
                                    nickname: str, password: str,
                                    domain: str, port: int,
-                                   httpPrefix: str, debug: bool) -> {}:
+                                   httpPrefix: str, debug: bool,
+                                   signingPrivateKeyPem: str) -> {}:
     """Returns the shared items catalog via c2s
     """
     if not session:
@@ -972,8 +985,8 @@ def getSharedItemsCatalogViaServer(baseDir, session,
     url = localActorUrl(httpPrefix, nickname, domainFull) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
-    catalogJson = getJson(session, url, headers, None, debug,
-                          __version__, httpPrefix, None)
+    catalogJson = getJson(signingPrivateKeyPem, session, url, headers, None,
+                          debug, __version__, httpPrefix, None)
     if not catalogJson:
         if debug:
             print('DEBUG: GET shared items catalog failed for c2s to ' + url)

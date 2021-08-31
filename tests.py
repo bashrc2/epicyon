@@ -978,8 +978,9 @@ def testPostMessageBetweenServers():
     assert len([name for name in os.listdir(outboxPath)
                 if os.path.isfile(os.path.join(outboxPath, name))]) == 0
     lowBandwidth = False
+    signingPrivateKeyPem = None
     sendResult = \
-        sendPost(__version__,
+        sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix,
                  'Why is a mouse when it spins? ' +
@@ -1100,7 +1101,7 @@ def testPostMessageBetweenServers():
                     'alice', aliceDomain, alicePort, [],
                     statusNumber, False, bobSendThreads, bobPostLog,
                     bobPersonCache, bobCachedWebfingers,
-                    True, __version__)
+                    True, __version__, signingPrivateKeyPem)
 
     for i in range(20):
         if 'likes' in open(outboxPostFilename).read():
@@ -1135,7 +1136,7 @@ def testPostMessageBetweenServers():
                    objectUrl,
                    False, bobSendThreads, bobPostLog,
                    bobPersonCache, bobCachedWebfingers,
-                   True, __version__)
+                   True, __version__, signingPrivateKeyPem)
     announceMessageArrived = False
     outboxMessageArrived = False
     for i in range(10):
@@ -1270,6 +1271,7 @@ def testFollowBetweenServers():
     aliceCachedWebfingers = {}
     alicePostLog = []
     bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
+    signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
                           'alice', aliceDomain, alicePort, httpPrefix,
@@ -1278,7 +1280,7 @@ def testFollowBetweenServers():
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     print('sendResult: ' + str(sendResult))
 
     for t in range(16):
@@ -1315,8 +1317,9 @@ def testFollowBetweenServers():
     isArticle = False
     city = 'London, England'
     lowBandwidth = False
+    signingPrivateKeyPem = None
     sendResult = \
-        sendPost(__version__,
+        sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
@@ -1466,6 +1469,7 @@ def testSharedItemsFederation():
     aliceCachedWebfingers = {}
     alicePostLog = []
     bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
+    signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
                           'alice', aliceDomain, alicePort, httpPrefix,
@@ -1474,7 +1478,7 @@ def testSharedItemsFederation():
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     print('sendResult: ' + str(sendResult))
 
     for t in range(16):
@@ -1527,6 +1531,7 @@ def testSharedItemsFederation():
     sharedItemDuration = "10 days"
     sharedItemPrice = "1.30"
     sharedItemCurrency = "EUR"
+    signingPrivateKeyPem = None
     shareJson = \
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
@@ -1537,7 +1542,8 @@ def testSharedItemsFederation():
                            sharedItemLocation, sharedItemDuration,
                            bobCachedWebfingers, bobPersonCache,
                            True, __version__,
-                           sharedItemPrice, sharedItemCurrency)
+                           sharedItemPrice, sharedItemCurrency,
+                           signingPrivateKeyPem)
     assert shareJson
     assert isinstance(shareJson, dict)
     sharedItemName = 'Epicyon T-shirt'
@@ -1560,7 +1566,8 @@ def testSharedItemsFederation():
                            sharedItemLocation, sharedItemDuration,
                            bobCachedWebfingers, bobPersonCache,
                            True, __version__,
-                           sharedItemPrice, sharedItemCurrency)
+                           sharedItemPrice, sharedItemCurrency,
+                           signingPrivateKeyPem)
     assert shareJson
     assert isinstance(shareJson, dict)
     sharedItemName = 'Soldering iron'
@@ -1583,7 +1590,8 @@ def testSharedItemsFederation():
                            sharedItemLocation, sharedItemDuration,
                            bobCachedWebfingers, bobPersonCache,
                            True, __version__,
-                           sharedItemPrice, sharedItemCurrency)
+                           sharedItemPrice, sharedItemCurrency,
+                           signingPrivateKeyPem)
     assert shareJson
     assert isinstance(shareJson, dict)
 
@@ -1605,9 +1613,11 @@ def testSharedItemsFederation():
 
     print('\n\n*********************************************************')
     print('Bob can read the shared items catalog on his own instance')
+    signingPrivateKeyPem = None
     catalogJson = \
         getSharedItemsCatalogViaServer(bobDir, sessionBob, 'bob', bobPassword,
-                                       bobDomain, bobPort, httpPrefix, True)
+                                       bobDomain, bobPort, httpPrefix, True,
+                                       signingPrivateKeyPem)
     assert catalogJson
     pprint(catalogJson)
     assert 'DFC:supplies' in catalogJson
@@ -1633,8 +1643,9 @@ def testSharedItemsFederation():
     isArticle = False
     city = 'London, England'
     lowBandwidth = False
+    signingPrivateKeyPem = None
     sendResult = \
-        sendPost(__version__,
+        sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
@@ -1697,7 +1708,9 @@ def testSharedItemsFederation():
         'Accept': 'application/json'
     }
     url = httpPrefix + '://' + bobAddress + '/catalog'
-    catalogJson = getJson(sessionAlice, url, headers, None, True)
+    signingPrivateKeyPem = None
+    catalogJson = getJson(signingPrivateKeyPem, sessionAlice, url, headers,
+                          None, True)
     assert catalogJson
     pprint(catalogJson)
     assert 'DFC:supplies' in catalogJson
@@ -1836,8 +1849,9 @@ def testGroupFollow():
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
-    outboxJson = getJson(session, aliceOutbox, asHeader, None,
-                         True, __version__, 'http', None)
+    signingPrivateKeyPem = None
+    outboxJson = getJson(signingPrivateKeyPem, session, aliceOutbox, asHeader,
+                         None, True, __version__, 'http', None)
     assert outboxJson
     pprint(outboxJson)
     assert outboxJson['type'] == 'OrderedCollection'
@@ -1847,8 +1861,8 @@ def testGroupFollow():
     print('Alice outbox totalItems: ' + str(outboxJson['totalItems']))
     assert outboxJson['totalItems'] == 3
 
-    outboxJson = getJson(session, firstPage, asHeader, None,
-                         True, __version__, 'http', None)
+    outboxJson = getJson(signingPrivateKeyPem, session, firstPage, asHeader,
+                         None, True, __version__, 'http', None)
     assert outboxJson
     pprint(outboxJson)
     assert 'orderedItems' in outboxJson
@@ -1879,6 +1893,7 @@ def testGroupFollow():
     alicePostLog = []
     # aliceActor = httpPrefix + '://' + aliceAddress + '/users/alice'
     testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
+    signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
                           'alice', aliceDomain, alicePort, httpPrefix,
@@ -1887,7 +1902,7 @@ def testGroupFollow():
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     print('sendResult: ' + str(sendResult))
 
     aliceFollowingFilename = \
@@ -1954,6 +1969,7 @@ def testGroupFollow():
     bobPostLog = []
     # bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
     testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
+    signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionBob, bobDir,
                           'bob', bobDomain, bobPort, httpPrefix,
@@ -1962,7 +1978,7 @@ def testGroupFollow():
                           clientToServer, federationList,
                           bobSendThreads, bobPostLog,
                           bobCachedWebfingers, bobPersonCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     print('sendResult: ' + str(sendResult))
 
     bobFollowingFilename = \
@@ -2025,8 +2041,9 @@ def testGroupFollow():
     isArticle = False
     city = 'London, England'
     lowBandwidth = False
+    signingPrivateKeyPem = None
     sendResult = \
-        sendPost(__version__,
+        sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'testgroup', testgroupDomain, testgroupPort, ccUrl,
                  httpPrefix, "Alice group message", followersOnly,
@@ -2553,8 +2570,9 @@ def testClientToServer():
     assert len([name for name in os.listdir(bobOutboxPath)
                 if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 0
     print('EVENT: all inboxes and outboxes are empty')
+    signingPrivateKeyPem = None
     sendResult = \
-        sendPostViaServer(__version__,
+        sendPostViaServer(signingPrivateKeyPem, __version__,
                           aliceDir, sessionAlice, 'alice', password,
                           aliceDomain, alicePort,
                           'bob', bobDomain, bobPort, None,
@@ -2619,13 +2637,14 @@ def testClientToServer():
                                aliceDomain, alicePort)
 
     print('\n\nAlice follows Bob')
+    signingPrivateKeyPem = None
     sendFollowRequestViaServer(aliceDir, sessionAlice,
                                'alice', password,
                                aliceDomain, alicePort,
                                'bob', bobDomain, bobPort,
                                httpPrefix,
                                cachedWebfingers, personCache,
-                               True, __version__)
+                               True, __version__, signingPrivateKeyPem)
     alicePetnamesFilename = aliceDir + '/accounts/' + \
         'alice@' + aliceDomain + '/petnames.txt'
     aliceFollowingFilename = \
@@ -2667,7 +2686,7 @@ def testClientToServer():
                                'alice', aliceDomain, alicePort,
                                httpPrefix,
                                cachedWebfingers, personCache,
-                               True, __version__)
+                               True, __version__, signingPrivateKeyPem)
     for t in range(10):
         if os.path.isfile(aliceDir + '/accounts/alice@' + aliceDomain +
                           '/followers.txt'):
@@ -2722,7 +2741,7 @@ def testClientToServer():
                       bobDomain, bobPort,
                       httpPrefix, outboxPostId,
                       cachedWebfingers, personCache,
-                      True, __version__)
+                      True, __version__, signingPrivateKeyPem)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
             if len([name for name in os.listdir(outboxPath)
@@ -2753,11 +2772,13 @@ def testClientToServer():
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
     print('\n\nEVENT: Bob repeats the post')
+    signingPrivateKeyPem = None
     sendAnnounceViaServer(bobDir, sessionBob, 'bob', password,
                           bobDomain, bobPort,
                           httpPrefix, outboxPostId,
                           cachedWebfingers,
-                          personCache, True, __version__)
+                          personCache, True, __version__,
+                          signingPrivateKeyPem)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
             if len([name for name in os.listdir(outboxPath)
@@ -2788,7 +2809,7 @@ def testClientToServer():
                         aliceDomain, alicePort,
                         httpPrefix, outboxPostId,
                         cachedWebfingers, personCache,
-                        True, __version__)
+                        True, __version__, signingPrivateKeyPem)
     for i in range(30):
         if os.path.isdir(inboxPath):
             test = len([name for name in os.listdir(inboxPath)
@@ -2813,7 +2834,7 @@ def testClientToServer():
                                  'bob', bobDomain, bobPort,
                                  httpPrefix,
                                  cachedWebfingers, personCache,
-                                 True, __version__)
+                                 True, __version__, signingPrivateKeyPem)
     for t in range(10):
         if 'alice@' + aliceDomain + ':' + str(alicePort) not in \
            open(bobFollowersFilename).read():
@@ -4704,13 +4725,14 @@ def testUpdateActor():
         'fnaZ2Wi050483Sj2RmQRpb99Dod7rVZTDtCqXk0J\n' + \
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
+    signingPrivateKeyPem = None
     actorUpdate = \
         pgpPublicKeyUpload(aliceDir, sessionAlice,
                            'alice', password,
                            aliceDomain, alicePort,
                            httpPrefix,
                            cachedWebfingers, personCache,
-                           True, pubKey)
+                           True, pubKey, signingPrivateKeyPem)
     print('actor update result: ' + str(actorUpdate))
     assert actorUpdate
 

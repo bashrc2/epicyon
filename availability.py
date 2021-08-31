@@ -82,7 +82,8 @@ def sendAvailabilityViaServer(baseDir: str, session,
                               httpPrefix: str,
                               status: str,
                               cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str) -> {}:
+                              debug: bool, projectVersion: str,
+                              signingPrivateKeyPem: str) -> {}:
     """Sets the availability for a person via c2s
     """
     if not session:
@@ -107,7 +108,8 @@ def sendAvailabilityViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False)
+                                domain, projectVersion, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: availability webfinger failed for ' + handle)
@@ -122,7 +124,8 @@ def sendAvailabilityViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, nickname,
                                             domain, postToBox, 57262)

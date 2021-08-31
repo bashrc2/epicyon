@@ -188,7 +188,8 @@ def _getPostFromRecentCache(session,
                             postStartTime,
                             pageNumber: int,
                             recentPostsCache: {},
-                            maxRecentPosts: int) -> str:
+                            maxRecentPosts: int,
+                            signingPrivateKeyPem: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if boxName == 'tlmedia':
@@ -213,7 +214,8 @@ def _getPostFromRecentCache(session,
 
         _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
-    updateAvatarImageCache(session, baseDir, httpPrefix,
+    updateAvatarImageCache(signingPrivateKeyPem,
+                           session, baseDir, httpPrefix,
                            postActor, avatarUrl, personCache,
                            allowDownloads)
 
@@ -1095,7 +1097,8 @@ def _getFooterWithIcons(showIcons: bool,
     return footerStr
 
 
-def individualPostAsHtml(allowDownloads: bool,
+def individualPostAsHtml(signingPrivateKeyPem: str,
+                         allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          translate: {},
                          pageNumber: int, baseDir: str,
@@ -1169,7 +1172,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 postStartTime,
                                 pageNumber,
                                 recentPostsCache,
-                                maxRecentPosts)
+                                maxRecentPosts,
+                                signingPrivateKeyPem)
     if postHtml:
         return postHtml
 
@@ -1179,7 +1183,8 @@ def individualPostAsHtml(allowDownloads: bool,
         getAvatarImageUrl(session,
                           baseDir, httpPrefix,
                           postActor, personCache,
-                          avatarUrl, allowDownloads)
+                          avatarUrl, allowDownloads,
+                          signingPrivateKeyPem)
 
     _logPostTiming(enableTimingLog, postStartTime, '5')
 
@@ -1193,14 +1198,16 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorWf = \
             webfingerHandle(session, postActorHandle, httpPrefix,
                             cachedWebfingers,
-                            domain, __version__, False, False)
+                            domain, __version__, False, False,
+                            signingPrivateKeyPem)
 
         avatarUrl2 = None
         displayName = None
         if postActorWf:
             (inboxUrl, pubKeyId, pubKey,
              fromPersonId, sharedInbox,
-             avatarUrl2, displayName) = getPersonBox(baseDir, session,
+             avatarUrl2, displayName) = getPersonBox(signingPrivateKeyPem,
+                                                     baseDir, session,
                                                      postActorWf,
                                                      personCache,
                                                      projectVersion,
@@ -1261,7 +1268,8 @@ def individualPostAsHtml(allowDownloads: bool,
                              allowLocalNetworkAccess,
                              recentPostsCache, False,
                              systemLanguage,
-                             domainFull, personCache)
+                             domainFull, personCache,
+                             signingPrivateKeyPem)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
@@ -1691,7 +1699,7 @@ def htmlIndividualPost(cssCache: {},
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int) -> str:
+                       maxLikeCount: int, signingPrivateKeyPem: str) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1723,7 +1731,8 @@ def htmlIndividualPost(cssCache: {},
         postStr += followStr + '</p>\n'
 
     postStr += \
-        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+        individualPostAsHtml(signingPrivateKeyPem,
+                             True, recentPostsCache, maxRecentPosts,
                              translate, None,
                              baseDir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
@@ -1748,7 +1757,8 @@ def htmlIndividualPost(cssCache: {},
             postJsonObject = loadJson(postFilename)
             if postJsonObject:
                 postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session, cachedWebfingers,
@@ -1781,7 +1791,8 @@ def htmlIndividualPost(cssCache: {},
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr += \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session, cachedWebfingers,
@@ -1818,14 +1829,16 @@ def htmlPostReplies(cssCache: {},
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
                     themeName: str, systemLanguage: str,
-                    maxLikeCount: int) -> str:
+                    maxLikeCount: int,
+                    signingPrivateKeyPem: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr += \
-                individualPostAsHtml(True, recentPostsCache,
+                individualPostAsHtml(signingPrivateKeyPem,
+                                     True, recentPostsCache,
                                      maxRecentPosts,
                                      translate, None,
                                      baseDir, session, cachedWebfingers,

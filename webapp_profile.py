@@ -84,7 +84,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            themeName: str,
                            accessKeys: {},
                            systemLanguage: str,
-                           maxLikeCount: int) -> str:
+                           maxLikeCount: int,
+                           signingPrivateKeyPem: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -94,7 +95,8 @@ def htmlProfileAfterSearch(cssCache: {},
     elif httpPrefix == 'gnunet':
         gnunet = True
     profileJson, asHeader = \
-        getActorJson(domain, profileHandle, http, gnunet, debug, False)
+        getActorJson(domain, profileHandle, http, gnunet, debug, False,
+                     signingPrivateKeyPem)
     if not profileJson:
         return None
 
@@ -251,7 +253,8 @@ def htmlProfileAfterSearch(cssCache: {},
             '</div>\n'
 
     userFeed = \
-        parseUserFeed(session, outboxUrl, asHeader, projectVersion,
+        parseUserFeed(signingPrivateKeyPem,
+                      session, outboxUrl, asHeader, projectVersion,
                       httpPrefix, domain, debug)
     if userFeed:
         i = 0
@@ -268,7 +271,8 @@ def htmlProfileAfterSearch(cssCache: {},
                 continue
 
             profileStr += \
-                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                individualPostAsHtml(signingPrivateKeyPem,
+                                     True, recentPostsCache, maxRecentPosts,
                                      translate, None, baseDir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
@@ -466,7 +470,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     return htmlStr
 
 
-def htmlProfile(rssIconAtTop: bool,
+def htmlProfile(signingPrivateKeyPem: str,
+                rssIconAtTop: bool,
                 cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
@@ -491,7 +496,8 @@ def htmlProfile(rssIconAtTop: bool,
     if not nickname:
         return ""
     if isSystemAccount(nickname):
-        return htmlFrontScreen(rssIconAtTop,
+        return htmlFrontScreen(signingPrivateKeyPem,
+                               rssIconAtTop,
                                cssCache, iconsAsButtons,
                                defaultTimeline,
                                recentPostsCache, maxRecentPosts,
@@ -851,7 +857,8 @@ def htmlProfile(rssIconAtTop: bool,
                               peertubeInstances,
                               allowLocalNetworkAccess,
                               theme, systemLanguage,
-                              maxLikeCount) + licenseStr
+                              maxLikeCount,
+                              signingPrivateKeyPem) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -860,7 +867,7 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["unfollow"], selected,
                                   usersPath, pageNumber, maxItemsPerPage,
-                                  dormantMonths, debug)
+                                  dormantMonths, debug, signingPrivateKeyPem)
     elif selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -869,7 +876,8 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["block"],
                                   selected, usersPath, pageNumber,
-                                  maxItemsPerPage, dormantMonths, debug)
+                                  maxItemsPerPage, dormantMonths, debug,
+                                  signingPrivateKeyPem)
     elif selected == 'roles':
         profileStr += \
             _htmlProfileRoles(translate, nickname, domainFull,
@@ -911,7 +919,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int,
+                      signingPrivateKeyPem: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -939,7 +948,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session, cachedWebfingers,
@@ -972,7 +982,8 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           feedName: str, actor: str,
                           pageNumber: int,
                           maxItemsPerPage: int,
-                          dormantMonths: int, debug: bool) -> str:
+                          dormantMonths: int, debug: bool,
+                          signingPrivateKeyPem: str) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -999,7 +1010,8 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           dormantMonths)
 
         profileStr += \
-            _individualFollowAsHtml(translate, baseDir, session,
+            _individualFollowAsHtml(signingPrivateKeyPem,
+                                    translate, baseDir, session,
                                     cachedWebfingers, personCache,
                                     domain, followingActor,
                                     authorized, nickname,
@@ -2068,7 +2080,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     return editProfileForm
 
 
-def _individualFollowAsHtml(translate: {},
+def _individualFollowAsHtml(signingPrivateKeyPem: str,
+                            translate: {},
                             baseDir: str, session,
                             cachedWebfingers: {},
                             personCache: {}, domain: str,
@@ -2095,11 +2108,13 @@ def _individualFollowAsHtml(translate: {},
     followUrlWf = \
         webfingerHandle(session, followUrlHandle, httpPrefix,
                         cachedWebfingers,
-                        domain, __version__, debug, False)
+                        domain, __version__, debug, False,
+                        signingPrivateKeyPem)
 
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     avatarUrl2, displayName) = getPersonBox(baseDir, session,
+     avatarUrl2, displayName) = getPersonBox(signingPrivateKeyPem,
+                                             baseDir, session,
                                              followUrlWf,
                                              personCache, projectVersion,
                                              httpPrefix, followUrlNickname,

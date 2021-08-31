@@ -423,7 +423,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  textModeBanner: str,
                  accessKeys: {}, systemLanguage: str,
                  maxLikeCount: int,
-                 sharedItemsFederatedDomains: []) -> str:
+                 sharedItemsFederatedDomains: [],
+                 signingPrivateKeyPem: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -854,7 +855,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                     # read the post from disk
                     currTlStr = \
-                        individualPostAsHtml(False, recentPostsCache,
+                        individualPostAsHtml(signingPrivateKeyPem,
+                                             False, recentPostsCache,
                                              maxRecentPosts,
                                              translate, pageNumber,
                                              baseDir, session,
@@ -1079,7 +1081,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
                maxLikeCount: int,
-               sharedItemsFederatedDomains: []) -> str:
+               sharedItemsFederatedDomains: [],
+               signingPrivateKeyPem: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -1102,7 +1105,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlWanted(cssCache: {}, defaultTimeline: str,
@@ -1127,7 +1130,8 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
                maxLikeCount: int,
-               sharedItemsFederatedDomains: []) -> str:
+               sharedItemsFederatedDomains: [],
+               signingPrivateKeyPem: str) -> str:
     """Show the wanted timeline as html
     """
     manuallyApproveFollowers = \
@@ -1150,7 +1154,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -1175,7 +1179,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               textModeBanner: str,
               accessKeys: {}, systemLanguage: str,
               maxLikeCount: int,
-              sharedItemsFederatedDomains: []) -> str:
+              sharedItemsFederatedDomains: [],
+              signingPrivateKeyPem: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -1198,7 +1203,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -1223,7 +1228,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   textModeBanner: str,
                   accessKeys: {}, systemLanguage: str,
                   maxLikeCount: int,
-                  sharedItemsFederatedDomains: []) -> str:
+                  sharedItemsFederatedDomains: [],
+                  signingPrivateKeyPem: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -1246,7 +1252,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -1271,7 +1277,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  textModeBanner: str,
                  accessKeys: {}, systemLanguage: str,
                  maxLikeCount: int,
-                 sharedItemsFederatedDomains: []) -> str:
+                 sharedItemsFederatedDomains: [],
+                 signingPrivateKeyPem: str) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1289,7 +1296,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -1314,7 +1321,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      textModeBanner: str,
                      accessKeys: {}, systemLanguage: str,
                      maxLikeCount: int,
-                     sharedItemsFederatedDomains: []) -> str:
+                     sharedItemsFederatedDomains: [],
+                     signingPrivateKeyPem: str) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1333,7 +1341,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -1358,7 +1366,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
                    maxLikeCount: int,
-                   sharedItemsFederatedDomains: []) -> str:
+                   sharedItemsFederatedDomains: [],
+                   signingPrivateKeyPem: str) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1377,7 +1386,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1402,7 +1411,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
                    maxLikeCount: int,
-                   sharedItemsFederatedDomains: []) -> str:
+                   sharedItemsFederatedDomains: [],
+                   signingPrivateKeyPem: str) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1421,7 +1431,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1447,7 +1457,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       textModeBanner: str,
                       accessKeys: {}, systemLanguage: str,
                       maxLikeCount: int,
-                      sharedItemsFederatedDomains: []) -> str:
+                      sharedItemsFederatedDomains: [],
+                      signingPrivateKeyPem: str) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1466,7 +1477,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1491,7 +1502,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   textModeBanner: str,
                   accessKeys: {}, systemLanguage: str,
                   maxLikeCount: int,
-                  sharedItemsFederatedDomains: []) -> str:
+                  sharedItemsFederatedDomains: [],
+                  signingPrivateKeyPem: str) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1510,7 +1522,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1535,7 +1547,8 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
                maxLikeCount: int,
-               sharedItemsFederatedDomains: []) -> str:
+               sharedItemsFederatedDomains: [],
+               signingPrivateKeyPem: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1555,4 +1568,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)

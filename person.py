@@ -1216,7 +1216,8 @@ def _detectUsersPath(url: str) -> str:
 
 
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
-                 debug: bool, quiet: bool = False) -> ({}, {}):
+                 debug: bool, quiet: bool,
+                 signingPrivateKeyPem: str) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1307,7 +1308,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
                                 None, __version__, debug,
-                                groupAccount)
+                                groupAccount, signingPrivateKeyPem)
     if not wfRequest:
         if not quiet:
             print('getActorJson Unable to webfinger ' + handle)
@@ -1361,7 +1362,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             'Accept': headerMimeType + '; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(session, personUrl, asHeader, None,
+            getJson(signingPrivateKeyPem, session, personUrl, asHeader, None,
                     debug, __version__, httpPrefix, hostDomain, 20, quiet)
         if personJson:
             if not quiet:

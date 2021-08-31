@@ -26,7 +26,8 @@ def manualDenyFollowRequest(session, baseDir: str,
                             sendThreads: [], postLog: [],
                             cachedWebfingers: {}, personCache: {},
                             debug: bool,
-                            projectVersion: str) -> None:
+                            projectVersion: str,
+                            signingPrivateKeyPem: str) -> None:
     """Manually deny a follow request
     """
     accountsDir = acctDir(baseDir, nickname, domain)
@@ -60,7 +61,8 @@ def manualDenyFollowRequest(session, baseDir: str,
                            federationList,
                            sendThreads, postLog,
                            cachedWebfingers, personCache,
-                           debug, projectVersion)
+                           debug, projectVersion,
+                           signingPrivateKeyPem)
 
     print('Follow request from ' + denyHandle + ' was denied.')
 
@@ -87,7 +89,8 @@ def manualApproveFollowRequest(session, baseDir: str,
                                sendThreads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
                                debug: bool,
-                               projectVersion: str) -> None:
+                               projectVersion: str,
+                               signingPrivateKeyPem: str) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -176,7 +179,8 @@ def manualApproveFollowRequest(session, baseDir: str,
                                                    cachedWebfingers,
                                                    personCache,
                                                    debug,
-                                                   projectVersion, False)
+                                                   projectVersion, False,
+                                                   signingPrivateKeyPem)
                     updateApprovedFollowers = True
                 else:
                     # this isn't the approved follow so it will remain

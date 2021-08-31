@@ -623,7 +623,8 @@ class PubServer(BaseHTTPRequestHandler):
             getPersonPubKey(self.server.baseDir, self.server.session, keyId,
                             self.server.personCache, self.server.debug,
                             __version__, self.server.httpPrefix,
-                            self.server.domain, self.server.onionDomain)
+                            self.server.domain, self.server.onionDomain,
+                            self.server.signingPrivateKeyPem)
         if not pubKey:
             if self.server.debug:
                 print('DEBUG: Authenticated fetch failed to ' +
@@ -1171,7 +1172,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    city, self.server.systemLanguage,
                                    self.server.sharedItemsFederatedDomains,
                                    self.server.sharedItemFederationTokens,
-                                   self.server.lowBandwidth)
+                                   self.server.lowBandwidth,
+                                   self.server.signingPrivateKeyPem)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -1777,7 +1779,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port,
                                             searchHandle,
                                             self.server.debug,
-                                            self.server.systemLanguage)
+                                            self.server.systemLanguage,
+                                            self.server.signingPrivateKeyPem)
                     else:
                         msg = \
                             htmlModerationInfo(self.server.cssCache,
@@ -2420,6 +2423,7 @@ class PubServer(BaseHTTPRequestHandler):
             if isModerator(self.server.baseDir, chooserNickname):
                 if debug:
                     print('Showing info for ' + optionsActor)
+                signingPrivateKeyPem = self.server.signingPrivateKeyPem
                 msg = \
                     htmlAccountInfo(self.server.cssCache,
                                     self.server.translate,
@@ -2430,7 +2434,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.port,
                                     optionsActor,
                                     self.server.debug,
-                                    self.server.systemLanguage).encode('utf-8')
+                                    self.server.systemLanguage,
+                                    signingPrivateKeyPem).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain, False)
@@ -2703,7 +2708,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.cachedWebfingers,
                                   self.server.personCache,
                                   debug,
-                                  self.server.projectVersion)
+                                  self.server.projectVersion,
+                                  self.server.signingPrivateKeyPem)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
@@ -2962,7 +2968,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.allowLocalNetworkAccess,
                                       self.server.themeName,
                                       self.server.systemLanguage,
-                                      self.server.maxLikeCount)
+                                      self.server.maxLikeCount,
+                                      self.server.signingPrivateKeyPem)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
@@ -3018,7 +3025,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.allowLocalNetworkAccess,
                                       self.server.themeName, 'outbox',
                                       self.server.systemLanguage,
-                                      self.server.maxLikeCount)
+                                      self.server.maxLikeCount,
+                                      self.server.signingPrivateKeyPem)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
@@ -3054,7 +3062,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.allowLocalNetworkAccess,
                                       self.server.themeName, 'bookmarks',
                                       self.server.systemLanguage,
-                                      self.server.maxLikeCount)
+                                      self.server.maxLikeCount,
+                                      self.server.signingPrivateKeyPem)
                 if bookmarksStr:
                     msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
@@ -3106,7 +3115,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           baseDir, httpPrefix,
                                           actor,
                                           self.server.personCache,
-                                          None, True)
+                                          None, True,
+                                          self.server.signingPrivateKeyPem)
                     profilePathStr += \
                         '?options=' + actor + ';1;' + avatarUrl
 
@@ -3126,6 +3136,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
+                    signingPrivateKeyPem = \
+                        self.server.signingPrivateKeyPem
                     profileStr = \
                         htmlProfileAfterSearch(self.server.cssCache,
                                                self.server.recentPostsCache,
@@ -3151,7 +3163,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.themeName,
                                                accessKeys,
                                                self.server.systemLanguage,
-                                               self.server.maxLikeCount)
+                                               self.server.maxLikeCount,
+                                               signingPrivateKeyPem)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -6530,7 +6543,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.allowLocalNetworkAccess,
                               self.server.themeName,
                               self.server.systemLanguage,
-                              self.server.maxLikeCount)
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -6685,7 +6699,8 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.personCache,
                            self.server.cachedWebfingers,
                            debug,
-                           self.server.projectVersion)
+                           self.server.projectVersion,
+                           self.server.signingPrivateKeyPem)
         if announceJson:
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('repeat.png'):
@@ -6846,7 +6861,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.cachedWebfingers,
                                        self.server.personCache,
                                        debug,
-                                       self.server.projectVersion)
+                                       self.server.projectVersion,
+                                       self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onionDomain:
@@ -7003,7 +7019,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     debug,
-                                    self.server.projectVersion)
+                                    self.server.projectVersion,
+                                    self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onionDomain:
@@ -7473,7 +7490,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.allowLocalNetworkAccess,
                                   self.server.themeName,
                                   self.server.systemLanguage,
-                                  self.server.maxLikeCount)
+                                  self.server.maxLikeCount,
+                                  self.server.signingPrivateKeyPem)
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
@@ -7683,7 +7701,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.themeName,
                                     self.server.systemLanguage,
-                                    self.server.maxLikeCount)
+                                    self.server.maxLikeCount,
+                                    self.server.signingPrivateKeyPem)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -7772,7 +7791,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allowLocalNetworkAccess,
                                     self.server.themeName,
                                     self.server.systemLanguage,
-                                    self.server.maxLikeCount)
+                                    self.server.maxLikeCount,
+                                    self.server.signingPrivateKeyPem)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -7848,7 +7868,8 @@ class PubServer(BaseHTTPRequestHandler):
                         getSpoofedCity(self.server.city,
                                        baseDir, nickname, domain)
                     msg = \
-                        htmlProfile(self.server.rssIconAtTop,
+                        htmlProfile(self.server.signingPrivateKeyPem,
+                                    self.server.rssIconAtTop,
                                     self.server.cssCache,
                                     iconsAsButtons,
                                     defaultTimeline,
@@ -7951,8 +7972,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                       nickname, domain)
                                 sharedItemsFederatedDomains = \
                                     self.server.sharedItemsFederatedDomains
+                                signingPrivateKeyPem = \
+                                    self.server.signingPrivateKeyPem
                                 msg = \
-                                    htmlProfile(self.server.rssIconAtTop,
+                                    htmlProfile(signingPrivateKeyPem,
+                                                self.server.rssIconAtTop,
                                                 self.server.cssCache,
                                                 iconsAsButtons,
                                                 defaultTimeline,
@@ -8113,7 +8137,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowLocalNetworkAccess,
                                    self.server.themeName,
                                    self.server.systemLanguage,
-                                   self.server.maxLikeCount)
+                                   self.server.maxLikeCount,
+                                   self.server.signingPrivateKeyPem)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -8327,7 +8352,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         accessKeys,
                                         self.server.systemLanguage,
                                         self.server.maxLikeCount,
-                                        sharedItemsFederatedDomains)
+                                        sharedItemsFederatedDomains,
+                                        self.server.signingPrivateKeyPem)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -8468,7 +8494,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys,
                                          self.server.systemLanguage,
                                          self.server.maxLikeCount,
-                                         sharedItemsFederatedDomains)
+                                         sharedItemsFederatedDomains,
+                                         self.server.signingPrivateKeyPem)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8602,7 +8629,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys,
                                          self.server.systemLanguage,
                                          self.server.maxLikeCount,
-                                         sharedItemsFederatedDomains)
+                                         sharedItemsFederatedDomains,
+                                         self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8735,7 +8763,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        accessKeys,
                                        self.server.systemLanguage,
                                        self.server.maxLikeCount,
-                                       self.server.sharedItemsFederatedDomains)
+                                       self.server.sharedItemsFederatedDomains,
+                                       self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8868,7 +8897,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        accessKeys,
                                        self.server.systemLanguage,
                                        self.server.maxLikeCount,
-                                       self.server.sharedItemsFederatedDomains)
+                                       self.server.sharedItemsFederatedDomains,
+                                       self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9010,7 +9040,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       accessKeys,
                                       self.server.systemLanguage,
                                       self.server.maxLikeCount,
-                                      self.server.sharedItemsFederatedDomains)
+                                      self.server.sharedItemsFederatedDomains,
+                                      self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9150,7 +9181,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           accessKeys,
                                           self.server.systemLanguage,
                                           self.server.maxLikeCount,
-                                          sharedItemsFederatedDomains)
+                                          sharedItemsFederatedDomains,
+                                          self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9249,7 +9281,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    accessKeys,
                                    self.server.systemLanguage,
                                    self.server.maxLikeCount,
-                                   self.server.sharedItemsFederatedDomains)
+                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9330,7 +9363,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    accessKeys,
                                    self.server.systemLanguage,
                                    self.server.maxLikeCount,
-                                   self.server.sharedItemsFederatedDomains)
+                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.signingPrivateKeyPem)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9448,7 +9482,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           accessKeys,
                                           self.server.systemLanguage,
                                           self.server.maxLikeCount,
-                                          sharedItemsFederatedDomains)
+                                          sharedItemsFederatedDomains,
+                                          self.server.signingPrivateKeyPem)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -9578,7 +9613,8 @@ class PubServer(BaseHTTPRequestHandler):
                                accessKeys,
                                self.server.systemLanguage,
                                self.server.maxLikeCount,
-                               self.server.sharedItemsFederatedDomains)
+                               self.server.sharedItemsFederatedDomains,
+                               self.server.signingPrivateKeyPem)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -9698,7 +9734,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            accessKeys,
                                            self.server.systemLanguage,
                                            self.server.maxLikeCount,
-                                           sharedItemsFederatedDomains)
+                                           sharedItemsFederatedDomains,
+                                           self.server.signingPrivateKeyPem)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -9790,7 +9827,8 @@ class PubServer(BaseHTTPRequestHandler):
                     city = getSpoofedCity(self.server.city,
                                           baseDir, nickname, domain)
                     msg = \
-                        htmlProfile(self.server.rssIconAtTop,
+                        htmlProfile(self.server.signingPrivateKeyPem,
+                                    self.server.rssIconAtTop,
                                     self.server.cssCache,
                                     self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
@@ -9906,7 +9944,8 @@ class PubServer(BaseHTTPRequestHandler):
                         city = getSpoofedCity(self.server.city,
                                               baseDir, nickname, domain)
                     msg = \
-                        htmlProfile(self.server.rssIconAtTop,
+                        htmlProfile(self.server.signingPrivateKeyPem,
+                                    self.server.rssIconAtTop,
                                     self.server.cssCache,
                                     self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
@@ -10021,7 +10060,8 @@ class PubServer(BaseHTTPRequestHandler):
                         city = getSpoofedCity(self.server.city,
                                               baseDir, nickname, domain)
                     msg = \
-                        htmlProfile(self.server.rssIconAtTop,
+                        htmlProfile(self.server.signingPrivateKeyPem,
+                                    self.server.rssIconAtTop,
                                     self.server.cssCache,
                                     self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
@@ -10160,7 +10200,8 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       baseDir, nickname, domain)
             msg = \
-                htmlProfile(self.server.rssIconAtTop,
+                htmlProfile(self.server.signingPrivateKeyPem,
+                            self.server.rssIconAtTop,
                             self.server.cssCache,
                             self.server.iconsAsButtons,
                             self.server.defaultTimeline,
@@ -13505,7 +13546,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.port,
                                 searchHandle,
                                 self.server.debug,
-                                self.server.systemLanguage)
+                                self.server.systemLanguage,
+                                self.server.signingPrivateKeyPem)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -13540,7 +13582,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.port,
                                 searchHandle,
                                 self.server.debug,
-                                self.server.systemLanguage)
+                                self.server.systemLanguage,
+                                self.server.signingPrivateKeyPem)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -15717,6 +15760,9 @@ def runDaemon(lowBandwidth: bool,
         print('serverAddress: ' + str(serverAddress))
         return False
 
+    # initialize authenticated fetch key
+    httpd.signingPrivateKeyPem = None
+
     httpd.showNodeInfoAccounts = showNodeInfoAccounts
     httpd.showNodeInfoVersion = showNodeInfoVersion
 
@@ -16090,7 +16136,8 @@ def runDaemon(lowBandwidth: bool,
                               verifyAllSignatures,
                               httpd.themeName,
                               httpd.systemLanguage,
-                              httpd.maxLikeCount), daemon=True)
+                              httpd.maxLikeCount,
+                              httpd.signingPrivateKeyPem), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
@@ -16120,6 +16167,17 @@ def runDaemon(lowBandwidth: bool,
 
     print('Adding hashtag categories for language ' + httpd.systemLanguage)
     loadHashtagCategories(baseDir, httpd.systemLanguage)
+
+    # signing key used for authorized fetch
+    # this is the instance actor private key
+    instanceActorPrivateKeyFilename = \
+        baseDir + '/keys/private/inbox@' + domain + '.key'
+    if not os.path.isfile(instanceActorPrivateKeyFilename):
+        print('ERROR: no instance actor private key for authorized fetch ' +
+              instanceActorPrivateKeyFilename)
+        return
+    with open(instanceActorPrivateKeyFilename) as fp:
+        httpd.signingPrivateKeyPem = fp.read()
 
     if not unitTest:
         print('Creating inbox queue watchdog')

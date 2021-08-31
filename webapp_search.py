@@ -575,7 +575,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       allowLocalNetworkAccess: bool,
                       themeName: str, boxName: str,
                       systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int,
+                      signingPrivateKeyPem: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -641,7 +642,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         showIndividualPostIcons = True
         allowDeletion = False
         postStr = \
-            individualPostAsHtml(True, recentPostsCache,
+            individualPostAsHtml(signingPrivateKeyPem,
+                                 True, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
                                  baseDir, session, cachedWebfingers,
@@ -680,7 +682,8 @@ def htmlHashtagSearch(cssCache: {},
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int,
+                      signingPrivateKeyPem: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -816,7 +819,8 @@ def htmlHashtagSearch(cssCache: {},
         avatarUrl = None
         showAvatarOptions = True
         postStr = \
-            individualPostAsHtml(allowDownloads, recentPostsCache,
+            individualPostAsHtml(signingPrivateKeyPem,
+                                 allowDownloads, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
                                  baseDir, session, cachedWebfingers,
