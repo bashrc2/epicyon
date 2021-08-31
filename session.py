@@ -175,7 +175,6 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     nickname = domain
 
 #    if debug:
-    print('Signed GET privateKeyPem: ' + signingPrivateKeyPem)
     print('Signed GET nickname: ' + nickname)
     print('Signed GET domain: ' + domain + ' ' + str(port))
     print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
