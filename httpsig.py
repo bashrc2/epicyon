@@ -49,7 +49,11 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
 
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-    keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
+    if nickname != domain:
+        keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
+    else:
+        # instance actor
+        keyID = httpPrefix + '://' + domain + '/actor#main-key'
     if not messageBodyJsonStr:
         headers = {
             '(request-target)': f'post {path}',
