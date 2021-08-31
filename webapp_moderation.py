@@ -137,7 +137,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     # get a list of any blocked following
     followingList = \
-        downloadFollowCollection('following', session,
+        downloadFollowCollection(signingPrivateKeyPem,
+                                 'following', session,
                                  httpPrefix, searchActor, 1, 5)
     blockedFollowing = []
     for followingActor in followingList:
