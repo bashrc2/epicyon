@@ -267,6 +267,11 @@ def webfingerLookup(path: str, baseDir: str,
         if onionDomain in handle:
             handle = handle.replace(onionDomain, domain)
             onionify = True
+    # instance actor
+    if handle.startswith('actor@'):
+        handle = handle.replace('actor@', 'inbox@', 1)
+    elif handle.startswith('Actor@'):
+        handle = handle.replace('Actor@', 'inbox@', 1)
     filename = baseDir + '/wfendpoints/' + handle + '.json'
     if debug:
         print('DEBUG: WEBFINGER filename ' + filename)
