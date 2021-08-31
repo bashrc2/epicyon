@@ -365,7 +365,7 @@ def _testHttpsigBase(withDigest):
         headers = {
             'host': headersDomain,
             'date': dateStr,
-            'content-type': 'application/json'
+            'accept': 'application/json'
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
@@ -5362,6 +5362,7 @@ def _translateOntology() -> None:
 
 def runAllTests():
     print('Running tests...')
+    _testHttpsig()
     updateDefaultThemesList(os.getcwd())
     _translateOntology()
     _testGetPriceFromString()

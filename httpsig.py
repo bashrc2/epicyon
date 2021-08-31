@@ -59,7 +59,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
             '(request-target)': f'post {path}',
             'host': toDomain,
             'date': dateStr,
-            'content-type': 'application/json'
+            'accept': 'application/json'
         }
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
