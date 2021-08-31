@@ -10271,6 +10271,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Instance actor requested by ' + callingDomain)
         if self._requestHTTP():
+            self._404()
             return False
         actorJson = personLookup(domain, path, baseDir)
         if not actorJson:
