@@ -10258,6 +10258,66 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
+    def _showInstanceActor(self, callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str,
+                           enableSharedInbox: bool) -> bool:
+        """Shows the instance actor
+        """
+        actorJson = personLookup(domain, path, baseDir)
+        if not actorJson:
+            self._404()
+            return False
+        acceptStr = self.headers['Accept']
+        if onionDomain and callingDomain.endswith('.onion'):
+            actorDomainUrl = 'http://' + onionDomain
+        elif i2pDomain and callingDomain.endswith('.i2p'):
+            actorDomainUrl = 'http://' + i2pDomain
+        else:
+            actorDomainUrl = httpPrefix + '://' + domainFull
+        actorUrl = actorDomainUrl + '/users/Actor'
+        del actorJson['icon']
+        del actorJson['image']
+        actorJson['endpoints'] = {}
+        if enableSharedInbox:
+            actorJson['endpoints'] = {
+                'sharedInbox': actorDomainUrl + '/inbox'
+            }
+        actorJson['name'] = 'ACTOR'
+        actorJson['preferredUsername'] = 'Actor'
+        actorJson['id'] = actorUrl
+        actorJson['publicKey']['id'] = actorUrl + '#main-key'
+        actorJson['publicKey']['owner'] = actorUrl
+        actorJson['url'] = actorUrl
+        actorJson['inbox'] = actorUrl + '/inbox'
+        actorJson['followers'] = actorUrl + '/followers'
+        actorJson['following'] = actorUrl + '/following'
+        msgStr = json.dumps(actorJson, ensure_ascii=False)
+        if onionDomain and callingDomain.endswith('.onion'):
+            msgStr = msgStr.replace(httpPrefix + '://' + domainFull,
+                                    'http://' + onionDomain)
+        elif i2pDomain and callingDomain.endswith('.i2p'):
+            msgStr = msgStr.replace(httpPrefix + '://' + domainFull,
+                                    'http://' + i2pDomain)
+        msg = msgStr.encode('utf-8')
+        msglen = len(msg)
+        if 'application/ld+json' in acceptStr:
+            self._set_headers('application/ld+json', msglen,
+                              cookie, callingDomain, False)
+        elif 'application/jrd+json' in acceptStr:
+            self._set_headers('application/jrd+json', msglen,
+                              cookie, callingDomain, False)
+        else:
+            self._set_headers('application/activity+json', msglen,
+                              cookie, callingDomain, False)
+        self._write(msg)
+        self.server.GETbusy = False
+        return True
+
     def _showBlogPage(self, authorized: bool,
                       callingDomain: str, path: str,
                       baseDir: str, httpPrefix: str,
@@ -11418,11 +11478,32 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'hasAccept', 'fonts')
 
-        # treat shared inbox paths consistently
-        if self.path == '/sharedInbox' or \
-           self.path == '/users/inbox' or \
-           self.path == '/actor/inbox' or \
-           self.path == '/users/' + self.server.domain:
+        if not htmlGET and \
+           self.path == '/actor' or \
+           self.path == '/users/actor' or \
+           self.path == '/Actor' or \
+           self.path == '/users/Actor':
+            self.path = '/users/inbox'
+            if self._showInstanceActor(callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType,
+                                       cookie, self.server.debug,
+                                       self.server.enableSharedInbox):
+                return
+            else:
+                self._404()
+                return
+        elif self.path == '/sharedInbox' or \
+             self.path == '/users/inbox' or \
+             self.path == '/actor/inbox' or \
+             self.path == '/users/' + self.server.domain:
             # if shared inbox is not enabled
             if not self.server.enableSharedInbox:
                 self._503()
