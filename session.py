@@ -139,7 +139,7 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
 def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                    sessionParams: {}, timeoutSec: int,
                    signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
-    """Authorized fetch
+    """Authorized fetch - a signed version of GET
     """
     if not domainFull:
         if debug:
@@ -180,9 +180,12 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
     print('Signed GET url: ' + url)
     print('Signed GET httpPrefix: ' + httpPrefix)
+    messageStr = ''
+    withDigest = True
     signatureHeaderJson = \
         createSignedHeader(signingPrivateKeyPem, nickname, domain, port,
-                           toDomain, toPort, url, httpPrefix, False, '')
+                           toDomain, toPort, url, httpPrefix, withDigest,
+                           messageStr)
     print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     for key, value in signatureHeaderJson.items():
         if key == 'Accept' or key == 'User-Agent':
