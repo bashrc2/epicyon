@@ -718,7 +718,7 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
     isSharedInbox = False
     if path == '/inbox' or path == '/users/inbox' or path == '/sharedInbox':
         # shared inbox actor on @domain@domain
-        path = '/users/' + domain
+        path = '/users/inbox'
         isSharedInbox = True
     else:
         notPersonLookup = ('/inbox', '/outbox', '/outboxarchive',

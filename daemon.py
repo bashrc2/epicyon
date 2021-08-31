@@ -10268,7 +10268,8 @@ class PubServer(BaseHTTPRequestHandler):
                            enableSharedInbox: bool) -> bool:
         """Shows the instance actor
         """
-        print('Instance actor requested by ' + callingDomain)
+        if debug:
+            print('Instance actor requested by ' + callingDomain)
         actorJson = personLookup(domain, path, baseDir)
         if not actorJson:
             print('ERROR: no instance actor found')
@@ -10282,8 +10283,10 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             actorDomainUrl = httpPrefix + '://' + domainFull
         actorUrl = actorDomainUrl + '/users/Actor'
-        del actorJson['icon']
-        del actorJson['image']
+        removeFields = ('icon', 'image', 'tts', 'shares')
+        for r in removeFields:
+            if actorJson.get(r):
+                del actorJson[r]
         actorJson['endpoints'] = {}
         if enableSharedInbox:
             actorJson['endpoints'] = {
@@ -11062,7 +11065,6 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):
-        print('actor test 0: ' + self.path)
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
             callingDomain = decodedHost(self.headers['Host'])
@@ -11080,12 +11082,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        print('actor test 1: ' + self.path)
         if self._blockedUserAgent(callingDomain):
             self._400()
             return
 
-        print('actor test 2: ' + self.path)
         GETstartTime = time.time()
         GETtimings = {}
 
@@ -11100,7 +11100,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'start', '_nodeinfo[callingDomain]')
 
-        print('actor test 3: ' + self.path)
         if self.path == '/logout':
             if not self.server.newsInstance:
                 msg = \
@@ -11157,13 +11156,12 @@ class PubServer(BaseHTTPRequestHandler):
                                           '/users/' + nickname + '/statuses/')
 
         # instance actor
-        print('actor test 4: ' + self.path)
         if self.path == '/actor' or \
            self.path == '/users/actor' or \
            self.path == '/Actor' or \
            self.path == '/users/Actor':
             self.path = '/users/inbox'
-            print('actor test 4: ' + self.path)
+            print('actor test 1: ' + self.path)
             if self._showInstanceActor(callingDomain, self.path,
                                        self.server.baseDir,
                                        self.server.httpPrefix,
@@ -11176,10 +11174,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.proxyType,
                                        None, self.server.debug,
                                        self.server.enableSharedInbox):
-                print('actor test success')
+                print('actor test 2: ' + self.path)
                 return
             else:
-                print('actor test failed')
+                print('actor test 3: ' + self.path)
                 self._404()
                 return
 

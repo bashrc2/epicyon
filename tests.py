@@ -1444,6 +1444,25 @@ def testSharedItemsFederation():
     assert ctr <= 60
     time.sleep(1)
 
+    signingPrivateKeyPem = None
+    sessionClient = createSession(proxyType)
+
+    # Get Bob's instance actor
+    print('\n\n*********************************************************')
+    print("Test Bob's instance actor")
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    testHeaders = {
+        'host': bobAddress,
+        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    }
+    bobInstanceActorJson = \
+        getJson(signingPrivateKeyPem, sessionClient,
+                'http://' + bobAddress + '/@actor', testHeaders, {}, True,                
+                __version__, 'http', 'somedomain.or.other', 10, True)
+    assert bobInstanceActorJson
+    pprint(bobInstanceActorJson)
+    assert bobInstanceActorJson['name'] == 'ACTOR'
+
     # In the beginning all was calm and there were no follows
 
     print('\n\n*********************************************************')
@@ -1469,7 +1488,6 @@ def testSharedItemsFederation():
     aliceCachedWebfingers = {}
     alicePostLog = []
     bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
-    signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
                           'alice', aliceDomain, alicePort, httpPrefix,
@@ -1520,7 +1538,6 @@ def testSharedItemsFederation():
     assert os.path.isfile(bobDir + '/ontology/foodTypes.json')
     assert os.path.isfile(bobDir + '/ontology/toolTypes.json')
     assert os.path.isfile(bobDir + '/ontology/clothesTypes.json')
-    sessionBob = createSession(proxyType)
     sharedItemName = 'cheddar'
     sharedItemDescription = 'Some cheese'
     sharedItemImageFilename = 'logo.png'
@@ -1532,6 +1549,7 @@ def testSharedItemsFederation():
     sharedItemPrice = "1.30"
     sharedItemCurrency = "EUR"
     signingPrivateKeyPem = None
+    sessionBob = createSession(proxyType)
     shareJson = \
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
