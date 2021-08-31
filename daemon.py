@@ -10283,7 +10283,8 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             actorDomainUrl = httpPrefix + '://' + domainFull
         actorUrl = actorDomainUrl + '/users/Actor'
-        removeFields = ('icon', 'image', 'tts', 'shares')
+        removeFields = ('icon', 'image', 'tts', 'shares',
+                        'alsoKnownAs', 'hasOccupation', 'featured')
         for r in removeFields:
             if actorJson.get(r):
                 del actorJson[r]
@@ -10295,6 +10296,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorJson['name'] = 'ACTOR'
         actorJson['preferredUsername'] = 'Actor'
         actorJson['id'] = actorUrl
+        actorJson['summary'] = 'Instance Actor'
         actorJson['publicKey']['id'] = actorUrl + '#main-key'
         actorJson['publicKey']['owner'] = actorUrl
         actorJson['url'] = actorUrl
