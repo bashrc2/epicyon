@@ -174,20 +174,22 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     # instance actor
     nickname = domain
 
-    if debug:
-        print('Signed GET privateKeyPem: ' + signingPrivateKeyPem)
-        print('Signed GET nickname: ' + nickname)
-        print('Signed GET domain: ' + domain + ' ' + str(port))
-        print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
-        print('Signed GET url: ' + url)
-        print('Signed GET httpPrefix: ' + httpPrefix)
+#    if debug:
+    print('Signed GET privateKeyPem: ' + signingPrivateKeyPem)
+    print('Signed GET nickname: ' + nickname)
+    print('Signed GET domain: ' + domain + ' ' + str(port))
+    print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
+    print('Signed GET url: ' + url)
+    print('Signed GET httpPrefix: ' + httpPrefix)
     signatureHeaderJson = \
         createSignedHeader(signingPrivateKeyPem, nickname, domain, port,
                            toDomain, toPort, url, httpPrefix, False, '')
+    print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     for key, value in signatureHeaderJson.items():
         if key == 'Accept' or key == 'User-Agent':
             continue
         sessionHeaders[key] = value
+    print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
     return _getJsonRequest(session, url, domainFull, sessionHeaders,
                            sessionParams, timeoutSec, None, quiet, debug)
