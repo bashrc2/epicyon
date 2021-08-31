@@ -10268,8 +10268,10 @@ class PubServer(BaseHTTPRequestHandler):
                            enableSharedInbox: bool) -> bool:
         """Shows the instance actor
         """
+        print('Instance actor requested by ' + callingDomain)
         actorJson = personLookup(domain, path, baseDir)
         if not actorJson:
+            print('ERROR: no instance actor found')
             self._404()
             return False
         acceptStr = self.headers['Accept']
