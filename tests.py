@@ -5362,7 +5362,6 @@ def _translateOntology() -> None:
 
 def runAllTests():
     print('Running tests...')
-    _testHttpsig()
     updateDefaultThemesList(os.getcwd())
     _translateOntology()
     _testGetPriceFromString()
