@@ -11159,6 +11159,29 @@ class PubServer(BaseHTTPRequestHandler):
                         self.path.replace('/users/' + nickname + '/',
                                           '/users/' + nickname + '/statuses/')
 
+        # instance actor
+        if self.path == '/actor' or \
+           self.path == '/users/actor' or \
+           self.path == '/Actor' or \
+           self.path == '/users/Actor':
+            self.path = '/users/inbox'
+            if self._showInstanceActor(callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType,
+                                       None, self.server.debug,
+                                       self.server.enableSharedInbox):
+                return
+            else:
+                self._404()
+                return
+
         # turn off dropdowns on new post screen
         noDropDown = False
         if self.path.endswith('?nodropdown'):
@@ -11461,30 +11484,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'create session', 'hasAccept')
-
-        # instance actor
-        if not httpGET:
-           if self.path == '/actor' or \
-              self.path == '/users/actor' or \
-              self.path == '/Actor' or \
-              self.path == '/users/Actor':
-               self.path = '/users/inbox'
-               if self._showInstanceActor(callingDomain, self.path,
-                                          self.server.baseDir,
-                                          self.server.httpPrefix,
-                                          self.server.domain,
-                                          self.server.domainFull,
-                                          self.server.port,
-                                          self.server.onionDomain,
-                                          self.server.i2pDomain,
-                                          GETstartTime, GETtimings,
-                                          self.server.proxyType,
-                                          None, self.server.debug,
-                                          self.server.enableSharedInbox):
-                   return
-               else:
-                   self._404()
-                   return
 
         # get css
         # Note that this comes before the busy flag to avoid conflicts
