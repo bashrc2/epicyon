@@ -10315,7 +10315,6 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('application/activity+json', msglen,
                               cookie, callingDomain, False)
         self._write(msg)
-        self.server.GETbusy = False
         return True
 
     def _showBlogPage(self, authorized: bool,
