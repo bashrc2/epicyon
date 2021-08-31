@@ -10270,6 +10270,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if debug:
             print('Instance actor requested by ' + callingDomain)
+        if self._requestHTTP():
+            return False
         actorJson = personLookup(domain, path, baseDir)
         if not actorJson:
             print('ERROR: no instance actor found')
