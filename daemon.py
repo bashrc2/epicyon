@@ -11168,7 +11168,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.i2pDomain,
                                        GETstartTime, GETtimings,
                                        self.server.proxyType,
-                                       cookie, self.server.debug,
+                                       None, self.server.debug,
                                        self.server.enableSharedInbox):
                 return
             else:
