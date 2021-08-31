@@ -11062,6 +11062,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):
+        print('actor test 0: ' + self.path)
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
             callingDomain = decodedHost(self.headers['Host'])
@@ -11079,10 +11080,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
+        print('actor test 1: ' + self.path)
         if self._blockedUserAgent(callingDomain):
             self._400()
             return
 
+        print('actor test 2: ' + self.path)
         GETstartTime = time.time()
         GETtimings = {}
 
@@ -11097,6 +11100,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'start', '_nodeinfo[callingDomain]')
 
+        print('actor test 3: ' + self.path)
         if self.path == '/logout':
             if not self.server.newsInstance:
                 msg = \
@@ -11153,13 +11157,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           '/users/' + nickname + '/statuses/')
 
         # instance actor
-        print('actor test 1: ' + self.path)
+        print('actor test 4: ' + self.path)
         if self.path == '/actor' or \
            self.path == '/users/actor' or \
            self.path == '/Actor' or \
            self.path == '/users/Actor':
             self.path = '/users/inbox'
-            print('actor test 2: ' + self.path)
+            print('actor test 4: ' + self.path)
             if self._showInstanceActor(callingDomain, self.path,
                                        self.server.baseDir,
                                        self.server.httpPrefix,
