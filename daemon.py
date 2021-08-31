@@ -11165,7 +11165,6 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/Actor' or \
            self.path == '/users/Actor':
             self.path = '/users/inbox'
-            print('actor test 1: ' + self.path)
             if self._showInstanceActor(callingDomain, self.path,
                                        self.server.baseDir,
                                        self.server.httpPrefix,
@@ -11178,10 +11177,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.proxyType,
                                        None, self.server.debug,
                                        self.server.enableSharedInbox):
-                print('actor test 2: ' + self.path)
                 return
             else:
-                print('actor test 3: ' + self.path)
                 self._404()
                 return
 
