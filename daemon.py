@@ -10296,6 +10296,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorJson['name'] = 'ACTOR'
         actorJson['preferredUsername'] = 'Actor'
         actorJson['id'] = actorUrl
+        actorJson['type'] = 'Person'
         actorJson['summary'] = 'Instance Actor'
         actorJson['publicKey']['id'] = actorUrl + '#main-key'
         actorJson['publicKey']['owner'] = actorUrl
