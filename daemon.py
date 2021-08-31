@@ -907,6 +907,11 @@ class PubServer(BaseHTTPRequestHandler):
     def _hasAccept(self, callingDomain: str) -> bool:
         """Do the http headers have an Accept field?
         """
+        if not self.headers.get('Accept'):
+            if self.headers.get('accept'):
+                print('Upper case Accept')
+                self.headers['Accept'] = self.headers['accept']
+
         if self.headers.get('Accept') or callingDomain.endswith('.b32.i2p'):
             if not self.headers.get('Accept'):
                 self.headers['Accept'] = \

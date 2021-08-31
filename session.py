@@ -191,6 +191,10 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         if key == 'Accept' or key == 'User-Agent':
             continue
         sessionHeaders[key] = value
+    # avoid double accept
+    if sessionHeaders.get('Accept') and sessionHeaders.get('accept'):
+        del sessionHeaders['Accept']
+    sessionHeaders['Origin'] = domainFull
     print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
     return _getJsonRequest(session, url, domainFull, sessionHeaders,
