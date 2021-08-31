@@ -11201,6 +11201,29 @@ class PubServer(BaseHTTPRequestHandler):
                              'favicon.ico')
             return
 
+        # instance actor
+        if self.path == '/actor' or \
+           self.path == '/users/actor' or \
+           self.path == '/Actor' or \
+           self.path == '/users/Actor':
+            self.path = '/users/inbox'
+            if self._showInstanceActor(callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType,
+                                       cookie, self.server.debug,
+                                       self.server.enableSharedInbox):
+                return
+            else:
+                self._404()
+                return
+
         # check authorization
         authorized = self._isAuthorized()
         if self.server.debug:
@@ -11479,32 +11502,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'hasAccept', 'fonts')
 
-        if not htmlGET and \
-           self.path == '/actor' or \
-           self.path == '/users/actor' or \
-           self.path == '/Actor' or \
-           self.path == '/users/Actor':
-            self.path = '/users/inbox'
-            if self._showInstanceActor(callingDomain, self.path,
-                                       self.server.baseDir,
-                                       self.server.httpPrefix,
-                                       self.server.domain,
-                                       self.server.domainFull,
-                                       self.server.port,
-                                       self.server.onionDomain,
-                                       self.server.i2pDomain,
-                                       GETstartTime, GETtimings,
-                                       self.server.proxyType,
-                                       cookie, self.server.debug,
-                                       self.server.enableSharedInbox):
-                return
-            else:
-                self._404()
-                return
-        elif self.path == '/sharedInbox' or \
-             self.path == '/users/inbox' or \
-             self.path == '/actor/inbox' or \
-             self.path == '/users/' + self.server.domain:
+        if self.path == '/sharedInbox' or \
+           self.path == '/users/inbox' or \
+           self.path == '/actor/inbox' or \
+           self.path == '/users/' + self.server.domain:
             # if shared inbox is not enabled
             if not self.server.enableSharedInbox:
                 self._503()
