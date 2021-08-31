@@ -1457,7 +1457,7 @@ def testSharedItemsFederation():
     }
     bobInstanceActorJson = \
         getJson(signingPrivateKeyPem, sessionClient,
-                'http://' + bobAddress + '/@actor', testHeaders, {}, True,                
+                'http://' + bobAddress + '/@actor', testHeaders, {}, True,
                 __version__, 'http', 'somedomain.or.other', 10, True)
     assert bobInstanceActorJson
     pprint(bobInstanceActorJson)

@@ -181,7 +181,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     print('Signed GET url: ' + url)
     print('Signed GET httpPrefix: ' + httpPrefix)
     messageStr = ''
-    withDigest = True
+    withDigest = False
     signatureHeaderJson = \
         createSignedHeader(signingPrivateKeyPem, nickname, domain, port,
                            toDomain, toPort, url, httpPrefix, withDigest,

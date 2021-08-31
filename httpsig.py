@@ -199,7 +199,8 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
         headers = {
             '(request-target)': f'post {path}',
             'host': headerDomain,
-            'date': dateStr
+            'date': dateStr,
+            'accept': contentType
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
