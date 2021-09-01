@@ -161,8 +161,8 @@ thrBob = None
 thrEve = None
 
 
-def _testHttpSigAuthorized():
-    print('testHttpSigAuthorized')
+def _testHttpSignedGET():
+    print('testHttpSignedGET')
 
     boxpath = '"/users/Actor HTTP/1.1"'
     boxpath = "/users/Actor"
@@ -172,15 +172,35 @@ def _testHttpSigAuthorized():
     dateStr = 'Wed, 01 Sep 2021 16:11:10 GMT'
     accept_encoding = 'gzip'
     accept = 'application/activity+json, application/ld+json'
-    signature = 'keyId="https://octodon.social/actor#main-key",algorithm="rsa-sha256",headers="(request-target) host date accept",signature="Fe53PS9A2OSP4x+W/svhAjUKHBvnAR73Ez+H32au7DQklLk08Lvm8alLS7pCor28yfyx+DfZADgq6G1mLLRZo0OOnPFSog7DhdcygLhBUMS0KlT5KVGwUS0twjdiHv4OC83RiCr/ZySBgOv65YLHYmGCi5BIqSZJRkqi8+SLmLGESlNOEzKu+jIxOBYmEEdIpNrDeE5YrFKpfTC3vS2GnxGOo5J/4lB2h+dlUpso+sv5rDz1d1FsqRWK8waV74HUfLV+qbgYRceOTyZIi50vVqLvt9CTQesKZHG3GrrPfaBuvoUbR4MCM3BUvpB7EzL9F17Y+Ea9mo8zjqzZm8HaZQ=="'    
+    signature = \
+        'keyId="https://octodon.social/actor#main-key",' + \
+        'algorithm="rsa-sha256",' + \
+        'headers="(request-target) host date accept",' + \
+        'signature="Fe53PS9A2OSP4x+W/svhA' + \
+        'jUKHBvnAR73Ez+H32au7DQklLk08Lvm8al' + \
+        'LS7pCor28yfyx+DfZADgq6G1mLLRZo0OOn' + \
+        'PFSog7DhdcygLhBUMS0KlT5KVGwUS0tw' + \
+        'jdiHv4OC83RiCr/ZySBgOv65YLHYmGCi5B' + \
+        'IqSZJRkqi8+SLmLGESlNOEzKu+jIxOBY' + \
+        'mEEdIpNrDeE5YrFKpfTC3vS2GnxGOo5J/4' + \
+        'lB2h+dlUpso+sv5rDz1d1FsqRWK8waV7' + \
+        '4HUfLV+qbgYRceOTyZIi50vVqLvt9CTQes' + \
+        'KZHG3GrrPfaBuvoUbR4MCM3BUvpB7EzL' + \
+        '9F17Y+Ea9mo8zjqzZm8HaZQ=="'
     publicKeyPem = \
         '-----BEGIN PUBLIC KEY-----\n' + \
-        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1XT+ov/i4LDYuaXCwh4r\n' + \
-        '2rVfWtnz68wnFx3knwymwtRoAc/SFGzp9ye5ogG1uPcbe7MeirZHhaBICynPlL32\n' + \
-        's9OYootI7MsQWn+vu7azxiXO7qcTPByvGcl0vpLhtT/ApmlMintkRTVXdzBdJVM0\n' + \
-        'UsmYKg6U+IHNL+a1gURHGXep2Ih0BJMh4AaDbaID6jtpJZvbIkYgJ4IJucOe+A3T\n' + \
-        'YPMwkBA84ew+hso+vKQfTunyDInuPQbEzrAzMJXEHS7IpBhdS4/cEox86BoDJ/q0\n' + \
-        'KOEOUpUDniFYWb9k1+9B387OviRDLIcLxNZnf+bNq8d+CwEXY2xGsToBle/q74d8\n' + \
+        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMII' + \
+        'BCgKCAQEA1XT+ov/i4LDYuaXCwh4r\n' + \
+        '2rVfWtnz68wnFx3knwymwtRoAc/SFGzp9ye' + \
+        '5ogG1uPcbe7MeirZHhaBICynPlL32\n' + \
+        's9OYootI7MsQWn+vu7azxiXO7qcTPByvGcl' + \
+        '0vpLhtT/ApmlMintkRTVXdzBdJVM0\n' + \
+        'UsmYKg6U+IHNL+a1gURHGXep2Ih0BJMh4Aa' + \
+        'DbaID6jtpJZvbIkYgJ4IJucOe+A3T\n' + \
+        'YPMwkBA84ew+hso+vKQfTunyDInuPQbEzrA' + \
+        'zMJXEHS7IpBhdS4/cEox86BoDJ/q0\n' + \
+        'KOEOUpUDniFYWb9k1+9B387OviRDLIcLxNZ' + \
+        'nf+bNq8d+CwEXY2xGsToBle/q74d8\n' + \
         'BwIDAQAB\n' + \
         '-----END PUBLIC KEY-----\n'
     headers = {
@@ -197,6 +217,11 @@ def _testHttpSigAuthorized():
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
                              boxpath, True, None,
                              '', debug, True)
+    # Change a single character and the signature should fail
+    headers['date'] = headers['date'].replace(':10', ':11')
+    assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                                 boxpath, True, None,
+                                 '', debug, True)
 
 
 def _testHttpSigNew():
@@ -5400,12 +5425,10 @@ def _translateOntology() -> None:
 
 def runAllTests():
     print('Running tests...')
-    _testHttpSigAuthorized()
     updateDefaultThemesList(os.getcwd())
     _translateOntology()
     _testGetPriceFromString()
     _testFunctions()
-    _testHttpSigAuthorized()
     _testDateConversions()
     _testAuthorizeSharedItems()
     _testValidPassword()
@@ -5461,6 +5484,7 @@ def runAllTests():
     _testAddEmoji()
     _testActorParsing()
     _testHttpsig()
+    _testHttpSignedGET()
     _testHttpSigNew()
     _testCache()
     _testThreads()
