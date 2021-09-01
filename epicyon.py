@@ -883,10 +883,12 @@ if args.json:
     if not args.domain:
         args.domain = getConfigParam(baseDir, 'domain')
     signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
-    if debug and signingPrivateKeyPem:
-        print('Obtained instance actor signing key')
-    else:
-        print('Did not obtain instance actor key for ' + args.domain)
+    if debug:
+        print('baseDir: ' + str(baseDir))
+        if signingPrivateKeyPem:
+            print('Obtained instance actor signing key')
+        else:
+            print('Did not obtain instance actor key for ' + args.domain)
     testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
                        None, debug, __version__, httpPrefix, None)
     pprint(testJson)
@@ -1899,10 +1901,12 @@ if args.actor:
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
     signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
-    if debug and signingPrivateKeyPem:
-        print('Obtained instance actor signing key')
-    else:
-        print('Did not obtain instance actor key for ' + domain)
+    if debug:
+        print('baseDir: ' + str(baseDir))
+        if signingPrivateKeyPem:
+            print('Obtained instance actor signing key')
+        else:
+            print('Did not obtain instance actor key for ' + domain)
     getActorJson(args.domain, args.actor, args.http, args.gnunet,
                  debug, False, signingPrivateKeyPem)
     sys.exit()
