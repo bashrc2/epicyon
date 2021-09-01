@@ -130,19 +130,49 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
     return ctr
 
 
+def _getLocalPrivateKey(baseDir: str, nickname: str, domain: str) -> str:
+    """Returns the private key for a local account
+    """
+    handle = nickname + '@' + domain
+    keyFilename = baseDir + '/keys/private/' + handle.lower() + '.key'
+    if not os.path.isfile(keyFilename):
+        return None
+    with open(keyFilename, 'r') as pemFile:
+        return pemFile.read()
+    return None
+
+
+def getInstanceActorKey(baseDir: str, domain: str) -> str:
+    """Returns the private key for the instance actor used for
+    signing GET posts
+    """
+    return _getLocalPrivateKey(baseDir, 'inbox', domain)
+
+
+def _getLocalPublicKey(baseDir: str, nickname: str, domain: str) -> str:
+    """Returns the public key for a local account
+    """
+    handle = nickname + '@' + domain
+    keyFilename = baseDir + '/keys/public/' + handle.lower() + '.key'
+    if not os.path.isfile(keyFilename):
+        return None
+    with open(keyFilename, 'r') as pemFile:
+        return pemFile.read()
+    return None
+
+
 def _getPersonKey(nickname: str, domain: str, baseDir: str,
                   keyType: str = 'public', debug: bool = False):
     """Returns the public or private key of a person
     """
-    handle = nickname + '@' + domain
-    keyFilename = baseDir + '/keys/' + keyType + '/' + handle.lower() + '.key'
-    if not os.path.isfile(keyFilename):
+    if keyType == 'private':
+        keyPem = _getLocalPrivateKey(baseDir, nickname, domain)
+    else:
+        keyPem = _getLocalPublicKey(baseDir, nickname, domain)
+    if not keyPem:
         if debug:
-            print('DEBUG: private key file not found: ' + keyFilename)
+            print('DEBUG: ' + keyType + ' key file not found')
         return ''
-    keyPem = ''
-    with open(keyFilename, 'r') as pemFile:
-        keyPem = pemFile.read()
     if len(keyPem) < 20:
         if debug:
             print('DEBUG: private key was too short: ' + keyPem)
