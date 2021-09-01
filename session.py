@@ -194,13 +194,15 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                            messageStr)
     print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     for key, value in signatureHeaderJson.items():
-        if key == 'Accept' or key == 'User-Agent':
+        if key == 'Accept' or key == 'User-Agent' or \
+           key.lower() == 'content-length':
             continue
         sessionHeaders[key] = value
     # avoid double accept
     if sessionHeaders.get('Accept') and sessionHeaders.get('accept'):
         del sessionHeaders['Accept']
     sessionHeaders['Origin'] = domainFull
+    sessionHeaders['Content-Length'] = '0'
     print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
     return _getJsonRequest(session, url, domainFull, sessionHeaders,
