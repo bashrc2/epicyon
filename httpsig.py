@@ -310,6 +310,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
+    algorithm = 'rsa-sha256'
     for signedHeader in signatureDict[requestTargetKey].split(fieldSep2):
         signedHeader = signedHeader.strip()
         if debug:
@@ -328,6 +329,9 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             #     if ')' in appendStr:
             #         appendStr = appendStr.split(')')[0]
             signedHeaderList.append(appendStr)
+        elif signedHeader == 'algorithm':
+            if headers.get(signedHeader):
+                algorithm = headers[signedHeader]
         elif signedHeader == 'digest':
             if messageBodyDigest:
                 bodyDigest = messageBodyDigest
@@ -402,7 +406,6 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         print('DEBUG: signedHeaderList: ' + str(signedHeaderList))
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
-    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
 
     # Get the signature, verify with public key, return result
     signature = None
@@ -419,12 +422,19 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         # Original Mastodon signature
         signature = base64.b64decode(signatureDict['signature'])
 
+    # If extra signing algorithms need to be added then do it here
+    if algorithm == 'rsa-sha256':
+        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+        paddingStr = padding.PKCS1v15()
+        alg = hazutils.Prehashed(hashes.SHA256())
+    else:
+        print('Unknown http signature algorithm: ' + algorithm)
+        paddingStr = padding.PKCS1v15()
+        alg = hazutils.Prehashed(hashes.SHA256())
+        headerDigest = ''
+
     try:
-        pubkey.verify(
-            signature,
-            headerDigest,
-            padding.PKCS1v15(),
-            hazutils.Prehashed(hashes.SHA256()))
+        pubkey.verify(signature, headerDigest, paddingStr, alg)
         return True
     except BaseException:
         if debug:
