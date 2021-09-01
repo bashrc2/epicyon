@@ -338,19 +338,17 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             if headers.get(signedHeader):
                 appendStr = f'content-length: {headers[signedHeader]}'
                 signedHeaderList.append(appendStr)
+            elif headers.get('Content-Length'):
+                contentLength = headers['Content-Length']
+                signedHeaderList.append(f'content-length: {contentLength}')
+            elif headers.get('Content-length'):
+                contentLength = headers['Content-length']
+                appendStr = f'content-length: {contentLength}'
+                signedHeaderList.append(appendStr)
             else:
-                if headers.get('Content-Length'):
-                    contentLength = headers['Content-Length']
-                    signedHeaderList.append(f'content-length: {contentLength}')
-                else:
-                    if headers.get('Content-length'):
-                        contentLength = headers['Content-length']
-                        appendStr = f'content-length: {contentLength}'
-                        signedHeaderList.append(appendStr)
-                    else:
-                        if debug:
-                            print('DEBUG: verifyPostHeaders ' + signedHeader +
-                                  ' not found in ' + str(headers))
+                if debug:
+                    print('DEBUG: verifyPostHeaders ' + signedHeader +
+                          ' not found in ' + str(headers))
         else:
             if headers.get(signedHeader):
                 if signedHeader == 'date' and not noRecencyCheck:
