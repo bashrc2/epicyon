@@ -201,10 +201,10 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
     if not withDigest:
         contentType = 'application/activity+json, application/ld+json'
         headers = {
-            '(request-target)': f'GET {path}',
-            'Host': headerDomain,
-            'Date': dateStr,
-            'Accept': contentType
+            '(request-target)': f'get {path}',
+            'host': headerDomain,
+            'date': dateStr,
+            'accept': contentType
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
