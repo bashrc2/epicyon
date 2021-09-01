@@ -163,35 +163,40 @@ thrEve = None
 
 def _testHttpSigAuthorized():
     print('testHttpSigAuthorized')
+
+    boxpath = '"/users/Actor HTTP/1.1"'
+    boxpath = "/users/Actor"
+    host = "epicyon.libreserver.org"
+    content_length = "0"
+    user_agent = "http.rb/4.4.1 (Mastodon/3.4.1; +https://octodon.social/)"
+    dateStr = 'Wed, 01 Sep 2021 16:11:10 GMT'
+    accept_encoding = 'gzip'
+    accept = 'application/activity+json, application/ld+json'
+    signature = 'keyId="https://octodon.social/actor#main-key",algorithm="rsa-sha256",headers="(request-target) host date accept",signature="Fe53PS9A2OSP4x+W/svhAjUKHBvnAR73Ez+H32au7DQklLk08Lvm8alLS7pCor28yfyx+DfZADgq6G1mLLRZo0OOnPFSog7DhdcygLhBUMS0KlT5KVGwUS0twjdiHv4OC83RiCr/ZySBgOv65YLHYmGCi5BIqSZJRkqi8+SLmLGESlNOEzKu+jIxOBYmEEdIpNrDeE5YrFKpfTC3vS2GnxGOo5J/4lB2h+dlUpso+sv5rDz1d1FsqRWK8waV74HUfLV+qbgYRceOTyZIi50vVqLvt9CTQesKZHG3GrrPfaBuvoUbR4MCM3BUvpB7EzL9F17Y+Ea9mo8zjqzZm8HaZQ=="'    
     publicKeyPem = \
         '-----BEGIN PUBLIC KEY-----\n' + \
-        'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA3PcHF18xQPG4zNKKhkZf\n' + \
-        'rIi0I1vxJc8B7p24SVXSGoO4v5RiASNQYEpov/7orGS9dX93jd0JWkqpdTKnay4X\n' + \
-        'AIHamedcXBPX/7IbwfhV4jtPu+yFA+AGmybKe1z7zQpo4O9LlEGuW6tMR+L16q3/\n' + \
-        'x3nP5/9UPOClG7HbgxvA1UkaS1vllOj6pWBOenfbJNx6m7DmEtWFlBsauPTmHBqY\n' + \
-        '2xfx/cFFS757WlPTA61gYpTqsRiyX5d2IWEyfIwhEJHYeK6EtblA1Pf2L1EjM2bw\n' + \
-        'qx2bgOEzG6ub48aQsTuASjXun39eEgMwNO02BEJXvsGr+fLRx/7xot2u2ekSwt3Z\n' + \
-        'bQKtUWSNbv+o/PV8hXlwp8gMjw/P+SsjbvYwDOFWa+xIvwNIBDkCk0quxokjiRp/\n' + \
-        '800JxHxsuyUk4D5bLy43aveuxMziOjb1Knr8N3Xm7DLnFzpz2SaHSaeeDkFTddEZ\n' + \
-        'uPo8d/vqI09Owremr7ZVvJHSeOzTibfD0xg984pneWP3KGzHvXQF2MWPSM7SckHl\n' + \
-        'eTADO03FGdL8nMO1kV3EIKFudNBjIVZYIZFyYHLff8sw4fILK2/TShf+3jdjOPo+\n' + \
-        'R4zgBlH2EBd9HvYl6vE1nl43EG4G4UXdv1UTfKKnVEUbIiJ4u6AsEYD6aOCbGp9D\n' + \
-        '3+CJDwridP1XwCLPoUChmAECAwEAAQ==\n' + \
+        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1XT+ov/i4LDYuaXCwh4r\n' + \
+        '2rVfWtnz68wnFx3knwymwtRoAc/SFGzp9ye5ogG1uPcbe7MeirZHhaBICynPlL32\n' + \
+        's9OYootI7MsQWn+vu7azxiXO7qcTPByvGcl0vpLhtT/ApmlMintkRTVXdzBdJVM0\n' + \
+        'UsmYKg6U+IHNL+a1gURHGXep2Ih0BJMh4AaDbaID6jtpJZvbIkYgJ4IJucOe+A3T\n' + \
+        'YPMwkBA84ew+hso+vKQfTunyDInuPQbEzrAzMJXEHS7IpBhdS4/cEox86BoDJ/q0\n' + \
+        'KOEOUpUDniFYWb9k1+9B387OviRDLIcLxNZnf+bNq8d+CwEXY2xGsToBle/q74d8\n' + \
+        'BwIDAQAB\n' + \
         '-----END PUBLIC KEY-----\n'
-    signature = 'signature: keyId="https://canic.us/friendica#main-key",algorithm="rsa-sha256",headers="(request-target) date host",signature="cm4IV/H2NaxrbMx1JlQd8rOqyqtKokaSBIDQUYJbP64arelpui+BAaYIEEQM2yn06Kp9quTz+hXgchdzUSJTSRFUwp3d2R0mnz7NR9EOt2UdzjSxafTC0bgyQdDHG++Wp8uBEx0MVol5fQjWZrK6JjLn7iF1YpyFC0i2HzY4ZnQjXv4J07t1mpBudqP13F7hkNVSfppRMDnkvd4qxn6zMOgISc/y5l52p/Qe0rbjVwCl1RbH9LFykP6/+Ii62+5VaLh8QjZCDot624P5ZceX9GemsdEoxAc7yLlhhGanpO9Wmel25y0Jg6dOt8CSRDQlAYvCyw7TC16Rm+JSLyS5ikslHaGnXiNnFV41uCHwXcRCBRJ7N7/U5Yd7xQ/UZ8uPBWYlRr/UUPBKFQU/pV6ZsiZkOHmcOy+qbgDZ7FOuemfc6xypf8uH1/MYdZf0P2cvxeViyHHunPyfA0zdYvQFH9KDe2174Wtd+TfC4RkHozY5LVpcrZpOgJFCYjzLjxUx34S6tf/YWonOLz4NxWgx4QfacdTaLirQuSIibT92nRdQIJcEm7JWj8efh6XkDIs54cKMm8Qb5Zk0CfpmM1bGuwJFZ0w7j3D9v/Q/mdYv7so4cG5jgNX6uiVJAp0PbNZkHvyu/T0v6iXAws09Xa2wnfNahyt3uuu/WVtYPlAngG8="'
     headers = {
-        "accept": 'application/activity+json, application/ld+json',
-        "user-agent": "Friendica 'Red Hot Poker' 2021.01-1384; https://canic.us",
-        "host": 'epicyon.libreserver.org',
-        "date": 'Wed, 01 Sep 2021 15:41:51 GMT',
-        "accept-encoding": 'deflate, gzip',
+        "user-agent": user_agent,
+        "content-length": content_length,
+        "host": host,
+        "date": dateStr,
+        "accept": accept,
+        "accept-encoding": accept_encoding,
         "signature": signature
     }
     httpPrefix = 'https'
-    debug = False
+    debug = True
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                             boxpath, False, None,
-                             messageBodyJsonStr, debug, True)
+                             boxpath, True, None,
+                             '', debug, True)
 
 
 def _testHttpSigNew():
@@ -5395,10 +5400,12 @@ def _translateOntology() -> None:
 
 def runAllTests():
     print('Running tests...')
+    _testHttpSigAuthorized()
     updateDefaultThemesList(os.getcwd())
     _translateOntology()
     _testGetPriceFromString()
     _testFunctions()
+    _testHttpSigAuthorized()
     _testDateConversions()
     _testAuthorizeSharedItems()
     _testValidPassword()
