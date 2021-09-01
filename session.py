@@ -194,6 +194,8 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                            messageStr)
     print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     for key, value in signatureHeaderJson.items():
+        if key.startswith('(') or key.startswith('*('):
+            continue
         if key == 'Accept' or key == 'User-Agent' or \
            key.lower() == 'content-length':
             continue
