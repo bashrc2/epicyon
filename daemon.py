@@ -11078,7 +11078,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.headers.get('Signature'):
-            print('Signed GET: ' + str(self.headers))
+            print('Signed HTTP GET: ' + str(self.headers))
 
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
