@@ -198,6 +198,8 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
            key.lower() == 'content-length':
             continue
         sessionHeaders[key.title()] = value
+        if sessionHeaders.get(key.lower()):
+            del sessionHeaders[key.lower()]
     # avoid double accept
     if sessionHeaders.get('Accept') and sessionHeaders.get('accept'):
         sessionHeaders['Accept'] = sessionHeaders['accept']
