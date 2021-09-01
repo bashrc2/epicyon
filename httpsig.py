@@ -56,7 +56,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
         keyID = httpPrefix + '://' + domain + '/actor#main-key'
     if not messageBodyJsonStr:
         headers = {
-            '(request-target)': f'post {path}',
+            '(request-target)': f'get {path}',
             'host': toDomain,
             'date': dateStr,
             'accept': 'application/json'
@@ -201,7 +201,7 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
         headers = {
-            '(request-target)': f'post {path}',
+            '(request-target)': f'get {path}',
             'host': headerDomain,
             'date': dateStr,
             'accept': contentType

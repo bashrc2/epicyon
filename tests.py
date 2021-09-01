@@ -452,20 +452,21 @@ def _testHttpsigBase(withDigest):
                             boxpath, httpPrefix, messageBodyJsonStr)
 
     headers['signature'] = signatureHeader
+    GETmethod = not withDigest
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                             boxpath, False, None,
+                             boxpath, GETmethod, None,
                              messageBodyJsonStr, False)
     if withDigest:
         # everything correct except for content-length
         headers['content-length'] = str(contentLength + 2)
         assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                                 boxpath, False, None,
+                                 boxpath, GETmethod, None,
                                  messageBodyJsonStr, False) is False
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                             '/parambulator' + boxpath, False, None,
+                             '/parambulator' + boxpath, GETmethod, None,
                              messageBodyJsonStr, False) is False
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                             boxpath, True, None,
+                             boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
     if not withDigest:
         # fake domain
@@ -490,7 +491,7 @@ def _testHttpsigBase(withDigest):
         }
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                             boxpath, True, None,
+                             boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
 
     os.chdir(baseDir)

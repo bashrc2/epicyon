@@ -184,9 +184,13 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     print('Signed GET httpPrefix: ' + httpPrefix)
     messageStr = ''
     withDigest = False
+    if toDomainFull + '/' in url:
+        path = '/' + url.split(toDomainFull + '/')[1]
+    else:
+        path = '/actor'
     signatureHeaderJson = \
         createSignedHeader(signingPrivateKeyPem, nickname, domain, port,
-                           toDomain, toPort, url, httpPrefix, withDigest,
+                           toDomain, toPort, path, httpPrefix, withDigest,
                            messageStr)
     print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     for key, value in signatureHeaderJson.items():
