@@ -99,7 +99,7 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                     print("WARN: getJson requires secure fetch url: " + url)
                 else:
                     if debug:
-                        print('Using signed GET')
+                        print('Using signed GET for domain: ' + domainFull)
                     return _getJsonSigned(session, url, domainFull,
                                           sessionHeaders, sessionParams,
                                           timeoutSec, signingPrivateKeyPem,

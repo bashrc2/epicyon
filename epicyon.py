@@ -890,7 +890,7 @@ if args.json:
         else:
             print('Did not obtain instance actor key for ' + args.domain)
     testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
-                       None, debug, __version__, httpPrefix, None)
+                       None, debug, __version__, httpPrefix, args.domain)
     pprint(testJson)
     sys.exit()
 
@@ -1907,7 +1907,7 @@ if args.actor:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    getActorJson(args.domain, args.actor, args.http, args.gnunet,
+    getActorJson(domain, args.actor, args.http, args.gnunet,
                  debug, False, signingPrivateKeyPem)
     sys.exit()
 
