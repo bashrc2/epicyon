@@ -71,6 +71,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import getInstanceActorKey
 from posts import removePostInteractions
 from posts import outboxMessageCreateWrap
 from posts import getPinnedPostAsJson
@@ -16272,14 +16273,7 @@ def runDaemon(lowBandwidth: bool,
 
     # signing key used for authorized fetch
     # this is the instance actor private key
-    instanceActorPrivateKeyFilename = \
-        baseDir + '/keys/private/inbox@' + domain + '.key'
-    if not os.path.isfile(instanceActorPrivateKeyFilename):
-        print('ERROR: no instance actor private key for authorized fetch ' +
-              instanceActorPrivateKeyFilename)
-        return
-    with open(instanceActorPrivateKeyFilename) as fp:
-        httpd.signingPrivateKeyPem = fp.read()
+    httpd.signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     if not unitTest:
         print('Creating inbox queue watchdog')
