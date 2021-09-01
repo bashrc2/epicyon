@@ -195,11 +195,11 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
                        messageBodyJsonStr: str) -> {}:
     """Note that the domain is the destination, not the sender
     """
-    contentType = 'application/activity+json'
     headerDomain = getFullDomain(toDomain, toPort)
 
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
+        contentType = 'application/activity+json, application/ld+json'
         headers = {
             '(request-target)': f'get {path}',
             'host': headerDomain,
@@ -211,6 +211,7 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
                             domain, port, toDomain, toPort,
                             path, httpPrefix, None)
     else:
+        contentType = 'application/activity+json'
         bodyDigest = messageContentDigest(messageBodyJsonStr)
         contentLength = len(messageBodyJsonStr)
         headers = {
