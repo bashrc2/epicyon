@@ -8393,7 +8393,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                       'show status done',
                                                       'show inbox')
                     else:
-                        # don't need authenticated fetch here because
+                        # don't need authorized fetch here because
                         # there is already the authorization check
                         msg = json.dumps(inboxFeed, ensure_ascii=False)
                         msg = msg.encode('utf-8')
@@ -8527,7 +8527,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   'show inbox done',
                                                   'show dms')
                     else:
-                        # don't need authenticated fetch here because
+                        # don't need authorized fetch here because
                         # there is already the authorization check
                         msg = json.dumps(inboxDMFeed, ensure_ascii=False)
                         msg = msg.encode('utf-8')
@@ -8662,7 +8662,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show dms done',
                                               'show replies 2')
                 else:
-                    # don't need authenticated fetch here because there is
+                    # don't need authorized fetch here because there is
                     # already the authorization check
                     msg = json.dumps(inboxRepliesFeed,
                                      ensure_ascii=False)
@@ -8796,7 +8796,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show replies 2 done',
                                               'show media 2')
                 else:
-                    # don't need authenticated fetch here because there is
+                    # don't need authorized fetch here because there is
                     # already the authorization check
                     msg = json.dumps(inboxMediaFeed,
                                      ensure_ascii=False)
@@ -8930,7 +8930,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show media 2 done',
                                               'show blogs 2')
                 else:
-                    # don't need authenticated fetch here because there is
+                    # don't need authorized fetch here because there is
                     # already the authorization check
                     msg = json.dumps(inboxBlogsFeed,
                                      ensure_ascii=False)
@@ -9073,7 +9073,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show blogs 2 done',
                                               'show news 2')
                 else:
-                    # don't need authenticated fetch here because there is
+                    # don't need authorized fetch here because there is
                     # already the authorization check
                     msg = json.dumps(inboxNewsFeed,
                                      ensure_ascii=False)
@@ -9214,7 +9214,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show blogs 2 done',
                                               'show news 2')
                 else:
-                    # don't need authenticated fetch here because there is
+                    # don't need authorized fetch here because there is
                     # already the authorization check
                     msg = json.dumps(inboxFeaturesFeed,
                                      ensure_ascii=False)
@@ -9515,7 +9515,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   'show shares 2 done',
                                                   'show bookmarks 2')
                     else:
-                        # don't need authenticated fetch here because
+                        # don't need authorized fetch here because
                         # there is already the authorization check
                         msg = json.dumps(bookmarksFeed,
                                          ensure_ascii=False)
@@ -9767,7 +9767,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   'show outbox done',
                                                   'show moderation')
                     else:
-                        # don't need authenticated fetch here because
+                        # don't need authorized fetch here because
                         # there is already the authorization check
                         msg = json.dumps(moderationFeed,
                                          ensure_ascii=False)
@@ -13882,7 +13882,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   None, callingDomain, False)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'authenticated fetch',
+                                          'authorized fetch',
                                           'arbitrary json')
         else:
             if self.server.debug:
