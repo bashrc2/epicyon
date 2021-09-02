@@ -15879,7 +15879,7 @@ def runDaemon(lowBandwidth: bool,
         print('serverAddress: ' + str(serverAddress))
         return False
 
-    # initialize authenticated fetch key
+    # initialize authorized fetch key
     httpd.signingPrivateKeyPem = None
 
     httpd.showNodeInfoAccounts = showNodeInfoAccounts
