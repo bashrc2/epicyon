@@ -1305,41 +1305,48 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if nickname == 'inbox':
         nickname = domain
 
-    handle = nickname + '@' + domain
-    wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
-                                None, __version__, debug,
-                                groupAccount, signingPrivateKeyPem)
-    if not wfRequest:
-        if not quiet:
-            print('getActorJson Unable to webfinger ' + handle)
-        return None, None
-    if not isinstance(wfRequest, dict):
-        if not quiet:
-            print('getActorJson Webfinger for ' + handle +
-                  ' did not return a dict. ' + str(wfRequest))
-        return None, None
-
-    if not quiet:
-        pprint(wfRequest)
-
     personUrl = None
-    if wfRequest.get('errors'):
-        if not quiet or debug:
-            print('getActorJson wfRequest error: ' +
-                  str(wfRequest['errors']))
-        if hasUsersPath(handle):
-            personUrl = originalActor
-        else:
-            if debug:
-                print('No users path in ' + handle)
+    wfRequest = None
+    if '://' in originalActor and \
+       originalActor.lower().endswith('/actor'):
+        if debug:
+            print(originalActor + ' is an instance actor')
+        personUrl = originalActor
+    else:
+        handle = nickname + '@' + domain
+        wfRequest = webfingerHandle(session, handle,
+                                    httpPrefix, cachedWebfingers,
+                                    None, __version__, debug,
+                                    groupAccount, signingPrivateKeyPem)
+        if not wfRequest:
+            if not quiet:
+                print('getActorJson Unable to webfinger ' + handle)
             return None, None
+        if not isinstance(wfRequest, dict):
+            if not quiet:
+                print('getActorJson Webfinger for ' + handle +
+                      ' did not return a dict. ' + str(wfRequest))
+            return None, None
+
+        if not quiet:
+            pprint(wfRequest)
+
+        if wfRequest.get('errors'):
+            if not quiet or debug:
+                print('getActorJson wfRequest error: ' +
+                      str(wfRequest['errors']))
+            if hasUsersPath(handle):
+                personUrl = originalActor
+            else:
+                if debug:
+                    print('No users path in ' + handle)
+                return None, None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
     headersList = (
         "activity+json", "ld+json", "jrd+json"
     )
-    if not personUrl:
+    if not personUrl and wfRequest:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
         paths = getUserPaths()
