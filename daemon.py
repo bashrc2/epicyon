@@ -497,8 +497,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         agentDomain = None
         agentStr = None
+
         if self.headers.get('User-Agent'):
             agentStr = self.headers['User-Agent']
+        elif self.headers.get('user-agent'):
+            agentStr = self.headers['user-agent']
+
+        if agentStr:
             # is this a web crawler? If so the block it
             agentStrLower = agentStr.lower()
             if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
