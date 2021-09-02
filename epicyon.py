@@ -407,10 +407,10 @@ parser.add_argument("--debug", type=str2bool, nargs='?',
 parser.add_argument("--notificationSounds", type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Play notification sounds")
-parser.add_argument("--authenticatedFetch", type=str2bool, nargs='?',
+parser.add_argument("--authorizedFetch", type=str2bool, nargs='?',
                     const=True, default=False,
-                    help="Enable authentication on GET requests" +
-                    " for json (authenticated fetch)")
+                    help="Enable authorization on GET requests" +
+                    " for json (authorized fetch)")
 parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Skills searches only return " +
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
               args.YTReplacementDomain,
               port, proxyPort, httpPrefix,
               federationList, args.maxMentions,
-              args.maxEmoji, args.authenticatedFetch,
+              args.maxEmoji, args.authorizedFetch,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,

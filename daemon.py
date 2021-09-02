@@ -586,20 +586,28 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
-    def _fetchAuthenticated(self) -> bool:
+    def _authorizedFetch(self) -> bool:
         """http authentication of GET requests for json
         """
-        if not self.server.authenticatedFetch:
+        if not self.server.authorizedFetch:
             return True
+
+        signature = None
+        if self.headers.get('signature'):
+            signature = self.headers['signature']
+        elif self.headers.get('Signature'):
+            signature = self.headers['Signature']
+
         # check that the headers are signed
-        if not self.headers.get('signature'):
+        if not signature:
             if self.server.debug:
-                print('WARN: authenticated fetch, ' +
+                print('WARN: authorized fetch, ' +
                       'GET has no signature in headers')
             return False
-        # get the keyId
+
+        # get the keyId, which is typically the instance actor
         keyId = None
-        signatureParams = self.headers['signature'].split(',')
+        signatureParams = signature.split(',')
         for signatureItem in signatureParams:
             if signatureItem.startswith('keyId='):
                 if '"' in signatureItem:
@@ -607,23 +615,30 @@ class PubServer(BaseHTTPRequestHandler):
                     break
         if not keyId:
             if self.server.debug:
-                print('WARN: authenticated fetch, ' +
+                print('WARN: authorized fetch, ' +
                       'failed to obtain keyId from signature')
             return False
+
+        # remove #main-key
+        if '#' in keyId:
+            keyId = keyId.split('#')[0]
+
         # is the keyId (actor) valid?
         if not urlPermitted(keyId, self.server.federationList):
             if self.server.debug:
                 print('Authorized fetch failed: ' + keyId +
                       ' is not permitted')
             return False
+
         # make sure we have a session
         if not self.server.session:
-            print('DEBUG: creating new session during authenticated fetch')
+            print('DEBUG: creating new session during authorized fetch')
             self.server.session = createSession(self.server.proxyType)
             if not self.server.session:
                 print('ERROR: GET failed to create session during ' +
-                      'authenticated fetch')
+                      'authorized fetch')
                 return False
+
         # obtain the public key
         pubKey = \
             getPersonPubKey(self.server.baseDir, self.server.session, keyId,
@@ -633,21 +648,17 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.signingPrivateKeyPem)
         if not pubKey:
             if self.server.debug:
-                print('DEBUG: Authenticated fetch failed to ' +
+                print('DEBUG: Authorized fetch failed to ' +
                       'obtain public key for ' + keyId)
             return False
-        # it is assumed that there will be no message body on
-        # authenticated fetches and also consequently no digest
-        GETrequestBody = ''
-        GETrequestDigest = None
+
         # verify the GET request without any digest
-        if verifyPostHeaders(self.server.httpPrefix,
-                             pubKey, self.headers,
-                             self.path, True,
-                             GETrequestDigest,
-                             GETrequestBody,
-                             self.server.debug):
+        if verifyPostHeaders(self.server.httpPrefix, pubKey, self.headers,
+                             self.path, True, None, '', self.server.debug):
             return True
+
+        if self.server.debug:
+            print('Authorized fetch failed for ' + keyId)
         return False
 
     def _login_headers(self, fileFormat: str, length: int,
@@ -7720,7 +7731,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain, False)
                 self._write(msg)
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     msg = json.dumps(repliesJson, ensure_ascii=False)
                     msg = msg.encode('utf-8')
                     protocolStr = 'application/json'
@@ -7814,7 +7825,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           'individual post done',
                                           'post replies done')
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     msg = json.dumps(repliesJson,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -7917,7 +7928,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'post replies done',
                                               'show roles')
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     rolesList = getActorRolesList(actorJson)
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
@@ -8025,7 +8036,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'post roles done',
                                                           'show skills')
                         else:
-                            if self._fetchAuthenticated():
+                            if self._authorizedFetch():
                                 actorSkillsList = \
                                     getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
@@ -8161,7 +8172,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       'done',
                                       'show status')
         else:
-            if self._fetchAuthenticated():
+            if self._authorizedFetch():
                 msg = json.dumps(postJsonObject,
                                  ensure_ascii=False)
                 msg = msg.encode('utf-8')
@@ -9635,7 +9646,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           'show events done',
                                           'show outbox')
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     msg = json.dumps(outboxFeed,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -9879,7 +9890,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy = False
                     return True
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     msg = json.dumps(shares,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -9996,7 +10007,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show profile 3')
                     return True
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     msg = json.dumps(following,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -10113,7 +10124,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show profile 4')
                     return True
             else:
-                if self._fetchAuthenticated():
+                if self._authorizedFetch():
                     msg = json.dumps(followers,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -10249,7 +10260,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show profile 4 done',
                                       'show profile posts')
         else:
-            if self._fetchAuthenticated():
+            if self._authorizedFetch():
                 acceptStr = self.headers['Accept']
                 msgStr = json.dumps(actorJson, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
@@ -13846,16 +13857,16 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        if not self._fetchAuthenticated():
+        if not self._authorizedFetch():
             if self.server.debug:
-                print('WARN: Unauthenticated GET')
+                print('WARN: Unauthorized GET')
             self._404()
             self.server.GETbusy = False
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show profile posts done',
-                                  'authenticated fetch')
+                                  'authorized fetch')
 
         # check that the file exists
         filename = self.server.baseDir + self.path
@@ -15829,7 +15840,7 @@ def runDaemon(lowBandwidth: bool,
               httpPrefix: str = 'https',
               fedList: [] = [],
               maxMentions: int = 10, maxEmoji: int = 10,
-              authenticatedFetch: bool = False,
+              authorizedFetch: bool = False,
               proxyType: str = None, maxReplies: int = 64,
               domainMaxPostsPerDay: int = 8640,
               accountMaxPostsPerDay: int = 864,
@@ -16050,7 +16061,7 @@ def runDaemon(lowBandwidth: bool,
     httpd.outboxThread = {}
     httpd.newPostThread = {}
     httpd.projectVersion = projectVersion
-    httpd.authenticatedFetch = authenticatedFetch
+    httpd.authorizedFetch = authorizedFetch
     # max POST size of 30M
     httpd.maxPostLength = 1024 * 1024 * 30
     httpd.maxMediaSize = httpd.maxPostLength
