@@ -133,6 +133,8 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
 def _getLocalPrivateKey(baseDir: str, nickname: str, domain: str) -> str:
     """Returns the private key for a local account
     """
+    if not domain or not nickname:
+        return None
     handle = nickname + '@' + domain
     keyFilename = baseDir + '/keys/private/' + handle.lower() + '.key'
     if not os.path.isfile(keyFilename):
@@ -152,6 +154,8 @@ def getInstanceActorKey(baseDir: str, domain: str) -> str:
 def _getLocalPublicKey(baseDir: str, nickname: str, domain: str) -> str:
     """Returns the public key for a local account
     """
+    if not domain or not nickname:
+        return None
     handle = nickname + '@' + domain
     keyFilename = baseDir + '/keys/public/' + handle.lower() + '.key'
     if not os.path.isfile(keyFilename):
