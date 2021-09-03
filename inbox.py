@@ -1023,7 +1023,15 @@ def _receiveUndoLike(recentPostsCache: {},
                      httpPrefix: str, domain: str, port: int,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
-                     debug: bool) -> bool:
+                     debug: bool,
+                     signingPrivateKeyPem: str,
+                     maxRecentPosts: int, translate: {},
+                     allowDeletion: bool,
+                     YTReplacementDomain: str,
+                     peertubeInstances: [],
+                     allowLocalNetworkAccess: bool,
+                     themeName: str, systemLanguage: str,
+                     maxLikeCount: int) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Undo':
@@ -1073,7 +1081,40 @@ def _receiveUndoLike(recentPostsCache: {},
     undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
                              messageJson['object'],
                              messageJson['actor'], domain, debug)
-    # TODO regenerate the html
+    # regenerate the html
+    likedPostJson = loadJson(postFilename, 0, 1)
+    if likedPostJson:
+        if debug:
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, handleName, domain,
+                                      likedPostJson)
+            print('Unliked post json: ' + str(likedPostJson))
+            print('Unliked post nickname: ' + handleName + ' ' + domain)
+            print('Unliked post cache: ' + str(cachedPostFilename))
+        pageNumber = 1
+        showPublishedDateOnly = False
+        showIndividualPostIcons = True
+        manuallyApproveFollowers = \
+            followerApprovalActive(baseDir, handleName, domain)
+        notDM = not isDM(likedPostJson)
+        individualPostAsHtml(signingPrivateKeyPem, False,
+                             recentPostsCache, maxRecentPosts,
+                             translate, pageNumber, baseDir,
+                             session, cachedWebfingers, personCache,
+                             handleName, domain, port, likedPostJson,
+                             None, True, allowDeletion,
+                             httpPrefix, __version__,
+                             'inbox', YTReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount, notDM,
+                             showIndividualPostIcons,
+                             manuallyApproveFollowers,
+                             False, True, False)
+    else:
+        print('WARN: Unliked post not found: ' + postFilename)
     return True
 
 
@@ -2364,7 +2405,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         personCache,
                         messageJson,
                         federationList,
-                        debug):
+                        debug, signingPrivateKeyPem,
+                        maxRecentPosts, translate,
+                        allowDeletion,
+                        YTReplacementDomain,
+                        peertubeInstances,
+                        allowLocalNetworkAccess,
+                        themeName, systemLanguage,
+                        maxLikeCount):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         return False
