@@ -7144,14 +7144,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   debug)
             if debug:
                 print('Regenerating html post for changed likes collection')
-            pageNumber = 1
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
+                pageNumber = 1
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, True,
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
                                      self.server.translate,
@@ -7288,7 +7288,7 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, True,
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
                                      self.server.translate,
