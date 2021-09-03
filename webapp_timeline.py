@@ -810,6 +810,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                   + boxName + ' ' + str(timelineJson))
             return ''
 
+    useCacheOnly = False
+    if boxName == 'inbox':
+        useCacheOnly = True
+
     if timelineJson:
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
@@ -876,7 +880,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
-                                             False, True)
+                                             False, True, useCacheOnly)
                     _logTimelineTiming(enableTimingLog,
                                        timelineStartTime, boxName, '12')
 

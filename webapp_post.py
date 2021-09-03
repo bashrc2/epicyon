@@ -1118,7 +1118,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          showIcons: bool = False,
                          manuallyApprovesFollowers: bool = False,
                          showPublicOnly: bool = False,
-                         storeToCache: bool = True) -> str:
+                         storeToCache: bool = True,
+                         useCacheOnly: bool = False) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:
@@ -1176,6 +1177,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                 signingPrivateKeyPem)
     if postHtml:
         return postHtml
+    if useCacheOnly:
+        return ''
 
     _logPostTiming(enableTimingLog, postStartTime, '4')
 
