@@ -462,7 +462,8 @@ class PubServer(BaseHTTPRequestHandler):
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
-            if self._postToOutbox(messageJson, __version__, nickname):
+            if self._postToOutbox(messageJson,
+                                  self.server.projectVersion, nickname):
                 postFilename = \
                     locatePost(self.server.baseDir, nickname,
                                self.server.domain, messageId)
@@ -648,7 +649,7 @@ class PubServer(BaseHTTPRequestHandler):
         pubKey = \
             getPersonPubKey(self.server.baseDir, self.server.session, keyId,
                             self.server.personCache, self.server.debug,
-                            __version__, self.server.httpPrefix,
+                            self.server.projectVersion, self.server.httpPrefix,
                             self.server.domain, self.server.onionDomain,
                             self.server.signingPrivateKeyPem)
         if not pubKey:
@@ -1226,7 +1227,8 @@ class PubServer(BaseHTTPRequestHandler):
         print('Creating outbox thread')
         self.server.outboxThread[accountOutboxThreadName] = \
             threadWithTrace(target=self._postToOutbox,
-                            args=(messageJson.copy(), __version__, None),
+                            args=(messageJson.copy(),
+                                  self.server.projectVersion, None),
                             daemon=True)
         print('Starting outbox thread')
         self.server.outboxThread[accountOutboxThreadName].start()
@@ -5683,7 +5685,8 @@ class PubServer(BaseHTTPRequestHandler):
                         }
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
-                                           __version__, nickname)
+                                           self.server.projectVersion,
+                                           nickname)
 
                     # deactivate the account
                     if fields.get('deactivateThisAccount'):
@@ -7747,7 +7750,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.translate, pageNumber,
                                   self.server.session, baseDir,
                                   deleteUrl, httpPrefix,
-                                  __version__, self.server.cachedWebfingers,
+                                  self.server.projectVersion,
+                                  self.server.cachedWebfingers,
                                   self.server.personCache, callingDomain,
                                   self.server.YTReplacementDomain,
                                   self.server.showPublishedDateOnly,
@@ -14508,7 +14512,9 @@ class PubServer(BaseHTTPRequestHandler):
                         pinPost(self.server.baseDir,
                                 nickname, self.server.domain, contentStr)
                         return 1
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domainFull,
@@ -14581,7 +14587,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         refreshNewswire(self.server.baseDir)
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
@@ -14721,7 +14729,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domain,
@@ -14770,7 +14780,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domain,
@@ -14825,7 +14837,9 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     print('Sending new DM to ' +
                           str(messageJson['object']['to']))
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domain,
@@ -14876,7 +14890,9 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     print('DEBUG: new reminder to ' +
                           str(messageJson['object']['to']))
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         return 1
                     else:
                         return -1
@@ -14906,7 +14922,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.systemLanguage,
                                      self.server.lowBandwidth)
                 if messageJson:
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         return 1
                     else:
                         return -1
@@ -14947,7 +14965,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
-                    if self._postToOutbox(messageJson, __version__, nickname):
+                    if self._postToOutbox(messageJson,
+                                          self.server.projectVersion,
+                                          nickname):
                         return 1
                 return -1
             elif postType == 'newshare' or postType == 'newwanted':
@@ -15947,7 +15967,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson, __version__, None):
+            if self._postToOutbox(messageJson,
+                                  self.server.projectVersion, None):
                 if messageJson.get('id'):
                     locnStr = removeIdEnding(messageJson['id'])
                     self.headers['Location'] = locnStr
@@ -16551,7 +16572,7 @@ def runDaemon(lowBandwidth: bool,
     print('Creating expire thread for shared items')
     httpd.thrSharesExpire = \
         threadWithTrace(target=runSharesExpire,
-                        args=(__version__, baseDir), daemon=True)
+                        args=(projectVersion, baseDir), daemon=True)
     if not unitTest:
         httpd.thrSharesExpireWatchdog = \
             threadWithTrace(target=runSharesExpireWatchdog,
