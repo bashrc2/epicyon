@@ -423,6 +423,7 @@ def updateLikesCollection(recentPostsCache: {},
     postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return
+
     # remove any cached version of this post so that the
     # like icon is changed
     removePostFromCache(postJsonObject, recentPostsCache)

@@ -96,6 +96,7 @@ from inbox import runInboxQueue
 from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
+from follow import followerApprovalActive
 from follow import isFollowingActor
 from follow import getFollowingFeed
 from follow import sendFollowRequest
@@ -186,6 +187,7 @@ from webapp_confirm import htmlConfirmFollow
 from webapp_confirm import htmlConfirmUnfollow
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
+from webapp_post import individualPostAsHtml
 from webapp_profile import htmlEditProfile
 from webapp_profile import htmlProfileAfterSearch
 from webapp_profile import htmlProfile
@@ -229,6 +231,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import isDM
 from utils import replaceUsersWithAt
 from utils import localActorUrl
 from utils import isfloat
@@ -7136,11 +7139,40 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(self.server.recentPostsCache,
-                                  baseDir,
-                                  likedPostFilename, likeUrl,
-                                  likeActor,
-                                  self.postToNickname, domain,
+                                  baseDir, likedPostFilename, likeUrl,
+                                  likeActor, self.postToNickname, domain,
                                   debug)
+            if debug:
+                print('Regenerating html post for changed likes collection')
+            pageNumber = 1
+            likedPostJson = loadJson(likedPostFilename)
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, self.postToNickname, domain)
+            individualPostAsHtml(self.server.signingPrivateKeyPem, True,
+                                 self.server.recentPostsCache,
+                                 self.server.maxRecentPosts,
+                                 self.server.translate,
+                                 pageNumber, baseDir,
+                                 self.server.session,
+                                 self.server.cachedWebfingers,
+                                 self.server.personCache,
+                                 self.postToNickname, domain,
+                                 self.server.port, likedPostJson, None, True,
+                                 self.server.allowDeletion,
+                                 httpPrefix, __version__, 'inbox',
+                                 self.server.YTReplacementDomain,
+                                 self.server.showPublishedDateOnly,
+                                 self.server.peertubeInstances,
+                                 self.server.allowLocalNetworkAccess,
+                                 self.server.themeName,
+                                 self.server.systemLanguage,
+                                 self.server.maxLikeCount,
+                                 not isDM(likedPostJson),
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False)
+
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like.png'):
                 del self.server.iconsCache['like.png']
@@ -7244,6 +7276,36 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
+            if debug:
+                print('Regenerating html post for changed likes collection')
+            pageNumber = 1
+            likedPostJson = loadJson(likedPostFilename)
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, self.postToNickname, domain)
+            individualPostAsHtml(self.server.signingPrivateKeyPem, True,
+                                 self.server.recentPostsCache,
+                                 self.server.maxRecentPosts,
+                                 self.server.translate,
+                                 pageNumber, baseDir,
+                                 self.server.session,
+                                 self.server.cachedWebfingers,
+                                 self.server.personCache,
+                                 self.postToNickname, domain,
+                                 self.server.port, likedPostJson, None, True,
+                                 self.server.allowDeletion,
+                                 httpPrefix, __version__, 'inbox',
+                                 self.server.YTReplacementDomain,
+                                 self.server.showPublishedDateOnly,
+                                 self.server.peertubeInstances,
+                                 self.server.allowLocalNetworkAccess,
+                                 self.server.themeName,
+                                 self.server.systemLanguage,
+                                 self.server.maxLikeCount,
+                                 not isDM(likedPostJson),
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False)
         # send out the undo like to followers
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
         self.server.GETbusy = False
