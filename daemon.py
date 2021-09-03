@@ -71,6 +71,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import savePostToBox
 from posts import getInstanceActorKey
 from posts import removePostInteractions
 from posts import outboxMessageCreateWrap
@@ -89,6 +90,7 @@ from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
+from inbox import inboxUpdateIndex
 from inbox import clearQueueItems
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
@@ -6730,11 +6732,72 @@ class PubServer(BaseHTTPRequestHandler):
                            debug,
                            self.server.projectVersion,
                            self.server.signingPrivateKeyPem)
+        announceFilename = None
         if announceJson:
+            # save the announce straight to the outbox
+            # This is because the subsequent send is within a separate thread
+            # but the html still needs to be generated before this call ends
+            announceId = removeIdEnding(announceJson['id'])
+            announceFilename = \
+                savePostToBox(baseDir, httpPrefix, announceId,
+                              self.postToNickname, domainFull,
+                              announceJson, 'outbox')
+            # also copy the post id to the inbox index
+            inboxUpdateIndex('inbox', baseDir,
+                             self.postToNickname + '@' + domain,
+                             announceFilename, debug)
+
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('repeat.png'):
                 del self.server.iconsCache['repeat.png']
+
+            # send out the announce within a separate thread
             self._postToOutboxThread(announceJson)
+
+        # generate the html for the announce
+        if announceFilename:
+            print('Generating html post for announce')
+            announcePostJson = loadJson(announceFilename, 0, 1)
+            if announcePostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, announcePostJson)
+                print('Announced post json: ' + str(announcePostJson))
+                print('Announced post nickname: ' +
+                      self.postToNickname + ' ' + domain)
+                print('Announced post cache: ' + str(cachedPostFilename))
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, announcePostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix, self.server.projectVersion,
+                                     timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     not isDM(announcePostJson),
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False)
+            else:
+                print('WARN: Announced post not found: ' + announceFilename)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
