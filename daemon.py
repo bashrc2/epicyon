@@ -7130,7 +7130,11 @@ class PubServer(BaseHTTPRequestHandler):
             'to': [actorLiked],
             'object': likeUrl
         }
-        print('Locating liked post')
+
+        # send out the like to followers
+        self._postToOutbox(likeJson, self.server.projectVersion, None)
+
+        print('Locating liked post ' + likeUrl)
         # directly like the post file
         likedPostFilename = locatePost(baseDir,
                                        self.postToNickname,
@@ -7170,7 +7174,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, likedPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, timelineStr,
+                                     httpPrefix,
+                                     self.server.projectVersion,
+                                     timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -7190,8 +7196,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
-        # send out the like to followers
-        self._postToOutbox(likeJson, self.server.projectVersion, None)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7273,6 +7278,10 @@ class PubServer(BaseHTTPRequestHandler):
                 'object': likeUrl
             }
         }
+
+        # send out the undo like to followers
+        self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
+
         # directly undo the like within the post file
         likedPostFilename = locatePost(baseDir,
                                        self.postToNickname,
@@ -7307,7 +7316,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, likedPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, timelineStr,
+                                     httpPrefix,
+                                     self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -7321,8 +7331,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, True, False)
             else:
                 print('WARN: Unliked post not found: ' + likedPostFilename)
-        # send out the undo like to followers
-        self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7438,7 +7447,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, bookmarkPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, timelineStr,
+                                     httpPrefix, self.server.projectVersion,
+                                     timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -7569,7 +7579,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, bookmarkPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, timelineStr,
+                                     httpPrefix,
+                                     self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -7766,7 +7777,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, mutePostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, timelineStr,
+                                     httpPrefix,
+                                     self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -7864,7 +7876,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, mutePostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, timelineStr,
+                                     httpPrefix,
+                                     self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
