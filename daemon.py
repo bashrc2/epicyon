@@ -7146,9 +7146,13 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Regenerating html post for changed likes collection')
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, likedPostJson)
                 print('Liked post json: ' + str(likedPostJson))
                 print('Liked post nickname: ' +
                       self.postToNickname + ' ' + domain)
+                print('Liked post cache: ' + str(cachedPostFilename))
                 boxName = 'inbox'
                 pageNumber = 1
                 showIndividualPostIcons = True
