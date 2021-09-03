@@ -7146,6 +7146,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Regenerating html post for changed likes collection')
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
+                print('Liked post json: ' + str(likedPostJson))
+                print('Liked post nickname: ' +
+                      self.postToNickname + ' ' + domain)
                 boxName = 'inbox'
                 pageNumber = 1
                 showIndividualPostIcons = True
@@ -7176,7 +7179,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
-
+            else:
+                print('WARN: Liked post not found: ' + likedPostFilename)
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like.png'):
                 del self.server.iconsCache['like.png']
@@ -7314,6 +7318,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
+            else:
+                print('WARN: Unliked post not found: ' + likedPostFilename)
         # send out the undo like to followers
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
         self.server.GETbusy = False
