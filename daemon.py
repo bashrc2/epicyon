@@ -6743,9 +6743,11 @@ class PubServer(BaseHTTPRequestHandler):
                               self.postToNickname, domainFull,
                               announceJson, 'outbox')
             # also copy the post id to the inbox index
-            inboxUpdateIndex('inbox', baseDir,
-                             self.postToNickname + '@' + domain,
-                             announceFilename, debug)
+            indexes = ['outbox', 'inbox']
+            for boxNameIndex in indexes:
+                inboxUpdateIndex(boxNameIndex, baseDir,
+                                 self.postToNickname + '@' + domain,
+                                 announceFilename, debug)
 
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('repeat.png'):
