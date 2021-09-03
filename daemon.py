@@ -7409,6 +7409,49 @@ class PubServer(BaseHTTPRequestHandler):
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
+        bookmarkFilename = \
+            locatePost(baseDir, self.postToNickname, domain, bookmarkUrl)
+        if bookmarkFilename:
+            print('Regenerating html post for changed bookmark')
+            bookmarkPostJson = loadJson(bookmarkFilename, 0, 1)
+            if bookmarkPostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, bookmarkPostJson)
+                print('Bookmarked post json: ' + str(bookmarkPostJson))
+                print('Bookmarked post nickname: ' +
+                      self.postToNickname + ' ' + domain)
+                print('Bookmarked post cache: ' + str(cachedPostFilename))
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, bookmarkPostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix, __version__, timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     not isDM(bookmarkPostJson),
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False)
+            else:
+                print('WARN: Bookmarked post not found: ' + bookmarkFilename)
         # self._postToOutbox(bookmarkJson, self.server.projectVersion, None)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
@@ -7497,6 +7540,49 @@ class PubServer(BaseHTTPRequestHandler):
             del self.server.iconsCache['bookmark_inactive.png']
         # self._postToOutbox(undoBookmarkJson,
         #                    self.server.projectVersion, None)
+        bookmarkFilename = \
+            locatePost(baseDir, self.postToNickname, domain, bookmarkUrl)
+        if bookmarkFilename:
+            print('Regenerating html post for changed unbookmark')
+            bookmarkPostJson = loadJson(bookmarkFilename, 0, 1)
+            if bookmarkPostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, bookmarkPostJson)
+                print('Unbookmarked post json: ' + str(bookmarkPostJson))
+                print('Unbookmarked post nickname: ' +
+                      self.postToNickname + ' ' + domain)
+                print('Unbookmarked post cache: ' + str(cachedPostFilename))
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, bookmarkPostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix, __version__, timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     not isDM(bookmarkPostJson),
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False)
+            else:
+                print('WARN: Unbookmarked post not found: ' + bookmarkFilename)
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7651,7 +7737,8 @@ class PubServer(BaseHTTPRequestHandler):
         mutePost(baseDir, nickname, domain, port,
                  httpPrefix, muteUrl,
                  self.server.recentPostsCache, debug)
-        muteFilename = locatePost(baseDir, nickname, domain, muteUrl)
+        muteFilename = \
+            locatePost(baseDir, self.postToNickname, domain, muteUrl)
         if muteFilename:
             print('Regenerating html post for changed mute status')
             mutePostJson = loadJson(muteFilename, 0, 1)
@@ -7748,7 +7835,8 @@ class PubServer(BaseHTTPRequestHandler):
         unmutePost(baseDir, nickname, domain, port,
                    httpPrefix, muteUrl,
                    self.server.recentPostsCache, debug)
-        muteFilename = locatePost(baseDir, nickname, domain, muteUrl)
+        muteFilename = \
+            locatePost(baseDir, self.postToNickname, domain, muteUrl)
         if muteFilename:
             print('Regenerating html post for changed unmute status')
             mutePostJson = loadJson(muteFilename, 0, 1)
