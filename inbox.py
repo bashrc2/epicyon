@@ -2025,6 +2025,7 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
     if '/' in destinationFilename:
         destinationFilename = destinationFilename.split('/')[-1]
 
+    written = False
     if os.path.isfile(indexFilename):
         try:
             with open(indexFilename, 'r+') as indexFile:
@@ -2032,6 +2033,7 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
                 if destinationFilename + '\n' not in content:
                     indexFile.seek(0, 0)
                     indexFile.write(destinationFilename + '\n' + content)
+                written = True
                 return True
         except Exception as e:
             print('WARN: Failed to write entry to index ' + str(e))
@@ -2039,10 +2041,11 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
         try:
             with open(indexFilename, 'w+') as indexFile:
                 indexFile.write(destinationFilename + '\n')
+                written = True
         except Exception as e:
             print('WARN: Failed to write initial entry to index ' + str(e))
 
-    return False
+    return written
 
 
 def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:

@@ -40,6 +40,7 @@ from inbox import inboxUpdateIndex
 from announce import outboxAnnounce
 from announce import outboxUndoAnnounce
 from follow import outboxUndoFollow
+from follow import followerApprovalActive
 from skills import outboxSkills
 from availability import outboxAvailability
 from like import outboxLike
@@ -49,6 +50,7 @@ from bookmarks import outboxUndoBookmark
 from delete import outboxDelete
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
+from webapp_post import individualPostAsHtml
 
 
 def _outboxPersonReceiveUpdate(recentPostsCache: {},
@@ -195,7 +197,10 @@ def postMessageToOutbox(session, translate: {},
                         sharedItemsFederatedDomains: [],
                         sharedItemFederationTokens: {},
                         lowBandwidth: bool,
-                        signingPrivateKeyPem: str) -> bool:
+                        signingPrivateKeyPem: str,
+                        peertubeInstances: str, theme: str,
+                        maxLikeCount: int,
+                        maxRecentPosts: int) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -425,6 +430,36 @@ def postMessageToOutbox(session, translate: {},
                     inboxUpdateIndex(boxNameIndex, baseDir,
                                      postToNickname + '@' + domain,
                                      savedFilename, debug)
+
+                    # regenerate the html
+                    useCacheOnly = False
+                    pageNumber = 1
+                    showIndividualPostIcons = True
+                    manuallyApproveFollowers = \
+                        followerApprovalActive(baseDir, postToNickname, domain)
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         False, recentPostsCache,
+                                         maxRecentPosts,
+                                         translate, pageNumber,
+                                         baseDir, session,
+                                         cachedWebfingers,
+                                         personCache,
+                                         postToNickname, domain, port,
+                                         messageJson, None, True,
+                                         allowDeletion,
+                                         httpPrefix, __version__,
+                                         boxNameIndex,
+                                         YTReplacementDomain,
+                                         showPublishedDateOnly,
+                                         peertubeInstances,
+                                         allowLocalNetworkAccess,
+                                         theme, systemLanguage,
+                                         maxLikeCount,
+                                         boxNameIndex != 'dm',
+                                         showIndividualPostIcons,
+                                         manuallyApproveFollowers,
+                                         False, True, useCacheOnly)
+
     if outboxAnnounce(recentPostsCache,
                       baseDir, messageJson, debug):
         if debug:

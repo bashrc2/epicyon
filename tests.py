@@ -2874,7 +2874,7 @@ def testClientToServer():
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
     assert len([name for name in os.listdir(bobOutboxPath)
-                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 3
+                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 4
     assert len([name for name in os.listdir(aliceInboxPath)
                 if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 1
     print('EVENT: Post repeated')

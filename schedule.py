@@ -116,7 +116,11 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.sharedItemsFederatedDomains,
                                        httpd.sharedItemFederationTokens,
                                        httpd.lowBandwidth,
-                                       httpd.signingPrivateKeyPem):
+                                       httpd.signingPrivateKeyPem,
+                                       httpd.peertubeInstances,
+                                       httpd.themeName,
+                                       httpd.maxLikeCount,
+                                       httpd.maxRecentPosts):
                 indexLines.remove(line)
                 os.remove(postFilename)
                 continue

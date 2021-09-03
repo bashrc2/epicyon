@@ -1195,7 +1195,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.sharedItemsFederatedDomains,
                                    self.server.sharedItemFederationTokens,
                                    self.server.lowBandwidth,
-                                   self.server.signingPrivateKeyPem)
+                                   self.server.signingPrivateKeyPem,
+                                   self.server.peertubeInstances,
+                                   self.server.themeName,
+                                   self.server.maxLikeCount,
+                                   self.server.maxRecentPosts)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post

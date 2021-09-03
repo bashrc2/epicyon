@@ -245,13 +245,20 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
     avatarLink = ''
     if '/users/news/' not in avatarUrl:
         avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
+        showProfileStr = 'Show profile'
+        if translate.get(showProfileStr):
+            showProfileStr = translate[showProfileStr]
         avatarLink += \
             '<img loading="lazy" src="' + avatarUrl + '" title="' + \
-            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            showProfileStr + '" alt=" "' + avatarPosition + \
             getBrokenLinkSubstitute() + '/></a>\n'
 
     if showAvatarOptions and \
        domainFull + '/users/' + nickname not in postActor:
+        showOptionsForThisPersonStr = 'Show options for this person'
+        if translate.get(showOptionsForThisPersonStr):
+            showOptionsForThisPersonStr = \
+                translate[showOptionsForThisPersonStr]
         if '/users/news/' not in avatarUrl:
             avatarLink = \
                 '        <a class="imageAnchor" href="/users/' + \
@@ -259,18 +266,18 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
                 ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
             avatarLink += \
                 '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'alt="👤 ' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'src="' + avatarUrl + '" ' + avatarPosition + \
                 getBrokenLinkSubstitute() + '/></a>\n'
         else:
             # don't link to the person options for the news account
             avatarLink += \
                 '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'alt="👤 ' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'src="' + avatarUrl + '" ' + avatarPosition + \
                 getBrokenLinkSubstitute() + '/>\n'
     return avatarLink.strip()
@@ -305,7 +312,9 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
     replyToLink += pageNumberParam
 
     replyStr = ''
-    replyToThisPostStr = translate['Reply to this post']
+    replyToThisPostStr = 'Reply to this post'
+    if translate.get(replyToThisPostStr):
+        replyToThisPostStr = translate[replyToThisPostStr]
     conversationStr = ''
     if conversationId:
         conversationStr = '?conversationId=' + conversationId
@@ -363,7 +372,9 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
             return editStr
 
         if isBlogPost(postJsonObject):
-            editBlogPostStr = translate['Edit blog post']
+            editBlogPostStr = 'Edit blog post'
+            if translate.get(editBlogPostStr):
+                editBlogPostStr = translate[editBlogPostStr]
             if not isNewsPost(postJsonObject):
                 editStr += \
                     '        ' + \
@@ -388,7 +399,9 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                     editBlogPostStr + '" alt="' + editBlogPostStr + \
                     ' |" src="/icons/edit.png"/></a>\n'
         elif isEvent:
-            editEventStr = translate['Edit event']
+            editEventStr = 'Edit event'
+            if translate.get(editEventStr):
+                editEventStr = translate[editEventStr]
             editStr += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
@@ -430,7 +443,10 @@ def _getAnnounceIconHtml(isAnnounced: bool,
     announceEmoji = ''
     if not isPublicRepeat:
         announceLink = 'repeatprivate'
-    announceTitle = translate['Repeat this post']
+    repeatThisPostStr = 'Repeat this post'
+    if translate.get(repeatThisPostStr):
+        repeatThisPostStr = translate[repeatThisPostStr]
+    announceTitle = repeatThisPostStr
     unannounceLinkStr = ''
 
     if announcedByPerson(isAnnounced,
@@ -440,7 +456,10 @@ def _getAnnounceIconHtml(isAnnounced: bool,
         announceLink = 'unrepeat'
         if not isPublicRepeat:
             announceLink = 'unrepeatprivate'
-        announceTitle = translate['Undo the repeat']
+        undoTheRepeatStr = 'Undo the repeat'
+        if translate.get(undoTheRepeatStr):
+            undoTheRepeatStr = translate[undoTheRepeatStr]
+        announceTitle = undoTheRepeatStr
         if announceJsonObject:
             unannounceLinkStr = '?unannounce=' + \
                 removeIdEnding(announceJsonObject['id'])
@@ -478,7 +497,9 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
     if not isModerationPost and showLikeButton:
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
-        likeTitle = translate['Like this post']
+        likeTitle = 'Like this post'
+        if translate.get(likeTitle):
+            likeTitle = translate[likeTitle]
         likeEmoji = ''
         likeCount = noOfLikes(postJsonObject)
 
@@ -496,7 +517,9 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                     likeCountStr = ''
                 likeIcon = 'like.png'
                 likeLink = 'unlike'
-                likeTitle = translate['Undo the like']
+                likeTitle = 'Undo the like'
+                if translate.get(likeTitle):
+                    likeTitle = translate[likeTitle]
                 likeEmoji = '👍 '
 
         _logPostTiming(enableTimingLog, postStartTime, '12.2')
@@ -541,12 +564,16 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     bookmarkIcon = 'bookmark_inactive.png'
     bookmarkLink = 'bookmark'
     bookmarkEmoji = ''
-    bookmarkTitle = translate['Bookmark this post']
+    bookmarkTitle = 'Bookmark this post'
+    if translate.get(bookmarkTitle):
+        bookmarkTitle = translate[bookmarkTitle]
     if bookmarkedByPerson(postJsonObject, nickname, domainFull):
         bookmarkIcon = 'bookmark.png'
         bookmarkLink = 'unbookmark'
         bookmarkEmoji = '🔖 '
-        bookmarkTitle = translate['Undo the bookmark']
+        bookmarkTitle = 'Undo the bookmark'
+        if translate.get(bookmarkTitle):
+            bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
@@ -581,28 +608,33 @@ def _getMuteIconHtml(isMuted: bool,
         return muteStr
 
     if not isMuted:
+        muteThisPostStr = 'Mute this post'
+        if translate.get('Mute this post'):
+            muteThisPostStr = translate[muteThisPostStr]
         muteStr = \
             '        <a class="imageAnchor" href="/users/' + nickname + \
             '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
             '?bm=' + timelinePostBookmark + \
-            '" title="' + translate['Mute this post'] + '">\n'
+            '" title="' + muteThisPostStr + '">\n'
         muteStr += \
             '          ' + \
             '<img loading="lazy" alt="' + \
-            translate['Mute this post'] + \
-            ' |" title="' + translate['Mute this post'] + \
+            muteThisPostStr + \
+            ' |" title="' + muteThisPostStr + \
             '" src="/icons/mute.png"/></a>\n'
     else:
+        undoMuteStr = 'Undo mute'
+        if translate.get(undoMuteStr):
+            undoMuteStr = translate[undoMuteStr]
         muteStr = \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?unmute=' + messageId + \
             pageNumberParam + '?tl=' + boxName + '?bm=' + \
-            timelinePostBookmark + '" title="' + \
-            translate['Undo mute'] + '">\n'
+            timelinePostBookmark + '" title="' + undoMuteStr + '">\n'
         muteStr += \
             '          ' + \
-            '<img loading="lazy" alt="🔇 ' + translate['Undo mute'] + \
-            ' |" title="' + translate['Undo mute'] + \
+            '<img loading="lazy" alt="🔇 ' + undoMuteStr + \
+            ' |" title="' + undoMuteStr + \
             '" src="/icons/unmute.png"/></a>\n'
     return muteStr
 
@@ -622,16 +654,19 @@ def _getDeleteIconHtml(nickname: str, domainFull: str,
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             if not isNewsPost(postJsonObject):
+                deleteThisPostStr = 'Delete this post'
+                if translate.get(deleteThisPostStr):
+                    deleteThisPostStr = translate[deleteThisPostStr]
                 deleteStr = \
                     '        <a class="imageAnchor" href="/users/' + \
                     nickname + \
                     '?delete=' + messageId + pageNumberParam + \
-                    '" title="' + translate['Delete this post'] + '">\n'
+                    '" title="' + deleteThisPostStr + '">\n'
                 deleteStr += \
                     '          ' + \
                     '<img loading="lazy" alt="' + \
-                    translate['Delete this post'] + \
-                    ' |" title="' + translate['Delete this post'] + \
+                    deleteThisPostStr + \
+                    ' |" title="' + deleteThisPostStr + \
                     '" src="/icons/delete.png"/></a>\n'
     return deleteStr
 
@@ -699,7 +734,10 @@ def _getBlogCitationsHtml(boxName: str,
             '<cite>' + tagJson['name'] + '</cite></a></li>\n'
 
     if citationsStr:
-        citationsStr = '<p><b>' + translate['Citations'] + ':</b></p>' + \
+        translatedCitationsStr = 'Citations'
+        if translate.get(translatedCitationsStr):
+            translatedCitationsStr = translate[translatedCitationsStr]
+        citationsStr = '<p><b>' + translatedCitationsStr + ':</b></p>' + \
             '<ul>\n' + citationsStr + '</ul>\n'
     return citationsStr
 
@@ -707,9 +745,12 @@ def _getBlogCitationsHtml(boxName: str,
 def _boostOwnPostHtml(translate: {}) -> str:
     """The html title for announcing your own post
     """
+    announcesStr = 'announces'
+    if translate.get(announcesStr):
+        announcesStr = translate[announcesStr]
     return '        <img loading="lazy" title="' + \
-        translate['announces'] + \
-        '" alt="' + translate['announces'] + \
+        announcesStr + \
+        '" alt="' + announcesStr + \
         '" src="/icons' + \
         '/repeat_inactive.png" class="announceOrReply"/>\n'
 
@@ -719,9 +760,12 @@ def _announceUnattributedHtml(translate: {},
     """Returns the html for an announce title where there
     is no attribution on the announced post
     """
+    announcesStr = 'announces'
+    if translate.get(announcesStr):
+        announcesStr = translate[announcesStr]
     return '    <img loading="lazy" title="' + \
-        translate['announces'] + '" alt="' + \
-        translate['announces'] + '" src="/icons' + \
+        announcesStr + '" alt="' + \
+        announcesStr + '" src="/icons' + \
         '/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '      <a href="' + \
@@ -734,9 +778,12 @@ def _announceWithDisplayNameHtml(translate: {},
                                  announceDisplayName: str) -> str:
     """Returns html for an announce having a display name
     """
+    announcesStr = 'announces'
+    if translate.get(announcesStr):
+        announcesStr = translate[announcesStr]
     return '          <img loading="lazy" title="' + \
-        translate['announces'] + '" alt="' + \
-        translate['announces'] + '" src="/' + \
+        announcesStr + '" alt="' + \
+        announcesStr + '" src="/' + \
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + \
@@ -825,6 +872,9 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 
     idx = 'Show options for this person'
     if '/users/news/' not in announceAvatarUrl:
+        showOptionsForThisPersonStr = idx
+        if translate.get(idx):
+            showOptionsForThisPersonStr = translate[idx]
         replyAvatarImageInPost = \
             '        <div class="timeline-avatar-reply">\n' \
             '            <a class="imageAnchor" ' + \
@@ -832,7 +882,8 @@ def _getPostTitleAnnounceHtml(baseDir: str,
             announceActor + ';' + str(pageNumber) + \
             ';' + announceAvatarUrl + messageIdStr + '">' \
             '<img loading="lazy" src="' + announceAvatarUrl + '" ' + \
-            'title="' + translate[idx] + '" alt=" "' + avatarPosition + \
+            'title="' + showOptionsForThisPersonStr + \
+            '" alt=" "' + avatarPosition + \
             getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
@@ -842,9 +893,12 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 def _replyToYourselfHtml(translate: {}) -> str:
     """Returns html for a title which is a reply to yourself
     """
+    replyingToThemselvesStr = 'replying to themselves'
+    if translate.get(replyingToThemselvesStr):
+        replyingToThemselvesStr = translate[replyingToThemselvesStr]
     return '    <img loading="lazy" title="' + \
-        translate['replying to themselves'] + \
-        '" alt="' + translate['replying to themselves'] + \
+        replyingToThemselvesStr + \
+        '" alt="' + replyingToThemselvesStr + \
         '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n'
 
@@ -853,9 +907,12 @@ def _replyToUnknownHtml(translate: {},
                         postJsonObject: {}) -> str:
     """Returns the html title for a reply to an unknown handle
     """
+    replyingToStr = 'replying to'
+    if translate.get(replyingToStr):
+        replyingToStr = translate[replyingToStr]
     return '        <img loading="lazy" title="' + \
-        translate['replying to'] + '" alt="' + \
-        translate['replying to'] + '" src="/icons' + \
+        replyingToStr + '" alt="' + \
+        replyingToStr + '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n' + \
         '        <a href="' + \
         postJsonObject['object']['inReplyTo'] + \
@@ -868,9 +925,12 @@ def _replyWithUnknownPathHtml(translate: {},
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/
     """
+    replyingToStr = 'replying to'
+    if translate.get(replyingToStr):
+        replyingToStr = translate[replyingToStr]
     return '        <img loading="lazy" title="' + \
-        translate['replying to'] + \
-        '" alt="' + translate['replying to'] + \
+        replyingToStr + \
+        '" alt="' + replyingToStr + \
         '" src="/icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + \
@@ -883,10 +943,13 @@ def _getReplyHtml(translate: {},
                   inReplyTo: str, replyDisplayName: str) -> str:
     """Returns html title for a reply
     """
+    replyingToStr = 'replying to'
+    if translate.get(replyingToStr):
+        replyingToStr = translate[replyingToStr]
     return '        ' + \
         '<img loading="lazy" title="' + \
-        translate['replying to'] + '" alt="' + \
-        translate['replying to'] + '" src="/' + \
+        replyingToStr + '" alt="' + \
+        replyingToStr + '" src="/' + \
         'icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + inReplyTo + \
@@ -987,6 +1050,9 @@ def _getPostTitleReplyHtml(baseDir: str,
     _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
     if replyAvatarUrl:
+        showProfileStr = 'Show profile'
+        if translate.get(showProfileStr):
+            showProfileStr = translate[showProfileStr]
         replyAvatarImageInPost = \
             '        <div class="timeline-avatar-reply">\n' + \
             '          <a class="imageAnchor" ' + \
@@ -994,7 +1060,7 @@ def _getPostTitleReplyHtml(baseDir: str,
             ';' + str(pageNumber) + ';' + replyAvatarUrl + \
             messageIdStr + '">\n' + \
             '          <img loading="lazy" src="' + replyAvatarUrl + '" ' + \
-            'title="' + translate['Show profile'] + \
+            'title="' + showProfileStr + \
             '" alt=" "' + avatarPosition + getBrokenLinkSubstitute() + \
             '/></a>\n        </div>\n'
 
@@ -1542,7 +1608,10 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             postIsSensitive = postJsonObject['object']['sensitive']
         else:
             # add a generic summary if none is provided
-            postJsonObject['object']['summary'] = translate['Sensitive']
+            sensitiveStr = 'Sensitive'
+            if translate.get(sensitiveStr):
+                sensitiveStr = translate[sensitiveStr]
+            postJsonObject['object']['summary'] = sensitiveStr
 
     # add an extra line if there is a content warning,
     # for better vertical spacing on mobile
@@ -1594,7 +1663,10 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         else:
             objectContent = contentStr
     else:
-        objectContent = '🔒 ' + translate['Encrypted']
+        encryptedStr = 'Encrypted'
+        if translate.get(encryptedStr):
+            encryptedStr = translate[encryptedStr]
+        objectContent = '🔒 ' + encryptedStr
 
     objectContent = '<article>' + objectContent + '</article>'
 
@@ -1711,9 +1783,11 @@ def htmlIndividualPost(cssCache: {},
         likedByDomain, likedByPort = getDomainFromActor(likedBy)
         likedByDomain = getFullDomain(likedByDomain, likedByPort)
         likedByHandle = likedByNickname + '@' + likedByDomain
+        likedByStr = 'Liked by'
+        if translate.get(likedByStr):
+            likedByStr = translate[likedByStr]
         postStr += \
-            '<p>' + translate['Liked by'] + \
-            ' <a href="' + likedBy + '">@' + \
+            '<p>' + likedByStr + ' <a href="' + likedBy + '">@' + \
             likedByHandle + '</a>\n'
 
         domainFull = getFullDomain(domain, port)
@@ -1726,10 +1800,16 @@ def htmlIndividualPost(cssCache: {},
             '    <input type="hidden" name="searchtext" value="' + \
             likedByHandle + '">\n'
         if not isFollowingActor(baseDir, nickname, domainFull, likedBy):
+            translateFollowStr = 'Follow'
+            if translate.get(translateFollowStr):
+                translateFollowStr = translate[translateFollowStr]
             followStr += '    <button type="submit" class="button" ' + \
-                'name="submitSearch">' + translate['Follow'] + '</button>\n'
+                'name="submitSearch">' + translateFollowStr + '</button>\n'
+        goBackStr = 'Go Back'
+        if translate.get(goBackStr):
+            goBackStr = translate[goBackStr]
         followStr += '    <button type="submit" class="button" ' + \
-            'name="submitBack">' + translate['Go Back'] + '</button>\n'
+            'name="submitBack">' + goBackStr + '</button>\n'
         followStr += '  </form>\n'
         postStr += followStr + '</p>\n'
 
