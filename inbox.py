@@ -51,6 +51,7 @@ from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
+from follow import followerApprovalActive
 from follow import isFollowingActor
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
@@ -180,6 +181,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     if boxname != 'outbox':
         boxname = 'inbox'
 
+    notDM = not isDM(postJsonObject)
     individualPostAsHtml(signingPrivateKeyPem,
                          True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,
@@ -191,8 +193,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
                          themeName, systemLanguage, maxLikeCount,
-                         not isDM(postJsonObject),
-                         True, True, False, True)
+                         notDM, True, True, False, True)
 
 
 def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
@@ -914,7 +915,15 @@ def _receiveLike(recentPostsCache: {},
                  onionDomain: str,
                  sendThreads: [], postLog: [], cachedWebfingers: {},
                  personCache: {}, messageJson: {}, federationList: [],
-                 debug: bool) -> bool:
+                 debug: bool,
+                 signingPrivateKeyPem: str,
+                 maxRecentPosts: int, translate: {},
+                 allowDeletion: bool,
+                 YTReplacementDomain: str,
+                 peertubeInstances: [],
+                 allowLocalNetworkAccess: bool,
+                 themeName: str, systemLanguage: str,
+                 maxLikeCount: int) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Like':
@@ -971,6 +980,41 @@ def _receiveLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           postLikedId, messageJson['actor'],
                           handleName, domain, debug)
+    # regenerate the html
+    likedPostJson = loadJson(postFilename, 0, 1)
+    if likedPostJson:
+        if debug:
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, handleName, domain,
+                                      likedPostJson)
+            print('Liked post json: ' + str(likedPostJson))
+            print('Liked post nickname: ' + handleName + ' ' + domain)
+            print('Liked post cache: ' + str(cachedPostFilename))
+        pageNumber = 1
+        showPublishedDateOnly = False
+        showIndividualPostIcons = True
+        manuallyApproveFollowers = \
+            followerApprovalActive(baseDir, handleName, domain)
+        notDM = not isDM(likedPostJson)
+        individualPostAsHtml(signingPrivateKeyPem, False,
+                             recentPostsCache, maxRecentPosts,
+                             translate, pageNumber, baseDir,
+                             session, cachedWebfingers, personCache,
+                             handleName, domain, port, likedPostJson,
+                             None, True, allowDeletion,
+                             httpPrefix, __version__,
+                             'inbox', YTReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount, notDM,
+                             showIndividualPostIcons,
+                             manuallyApproveFollowers,
+                             False, True, False)
+    else:
+        print('WARN: Liked post not found: ' + postFilename)
+
     return True
 
 
@@ -1029,6 +1073,7 @@ def _receiveUndoLike(recentPostsCache: {},
     undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
                              messageJson['object'],
                              messageJson['actor'], domain, debug)
+    # TODO regenerate the html
     return True
 
 
@@ -2275,7 +2320,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        peertubeInstances: [],
                        lastBounceMessage: [],
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int, signingPrivateKeyPem: str) -> bool:
+                       maxLikeCount: int,
+                       signingPrivateKeyPem: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2297,7 +2343,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     personCache,
                     messageJson,
                     federationList,
-                    debug):
+                    debug, signingPrivateKeyPem,
+                    maxRecentPosts, translate,
+                    allowDeletion,
+                    YTReplacementDomain,
+                    peertubeInstances,
+                    allowLocalNetworkAccess,
+                    themeName, systemLanguage,
+                    maxLikeCount):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         return False
