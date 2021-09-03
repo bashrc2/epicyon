@@ -7137,13 +7137,13 @@ class PubServer(BaseHTTPRequestHandler):
                                        domain,
                                        likeUrl)
         if likedPostFilename:
-            #if debug:
+            # if debug:
             print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(self.server.recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
                                   debug)
-            #if debug:
+            # if debug:
             print('Regenerating html post for changed likes collection')
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
@@ -7636,12 +7636,64 @@ class PubServer(BaseHTTPRequestHandler):
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
         actor = \
             httpPrefix + '://' + domainFull + path.split('?mute=')[0]
         nickname = getNicknameFromActor(actor)
         mutePost(baseDir, nickname, domain, port,
                  httpPrefix, muteUrl,
                  self.server.recentPostsCache, debug)
+        muteFilename = locatePost(baseDir, nickname, domain, muteUrl)
+        if muteFilename:
+            print('Regenerating html post for changed mute status')
+            mutePostJson = loadJson(muteFilename, 0, 1)
+            if mutePostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, mutePostJson)
+                print('Muted post json: ' + str(mutePostJson))
+                print('Muted post nickname: ' +
+                      self.postToNickname + ' ' + domain)
+                print('Muted post cache: ' + str(cachedPostFilename))
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, mutePostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix, __version__, timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     not isDM(mutePostJson),
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False)
+            else:
+                print('WARN: Muted post not found: ' + muteFilename)
+
         self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
@@ -7681,12 +7733,63 @@ class PubServer(BaseHTTPRequestHandler):
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
         actor = \
             httpPrefix + '://' + domainFull + path.split('?unmute=')[0]
         nickname = getNicknameFromActor(actor)
         unmutePost(baseDir, nickname, domain, port,
                    httpPrefix, muteUrl,
                    self.server.recentPostsCache, debug)
+        muteFilename = locatePost(baseDir, nickname, domain, muteUrl)
+        if muteFilename:
+            print('Regenerating html post for changed unmute status')
+            mutePostJson = loadJson(muteFilename, 0, 1)
+            if mutePostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, mutePostJson)
+                print('Unmuted post json: ' + str(mutePostJson))
+                print('Unmuted post nickname: ' +
+                      self.postToNickname + ' ' + domain)
+                print('Unmuted post cache: ' + str(cachedPostFilename))
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, mutePostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix, __version__, timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     not isDM(mutePostJson),
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False)
+            else:
+                print('WARN: Unmuted post not found: ' + muteFilename)
         self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
