@@ -7146,6 +7146,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Regenerating html post for changed likes collection')
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
+                boxName = 'inbox'
                 pageNumber = 1
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
@@ -7163,7 +7164,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, likedPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, 'inbox',
+                                     httpPrefix, __version__, boxName,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -7281,9 +7282,10 @@ class PubServer(BaseHTTPRequestHandler):
                 del self.server.iconsCache['like_inactive.png']
             if debug:
                 print('Regenerating html post for changed likes collection')
-            pageNumber = 1
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
+                boxName = 'inbox'
+                pageNumber = 1
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
@@ -7300,7 +7302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, likedPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, __version__, 'inbox',
+                                     httpPrefix, __version__, boxName,
                                      self.server.YTReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
