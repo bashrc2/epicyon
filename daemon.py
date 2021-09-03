@@ -228,6 +228,7 @@ from categories import setHashtagCategory
 from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
+from like import updateLikesCollection
 from utils import replaceUsersWithAt
 from utils import localActorUrl
 from utils import isfloat
@@ -265,7 +266,6 @@ from utils import isSystemAccount
 from utils import setConfigParam
 from utils import getConfigParam
 from utils import removeIdEnding
-from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import deletePost
 from utils import isBlogPost

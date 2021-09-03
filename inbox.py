@@ -14,6 +14,7 @@ import time
 import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
+from like import updateLikesCollection
 from utils import getUserPaths
 from utils import getBaseContentFromPost
 from utils import acctDir
@@ -43,7 +44,6 @@ from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import loadJson
 from utils import saveJson
-from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import hasGroupType
 from utils import localActorUrl

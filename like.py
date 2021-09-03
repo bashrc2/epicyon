@@ -7,6 +7,8 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+import os
+from pprint import pprint
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
@@ -16,10 +18,13 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
-from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import hasGroupType
 from utils import localActorUrl
+from utils import loadJson
+from utils import saveJson
+from utils import removePostFromCache
+from utils import getCachedPostFilename
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -407,3 +412,64 @@ def outboxUndoLike(recentPostsCache: {},
                              domain, debug)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + postFilename)
+
+
+def updateLikesCollection(recentPostsCache: {},
+                          baseDir: str, postFilename: str,
+                          objectUrl: str, actor: str,
+                          nickname: str, domain: str, debug: bool) -> None:
+    """Updates the likes collection within a post
+    """
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return
+    # remove any cached version of this post so that the
+    # like icon is changed
+    removePostFromCache(postJsonObject, recentPostsCache)
+    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+                                               domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            pprint(postJsonObject)
+            print('DEBUG: post ' + objectUrl + ' has no object')
+        return
+    if not objectUrl.endswith('/likes'):
+        objectUrl = objectUrl + '/likes'
+    if not postJsonObject['object'].get('likes'):
+        if debug:
+            print('DEBUG: Adding initial like to ' + objectUrl)
+        likesJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': objectUrl,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
+                'type': 'Like',
+                'actor': actor
+            }]
+        }
+        postJsonObject['object']['likes'] = likesJson
+    else:
+        if not postJsonObject['object']['likes'].get('items'):
+            postJsonObject['object']['likes']['items'] = []
+        for likeItem in postJsonObject['object']['likes']['items']:
+            if likeItem.get('actor'):
+                if likeItem['actor'] == actor:
+                    # already liked
+                    return
+        newLike = {
+            'type': 'Like',
+            'actor': actor
+        }
+        postJsonObject['object']['likes']['items'].append(newLike)
+        itlen = len(postJsonObject['object']['likes']['items'])
+        postJsonObject['object']['likes']['totalItems'] = itlen
+
+    if debug:
+        print('DEBUG: saving post with likes added')
+        pprint(postJsonObject)
+    saveJson(postJsonObject, postFilename)
