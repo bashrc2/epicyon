@@ -7130,20 +7130,21 @@ class PubServer(BaseHTTPRequestHandler):
             'to': [actorLiked],
             'object': likeUrl
         }
+        print('Locating liked post')
         # directly like the post file
         likedPostFilename = locatePost(baseDir,
                                        self.postToNickname,
                                        domain,
                                        likeUrl)
         if likedPostFilename:
-            if debug:
-                print('Updating likes for ' + likedPostFilename)
+            #if debug:
+            print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(self.server.recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
                                   debug)
-            if debug:
-                print('Regenerating html post for changed likes collection')
+            #if debug:
+            print('Regenerating html post for changed likes collection')
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
                 cachedPostFilename = \
