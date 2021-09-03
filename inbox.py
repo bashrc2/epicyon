@@ -1012,8 +1012,6 @@ def _receiveLike(recentPostsCache: {},
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
                              False, True, False)
-    else:
-        print('WARN: Liked post not found: ' + postFilename)
 
     return True
 
@@ -1113,8 +1111,6 @@ def _receiveUndoLike(recentPostsCache: {},
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
                              False, True, False)
-    else:
-        print('WARN: Unliked post not found: ' + postFilename)
     return True
 
 
@@ -1123,7 +1119,14 @@ def _receiveBookmark(recentPostsCache: {},
                      httpPrefix: str, domain: str, port: int,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
-                     debug: bool) -> bool:
+                     debug: bool, signingPrivateKeyPem: str,
+                     maxRecentPosts: int, translate: {},
+                     allowDeletion: bool,
+                     YTReplacementDomain: str,
+                     peertubeInstances: [],
+                     allowLocalNetworkAccess: bool,
+                     themeName: str, systemLanguage: str,
+                     maxLikeCount: int) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not messageJson.get('type'):
@@ -1189,6 +1192,38 @@ def _receiveBookmark(recentPostsCache: {},
     updateBookmarksCollection(recentPostsCache, baseDir, postFilename,
                               messageJson['object']['url'],
                               messageJson['actor'], domain, debug)
+    # regenerate the html
+    bookmarkedPostJson = loadJson(postFilename, 0, 1)
+    if bookmarkedPostJson:
+        if debug:
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain,
+                                      bookmarkedPostJson)
+            print('Bookmarked post json: ' + str(bookmarkedPostJson))
+            print('Bookmarked post nickname: ' + nickname + ' ' + domain)
+            print('Bookmarked post cache: ' + str(cachedPostFilename))
+        pageNumber = 1
+        showPublishedDateOnly = False
+        showIndividualPostIcons = True
+        manuallyApproveFollowers = \
+            followerApprovalActive(baseDir, nickname, domain)
+        notDM = not isDM(bookmarkedPostJson)
+        individualPostAsHtml(signingPrivateKeyPem, False,
+                             recentPostsCache, maxRecentPosts,
+                             translate, pageNumber, baseDir,
+                             session, cachedWebfingers, personCache,
+                             nickname, domain, port, bookmarkedPostJson,
+                             None, True, allowDeletion,
+                             httpPrefix, __version__,
+                             'inbox', YTReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount, notDM,
+                             showIndividualPostIcons,
+                             manuallyApproveFollowers,
+                             False, True, False)
     return True
 
 
@@ -1197,7 +1232,14 @@ def _receiveUndoBookmark(recentPostsCache: {},
                          httpPrefix: str, domain: str, port: int,
                          sendThreads: [], postLog: [], cachedWebfingers: {},
                          personCache: {}, messageJson: {}, federationList: [],
-                         debug: bool) -> bool:
+                         debug: bool, signingPrivateKeyPem: str,
+                         maxRecentPosts: int, translate: {},
+                         allowDeletion: bool,
+                         YTReplacementDomain: str,
+                         peertubeInstances: [],
+                         allowLocalNetworkAccess: bool,
+                         themeName: str, systemLanguage: str,
+                         maxLikeCount: int) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not messageJson.get('type'):
@@ -1264,6 +1306,38 @@ def _receiveUndoBookmark(recentPostsCache: {},
     undoBookmarksCollectionEntry(recentPostsCache, baseDir, postFilename,
                                  messageJson['object']['url'],
                                  messageJson['actor'], domain, debug)
+    # regenerate the html
+    bookmarkedPostJson = loadJson(postFilename, 0, 1)
+    if bookmarkedPostJson:
+        if debug:
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain,
+                                      bookmarkedPostJson)
+            print('Unbookmarked post json: ' + str(bookmarkedPostJson))
+            print('Unbookmarked post nickname: ' + nickname + ' ' + domain)
+            print('Unbookmarked post cache: ' + str(cachedPostFilename))
+        pageNumber = 1
+        showPublishedDateOnly = False
+        showIndividualPostIcons = True
+        manuallyApproveFollowers = \
+            followerApprovalActive(baseDir, nickname, domain)
+        notDM = not isDM(bookmarkedPostJson)
+        individualPostAsHtml(signingPrivateKeyPem, False,
+                             recentPostsCache, maxRecentPosts,
+                             translate, pageNumber, baseDir,
+                             session, cachedWebfingers, personCache,
+                             nickname, domain, port, bookmarkedPostJson,
+                             None, True, allowDeletion,
+                             httpPrefix, __version__,
+                             'inbox', YTReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount, notDM,
+                             showIndividualPostIcons,
+                             manuallyApproveFollowers,
+                             False, True, False)
     return True
 
 
@@ -2426,7 +2500,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         personCache,
                         messageJson,
                         federationList,
-                        debug):
+                        debug, signingPrivateKeyPem,
+                        maxRecentPosts, translate,
+                        allowDeletion,
+                        YTReplacementDomain,
+                        peertubeInstances,
+                        allowLocalNetworkAccess,
+                        themeName, systemLanguage,
+                        maxLikeCount):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         return False
@@ -2440,7 +2521,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             personCache,
                             messageJson,
                             federationList,
-                            debug):
+                            debug, signingPrivateKeyPem,
+                            maxRecentPosts, translate,
+                            allowDeletion,
+                            YTReplacementDomain,
+                            peertubeInstances,
+                            allowLocalNetworkAccess,
+                            themeName, systemLanguage,
+                            maxLikeCount):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
