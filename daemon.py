@@ -7738,13 +7738,13 @@ class PubServer(BaseHTTPRequestHandler):
                  httpPrefix, muteUrl,
                  self.server.recentPostsCache, debug)
         muteFilename = \
-            locatePost(baseDir, self.postToNickname, domain, muteUrl)
+            locatePost(baseDir, nickname, domain, muteUrl)
         if muteFilename:
             print('Regenerating html post for changed mute status')
             mutePostJson = loadJson(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(baseDir, self.postToNickname,
+                    getCachedPostFilename(baseDir, nickname,
                                           domain, mutePostJson)
                 print('Muted post json: ' + str(mutePostJson))
                 print('Muted post nickname: ' +
@@ -7753,7 +7753,7 @@ class PubServer(BaseHTTPRequestHandler):
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
-                                           self.postToNickname, domain)
+                                           nickname, domain)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7762,7 +7762,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.session,
                                      self.server.cachedWebfingers,
                                      self.server.personCache,
-                                     self.postToNickname, domain,
+                                     nickname, domain,
                                      self.server.port, mutePostJson,
                                      None, True,
                                      self.server.allowDeletion,
@@ -7836,13 +7836,13 @@ class PubServer(BaseHTTPRequestHandler):
                    httpPrefix, muteUrl,
                    self.server.recentPostsCache, debug)
         muteFilename = \
-            locatePost(baseDir, self.postToNickname, domain, muteUrl)
+            locatePost(baseDir, nickname, domain, muteUrl)
         if muteFilename:
             print('Regenerating html post for changed unmute status')
             mutePostJson = loadJson(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(baseDir, self.postToNickname,
+                    getCachedPostFilename(baseDir, nickname,
                                           domain, mutePostJson)
                 print('Unmuted post json: ' + str(mutePostJson))
                 print('Unmuted post nickname: ' +
@@ -7851,7 +7851,7 @@ class PubServer(BaseHTTPRequestHandler):
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
-                                           self.postToNickname, domain)
+                                           nickname, domain)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7860,7 +7860,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.session,
                                      self.server.cachedWebfingers,
                                      self.server.personCache,
-                                     self.postToNickname, domain,
+                                     nickname, domain,
                                      self.server.port, mutePostJson,
                                      None, True,
                                      self.server.allowDeletion,
