@@ -7748,7 +7748,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain, mutePostJson)
                 print('Muted post json: ' + str(mutePostJson))
                 print('Muted post nickname: ' +
-                      self.postToNickname + ' ' + domain)
+                      nickname + ' ' + domain)
                 print('Muted post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
@@ -7846,7 +7846,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain, mutePostJson)
                 print('Unmuted post json: ' + str(mutePostJson))
                 print('Unmuted post nickname: ' +
-                      self.postToNickname + ' ' + domain)
+                      nickname + ' ' + domain)
                 print('Unmuted post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
