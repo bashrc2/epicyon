@@ -1604,7 +1604,7 @@ def _receiveAnnounce(recentPostsCache: {},
                     time.sleep(5)
         if debug:
             print('DEBUG: announced/repeated post arrived in inbox')
-        if postJsonObject:
+        if messageJson:
             pageNumber = 1
             showPublishedDateOnly = False
             showIndividualPostIcons = True
@@ -1615,7 +1615,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                  recentPostsCache, maxRecentPosts,
                                  translate, pageNumber, baseDir,
                                  session, cachedWebfingers, personCache,
-                                 nickname, domain, port, postJsonObject,
+                                 nickname, domain, port, messageJson,
                                  None, True, allowDeletion,
                                  httpPrefix, __version__,
                                  'inbox', YTReplacementDomain,
