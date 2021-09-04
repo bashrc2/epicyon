@@ -1611,7 +1611,8 @@ def _receiveAnnounce(recentPostsCache: {},
         manuallyApproveFollowers = \
             followerApprovalActive(baseDir, nickname, domain)
         notDM = True
-        print('Generating html for announce ' + postJsonObject['id'])
+        if debug:
+            print('Generating html for announce ' + postJsonObject['id'])
         announceHtml = \
             individualPostAsHtml(signingPrivateKeyPem, True,
                                  recentPostsCache, maxRecentPosts,
@@ -1629,7 +1630,9 @@ def _receiveAnnounce(recentPostsCache: {},
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False)
-        print('Generating html for announce ' + str(announceHtml))
+        if not announceHtml:
+            print('WARN: Unable to generate html for announce ' +
+                  postJsonObject['id'])
     return True
 
 
