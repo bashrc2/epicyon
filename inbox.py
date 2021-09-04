@@ -1611,8 +1611,8 @@ def _receiveAnnounce(recentPostsCache: {},
         manuallyApproveFollowers = \
             followerApprovalActive(baseDir, nickname, domain)
         notDM = True
-        if debug:
-            print('Generating html for announce ' + postJsonObject['id'])
+        #if debug:
+        print('Generating html for announce ' + postJsonObject['id'])
         announceHtml = \
             individualPostAsHtml(signingPrivateKeyPem, True,
                                  recentPostsCache, maxRecentPosts,
