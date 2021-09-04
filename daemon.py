@@ -90,7 +90,6 @@ from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
-from inbox import inboxUpdateIndex
 from inbox import clearQueueItems
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
@@ -6740,18 +6739,11 @@ class PubServer(BaseHTTPRequestHandler):
             # save the announce straight to the outbox
             # This is because the subsequent send is within a separate thread
             # but the html still needs to be generated before this call ends
-            # announceId = removeIdEnding(announceJson['id'])
-            announceId = announceJson['id']
+            announceId = removeIdEnding(announceJson['id'])
             announceFilename = \
                 savePostToBox(baseDir, httpPrefix, announceId,
                               self.postToNickname, domainFull,
                               announceJson, 'outbox')
-            # also copy the post id to the inbox index
-            indexes = ['inbox']
-            for boxNameIndex in indexes:
-                inboxUpdateIndex(boxNameIndex, baseDir,
-                                 self.postToNickname + '@' + domain,
-                                 announceFilename, debug)
 
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('repeat.png'):
