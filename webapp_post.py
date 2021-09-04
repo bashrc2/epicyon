@@ -1243,7 +1243,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                 signingPrivateKeyPem)
     if postHtml:
         return postHtml
-    if useCacheOnly:
+    if useCacheOnly and postJsonObject['type'] != 'Announce':
         return ''
 
     _logPostTiming(enableTimingLog, postStartTime, '4')
