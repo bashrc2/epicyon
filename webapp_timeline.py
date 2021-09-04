@@ -860,7 +860,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     # read the post from disk
                     currTlStr = \
                         individualPostAsHtml(signingPrivateKeyPem,
-                                             False, recentPostsCache,
+                                             True, recentPostsCache,
                                              maxRecentPosts,
                                              translate, pageNumber,
                                              baseDir, session,

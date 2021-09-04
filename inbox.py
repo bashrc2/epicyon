@@ -1530,7 +1530,7 @@ def _receiveAnnounce(recentPostsCache: {},
               ' -> ' + messageJson['object'])
     domainFull = getFullDomain(domain, port)
 
-    # generate html
+    # Generate html. This also downloads the announced post.
     pageNumber = 1
     showPublishedDateOnly = False
     showIndividualPostIcons = True
