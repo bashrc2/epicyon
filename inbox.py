@@ -1604,18 +1604,20 @@ def _receiveAnnounce(recentPostsCache: {},
                     time.sleep(5)
         if debug:
             print('DEBUG: announced/repeated post arrived in inbox')
-        if messageJson:
-            pageNumber = 1
-            showPublishedDateOnly = False
-            showIndividualPostIcons = True
-            manuallyApproveFollowers = \
-                followerApprovalActive(baseDir, nickname, domain)
-            notDM = True
+
+        pageNumber = 1
+        showPublishedDateOnly = False
+        showIndividualPostIcons = True
+        manuallyApproveFollowers = \
+            followerApprovalActive(baseDir, nickname, domain)
+        notDM = True
+        print('Generating html for announce ' + postJsonObject['id'])
+        announceHtml = \
             individualPostAsHtml(signingPrivateKeyPem, True,
                                  recentPostsCache, maxRecentPosts,
                                  translate, pageNumber, baseDir,
                                  session, cachedWebfingers, personCache,
-                                 nickname, domain, port, messageJson,
+                                 nickname, domain, port, postJsonObject,
                                  None, True, allowDeletion,
                                  httpPrefix, __version__,
                                  'inbox', YTReplacementDomain,
@@ -1627,7 +1629,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False)
-
+        print('Generating html for announce ' + str(announceHtml))
     return True
 
 
