@@ -1529,6 +1529,40 @@ def _receiveAnnounce(recentPostsCache: {},
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
     domainFull = getFullDomain(domain, port)
+
+    # generate html
+    pageNumber = 1
+    showPublishedDateOnly = False
+    showIndividualPostIcons = True
+    manuallyApproveFollowers = \
+        followerApprovalActive(baseDir, nickname, domain)
+    notDM = True
+    # if debug:
+    print('Generating html for announce ' + messageJson['id'])
+    announceHtml = \
+        individualPostAsHtml(signingPrivateKeyPem, True,
+                             recentPostsCache, maxRecentPosts,
+                             translate, pageNumber, baseDir,
+                             session, cachedWebfingers, personCache,
+                             nickname, domain, port, messageJson,
+                             None, True, allowDeletion,
+                             httpPrefix, __version__,
+                             'inbox', YTReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount, notDM,
+                             showIndividualPostIcons,
+                             manuallyApproveFollowers,
+                             False, True, False)
+    if not announceHtml:
+        print('WARN: Unable to generate html for announce ' +
+              str(messageJson))
+    else:
+        # if debug:
+        print('Generated announce html ' + announceHtml.replace('\n', ''))
+
     postJsonObject = downloadAnnounce(session, baseDir,
                                       httpPrefix,
                                       nickname, domain,
@@ -1605,35 +1639,6 @@ def _receiveAnnounce(recentPostsCache: {},
                     time.sleep(5)
         if debug:
             print('DEBUG: announced/repeated post arrived in inbox')
-
-        pageNumber = 1
-        showPublishedDateOnly = False
-        showIndividualPostIcons = True
-        manuallyApproveFollowers = \
-            followerApprovalActive(baseDir, nickname, domain)
-        notDM = True
-        #if debug:
-        print('Generating html for announce ' + postJsonObject['id'])
-        announceHtml = \
-            individualPostAsHtml(signingPrivateKeyPem, True,
-                                 recentPostsCache, maxRecentPosts,
-                                 translate, pageNumber, baseDir,
-                                 session, cachedWebfingers, personCache,
-                                 nickname, domain, port, postJsonObject,
-                                 None, True, allowDeletion,
-                                 httpPrefix, __version__,
-                                 'inbox', YTReplacementDomain,
-                                 showPublishedDateOnly,
-                                 peertubeInstances,
-                                 allowLocalNetworkAccess,
-                                 themeName, systemLanguage,
-                                 maxLikeCount, notDM,
-                                 showIndividualPostIcons,
-                                 manuallyApproveFollowers,
-                                 False, True, False)
-        if not announceHtml:
-            print('WARN: Unable to generate html for announce ' +
-                  postJsonObject['id'])
     return True
 
 
