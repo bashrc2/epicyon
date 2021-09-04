@@ -1537,8 +1537,8 @@ def _receiveAnnounce(recentPostsCache: {},
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
     notDM = True
-    # if debug:
-    print('Generating html for announce ' + messageJson['id'])
+    if debug:
+        print('Generating html for announce ' + messageJson['id'])
     announceHtml = \
         individualPostAsHtml(signingPrivateKeyPem, True,
                              recentPostsCache, maxRecentPosts,
@@ -1560,8 +1560,8 @@ def _receiveAnnounce(recentPostsCache: {},
         print('WARN: Unable to generate html for announce ' +
               str(messageJson))
     else:
-        # if debug:
-        print('Generated announce html ' + announceHtml.replace('\n', ''))
+        if debug:
+            print('Generated announce html ' + announceHtml.replace('\n', ''))
 
     postJsonObject = downloadAnnounce(session, baseDir,
                                       httpPrefix,
