@@ -1541,6 +1541,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                       domainFull, personCache,
                                       signingPrivateKeyPem)
     if not postJsonObject:
+        print('WARN: unable to download announce: ' + str(messageJson))
         notInOnion = True
         if onionDomain:
             if onionDomain in messageJson['object']:
