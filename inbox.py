@@ -1434,7 +1434,11 @@ def _receiveAnnounce(recentPostsCache: {},
                      YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
                      themeName: str, systemLanguage: str,
-                     signingPrivateKeyPem: str) -> bool:
+                     signingPrivateKeyPem: str,
+                     maxRecentPosts: int,
+                     allowDeletion: bool,
+                     peertubeInstances: [],
+                     maxLikeCount: int) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1600,6 +1604,30 @@ def _receiveAnnounce(recentPostsCache: {},
                     time.sleep(5)
         if debug:
             print('DEBUG: announced/repeated post arrived in inbox')
+        if postJsonObject:
+            pageNumber = 1
+            showPublishedDateOnly = False
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, nickname, domain)
+            notDM = True
+            individualPostAsHtml(signingPrivateKeyPem, True,
+                                 recentPostsCache, maxRecentPosts,
+                                 translate, pageNumber, baseDir,
+                                 session, cachedWebfingers, personCache,
+                                 nickname, domain, port, postJsonObject,
+                                 None, True, allowDeletion,
+                                 httpPrefix, __version__,
+                                 'inbox', YTReplacementDomain,
+                                 showPublishedDateOnly,
+                                 peertubeInstances,
+                                 allowLocalNetworkAccess,
+                                 themeName, systemLanguage,
+                                 maxLikeCount, notDM,
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False)
+
     return True
 
 
@@ -2546,7 +2574,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         YTReplacementDomain,
                         allowLocalNetworkAccess,
                         themeName, systemLanguage,
-                        signingPrivateKeyPem):
+                        signingPrivateKeyPem,
+                        maxRecentPosts,
+                        allowDeletion,
+                        peertubeInstances,
+                        maxLikeCount):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
