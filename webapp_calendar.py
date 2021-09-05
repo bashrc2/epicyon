@@ -110,7 +110,10 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
     accountDir = acctDir(baseDir, nickname, domain)
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
-        os.remove(calendarFile)
+        try:
+            os.remove(calendarFile)
+        except BaseException:
+            pass
 
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):

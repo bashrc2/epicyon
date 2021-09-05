@@ -44,7 +44,10 @@ def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
     personDir = acctDir(baseDir, nickname, domain)
     deviceFilename = personDir + '/devices/' + deviceId + '.json'
     if os.path.isfile(deviceFilename):
-        os.remove(deviceFilename)
+        try:
+            os.remove(deviceFilename)
+        except BaseException:
+            pass
         return True
     return False
 

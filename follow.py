@@ -308,7 +308,10 @@ def clearFollows(baseDir: str, nickname: str, domain: str,
         os.mkdir(baseDir + '/accounts/' + handle)
     filename = baseDir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):
-        os.remove(filename)
+        try:
+            os.remove(filename)
+        except BaseException:
+            pass
 
 
 def clearFollowers(baseDir: str, nickname: str, domain: str) -> None:

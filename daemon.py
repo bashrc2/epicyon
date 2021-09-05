@@ -488,7 +488,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                   postJsonObject)
                         if cachedPostFilename:
                             if os.path.isfile(cachedPostFilename):
-                                os.remove(cachedPostFilename)
+                                try:
+                                    os.remove(cachedPostFilename)
+                                except BaseException:
+                                    pass
                         # remove from memory cache
                         removePostFromCache(postJsonObject,
                                             self.server.recentPostsCache)
@@ -2256,7 +2259,10 @@ class PubServer(BaseHTTPRequestHandler):
                 newswireBlockedFilename = accountDir + '/.nonewswire'
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
-                        os.remove(newswireBlockedFilename)
+                        try:
+                            os.remove(newswireBlockedFilename)
+                        except BaseException:
+                            pass
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
@@ -2291,7 +2297,10 @@ class PubServer(BaseHTTPRequestHandler):
                 featuresBlockedFilename = accountDir + '/.nofeatures'
                 if postsToFeatures == 'on':
                     if os.path.isfile(featuresBlockedFilename):
-                        os.remove(featuresBlockedFilename)
+                        try:
+                            os.remove(featuresBlockedFilename)
+                        except BaseException:
+                            pass
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
@@ -2326,7 +2335,10 @@ class PubServer(BaseHTTPRequestHandler):
                 newswireModFilename = accountDir + '/.newswiremoderated'
                 if modPostsToNews != 'on':
                     if os.path.isfile(newswireModFilename):
-                        os.remove(newswireModFilename)
+                        try:
+                            os.remove(newswireModFilename)
+                        except BaseException:
+                            pass
                 else:
                     if os.path.isdir(accountDir):
                         nwFilename = newswireModFilename
@@ -3739,7 +3751,10 @@ class PubServer(BaseHTTPRequestHandler):
                     linksFile.write(linksStr)
             else:
                 if os.path.isfile(linksFilename):
-                    os.remove(linksFilename)
+                    try:
+                        os.remove(linksFilename)
+                    except BaseException:
+                        pass
 
             adminNickname = \
                 getConfigParam(baseDir, 'admin')
@@ -3752,7 +3767,10 @@ class PubServer(BaseHTTPRequestHandler):
                             aboutFile.write(aboutStr)
                 else:
                     if os.path.isfile(aboutFilename):
-                        os.remove(aboutFilename)
+                        try:
+                            os.remove(aboutFilename)
+                        except BaseException:
+                            pass
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
@@ -3762,7 +3780,10 @@ class PubServer(BaseHTTPRequestHandler):
                             TOSFile.write(TOSStr)
                 else:
                     if os.path.isfile(TOSFilename):
-                        os.remove(TOSFilename)
+                        try:
+                            os.remove(TOSFilename)
+                        except BaseException:
+                            pass
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/' + defaultTimeline,
@@ -3860,7 +3881,10 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 categoryFilename = baseDir + '/tags/' + hashtag + '.category'
                 if os.path.isfile(categoryFilename):
-                    os.remove(categoryFilename)
+                    try:
+                        os.remove(categoryFilename)
+                    except BaseException:
+                        pass
 
         # redirect back to the default timeline
         self._redirect_headers(tagScreenStr,
@@ -3938,7 +3962,10 @@ class PubServer(BaseHTTPRequestHandler):
                     newswireFile.write(newswireStr)
             else:
                 if os.path.isfile(newswireFilename):
-                    os.remove(newswireFilename)
+                    try:
+                        os.remove(newswireFilename)
+                    except BaseException:
+                        pass
 
             # save filtered words list for the newswire
             filterNewswireFilename = \
@@ -3949,7 +3976,10 @@ class PubServer(BaseHTTPRequestHandler):
                     filterfile.write(fields['filteredWordsNewswire'])
             else:
                 if os.path.isfile(filterNewswireFilename):
-                    os.remove(filterNewswireFilename)
+                    try:
+                        os.remove(filterNewswireFilename)
+                    except BaseException:
+                        pass
 
             # save news tagging rules
             hashtagRulesFilename = \
@@ -3959,7 +3989,10 @@ class PubServer(BaseHTTPRequestHandler):
                     rulesfile.write(fields['hashtagRulesList'])
             else:
                 if os.path.isfile(hashtagRulesFilename):
-                    os.remove(hashtagRulesFilename)
+                    try:
+                        os.remove(hashtagRulesFilename)
+                    except BaseException:
+                        pass
 
             newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
             if fields.get('trustedNewswire'):
@@ -3970,7 +4003,10 @@ class PubServer(BaseHTTPRequestHandler):
                     trustFile.write(newswireTrusted)
             else:
                 if os.path.isfile(newswireTrustedFilename):
-                    os.remove(newswireTrustedFilename)
+                    try:
+                        os.remove(newswireTrustedFilename)
+                    except BaseException:
+                        pass
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/' + defaultTimeline,
@@ -3995,7 +4031,10 @@ class PubServer(BaseHTTPRequestHandler):
             acctDir(baseDir, nickname, domain) + '/.citations.txt'
         # remove any existing citations file
         if os.path.isfile(citationsFilename):
-            os.remove(citationsFilename)
+            try:
+                os.remove(citationsFilename)
+            except BaseException:
+                pass
 
         if newswire and \
            ' boundary=' in self.headers['Content-type']:
@@ -4297,7 +4336,10 @@ class PubServer(BaseHTTPRequestHandler):
                     filenameBase = \
                         baseDir + '/imports/newtheme.zip'
                     if os.path.isfile(filenameBase):
-                        os.remove(filenameBase)
+                        try:
+                            os.remove(filenameBase)
+                        except BaseException:
+                            pass
                 else:
                     filenameBase = \
                         acctDir(baseDir, nickname, domain) + \
@@ -5334,14 +5376,20 @@ class PubServer(BaseHTTPRequestHandler):
                             for ext in fontExt:
                                 if os.path.isfile(baseDir +
                                                   '/fonts/custom.' + ext):
-                                    os.remove(baseDir +
-                                              '/fonts/custom.' + ext)
+                                    try:
+                                        os.remove(baseDir +
+                                                  '/fonts/custom.' + ext)
+                                    except BaseException:
+                                        pass
                                 if os.path.isfile(baseDir +
                                                   '/fonts/custom.' + ext +
                                                   '.etag'):
-                                    os.remove(baseDir +
-                                              '/fonts/custom.' + ext +
-                                              '.etag')
+                                    try:
+                                        os.remove(baseDir +
+                                                  '/fonts/custom.' + ext +
+                                                  '.etag')
+                                    except BaseException:
+                                        pass
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 self.server.themeName = currTheme
@@ -5389,7 +5437,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     fFile.write('\n')
                         if not followDMsActive:
                             if os.path.isfile(followDMsFilename):
-                                os.remove(followDMsFilename)
+                                try:
+                                    os.remove(followDMsFilename)
+                                except BaseException:
+                                    pass
 
                     # remove Twitter retweets
                     removeTwitterFilename = \
@@ -5404,7 +5455,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 rFile.write('\n')
                     if not removeTwitterActive:
                         if os.path.isfile(removeTwitterFilename):
-                            os.remove(removeTwitterFilename)
+                            try:
+                                os.remove(removeTwitterFilename)
+                            except BaseException:
+                                pass
 
                     # hide Like button
                     hideLikeButtonFile = \
@@ -5421,10 +5475,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 rFile.write('\n')
                             # remove notify likes selection
                             if os.path.isfile(notifyLikesFilename):
-                                os.remove(notifyLikesFilename)
+                                try:
+                                    os.remove(notifyLikesFilename)
+                                except BaseException:
+                                    pass
                     if not hideLikeButtonActive:
                         if os.path.isfile(hideLikeButtonFile):
-                            os.remove(hideLikeButtonFile)
+                            try:
+                                os.remove(hideLikeButtonFile)
+                            except BaseException:
+                                pass
 
                     # notify about new Likes
                     if onFinalWelcomeScreen:
@@ -5442,7 +5502,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     rFile.write('\n')
                         if not notifyLikesActive:
                             if os.path.isfile(notifyLikesFilename):
-                                os.remove(notifyLikesFilename)
+                                try:
+                                    os.remove(notifyLikesFilename)
+                                except BaseException:
+                                    pass
 
                     # this account is a bot
                     if fields.get('isBot'):
@@ -5501,7 +5564,10 @@ class PubServer(BaseHTTPRequestHandler):
                             filterfile.write(fields['filteredWords'])
                     else:
                         if os.path.isfile(filterFilename):
-                            os.remove(filterFilename)
+                            try:
+                                os.remove(filterFilename)
+                            except BaseException:
+                                pass
 
                     # word replacements
                     switchFilename = \
@@ -5512,7 +5578,10 @@ class PubServer(BaseHTTPRequestHandler):
                             switchfile.write(fields['switchWords'])
                     else:
                         if os.path.isfile(switchFilename):
-                            os.remove(switchFilename)
+                            try:
+                                os.remove(switchFilename)
+                            except BaseException:
+                                pass
 
                     # autogenerated tags
                     autoTagsFilename = \
@@ -5523,7 +5592,10 @@ class PubServer(BaseHTTPRequestHandler):
                             autoTagsFile.write(fields['autoTags'])
                     else:
                         if os.path.isfile(autoTagsFilename):
-                            os.remove(autoTagsFilename)
+                            try:
+                                os.remove(autoTagsFilename)
+                            except BaseException:
+                                pass
 
                     # autogenerated content warnings
                     autoCWFilename = \
@@ -5534,7 +5606,10 @@ class PubServer(BaseHTTPRequestHandler):
                             autoCWFile.write(fields['autoCW'])
                     else:
                         if os.path.isfile(autoCWFilename):
-                            os.remove(autoCWFilename)
+                            try:
+                                os.remove(autoCWFilename)
+                            except BaseException:
+                                pass
 
                     # save blocked accounts list
                     blockedFilename = \
@@ -5545,7 +5620,10 @@ class PubServer(BaseHTTPRequestHandler):
                             blockedfile.write(fields['blocked'])
                     else:
                         if os.path.isfile(blockedFilename):
-                            os.remove(blockedFilename)
+                            try:
+                                os.remove(blockedFilename)
+                            except BaseException:
+                                pass
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
@@ -5558,7 +5636,10 @@ class PubServer(BaseHTTPRequestHandler):
                             aFile.write(fields['dmAllowedInstances'])
                     else:
                         if os.path.isfile(dmAllowedInstancesFilename):
-                            os.remove(dmAllowedInstancesFilename)
+                            try:
+                                os.remove(dmAllowedInstancesFilename)
+                            except BaseException:
+                                pass
 
                     # save allowed instances list
                     # This is the account level allow list
@@ -5570,7 +5651,10 @@ class PubServer(BaseHTTPRequestHandler):
                             aFile.write(fields['allowedInstances'])
                     else:
                         if os.path.isfile(allowedInstancesFilename):
-                            os.remove(allowedInstancesFilename)
+                            try:
+                                os.remove(allowedInstancesFilename)
+                            except BaseException:
+                                pass
 
                     # save blocked user agents
                     # This is admin lebel and global to the instance
@@ -5615,7 +5699,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances.append(url)
                         else:
                             if os.path.isfile(peertubeInstancesFile):
-                                os.remove(peertubeInstancesFile)
+                                try:
+                                    os.remove(peertubeInstancesFile)
+                                except BaseException:
+                                    pass
                             self.server.peertubeInstances.clear()
 
                     # save git project names list
@@ -5627,7 +5714,10 @@ class PubServer(BaseHTTPRequestHandler):
                             aFile.write(fields['gitProjects'].lower())
                     else:
                         if os.path.isfile(gitProjectsFilename):
-                            os.remove(gitProjectsFilename)
+                            try:
+                                os.remove(gitProjectsFilename)
+                            except BaseException:
+                                pass
 
                     # save actor json file within accounts
                     if actorChanged:
@@ -15025,7 +15115,10 @@ class PubServer(BaseHTTPRequestHandler):
                          self.server.lowBandwidth)
                 if filename:
                     if os.path.isfile(filename):
-                        os.remove(filename)
+                        try:
+                            os.remove(filename)
+                        except BaseException:
+                            pass
                 self.postToNickname = nickname
                 return 1
         return -1

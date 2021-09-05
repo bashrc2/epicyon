@@ -93,7 +93,10 @@ def updateHashtagCategories(baseDir: str) -> None:
     hashtagCategories = getHashtagCategories(baseDir)
     if not hashtagCategories:
         if os.path.isfile(categoryListFilename):
-            os.remove(categoryListFilename)
+            try:
+                os.remove(categoryListFilename)
+            except BaseException:
+                pass
         return
 
     categoryList = []

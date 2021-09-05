@@ -83,7 +83,10 @@ def exportTheme(baseDir: str, theme: str) -> bool:
         os.mkdir(baseDir + '/exports')
     exportFilename = baseDir + '/exports/' + theme + '.zip'
     if os.path.isfile(exportFilename):
-        os.remove(exportFilename)
+        try:
+            os.remove(exportFilename)
+        except BaseException:
+            pass
     try:
         make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
     except BaseException:
@@ -250,7 +253,10 @@ def _removeTheme(baseDir: str):
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
-            os.remove(baseDir + '/' + filename)
+            try:
+                os.remove(baseDir + '/' + filename)
+            except BaseException:
+                pass
 
 
 def setCSSparam(css: str, param: str, value: str) -> str:
@@ -432,7 +438,10 @@ def disableGrayscale(baseDir: str) -> None:
                     cssfile.write(css)
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
-        os.remove(grayscaleFilename)
+        try:
+            os.remove(grayscaleFilename)
+        except BaseException:
+            pass
 
 
 def _setCustomFont(baseDir: str):
@@ -587,7 +596,10 @@ def _setTextModeTheme(baseDir: str, name: str) -> None:
     textModeBannerFilename = \
         baseDir + '/theme/' + name + '/banner.txt'
     if os.path.isfile(baseDir + '/accounts/banner.txt'):
-        os.remove(baseDir + '/accounts/banner.txt')
+        try:
+            os.remove(baseDir + '/accounts/banner.txt')
+        except BaseException:
+            pass
     if os.path.isfile(textModeBannerFilename):
         try:
             copyfile(textModeBannerFilename,
@@ -684,7 +696,10 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                     else:
                         if os.path.isfile(accountDir +
                                           '/left_col_image.png'):
-                            os.remove(accountDir + '/left_col_image.png')
+                            try:
+                                os.remove(accountDir + '/left_col_image.png')
+                            except BaseException:
+                                pass
 
                 except BaseException:
                     pass
@@ -696,7 +711,10 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                     else:
                         if os.path.isfile(accountDir +
                                           '/right_col_image.png'):
-                            os.remove(accountDir + '/right_col_image.png')
+                            try:
+                                os.remove(accountDir + '/right_col_image.png')
+                            except BaseException:
+                                pass
                 except BaseException:
                     pass
         break
@@ -719,7 +737,10 @@ def setNewsAvatar(baseDir: str, name: str,
     filename = baseDir + '/cache/avatars/' + avatarFilename
 
     if os.path.isfile(filename):
-        os.remove(filename)
+        try:
+            os.remove(filename)
+        except BaseException:
+            pass
     if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
     accountDir = acctDir(baseDir, nickname, domain)

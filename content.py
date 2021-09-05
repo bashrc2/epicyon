@@ -938,9 +938,15 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
             for ex in extensionTypes:
                 possibleOtherFormat = filenameBase + '.' + ex
                 if os.path.isfile(possibleOtherFormat):
-                    os.remove(possibleOtherFormat)
+                    try:
+                        os.remove(possibleOtherFormat)
+                    except BaseException:
+                        pass
             if os.path.isfile(filenameBase):
-                os.remove(filenameBase)
+                try:
+                    os.remove(filenameBase)
+                except BaseException:
+                    pass
 
         if debug:
             print('DEBUG: No media found within POST')
@@ -1006,7 +1012,10 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                                                       detectedExtension, '.' +
                                                       ex)
             if os.path.isfile(possibleOtherFormat):
-                os.remove(possibleOtherFormat)
+                try:
+                    os.remove(possibleOtherFormat)
+                except BaseException:
+                    pass
 
     with open(filename, 'wb') as fp:
         fp.write(mediaBytes[startPos:])

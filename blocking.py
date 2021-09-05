@@ -514,7 +514,10 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
 
     with open(postFilename + '.muted', 'w+') as muteFile:
         muteFile.write('\n')
@@ -550,7 +553,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
 
     muteFilename = postFilename + '.muted'
     if os.path.isfile(muteFilename):
-        os.remove(muteFilename)
+        try:
+            os.remove(muteFilename)
+        except BaseException:
+            pass
         print('UNMUTE: ' + muteFilename + ' file removed')
 
     if hasObjectDict(postJsonObject):
@@ -588,7 +594,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
 
     # if the post is in the recent posts cache then mark it as unmuted
     if recentPostsCache.get('index'):
@@ -740,7 +749,10 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     if not enabled:
         # remove instance allow list
         if os.path.isfile(allowFilename):
-            os.remove(allowFilename)
+            try:
+                os.remove(allowFilename)
+            except BaseException:
+                pass
             print('Broch mode turned off')
     else:
         if os.path.isfile(allowFilename):
@@ -799,11 +811,14 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
     currTime = datetime.datetime.utcnow()
     daysSinceBroch = (currTime - modifiedDate).days
     if daysSinceBroch >= lapseDays:
+        removed = False
         try:
             os.remove(allowFilename)
+            removed = True
+        except BaseException:
+            pass
+        if removed:
             setConfigParam(baseDir, "brochMode", False)
             print('Broch mode has elapsed')
             return True
-        except BaseException:
-            pass
     return False

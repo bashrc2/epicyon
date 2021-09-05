@@ -46,7 +46,10 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
             if deleteSchedulePost:
                 # delete extraneous scheduled posts
                 if os.path.isfile(postFilename):
-                    os.remove(postFilename)
+                    try:
+                        os.remove(postFilename)
+                    except BaseException:
+                        pass
                 continue
             # create the new index file
             indexLines.append(line)
@@ -122,7 +125,10 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.maxLikeCount,
                                        httpd.maxRecentPosts):
                 indexLines.remove(line)
-                os.remove(postFilename)
+                try:
+                    os.remove(postFilename)
+                except BaseException:
+                    pass
                 continue
 
             # move to the outbox
@@ -190,7 +196,10 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
     scheduleIndexFilename = \
         acctDir(baseDir, nickname, domain) + '/schedule.index'
     if os.path.isfile(scheduleIndexFilename):
-        os.remove(scheduleIndexFilename)
+        try:
+            os.remove(scheduleIndexFilename)
+        except BaseException:
+            pass
     # remove the scheduled posts
     scheduledDir = acctDir(baseDir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduledDir):
@@ -199,6 +208,9 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
         filePath = os.path.join(scheduledDir, scheduledPostFilename)
         try:
             if os.path.isfile(filePath):
-                os.remove(filePath)
+                try:
+                    os.remove(filePath)
+                except BaseException:
+                    pass
         except BaseException:
             pass

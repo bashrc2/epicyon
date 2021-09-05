@@ -702,7 +702,10 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                                      blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
-                        os.remove(filename + '.arrived')
+                        try:
+                            os.remove(filename + '.arrived')
+                        except BaseException:
+                            pass
 
                 # setting the url here links to the activitypub object
                 # stored locally

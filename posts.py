@@ -1470,7 +1470,10 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
     accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     if os.path.isfile(pinnedFilename):
-        os.remove(pinnedFilename)
+        try:
+            os.remove(pinnedFilename)
+        except BaseException:
+            pass
 
 
 def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
@@ -3766,7 +3769,10 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
         postCacheFilename = \
             os.path.join(postCacheDir, postFilename).replace('.json', '.html')
         if os.path.isfile(postCacheFilename):
-            os.remove(postCacheFilename)
+            try:
+                os.remove(postCacheFilename)
+            except BaseException:
+                pass
 
         noOfPosts -= 1
         removeCtr += 1

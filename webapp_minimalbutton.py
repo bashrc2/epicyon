@@ -34,7 +34,10 @@ def setMinimal(baseDir: str, domain: str, nickname: str,
     minimalFilename = accountDir + '/.notminimal'
     minimalFileExists = os.path.isfile(minimalFilename)
     if minimal and minimalFileExists:
-        os.remove(minimalFilename)
+        try:
+            os.remove(minimalFilename)
+        except BaseException:
+            pass
     elif not minimal and not minimalFileExists:
         with open(minimalFilename, 'w+') as fp:
             fp.write('\n')

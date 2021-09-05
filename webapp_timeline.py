@@ -451,7 +451,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(dmFile):
         newDM = True
         if boxName == 'dm':
-            os.remove(dmFile)
+            try:
+                os.remove(dmFile)
+            except BaseException:
+                pass
 
     # should the Replies button be highlighted?
     newReply = False
@@ -459,7 +462,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(replyFile):
         newReply = True
         if boxName == 'tlreplies':
-            os.remove(replyFile)
+            try:
+                os.remove(replyFile)
+            except BaseException:
+                pass
 
     # should the Shares button be highlighted?
     newShare = False
@@ -467,7 +473,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(newShareFile):
         newShare = True
         if boxName == 'tlshares':
-            os.remove(newShareFile)
+            try:
+                os.remove(newShareFile)
+            except BaseException:
+                pass
 
     # should the Wanted button be highlighted?
     newWanted = False
@@ -475,7 +484,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(newWantedFile):
         newWanted = True
         if boxName == 'tlwanted':
-            os.remove(newWantedFile)
+            try:
+                os.remove(newWantedFile)
+            except BaseException:
+                pass
 
     # should the Moderation/reports button be highlighted?
     newReport = False
@@ -483,7 +495,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(newReportFile):
         newReport = True
         if boxName == 'moderation':
-            os.remove(newReportFile)
+            try:
+                os.remove(newReportFile)
+            except BaseException:
+                pass
 
     separatorStr = ''
     if boxName != 'tlmedia':

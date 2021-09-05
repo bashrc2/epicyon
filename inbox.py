@@ -821,7 +821,10 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
         getCachedPostFilename(baseDir, nickname, domain, messageJson)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     # remove from memory cache
     removePostFromCache(messageJson, recentPostsCache)
 
@@ -1583,7 +1586,10 @@ def _receiveAnnounce(recentPostsCache: {},
         if domain not in messageJson['object'] and notInOnion:
             if os.path.isfile(postFilename):
                 # if the announce can't be downloaded then remove it
-                os.remove(postFilename)
+                try:
+                    os.remove(postFilename)
+                except BaseException:
+                    pass
     else:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
@@ -1693,7 +1699,10 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     undoAnnounceCollectionEntry(recentPostsCache, baseDir, postFilename,
                                 messageJson['actor'], domain, debug)
     if os.path.isfile(postFilename):
-        os.remove(postFilename)
+        try:
+            os.remove(postFilename)
+        except BaseException:
+            pass
     return True
 
 
@@ -3276,7 +3285,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if debug:
                 print('Queue: public key could not be obtained from ' + keyId)
             if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
+                try:
+                    os.remove(queueFilename)
+                except BaseException:
+                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -3324,7 +3336,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
             if httpSignatureFailed or verifyAllSignatures:
                 if os.path.isfile(queueFilename):
-                    os.remove(queueFilename)
+                    try:
+                        os.remove(queueFilename)
+                    except BaseException:
+                        pass
                 if len(queue) > 0:
                     queue.pop(0)
                 continue
@@ -3341,7 +3356,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                         print('WARN: jsonld inbox signature check failed ' +
                               keyId)
                     if os.path.isfile(queueFilename):
-                        os.remove(queueFilename)
+                        try:
+                            os.remove(queueFilename)
+                        except BaseException:
+                            pass
                     if len(queue) > 0:
                         queue.pop(0)
                     continue
@@ -3367,7 +3385,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                         debug):
             print('Queue: Undo accepted from ' + keyId)
             if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
+                try:
+                    os.remove(queueFilename)
+                except BaseException:
+                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -3385,7 +3406,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 maxFollowers, onionDomain,
                                 signingPrivateKeyPem):
             if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
+                try:
+                    os.remove(queueFilename)
+                except BaseException:
+                    pass
             if len(queue) > 0:
                 queue.pop(0)
             print('Queue: Follow activity for ' + keyId +
@@ -3403,7 +3427,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                federationList, debug):
             print('Queue: Accept/Reject received from ' + keyId)
             if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
+                try:
+                    os.remove(queueFilename)
+                except BaseException:
+                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -3421,7 +3448,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if debug:
                 print('Queue: Update accepted from ' + keyId)
             if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
+                try:
+                    os.remove(queueFilename)
+                except BaseException:
+                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -3436,7 +3466,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 print('Queue: no recipients were resolved ' +
                       'for post arriving in inbox')
             if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
+                try:
+                    os.remove(queueFilename)
+                except BaseException:
+                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -3506,6 +3539,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')
         if os.path.isfile(queueFilename):
-            os.remove(queueFilename)
+            try:
+                os.remove(queueFilename)
+            except BaseException:
+                pass
         if len(queue) > 0:
             queue.pop(0)

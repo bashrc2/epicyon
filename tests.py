@@ -3197,7 +3197,10 @@ def _testJsonString() -> None:
     assert receivedJson['content'] == messageStr
     encodedStr = json.dumps(testJson, ensure_ascii=False)
     assert messageStr in encodedStr
-    os.remove(filename)
+    try:
+        os.remove(filename)
+    except BaseException:
+        pass
 
 
 def _testSaveLoadJson():
@@ -3208,7 +3211,10 @@ def _testSaveLoadJson():
     }
     testFilename = '.epicyon_tests_testSaveLoadJson.json'
     if os.path.isfile(testFilename):
-        os.remove(testFilename)
+        try:
+            os.remove(testFilename)
+        except BaseException:
+            pass
     assert saveJson(testJson, testFilename)
     assert os.path.isfile(testFilename)
     testLoadJson = loadJson(testFilename)
@@ -3217,7 +3223,10 @@ def _testSaveLoadJson():
     assert testLoadJson.get('param2')
     assert testLoadJson['param1'] == 3
     assert testLoadJson['param2'] == '"Crème brûlée यह एक परीक्षण ह"'
-    os.remove(testFilename)
+    try:
+        os.remove(testFilename)
+    except BaseException:
+        pass
 
 
 def _testTheme():

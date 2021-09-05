@@ -431,7 +431,10 @@ def updateLikesCollection(recentPostsCache: {},
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
 
     if not hasObjectDict(postJsonObject):
         if debug:

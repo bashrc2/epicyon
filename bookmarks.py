@@ -47,7 +47,10 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     # remove from the index
@@ -152,7 +155,10 @@ def updateBookmarksCollection(recentPostsCache: {},
                                                    domain, postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
+                try:
+                    os.remove(cachedPostFilename)
+                except BaseException:
+                    pass
         removePostFromCache(postJsonObject, recentPostsCache)
 
         if not postJsonObject.get('object'):

@@ -390,7 +390,10 @@ def postMessageToOutbox(session, translate: {},
                     baseDir + '/accounts/' + \
                     postToNickname + '@' + domain + '/.citations.txt'
                 if os.path.isfile(citationsFilename):
-                    os.remove(citationsFilename)
+                    try:
+                        os.remove(citationsFilename)
+                    except BaseException:
+                        pass
 
         # The following activity types get added to the index files
         indexedActivities = (

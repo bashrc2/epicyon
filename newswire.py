@@ -1028,7 +1028,10 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
     else:
         # remove the file if there is nothing to moderate
         if os.path.isfile(newswireModerationFilename):
-            os.remove(newswireModerationFilename)
+            try:
+                os.remove(newswireModerationFilename)
+            except BaseException:
+                pass
 
 
 def getDictFromNewswire(session, baseDir: str, domain: str,

@@ -222,6 +222,12 @@ def manualApproveFollowRequest(session, baseDir: str,
         # remove the .follow file
         if followActivityfilename:
             if os.path.isfile(followActivityfilename):
-                os.remove(followActivityfilename)
+                try:
+                    os.remove(followActivityfilename)
+                except BaseException:
+                    pass
     else:
-        os.remove(approveFollowsFilename + '.new')
+        try:
+            os.remove(approveFollowsFilename + '.new')
+        except BaseException:
+            pass

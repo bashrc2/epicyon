@@ -142,7 +142,10 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
             for ext in formats:
                 if sharesJson[itemID]['imageUrl'].endswith('.' + ext):
                     if os.path.isfile(itemIDfile + '.' + ext):
-                        os.remove(itemIDfile + '.' + ext)
+                        try:
+                            os.remove(itemIDfile + '.' + ext)
+                        except BaseException:
+                            pass
         # remove the item itself
         del sharesJson[itemID]
         saveJson(sharesJson, sharesFilename)
@@ -350,7 +353,10 @@ def addShare(baseDir: str,
                                 imageFilename, itemIDfile + '.' + ext,
                                 city)
                 if moveImage:
-                    os.remove(imageFilename)
+                    try:
+                        os.remove(imageFilename)
+                    except BaseException:
+                        pass
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
                     '/sharefiles/' + nickname + '/' + itemID + '.' + ext
@@ -419,7 +425,10 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(itemIDfile + '.' + ext):
-                os.remove(itemIDfile + '.' + ext)
+                try:
+                    os.remove(itemIDfile + '.' + ext)
+                except BaseException:
+                    pass
     saveJson(sharesJson, sharesFilename)
 
 

@@ -919,10 +919,16 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
 
     saltFilename = acctDir(baseDir, nickname, domain) + '/.salt'
     if os.path.isfile(saltFilename):
-        os.remove(saltFilename)
+        try:
+            os.remove(saltFilename)
+        except BaseException:
+            pass
     tokenFilename = acctDir(baseDir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
-        os.remove(tokenFilename)
+        try:
+            os.remove(tokenFilename)
+        except BaseException:
+            pass
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
@@ -1025,17 +1031,32 @@ def removeAccount(baseDir: str, nickname: str,
     if os.path.isdir(baseDir + '/accounts/' + handle):
         shutil.rmtree(baseDir + '/accounts/' + handle)
     if os.path.isfile(baseDir + '/accounts/' + handle + '.json'):
-        os.remove(baseDir + '/accounts/' + handle + '.json')
+        try:
+            os.remove(baseDir + '/accounts/' + handle + '.json')
+        except BaseException:
+            pass
     if os.path.isfile(baseDir + '/wfendpoints/' + handle + '.json'):
-        os.remove(baseDir + '/wfendpoints/' + handle + '.json')
+        try:
+            os.remove(baseDir + '/wfendpoints/' + handle + '.json')
+        except BaseException:
+            pass
     if os.path.isfile(baseDir + '/keys/private/' + handle + '.key'):
-        os.remove(baseDir + '/keys/private/' + handle + '.key')
+        try:
+            os.remove(baseDir + '/keys/private/' + handle + '.key')
+        except BaseException:
+            pass
     if os.path.isfile(baseDir + '/keys/public/' + handle + '.pem'):
-        os.remove(baseDir + '/keys/public/' + handle + '.pem')
+        try:
+            os.remove(baseDir + '/keys/public/' + handle + '.pem')
+        except BaseException:
+            pass
     if os.path.isdir(baseDir + '/sharefiles/' + nickname):
         shutil.rmtree(baseDir + '/sharefiles/' + nickname)
     if os.path.isfile(baseDir + '/wfdeactivated/' + handle + '.json'):
-        os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
+        try:
+            os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
+        except BaseException:
+            pass
     if os.path.isdir(baseDir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname)
 

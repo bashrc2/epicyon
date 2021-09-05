@@ -280,7 +280,10 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                           str(result.status_code))
                 # remove partial download
                 if os.path.isfile(avatarImageFilename):
-                    os.remove(avatarImageFilename)
+                    try:
+                        os.remove(avatarImageFilename)
+                    except BaseException:
+                        pass
             else:
                 with open(avatarImageFilename, 'wb') as f:
                     f.write(result.content)

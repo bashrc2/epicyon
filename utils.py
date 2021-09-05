@@ -614,7 +614,10 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
         avatarFilename = \
             baseDir + '/cache/avatars/' + actorStr + '.' + extension
         if os.path.isfile(avatarFilename):
-            os.remove(avatarFilename)
+            try:
+                os.remove(avatarFilename)
+            except BaseException:
+                pass
 
 
 def saveJson(jsonObject: {}, filename: str) -> bool:
@@ -1318,10 +1321,16 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
     mediaFilename = baseDir + '/' + \
         attachmentUrl.replace(httpPrefix + '://' + domain + '/', '')
     if os.path.isfile(mediaFilename):
-        os.remove(mediaFilename)
+        try:
+            os.remove(mediaFilename)
+        except BaseException:
+            pass
     etagFilename = mediaFilename + '.etag'
     if os.path.isfile(etagFilename):
-        os.remove(etagFilename)
+        try:
+            os.remove(etagFilename)
+        except BaseException:
+            pass
     postJson['attachment'] = []
 
 
@@ -1386,7 +1395,10 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
                            nickname, domain, replyFile, debug,
                            recentPostsCache)
     # remove the replies file
-    os.remove(repliesFilename)
+    try:
+        os.remove(repliesFilename)
+    except BaseException:
+        pass
 
 
 def _isBookmarked(baseDir: str, nickname: str, domain: str,
@@ -1442,7 +1454,10 @@ def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
 
 
 def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
@@ -1486,7 +1501,10 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             newlines += fileLine
         if not newlines.strip():
             # if there are no lines then remove the hashtag file
-            os.remove(tagIndexFilename)
+            try:
+                os.remove(tagIndexFilename)
+            except BaseException:
+                pass
         else:
             # write the new hashtag index without the given post in it
             with open(tagIndexFilename, 'w+') as f:
@@ -1521,8 +1539,14 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
             fp.write(conversationStr)
     else:
         if os.path.isfile(conversationFilename + '.muted'):
-            os.remove(conversationFilename + '.muted')
-        os.remove(conversationFilename)
+            try:
+                os.remove(conversationFilename + '.muted')
+            except BaseException:
+                pass
+        try:
+            os.remove(conversationFilename)
+        except BaseException:
+            pass
 
 
 def deletePost(baseDir: str, httpPrefix: str,
@@ -1537,7 +1561,10 @@ def deletePost(baseDir: str, httpPrefix: str,
                                  httpPrefix, postFilename,
                                  recentPostsCache, debug)
         # finally, remove the post itself
-        os.remove(postFilename)
+        try:
+            os.remove(postFilename)
+        except BaseException:
+            pass
         return
 
     # don't allow deletion of bookmarked posts
@@ -1562,7 +1589,10 @@ def deletePost(baseDir: str, httpPrefix: str,
     for ext in extensions:
         extFilename = postFilename + '.' + ext
         if os.path.isfile(extFilename):
-            os.remove(extFilename)
+            try:
+                os.remove(extFilename)
+            except BaseException:
+                pass
 
     # remove cached html version of the post
     _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
@@ -1588,7 +1618,10 @@ def deletePost(baseDir: str, httpPrefix: str,
                              httpPrefix, postFilename,
                              recentPostsCache, debug)
     # finally, remove the post itself
-    os.remove(postFilename)
+    try:
+        os.remove(postFilename)
+    except BaseException:
+        pass
 
 
 def isValidLanguage(text: str) -> bool:
@@ -2022,7 +2055,10 @@ def undoLikesCollectionEntry(recentPostsCache: {},
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
@@ -2083,7 +2119,10 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
                                                postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
@@ -2144,7 +2183,10 @@ def updateAnnounceCollection(recentPostsCache: {},
                                                postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not hasObjectDict(postJsonObject):
