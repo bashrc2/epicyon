@@ -3506,15 +3506,15 @@ def _createBoxIndexed(recentPostsCache: {},
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             url = recentPostsCache['json'][postUrl]
-                                if _addPostStringToTimeline(url,
-                                                            boxname, postsInBox,
-                                                            boxActor):
-                                    totalPostsCount += 1
-                                    postsAddedToTimeline += 1
-                                    postUrlsInBox.append(url)
-                                    continue
-                                else:
-                                    print('Post not added to timeline')
+                            if _addPostStringToTimeline(url,
+                                                        boxname, postsInBox,
+                                                        boxActor):
+                                totalPostsCount += 1
+                                postsAddedToTimeline += 1
+                                postUrlsInBox.append(url)
+                                continue
+                            else:
+                                print('Post not added to timeline')
 
                 # read the post from file
                 fullPostFilename = \
