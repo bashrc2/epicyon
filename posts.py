@@ -3458,6 +3458,7 @@ def _createBoxIndexed(recentPostsCache: {},
     }
 
     postsInBox = []
+    postUrlsInBox = []
 
     indexFilename = \
         acctDir(baseDir, timelineNickname, originalDomain) + \
@@ -3497,19 +3498,23 @@ def _createBoxIndexed(recentPostsCache: {},
                     postFilename.replace('\n', '').replace('\r', '')
                 postUrl = postUrl.replace('.json', '').strip()
 
+                if url in postUrlsInBox:
+                    continue
+
                 # is the post cached in memory?
                 if recentPostsCache.get('index'):
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             url = recentPostsCache['json'][postUrl]
-                            if _addPostStringToTimeline(url,
-                                                        boxname, postsInBox,
-                                                        boxActor):
-                                totalPostsCount += 1
-                                postsAddedToTimeline += 1
-                                continue
-                            else:
-                                print('Post not added to timeline')
+                                if _addPostStringToTimeline(url,
+                                                            boxname, postsInBox,
+                                                            boxActor):
+                                    totalPostsCount += 1
+                                    postsAddedToTimeline += 1
+                                    postUrlsInBox.append(url)
+                                    continue
+                                else:
+                                    print('Post not added to timeline')
 
                 # read the post from file
                 fullPostFilename = \
@@ -3524,6 +3529,7 @@ def _createBoxIndexed(recentPostsCache: {},
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
                         totalPostsCount += 1
+                        postUrlsInBox.append(url)
                     else:
                         print('WARN: Unable to add post ' + postUrl +
                               ' nickname ' + nickname +
@@ -3539,6 +3545,7 @@ def _createBoxIndexed(recentPostsCache: {},
                                                   postsInBox, boxActor):
                                 postsAddedToTimeline += 1
                                 totalPostsCount += 1
+                                postUrlsInBox.append(url)
                             else:
                                 print('WARN: Unable to add features post ' +
                                       postUrl + ' nickname ' + nickname +
