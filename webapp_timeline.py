@@ -900,10 +900,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                        timelineStartTime, boxName, '12')
 
                 if currTlStr:
-                    itemCtr += 1
-                    tlStr += textModeSeparator + currTlStr
-                    if separatorStr:
-                        tlStr += separatorStr
+                    if currTlStr not in tlStr:
+                        itemCtr += 1
+                        tlStr += textModeSeparator + currTlStr
+                        if separatorStr:
+                            tlStr += separatorStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
