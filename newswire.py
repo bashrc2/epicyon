@@ -192,9 +192,9 @@ def parseFeedDate(pubDate: str) -> str:
     formats = ("%a, %d %b %Y %H:%M:%S %z",
                "%a, %d %b %Y %H:%M:%S EST",
                "%a, %d %b %Y %H:%M:%S UT",
+               "%a, %d %b %Y %H:%M:%S GMT",
                "%Y-%m-%dT%H:%M:%SZ",
                "%Y-%m-%dT%H:%M:%S%z")
-
     publishedDate = None
     for dateFormat in formats:
         if ',' in pubDate and ',' not in dateFormat:
@@ -206,6 +206,8 @@ def parseFeedDate(pubDate: str) -> str:
         if 'Z' not in pubDate and 'Z' in dateFormat:
             continue
         if 'EST' not in pubDate and 'EST' in dateFormat:
+            continue
+        if 'GMT' not in pubDate and 'GMT' in dateFormat:
             continue
         if 'EST' in pubDate and 'EST' not in dateFormat:
             continue
