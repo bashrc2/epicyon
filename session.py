@@ -108,6 +108,8 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
                 print('WARN: getJson Not Found url: ' + url)
+            elif result.status_code == 410:
+                print('WARN: getJson no longer available url: ' + url)
             else:
                 print('WARN: getJson url: ' + url +
                       ' failed with error code ' +
