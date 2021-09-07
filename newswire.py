@@ -220,8 +220,6 @@ def parseFeedDate(pubDate: str) -> str:
             publishedDate = \
                 datetime.strptime(pubDate, dateFormat)
         except BaseException:
-            print('WARN: unrecognized date format: ' +
-                  pubDate + ' ' + dateFormat)
             continue
 
         if publishedDate:
@@ -240,6 +238,8 @@ def parseFeedDate(pubDate: str) -> str:
         pubDateStr = str(publishedDate)
         if not pubDateStr.endswith('+00:00'):
             pubDateStr += '+00:00'
+    else:
+        print('WARN: unrecognized date format: ' + pubDate)
 
     return pubDateStr
 
