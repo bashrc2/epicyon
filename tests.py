@@ -1598,10 +1598,16 @@ def testSharedItemsFederation():
              bobDir + '/ontology/toolTypes.json')
     copyfile(baseDir + '/ontology/clothesTypes.json',
              bobDir + '/ontology/clothesTypes.json')
+    copyfile(baseDir + '/ontology/medicalTypes.json',
+             bobDir + '/ontology/medicalTypes.json')
+    copyfile(baseDir + '/ontology/accommodationTypes.json',
+             bobDir + '/ontology/accommodationTypes.json')
     assert os.path.isfile(bobDir + '/logo.png')
     assert os.path.isfile(bobDir + '/ontology/foodTypes.json')
     assert os.path.isfile(bobDir + '/ontology/toolTypes.json')
     assert os.path.isfile(bobDir + '/ontology/clothesTypes.json')
+    assert os.path.isfile(bobDir + '/ontology/medicalTypes.json')
+    assert os.path.isfile(bobDir + '/ontology/accommodationTypes.json')
     sharedItemName = 'cheddar'
     sharedItemDescription = 'Some cheese'
     sharedItemImageFilename = 'logo.png'
