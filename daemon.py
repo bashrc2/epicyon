@@ -594,10 +594,10 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
-    def _authorizedFetch(self) -> bool:
+    def _secureMode(self) -> bool:
         """http authentication of GET requests for json
         """
-        if not self.server.authorizedFetch:
+        if not self.server.secureMode:
             return True
 
         signature = None
@@ -609,7 +609,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the headers are signed
         if not signature:
             if self.server.debug:
-                print('WARN: authorized fetch, ' +
+                print('AUTH: secure mode, ' +
                       'GET has no signature in headers')
             return False
 
@@ -623,7 +623,7 @@ class PubServer(BaseHTTPRequestHandler):
                     break
         if not keyId:
             if self.server.debug:
-                print('WARN: authorized fetch, ' +
+                print('AUTH: secure mode, ' +
                       'failed to obtain keyId from signature')
             return False
 
@@ -634,8 +634,7 @@ class PubServer(BaseHTTPRequestHandler):
         # is the keyId (actor) valid?
         if not urlPermitted(keyId, self.server.federationList):
             if self.server.debug:
-                print('Authorized fetch failed: ' + keyId +
-                      ' is not permitted')
+                print('AUTH: Secure mode GET request not permitted: ' + keyId)
             return False
 
         # make sure we have a session
@@ -644,7 +643,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.session = createSession(self.server.proxyType)
             if not self.server.session:
                 print('ERROR: GET failed to create session during ' +
-                      'authorized fetch')
+                      'secure mode')
                 return False
 
         # obtain the public key
@@ -656,7 +655,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.signingPrivateKeyPem)
         if not pubKey:
             if self.server.debug:
-                print('DEBUG: Authorized fetch failed to ' +
+                print('AUTH: secure mode failed to ' +
                       'obtain public key for ' + keyId)
             return False
 
@@ -666,7 +665,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         if self.server.debug:
-            print('Authorized fetch failed for ' + keyId)
+            print('AUTH: secure mode authorization failed for ' + keyId)
         return False
 
     def _login_headers(self, fileFormat: str, length: int,
@@ -8164,7 +8163,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain, False)
                 self._write(msg)
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     msg = json.dumps(repliesJson, ensure_ascii=False)
                     msg = msg.encode('utf-8')
                     protocolStr = 'application/json'
@@ -8258,7 +8257,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           'individual post done',
                                           'post replies done')
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     msg = json.dumps(repliesJson,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -8361,7 +8360,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'post replies done',
                                               'show roles')
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     rolesList = getActorRolesList(actorJson)
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
@@ -8469,7 +8468,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'post roles done',
                                                           'show skills')
                         else:
-                            if self._authorizedFetch():
+                            if self._secureMode():
                                 actorSkillsList = \
                                     getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
@@ -8605,7 +8604,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       'done',
                                       'show status')
         else:
-            if self._authorizedFetch():
+            if self._secureMode():
                 msg = json.dumps(postJsonObject,
                                  ensure_ascii=False)
                 msg = msg.encode('utf-8')
@@ -10079,7 +10078,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           'show events done',
                                           'show outbox')
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     msg = json.dumps(outboxFeed,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -10323,7 +10322,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy = False
                     return True
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     msg = json.dumps(shares,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -10440,7 +10439,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show profile 3')
                     return True
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     msg = json.dumps(following,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -10557,7 +10556,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show profile 4')
                     return True
             else:
-                if self._authorizedFetch():
+                if self._secureMode():
                     msg = json.dumps(followers,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -10693,7 +10692,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show profile 4 done',
                                       'show profile posts')
         else:
-            if self._authorizedFetch():
+            if self._secureMode():
                 acceptStr = self.headers['Accept']
                 msgStr = json.dumps(actorJson, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
@@ -14286,7 +14285,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        if not self._authorizedFetch():
+        if not self._secureMode():
             if self.server.debug:
                 print('WARN: Unauthorized GET')
             self._404()
@@ -16289,7 +16288,7 @@ def runDaemon(lowBandwidth: bool,
               httpPrefix: str = 'https',
               fedList: [] = [],
               maxMentions: int = 10, maxEmoji: int = 10,
-              authorizedFetch: bool = False,
+              secureMode: bool = False,
               proxyType: str = None, maxReplies: int = 64,
               domainMaxPostsPerDay: int = 8640,
               accountMaxPostsPerDay: int = 864,
@@ -16510,7 +16509,7 @@ def runDaemon(lowBandwidth: bool,
     httpd.outboxThread = {}
     httpd.newPostThread = {}
     httpd.projectVersion = projectVersion
-    httpd.authorizedFetch = authorizedFetch
+    httpd.secureMode = secureMode
     # max POST size of 30M
     httpd.maxPostLength = 1024 * 1024 * 30
     httpd.maxMediaSize = httpd.maxPostLength
