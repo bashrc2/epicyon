@@ -232,6 +232,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import canReplyTo
 from utils import isDM
 from utils import replaceUsersWithAt
 from utils import localActorUrl
@@ -856,6 +857,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._httpReturnCode(200, 'Ok',
                                  'This is nothing less ' +
                                  'than an utter triumph')
+
+    def _403(self) -> None:
+        if self.server.translate:
+            self._httpReturnCode(403, self.server.translate['Forbidden'],
+                                 self.server.translate["You're not allowed"])
+        else:
+            self._httpReturnCode(403, 'Forbidden',
+                                 "You're not allowed")
 
     def _404(self) -> None:
         if self.server.translate:
@@ -11287,6 +11296,18 @@ class PubServer(BaseHTTPRequestHandler):
         if isNewPostEndpoint:
             nickname = getNicknameFromActor(path)
 
+            if inReplyToUrl:
+                replyIntervalHours = self.server.defaultReplyIntervalHours
+                if not canReplyTo(baseDir, nickname, domain,
+                                  inReplyToUrl, replyIntervalHours):
+                    print('Reply outside of time window ' + inReplyToUrl)
+                    self._403()
+                    self.server.GETbusy = False
+                    return True
+                elif self.server.debug:
+                    print('Reply is within time interval: ' +
+                          str(replyIntervalHours) + ' hours')
+
             accessKeys = self.server.accessKeys
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
@@ -16245,7 +16266,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(lowBandwidth: bool,
+def runDaemon(defaultReplyIntervalHours: int,
+              lowBandwidth: bool,
               maxLikeCount: int,
               sharedItemsFederatedDomains: [],
               userAgentsBlocked: [],
@@ -16376,6 +16398,11 @@ def runDaemon(lowBandwidth: bool,
         'Public': 'p',
         'Reminder': 'r'
     }
+
+    # how many hours after a post was publushed can a reply be made
+    defaultReplyIntervalHours = 9999999
+    httpd.defaultReplyIntervalHours = defaultReplyIntervalHours
+
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(baseDir, httpd.keyShortcuts, httpd.accessKeys)
 
@@ -16704,7 +16731,8 @@ def runDaemon(lowBandwidth: bool,
                               httpd.themeName,
                               httpd.systemLanguage,
                               httpd.maxLikeCount,
-                              httpd.signingPrivateKeyPem), daemon=True)
+                              httpd.signingPrivateKeyPem,
+                              httpd.defaultReplyIntervalHours), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

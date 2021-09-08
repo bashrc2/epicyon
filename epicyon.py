@@ -170,6 +170,11 @@ parser.add_argument('--dormantMonths',
                     default=3,
                     help='How many months does a followed account need to ' +
                     'be unseen for before being considered dormant')
+parser.add_argument('--defaultReplyIntervalHours',
+                    dest='defaultReplyIntervalHours', type=int,
+                    default=9999999999,
+                    help='How many hours after publication of a post ' +
+                    'are replies to it permitted')
 parser.add_argument('--sendThreadsTimeoutMins',
                     dest='sendThreadsTimeoutMins', type=int,
                     default=30,
@@ -3031,7 +3036,8 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(args.lowBandwidth, args.maxLikeCount,
+    runDaemon(args.defaultReplyIntervalHours,
+              args.lowBandwidth, args.maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               args.logLoginFailures,

@@ -1317,6 +1317,74 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     return None
 
 
+def _getPublishedDate(postJsonObject: {}) -> str:
+    """Returns the published date on the given post
+    """
+    published = None
+    if postJsonObject.get('published'):
+        published = postJsonObject['published']
+    elif postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('published'):
+                published = postJsonObject['object']['published']
+    if not published:
+        return None
+    if not isinstance(published, str):
+        return None
+    return published
+
+
+def getReplyIntervalHours(baseDir: str, nickname: str, domain: str,
+                          defaultReplyIntervalHours: int) -> int:
+    """Returns the reply interval for the given account.
+    The reply interval is the number of hours after a post being made
+    during which replies are allowed
+    """
+    replyIntervalFilename = \
+        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
+    if os.path.isfile(replyIntervalFilename):
+        with open(replyIntervalFilename, 'r') as fp:
+            hoursStr = fp.read()
+            if hoursStr.isdigit():
+                return int(hoursStr)
+    return defaultReplyIntervalHours
+
+
+def canReplyTo(baseDir: str, nickname: str, domain: str,
+               postUrl: str, replyIntervalHours: int,
+               currDateStr: str = None) -> bool:
+    """Is replying to the given post permitted?
+    This is a spam mitigation feature, so that spammers can't
+    add a lot of replies to old post which you don't notice.
+    """
+    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    if not postFilename:
+        return False
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return False
+    published = _getPublishedDate(postJsonObject)
+    if not published:
+        return False
+    try:
+        pubDate = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
+    except BaseException:
+        return False
+    if not currDateStr:
+        currDate = datetime.datetime.utcnow()
+    else:
+        try:
+            currDate = datetime.datetime.strptime(currDateStr,
+                                                  '%Y-%m-%dT%H:%M:%SZ')
+        except BaseException:
+            return False
+    hoursSincePublication = int((currDate - pubDate).total_seconds() / 3600)
+    if hoursSincePublication < 0 or \
+       hoursSincePublication > replyIntervalHours:
+        return False
+    return True
+
+
 def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
                       postJson: {}):
     if not postJson.get('attachment'):

@@ -15,6 +15,8 @@ import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
 from like import updateLikesCollection
+from utils import getReplyIntervalHours
+from utils import canReplyTo
 from utils import getUserPaths
 from utils import getBaseContentFromPost
 from utils import acctDir
@@ -2484,7 +2486,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        lastBounceMessage: [],
                        themeName: str, systemLanguage: str,
                        maxLikeCount: int,
-                       signingPrivateKeyPem: str) -> bool:
+                       signingPrivateKeyPem: str,
+                       defaultReplyIntervalHours: int) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2765,11 +2768,29 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             if isinstance(inReplyTo, str):
                                 if not isMuted(baseDir, nickname, domain,
                                                inReplyTo, conversationId):
-                                    actUrl = \
-                                        localActorUrl(httpPrefix,
-                                                      nickname, domain)
-                                    _replyNotify(baseDir, handle,
-                                                 actUrl + '/tlreplies')
+                                    # check if the reply is within the allowed
+                                    # time period after publication
+                                    hrs = defaultReplyIntervalHours
+                                    replyIntervalHours = \
+                                        getReplyIntervalHours(baseDir,
+                                                              nickname,
+                                                              domain, hrs)
+                                    if canReplyTo(baseDir, nickname, domain,
+                                                  inReplyTo,
+                                                  replyIntervalHours):
+                                        actUrl = \
+                                            localActorUrl(httpPrefix,
+                                                          nickname, domain)
+                                        _replyNotify(baseDir, handle,
+                                                     actUrl + '/tlreplies')
+                                    else:
+                                        if debug:
+                                            print('Reply to ' + inReplyTo +
+                                                  ' is outside of the ' +
+                                                  'permitted interval of ' +
+                                                  str(replyIntervalHours) +
+                                                  ' hours')
+                                        return False
                                 else:
                                     isReplyToMutedPost = True
 
@@ -3119,7 +3140,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
                   themeName: str, systemLanguage: str,
-                  maxLikeCount: int, signingPrivateKeyPem: str) -> None:
+                  maxLikeCount: int, signingPrivateKeyPem: str,
+                  defaultReplyIntervalHours: int) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -3534,7 +3556,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                lastBounceMessage,
                                themeName, systemLanguage,
                                maxLikeCount,
-                               signingPrivateKeyPem)
+                               signingPrivateKeyPem,
+                               defaultReplyIntervalHours)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')
