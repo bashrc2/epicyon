@@ -1369,15 +1369,17 @@ def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
 
 def canReplyTo(baseDir: str, nickname: str, domain: str,
                postUrl: str, replyIntervalHours: int,
-               currDateStr: str = None) -> bool:
+               currDateStr: str = None,
+               postJsonObject: {} = None) -> bool:
     """Is replying to the given post permitted?
     This is a spam mitigation feature, so that spammers can't
     add a lot of replies to old post which you don't notice.
     """
-    postFilename = locatePost(baseDir, nickname, domain, postUrl)
-    if not postFilename:
-        return False
-    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        postFilename = locatePost(baseDir, nickname, domain, postUrl)
+        if not postFilename:
+            return False
+        postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return False
     published = _getPublishedDate(postJsonObject)

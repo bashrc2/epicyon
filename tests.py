@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import canReplyTo
 from utils import isGroupAccount
 from utils import getActorLanguagesList
 from utils import getCategoryTypes
@@ -5447,12 +5448,72 @@ def _translateOntology() -> None:
         saveJson(ontologyJson, filename + '.new')
 
 
+def _testCanReplyTo() -> None:
+    print('testCanReplyTo')
+    baseDir = os.getcwd()
+    systemLanguage = 'en'
+    nickname = 'test27637'
+    domain = 'rando.site'
+    port = 443
+    httpPrefix = 'https'
+    content = 'This is a test post with links.\n\n' + \
+        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = True
+    attachImageFilename = None
+    mediaType = None
+    imageDescription = None
+    city = 'London, England'
+    testInReplyTo = None
+    testInReplyToAtomUri = None
+    testSubject = None
+    testSchedulePost = False
+    testEventDate = None
+    testEventTime = None
+    testLocation = None
+    testIsArticle = False
+    conversationId = None
+    lowBandwidth = True
+
+    postJsonObject = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         content, followersOnly, saveToFile,
+                         clientToServer, commentsEnabled,
+                         attachImageFilename, mediaType,
+                         imageDescription, city,
+                         testInReplyTo, testInReplyToAtomUri,
+                         testSubject, testSchedulePost,
+                         testEventDate, testEventTime, testLocation,
+                         testIsArticle, systemLanguage, conversationId,
+                         lowBandwidth)
+    # set the date on the post
+    currDateStr = "2021-09-08T20:45:00Z"
+    postJsonObject['published'] = currDateStr
+    postJsonObject['object']['published'] = currDateStr
+
+    postUrl = postJsonObject['object']['id']
+    replyIntervalHours = 2
+    currDateStr = "2021-09-08T21:32:10Z"
+    assert canReplyTo(baseDir, nickname, domain,
+                      postUrl, replyIntervalHours,
+                      currDateStr,
+                      postJsonObject)
+    currDateStr = "2021-09-09T09:24:47Z"
+    assert not canReplyTo(baseDir, nickname, domain,
+                          postUrl, replyIntervalHours,
+                          currDateStr,
+                          postJsonObject)
+
+
 def runAllTests():
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
     _translateOntology()
     _testGetPriceFromString()
     _testFunctions()
+    _testCanReplyTo()
     _testDateConversions()
     _testAuthorizeSharedItems()
     _testValidPassword()
