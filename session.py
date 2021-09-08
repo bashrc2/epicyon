@@ -95,7 +95,7 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                              params=sessionParams, timeout=timeoutSec)
         if result.status_code != 200:
             if result.status_code == 401:
-                print("WARN: getJson" + url + ' rejected by secure mode')
+                print("WARN: getJson " + url + ' rejected by secure mode')
             elif result.status_code == 403:
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
