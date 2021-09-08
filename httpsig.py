@@ -24,6 +24,7 @@ from time import gmtime, strftime
 import datetime
 from utils import getFullDomain
 from utils import getSHA256
+from utils import getSHA512
 from utils import localActorUrl
 
 
@@ -49,11 +50,12 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
 
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-    if nickname != domain:
-        keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
+    if nickname != domain and nickname.lower() != 'actor':
+        keyID = localActorUrl(httpPrefix, nickname, domain)
     else:
         # instance actor
-        keyID = httpPrefix + '://' + domain + '/actor#main-key'
+        keyID = httpPrefix + '://' + domain + '/actor'
+    keyID += '#main-key'
     if not messageBodyJsonStr:
         headers = {
             '(request-target)': f'get {path}',
@@ -82,7 +84,8 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     signedHeaderText = ''
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
-    signedHeaderText = signedHeaderText.strip()
+    # strip the trailing linefeed
+    signedHeaderText = signedHeaderText.rstrip('\n')
     # signedHeaderText.encode('ascii') matches
     headerDigest = getSHA256(signedHeaderText.encode('ascii'))
     # print('headerDigest2: ' + str(headerDigest))
@@ -159,11 +162,18 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
     signedHeaderText = signedHeaderText.strip()
-    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
 
     # Sign the digest. Potentially other signing algorithms can be added here.
     signature = ''
-    if algorithm == 'rsa-sha256':
+    if algorithm == 'rsa-sha512':
+        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+        rawSignature = key.sign(headerDigest,
+                                padding.PKCS1v15(),
+                                hazutils.Prehashed(hashes.SHA512()))
+        signature = base64.b64encode(rawSignature).decode('ascii')
+    else:
+        # default sha256
+        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
         rawSignature = key.sign(headerDigest,
                                 padding.PKCS1v15(),
                                 hazutils.Prehashed(hashes.SHA256()))

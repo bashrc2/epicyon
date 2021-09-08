@@ -175,11 +175,8 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
             toPort = 443
         else:
             toPort = 80
-    # instance actor
-    nickname = domain
 
 #    if debug:
-    print('Signed GET nickname: ' + nickname)
     print('Signed GET domain: ' + domain + ' ' + str(port))
     print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
     print('Signed GET url: ' + url)
@@ -191,7 +188,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     else:
         path = '/actor'
     signatureHeaderJson = \
-        createSignedHeader(signingPrivateKeyPem, nickname, domain, port,
+        createSignedHeader(signingPrivateKeyPem, 'actor', domain, port,
                            toDomain, toPort, path, httpPrefix, withDigest,
                            messageStr)
     print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
@@ -201,7 +198,6 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         sessionHeaders[key.title()] = value
         if sessionHeaders.get(key.lower()):
             del sessionHeaders[key.lower()]
-    sessionHeaders['Content-Length'] = '0'
     print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
     return _getJsonRequest(session, url, domainFull, sessionHeaders,

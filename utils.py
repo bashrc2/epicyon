@@ -147,6 +147,14 @@ def getSHA256(msg: str):
     return digest.finalize()
 
 
+def getSHA512(msg: str):
+    """Returns a SHA512 hash of the given string
+    """
+    digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
+    digest.update(msg)
+    return digest.finalize()
+
+
 def _localNetworkHost(host: str) -> bool:
     """Returns true if the given host is on the local network
     """
