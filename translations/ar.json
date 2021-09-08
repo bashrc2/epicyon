@@ -477,5 +477,6 @@
     "Low Bandwidth": "انخفاض النطاق الترددي",
     "accommodation": "الإقامة",
     "Forbidden": "محرم",
-    "You're not allowed": "كنت لا يسمح"
+    "You're not allowed": "كنت لا يسمح",
+    "Hours after posting during which replies are allowed": "ساعات بعد النشر المسموح بها خلال الردود"
 }

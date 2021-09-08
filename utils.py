@@ -1350,6 +1350,23 @@ def getReplyIntervalHours(baseDir: str, nickname: str, domain: str,
     return defaultReplyIntervalHours
 
 
+def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
+                          replyIntervalHours: int) -> bool:
+    """Sets the reply interval for the given account.
+    The reply interval is the number of hours after a post being made
+    during which replies are allowed
+    """
+    replyIntervalFilename = \
+        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
+    with open(replyIntervalFilename, 'w+') as fp:
+        try:
+            fp.write(str(replyIntervalHours))
+            return True
+        except BaseException:
+            pass
+    return False
+
+
 def canReplyTo(baseDir: str, nickname: str, domain: str,
                postUrl: str, replyIntervalHours: int,
                currDateStr: str = None) -> bool:
@@ -1380,7 +1397,7 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
             return False
     hoursSincePublication = int((currDate - pubDate).total_seconds() / 3600)
     if hoursSincePublication < 0 or \
-       hoursSincePublication > replyIntervalHours:
+       hoursSincePublication >= replyIntervalHours:
         return False
     return True
 

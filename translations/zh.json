@@ -477,5 +477,6 @@
     "Low Bandwidth": "低带宽",
     "accommodation": "住所",
     "Forbidden": "禁止的",
-    "You're not allowed": "你不被允许"
+    "You're not allowed": "你不被允许",
+    "Hours after posting during which replies are allowed": "发布后的时间允许答复"
 }

@@ -477,5 +477,6 @@
     "Low Bandwidth": "Низкая пропускная способность",
     "accommodation": "размещение",
     "Forbidden": "Запрещенный",
-    "You're not allowed": "Вам не разрешено"
+    "You're not allowed": "Вам не разрешено",
+    "Hours after posting during which replies are allowed": "Часы после размещения, в течение которых разрешены ответы"
 }

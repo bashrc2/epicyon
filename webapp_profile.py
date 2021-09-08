@@ -25,6 +25,7 @@ from utils import getImageFormats
 from utils import acctDir
 from utils import getSupportedLanguages
 from utils import localActorUrl
+from utils import getReplyIntervalHours
 from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
@@ -1435,7 +1436,8 @@ def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
 
 
 def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
-                              userAgentsBlocked: str, translate: {}) -> str:
+                              userAgentsBlocked: str, translate: {},
+                              replyIntervalHours: int) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filterStr = ''
@@ -1488,6 +1490,14 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
             allowedInstancesStr = allowedInstancesFile.read()
 
     editProfileForm = beginEditSection(translate['Filtering and Blocking'])
+
+    idx = 'Hours after posting during which replies are allowed'
+    editProfileForm += \
+        '  <label class="labels">' + \
+        translate[idx] + \
+        ':</label> <input type="number" name="replyhours" ' + \
+        'min="0" max="999999999999" step="1" ' + \
+        'value="' + str(replyIntervalHours) + '"><br>\n'
 
     editProfileForm += \
         '<label class="labels">' + \
@@ -1864,7 +1874,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     peertubeInstances: [],
                     textModeBanner: str, city: str,
                     userAgentsBlocked: str,
-                    accessKeys: {}) -> str:
+                    accessKeys: {},
+                    defaultReplyIntervalHours: int) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2048,9 +2059,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += libretranslateStr
 
     # Filtering and blocking section
+    replyIntervalHours = getReplyIntervalHours(baseDir, nickname, domain,
+                                               defaultReplyIntervalHours)
     editProfileForm += \
         _htmlEditProfileFiltering(baseDir, nickname, domain,
-                                  userAgentsBlocked, translate)
+                                  userAgentsBlocked, translate,
+                                  replyIntervalHours)
 
     # git projects section
     editProfileForm += \

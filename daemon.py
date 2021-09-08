@@ -232,6 +232,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import setReplyIntervalHours
 from utils import canReplyTo
 from utils import isDM
 from utils import replaceUsersWithAt
@@ -4538,6 +4539,12 @@ class PubServer(BaseHTTPRequestHandler):
                             # set password
                             storeBasicCredentials(baseDir, nickname,
                                                   fields['password'])
+
+                    # reply interval in hours
+                    if fields.get('replyhours'):
+                        if fields['replyhours'].isdigit():
+                            setReplyIntervalHours(baseDir, nickname, domain,
+                                                  fields['replyhours'])
 
                     # change city
                     if fields.get('cityDropdown'):
@@ -11367,6 +11374,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
+            defaultReplyIntervalHours = self.server.defaultReplyIntervalHours
             msg = htmlEditProfile(self.server.cssCache,
                                   translate,
                                   baseDir,
@@ -11379,7 +11387,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.textModeBanner,
                                   city,
                                   self.server.userAgentsBlocked,
-                                  accessKeys).encode('utf-8')
+                                  accessKeys,
+                                  defaultReplyIntervalHours).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,

@@ -477,5 +477,6 @@
     "Low Bandwidth": "Ancho de banda bajo",
     "accommodation": "alojamiento",
     "Forbidden": "Prohibida",
-    "You're not allowed": "No tienes permiso"
+    "You're not allowed": "No tienes permiso",
+    "Hours after posting during which replies are allowed": "Horas después de la publicación durante las cuales se permiten las respuestas"
 }
