@@ -2040,13 +2040,16 @@ if args.followers:
     if nickname == 'inbox':
         nickname = domain
 
+    hostDomain = None
+    if args.domain:
+        hostDomain = args.domain
     handle = nickname + '@' + domain
     signingPrivateKeyPem = None
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug, False,
+                                hostDomain, __version__, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         print('Unable to webfinger ' + handle)

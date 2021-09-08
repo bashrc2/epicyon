@@ -2810,7 +2810,7 @@ def _hasSharedInbox(session, httpPrefix: str, domain: str,
     tryHandles.append('inbox@' + domain)
     for handle in tryHandles:
         wfRequest = webfingerHandle(session, handle, httpPrefix, {},
-                                    None, __version__, debug, False,
+                                    domain, __version__, debug, False,
                                     signingPrivateKeyPem)
         if wfRequest:
             if isinstance(wfRequest, dict):
