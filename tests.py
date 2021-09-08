@@ -171,7 +171,7 @@ def _testHttpSignedGET():
     dateStr = 'Wed, 01 Sep 2021 16:11:10 GMT'
     accept_encoding = 'gzip'
     accept = \
-        'application/activity+json, application/ld+json, application/jrd+json'
+        'application/activity+json, application/ld+json'
     signature = \
         'keyId="https://octodon.social/actor#main-key",' + \
         'algorithm="rsa-sha256",' + \
