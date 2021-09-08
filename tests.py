@@ -170,7 +170,8 @@ def _testHttpSignedGET():
     user_agent = "http.rb/4.4.1 (Mastodon/3.4.1; +https://octodon.social/)"
     dateStr = 'Wed, 01 Sep 2021 16:11:10 GMT'
     accept_encoding = 'gzip'
-    accept = 'application/activity+json, application/ld+json'
+    accept = \
+        'application/activity+json, application/ld+json, application/jrd+json'
     signature = \
         'keyId="https://octodon.social/actor#main-key",' + \
         'algorithm="rsa-sha256",' + \
