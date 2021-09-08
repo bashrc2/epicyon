@@ -5493,6 +5493,7 @@ def _testCanReplyTo() -> None:
     postJsonObject['published'] = currDateStr
     postJsonObject['object']['published'] = currDateStr
 
+    # test a post within the reply interval
     postUrl = postJsonObject['object']['id']
     replyIntervalHours = 2
     currDateStr = "2021-09-08T21:32:10Z"
@@ -5500,6 +5501,8 @@ def _testCanReplyTo() -> None:
                       postUrl, replyIntervalHours,
                       currDateStr,
                       postJsonObject)
+
+    # test a post outside of the reply interval
     currDateStr = "2021-09-09T09:24:47Z"
     assert not canReplyTo(baseDir, nickname, domain,
                           postUrl, replyIntervalHours,
