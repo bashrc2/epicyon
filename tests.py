@@ -164,7 +164,6 @@ thrEve = None
 def _testHttpSignedGET():
     print('testHttpSignedGET')
 
-    boxpath = '"/users/Actor HTTP/1.1"'
     boxpath = "/users/Actor"
     host = "epicyon.libreserver.org"
     content_length = "0"
