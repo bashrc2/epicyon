@@ -95,15 +95,7 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                              params=sessionParams, timeout=timeoutSec)
         if result.status_code != 200:
             if result.status_code == 401:
-                if not signingPrivateKeyPem:
-                    print("WARN: getJson requires secure fetch url: " + url)
-                else:
-                    if debug:
-                        print('Using signed GET for domain: ' + domainFull)
-                    return _getJsonSigned(session, url, domainFull,
-                                          sessionHeaders, sessionParams,
-                                          timeoutSec, signingPrivateKeyPem,
-                                          quiet, debug)
+                print("WARN: getJson" + url + ' rejected by secure mode')
             elif result.status_code == 403:
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
@@ -176,11 +168,11 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         else:
             toPort = 80
 
-#    if debug:
-    print('Signed GET domain: ' + domain + ' ' + str(port))
-    print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
-    print('Signed GET url: ' + url)
-    print('Signed GET httpPrefix: ' + httpPrefix)
+    if debug:
+        print('Signed GET domain: ' + domain + ' ' + str(port))
+        print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
+        print('Signed GET url: ' + url)
+        print('Signed GET httpPrefix: ' + httpPrefix)
     messageStr = ''
     withDigest = False
     if toDomainFull + '/' in url:
@@ -191,14 +183,16 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         createSignedHeader(signingPrivateKeyPem, 'actor', domain, port,
                            toDomain, toPort, path, httpPrefix, withDigest,
                            messageStr)
-    print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
+    if debug:
+        print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     for key, value in signatureHeaderJson.items():
         if key.startswith('(') or key.startswith('*('):
             continue
         sessionHeaders[key.title()] = value
         if sessionHeaders.get(key.lower()):
             del sessionHeaders[key.lower()]
-    print('Signed GET sessionHeaders ' + str(sessionHeaders))
+    if debug:
+        print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
     return _getJsonRequest(session, url, domainFull, sessionHeaders,
                            sessionParams, timeoutSec, None, quiet, debug)
@@ -232,9 +226,15 @@ def getJson(signingPrivateKeyPem: str,
     if debug:
         HTTPConnection.debuglevel = 1
 
-    return _getJsonRequest(session, url, domain, sessionHeaders,
-                           sessionParams, timeoutSec,
-                           signingPrivateKeyPem, quiet, debug)
+    if signingPrivateKeyPem:
+        return _getJsonSigned(session, url, domain,
+                              sessionHeaders, sessionParams,
+                              timeoutSec, signingPrivateKeyPem,
+                              quiet, debug)
+    else:
+        return _getJsonRequest(session, url, domain, sessionHeaders,
+                               sessionParams, timeoutSec,
+                               None, quiet, debug)
 
 
 def postJson(httpPrefix: str, domainFull: str,
