@@ -16737,7 +16737,8 @@ def runDaemon(lowBandwidth: bool,
 
     # signing key used for authorized fetch
     # this is the instance actor private key
-    httpd.signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    if secureMode:
+        httpd.signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     if not unitTest:
         print('Creating inbox queue watchdog')
