@@ -172,7 +172,7 @@ parser.add_argument('--dormantMonths',
                     'be unseen for before being considered dormant')
 parser.add_argument('--defaultReplyIntervalHours',
                     dest='defaultReplyIntervalHours', type=int,
-                    default=9999999999,
+                    default=1000,
                     help='How many hours after publication of a post ' +
                     'are replies to it permitted')
 parser.add_argument('--sendThreadsTimeoutMins',
