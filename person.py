@@ -1337,7 +1337,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         handle = nickname + '@' + domain
         wfRequest = webfingerHandle(session, handle,
                                     httpPrefix, cachedWebfingers,
-                                    None, __version__, debug,
+                                    hostDomain, __version__, debug,
                                     groupAccount, signingPrivateKeyPem)
         if not wfRequest:
             if not quiet:
