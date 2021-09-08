@@ -690,7 +690,9 @@ if args.posts:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
@@ -726,7 +728,9 @@ if args.postDomains:
     domainList = []
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
                                       proxyType, args.port,
@@ -771,7 +775,9 @@ if args.postDomainsBlocked:
     domainList = []
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     domainList = getPublicPostDomainsBlocked(None,
                                              baseDir, nickname, domain,
                                              proxyType, args.port,
@@ -814,7 +820,9 @@ if args.checkDomains:
     maxBlockedDomains = 0
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     checkDomains(None,
                  baseDir, nickname, domain,
                  proxyType, args.port,
@@ -837,7 +845,9 @@ if args.socnet:
         args.language = 'en'
     if not args.domain:
         args.domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
     dotGraph = instancesGraph(baseDir, args.socnet,
                               proxyType, args.port,
                               httpPrefix, debug,
@@ -868,7 +878,9 @@ if args.postsraw:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
@@ -883,7 +895,9 @@ if args.json:
     }
     if not args.domain:
         args.domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
     if debug:
         print('baseDir: ' + str(baseDir))
         if signingPrivateKeyPem:
@@ -1102,7 +1116,9 @@ if args.approve:
     personCache = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     manualApproveFollowRequest(session, baseDir,
                                httpPrefix,
                                args.nickname, domain, port,
@@ -1128,7 +1144,9 @@ if args.deny:
     personCache = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     manualDenyFollowRequest(session, baseDir,
                             httpPrefix,
                             args.nickname, domain, port,
@@ -1219,7 +1237,9 @@ if args.message:
     isArticle = False
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending post to ' + args.sendto)
 
     sendPostViaServer(signingPrivateKeyPem, __version__,
@@ -1254,7 +1274,9 @@ if args.announce:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending announce/repeat of ' + args.announce)
 
     sendAnnounceViaServer(baseDir, session, args.nickname, args.password,
@@ -1296,7 +1318,9 @@ if args.box:
         proxyType = 'gnunet'
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     session = createSession(proxyType)
     boxJson = c2sBoxJson(baseDir, session,
@@ -1355,7 +1379,9 @@ if args.itemName:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending shared item: ' + args.itemName)
 
     sendShareViaServer(baseDir, session,
@@ -1396,7 +1422,9 @@ if args.undoItemName:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo of shared item: ' + args.undoItemName)
 
     sendUndoShareViaServer(baseDir, session,
@@ -1456,7 +1484,9 @@ if args.wantedItemName:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending wanted item: ' + args.wantedItemName)
 
     sendWantedViaServer(baseDir, session,
@@ -1497,7 +1527,9 @@ if args.undoWantedItemName:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo of wanted item: ' + args.undoWantedItemName)
 
     sendUndoWantedViaServer(baseDir, session,
@@ -1529,7 +1561,9 @@ if args.like:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending like of ' + args.like)
 
     sendLikeViaServer(baseDir, session,
@@ -1560,7 +1594,9 @@ if args.undolike:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo like of ' + args.undolike)
 
     sendUndoLikeViaServer(baseDir, session,
@@ -1592,7 +1628,9 @@ if args.bookmark:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending bookmark of ' + args.bookmark)
 
     sendBookmarkViaServer(baseDir, session,
@@ -1624,7 +1662,9 @@ if args.unbookmark:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo bookmark of ' + args.unbookmark)
 
     sendUndoBookmarkViaServer(baseDir, session,
@@ -1655,7 +1695,9 @@ if args.delete:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending delete request of ' + args.delete)
 
     sendDeleteViaServer(baseDir, session,
@@ -1698,7 +1740,9 @@ if args.follow:
         followHttpPrefix = 'https'
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     sendFollowRequestViaServer(baseDir, session,
                                args.nickname, args.password,
@@ -1742,7 +1786,9 @@ if args.unfollow:
         followHttpPrefix = 'https'
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     sendUnfollowRequestViaServer(baseDir, session,
                                  args.nickname, args.password,
@@ -1775,7 +1821,9 @@ if args.followingList:
     followHttpPrefix = httpPrefix
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     followingJson = \
         getFollowingViaServer(baseDir, session,
@@ -1806,7 +1854,9 @@ if args.followersList:
     followHttpPrefix = httpPrefix
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     followersJson = \
         getFollowersViaServer(baseDir, session,
@@ -1838,7 +1888,9 @@ if args.followRequestsList:
     followHttpPrefix = httpPrefix
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     followRequestsJson = \
         getFollowRequestsViaServer(baseDir, session,
@@ -1888,7 +1940,9 @@ if args.migrations:
     session = createSession(proxyType)
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     ctr = migrateAccounts(baseDir, session,
                           httpPrefix, cachedWebfingers,
                           True, signingPrivateKeyPem)
@@ -1901,7 +1955,9 @@ if args.migrations:
 if args.actor:
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     if debug:
         print('baseDir: ' + str(baseDir))
         if signingPrivateKeyPem:
@@ -1985,7 +2041,9 @@ if args.followers:
         nickname = domain
 
     handle = nickname + '@' + domain
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
                                 None, __version__, debug, False,
@@ -2031,7 +2089,9 @@ if args.followers:
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     followersList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'followers', session,
@@ -2286,7 +2346,9 @@ if args.skill:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending ' + args.skill + ' skill level ' +
           str(args.skillLevelPercent) + ' for ' + nickname)
 
@@ -2319,7 +2381,9 @@ if args.availability:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending availability status of ' + nickname +
           ' as ' + args.availability)
 
@@ -2431,7 +2495,9 @@ if args.block:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending block of ' + args.block)
 
     sendBlockViaServer(baseDir, session, nickname, args.password,
@@ -2461,7 +2527,9 @@ if args.mute:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending mute of ' + args.mute)
 
     sendMuteViaServer(baseDir, session, nickname, args.password,
@@ -2491,7 +2559,9 @@ if args.unmute:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo mute of ' + args.unmute)
 
     sendUndoMuteViaServer(baseDir, session, nickname, args.password,
@@ -2533,7 +2603,9 @@ if args.unblock:
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo block of ' + args.unblock)
 
     sendUndoBlockViaServer(baseDir, session, nickname, args.password,
