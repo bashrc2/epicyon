@@ -769,5 +769,6 @@
     "void": "void",
     "openbsd": "openbsd",
     "freebsd": "freebsd",
-    "orgmode": "orgmode"
+    "orgmode": "orgmode",
+    "kde": "kde"
 }
