@@ -413,12 +413,18 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
     if not outboxUrl:
         return personPosts
     profileStr = 'https://www.w3.org/ns/activitystreams'
+    acceptStr = \
+        'application/activity+json, application/ld+json; ' + \
+        'profile="' + profileStr + '"'
     asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+        'Accept': acceptStr
     }
     if '/outbox/' in outboxUrl:
+        acceptStr = \
+            'application/ld+json, application/activity+json; ' + \
+            'profile="' + profileStr + '"'
         asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+            'Accept': acceptStr
         }
     if raw:
         if debug:
@@ -664,12 +670,18 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     if not outboxUrl:
         return []
     profileStr = 'https://www.w3.org/ns/activitystreams'
+    acceptStr = \
+        'application/activity+json, application/ld+json; ' + \
+        'profile="' + profileStr + '"'
     asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+        'Accept': acceptStr
     }
     if '/outbox/' in outboxUrl:
+        acceptStr = \
+            'application/ld+json, application/activity+json; ' + \
+            'profile="' + profileStr + '"'
         asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+            'Accept': acceptStr
         }
 
     postDomains = domainList
@@ -721,12 +733,18 @@ def _getPostsForBlockedDomains(baseDir: str,
     if not outboxUrl:
         return {}
     profileStr = 'https://www.w3.org/ns/activitystreams'
+    acceptStr = \
+        'application/activity+json, application/ld+json; ' + \
+        'profile="' + profileStr + '"'
     asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+        'Accept': acceptStr
     }
     if '/outbox/' in outboxUrl:
+        acceptStr = \
+            'application/ld+json, application/activity+json; ' + \
+            'profile="' + profileStr + '"'
         asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+            'Accept': acceptStr
         }
 
     blockedPosts = {}
@@ -3916,12 +3934,18 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
     """
     prof = 'https://www.w3.org/ns/activitystreams'
     if '/channel/' not in actor or '/accounts/' not in actor:
+        acceptStr = \
+            'application/activity+json, application/ld+json; ' + \
+            'profile="' + prof + '"'
         sessionHeaders = {
-            'Accept': 'application/activity+json; profile="' + prof + '"'
+            'Accept': acceptStr
         }
     else:
+        acceptStr = \
+            'application/ld+json, application/activity+json; ' + \
+            'profile="' + prof + '"'
         sessionHeaders = {
-            'Accept': 'application/ld+json; profile="' + prof + '"'
+            'Accept': acceptStr
         }
     result = []
     for pageCtr in range(noOfPages):
@@ -4261,13 +4285,19 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             return postJsonObject
     else:
         profileStr = 'https://www.w3.org/ns/activitystreams'
+        acceptStr = \
+            'application/activity+json, application/ld+json; ' + \
+            'profile="' + profileStr + '"'
         asHeader = {
-            'Accept': 'application/activity+json; profile="' + profileStr + '"'
+            'Accept': acceptStr
         }
         if '/channel/' in postJsonObject['actor'] or \
            '/accounts/' in postJsonObject['actor']:
+            acceptStr = \
+                'application/ld+json, application/activity+json; ' + \
+                'profile="' + profileStr + '"'
             asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
+                'Accept': acceptStr
             }
         actorNickname = getNicknameFromActor(postJsonObject['actor'])
         actorDomain, actorPort = getDomainFromActor(postJsonObject['actor'])
