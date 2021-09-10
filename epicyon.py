@@ -696,12 +696,15 @@ if args.posts:
     if not args.language:
         args.language = 'en'
     signingPrivateKeyPem = None
+    originDomain = None
+    if args.domain:
+        originDomain = args.domain
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
-                           signingPrivateKeyPem)
+                           signingPrivateKeyPem, originDomain)
     sys.exit()
 
 if args.postDomains:
@@ -887,12 +890,15 @@ if args.postsraw:
     if not args.language:
         args.language = 'en'
     signingPrivateKeyPem = None
+    originDomain = None
+    if args.domain:
+        originDomain = args.domain
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
-                           signingPrivateKeyPem)
+                           signingPrivateKeyPem, originDomain)
     sys.exit()
 
 if args.json:

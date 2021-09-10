@@ -3818,7 +3818,8 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str,
                            debug: bool, projectVersion: str,
                            systemLanguage: str,
-                           signingPrivateKeyPem: str) -> None:
+                           signingPrivateKeyPem: str,
+                           originDomain: str) -> None:
     """ This is really just for test purposes
     """
     print('Starting new session for getting public posts')
@@ -3869,7 +3870,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     _getPosts(session, personUrl, 30, maxMentions, maxEmoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
-              projectVersion, httpPrefix, domain, systemLanguage,
+              projectVersion, httpPrefix, originDomain, systemLanguage,
               signingPrivateKeyPem)
 
 
