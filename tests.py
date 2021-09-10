@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Testing"
 
@@ -4469,7 +4469,7 @@ def _testLinksWithinPost() -> None:
     port = 443
     httpPrefix = 'https'
     content = 'This is a test post with links.\n\n' + \
-        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
     followersOnly = False
     saveToFile = False
     clientToServer = False
@@ -4508,10 +4508,10 @@ def _testLinksWithinPost() -> None:
         '<span class="invisible">ftp://</span>' + \
         '<span class="ellipsis">' + \
         'ftp.ncdc.noaa.gov/pub/data/ghcn/v4/</span>' + \
-        '</a><br><br><a href="https://freedombone.net" ' + \
+        '</a><br><br><a href="https://libreserver.org" ' + \
         'rel="nofollow noopener noreferrer" target="_blank">' + \
         '<span class="invisible">https://</span>' + \
-        '<span class="ellipsis">freedombone.net</span></a></p>'
+        '<span class="ellipsis">libreserver.org</span></a></p>'
     assert postJsonObject['object']['content'] == \
         postJsonObject['object']['contentMap'][systemLanguage]
 
@@ -5457,7 +5457,7 @@ def _testCanReplyTo() -> None:
     port = 443
     httpPrefix = 'https'
     content = 'This is a test post with links.\n\n' + \
-        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
     followersOnly = False
     saveToFile = False
     clientToServer = False

@@ -52,7 +52,7 @@ If you're raising concerns about something or someone, there must be demonstrabl
 
 This is not a big project and so there is no division of labor or special enforcement committee or bureaucratic process.
 
-Complaints should be either reported in the Matrix chat room **#epicyon:matrix.freedombone.net** or sent to bob@freedombone.net, preferably via XMPP/Conversations with OMEMO enabled but you can also use the same address for email correspondence.
+Complaints should be either reported in the Matrix chat room **#epicyon:matrix.libreserver.org** or sent to bob@libreserver.org, preferably via XMPP/Conversations with OMEMO enabled but you can also use the same address for email correspondence.
 
 ## In case of violations
 
@@ -60,6 +60,5 @@ Violators of this code of conduct will:
 
  * Be removed from any associated Matrix and/or XMPP chat rooms
  * Will not have pending or future patches or pull requests merged
- * If they have a user account on *code.freedombone.net* it will be removed
 
 This applies regardless of past levels of commitment or technical abilities.
