@@ -1375,6 +1375,8 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
     This is a spam mitigation feature, so that spammers can't
     add a lot of replies to old post which you don't notice.
     """
+    if '/statuses/' not in postUrl:
+        return True
     if not postJsonObject:
         postFilename = locatePost(baseDir, nickname, domain, postUrl)
         if not postFilename:

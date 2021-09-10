@@ -11307,7 +11307,8 @@ class PubServer(BaseHTTPRequestHandler):
                 replyIntervalHours = self.server.defaultReplyIntervalHours
                 if not canReplyTo(baseDir, nickname, domain,
                                   inReplyToUrl, replyIntervalHours):
-                    print('Reply outside of time window ' + inReplyToUrl)
+                    print('Reply outside of time window ' + inReplyToUrl +
+                          str(replyIntervalHours) + ' hours')
                     self._403()
                     self.server.GETbusy = False
                     return True
