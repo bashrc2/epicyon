@@ -850,9 +850,12 @@ if args.socnet:
         args.language = 'en'
     if not args.domain:
         args.domain = getConfigParam(baseDir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
     signingPrivateKeyPem = None
     if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     dotGraph = instancesGraph(baseDir, args.socnet,
                               proxyType, args.port,
                               httpPrefix, debug,
