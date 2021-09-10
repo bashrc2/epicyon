@@ -900,17 +900,20 @@ if args.json:
     }
     if not args.domain:
         args.domain = getConfigParam(baseDir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
     signingPrivateKeyPem = None
     if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, args.domain)
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     if debug:
         print('baseDir: ' + str(baseDir))
         if signingPrivateKeyPem:
             print('Obtained instance actor signing key')
         else:
-            print('Did not obtain instance actor key for ' + args.domain)
+            print('Did not obtain instance actor key for ' + domain)
     testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
-                       None, debug, __version__, httpPrefix, args.domain)
+                       None, debug, __version__, httpPrefix, domain)
     pprint(testJson)
     sys.exit()
 
