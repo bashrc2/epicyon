@@ -415,6 +415,11 @@ def getPersonBox(signingPrivateKeyPem: str,
 def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
     """Is the given post a public feed post?
     """
+    if not isinstance(item, dict):
+        if debug:
+            print('item object is not a dict')
+            pprint(item)
+        return False
     if not item.get('id'):
         if debug:
             print('No id')
@@ -426,11 +431,6 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
     if item['type'] != 'Create' and item['type'] != 'Announce':
         if debug:
             print('Not Create type')
-        return False
-    if not isinstance(item, dict):
-        if debug:
-            print('item object is not a dict')
-            pprint(item)
         return False
     if item.get('object'):
         if isinstance(item['object'], dict):
@@ -468,6 +468,25 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
                         break
                 if not isPublic:
                     return False
+    return True
+
+
+def _isCreateInsideAnnounce(item: {}) -> bool:
+    """ is this a Create inside of an Announce?
+    eg. lemmy feed item
+    """
+    if not isinstance(item, dict):
+        return False
+    if item['type'] != 'Announce':
+        return False
+    if not item.get('object'):
+        return False
+    if not isinstance(item['object'], dict):
+        return False
+    if not item['object'].get('type'):
+        return False
+    if item['object']['type'] != 'Create':
+        return False
     return True
 
 
@@ -527,6 +546,9 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
     i = 0
     for item in userFeed:
+        if _isCreateInsideAnnounce(item):
+            item = item['object']
+
         if not _isPublicFeedPost(item, personPosts, debug):
             continue
 
