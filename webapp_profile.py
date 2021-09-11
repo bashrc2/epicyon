@@ -261,11 +261,13 @@ def htmlProfileAfterSearch(cssCache: {},
     if userFeed:
         i = 0
         for item in userFeed:
+            isAnnouncedFeedItem = False
             if isCreateInsideAnnounce(item):
+                isAnnouncedFeedItem = True
                 item = item['object']
             if not item.get('actor'):
                 continue
-            if item['actor'] != personUrl:
+            if not isAnnouncedFeedItem and item['actor'] != personUrl:
                 continue
             if not item.get('type'):
                 continue
