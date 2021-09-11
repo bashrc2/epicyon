@@ -231,7 +231,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
         print('Getting user feed for ' + feedUrl)
         print('User feed header ' + str(asHeader))
     feedJson = getJson(signingPrivateKeyPem, session, feedUrl, asHeader, None,
-                       False, projectVersion, httpPrefix, domain)
+                       debug, projectVersion, httpPrefix, domain)
     if not feedJson:
         if debug:
             print('No user feed was returned')
