@@ -291,7 +291,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      themeName, systemLanguage, maxLikeCount,
                                      False, False, False, False, False)
             i += 1
-            if i >= 20:
+            if i >= 8:
                 break
 
     instanceTitle = \
