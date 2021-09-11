@@ -471,7 +471,7 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
     return True
 
 
-def _isCreateInsideAnnounce(item: {}) -> bool:
+def isCreateInsideAnnounce(item: {}) -> bool:
     """ is this a Create inside of an Announce?
     eg. lemmy feed item
     """
@@ -546,7 +546,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
     i = 0
     for item in userFeed:
-        if _isCreateInsideAnnounce(item):
+        if isCreateInsideAnnounce(item):
             item = item['object']
 
         if not _isPublicFeedPost(item, personPosts, debug):

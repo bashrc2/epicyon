@@ -35,6 +35,7 @@ from person import getPersonAvatarUrl
 from webfinger import webfingerHandle
 from posts import parseUserFeed
 from posts import getPersonBox
+from posts import isCreateInsideAnnounce
 from donate import getDonationUrl
 from donate import getWebsite
 from xmpp import getXmppAddress
@@ -260,6 +261,8 @@ def htmlProfileAfterSearch(cssCache: {},
     if userFeed:
         i = 0
         for item in userFeed:
+            if isCreateInsideAnnounce(item):
+                item = item['object']
             if not item.get('actor'):
                 continue
             if item['actor'] != personUrl:
