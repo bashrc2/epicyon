@@ -412,6 +412,65 @@ def getPersonBox(signingPrivateKeyPem: str,
         avatarUrl, displayName
 
 
+def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
+    """Is the given post a public feed post?
+    """
+    if not item.get('id'):
+        if debug:
+            print('No id')
+        return False
+    if not item.get('type'):
+        if debug:
+            print('No type')
+        return False
+    if item['type'] != 'Create' and item['type'] != 'Announce':
+        if debug:
+            print('Not Create type')
+        return False
+    if not isinstance(item, dict):
+        if debug:
+            print('item object is not a dict')
+            pprint(item)
+        return False
+    if item.get('object'):
+        if isinstance(item['object'], dict):
+            if not item['object'].get('published'):
+                if debug:
+                    print('No published attribute')
+                return False
+        elif isinstance(item['object'], str):
+            if not item.get('published'):
+                if debug:
+                    print('No published attribute')
+                return False
+        else:
+            if debug:
+                print('object is not a dict or string')
+            return False
+    if not personPosts.get(item['id']):
+        # check that this is a public post
+        # #Public should appear in the "to" list
+        if isinstance(item['object'], dict):
+            if item['object'].get('to'):
+                isPublic = False
+                for recipient in item['object']['to']:
+                    if recipient.endswith('#Public'):
+                        isPublic = True
+                        break
+                if not isPublic:
+                    return False
+        elif isinstance(item['object'], str):
+            if item.get('to'):
+                isPublic = False
+                for recipient in item['to']:
+                    if recipient.endswith('#Public'):
+                        isPublic = True
+                        break
+                if not isPublic:
+                    return False
+    return True
+
+
 def _getPosts(session, outboxUrl: str, maxPosts: int,
               maxMentions: int,
               maxEmoji: int, maxAttachments: int,
@@ -468,133 +527,83 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
     i = 0
     for item in userFeed:
-        if not item.get('id'):
-            if debug:
-                print('No id')
+        if not _isPublicFeedPost(item, personPosts, debug):
             continue
-        if not item.get('type'):
-            if debug:
-                print('No type')
-            continue
-        if item['type'] != 'Create' and item['type'] != 'Announce':
-            if debug:
-                print('Not Create type')
-            continue
-        if not isinstance(item, dict):
-            if debug:
-                print('item object is not a dict')
-                pprint(item)
-            continue
-        if item.get('object'):
-            if isinstance(item['object'], dict):
-                if not item['object'].get('published'):
-                    if debug:
-                        print('No published attribute')
-                    continue
-            elif isinstance(item['object'], str):
-                if not item.get('published'):
-                    if debug:
-                        print('No published attribute')
-                    continue
-            else:
-                if debug:
-                    print('object is not a dict or string')
-                continue
-        if not personPosts.get(item['id']):
-            # check that this is a public post
-            # #Public should appear in the "to" list
-            if isinstance(item['object'], dict):
-                if item['object'].get('to'):
-                    isPublic = False
-                    for recipient in item['object']['to']:
-                        if recipient.endswith('#Public'):
-                            isPublic = True
-                            break
-                    if not isPublic:
-                        continue
-            elif isinstance(item['object'], str):
-                if item.get('to'):
-                    isPublic = False
-                    for recipient in item['to']:
-                        if recipient.endswith('#Public'):
-                            isPublic = True
-                            break
-                    if not isPublic:
-                        continue
 
-            content = getBaseContentFromPost(item, systemLanguage)
-            content = content.replace('&apos;', "'")
+        content = getBaseContentFromPost(item, systemLanguage)
+        content = content.replace('&apos;', "'")
 
-            mentions = []
-            emoji = {}
-            summary = ''
-            inReplyTo = ''
-            attachment = []
-            sensitive = False
-            if isinstance(item['object'], dict):
-                if item['object'].get('tag'):
-                    for tagItem in item['object']['tag']:
-                        tagType = tagItem['type'].lower()
-                        if tagType == 'emoji':
-                            if tagItem.get('name') and tagItem.get('icon'):
-                                if tagItem['icon'].get('url'):
-                                    # No emoji from non-permitted domains
-                                    if urlPermitted(tagItem['icon']['url'],
-                                                    federationList):
-                                        emojiName = tagItem['name']
-                                        emojiIcon = tagItem['icon']['url']
-                                        emoji[emojiName] = emojiIcon
-                                    else:
-                                        if debug:
-                                            print('url not permitted ' +
-                                                  tagItem['icon']['url'])
-                        if tagType == 'mention':
-                            if tagItem.get('name'):
-                                if tagItem['name'] not in mentions:
-                                    mentions.append(tagItem['name'])
-                if len(mentions) > maxMentions:
-                    if debug:
-                        print('max mentions reached')
-                    continue
-                if len(emoji) > maxEmoji:
-                    if debug:
-                        print('max emojis reached')
-                    continue
-
-                if item['object'].get('summary'):
-                    if item['object']['summary']:
-                        summary = item['object']['summary']
-
-                if item['object'].get('inReplyTo'):
-                    if item['object']['inReplyTo']:
-                        if isinstance(item['object']['inReplyTo'], str):
-                            # No replies to non-permitted domains
-                            if not urlPermitted(item['object']['inReplyTo'],
+        mentions = []
+        emoji = {}
+        summary = ''
+        inReplyTo = ''
+        attachment = []
+        sensitive = False
+        if isinstance(item['object'], dict):
+            if item['object'].get('tag'):
+                for tagItem in item['object']['tag']:
+                    tagType = tagItem['type'].lower()
+                    if tagType == 'emoji':
+                        if tagItem.get('name') and tagItem.get('icon'):
+                            if tagItem['icon'].get('url'):
+                                # No emoji from non-permitted domains
+                                if urlPermitted(tagItem['icon']['url'],
                                                 federationList):
-                                if debug:
-                                    print('url not permitted ' +
-                                          item['object']['inReplyTo'])
-                                continue
-                            inReplyTo = item['object']['inReplyTo']
-
-                if item['object'].get('attachment'):
-                    if item['object']['attachment']:
-                        for attach in item['object']['attachment']:
-                            if attach.get('name') and attach.get('url'):
-                                # no attachments from non-permitted domains
-                                if urlPermitted(attach['url'],
-                                                federationList):
-                                    attachment.append([attach['name'],
-                                                       attach['url']])
+                                    emojiName = tagItem['name']
+                                    emojiIcon = tagItem['icon']['url']
+                                    emoji[emojiName] = emojiIcon
                                 else:
                                     if debug:
                                         print('url not permitted ' +
-                                              attach['url'])
+                                              tagItem['icon']['url'])
+                    if tagType == 'mention':
+                        if tagItem.get('name'):
+                            if tagItem['name'] not in mentions:
+                                mentions.append(tagItem['name'])
+            if len(mentions) > maxMentions:
+                if debug:
+                    print('max mentions reached')
+                continue
+            if len(emoji) > maxEmoji:
+                if debug:
+                    print('max emojis reached')
+                continue
 
-                sensitive = False
-                if item['object'].get('sensitive'):
-                    sensitive = item['object']['sensitive']
+            if item['object'].get('summary'):
+                if item['object']['summary']:
+                    summary = item['object']['summary']
 
+            if item['object'].get('inReplyTo'):
+                if item['object']['inReplyTo']:
+                    if isinstance(item['object']['inReplyTo'], str):
+                        # No replies to non-permitted domains
+                        if not urlPermitted(item['object']['inReplyTo'],
+                                            federationList):
+                            if debug:
+                                print('url not permitted ' +
+                                      item['object']['inReplyTo'])
+                            continue
+                        inReplyTo = item['object']['inReplyTo']
+
+            if item['object'].get('attachment'):
+                if item['object']['attachment']:
+                    for attach in item['object']['attachment']:
+                        if attach.get('name') and attach.get('url'):
+                            # no attachments from non-permitted domains
+                            if urlPermitted(attach['url'],
+                                            federationList):
+                                attachment.append([attach['name'],
+                                                   attach['url']])
+                            else:
+                                if debug:
+                                    print('url not permitted ' +
+                                          attach['url'])
+
+            sensitive = False
+            if item['object'].get('sensitive'):
+                sensitive = item['object']['sensitive']
+
+        if content:
             if simple:
                 print(_cleanHtml(content) + '\n')
             else:
@@ -609,10 +618,10 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     "mentions": mentions,
                     "emoji": emoji
                 }
-        i += 1
+            i += 1
 
-        if i == maxPosts:
-            break
+            if i == maxPosts:
+                break
     return personPosts
 
 
