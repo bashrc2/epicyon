@@ -230,6 +230,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
     if debug:
         print('Getting user feed for ' + feedUrl)
         print('User feed header ' + str(asHeader))
+        print('httpPrefix ' + str(httpPrefix))
     feedJson = getJson(signingPrivateKeyPem, session, feedUrl, asHeader, None,
                        debug, projectVersion, httpPrefix, domain)
     if not feedJson:
@@ -243,6 +244,8 @@ def parseUserFeed(signingPrivateKeyPem: str,
 
     if 'orderedItems' in feedJson:
         return feedJson['orderedItems']
+    elif 'items' in feedJson:
+        return feedJson['items']
 
     nextUrl = None
     if 'first' in feedJson:
@@ -267,6 +270,8 @@ def parseUserFeed(signingPrivateKeyPem: str,
             userFeed = nextUrl
             if userFeed.get('orderedItems'):
                 return userFeed['orderedItems']
+            elif userFeed.get('items'):
+                return userFeed['items']
     return None
 
 
@@ -3957,6 +3962,10 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
         if followersJson:
             if followersJson.get('orderedItems'):
                 for followerActor in followersJson['orderedItems']:
+                    if followerActor not in result:
+                        result.append(followerActor)
+            elif followersJson.get('items'):
+                for followerActor in followersJson['items']:
                     if followerActor not in result:
                         result.append(followerActor)
             else:
