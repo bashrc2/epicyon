@@ -74,6 +74,7 @@ from utils import dangerousMarkup
 from utils import isDM
 from utils import isReply
 from httpsig import messageContentDigest
+from posts import isCreateInsideAnnounce
 from posts import createDirectMessagePost
 from posts import validContentWarning
 from posts import downloadAnnounce
@@ -2583,6 +2584,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
+
+    if isCreateInsideAnnounce(messageJson):
+        messageJson = messageJson['object']
 
     if _receiveAnnounce(recentPostsCache,
                         session, handle, isGroup,
