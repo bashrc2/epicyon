@@ -231,8 +231,19 @@ def parseUserFeed(signingPrivateKeyPem: str,
         print('Getting user feed for ' + feedUrl)
         print('User feed header ' + str(asHeader))
         print('httpPrefix ' + str(httpPrefix))
+
     feedJson = getJson(signingPrivateKeyPem, session, feedUrl, asHeader, None,
                        debug, projectVersion, httpPrefix, domain)
+    if not feedJson:
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        acceptStr = 'application/ld+json; profile="' + profileStr + '"'
+        if asHeader['Accept'] != acceptStr:
+            asHeader = {
+                'Accept': acceptStr
+            }
+            feedJson = getJson(signingPrivateKeyPem, session, feedUrl,
+                               asHeader, None, debug, projectVersion,
+                               httpPrefix, domain)
     if not feedJson:
         if debug:
             print('No user feed was returned')
