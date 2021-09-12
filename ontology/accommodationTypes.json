@@ -2,9 +2,9 @@
   "@context": {
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
-    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductGlossary.owl#",
     "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
-    "dfc-u": "http://static.datafoodconsortium.org/data/units.rdf#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.json#",
     "dfc-p:specialize": {
       "@type": "@id"
     }
