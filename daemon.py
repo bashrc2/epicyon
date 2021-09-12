@@ -6647,7 +6647,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self._404()
 
-    def _showCachedAvatar(self, callingDomain: str, path: str,
+    def _showCachedAvatar(self, refererDomain: str, path: str,
                           baseDir: str,
                           GETstartTime, GETtimings: {}) -> None:
         """Shows an avatar image obtained from the cache
@@ -6664,7 +6664,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       self.server.domainFull,
+                                       refererDomain,
                                        False, None)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11205,7 +11205,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'share files shown')
         return True
 
-    def _showAvatarOrBanner(self, callingDomain: str, path: str,
+    def _showAvatarOrBanner(self, refererDomain: str, path: str,
                             baseDir: str, domain: str,
                             GETstartTime, GETtimings: {}) -> bool:
         """Shows an avatar or banner or profile background image
@@ -11259,7 +11259,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaBinary = avFile.read()
             self._set_headers_etag(avatarFilename, mediaImageType,
                                    mediaBinary, None,
-                                   None, True,
+                                   refererDomain, True,
                                    lastModifiedTimeStr)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11626,6 +11626,17 @@ class PubServer(BaseHTTPRequestHandler):
                     print('GET domain blocked: ' + callingDomain)
                     self._400()
                     return
+
+        # which domain is the GET request coming from?
+        refererDomain = None
+        if self.headers.get('referer'):
+            refererDomain, refererPort = \
+                getDomainFromActor(self.headers['referer'])
+            refererDomain = getFullDomain(refererDomain, refererPort)
+        elif self.headers.get('Referer'):
+            refererDomain, refererPort = \
+                getDomainFromActor(self.headers['Referer'])
+            refererDomain = getFullDomain(refererDomain, refererPort)
 
         if self._blockedUserAgent(callingDomain):
             self._400()
@@ -13027,7 +13038,7 @@ class PubServer(BaseHTTPRequestHandler):
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
-            self._showCachedAvatar(self.server.domainFull, self.path,
+            self._showCachedAvatar(refererDomain, self.path,
                                    self.server.baseDir,
                                    GETstartTime, GETtimings)
             return
@@ -13038,7 +13049,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
-        if self._showAvatarOrBanner(callingDomain, self.path,
+        if self._showAvatarOrBanner(refererDomain, self.path,
                                     self.server.baseDir,
                                     self.server.domain,
                                     GETstartTime, GETtimings):
