@@ -11644,6 +11644,15 @@ class PubServer(BaseHTTPRequestHandler):
             refererDomain, refererPort = \
                 getDomainFromActor(self.headers['Referer'])
             refererDomain = getFullDomain(refererDomain, refererPort)
+        elif self.headers.get('Signature'):
+            if 'keyId="' in self.headers['Signature']:
+                refererDomain = self.headers['Signature'].split('keyId="')[1]
+                if '/' in refererDomain:
+                    refererDomain = refererDomain.split('/')[0]
+                elif '#' in refererDomain:
+                    refererDomain = refererDomain.split('#')[0]
+                elif '"' in refererDomain:
+                    refererDomain = refererDomain.split('"')[0]
         elif uaStr:
             if '+https://' in uaStr:
                 refererDomain = \
