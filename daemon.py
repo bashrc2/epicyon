@@ -6492,9 +6492,6 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 ontologyStr = ontologyStr.replace('/data/', '')
                 ontologyFilename = baseDir + '/ontology/' + ontologyStr
-            else:
-                self._404()
-                return
             if ontologyStr.endswith('.json'):
                 ontologyFileType = 'application/ld+json'
             if os.path.isfile(ontologyFilename):
