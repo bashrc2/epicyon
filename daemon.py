@@ -6493,9 +6493,13 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(ontologyFilename, 'r') as fp:
                     ontologyFile = fp.read()
                 if ontologyFile:
+                    ontologyFile = \
+                        ontologyFile.replace('static.datafoodconsortium.org',
+                                             self.server.domainFull)
                     msg = ontologyFile.encode('utf-8')
                     self._set_headers('application/rdf+xml', len(msg),
                                       None, callingDomain, False)
+                    self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show emoji done',
                                           'get onotology')
