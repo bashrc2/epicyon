@@ -502,16 +502,10 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _blockedUserAgent(self, callingDomain: str) -> bool:
+    def _blockedUserAgent(self, callingDomain: str, agentStr: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
         agentDomain = None
-        agentStr = None
-
-        if self.headers.get('User-Agent'):
-            agentStr = self.headers['User-Agent']
-        elif self.headers.get('user-agent'):
-            agentStr = self.headers['user-agent']
 
         if agentStr:
             # is this a web crawler? If so the block it
@@ -11627,6 +11621,19 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
+        # get the user agent
+        uaStr = None
+        if self.headers.get('User-Agent'):
+            uaStr = self.headers['User-Agent']
+        elif self.headers.get('user-agent'):
+            uaStr = self.headers['user-agent']
+        elif self.headers.get('User-agent'):
+            uaStr = self.headers['User-agent']
+
+        if self._blockedUserAgent(callingDomain, uaStr):
+            self._400()
+            return
+
         # which domain is the GET request coming from?
         refererDomain = None
         if self.headers.get('referer'):
@@ -11637,10 +11644,21 @@ class PubServer(BaseHTTPRequestHandler):
             refererDomain, refererPort = \
                 getDomainFromActor(self.headers['Referer'])
             refererDomain = getFullDomain(refererDomain, refererPort)
-
-        if self._blockedUserAgent(callingDomain):
-            self._400()
-            return
+        elif uaStr:
+            if '+https://' in uaStr:
+                refererDomain = \
+                    self.headers['User-Agent'].split('+https://')[1]
+                if '/' in refererDomain:
+                    refererDomain = refererDomain.split('/')[0]
+                elif ')' in refererDomain:
+                    refererDomain = refererDomain.split(')')[0]
+            elif '+http://' in uaStr:
+                refererDomain = \
+                    self.headers['User-Agent'].split('+http://')[1]
+                if '/' in refererDomain:
+                    refererDomain = refererDomain.split('/')[0]
+                elif ')' in refererDomain:
+                    refererDomain = refererDomain.split(')')[0]
 
         GETstartTime = time.time()
         GETtimings = {}
@@ -15526,7 +15544,16 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        if self._blockedUserAgent(callingDomain):
+        # get the user agent
+        uaStr = None
+        if self.headers.get('User-Agent'):
+            uaStr = self.headers['User-Agent']
+        elif self.headers.get('user-agent'):
+            uaStr = self.headers['user-agent']
+        elif self.headers.get('User-agent'):
+            uaStr = self.headers['User-agent']
+
+        if self._blockedUserAgent(callingDomain, uaStr):
             self._400()
             return
 
