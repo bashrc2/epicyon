@@ -11599,6 +11599,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         callingDomain = self.server.domainFull
+
+        # TEST
+        print('GETheaders: ' + self.path + ' ' + str(self.headers))
+
         if self.headers.get('Host'):
             callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
