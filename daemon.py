@@ -721,7 +721,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-type', fileFormat)
         if length > -1:
             self.send_header('Content-Length', str(length))
-        self.send_header('Host', callingDomain)
+        if callingDomain:
+            self.send_header('Host', callingDomain)
         if permissive:
             self.send_header('Access-Control-Allow-Origin', '*')
             return
@@ -6471,7 +6472,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers_etag(mediaFilename, mediaFileType,
                                            mediaBinary, None,
-                                           callingDomain, True,
+                                           None, True,
                                            lastModifiedTimeStr)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -6487,7 +6488,18 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '.owl' in path or '.rdf' in path or '.json' in path:
             ontologyStr = path.split('/ontologies/')[1].replace('#', '')
-            ontologyFilename = baseDir + '/ontology/DFC/' + ontologyStr
+            ontologyFilename = None
+            ontologyFileType = 'application/rdf+xml'
+            if ontologyStr.startswith('DFC_'):
+                ontologyFilename = baseDir + '/ontology/DFC/' + ontologyStr
+            elif ontologyStr.endswith('.json'):
+                ontologyStr = ontologyStr.replace('/data/', '')
+                ontologyFilename = baseDir + '/ontology/' + ontologyStr
+            else:
+                self._404()
+                return
+            if ontologyStr.endswith('.json'):
+                ontologyFileType = 'application/ld+json'
             if os.path.isfile(ontologyFilename):
                 ontologyFile = None
                 with open(ontologyFilename, 'r') as fp:
@@ -6495,9 +6507,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if ontologyFile:
                     ontologyFile = \
                         ontologyFile.replace('static.datafoodconsortium.org',
-                                             self.server.domainFull)
+                                             callingDomain)
+                    if not callingDomain.endswith('.i2p') and \
+                       not callingDomain.endswith('.onion'):
+                        ontologyFile = \
+                            ontologyFile.replace('http://' +
+                                                 self.server.domainFull,
+                                                 'https://' +
+                                                 self.server.domainFull)
                     msg = ontologyFile.encode('utf-8')
-                    self._set_headers('application/rdf+xml', len(msg),
+                    self._set_headers(ontologyFileType, len(msg),
                                       None, callingDomain, False)
                     self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11240,7 +11259,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaBinary = avFile.read()
             self._set_headers_etag(avatarFilename, mediaImageType,
                                    mediaBinary, None,
-                                   callingDomain, True,
+                                   None, True,
                                    lastModifiedTimeStr)
             self._write(mediaBinary)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
