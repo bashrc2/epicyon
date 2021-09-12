@@ -11621,15 +11621,13 @@ class PubServer(BaseHTTPRequestHandler):
                     refererDomain = refererDomain.split('"')[0]
         elif uaStr:
             if '+https://' in uaStr:
-                refererDomain = \
-                    self.headers['User-Agent'].split('+https://')[1]
+                refererDomain = uaStr.split('+https://')[1]
                 if '/' in refererDomain:
                     refererDomain = refererDomain.split('/')[0]
                 elif ')' in refererDomain:
                     refererDomain = refererDomain.split(')')[0]
             elif '+http://' in uaStr:
-                refererDomain = \
-                    self.headers['User-Agent'].split('+http://')[1]
+                refererDomain = uaStr.split('+http://')[1]
                 if '/' in refererDomain:
                     refererDomain = refererDomain.split('/')[0]
                 elif ')' in refererDomain:
