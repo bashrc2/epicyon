@@ -11634,6 +11634,18 @@ class PubServer(BaseHTTPRequestHandler):
                     refererDomain = refererDomain.split(')')[0]
         return refererDomain
 
+    def _getUserAgent(self) -> str:
+        """Returns the user agent string from the headers
+        """
+        uaStr = None
+        if self.headers.get('User-Agent'):
+            uaStr = self.headers['User-Agent']
+        elif self.headers.get('user-agent'):
+            uaStr = self.headers['user-agent']
+        elif self.headers.get('User-agent'):
+            uaStr = self.headers['User-agent']
+        return uaStr
+
     def do_GET(self):
         callingDomain = self.server.domainFull
 
@@ -11664,14 +11676,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        # get the user agent
-        uaStr = None
-        if self.headers.get('User-Agent'):
-            uaStr = self.headers['User-Agent']
-        elif self.headers.get('user-agent'):
-            uaStr = self.headers['user-agent']
-        elif self.headers.get('User-agent'):
-            uaStr = self.headers['User-agent']
+        uaStr = self._getUserAgent()
 
         if self._blockedUserAgent(callingDomain, uaStr):
             self._400()
@@ -15556,6 +15561,13 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST domain blocked: ' + callingDomain)
                     self._400()
                     return
+            elif self.server.i2pDomain:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull and \
+                   callingDomain != self.server.i2pDomain:
+                    print('POST domain blocked: ' + callingDomain)
+                    self._400()
+                    return
             else:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull:
@@ -15563,14 +15575,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        # get the user agent
-        uaStr = None
-        if self.headers.get('User-Agent'):
-            uaStr = self.headers['User-Agent']
-        elif self.headers.get('user-agent'):
-            uaStr = self.headers['user-agent']
-        elif self.headers.get('User-agent'):
-            uaStr = self.headers['User-agent']
+        uaStr = self._getUserAgent()
 
         if self._blockedUserAgent(callingDomain, uaStr):
             self._400()
