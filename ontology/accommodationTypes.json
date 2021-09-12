@@ -11,7 +11,7 @@
   },
   "@graph": [
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#EntirePlace",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#EntirePlace",
       "rdfs:label": [
         {
           "@value": "Entire Place",
@@ -82,11 +82,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#EntirePlace",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#EntirePlace",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#PrivateRoom",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#PrivateRoom",
       "rdfs:label": [
         {
           "@value": "Private Room",
@@ -157,11 +157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#PrivateRoom",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#PrivateRoom",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#HotelRoom",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#HotelRoom",
       "rdfs:label": [
         {
           "@value": "Hotel Room",
@@ -232,11 +232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#HotelRoom",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#HotelRoom",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#SharedRoom",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#SharedRoom",
       "rdfs:label": [
         {
           "@value": "Shared Room",
@@ -307,11 +307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#SharedRoom",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#SharedRoom",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Sofa",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Sofa",
       "rdfs:label": [
         {
           "@value": "Sofa",
@@ -382,11 +382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Sofa",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Sofa",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Boat",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Boat",
       "rdfs:label": [
         {
           "@value": "Boat",
@@ -457,11 +457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Boat",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Boat",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Barge",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Barge",
       "rdfs:label": [
         {
           "@value": "Barge",
@@ -532,11 +532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Boat",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Boat",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Tent",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tent",
       "rdfs:label": [
         {
           "@value": "Tent",
@@ -607,11 +607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Tent",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tent",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Caravan",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Caravan",
       "rdfs:label": [
         {
           "@value": "Caravan",
@@ -682,11 +682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Caravan",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Caravan",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Hostel",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Hostel",
       "rdfs:label": [
         {
           "@value": "Hostel",
@@ -757,11 +757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Hostel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Hostel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Yurt",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Yurt",
       "rdfs:label": [
         {
           "@value": "Yurt",
@@ -832,11 +832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Yurt",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Yurt",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Tipi",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tipi",
       "rdfs:label": [
         {
           "@value": "Tipi",
@@ -907,11 +907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#Tipi",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tipi",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#RV",
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#RV",
       "rdfs:label": [
         {
           "@value": "RV",
@@ -982,7 +982,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.rdf#RV",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#RV",
       "@type": "dfc-p:ProductType"
     }
   ]
