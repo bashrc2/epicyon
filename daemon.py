@@ -6510,7 +6510,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'https://' +
                                                  self.server.domainFull)
                     msg = ontologyFile.encode('utf-8')
-                    self._set_headers(ontologyFileType, len(msg),
+                    msglen = len(msg)
+                    self._set_headers(ontologyFileType, msglen,
                                       None, callingDomain, False)
                     self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
