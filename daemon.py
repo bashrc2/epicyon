@@ -6506,9 +6506,9 @@ class PubServer(BaseHTTPRequestHandler):
                        not callingDomain.endswith('.onion'):
                         ontologyFile = \
                             ontologyFile.replace('http://' +
-                                                 self.server.domainFull,
+                                                 callingDomain,
                                                  'https://' +
-                                                 self.server.domainFull)
+                                                 callingDomain)
                     msg = ontologyFile.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers(ontologyFileType, msglen,
