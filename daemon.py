@@ -11597,6 +11597,45 @@ class PubServer(BaseHTTPRequestHandler):
                            blockerNickname)
         return True
 
+    def _getRefererDomain(self, uaStr: str) -> str:
+        """Returns the referer domain
+        Which domain is the GET request coming from?
+        """
+        refererDomain = None
+        if self.headers.get('referer'):
+            refererDomain, refererPort = \
+                getDomainFromActor(self.headers['referer'])
+            refererDomain = getFullDomain(refererDomain, refererPort)
+        elif self.headers.get('Referer'):
+            refererDomain, refererPort = \
+                getDomainFromActor(self.headers['Referer'])
+            refererDomain = getFullDomain(refererDomain, refererPort)
+        elif self.headers.get('Signature'):
+            if 'keyId="' in self.headers['Signature']:
+                refererDomain = self.headers['Signature'].split('keyId="')[1]
+                if '/' in refererDomain:
+                    refererDomain = refererDomain.split('/')[0]
+                elif '#' in refererDomain:
+                    refererDomain = refererDomain.split('#')[0]
+                elif '"' in refererDomain:
+                    refererDomain = refererDomain.split('"')[0]
+        elif uaStr:
+            if '+https://' in uaStr:
+                refererDomain = \
+                    self.headers['User-Agent'].split('+https://')[1]
+                if '/' in refererDomain:
+                    refererDomain = refererDomain.split('/')[0]
+                elif ')' in refererDomain:
+                    refererDomain = refererDomain.split(')')[0]
+            elif '+http://' in uaStr:
+                refererDomain = \
+                    self.headers['User-Agent'].split('+http://')[1]
+                if '/' in refererDomain:
+                    refererDomain = refererDomain.split('/')[0]
+                elif ')' in refererDomain:
+                    refererDomain = refererDomain.split(')')[0]
+        return refererDomain
+
     def do_GET(self):
         callingDomain = self.server.domainFull
 
@@ -11640,40 +11679,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return
 
-        # which domain is the GET request coming from?
-        refererDomain = None
-        if self.headers.get('referer'):
-            refererDomain, refererPort = \
-                getDomainFromActor(self.headers['referer'])
-            refererDomain = getFullDomain(refererDomain, refererPort)
-        elif self.headers.get('Referer'):
-            refererDomain, refererPort = \
-                getDomainFromActor(self.headers['Referer'])
-            refererDomain = getFullDomain(refererDomain, refererPort)
-        elif self.headers.get('Signature'):
-            if 'keyId="' in self.headers['Signature']:
-                refererDomain = self.headers['Signature'].split('keyId="')[1]
-                if '/' in refererDomain:
-                    refererDomain = refererDomain.split('/')[0]
-                elif '#' in refererDomain:
-                    refererDomain = refererDomain.split('#')[0]
-                elif '"' in refererDomain:
-                    refererDomain = refererDomain.split('"')[0]
-        elif uaStr:
-            if '+https://' in uaStr:
-                refererDomain = \
-                    self.headers['User-Agent'].split('+https://')[1]
-                if '/' in refererDomain:
-                    refererDomain = refererDomain.split('/')[0]
-                elif ')' in refererDomain:
-                    refererDomain = refererDomain.split(')')[0]
-            elif '+http://' in uaStr:
-                refererDomain = \
-                    self.headers['User-Agent'].split('+http://')[1]
-                if '/' in refererDomain:
-                    refererDomain = refererDomain.split('/')[0]
-                elif ')' in refererDomain:
-                    refererDomain = refererDomain.split(')')[0]
+        refererDomain = self._getRefererDomain(uaStr)
 
         GETstartTime = time.time()
         GETtimings = {}
