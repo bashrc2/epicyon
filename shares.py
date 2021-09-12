@@ -1151,12 +1151,13 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
+    Also the subdirectory ontology/DFC
     """
     today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
-        "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+        httpPrefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        "http://static.datafoodconsortium.org/data/productTypes.rdf#"
+        httpPrefix + '://' + domainFull + '/data/productTypes.rdf#'
     owner = localActorUrl(httpPrefix, nickname, domainFull)
     if sharesFileType == 'shares':
         dfcInstanceId = owner + '/catalog'
@@ -1239,12 +1240,13 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           path: str, sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
+    Also the subdirectory ontology/DFC
     """
     today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
-        "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+        httpPrefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        "http://static.datafoodconsortium.org/data/productTypes.rdf#"
+        httpPrefix + '://' + domainFull + '/data/productTypes.rdf#'
     dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
     endpoint = {
         "@context": {
