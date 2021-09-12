@@ -6485,7 +6485,7 @@ class PubServer(BaseHTTPRequestHandler):
                      GETstartTime, GETtimings: {}) -> None:
         """Returns an ontology file
         """
-        if '.owl' in path or '.rdf' in path:
+        if '.owl' in path or '.rdf' in path or '.json' in path:
             ontologyStr = path.split('/ontologies/')[1].replace('#', '')
             ontologyFilename = baseDir + '/ontology/DFC/' + ontologyStr
             if os.path.isfile(ontologyFilename):
