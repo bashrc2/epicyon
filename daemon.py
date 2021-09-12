@@ -11613,6 +11613,13 @@ class PubServer(BaseHTTPRequestHandler):
                     print('GET domain blocked: ' + callingDomain)
                     self._400()
                     return
+            elif self.server.i2pDomain:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull and \
+                   callingDomain != self.server.i2pDomain:
+                    print('GET domain blocked: ' + callingDomain)
+                    self._400()
+                    return
             else:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull:
