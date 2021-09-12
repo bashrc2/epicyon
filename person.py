@@ -1328,12 +1328,13 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
 
     personUrl = None
     wfRequest = None
+
     if '://' in originalActor and \
        originalActor.lower().endswith('/actor'):
         if debug:
             print(originalActor + ' is an instance actor')
         personUrl = originalActor
-    elif '://' in originalActor and '/c/' in originalActor:
+    elif '://' in originalActor and groupAccount:
         if debug:
             print(originalActor + ' is a group actor')
         personUrl = originalActor
