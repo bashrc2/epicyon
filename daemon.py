@@ -11600,6 +11600,10 @@ class PubServer(BaseHTTPRequestHandler):
     def do_GET(self):
         callingDomain = self.server.domainFull
 
+        # TEST
+        print('GET headers: ' + self.path + ' ' +
+              str(self.headers).replace('\n', ', '))
+
         if self.headers.get('Host'):
             callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
@@ -11670,11 +11674,6 @@ class PubServer(BaseHTTPRequestHandler):
                     refererDomain = refererDomain.split('/')[0]
                 elif ')' in refererDomain:
                     refererDomain = refererDomain.split(')')[0]
-
-        # TEST for the missing avatar image
-        if '/accounts/avatars/' in self.path:
-            print('GET avatar image: ' + self.path + ' ' +
-                  str(self.headers).replace('\n', ', '))
 
         GETstartTime = time.time()
         GETtimings = {}
