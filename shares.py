@@ -47,7 +47,8 @@ from blocking import isBlocked
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str,
-                productType: str) -> {}:
+                productType: str,
+                httpPrefix: str, domainFull: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
@@ -92,7 +93,10 @@ def _loadDfcIds(baseDir: str, systemLanguage: str,
             if not label.get('@value'):
                 continue
             if label['@language'] == systemLanguage:
-                dfcIds[label['@value'].lower()] = item['@id']
+                itemId = \
+                    item['@id'].replace('http://static.datafoodconsortium.org',
+                                        httpPrefix + '://' + domainFull)
+                dfcIds[label['@value'].lower()] = itemId
                 break
     return dfcIds
 
@@ -196,7 +200,9 @@ def _dfcProductTypeFromCategory(baseDir: str,
 
 def _getshareDfcId(baseDir: str, systemLanguage: str,
                    itemType: str, itemCategory: str,
-                   translate: {}, dfcIds: {} = None) -> str:
+                   translate: {},
+                   httpPrefix: str, domainFull: str,
+                   dfcIds: {} = None) -> str:
     """Attempts to obtain a DFC Id for the shared item,
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
@@ -210,7 +216,8 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
         itemType = itemType.replace('.', '')
         return 'epicyon#' + itemType
     if not dfcIds:
-        dfcIds = _loadDfcIds(baseDir, systemLanguage, matchedProductType)
+        dfcIds = _loadDfcIds(baseDir, systemLanguage, matchedProductType,
+                             httpPrefix, domainFull)
         if not dfcIds:
             return ''
     itemTypeLower = itemType.lower()
@@ -319,7 +326,8 @@ def addShare(baseDir: str,
     actor = localActorUrl(httpPrefix, nickname, domainFull)
     itemID = _getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(baseDir, systemLanguage,
-                           itemType, itemCategory, translate)
+                           itemType, itemCategory, translate,
+                           httpPrefix, domainFull)
 
     # has an image for this share been uploaded?
     imageUrl = None
@@ -1576,7 +1584,8 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         if saveJson(catalogJson, catalogFilename):
             print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
-                                            baseDir, systemLanguage)
+                                            baseDir, systemLanguage,
+                                            httpPrefix, domainFull)
             if sharesJson:
                 sharesFilename = \
                     catalogsDir + '/' + federatedDomainFull + '.' + \
@@ -1735,7 +1744,8 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
 
 
 def _dfcToSharesFormat(catalogJson: {},
-                       baseDir: str, systemLanguage: str) -> {}:
+                       baseDir: str, systemLanguage: str,
+                       httpPrefix: str, domainFull: str) -> {}:
     """Converts DFC format into the internal formal used to store shared items.
     This simplifies subsequent search and display
     """
@@ -1746,7 +1756,8 @@ def _dfcToSharesFormat(catalogJson: {},
     dfcIds = {}
     productTypesList = getCategoryTypes(baseDir)
     for productType in productTypesList:
-        dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType)
+        dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType,
+                                          httpPrefix, domainFull)
 
     currTime = int(time.time())
     for item in catalogJson['DFC:supplies']:
