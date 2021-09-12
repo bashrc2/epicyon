@@ -1378,6 +1378,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         paths = getUserPaths()
         for userPath in paths:
             personUrl = personUrl.replace(userPath, '/actor/')
+    if not personUrl and groupAccount:
+        personUrl = httpPrefix + '://' + domain + '/c/' + nickname
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain + '/' + nickname
