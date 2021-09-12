@@ -6481,7 +6481,10 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns an ontology file
         """
         if '.owl' in path or '.rdf' in path or '.json' in path:
-            ontologyStr = path.split('/ontologies/')[1].replace('#', '')
+            if '/ontologies/' in path:
+                ontologyStr = path.split('/ontologies/')[1].replace('#', '')
+            else:
+                ontologyStr = path.split('/data/')[1].replace('#', '')
             ontologyFilename = None
             ontologyFileType = 'application/rdf+xml'
             if ontologyStr.startswith('DFC_'):
@@ -10908,6 +10911,7 @@ class PubServer(BaseHTTPRequestHandler):
         divertToLoginScreen = False
         if '/media/' not in path and \
            '/ontologies/' not in path and \
+           '/data/' not in path and \
            '/sharefiles/' not in path and \
            '/statuses/' not in path and \
            '/emoji/' not in path and \
@@ -13035,11 +13039,13 @@ class PubServer(BaseHTTPRequestHandler):
                             GETstartTime, GETtimings)
             return
 
-        if '/ontologies/' in self.path:
-            self._getOntology(callingDomain,
-                              self.path, self.server.baseDir,
-                              GETstartTime, GETtimings)
-            return
+        if '/ontologies/' in self.path or \
+           '/data/' in self.path:
+            if not hasUsersPath(self.path):
+                self._getOntology(callingDomain,
+                                  self.path, self.server.baseDir,
+                                  GETstartTime, GETtimings)
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show emoji done',

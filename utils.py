@@ -1790,7 +1790,8 @@ def _getReservedWords() -> str:
             'ignores', 'linksmobile', 'newswiremobile',
             'minimal', 'search', 'eventdelete',
             'searchemoji', 'catalog', 'conversationId',
-            'mention', 'http', 'https')
+            'mention', 'http', 'https',
+            'ontologies', 'data')
 
 
 def getNicknameValidationPattern() -> str:
