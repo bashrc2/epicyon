@@ -1157,7 +1157,8 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     dfcUrl = \
         httpPrefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        httpPrefix + '://' + domainFull + '/ontologies/productGlossary.rdf#'
+        httpPrefix + '://' + domainFull + \
+        '/ontologies/DFC_productGlossary.rdf#'
     owner = localActorUrl(httpPrefix, nickname, domainFull)
     if sharesFileType == 'shares':
         dfcInstanceId = owner + '/catalog'
@@ -1246,7 +1247,8 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
     dfcUrl = \
         httpPrefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        httpPrefix + '://' + domainFull + '/ontologies/productGlossary.rdf#'
+        httpPrefix + '://' + domainFull + \
+        '/ontologies/DFC_productGlossary.rdf#'
     dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
     endpoint = {
         "@context": {
