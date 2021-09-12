@@ -10889,6 +10889,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         divertToLoginScreen = False
         if '/media/' not in path and \
+           '/ontologies/' not in path and \
            '/sharefiles/' not in path and \
            '/statuses/' not in path and \
            '/emoji/' not in path and \
