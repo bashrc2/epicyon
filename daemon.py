@@ -6480,6 +6480,28 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
+    def _getOntology(self, callingDomain: str,
+                     path: str, baseDir: str,
+                     GETstartTime, GETtimings: {}) -> None:
+        """Returns an ontology file
+        """
+        if '.owl' in path or '.rdf' in path:
+            ontologyStr = path.split('/ontologies/')[1].replace('#', '')
+            ontologyFilename = baseDir + '/ontology/DFC/' + ontologyStr
+            if os.path.isfile(ontologyFilename):
+                ontologyFile = None
+                with open(ontologyFilename, 'r') as fp:
+                    ontologyFile = fp.read()
+                if ontologyFile:
+                    msg = ontologyFile.encode('utf-8')
+                    self._set_headers('application/rdf+xml', len(msg),
+                                      None, callingDomain, False)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show emoji done',
+                                          'get onotology')
+                return
+        self._404()
+
     def _showEmoji(self, callingDomain: str, path: str,
                    baseDir: str,
                    GETstartTime, GETtimings: {}) -> None:
@@ -12927,6 +12949,12 @@ class PubServer(BaseHTTPRequestHandler):
             self._showMedia(callingDomain,
                             self.path, self.server.baseDir,
                             GETstartTime, GETtimings)
+            return
+
+        if '/ontologies/' in self.path:
+            self._getOntology(callingDomain,
+                              self.path, self.server.baseDir,
+                              GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
