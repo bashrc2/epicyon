@@ -6489,7 +6489,7 @@ class PubServer(BaseHTTPRequestHandler):
             ontologyFileType = 'application/rdf+xml'
             if ontologyStr.startswith('DFC_'):
                 ontologyFilename = baseDir + '/ontology/DFC/' + ontologyStr
-            elif ontologyStr.endswith('.json'):
+            else:
                 ontologyStr = ontologyStr.replace('/data/', '')
                 ontologyFilename = baseDir + '/ontology/' + ontologyStr
             else:
