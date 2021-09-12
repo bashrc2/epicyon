@@ -1333,6 +1333,10 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         if debug:
             print(originalActor + ' is an instance actor')
         personUrl = originalActor
+    elif '://' in originalActor and '/c/' in originalActor:
+        if debug:
+            print(originalActor + ' is a group actor')
+        personUrl = originalActor
     else:
         handle = nickname + '@' + domain
         wfRequest = webfingerHandle(session, handle,
@@ -1379,6 +1383,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         headersList = (
             "ld+json", "jrd+json", "activity+json"
         )
+        if debug:
+            print('Trying single user instance ' + personUrl)
     if '/channel/' in personUrl or '/accounts/' in personUrl:
         headersList = (
             "ld+json", "jrd+json", "activity+json"
