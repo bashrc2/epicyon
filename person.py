@@ -56,6 +56,7 @@ from utils import acctDir
 from utils import getUserPaths
 from utils import getGroupPaths
 from utils import localActorUrl
+from utils import dangerousSVG
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -1426,14 +1427,22 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
 
     imageExtension = getImageExtensions()
     for ext in imageExtension:
-        if ext == 'svg':
-            continue
         if os.path.isfile(avatarImagePath + '.' + ext):
-            return '/avatars/' + actorStr + '.' + ext
+            if ext == 'svg':
+                if not dangerousSVG(avatarImagePath + '.' + ext, False):
+                    return '/avatars/' + actorStr + '.' + ext
+            else:
+                return '/avatars/' + actorStr + '.' + ext
         elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
-            return '/avatars/' + actorStr.lower() + '.' + ext
+            if ext == 'svg':
+                if not dangerousSVG(avatarImagePath.lower() + '.' + ext,
+                                    False):
+                    return '/avatars/' + actorStr.lower() + '.' + ext
+            else:
+                return '/avatars/' + actorStr.lower() + '.' + ext
 
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
-            return personJson['icon']['url']
+            if '.svg' not in personJson['icon']['url'].lower():
+                return personJson['icon']['url']
     return None
