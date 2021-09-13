@@ -917,7 +917,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         if attach.get('name'):
             imageDescription = attach['name'].replace('"', "'")
         if _isImageMimeType(mediaType):
-            if _isAttachedImage(attach['url']):
+            imageUrl = attach['url']
+            if _isAttachedImage(attach['url']) and 'svg' not in mediaType:
                 if not attachmentStr:
                     attachmentStr += '<div class="media">\n'
                     mediaStyleAdded = True
@@ -927,10 +928,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                 if boxName == 'tlmedia':
                     galleryStr += '<div class="gallery">\n'
                     if not isMuted:
-                        galleryStr += '  <a href="' + attach['url'] + '">\n'
+                        galleryStr += '  <a href="' + imageUrl + '">\n'
                         galleryStr += \
                             '    <img loading="lazy" src="' + \
-                            attach['url'] + '" alt="" title="">\n'
+                            imageUrl + '" alt="" title="">\n'
                         galleryStr += '  </a>\n'
                     if postJsonObject['object'].get('url'):
                         imagePostUrl = postJsonObject['object']['url']
@@ -955,9 +956,9 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     galleryStr += '  </div>\n'
                     galleryStr += '</div>\n'
 
-                attachmentStr += '<a href="' + attach['url'] + '">'
+                attachmentStr += '<a href="' + imageUrl + '">'
                 attachmentStr += \
-                    '<img loading="lazy" src="' + attach['url'] + \
+                    '<img loading="lazy" src="' + imageUrl + \
                     '" alt="' + imageDescription + '" title="' + \
                     imageDescription + '" class="attachment"></a>\n'
                 attachmentCtr += 1
