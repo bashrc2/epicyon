@@ -3912,7 +3912,9 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                                             nickname, domain, 'outbox',
                                             62524)
     if debug:
-        print('Actor url: ' + personId)
+        print('Actor url: ' + str(personId))
+    if not personId:
+        return
 
     maxMentions = 10
     maxEmoji = 10
