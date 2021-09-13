@@ -428,6 +428,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             translate['Switch to timeline view'] + '">\n' + \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
             'alt="" class="title"></a>\n'
+    if not displayName:
+        displayName = searchNickname
     htmlStr += \
         '        <h1>' + displayName + '</h1>\n' + \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
