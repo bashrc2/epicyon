@@ -3443,7 +3443,7 @@ def _testDangerousSVG() -> None:
     assert dangerousSVG(svgContent, False)
 
     baseDir = os.getcwd()
-    scanThemesForScripts(baseDir)
+    assert not scanThemesForScripts(baseDir)
 
 
 def _testDangerousMarkup():

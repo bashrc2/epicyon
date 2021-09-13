@@ -71,6 +71,9 @@ def importTheme(baseDir: str, filename: str) -> bool:
     copytree(tempThemeDir, themeDir)
     if os.path.isdir(tempThemeDir):
         rmtree(tempThemeDir)
+    if scanThemesForScripts(themeDir):
+        rmtree(themeDir)
+        return False
     return os.path.isfile(themeDir + '/theme.json')
 
 
@@ -829,7 +832,7 @@ def updateDefaultThemesList(baseDir: str) -> None:
             defaultThemesFile.write(name + '\n')
 
 
-def scanThemesForScripts(baseDir: str) -> None:
+def scanThemesForScripts(baseDir: str) -> bool:
     """Scans the theme directory for any svg files containing scripts
     """
     for subdir, dirs, files in os.walk(baseDir + '/theme'):
@@ -843,5 +846,6 @@ def scanThemesForScripts(baseDir: str) -> None:
             svgDangerous = dangerousSVG(content, False)
             if svgDangerous:
                 print('svg file contains script: ' + svgFilename)
-            assert not svgDangerous
+                return True
         # deliberately no break - should resursively scan
+    return False

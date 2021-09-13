@@ -16481,7 +16481,7 @@ def runDaemon(defaultReplyIntervalHours: int,
         return False
 
     # scan the theme directory for any svg files containing scripts
-    scanThemesForScripts(baseDir)
+    assert not scanThemesForScripts(baseDir)
 
     # initialize authorized fetch key
     httpd.signingPrivateKeyPem = None
