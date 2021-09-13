@@ -825,6 +825,12 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
     separators = (['<', '>'], ['&lt;', '&gt;'])
+    invalidStrings = (
+        'script', 'noscript',
+        'canvas', 'style', 'abbr',
+        'frame', 'iframe', 'html', 'body',
+        'hr', 'allow-popups', 'allow-scripts'
+    )
     for separatorStyle in separators:
         startChar = separatorStyle[0]
         endChar = separatorStyle[1]
@@ -836,10 +842,6 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
         invalidPartials = ()
         if not allowLocalNetworkAccess:
             invalidPartials = getLocalNetworkAddresses()
-        invalidStrings = ('script', 'noscript',
-                          'canvas', 'style', 'abbr',
-                          'frame', 'iframe', 'html', 'body',
-                          'hr', 'allow-popups', 'allow-scripts')
         for markup in contentSections:
             if endChar not in markup:
                 continue
