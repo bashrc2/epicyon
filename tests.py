@@ -3447,7 +3447,6 @@ def _testDangerousSVG() -> None:
             if not f.endswith('.svg'):
                 continue
             svgFilename = os.path.join(subdir, f)
-            print(svgFilename)
             content = ''
             with open(svgFilename, 'r') as fp:
                 content = fp.read()
