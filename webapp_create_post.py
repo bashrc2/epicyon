@@ -298,8 +298,11 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
+    formatsString = getMediaFormats()
+    # remove svg as a permitted format
+    formatsString = formatsString.replace(', .svg', '').replace('.svg, ', '')
     newPostImageSection += \
-        '            accept="' + getMediaFormats() + '">\n'
+        '            accept="' + formatsString + '">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
