@@ -3451,7 +3451,10 @@ def _testDangerousSVG() -> None:
             content = ''
             with open(svgFilename, 'r') as fp:
                 content = fp.read()
-            assert not dangerousCSS(content, False)
+            svgDangerous = dangerousCSS(content, False)
+            if svgDangerous:
+                print('svg file contains script: ' + svgFilename)
+            assert not svgDangerous
         # deliberately no break - should resursively scan
 
 
