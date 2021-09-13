@@ -3441,6 +3441,19 @@ def _testDangerousSVG() -> None:
         '</svg>'
     assert dangerousSVG(svgContent, False)
 
+    baseDir = os.getcwd()
+    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+        for f in files:
+            if not f.endswith('.svg'):
+                continue
+            svgFilename = os.path.join(subdir, f)
+            print(svgFilename)
+            content = ''
+            with open(svgFilename, 'r') as fp:
+                content = fp.read()
+            assert not dangerousCSS(content, False)
+        # deliberately no break - should resursively scan
+
 
 def _testDangerousMarkup():
     print('testDangerousMarkup')
