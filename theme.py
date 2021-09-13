@@ -14,6 +14,7 @@ from utils import saveJson
 from utils import getImageExtensions
 from utils import copytree
 from utils import acctDir
+from utils import dangerousSVG
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -826,3 +827,21 @@ def updateDefaultThemesList(baseDir: str) -> None:
     with open(defaultThemesFilename, 'w+') as defaultThemesFile:
         for name in themeNames:
             defaultThemesFile.write(name + '\n')
+
+
+def scanThemesForScripts(baseDir: str) -> None:
+    """Scans the theme directory for any svg files containing scripts
+    """
+    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+        for f in files:
+            if not f.endswith('.svg'):
+                continue
+            svgFilename = os.path.join(subdir, f)
+            content = ''
+            with open(svgFilename, 'r') as fp:
+                content = fp.read()
+            svgDangerous = dangerousSVG(content, False)
+            if svgDangerous:
+                print('svg file contains script: ' + svgFilename)
+            assert not svgDangerous
+        # deliberately no break - should resursively scan

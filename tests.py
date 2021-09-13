@@ -42,6 +42,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import dangerousSVG
 from utils import canReplyTo
 from utils import isGroupAccount
 from utils import getActorLanguagesList
@@ -70,7 +71,6 @@ from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
 from utils import dangerousMarkup
-from utils import dangerousSVG
 from utils import acctDir
 from pgp import extractPGPPublicKey
 from pgp import pgpPublicKeyUpload
@@ -127,6 +127,7 @@ from content import removeTextFormatting
 from content import removeHtmlTag
 from theme import updateDefaultThemesList
 from theme import setCSSparam
+from theme import scanThemesForScripts
 from linked_data_sig import generateJsonSignature
 from linked_data_sig import verifyJsonSignature
 from newsdaemon import hashtagRuleTree
@@ -3442,19 +3443,7 @@ def _testDangerousSVG() -> None:
     assert dangerousSVG(svgContent, False)
 
     baseDir = os.getcwd()
-    for subdir, dirs, files in os.walk(baseDir + '/theme'):
-        for f in files:
-            if not f.endswith('.svg'):
-                continue
-            svgFilename = os.path.join(subdir, f)
-            content = ''
-            with open(svgFilename, 'r') as fp:
-                content = fp.read()
-            svgDangerous = dangerousCSS(content, False)
-            if svgDangerous:
-                print('svg file contains script: ' + svgFilename)
-            assert not svgDangerous
-        # deliberately no break - should resursively scan
+    scanThemesForScripts(baseDir)
 
 
 def _testDangerousMarkup():

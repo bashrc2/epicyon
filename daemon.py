@@ -304,6 +304,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
+from theme import scanThemesForScripts
 from theme import importTheme
 from theme import exportTheme
 from theme import isNewsThemeName
@@ -16478,6 +16479,9 @@ def runDaemon(defaultReplyIntervalHours: int,
         print('ERROR: HTTP server failed to start. ' + str(e))
         print('serverAddress: ' + str(serverAddress))
         return False
+
+    # scan the theme directory for any svg files containing scripts
+    scanThemesForScripts(baseDir)
 
     # initialize authorized fetch key
     httpd.signingPrivateKeyPem = None
