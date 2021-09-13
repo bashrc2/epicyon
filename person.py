@@ -1427,19 +1427,18 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
 
     imageExtension = getImageExtensions()
     for ext in imageExtension:
-        if os.path.isfile(avatarImagePath + '.' + ext):
-            if ext == 'svg':
-                if not dangerousSVG(avatarImagePath + '.' + ext, False):
-                    return '/avatars/' + actorStr + '.' + ext
-            else:
-                return '/avatars/' + actorStr + '.' + ext
-        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
-            if ext == 'svg':
-                if not dangerousSVG(avatarImagePath.lower() + '.' + ext,
-                                    False):
-                    return '/avatars/' + actorStr.lower() + '.' + ext
-            else:
-                return '/avatars/' + actorStr.lower() + '.' + ext
+        imFilename = avatarImagePath + '.' + ext
+        imPath = '/avatars/' + actorStr + '.' + ext
+        if not os.path.isfile(imFilename):
+            imFilename = avatarImagePath.lower() + '.' + ext
+            imPath = '/avatars/' + actorStr.lower() + '.' + ext
+            if not os.path.isfile(imFilename):
+                continue
+        if ext == 'svg':
+            if not dangerousSVG(imFilename, False):
+                return imPath
+        else:
+            return imPath
 
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
