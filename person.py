@@ -1426,6 +1426,8 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
 
     imageExtension = getImageExtensions()
     for ext in imageExtension:
+        if ext == 'svg':
+            continue
         if os.path.isfile(avatarImagePath + '.' + ext):
             return '/avatars/' + actorStr + '.' + ext
         elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
