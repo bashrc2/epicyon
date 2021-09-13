@@ -211,6 +211,12 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
                        followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?
     """
+    if not followerDomain:
+        print('No followerDomain')
+        return False
+    if not followerNickname:
+        print('No followerNickname for ' + followerDomain)
+        return False
     domain = removeDomainPort(domain)
     followersFile = acctDir(baseDir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
