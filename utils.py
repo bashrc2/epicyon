@@ -1012,14 +1012,15 @@ def getUserPaths() -> []:
     """Returns possible user paths
     e.g. /users/nickname, /channel/nickname
     """
-    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/', '/c/')
+    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
+            '/c/', '/video-channels/')
 
 
 def getGroupPaths() -> []:
     """Returns possible group paths
     e.g. https://lemmy/c/groupname
     """
-    return ['/c/']
+    return ['/c/', '/video-channels/']
 
 
 def getDomainFromActor(actor: str) -> (str, int):
@@ -1773,7 +1774,7 @@ def isValidLanguage(text: str) -> bool:
 def _getReservedWords() -> str:
     return ('inbox', 'dm', 'outbox', 'following',
             'public', 'followers', 'category',
-            'channel', 'calendar',
+            'channel', 'calendar', 'video-channels',
             'tlreplies', 'tlmedia', 'tlblogs',
             'tlblogs', 'tlfeatures',
             'moderation', 'moderationaction',
