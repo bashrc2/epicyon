@@ -821,16 +821,10 @@ def isLocalNetworkAddress(ipAddress: str) -> bool:
     return False
 
 
-def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
-    """Returns true if the given content contains dangerous html markup
+def _isDangerousString(content: str, allowLocalNetworkAccess: bool,
+                       separators: [], invalidStrings: []) -> bool:
+    """Returns true if the given string is dangerous
     """
-    separators = (['<', '>'], ['&lt;', '&gt;'])
-    invalidStrings = (
-        'script', 'noscript',
-        'canvas', 'style', 'abbr',
-        'frame', 'iframe', 'html', 'body',
-        'hr', 'allow-popups', 'allow-scripts'
-    )
     for separatorStyle in separators:
         startChar = separatorStyle[0]
         endChar = separatorStyle[1]
@@ -858,6 +852,31 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
                     if badStr + ' ' in markup:
                         return True
     return False
+
+
+def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
+    """Returns true if the given content contains dangerous html markup
+    """
+    separators = [['<', '>'], ['&lt;', '&gt;']]
+    invalidStrings = [
+        'script', 'noscript',
+        'canvas', 'style', 'abbr',
+        'frame', 'iframe', 'html', 'body',
+        'hr', 'allow-popups', 'allow-scripts'
+    ]
+    return _isDangerousString(content, allowLocalNetworkAccess,
+                              separators, invalidStrings)
+
+
+def dangerousSVG(content: str, allowLocalNetworkAccess: bool) -> bool:
+    """Returns true if the given svg file content contains dangerous scripts
+    """
+    separators = [['<', '>'], ['&lt;', '&gt;']]
+    invalidStrings = [
+        'script'
+    ]
+    return _isDangerousString(content, allowLocalNetworkAccess,
+                              separators, invalidStrings)
 
 
 def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
