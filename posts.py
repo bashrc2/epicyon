@@ -80,6 +80,7 @@ from filters import isFiltered
 from git import convertPostToPatch
 from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
+from video import convertVideoToNote
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -3282,6 +3283,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
+        blockedCache = {}
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
@@ -3291,7 +3293,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              recentPostsCache, debug,
                              systemLanguage,
                              domainFull, personCache,
-                             signingPrivateKeyPem)
+                             signingPrivateKeyPem,
+                             blockedCache)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -4302,7 +4305,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      recentPostsCache: {}, debug: bool,
                      systemLanguage: str,
                      domainFull: str, personCache: {},
-                     signingPrivateKeyPem: str) -> {}:
+                     signingPrivateKeyPem: str,
+                     blockedCache: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -4399,17 +4403,24 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
             return None
+        if not announcedJson.get('type'):
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
+            return None
+        if announcedJson['type'] == 'Video':
+            convertedJson = \
+                convertVideoToNote(baseDir, nickname, domain,
+                                   systemLanguage,
+                                   announcedJson, blockedCache)
+            if convertedJson:
+                announcedJson = convertedJson
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not hasUsersPath(announcedJson['id']):
-            _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
-                            recentPostsCache)
-            return None
-        if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)

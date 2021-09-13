@@ -664,7 +664,8 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                       screenreader: str, espeak,
                       translate: {}, yourActor: str,
                       domainFull: str, personCache: {},
-                      signingPrivateKeyPem: str) -> {}:
+                      signingPrivateKeyPem: str,
+                      blockedCache: {}) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -702,7 +703,8 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              recentPostsCache, False,
                              systemLanguage,
                              domainFull, personCache,
-                             signingPrivateKeyPem)
+                             signingPrivateKeyPem,
+                             blockedCache)
         if postJsonObject2:
             if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
@@ -1315,6 +1317,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     # TODO: this should probably be retrieved somehow from the server
     signingPrivateKeyPem = None
 
+    blockedCache = {}
+
     indent = '   '
     if showNewPosts:
         indent = ''
@@ -1624,7 +1628,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           systemLanguage, screenreader,
                                           espeak, translate, yourActor,
                                           domainFull, personCache,
-                                          signingPrivateKeyPem)
+                                          signingPrivateKeyPem,
+                                          blockedCache)
                     print('')
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlightText(sayStr)
@@ -2381,7 +2386,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              recentPostsCache, False,
                                              systemLanguage,
                                              domainFull, personCache,
-                                             signingPrivateKeyPem)
+                                             signingPrivateKeyPem,
+                                             blockedCache)
                         if postJsonObject2:
                             postJsonObject = postJsonObject2
                 if postJsonObject:

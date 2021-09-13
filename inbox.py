@@ -1488,6 +1488,7 @@ def _receiveAnnounce(recentPostsCache: {},
                   messageJson['type'])
         return False
 
+    blockedCache = {}
     prefixes = getProtocolPrefixes()
     # is the domain of the announce actor blocked?
     objectDomain = messageJson['object']
@@ -1579,7 +1580,8 @@ def _receiveAnnounce(recentPostsCache: {},
                                       recentPostsCache, debug,
                                       systemLanguage,
                                       domainFull, personCache,
-                                      signingPrivateKeyPem)
+                                      signingPrivateKeyPem,
+                                      blockedCache)
     if not postJsonObject:
         print('WARN: unable to download announce: ' + str(messageJson))
         notInOnion = True

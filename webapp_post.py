@@ -1329,6 +1329,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     announceJsonObject = None
     if postJsonObject['type'] == 'Announce':
         announceJsonObject = postJsonObject.copy()
+        blockedCache = {}
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
@@ -1338,7 +1339,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                              recentPostsCache, False,
                              systemLanguage,
                              domainFull, personCache,
-                             signingPrivateKeyPem)
+                             signingPrivateKeyPem,
+                             blockedCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
