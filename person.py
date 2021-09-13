@@ -1437,7 +1437,10 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
         if ext != 'svg':
             return imPath
         else:
-            if not dangerousSVG(imFilename, False):
+            content = ''
+            with open(imFilename, 'r') as fp:
+                content = fp.read()
+            if not dangerousSVG(content, False):
                 return imPath
 
     if personJson.get('icon'):
