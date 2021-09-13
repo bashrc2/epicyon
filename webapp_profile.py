@@ -104,7 +104,11 @@ def htmlProfileAfterSearch(cssCache: {},
 
     personUrl = profileJson['id']
     searchDomain, searchPort = getDomainFromActor(personUrl)
+    if not searchDomain:
+        return None
     searchNickname = getNicknameFromActor(personUrl)
+    if not searchNickname:
+        return None
     searchDomainFull = getFullDomain(searchDomain, searchPort)
 
     profileStr = ''
