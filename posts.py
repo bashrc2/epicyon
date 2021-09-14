@@ -2244,7 +2244,8 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
     signatureHeaderJson = \
         createSignedHeader(None, privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
-                           postPath, httpPrefix, withDigest, postJsonStr)
+                           postPath, httpPrefix, withDigest, postJsonStr,
+                           None)
 
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
@@ -2603,7 +2604,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     signatureHeaderJson = \
         createSignedHeader(None, privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
-                           postPath, httpPrefix, withDigest, postJsonStr)
+                           postPath, httpPrefix, withDigest, postJsonStr,
+                           None)
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if sharedItemsToken:

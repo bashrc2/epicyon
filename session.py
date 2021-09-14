@@ -179,10 +179,13 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         path = '/' + url.split(toDomainFull + '/')[1]
     else:
         path = '/actor'
+    contentType = 'application/activity+json'
+    if sessionHeaders.get('Accept'):
+        contentType = sessionHeaders['Accept']
     signatureHeaderJson = \
         createSignedHeader(None, signingPrivateKeyPem, 'actor', domain, port,
                            toDomain, toPort, path, httpPrefix, withDigest,
-                           messageStr)
+                           messageStr, contentType)
     if debug:
         print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     # update the session headers from the signature headers

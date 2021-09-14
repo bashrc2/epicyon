@@ -354,7 +354,7 @@ def _testHttpSignedGET():
                                          'epicyon.libreserver.org', 443,
                                          host, 443,
                                          boxpath, httpPrefix, False,
-                                         None)
+                                         None, accept)
     signature = signatureHeader['signature']
 
     print('')
