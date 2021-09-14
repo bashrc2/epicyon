@@ -16899,8 +16899,7 @@ def runDaemon(defaultReplyIntervalHours: int,
 
     # signing key used for authorized fetch
     # this is the instance actor private key
-    if secureMode:
-        httpd.signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    httpd.signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     if not unitTest:
         print('Creating inbox queue watchdog')
