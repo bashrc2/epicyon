@@ -5754,6 +5754,8 @@ def _testCanReplyTo() -> None:
 
 def runAllTests():
     print('Running tests...')
+    _testHttpSignedGET()
+    return
     updateDefaultThemesList(os.getcwd())
     _translateOntology()
     _testGetPriceFromString()

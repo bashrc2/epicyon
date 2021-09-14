@@ -193,6 +193,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     sessionHeaders['Date'] = signatureHeaderJson['date']
     sessionHeaders['Accept'] = signatureHeaderJson['accept']
     sessionHeaders['Signature'] = signatureHeaderJson['signature']
+    sessionHeaders['Content-Length'] = '0'
     if debug:
         print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
