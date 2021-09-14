@@ -695,12 +695,10 @@ if args.posts:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = None
     originDomain = None
     if args.domain:
         originDomain = args.domain
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
@@ -889,12 +887,10 @@ if args.postsraw:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
-    signingPrivateKeyPem = None
     originDomain = None
     if args.domain:
         originDomain = args.domain
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
@@ -912,9 +908,7 @@ if args.json:
     domain = ''
     if args.domain:
         domain = args.domain
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     if debug:
         print('baseDir: ' + str(baseDir))
         if signingPrivateKeyPem:
@@ -1972,9 +1966,7 @@ if args.migrations:
 if args.actor:
     if not domain:
         domain = getConfigParam(baseDir, 'domain')
-    signingPrivateKeyPem = None
-    if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     if debug:
         print('baseDir: ' + str(baseDir))
         if signingPrivateKeyPem:
