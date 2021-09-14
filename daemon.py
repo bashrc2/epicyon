@@ -10808,14 +10808,14 @@ class PubServer(BaseHTTPRequestHandler):
                 'sharedInbox': actorDomainUrl + '/inbox'
             }
         actorJson['name'] = 'ACTOR'
-        actorJson['preferredUsername'] = 'Actor'
-        actorJson['id'] = actorUrl
-        actorJson['type'] = 'Person'
+        actorJson['preferredUsername'] = domainFull
+        actorJson['id'] = actorDomainUrl + '/actor'
+        actorJson['type'] = 'Application'
         actorJson['discoverable'] = False
         actorJson['summary'] = 'Instance Actor'
         actorJson['publicKey']['id'] = actorUrl + '#main-key'
         actorJson['publicKey']['owner'] = actorUrl
-        actorJson['url'] = actorUrl
+        actorJson['url'] = actorDomainUrl + '/actor'
         actorJson['inbox'] = actorUrl + '/inbox'
         actorJson['followers'] = actorUrl + '/followers'
         actorJson['following'] = actorUrl + '/following'
