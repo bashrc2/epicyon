@@ -10798,9 +10798,11 @@ class PubServer(BaseHTTPRequestHandler):
             actorDomainUrl = httpPrefix + '://' + domainFull
         actorUrl = actorDomainUrl + '/users/Actor'
         removeFields = ('icon', 'image', 'tts', 'shares',
-                        'alsoKnownAs', 'hasOccupation', 'featured')
+                        'alsoKnownAs', 'hasOccupation', 'featured',
+                        'featuredTags', 'discoverable', 'published',
+                        'devices')
         for r in removeFields:
-            if actorJson.get(r):
+            if r in actorJson:
                 del actorJson[r]
         actorJson['endpoints'] = {}
         if enableSharedInbox:
@@ -10811,7 +10813,6 @@ class PubServer(BaseHTTPRequestHandler):
         actorJson['preferredUsername'] = domainFull
         actorJson['id'] = actorDomainUrl + '/actor'
         actorJson['type'] = 'Application'
-        actorJson['discoverable'] = False
         actorJson['summary'] = 'Instance Actor'
         actorJson['publicKey']['id'] = actorDomainUrl + '/actor#main-key'
         actorJson['publicKey']['owner'] = actorDomainUrl + '/actor'
