@@ -509,14 +509,14 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         return personPosts
     profileStr = 'https://www.w3.org/ns/activitystreams'
     acceptStr = \
-        'application/activity+json, application/ld+json; ' + \
+        'application/activity+json; ' + \
         'profile="' + profileStr + '"'
     asHeader = {
         'Accept': acceptStr
     }
     if '/outbox/' in outboxUrl:
         acceptStr = \
-            'application/ld+json, application/activity+json; ' + \
+            'application/ld+json; ' + \
             'profile="' + profileStr + '"'
         asHeader = {
             'Accept': acceptStr
@@ -719,14 +719,14 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
         return []
     profileStr = 'https://www.w3.org/ns/activitystreams'
     acceptStr = \
-        'application/activity+json, application/ld+json; ' + \
+        'application/activity+json; ' + \
         'profile="' + profileStr + '"'
     asHeader = {
         'Accept': acceptStr
     }
     if '/outbox/' in outboxUrl:
         acceptStr = \
-            'application/ld+json, application/activity+json; ' + \
+            'application/ld+json; ' + \
             'profile="' + profileStr + '"'
         asHeader = {
             'Accept': acceptStr
@@ -782,14 +782,14 @@ def _getPostsForBlockedDomains(baseDir: str,
         return {}
     profileStr = 'https://www.w3.org/ns/activitystreams'
     acceptStr = \
-        'application/activity+json, application/ld+json; ' + \
+        'application/activity+json; ' + \
         'profile="' + profileStr + '"'
     asHeader = {
         'Accept': acceptStr
     }
     if '/outbox/' in outboxUrl:
         acceptStr = \
-            'application/ld+json, application/activity+json; ' + \
+            'application/ld+json; ' + \
             'profile="' + profileStr + '"'
         asHeader = {
             'Accept': acceptStr
@@ -3988,14 +3988,14 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
     prof = 'https://www.w3.org/ns/activitystreams'
     if '/channel/' not in actor or '/accounts/' not in actor:
         acceptStr = \
-            'application/activity+json, application/ld+json; ' + \
+            'application/activity+json; ' + \
             'profile="' + prof + '"'
         sessionHeaders = {
             'Accept': acceptStr
         }
     else:
         acceptStr = \
-            'application/ld+json, application/activity+json; ' + \
+            'application/ld+json; ' + \
             'profile="' + prof + '"'
         sessionHeaders = {
             'Accept': acceptStr
@@ -4344,7 +4344,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
     else:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         acceptStr = \
-            'application/activity+json, application/ld+json; ' + \
+            'application/activity+json; ' + \
             'profile="' + profileStr + '"'
         asHeader = {
             'Accept': acceptStr
@@ -4352,7 +4352,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if '/channel/' in postJsonObject['actor'] or \
            '/accounts/' in postJsonObject['actor']:
             acceptStr = \
-                'application/ld+json, application/activity+json; ' + \
+                'application/ld+json; ' + \
                 'profile="' + profileStr + '"'
             asHeader = {
                 'Accept': acceptStr

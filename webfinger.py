@@ -159,7 +159,6 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
-    actor = localActorUrl(httpPrefix, nickname, domain)
     account = {
         "aliases": [
             httpPrefix + "://" + domain + "/@" + personName,

@@ -210,8 +210,7 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
         contentType = \
-            'application/activity+json, ' + \
-            'application/ld+json, application/jrd+json'
+            'application/activity+json'
         headers = {
             '(request-target)': f'get {path}',
             'host': headerDomain,
