@@ -185,17 +185,11 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                            messageStr)
     if debug:
         print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
+    # update the session headers from the signature headers
     sessionHeaders['Host'] = signatureHeaderJson['host']
     sessionHeaders['Date'] = signatureHeaderJson['date']
     sessionHeaders['Accept'] = signatureHeaderJson['accept']
     sessionHeaders['Signature'] = signatureHeaderJson['signature']
-    # update the session headers from the signature headers
-    # for key, value in signatureHeaderJson.items():
-    #    if key.startswith('(') or key.startswith('*('):
-    #        continue
-    #    sessionHeaders[key.title()] = value
-    #    if sessionHeaders.get(key.lower()):
-    #        del sessionHeaders[key.lower()]
     if debug:
         print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
