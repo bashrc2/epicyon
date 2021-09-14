@@ -198,7 +198,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     return signatureIndexHeader, signatureHeader
 
 
-def createSignedHeader(privateKeyPem: str, nickname: str,
+def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                        domain: str, port: int,
                        toDomain: str, toPort: int,
                        path: str, httpPrefix: str, withDigest: bool,
@@ -207,10 +207,10 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
     """
     headerDomain = getFullDomain(toDomain, toPort)
 
-    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    if not dateStr:
+        dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
-        contentType = \
-            'application/activity+json'
+        contentType = 'application/activity+json'
         headers = {
             '(request-target)': f'get {path}',
             'host': headerDomain,
@@ -319,6 +319,9 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
         }
 
+    if debug:
+        print('signatureDict: ' + str(signatureDict))
+
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
@@ -414,10 +417,10 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                         signedHeaderList.append(
                             f'{signedHeader}: {headers[signedHeaderCap]}')
 
-    if debug:
-        print('DEBUG: signedHeaderList: ' + str(signedHeaderList))
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
+    if debug:
+        print('signedHeaderText:\n' + signedHeaderText + 'END')
 
     # Get the signature, verify with public key, return result
     signature = None
@@ -439,6 +442,10 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         headerDigest = getSHA256(signedHeaderText.encode('ascii'))
         paddingStr = padding.PKCS1v15()
         alg = hazutils.Prehashed(hashes.SHA256())
+    elif algorithm == 'rsa-sha512':
+        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+        paddingStr = padding.PKCS1v15()
+        alg = hazutils.Prehashed(hashes.SHA512())
     else:
         print('Unknown http signature algorithm: ' + algorithm)
         paddingStr = padding.PKCS1v15()
@@ -451,4 +458,4 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     except BaseException:
         if debug:
             print('DEBUG: verifyPostHeaders pkcs1_15 verify failure')
-        return False
+    return False

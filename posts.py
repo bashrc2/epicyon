@@ -2242,7 +2242,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
-        createSignedHeader(privateKeyPem, nickname, domain, port,
+        createSignedHeader(None, privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
                            postPath, httpPrefix, withDigest, postJsonStr)
 
@@ -2601,7 +2601,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
-        createSignedHeader(privateKeyPem, nickname, domain, port,
+        createSignedHeader(None, privateKeyPem, nickname, domain, port,
                            toDomain, toPort,
                            postPath, httpPrefix, withDigest, postJsonStr)
     # optionally add a token so that the receiving instance may access
