@@ -10813,8 +10813,8 @@ class PubServer(BaseHTTPRequestHandler):
         actorJson['type'] = 'Application'
         actorJson['discoverable'] = False
         actorJson['summary'] = 'Instance Actor'
-        actorJson['publicKey']['id'] = actorUrl + '#main-key'
-        actorJson['publicKey']['owner'] = actorUrl
+        actorJson['publicKey']['id'] = actorDomainUrl + '/actor#main-key'
+        actorJson['publicKey']['owner'] = actorDomainUrl + '/actor'
         actorJson['url'] = actorDomainUrl + '/actor'
         actorJson['inbox'] = actorUrl + '/inbox'
         actorJson['followers'] = actorUrl + '/followers'
