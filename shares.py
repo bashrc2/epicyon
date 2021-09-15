@@ -617,9 +617,11 @@ def sendShareViaServer(baseDir, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
@@ -720,9 +722,11 @@ def sendUndoShareViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
@@ -835,9 +839,11 @@ def sendWantedViaServer(baseDir, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
@@ -938,9 +944,11 @@ def sendUndoWantedViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,

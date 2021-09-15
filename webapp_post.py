@@ -1273,9 +1273,11 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         avatarUrl2 = None
         displayName = None
         if postActorWf:
+            originDomain = domain
             (inboxUrl, pubKeyId, pubKey,
              fromPersonId, sharedInbox,
              avatarUrl2, displayName) = getPersonBox(signingPrivateKeyPem,
+                                                     originDomain,
                                                      baseDir, session,
                                                      postActorWf,
                                                      personCache,

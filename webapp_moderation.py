@@ -81,6 +81,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
     """
+    signingPrivateKeyPem = None
     msgStr1 = 'This account interacts with the following instances'
 
     infoForm = ''
@@ -114,8 +115,10 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     session = createSession(proxyType)
 
     wordFrequency = {}
+    originDomain = None
     domainDict = getPublicPostInfo(session,
                                    baseDir, searchNickname, searchDomain,
+                                   originDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
                                    __version__, wordFrequency, systemLanguage,

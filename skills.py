@@ -224,9 +224,11 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = domain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, nickname, domain,

@@ -63,9 +63,11 @@ def instancesGraph(baseDir: str, handles: str,
                   str(wfRequest))
             return dotGraphStr + '}\n'
 
+        originDomain = None
         (personUrl, pubKeyId, pubKey,
          personId, shaedInbox,
          avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                                originDomain,
                                                 baseDir, session, wfRequest,
                                                 personCache,
                                                 projectVersion, httpPrefix,

@@ -201,8 +201,10 @@ def sendLikeViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -287,8 +289,10 @@ def sendUndoLikeViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,

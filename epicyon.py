@@ -739,10 +739,15 @@ if args.postDomains:
     if not args.language:
         args.language = 'en'
     signingPrivateKeyPem = None
+    if not args.domain:
+        originDomain = getConfigParam(baseDir, 'domain')
+    else:
+        originDomain = args.domain
     if args.secureMode:
-        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
+                                      originDomain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__,

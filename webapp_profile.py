@@ -2137,9 +2137,11 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                         domain, __version__, debug, False,
                         signingPrivateKeyPem)
 
+    originDomain = domain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl2, displayName) = getPersonBox(signingPrivateKeyPem,
+                                             originDomain,
                                              baseDir, session,
                                              followUrlWf,
                                              personCache, projectVersion,
