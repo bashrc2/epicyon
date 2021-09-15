@@ -526,6 +526,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     """Converts rss items in a newswire into posts
     """
     if not newswire:
+        print('No newswire to convert')
         return
 
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
@@ -542,8 +543,12 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             dateStr = dateStr.replace(' ', 'T')
             dateStr = dateStr.replace('+00:00', 'Z')
         else:
-            dateStrWithOffset = \
-                datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            try:
+                dateStrWithOffset = \
+                    datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            except BaseException:
+                print('Newswire strptime failed ' + str(dateStr))
+                continue
             dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         statusNumber, published = getStatusNumber(dateStr)
