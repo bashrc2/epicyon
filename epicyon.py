@@ -670,6 +670,10 @@ if args.libretranslateApiKey:
     setConfigParam(baseDir, 'libretranslateApiKey', args.libretranslateApiKey)
 
 if args.posts:
+    if not domain:
+        originDomain = getConfigParam(baseDir, 'domain')
+    else:
+        originDomain = domain
     if '@' not in args.posts:
         if '/users/' in args.posts:
             postsNickname = getNicknameFromActor(args.posts)
@@ -696,10 +700,7 @@ if args.posts:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
-    originDomain = None
-    if args.domain:
-        originDomain = args.domain
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
@@ -872,6 +873,10 @@ if args.socnet:
     sys.exit()
 
 if args.postsraw:
+    if not domain:
+        originDomain = getConfigParam(baseDir, 'domain')
+    else:
+        originDomain = domain
     if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
         sys.exit()
@@ -888,10 +893,7 @@ if args.postsraw:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
-    originDomain = None
-    if args.domain:
-        originDomain = args.domain
-    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
                            __version__, args.language,
