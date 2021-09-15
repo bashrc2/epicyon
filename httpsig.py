@@ -40,7 +40,8 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
                     toDomain: str, toPort: int,
                     path: str,
                     httpPrefix: str,
-                    messageBodyJsonStr: str) -> str:
+                    messageBodyJsonStr: str,
+                    contentType: str) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
@@ -61,7 +62,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
             '(request-target)': f'get {path}',
             'host': toDomain,
             'date': dateStr,
-            'accept': 'application/json'
+            'accept': contentType
         }
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
@@ -208,10 +209,14 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
     """
     headerDomain = getFullDomain(toDomain, toPort)
 
+    # if no date is given then create one
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+
+    # Content-Type or Accept header
     if not contentType:
         contentType = 'application/activity+json'
+
     if not withDigest:
         headers = {
             '(request-target)': f'get {path}',
@@ -222,7 +227,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port, toDomain, toPort,
-                            path, httpPrefix, None)
+                            path, httpPrefix, None, contentType)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
         contentLength = len(messageBodyJsonStr)
@@ -238,7 +243,8 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             toDomain, toPort,
-                            path, httpPrefix, messageBodyJsonStr)
+                            path, httpPrefix, messageBodyJsonStr,
+                            contentType)
     headers['signature'] = signatureHeader
     return headers
 
@@ -437,6 +443,9 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     else:
         # Original Mastodon signature
         signature = base64.b64decode(signatureDict['signature'])
+        if debug:
+            print('signature: ' + algorithm + ' ' +
+                  signatureDict['signature'])
 
     # If extra signing algorithms need to be added then do it here
     if algorithm == 'rsa-sha256':
