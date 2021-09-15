@@ -525,23 +525,18 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                              lowBandwidth: bool) -> None:
     """Converts rss items in a newswire into posts
     """
-    print('newswire convertRSStoActivityPub 1')
     if not newswire:
         print('No newswire to convert')
         return
 
-    print('newswire convertRSStoActivityPub 2')
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
     if not os.path.isdir(basePath):
         os.mkdir(basePath)
 
-    print('newswire convertRSStoActivityPub 3')
     # oldest items first
     newswireReverse = OrderedDict(sorted(newswire.items(), reverse=False))
 
-    print('newswire convertRSStoActivityPub 4')
     for dateStr, item in newswireReverse.items():
-        print('newswire convertRSStoActivityPub 5')
         originalDateStr = dateStr
         # convert the date to the format used by ActivityPub
         if '+00:00' in dateStr:
@@ -561,13 +556,11 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                       str(dateStrWithOffset))
                 continue
 
-        print('newswire convertRSStoActivityPub 6')
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
             localActorUrl(httpPrefix, 'news', domain) + \
             '/statuses/' + statusNumber
 
-        print('newswire convertRSStoActivityPub 7')
         # file where the post is stored
         filename = basePath + '/' + newPostId.replace('/', '#') + '.json'
         if os.path.isfile(filename):
@@ -579,7 +572,6 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        print('newswire convertRSStoActivityPub 8')
         rssTitle = _removeControlCharacters(item[0])
         url = item[1]
         if dangerousMarkup(url, allowLocalNetworkAccess) or \
@@ -587,7 +579,6 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             continue
         rssDescription = ''
 
-        print('newswire convertRSStoActivityPub 9')
         # get the rss description if it exists
         rssDescription = '<p>' + removeHtml(item[4]) + '<p>'
 
@@ -606,7 +597,6 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             '<br><a href="' + postUrl + '">' + \
             translate['Read more...'] + '</a>'
 
-        print('newswire convertRSStoActivityPub 10')
         followersOnly = False
         # NOTE: the id when the post is created will not be
         # consistent (it's based on the current time, not the
@@ -627,14 +617,12 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                               conversationId, lowBandwidth)
         if not blog:
             continue
-        print('newswire convertRSStoActivityPub 11')
 
         if mirrored:
             if not _createNewsMirror(baseDir, domain, statusNumber,
                                      url, maxMirroredArticles):
                 continue
 
-        print('newswire convertRSStoActivityPub 12')
         idStr = \
             localActorUrl(httpPrefix, 'news', domain) + \
             '/statuses/' + statusNumber + '/replies'
@@ -658,7 +646,6 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['content'] = rssDescription
         blog['object']['contentMap'][systemLanguage] = rssDescription
 
-        print('newswire convertRSStoActivityPub 13')
         domainFull = getFullDomain(domain, port)
 
         hashtags = item[6]
@@ -667,14 +654,12 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         moderated = item[5]
 
-        print('newswire convertRSStoActivityPub 14')
         savePost = _newswireHashtagProcessing(session, baseDir, blog, hashtags,
                                               httpPrefix, domain, port,
                                               personCache, cachedWebfingers,
                                               federationList,
                                               sendThreads, postLog,
                                               moderated, url, systemLanguage)
-        print('newswire convertRSStoActivityPub 15')
 
         # save the post and update the index
         if savePost:
@@ -713,10 +698,8 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 if tag not in newswire[originalDateStr][6]:
                     newswire[originalDateStr][6].append(tag)
 
-            print('newswire convertRSStoActivityPub 16')
             storeHashTags(baseDir, 'news', blog)
 
-            print('newswire convertRSStoActivityPub 17')
             clearFromPostCaches(baseDir, recentPostsCache, postId)
             if saveJson(blog, filename):
                 _updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
@@ -741,7 +724,6 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
                 # set the filename
                 newswire[originalDateStr][3] = filename
-                print('newswire convertRSStoActivityPub 18')
 
 
 def _mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
