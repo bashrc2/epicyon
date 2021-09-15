@@ -753,6 +753,7 @@ def runNewswireDaemon(baseDir: str, httpd,
                 print('Newswire daemon session established')
 
         # try to update the feeds
+        print('Updating newswire feeds')
         newNewswire = \
             getDictFromNewswire(httpd.session, baseDir, domain,
                                 httpd.maxNewswirePostsPerSource,
@@ -764,16 +765,22 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.systemLanguage)
 
         if not httpd.newswire:
+            print('Newswire feeds not updated')
             if os.path.isfile(newswireStateFilename):
+                print('Loading newswire from file')
                 httpd.newswire = loadJson(newswireStateFilename)
 
+        print('Merging with previous newswire')
         _mergeWithPreviousNewswire(httpd.newswire, newNewswire)
 
         httpd.newswire = newNewswire
         if newNewswire:
             saveJson(httpd.newswire, newswireStateFilename)
             print('Newswire updated')
+        else:
+            print('No new newswire')
 
+        print('Converting newswire to activitypub format')
         _convertRSStoActivityPub(baseDir,
                                  httpPrefix, domain, port,
                                  newNewswire, translate,
@@ -795,6 +802,7 @@ def runNewswireDaemon(baseDir: str, httpd,
             archiveDir = baseDir + '/archive'
             archiveSubdir = \
                 archiveDir + '/accounts/news@' + domain + '/outbox'
+            print('Archiving news posts')
             archivePostsForPerson(httpPrefix, 'news',
                                   domain, baseDir, 'outbox',
                                   archiveSubdir,
