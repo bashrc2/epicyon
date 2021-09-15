@@ -97,6 +97,7 @@ from announce import isSelfAnnounce
 from announce import createAnnounce
 from notifyOnPost import notifyWhenPersonPosts
 from conversation import updateConversation
+from content import validHashTag
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -132,6 +133,8 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
         if not tag.get('name'):
             continue
         tagName = tag['name'].replace('#', '').strip()
+        if not validHashTag(tagName):
+            continue
         tagsFilename = tagsDir + '/' + tagName + '.txt'
         postUrl = removeIdEnding(postJsonObject['id'])
         postUrl = postUrl.replace('/', '#')
