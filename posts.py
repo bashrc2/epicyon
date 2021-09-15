@@ -3874,6 +3874,12 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                            originDomain: str) -> None:
     """ This is really just for test purposes
     """
+    if debug:
+        if signingPrivateKeyPem:
+            print('Signing key available')
+        else:
+            print('Signing key missing')
+
     print('Starting new session for getting public posts')
     session = createSession(proxyType)
     if not session:
