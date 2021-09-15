@@ -674,6 +674,8 @@ if args.posts:
         originDomain = getConfigParam(baseDir, 'domain')
     else:
         originDomain = args.domain
+    if debug:
+        print('originDomain: ' + str(originDomain))
     if '@' not in args.posts:
         if '/users/' in args.posts:
             postsNickname = getNicknameFromActor(args.posts)
@@ -877,6 +879,8 @@ if args.postsraw:
         originDomain = getConfigParam(baseDir, 'domain')
     else:
         originDomain = args.domain
+    if debug:
+        print('originDomain: ' + str(originDomain))
     if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
         sys.exit()
