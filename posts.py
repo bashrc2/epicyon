@@ -3930,7 +3930,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     _getPosts(session, personUrl, 30, maxMentions, maxEmoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
-              projectVersion, httpPrefix, domain, systemLanguage,
+              projectVersion, httpPrefix, originDomain, systemLanguage,
               signingPrivateKeyPem)
 
 
