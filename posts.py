@@ -3898,7 +3898,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion, debug, groupAccount,
+                        originDomain, projectVersion, debug, groupAccount,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -3930,7 +3930,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     _getPosts(session, personUrl, 30, maxMentions, maxEmoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
-              projectVersion, httpPrefix, originDomain, systemLanguage,
+              projectVersion, httpPrefix, domain, systemLanguage,
               signingPrivateKeyPem)
 
 
