@@ -222,7 +222,7 @@ def getUserUrl(wfRequest: {}, sourceId: int = 0, debug: bool = False) -> str:
 def parseUserFeed(signingPrivateKeyPem: str,
                   session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
-                  domain: str, debug: bool, depth: int = 0) -> []:
+                  originDomain: str, debug: bool, depth: int = 0) -> []:
     if depth > 10:
         if debug:
             print('Maximum search depth reached')
@@ -232,9 +232,10 @@ def parseUserFeed(signingPrivateKeyPem: str,
         print('Getting user feed for ' + feedUrl)
         print('User feed header ' + str(asHeader))
         print('httpPrefix ' + str(httpPrefix))
+        print('originDomain ' + str(originDomain))
 
     feedJson = getJson(signingPrivateKeyPem, session, feedUrl, asHeader, None,
-                       debug, projectVersion, httpPrefix, domain)
+                       debug, projectVersion, httpPrefix, originDomain)
     if not feedJson:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         acceptStr = 'application/ld+json; profile="' + profileStr + '"'
@@ -244,7 +245,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
             }
             feedJson = getJson(signingPrivateKeyPem, session, feedUrl,
                                asHeader, None, debug, projectVersion,
-                               httpPrefix, domain)
+                               httpPrefix, originDomain)
     if not feedJson:
         if debug:
             print('No user feed was returned')
@@ -275,7 +276,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
                     parseUserFeed(signingPrivateKeyPem,
                                   session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
-                                  domain, debug, depth + 1)
+                                  originDomain, debug, depth + 1)
                 if userFeed:
                     return userFeed
         elif isinstance(nextUrl, dict):
@@ -498,7 +499,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               personCache: {}, raw: bool,
               simple: bool, debug: bool,
               projectVersion: str, httpPrefix: str,
-              domain: str, systemLanguage: str,
+              originDomain: str, systemLanguage: str,
               signingPrivateKeyPem: str) -> {}:
     """Gets public posts from an outbox
     """
@@ -528,7 +529,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         i = 0
         userFeed = parseUserFeed(signingPrivateKeyPem,
                                  session, outboxUrl, asHeader,
-                                 projectVersion, httpPrefix, domain, debug)
+                                 projectVersion, httpPrefix,
+                                 originDomain, debug)
         for item in userFeed:
             result.append(item)
             i += 1
@@ -541,7 +543,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         print('Returning a human readable version of the feed')
     userFeed = parseUserFeed(signingPrivateKeyPem,
                              session, outboxUrl, asHeader,
-                             projectVersion, httpPrefix, domain, debug)
+                             projectVersion, httpPrefix,
+                             originDomain, debug)
     if not userFeed:
         return personPosts
 
