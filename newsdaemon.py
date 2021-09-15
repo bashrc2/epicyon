@@ -549,7 +549,12 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             except BaseException:
                 print('Newswire strptime failed ' + str(dateStr))
                 continue
-            dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
+            try:
+                dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
+            except BaseException:
+                print('Newswire dateStrWithOffset failed ' +
+                      str(dateStrWithOffset))
+                continue
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
