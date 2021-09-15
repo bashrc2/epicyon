@@ -670,10 +670,10 @@ if args.libretranslateApiKey:
     setConfigParam(baseDir, 'libretranslateApiKey', args.libretranslateApiKey)
 
 if args.posts:
-    if not domain:
+    if not args.domain:
         originDomain = getConfigParam(baseDir, 'domain')
     else:
-        originDomain = domain
+        originDomain = args.domain
     if '@' not in args.posts:
         if '/users/' in args.posts:
             postsNickname = getNicknameFromActor(args.posts)
@@ -873,10 +873,10 @@ if args.socnet:
     sys.exit()
 
 if args.postsraw:
-    if not domain:
+    if not args.domain:
         originDomain = getConfigParam(baseDir, 'domain')
     else:
-        originDomain = domain
+        originDomain = args.domain
     if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
         sys.exit()
