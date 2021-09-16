@@ -11212,6 +11212,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'banner done',
                                               'background shown')
                     return True
+                break
 
         self._404()
         return True
