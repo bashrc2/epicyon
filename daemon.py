@@ -11169,6 +11169,53 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _showDefaultProfileBackground(self, callingDomain: str, path: str,
+                                      baseDir: str, themeName: str,
+                                      GETstartTime, GETtimings: {}) -> bool:
+        """If a background image is missing after searching for a handle
+        then substitute this image
+        """
+        imageExtensions = getImageExtensions()
+        for ext in imageExtensions:
+            bgFilename = \
+                baseDir + '/theme/' + themeName + '/image.' + ext
+            if os.path.isfile(bgFilename):
+                if self._etag_exists(bgFilename):
+                    # The file has not changed
+                    self._304()
+                    return True
+
+                tries = 0
+                bgBinary = None
+                while tries < 5:
+                    try:
+                        with open(bgFilename, 'rb') as avFile:
+                            bgBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print('ERROR: _showDefaultProfileBackground ' +
+                              str(tries) + ' ' + str(e))
+                        time.sleep(1)
+                        tries += 1
+                if bgBinary:
+                    if ext == 'jpg':
+                        ext = 'jpeg'
+                    self._set_headers_etag(bgFilename,
+                                           'image/' + ext,
+                                           bgBinary, None,
+                                           self.server.domainFull,
+                                           False, None)
+                    self._write(bgBinary)
+                    self._benchmarkGETtimings(GETstartTime,
+                                              GETtimings,
+                                              'search screen ' +
+                                              'banner done',
+                                              'background shown')
+                    return True
+
+        self._404()
+        return True
+
     def _showShareImage(self, callingDomain: str, path: str,
                         baseDir: str,
                         GETstartTime, GETtimings: {}) -> bool:
@@ -13004,6 +13051,13 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'account qrcode done',
                                   'search screen banner done')
+
+        if self.path.startswith('/defaultprofilebackground'):
+            self._showDefaultProfileBackground(callingDomain, self.path,
+                                               self.server.baseDir,
+                                               self.server.themeName,
+                                               GETstartTime, GETtimings)
+            return
 
         if '-background.' in self.path:
             if self._showBackgroundImage(callingDomain, self.path,

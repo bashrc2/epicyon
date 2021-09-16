@@ -415,6 +415,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     """The header of a searched for handle, containing background
     image and avatar
     """
+    if not imageUrl:
+        imageUrl = '/defaultprofilebackground'
     htmlStr = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
