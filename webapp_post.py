@@ -296,6 +296,11 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
 
     # reply is permitted - create reply icon
     replyToLink = postJsonObject['object']['id']
+
+    # see Mike MacGirvin's replyTo suggestion
+    if postJsonObject['object'].get('replyTo'):
+        replyToLink = postJsonObject['object']['replyTo']
+
     if postJsonObject['object'].get('attributedTo'):
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
