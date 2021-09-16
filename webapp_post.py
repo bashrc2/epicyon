@@ -76,6 +76,7 @@ from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
 from speaker import updateSpeaker
 from languages import autoTranslatePost
+from blocking import isBlocked
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -283,7 +284,8 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
     return avatarLink.strip()
 
 
-def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
+def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
+                      isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       postJsonObject: {}, pageNumberParam: str,
                       translate: {}, systemLanguage: str,
@@ -299,7 +301,14 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
 
     # see Mike MacGirvin's replyTo suggestion
     if postJsonObject['object'].get('replyTo'):
-        replyToLink = postJsonObject['object']['replyTo']
+        # check that the alternative replyTo url is not blocked
+        blockNickname = \
+            getNicknameFromActor(postJsonObject['object']['replyTo'])
+        blockDomain, _ = \
+            getDomainFromActor(postJsonObject['object']['replyTo'])
+        if not isBlocked(baseDir, nickname, domain,
+                         blockNickname, blockDomain, {}):
+            replyToLink = postJsonObject['object']['replyTo']
 
     if postJsonObject['object'].get('attributedTo'):
         if isinstance(postJsonObject['object']['attributedTo'], str):
@@ -1451,7 +1460,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if postJsonObject['object']['conversation']:
             conversationId = postJsonObject['object']['conversation']
 
-    replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
+    replyStr = _getReplyIconHtml(baseDir, nickname, domain,
+                                 isPublicRepeat,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
                                  translate, systemLanguage,
