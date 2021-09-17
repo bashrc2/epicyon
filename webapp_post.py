@@ -1364,6 +1364,27 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             return ''
         postJsonObject = postJsonAnnounce
 
+        # is the announced post in the html cache?
+        postHtml = \
+            _getPostFromRecentCache(session, baseDir,
+                                    httpPrefix, nickname, domain,
+                                    postJsonObject,
+                                    postActor,
+                                    personCache,
+                                    allowDownloads,
+                                    showPublicOnly,
+                                    storeToCache,
+                                    boxName,
+                                    avatarUrl,
+                                    enableTimingLog,
+                                    postStartTime,
+                                    pageNumber,
+                                    recentPostsCache,
+                                    maxRecentPosts,
+                                    signingPrivateKeyPem)
+        if postHtml:
+            return postHtml
+
         announceFilename = \
             locatePost(baseDir, nickname, domain, postJsonObject['id'])
         if announceFilename:
