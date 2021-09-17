@@ -2163,15 +2163,14 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     cc = ''
     nickname = handle.split('@')[0].replace('!', '')
 
+    postId = postJsonObject['object']['id']
     if debug:
-        print('Group announce: ' + postJsonObject['object']['id'])
+        print('Group announce: ' + postId)
     announceJson = \
         createAnnounce(session, baseDir, federationList,
                        nickname, domain, port,
                        groupActor + '/followers', cc,
-                       httpPrefix,
-                       postJsonObject['object']['id'],
-                       False, False,
+                       httpPrefix, postId, False, False,
                        sendThreads, postLog,
                        personCache, cachedWebfingers,
                        debug, __version__, signingPrivateKeyPem)
