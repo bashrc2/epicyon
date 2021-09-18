@@ -223,6 +223,9 @@ parser.add_argument('--path', dest='baseDir',
 parser.add_argument('--ytdomain', dest='YTReplacementDomain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
+parser.add_argument('--twitterdomain', dest='twitterReplacementDomain',
+                    type=str, default=None,
+                    help='Domain used to replace twitter.com')
 parser.add_argument('--language', dest='language',
                     type=str, default=None,
                     help='Language code, eg. en/fr/de/es')
@@ -3022,6 +3025,15 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
+twitterDomain = getConfigParam(baseDir, 'twitterdomain')
+if twitterDomain:
+    if '://' in twitterDomain:
+        twitterDomain = twitterDomain.split('://')[1]
+    if '/' in twitterDomain:
+        twitterDomain = twitterDomain.split('/')[0]
+    if '.' in twitterDomain:
+        args.twitterReplacementDomain = twitterDomain
+
 if setTheme(baseDir, themeName, domain,
             args.allowLocalNetworkAccess, args.language):
     print('Theme set to ' + themeName)
@@ -3089,6 +3101,7 @@ if __name__ == "__main__":
               instanceId, args.client, baseDir,
               domain, onionDomain, i2pDomain,
               args.YTReplacementDomain,
+              args.twitterReplacementDomain,
               port, proxyPort, httpPrefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.secureMode,

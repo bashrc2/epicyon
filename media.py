@@ -48,6 +48,26 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str,
         postJsonObject['object']['contentMap'][systemLanguage] = contentStr
 
 
+def replaceTwitter(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
+    """Replace Twitter with a replacement domain
+    This allows you to view twitter posts without having a twitter account
+    """
+    if not replacementDomain:
+        return
+    if not hasObjectDict(postJsonObject):
+        return
+    if not postJsonObject['object'].get('content'):
+        return
+    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+    if 'twitter.com' not in contentStr:
+        return
+    contentStr = contentStr.replace('twitter.com', replacementDomain)
+    postJsonObject['object']['content'] = contentStr
+    if postJsonObject['object'].get('contentMap'):
+        postJsonObject['object']['contentMap'][systemLanguage] = contentStr
+
+
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed

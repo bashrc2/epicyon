@@ -478,5 +478,7 @@
     "accommodation": "宿泊施設",
     "Forbidden": "禁断",
     "You're not allowed": "あなたは許可されていません",
-    "Hours after posting during which replies are allowed": "転記後の時間返信が許可されています"
+    "Hours after posting during which replies are allowed": "転記後の時間返信が許可されています",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Twitterの代替ドメイン"
 }

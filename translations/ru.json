@@ -478,5 +478,7 @@
     "accommodation": "размещение",
     "Forbidden": "Запрещенный",
     "You're not allowed": "Вам не разрешено",
-    "Hours after posting during which replies are allowed": "Часы после размещения, в течение которых разрешены ответы"
+    "Hours after posting during which replies are allowed": "Часы после размещения, в течение которых разрешены ответы",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Замещающий домен Twitter"
 }

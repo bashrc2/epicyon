@@ -478,5 +478,7 @@
     "accommodation": "unterkunft",
     "Forbidden": "Verboten",
     "You're not allowed": "Du darfst nicht",
-    "Hours after posting during which replies are allowed": "Stunden nach dem Posten, während denen Antworten erlaubt sind"
+    "Hours after posting during which replies are allowed": "Stunden nach dem Posten, während denen Antworten erlaubt sind",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Twitter-Ersatzdomain"
 }

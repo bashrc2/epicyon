@@ -478,5 +478,7 @@
     "accommodation": "الإقامة",
     "Forbidden": "محرم",
     "You're not allowed": "كنت لا يسمح",
-    "Hours after posting during which replies are allowed": "ساعات بعد النشر المسموح بها خلال الردود"
+    "Hours after posting during which replies are allowed": "ساعات بعد النشر المسموح بها خلال الردود",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "مجال استبدال تويتر"
 }

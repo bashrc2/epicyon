@@ -34,6 +34,7 @@ from blocking import outboxUndoBlock
 from blocking import outboxMute
 from blocking import outboxUndoMute
 from media import replaceYouTube
+from media import replaceTwitter
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
@@ -191,6 +192,7 @@ def postMessageToOutbox(session, translate: {},
                         personCache: {}, allowDeletion: bool,
                         proxyType: str, version: str, debug: bool,
                         YTReplacementDomain: str,
+                        twitterReplacementDomain: str,
                         showPublishedDateOnly: bool,
                         allowLocalNetworkAccess: bool,
                         city: str, systemLanguage: str,
@@ -287,6 +289,9 @@ def postMessageToOutbox(session, translate: {},
             return False
         # replace youtube, so that google gets less tracking data
         replaceYouTube(messageJson, YTReplacementDomain, systemLanguage)
+        # replace twitter, so that twitter posts can be shown without
+        # having a twitter account
+        replaceTwitter(messageJson, twitterReplacementDomain, systemLanguage)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):
@@ -413,7 +418,9 @@ def postMessageToOutbox(session, translate: {},
                     if isImageMedia(session, baseDir, httpPrefix,
                                     postToNickname, domain,
                                     messageJson,
-                                    translate, YTReplacementDomain,
+                                    translate,
+                                    YTReplacementDomain,
+                                    twitterReplacementDomain,
                                     allowLocalNetworkAccess,
                                     recentPostsCache, debug, systemLanguage,
                                     domainFull, personCache,
@@ -453,6 +460,7 @@ def postMessageToOutbox(session, translate: {},
                                          httpPrefix, __version__,
                                          boxNameIndex,
                                          YTReplacementDomain,
+                                         twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,

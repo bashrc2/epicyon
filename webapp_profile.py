@@ -79,6 +79,7 @@ def htmlProfileAfterSearch(cssCache: {},
                            session, cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
                            YTReplacementDomain: str,
+                           twitterReplacementDomain: str,
                            showPublishedDateOnly: bool,
                            defaultTimeline: str,
                            peertubeInstances: [],
@@ -290,6 +291,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      item, avatarUrl, False, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     twitterReplacementDomain,
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
@@ -495,6 +497,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 profileJson: {}, selected: str,
                 session, cachedWebfingers: {}, personCache: {},
                 YTReplacementDomain: str,
+                twitterReplacementDomain: str,
                 showPublishedDateOnly: bool,
                 newswire: {}, theme: str, dormantMonths: int,
                 peertubeInstances: [],
@@ -521,6 +524,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                profileJson, selected,
                                session, cachedWebfingers, personCache,
                                YTReplacementDomain,
+                               twitterReplacementDomain,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
@@ -868,6 +872,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                               session, cachedWebfingers, personCache,
                               projectVersion,
                               YTReplacementDomain,
+                              twitterReplacementDomain,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
@@ -930,6 +935,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       session, cachedWebfingers: {}, personCache: {},
                       projectVersion: str,
                       YTReplacementDomain: str,
+                      twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
@@ -973,6 +979,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
@@ -1170,6 +1177,25 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
 
     graphicsStr += endEditSection()
     return graphicsStr
+
+
+def _htmlEditProfileTwitter(baseDir: str, translate: {},
+                            removeTwitter: str) -> str:
+    """Edit twitter settings within profile
+    """
+    # Twitter section
+    twitterStr = beginEditSection(translate['Twitter'])
+    twitterStr += \
+        editCheckBox(translate['Remove Twitter posts'],
+                     'removeTwitter', removeTwitter)
+    twitterReplacementDomain = getConfigParam(baseDir, "twitterdomain")
+    if not twitterReplacementDomain:
+        twitterReplacementDomain = ''
+    twitterStr += \
+        editTextField(translate['Twitter Replacement Domain'],
+                      'twitterdomain', twitterReplacementDomain)
+    twitterStr += endEditSection()
+    return twitterStr
 
 
 def _htmlEditProfileInstance(baseDir: str, translate: {},
@@ -1910,7 +1936,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
     notifyLikes = hideLikeButton = mediaInstanceStr = ''
-    blogsInstanceStr = newsInstanceStr = movedTo = ''
+    blogsInstanceStr = newsInstanceStr = movedTo = twitterStr = ''
     bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
@@ -2002,6 +2028,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
             isAdmin = True
+            twitterStr = \
+                _htmlEditProfileTwitter(baseDir, translate, removeTwitter)
             # shared items section
             sharesFederationStr = \
                 _htmlEditProfileSharedItems(baseDir, nickname,
@@ -2089,7 +2117,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         _htmlEditProfileSkills(baseDir, nickname, domain, translate)
 
     editProfileForm += roleAssignStr + peertubeStr + graphicsStr
-    editProfileForm += sharesFederationStr + instanceStr
+    editProfileForm += sharesFederationStr + twitterStr + instanceStr
 
     # danger zone section
     editProfileForm += _htmlEditProfileDangerZone(translate)

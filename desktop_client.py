@@ -692,6 +692,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         recentPostsCache = {}
         allowLocalNetworkAccess = False
         YTReplacementDomain = None
+        twitterReplacementDomain = None
         postJsonObject2 = \
             downloadAnnounce(session, baseDir,
                              httpPrefix,
@@ -699,6 +700,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              postJsonObject,
                              __version__, translate,
                              YTReplacementDomain,
+                             twitterReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, False,
                              systemLanguage,
@@ -2375,6 +2377,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         recentPostsCache = {}
                         allowLocalNetworkAccess = False
                         YTReplacementDomain = None
+                        twitterReplacementDomain = None
                         postJsonObject2 = \
                             downloadAnnounce(session, baseDir,
                                              httpPrefix,
@@ -2382,6 +2385,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              postJsonObject,
                                              __version__, translate,
                                              YTReplacementDomain,
+                                             twitterReplacementDomain,
                                              allowLocalNetworkAccess,
                                              recentPostsCache, False,
                                              systemLanguage,

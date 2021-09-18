@@ -67,6 +67,7 @@ from utils import acctDir
 from utils import localActorUrl
 from media import attachMedia
 from media import replaceYouTube
+from media import replaceTwitter
 from content import limitRepeatedWords
 from content import tagExists
 from content import removeLongWords
@@ -3286,6 +3287,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
+                 twitterReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
                  recentPostsCache: {}, debug: bool,
                  systemLanguage: str,
@@ -3300,6 +3302,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              nickname, domain, postJsonObject,
                              __version__, translate,
                              YTReplacementDomain,
+                             twitterReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, debug,
                              systemLanguage,
@@ -4326,7 +4329,9 @@ def _rejectAnnounce(announceFilename: str,
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
-                     translate: {}, YTReplacementDomain: str,
+                     translate: {},
+                     YTReplacementDomain: str,
+                     twitterReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
                      recentPostsCache: {}, debug: bool,
                      systemLanguage: str,
@@ -4535,6 +4540,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                 return None
         postJsonObject = announcedJson
         replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
+        replaceTwitter(postJsonObject, twitterReplacementDomain,
+                       systemLanguage)
         if saveJson(postJsonObject, announceFilename):
             return postJsonObject
     return None
