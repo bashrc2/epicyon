@@ -74,6 +74,7 @@ from utils import dangerousMarkup
 from utils import isDM
 from utils import isReply
 from httpsig import messageContentDigest
+from posts import savePostToBox
 from posts import isCreateInsideAnnounce
 from posts import createDirectMessagePost
 from posts import validContentWarning
@@ -2162,6 +2163,11 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
         return
     cc = ''
     nickname = handle.split('@')[0].replace('!', '')
+
+    # save to the group outbox so that replies will be to the group
+    # rather than the original sender
+    savePostToBox(baseDir, httpPrefix, None,
+                  nickname, domain, postJsonObject, 'outbox')
 
     postId = postJsonObject['object']['id']
     if debug:
