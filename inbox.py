@@ -190,6 +190,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
         boxname = 'inbox'
 
     notDM = not isDM(postJsonObject)
+    YTReplacementDomain = getConfigParam(baseDir, 'youtubedomain')
+    twitterReplacementDomain = getConfigParam(baseDir, 'twitterdomain')
     individualPostAsHtml(signingPrivateKeyPem,
                          True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,
@@ -197,7 +199,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,
-                         httpPrefix, __version__, boxname, None, None,
+                         httpPrefix, __version__, boxname,
+                         YTReplacementDomain, twitterReplacementDomain,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
                          themeName, systemLanguage, maxLikeCount,
