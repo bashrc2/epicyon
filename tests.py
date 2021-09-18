@@ -2297,6 +2297,21 @@ def testGroupFollow(baseDir: str) -> None:
     city = 'London, England'
     lowBandwidth = False
     signingPrivateKeyPem = None
+
+    queuePath = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
+    inboxPath = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/inbox'
+    outboxPath = \
+        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/outbox'
+    aliceMessageArrived = False
+    startPostsInbox = \
+        len([name for name in os.listdir(inboxPath)
+             if os.path.isfile(os.path.join(inboxPath, name))])
+    startPostsOutbox = \
+        len([name for name in os.listdir(outboxPath)
+             if os.path.isfile(os.path.join(outboxPath, name))])
+
     sendResult = \
         sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
@@ -2311,20 +2326,17 @@ def testGroupFollow(baseDir: str) -> None:
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
-    queuePath = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/queue'
-    inboxPath = \
-        testgroupDir + '/accounts/testgroup@' + testgroupDomain + '/inbox'
-    aliceMessageArrived = False
-    startPosts = len([name for name in os.listdir(inboxPath)
-                      if os.path.isfile(os.path.join(inboxPath, name))])
     for i in range(20):
         time.sleep(1)
         if os.path.isdir(inboxPath):
-            currPosts = \
+            currPostsInbox = \
                 len([name for name in os.listdir(inboxPath)
                      if os.path.isfile(os.path.join(inboxPath, name))])
-            if currPosts > startPosts:
+            currPostsOutbox = \
+                len([name for name in os.listdir(outboxPath)
+                     if os.path.isfile(os.path.join(outboxPath, name))])
+            if currPostsInbox > startPostsInbox and \
+               currPostsOutbox > startPostsOutbox:
                 aliceMessageArrived = True
                 print('Alice post sent to test group!')
                 break
