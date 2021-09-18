@@ -2362,6 +2362,20 @@ def testGroupFollow(baseDir: str) -> None:
 
     assert bobMessageArrived is True
 
+    # check that the received post has an id from the group,
+    # not from the original sender (alice)
+    groupIdChecked = False
+    for name in os.listdir(inboxPathBob):
+        filename = os.path.join(inboxPathBob, name)
+        if os.path.isfile(filename):
+            receivedJson = loadJson(filename)
+            assert receivedJson
+            print('Received group post ' + receivedJson['id'])
+            assert '/testgroup/statuses/' in receivedJson['id']
+            groupIdChecked = True
+            break
+    assert groupIdChecked
+
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
