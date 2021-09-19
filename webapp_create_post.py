@@ -536,14 +536,15 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
        endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
+        dateAndLocation = \
+            '<div class="container">\n'
         if category != 'accommodation':
-            dateAndLocation = \
-                '<div class="container">\n' + \
+            dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
                 'name="commentsEnabled" checked><label class="labels"> ' + \
                 translate['Allow replies.'] + '</label></p>\n'
         else:
-            dateAndLocation = \
+            dateAndLocation += \
                 '<input type="hidden" name="commentsEnabled" value="true">\n'
 
         if endpoint == 'newpost':
