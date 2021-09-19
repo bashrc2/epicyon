@@ -12587,6 +12587,8 @@ class PubServer(BaseHTTPRequestHandler):
         # after selecting a shared item from the left column then show it
         if htmlGET and '?showshare=' in self.path and '/users/' in self.path:
             itemID = self.path.split('?showshare=')[1]
+            if ';' in itemID:
+                itemID = itemID.split(';')[0]
             usersPath = self.path.split('?showshare=')[0]
             nickname = usersPath.replace('/users/', '')
             itemID = urllib.parse.unquote_plus(itemID.strip())

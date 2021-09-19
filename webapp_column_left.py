@@ -20,6 +20,7 @@ from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
+from shares import shareCategoryIcon
 
 
 def _linksExist(baseDir: str) -> bool:
@@ -57,7 +58,11 @@ def _getLeftColumnShares(baseDir: str,
         shareId = item['shareId']
         # selecting this link calls htmlShowShare
         shareLink = actor + '?showshare=' + shareId
-        linksList.append(sharedesc + ' ' + shareLink)
+        if item.get('category'):
+            shareLink += ';category=' + item['category']
+            shareCategory = shareCategoryIcon(item['category'])
+
+        linksList.append(shareCategory + sharedesc + ' ' + shareLink)
         ctr += 1
         if ctr >= maxSharesInLeftColumn:
             break

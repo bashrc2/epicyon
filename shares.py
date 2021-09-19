@@ -1840,3 +1840,17 @@ def _dfcToSharesFormat(catalogJson: {},
             "itemCurrency": item['DFC:price'].split(' ')[1]
         }
     return sharesJson
+
+
+def shareCategoryIcon(category: str) -> str:
+    """Returns unicode icon for the given category
+    """
+    categoryIcons = {
+        'accommodation': '🏠',
+        'clothes':  '👚',
+        'tools': '🔧',
+        'food': '🍏'
+    }
+    if categoryIcons.get(category):
+        return categoryIcons[category]
+    return ''
