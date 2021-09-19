@@ -12589,6 +12589,11 @@ class PubServer(BaseHTTPRequestHandler):
             itemID = self.path.split('?showshare=')[1]
             if ';' in itemID:
                 itemID = itemID.split(';')[0]
+            category = ''
+            if ';category=' in self.path:
+                category = self.path.split(';category=')[1]
+            if ';' in category:
+                category = category.split(';')[0]
             usersPath = self.path.split('?showshare=')[0]
             nickname = usersPath.replace('/users/', '')
             itemID = urllib.parse.unquote_plus(itemID.strip())
@@ -12599,7 +12604,7 @@ class PubServer(BaseHTTPRequestHandler):
                               itemID, self.server.translate,
                               self.server.sharedItemsFederatedDomains,
                               self.server.defaultTimeline,
-                              self.server.themeName, 'shares')
+                              self.server.themeName, 'shares', category)
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -12623,6 +12628,11 @@ class PubServer(BaseHTTPRequestHandler):
         # after selecting a wanted item from the left column then show it
         if htmlGET and '?showwanted=' in self.path and '/users/' in self.path:
             itemID = self.path.split('?showwanted=')[1]
+            if ';' in itemID:
+                itemID = itemID.split(';')[0]
+            category = self.path.split('?category=')[1]
+            if ';' in category:
+                category = category.split(';')[0]
             usersPath = self.path.split('?showwanted=')[0]
             nickname = usersPath.replace('/users/', '')
             itemID = urllib.parse.unquote_plus(itemID.strip())
@@ -12633,7 +12643,7 @@ class PubServer(BaseHTTPRequestHandler):
                               itemID, self.server.translate,
                               self.server.sharedItemsFederatedDomains,
                               self.server.defaultTimeline,
-                              self.server.themeName, 'wanted')
+                              self.server.themeName, 'wanted', category)
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:

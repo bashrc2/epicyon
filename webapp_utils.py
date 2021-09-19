@@ -1292,7 +1292,8 @@ def editTextArea(label: str, name: str, value: str = "",
 def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                           httpPrefix: str, domainFull: str,
                           contactNickname: str, itemID: str,
-                          actor: str, sharesFileType: str) -> str:
+                          actor: str, sharesFileType: str,
+                          category: str) -> str:
     """Returns the html for an individual shared item
     """
     sharedItemsForm = '<div class="container">\n'
@@ -1319,6 +1320,7 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
         sharedItemsForm += \
             '<b>' + translate['Location'] + ':</b> ' + \
             sharedItem['location'] + '<br>'
+    contactTitleStr = translate['Contact']
     if sharedItem.get('itemPrice') and \
        sharedItem.get('itemCurrency'):
         if isfloat(sharedItem['itemPrice']):
@@ -1327,17 +1329,21 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                     ' <b>' + translate['Price'] + \
                     ':</b> ' + sharedItem['itemPrice'] + \
                     ' ' + sharedItem['itemCurrency']
+                contactTitleStr = translate['Buy']
     sharedItemsForm += '</p>\n'
     contactActor = \
         localActorUrl(httpPrefix, contactNickname, domainFull)
+    if category == 'accommodation':
+        contactTitleStr = translate['Request to stay']
+
     sharedItemsForm += \
         '<p>' + \
         '<a href="' + actor + '?replydm=sharedesc:' + \
         sharedItem['displayName'] + '?mention=' + contactActor + \
-        '"><button class="button">' + translate['Contact'] + \
+        '"><button class="button">' + contactTitleStr + \
         '</button></a>\n' + \
         '<a href="' + contactActor + '"><button class="button">' + \
-        translate['View'] + '</button></a>\n'
+        translate['Profile'] + '</button></a>\n'
 
     # should the remove button be shown?
     showRemoveButton = False
@@ -1372,7 +1378,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
                   itemID: str, translate: {},
                   sharedItemsFederatedDomains: [],
                   defaultTimeline: str, theme: str,
-                  sharesFileType: str) -> str:
+                  sharesFileType: str, category: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
     sharesJson = None
@@ -1437,7 +1443,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     shareStr += \
         htmlSearchResultShare(baseDir, sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
-                              actor, sharesFileType)
+                              actor, sharesFileType, category)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

@@ -859,7 +859,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
     invalidStrings = [
-        'script', 'noscript', 'code',
+        'script', 'noscript', 'code', 'pre',
         'canvas', 'style', 'abbr',
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts'

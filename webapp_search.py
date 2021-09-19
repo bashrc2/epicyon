@@ -178,7 +178,8 @@ def _htmlSharesResult(baseDir: str,
                     htmlSearchResultShare(baseDir, sharedItem, translate,
                                           httpPrefix, domainFull,
                                           contactNickname,
-                                          name, actor, sharesFileType)
+                                          name, actor, sharesFileType,
+                                          sharedItem['category'])
                 if not resultsExist and currPage > 1:
                     # show the previous page button
                     sharedItemsForm += \
