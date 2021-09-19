@@ -981,18 +981,18 @@ def htmlIndividualShare(domain: str, shareId: str,
                     item['itemPrice'] + ' ' + item['itemCurrency']
     profileStr += '</p>\n'
     sharedesc = item['displayName']
-    if '<' not in sharedesc and '?' not in sharedesc:
+    if '<' not in sharedesc and ';' not in sharedesc:
         if showContact:
             contactActor = item['actor']
             profileStr += \
                 '<p>' + \
                 '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
-                '?mention=' + contactActor + '"><button class="button">' + \
+                ';mention=' + contactActor + '"><button class="button">' + \
                 translate['Contact'] + '</button></a>\n'
             profileStr += \
                 '<a href="' + contactActor + '"><button class="button">' + \
-                translate['View'] + '</button></a>\n'
+                translate['Profile'] + '</button></a>\n'
         if removeButton and domain in shareId:
             if sharesFileType == 'shares':
                 profileStr += \

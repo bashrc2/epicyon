@@ -53,7 +53,7 @@ def _getLeftColumnShares(baseDir: str,
     ctr = 0
     for published, item in sharesJson.items():
         sharedesc = item['displayName']
-        if '<' in sharedesc or '?' in sharedesc:
+        if '<' in sharedesc or ';' in sharedesc:
             continue
         shareId = item['shareId']
         # selecting this link calls htmlShowShare
@@ -95,7 +95,7 @@ def _getLeftColumnWanted(baseDir: str,
     ctr = 0
     for published, item in sharesJson.items():
         sharedesc = item['displayName']
-        if '<' in sharedesc or '?' in sharedesc:
+        if '<' in sharedesc or ';' in sharedesc:
             continue
         shareId = item['shareId']
         # selecting this link calls htmlShowShare
