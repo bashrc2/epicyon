@@ -1870,6 +1870,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
             print('WARN: invalid content warning ' + summary)
             return False
 
+    # check for patches before dangeousMarkup, which excludes code
     if isGitPatch(baseDir, nickname, domain,
                   messageJson['object']['type'],
                   summary,
