@@ -2451,7 +2451,7 @@ class PubServer(BaseHTTPRequestHandler):
                               httpPrefix,
                               reportPath, None,
                               [optionsActor], None, None,
-                              pageNumber,
+                              pageNumber, '',
                               chooserNickname,
                               domain,
                               domainFull,
@@ -2566,7 +2566,7 @@ class PubServer(BaseHTTPRequestHandler):
                               baseDir,
                               httpPrefix,
                               reportPath, None, [],
-                              None, postUrl, pageNumber,
+                              None, postUrl, pageNumber, '',
                               chooserNickname,
                               domain,
                               domainFull,
@@ -11449,6 +11449,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      inReplyToUrl: str, replyToList: [],
                      shareDescription: str, replyPageNumber: int,
+                     replyCategory: str,
                      domain: str, domainFull: str,
                      GETstartTime, GETtimings: {}, cookie,
                      noDropDown: bool, conversationId: str) -> bool:
@@ -11496,6 +11497,7 @@ class PubServer(BaseHTTPRequestHandler):
                               replyToList,
                               shareDescription, None,
                               replyPageNumber,
+                              replyCategory,
                               nickname, domain,
                               domainFull,
                               self.server.defaultTimeline,
@@ -13865,6 +13867,7 @@ class PubServer(BaseHTTPRequestHandler):
 #        replyWithDM = False
         replyToList = []
         replyPageNumber = 1
+        replyCategory = ''
         shareDescription = None
         conversationId = None
 #        replytoActor = None
@@ -13934,6 +13937,8 @@ class PubServer(BaseHTTPRequestHandler):
                             replyPageStr = m.replace('page=', '')
                             if replyPageStr.isdigit():
                                 replyPageNumber = int(replyPageStr)
+                        elif m.startswith('category='):
+                            replyCategory = m.replace('category=', '')
                         elif m.startswith('sharedesc:'):
                             # get the title for the shared item
                             shareDescription = \
@@ -14041,6 +14046,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.httpPrefix,
                                  inReplyToUrl, replyToList,
                                  shareDescription, replyPageNumber,
+                                 replyCategory,
                                  self.server.domain,
                                  self.server.domainFull,
                                  GETstartTime, GETtimings,

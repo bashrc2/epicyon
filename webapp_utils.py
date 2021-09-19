@@ -1340,6 +1340,7 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
         '<p>' + \
         '<a href="' + actor + '?replydm=sharedesc:' + \
         sharedItem['displayName'] + ';mention=' + contactActor + \
+        ';category=' + category + \
         '"><button class="button">' + contactTitleStr + \
         '</button></a>\n' + \
         '<a href="' + contactActor + '"><button class="button">' + \

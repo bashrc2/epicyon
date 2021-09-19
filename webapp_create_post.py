@@ -188,6 +188,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 mentions: [],
                 shareDescription: str,
                 reportUrl: str, pageNumber: int,
+                category: str,
                 nickname: str, domain: str,
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
@@ -211,13 +212,15 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 newPostText = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
-                newPostText = \
-                    '<p class="new-post-text">' + \
-                    translate['Write your reply to'] + \
-                    ' <a href="' + inReplyTo + \
-                    '" rel="nofollow noopener noreferrer" ' + \
-                    'target="_blank">' + \
-                    translate['this post'] + '</a></p>\n'
+                newPostText = ''
+                if category != 'accommodation':
+                    newPostText = \
+                        '<p class="new-post-text">' + \
+                        translate['Write your reply to'] + \
+                        ' <a href="' + inReplyTo + \
+                        '" rel="nofollow noopener noreferrer" ' + \
+                        'target="_blank">' + \
+                        translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'
 
@@ -308,7 +311,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     scopeIcon = 'scope_public.png'
     scopeDescription = translate['Public']
     if shareDescription:
-        placeholderSubject = translate['Ask about a shared item.'] + '..'
+        if category == 'accommodation':
+            placeholderSubject = translate['Request to stay']
+        else:
+            placeholderSubject = translate['Ask about a shared item.'] + '..'
     else:
         placeholderSubject = \
             translate['Subject or Content Warning (optional)'] + '...'
@@ -316,7 +322,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if inReplyTo:
         placeholderMentions = \
             translate['Replying to'] + '...'
-    placeholderMessage = translate['Write something'] + '...'
+    placeholderMessage = ''
+    if category != 'accommodation':
+        placeholderMessage = translate['Write something'] + '...'
     extraFields = ''
     endpoint = 'newpost'
     if path.endswith('/newblog'):
@@ -528,11 +536,15 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
        endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = \
-            '<div class="container">\n' + \
-            '<p><input type="checkbox" class="profilecheckbox" ' + \
-            'name="commentsEnabled" checked><label class="labels"> ' + \
-            translate['Allow replies.'] + '</label></p>\n'
+        if category != 'accommodation':
+            dateAndLocation = \
+                '<div class="container">\n' + \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="commentsEnabled" checked><label class="labels"> ' + \
+                translate['Allow replies.'] + '</label></p>\n'
+        else:
+            dateAndLocation = \
+                '<input type="hidden" name="commentsEnabled" value="true">\n'
 
         if endpoint == 'newpost':
             dateAndLocation += \
