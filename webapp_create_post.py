@@ -325,6 +325,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     placeholderMessage = ''
     if category != 'accommodation':
         placeholderMessage = translate['Write something'] + '...'
+    else:
+        idx = 'Introduce yourself and specify the date ' + \
+            'and time when you wish to stay'
+        placeholderMessage = translate[idx]
     extraFields = ''
     endpoint = 'newpost'
     if path.endswith('/newblog'):
