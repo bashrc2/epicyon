@@ -112,7 +112,7 @@ def _matchSharedItem(searchStrLowerList: [],
         if sharedItem.get('location'):
             if searchSubstr in sharedItem['location'].lower():
                 return True
-        elif searchSubstr in sharedItem['summary'].lower():
+        if searchSubstr in sharedItem['summary'].lower():
             return True
         elif searchSubstr in sharedItem['displayName'].lower():
             return True
