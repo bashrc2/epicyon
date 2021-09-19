@@ -1365,7 +1365,8 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         csvStr += str(item['DFC:quantity']) + ','
         csvStr += item['DFC:price'].split(' ')[0] + ','
         csvStr += '"' + item['DFC:price'].split(' ')[1] + '",'
-        csvStr += '"' + item['DFC:Image'] + '",'
+        if item.get('DFC:Image'):
+            csvStr += '"' + item['DFC:Image'] + '",'
         description = item['DFC:description'].replace('"', "'")
         csvStr += '"' + description + '",\n'
     return csvStr
@@ -1776,7 +1777,6 @@ def _dfcToSharesFormat(catalogJson: {},
            not item.get('DFC:expiryDate') or \
            not item.get('DFC:quantity') or \
            not item.get('DFC:price') or \
-           not item.get('DFC:Image') or \
            not item.get('DFC:description'):
             continue
 
@@ -1825,10 +1825,13 @@ def _dfcToSharesFormat(catalogJson: {},
         itemID = item['@id']
         description = item['DFC:description'].split(':', 1)[1].strip()
 
+        imageUrl = ''
+        if item.get('DFC:Image'):
+            imageUrl = item['DFC:Image']
         sharesJson[itemID] = {
             "displayName": item['DFC:description'].split(':')[0],
             "summary": description,
-            "imageUrl": item['DFC:Image'],
+            "imageUrl": imageUrl,
             "itemQty": float(item['DFC:quantity']),
             "dfcId": dfcId,
             "itemType": itemType,
