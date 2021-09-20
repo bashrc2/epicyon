@@ -2759,8 +2759,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.sendThreads,
                                   self.server.postLog,
                                   self.server.cachedWebfingers,
-                                  self.server.personCache,
-                                  debug,
+                                  self.server.personCache, debug,
                                   self.server.projectVersion,
                                   self.server.signingPrivateKeyPem)
         if callingDomain.endswith('.onion') and onionDomain:
