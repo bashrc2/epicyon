@@ -980,6 +980,9 @@ def sendFollowRequest(session, baseDir: str,
                       projectVersion: str, signingPrivateKeyPem: str) -> {}:
     """Gets the json object for sending a follow request
     """
+    if not signingPrivateKeyPem:
+        print('WARN: follow request without signing key')
+
     if not domainPermitted(followDomain, federationList):
         print('You are not permitted to follow the domain ' + followDomain)
         return None
