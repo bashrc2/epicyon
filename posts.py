@@ -294,7 +294,8 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
                        debug: bool, projectVersion: str,
                        httpPrefix: str, domain: str,
                        personCache: {},
-                       signingPrivateKeyPem: str) -> {}:
+                       signingPrivateKeyPem: str,
+                       sourceId: int) -> {}:
     """Returns the actor json for the given actor url
     """
     personJson = \
@@ -318,7 +319,7 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
                          debug, projectVersion, httpPrefix, domain)
     if personJson:
         return personJson
-    print('Unable to get actor for ' + actor)
+    print('Unable to get actor for ' + actor + ' ' + str(sourceId))
     if not signingPrivateKeyPem:
         print('No signing key provided when getting actor')
     return None
@@ -363,7 +364,8 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                            profileStr, asHeader,
                            debug, projectVersion,
                            httpPrefix, originDomain,
-                           personCache, signingPrivateKeyPem)
+                           personCache, signingPrivateKeyPem,
+                           sourceId)
     if not personJson:
         return None, None, None, None, None, None, None
 

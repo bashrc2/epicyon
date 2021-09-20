@@ -848,7 +848,7 @@ def sendWantedViaServer(baseDir, session,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
                                             fromDomain, postToBox,
-                                            83653)
+                                            23653)
 
     if not inboxUrl:
         if debug:
@@ -953,7 +953,7 @@ def sendUndoWantedViaServer(baseDir: str, session,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
                                             fromDomain, postToBox,
-                                            12663)
+                                            12693)
 
     if not inboxUrl:
         if debug:

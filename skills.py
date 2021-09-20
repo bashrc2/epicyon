@@ -232,7 +232,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
                                             baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, nickname, domain,
-                                            postToBox, 86725)
+                                            postToBox, 76121)
 
     if not inboxUrl:
         if debug:

@@ -406,7 +406,7 @@ def sendBookmarkViaServer(baseDir: str, session,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             nickname, domain,
-                                            postToBox, 52594)
+                                            postToBox, 58391)
 
     if not inboxUrl:
         if debug:

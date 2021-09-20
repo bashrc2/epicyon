@@ -580,7 +580,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
      displayName) = getPersonBox(signingPrivateKeyPem, originDomain,
                                  baseDir, session, wfRequest, personCache,
                                  __version__, httpPrefix, nickname,
-                                 domain, postToBox, 52025)
+                                 domain, postToBox, 35725)
 
     if not inboxUrl:
         if debug:
