@@ -318,6 +318,8 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
     if personJson:
         return personJson
     print('Unable to get actor for ' + actor)
+    if not signingPrivateKeyPem:
+        print('No signing key provided when getting actor')
     return None
 
 

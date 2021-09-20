@@ -2745,6 +2745,8 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Sending follow request from ' +
                       followerNickname + ' to ' + followingActor)
+                if not self.server.signingPrivateKeyPem:
+                    print('Sending follow request with no signing key')
                 sendFollowRequest(self.server.session,
                                   baseDir, followerNickname,
                                   domain, port,
