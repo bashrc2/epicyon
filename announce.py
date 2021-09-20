@@ -181,7 +181,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
                        httpPrefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
                        debug, projectVersion, None, groupAccount,
-                       signingPrivateKeyPem)
+                       signingPrivateKeyPem, 639633)
 
     return newAnnounce
 

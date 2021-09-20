@@ -898,7 +898,8 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, projectVersion, None,
-                          groupAccount, signingPrivateKeyPem)
+                          groupAccount, signingPrivateKeyPem,
+                          7856837)
 
 
 def followedAccountRejects(session, baseDir: str, httpPrefix: str,
@@ -964,7 +965,8 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, projectVersion, None,
-                          groupAccount, signingPrivateKeyPem)
+                          groupAccount, signingPrivateKeyPem,
+                          6393063)
 
 
 def sendFollowRequest(session, baseDir: str,
@@ -1032,7 +1034,7 @@ def sendFollowRequest(session, baseDir: str,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
                    debug, projectVersion, None, groupAccount,
-                   signingPrivateKeyPem)
+                   signingPrivateKeyPem, 8234389)
 
     return newFollowJson
 

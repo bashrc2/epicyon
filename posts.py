@@ -2493,7 +2493,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                    sendThreads: [], postLog: [], cachedWebfingers: {},
                    personCache: {}, debug: bool, projectVersion: str,
                    sharedItemsToken: str, groupAccount: bool,
-                   signingPrivateKeyPem: str) -> int:
+                   signingPrivateKeyPem: str,
+                   sourceId: int) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2559,7 +2560,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                                  personCache,
                                  projectVersion, httpPrefix,
                                  nickname, domain, postToBox,
-                                 30873)
+                                 sourceId)
 
     print("inboxUrl: " + str(inboxUrl))
     print("toPersonId: " + str(toPersonId))
@@ -2879,7 +2880,7 @@ def sendToNamedAddresses(session, baseDir: str,
                        sendThreads, postLog, cachedWebfingers,
                        personCache, debug, projectVersion,
                        sharedItemsToken, groupAccount,
-                       signingPrivateKeyPem)
+                       signingPrivateKeyPem, 34436782)
 
 
 def _hasSharedInbox(session, httpPrefix: str, domain: str,
@@ -3052,7 +3053,7 @@ def sendToFollowers(session, baseDir: str,
                            sendThreads, postLog, cachedWebfingers,
                            personCache, debug, projectVersion,
                            sharedItemsToken, groupAccount,
-                           signingPrivateKeyPem)
+                           signingPrivateKeyPem, 639342)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
@@ -3081,7 +3082,7 @@ def sendToFollowers(session, baseDir: str,
                                sendThreads, postLog, cachedWebfingers,
                                personCache, debug, projectVersion,
                                sharedItemsToken, groupAccount,
-                               signingPrivateKeyPem)
+                               signingPrivateKeyPem, 634219)
 
         time.sleep(4)
 
