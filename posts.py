@@ -292,7 +292,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
 def _getPersonBoxActor(session, baseDir: str, actor: str,
                        profileStr: str, asHeader: {},
                        debug: bool, projectVersion: str,
-                       httpPrefix: str, domain: str,
+                       httpPrefix: str, originDomain: str,
                        personCache: {},
                        signingPrivateKeyPem: str,
                        sourceId: int) -> {}:
@@ -308,14 +308,14 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
     personJson = getJson(signingPrivateKeyPem, session, actor, asHeader, None,
-                         debug, projectVersion, httpPrefix, domain)
+                         debug, projectVersion, httpPrefix, originDomain)
     if personJson:
         return personJson
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     personJson = getJson(signingPrivateKeyPem, session, actor, asHeader, None,
-                         debug, projectVersion, httpPrefix, domain)
+                         debug, projectVersion, httpPrefix, originDomain)
     if personJson:
         return personJson
     print('Unable to get actor for ' + actor + ' ' + str(sourceId))
@@ -2551,7 +2551,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         postToBox = 'outbox'
 
     # get the actor inbox/outbox for the To handle
-    originDomain = toDomain
+    originDomain = domain
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
      displayName) = getPersonBox(signingPrivateKeyPem,
                                  originDomain,
