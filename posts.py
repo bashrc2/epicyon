@@ -300,6 +300,7 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
     personJson = \
         getPersonFromCache(baseDir, actor, personCache, True)
     if personJson:
+        print('_getPersonBoxActor unable to get actor ' + actor)
         return personJson
 
     if '/channel/' in actor or '/accounts/' in actor:
