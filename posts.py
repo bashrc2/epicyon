@@ -2195,7 +2195,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
             postToBox = 'tlblogs'
 
     # get the actor inbox for the To handle
-    originDomain = toDomain
+    originDomain = domain
     (inboxUrl, pubKeyId, pubKey,
      toPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
@@ -2342,7 +2342,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
         postToBox = 'tlblogs'
 
     # get the actor inbox for the To handle
-    originDomain = toDomain
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
