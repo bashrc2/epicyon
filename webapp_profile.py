@@ -827,23 +827,25 @@ def htmlProfile(signingPrivateKeyPem: str,
         '    <a href="' + usersPath + '#buttonheader"><button class="' + \
         postsButton + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/following#buttonheader">' + \
-        '<button class="' + followingButton + '"><span>' + \
-        translate['Following'] + ' </span></button></a>'
+    if not isGroup:
+        profileStr += \
+            '    <a href="' + usersPath + '/following#buttonheader">' + \
+            '<button class="' + followingButton + '"><span>' + \
+            translate['Following'] + ' </span></button></a>'
     profileStr += \
         '    <a href="' + usersPath + '/followers#buttonheader">' + \
         '<button class="' + followersButton + \
         '"><span>' + followersStr + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/roles#buttonheader">' + \
-        '<button class="' + rolesButton + '"><span>' + \
-        translate['Roles'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/skills#buttonheader">' + \
-        '<button class="' + skillsButton + '"><span>' + \
-        translate['Skills'] + ' </span></button></a>'
+    if not isGroup:
+        profileStr += \
+            '    <a href="' + usersPath + '/roles#buttonheader">' + \
+            '<button class="' + rolesButton + '"><span>' + \
+            translate['Roles'] + \
+            ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/skills#buttonheader">' + \
+            '<button class="' + skillsButton + '"><span>' + \
+            translate['Skills'] + ' </span></button></a>'
 #    profileStr += \
 #        '    <a href="' + usersPath + '/shares#buttonheader">' + \
 #        '<button class="' + sharesButton + '"><span>' + \
