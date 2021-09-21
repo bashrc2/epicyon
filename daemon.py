@@ -2392,7 +2392,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # person options screen, follow button
-        # See htmlPersonOptions
+        # See htmlPersonOptions followStr
         if '&submitFollow=' in optionsConfirmParams:
             if debug:
                 print('Following ' + optionsActor)
@@ -2411,7 +2411,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # person options screen, unfollow button
-        # See htmlPersonOptions
+        # See htmlPersonOptions followStr
         if '&submitUnfollow=' in optionsConfirmParams:
             print('Unfollowing ' + optionsActor)
             msg = \
