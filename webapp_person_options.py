@@ -60,7 +60,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       textModeBanner: str,
                       newsInstance: bool,
                       authorized: bool,
-                      accessKeys: {}) -> str:
+                      accessKeys: {},
+                      isGroup: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -73,6 +74,8 @@ def htmlPersonOptions(defaultTimeline: str,
 
     dormant = False
     followStr = 'Follow'
+    if isGroup:
+        followStr = 'Join'
     blockStr = 'Block'
     nickname = None
     optionsNickname = None
@@ -86,6 +89,8 @@ def htmlPersonOptions(defaultTimeline: str,
         followerDomain, followerPort = getDomainFromActor(optionsActor)
         if isFollowingActor(baseDir, nickname, domain, optionsActor):
             followStr = 'Unfollow'
+            if isGroup:
+                followStr = 'Leave'
             dormant = \
                 isDormant(baseDir, nickname, domain, optionsActor,
                           dormantMonths)

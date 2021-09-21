@@ -2393,7 +2393,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # person options screen, follow button
         # See htmlPersonOptions followStr
-        if '&submitFollow=' in optionsConfirmParams:
+        if '&submitFollow=' in optionsConfirmParams or \
+           '&submitJoin=' in optionsConfirmParams:
             if debug:
                 print('Following ' + optionsActor)
             msg = \
@@ -2412,7 +2413,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # person options screen, unfollow button
         # See htmlPersonOptions followStr
-        if '&submitUnfollow=' in optionsConfirmParams:
+        if '&submitUnfollow=' in optionsConfirmParams or \
+           '&submitLeave=' in optionsConfirmParams:
             print('Unfollowing ' + optionsActor)
             msg = \
                 htmlConfirmUnfollow(self.server.cssCache,
@@ -6365,6 +6367,7 @@ class PubServer(BaseHTTPRequestHandler):
             optionsLink = None
             if len(optionsList) > 3:
                 optionsLink = optionsList[3]
+            isGroup = False
             donateUrl = None
             websiteUrl = None
             PGPpubKey = None
@@ -6390,6 +6393,8 @@ class PubServer(BaseHTTPRequestHandler):
                     movedTo = actorJson['movedTo']
                     if '"' in movedTo:
                         movedTo = movedTo.split('"')[1]
+                if actorJson['type'] == 'Group':
+                    isGroup = True
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
                 websiteUrl = getWebsite(actorJson, self.server.translate)
@@ -6445,7 +6450,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.newsInstance,
                                     authorized,
-                                    accessKeys).encode('utf-8')
+                                    accessKeys, isGroup).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
