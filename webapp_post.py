@@ -331,7 +331,7 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
         replyToThisPostStr = translate[replyToThisPostStr]
     conversationStr = ''
     if conversationId:
-        conversationStr = ';conversationId=' + conversationId
+        conversationStr = '?conversationId=' + conversationId
     if isPublicRepeat:
         replyStr += \
             '        <a class="imageAnchor" href="/users/' + \
