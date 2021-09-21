@@ -1333,15 +1333,17 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
     sharedItemsForm += '</p>\n'
     contactActor = \
         localActorUrl(httpPrefix, contactNickname, domainFull)
+    buttonStyleStr = 'button'
     if category == 'accommodation':
         contactTitleStr = translate['Request to stay']
+        buttonStyleStr = 'contactbutton'
 
     sharedItemsForm += \
         '<p>' + \
         '<a href="' + actor + '?replydm=sharedesc:' + \
         sharedItem['displayName'] + ';mention=' + contactActor + \
         ';category=' + category + \
-        '"><button class="contactbutton">' + contactTitleStr + \
+        '"><button class="' + buttonStyleStr + '">' + contactTitleStr + \
         '</button></a>\n' + \
         '<a href="' + contactActor + '"><button class="button">' + \
         translate['Profile'] + '</button></a>\n'

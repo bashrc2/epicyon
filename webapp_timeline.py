@@ -947,49 +947,59 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
 
 def htmlIndividualShare(domain: str, shareId: str,
-                        actor: str, item: {}, translate: {},
+                        actor: str, sharedItem: {}, translate: {},
                         showContact: bool, removeButton: bool,
                         sharesFileType: str) -> str:
     """Returns an individual shared item as html
     """
     profileStr = '<div class="container">\n'
-    profileStr += '<p class="share-title">' + item['displayName'] + '</p>\n'
-    if item.get('imageUrl'):
-        profileStr += '<a href="' + item['imageUrl'] + '">\n'
+    profileStr += \
+        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
+    if sharedItem.get('imageUrl'):
+        profileStr += '<a href="' + sharedItem['imageUrl'] + '">\n'
         profileStr += \
-            '<img loading="lazy" src="' + item['imageUrl'] + \
+            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
             '" alt="' + translate['Item image'] + '">\n</a>\n'
-    profileStr += '<p>' + item['summary'] + '</p>\n<p>'
-    if item.get('itemQty'):
-        if item['itemQty'] > 1:
+    profileStr += '<p>' + sharedItem['summary'] + '</p>\n<p>'
+    if sharedItem.get('itemQty'):
+        if sharedItem['itemQty'] > 1:
             profileStr += \
                 '<b>' + translate['Quantity'] + ':</b> ' + \
-                str(item['itemQty']) + '<br>'
+                str(sharedItem['itemQty']) + '<br>'
     profileStr += \
-        '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + '<br>'
+        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
     profileStr += \
-        '<b>' + translate['Category'] + ':</b> ' + item['category'] + '<br>'
-    if item.get('location'):
+        '<b>' + translate['Category'] + ':</b> ' + \
+        sharedItem['category'] + '<br>'
+    if sharedItem.get('location'):
         profileStr += \
             '<b>' + translate['Location'] + ':</b> ' + \
-            item['location'] + '<br>'
-    if item.get('itemPrice') and item.get('itemCurrency'):
-        if isfloat(item['itemPrice']):
-            if float(item['itemPrice']) > 0:
+            sharedItem['location'] + '<br>'
+    contactTitleStr = translate['Contact']
+    if sharedItem.get('itemPrice') and sharedItem.get('itemCurrency'):
+        if isfloat(sharedItem['itemPrice']):
+            if float(sharedItem['itemPrice']) > 0:
                 profileStr += ' ' + \
                     '<b>' + translate['Price'] + ':</b> ' + \
-                    item['itemPrice'] + ' ' + item['itemCurrency']
+                    sharedItem['itemPrice'] + ' ' + sharedItem['itemCurrency']
+                contactTitleStr = translate['Buy']
     profileStr += '</p>\n'
-    sharedesc = item['displayName']
+    sharedesc = sharedItem['displayName']
     if '<' not in sharedesc and ';' not in sharedesc:
         if showContact:
-            contactActor = item['actor']
+            buttonStyleStr = 'button'
+            if sharedItem['category'] == 'accommodation':
+                contactTitleStr = translate['Request to stay']
+                buttonStyleStr = 'contactbutton'
+
+            contactActor = sharedItem['actor']
             profileStr += \
                 '<p>' + \
                 '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
-                ';mention=' + contactActor + '"><button class="button">' + \
-                translate['Contact'] + '</button></a>\n'
+                ';mention=' + contactActor + '">' + \
+                '<button class="' + buttonStyleStr + '">' + \
+                contactTitleStr + '</button></a>\n'
             profileStr += \
                 '<a href="' + contactActor + '"><button class="button">' + \
                 translate['Profile'] + '</button></a>\n'
@@ -1049,17 +1059,18 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if isModerator(baseDir, nickname):
         isModeratorAccount = True
 
-    for published, item in sharesJson.items():
+    for published, sharedItem in sharesJson.items():
         showContactButton = False
-        if item['actor'] != actor:
+        if sharedItem['actor'] != actor:
             showContactButton = True
         showRemoveButton = False
-        if '___' + domain in item['shareId']:
-            if item['actor'] == actor or isAdminAccount or isModeratorAccount:
+        if '___' + domain in sharedItem['shareId']:
+            if sharedItem['actor'] == actor or \
+               isAdminAccount or isModeratorAccount:
                 showRemoveButton = True
         timelineStr += \
-            htmlIndividualShare(domain, item['shareId'],
-                                actor, item, translate,
+            htmlIndividualShare(domain, sharedItem['shareId'],
+                                actor, sharedItem, translate,
                                 showContactButton, showRemoveButton,
                                 sharesFileType)
         timelineStr += separatorStr
