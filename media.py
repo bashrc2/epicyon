@@ -42,7 +42,7 @@ def _replaceSiloDomain(postJsonObject: {},
     contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
     if siloDomain not in contentStr:
         return
-    contentStr = contentStr.replace('www.youtube.com', replacementDomain)
+    contentStr = contentStr.replace(siloDomain, replacementDomain)
     postJsonObject['object']['content'] = contentStr
     if postJsonObject['object'].get('contentMap'):
         postJsonObject['object']['contentMap'][systemLanguage] = contentStr
@@ -53,8 +53,8 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str,
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
-    return _replaceSiloDomain(postJsonObject, 'www.youtube.com',
-                              replacementDomain, systemLanguage)
+    _replaceSiloDomain(postJsonObject, 'www.youtube.com',
+                       replacementDomain, systemLanguage)
 
 
 def replaceTwitter(postJsonObject: {}, replacementDomain: str,
@@ -62,8 +62,8 @@ def replaceTwitter(postJsonObject: {}, replacementDomain: str,
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
-    return _replaceSiloDomain(postJsonObject, 'twitter.com',
-                              replacementDomain, systemLanguage)
+    _replaceSiloDomain(postJsonObject, 'twitter.com',
+                       replacementDomain, systemLanguage)
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
