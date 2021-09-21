@@ -898,7 +898,8 @@ def htmlProfile(signingPrivateKeyPem: str,
                                       cachedWebfingers, personCache, extraJson,
                                       projectVersion, ["unfollow"], selected,
                                       usersPath, pageNumber, maxItemsPerPage,
-                                      dormantMonths, debug, signingPrivateKeyPem)
+                                      dormantMonths, debug,
+                                      signingPrivateKeyPem)
     if selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -914,7 +915,7 @@ def htmlProfile(signingPrivateKeyPem: str,
             profileStr += \
                 _htmlProfileRoles(translate, nickname, domainFull,
                                   extraJson)
-        elif selected == 'skills' and not isGroup:
+        elif selected == 'skills':
             profileStr += \
                 _htmlProfileSkills(translate, nickname, domainFull, extraJson)
 #       elif selected == 'shares':
