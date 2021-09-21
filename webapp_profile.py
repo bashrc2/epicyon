@@ -118,6 +118,11 @@ def htmlProfileAfterSearch(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
+    isGroup = False
+    if profileJson.get('type'):
+        if profileJson['type'] == 'Group':
+            isGroup = True
+
     avatarUrl = ''
     if profileJson.get('icon'):
         if profileJson['icon'].get('url'):
@@ -229,6 +234,10 @@ def htmlProfileAfterSearch(cssCache: {},
         followIsPermitted = False
 
     if followIsPermitted:
+        followStr = 'Follow'
+        if isGroup:
+            followStr = 'Join'
+
         profileStr += \
             '<div class="container">\n' + \
             '  <form method="POST" action="' + \
@@ -238,7 +247,7 @@ def htmlProfileAfterSearch(cssCache: {},
             personUrl + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate['Follow'] + '</button>\n' + \
+            translate[followStr] + '</button>\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + accessKeys['viewButton'] + '">' + \
             translate['View'] + '</button>\n' + \
