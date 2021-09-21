@@ -13925,9 +13925,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '?replydm=' in self.path:
                 inReplyToUrl = self.path.split('?replydm=')[1]
                 inReplyToUrl = urllib.parse.unquote_plus(inReplyToUrl)
-                if ';' in inReplyToUrl:
+                if '?' in inReplyToUrl:
                     # multiple parameters
-                    mentionsList = inReplyToUrl.split(';')
+                    mentionsList = inReplyToUrl.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyHandle = m.replace('mention=', '')

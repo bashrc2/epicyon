@@ -313,14 +313,14 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
     if postJsonObject['object'].get('attributedTo'):
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
-                '?mention=' + postJsonObject['object']['attributedTo']
+                ';mention=' + postJsonObject['object']['attributedTo']
     content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if content:
         mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:
             for actorUrl in mentionedActors:
-                if '?mention=' + actorUrl not in replyToLink:
-                    replyToLink += '?mention=' + actorUrl
+                if ';mention=' + actorUrl not in replyToLink:
+                    replyToLink += ';mention=' + actorUrl
                     if len(replyToLink) > 500:
                         break
     replyToLink += pageNumberParam
@@ -331,7 +331,7 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
         replyToThisPostStr = translate[replyToThisPostStr]
     conversationStr = ''
     if conversationId:
-        conversationStr = '?conversationId=' + conversationId
+        conversationStr = ';conversationId=' + conversationId
     if isPublicRepeat:
         replyStr += \
             '        <a class="imageAnchor" href="/users/' + \
@@ -396,7 +396,7 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                     nickname + \
                     '/tlblogs?editblogpost=' + \
                     postId.split('/statuses/')[1] + \
-                    '?actor=' + actorNickname + \
+                    ';actor=' + actorNickname + \
                     '" title="' + editBlogPostStr + '">' + \
                     '<img loading="lazy" title="' + \
                     editBlogPostStr + '" alt="' + editBlogPostStr + \
