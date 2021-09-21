@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
+from utils import isGroupAccount
 from utils import hasObjectDict
 from utils import getOccupationName
 from utils import getLockedAccount
@@ -786,8 +787,11 @@ def htmlProfile(signingPrivateKeyPem: str,
         htmlHideFromScreenReader('✍') + ' ' + translate['Edit']
     menuFollowing = \
         htmlHideFromScreenReader('👥') + ' ' + translate['Following']
+    followersStr = translate['Followers']
+    if isGroupAccount(baseDir, nickname, domain):
+        followersStr = translate['Members']
     menuFollowers = \
-        htmlHideFromScreenReader('👪') + ' ' + translate['Followers']
+        htmlHideFromScreenReader('👪') + ' ' + followersStr
     menuRoles = \
         htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
     menuSkills = \
@@ -826,7 +830,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     profileStr += \
         '    <a href="' + usersPath + '/followers#buttonheader">' + \
         '<button class="' + followersButton + \
-        '"><span>' + translate['Followers'] + ' </span></button></a>'
+        '"><span>' + followersStr + ' </span></button></a>'
     profileStr += \
         '    <a href="' + usersPath + '/roles#buttonheader">' + \
         '<button class="' + rolesButton + '"><span>' + \
