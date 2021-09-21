@@ -780,22 +780,26 @@ def htmlProfile(signingPrivateKeyPem: str,
     # keyboard navigation
     userPathStr = '/users/' + nickname
     deft = defaultTimeline
+    isGroup = False
+    followersStr = translate['Followers']
+    if isGroupAccount(baseDir, nickname, domain):
+        isGroup = True
+        followersStr = translate['Members']
     menuTimeline = \
         htmlHideFromScreenReader('🏠') + ' ' + \
         translate['Switch to timeline view']
     menuEdit = \
         htmlHideFromScreenReader('✍') + ' ' + translate['Edit']
-    menuFollowing = \
-        htmlHideFromScreenReader('👥') + ' ' + translate['Following']
-    followersStr = translate['Followers']
-    if isGroupAccount(baseDir, nickname, domain):
-        followersStr = translate['Members']
+    if not isGroup:
+        menuFollowing = \
+            htmlHideFromScreenReader('👥') + ' ' + translate['Following']
     menuFollowers = \
         htmlHideFromScreenReader('👪') + ' ' + followersStr
-    menuRoles = \
-        htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
-    menuSkills = \
-        htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
+    if not isGroup:
+        menuRoles = \
+            htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
+        menuSkills = \
+            htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
     menuLogout = \
         htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
     navLinks = {
