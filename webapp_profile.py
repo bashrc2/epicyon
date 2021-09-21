@@ -889,7 +889,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                               theme, systemLanguage,
                               maxLikeCount,
                               signingPrivateKeyPem) + licenseStr
-    elif selected == 'following':
+    elif selected == 'following' and not isGroup:
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
                                   authorized, nickname,
@@ -908,11 +908,11 @@ def htmlProfile(signingPrivateKeyPem: str,
                                   selected, usersPath, pageNumber,
                                   maxItemsPerPage, dormantMonths, debug,
                                   signingPrivateKeyPem)
-    elif selected == 'roles':
+    elif selected == 'roles' and not isGroup:
         profileStr += \
             _htmlProfileRoles(translate, nickname, domainFull,
                               extraJson)
-    elif selected == 'skills':
+    elif selected == 'skills' and not isGroup:
         profileStr += \
             _htmlProfileSkills(translate, nickname, domainFull, extraJson)
 #    elif selected == 'shares':
