@@ -53,13 +53,13 @@ def _getLeftColumnShares(baseDir: str,
     ctr = 0
     for published, item in sharesJson.items():
         sharedesc = item['displayName']
-        if '<' in sharedesc or ';' in sharedesc:
+        if '<' in sharedesc or '?' in sharedesc:
             continue
         shareId = item['shareId']
         # selecting this link calls htmlShowShare
         shareLink = actor + '?showshare=' + shareId
         if item.get('category'):
-            shareLink += ';category=' + item['category']
+            shareLink += '?category=' + item['category']
             shareCategory = shareCategoryIcon(item['category'])
 
         linksList.append(shareCategory + sharedesc + ' ' + shareLink)

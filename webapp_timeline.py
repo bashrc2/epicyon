@@ -997,7 +997,7 @@ def htmlIndividualShare(domain: str, shareId: str,
                 '<p>' + \
                 '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
-                ';mention=' + contactActor + '">' + \
+                '?mention=' + contactActor + '">' + \
                 '<button class="' + buttonStyleStr + '">' + \
                 contactTitleStr + '</button></a>\n'
             profileStr += \
