@@ -889,16 +889,17 @@ def htmlProfile(signingPrivateKeyPem: str,
                               theme, systemLanguage,
                               maxLikeCount,
                               signingPrivateKeyPem) + licenseStr
-    elif selected == 'following' and not isGroup:
-        profileStr += \
-            _htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                  authorized, nickname,
-                                  domain, port, session,
-                                  cachedWebfingers, personCache, extraJson,
-                                  projectVersion, ["unfollow"], selected,
-                                  usersPath, pageNumber, maxItemsPerPage,
-                                  dormantMonths, debug, signingPrivateKeyPem)
-    elif selected == 'followers':
+    if not isGroup:
+        if selected == 'following':
+            profileStr += \
+                _htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                      authorized, nickname,
+                                      domain, port, session,
+                                      cachedWebfingers, personCache, extraJson,
+                                      projectVersion, ["unfollow"], selected,
+                                      usersPath, pageNumber, maxItemsPerPage,
+                                      dormantMonths, debug, signingPrivateKeyPem)
+    if selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
                                   authorized, nickname,
@@ -908,23 +909,24 @@ def htmlProfile(signingPrivateKeyPem: str,
                                   selected, usersPath, pageNumber,
                                   maxItemsPerPage, dormantMonths, debug,
                                   signingPrivateKeyPem)
-    elif selected == 'roles' and not isGroup:
-        profileStr += \
-            _htmlProfileRoles(translate, nickname, domainFull,
-                              extraJson)
-    elif selected == 'skills' and not isGroup:
-        profileStr += \
-            _htmlProfileSkills(translate, nickname, domainFull, extraJson)
-#    elif selected == 'shares':
-#        profileStr += \
-#            _htmlProfileShares(actor, translate,
-#                               nickname, domainFull,
-#                               extraJson, 'shares') + licenseStr
-#    elif selected == 'wanted':
-#        profileStr += \
-#            _htmlProfileShares(actor, translate,
-#                               nickname, domainFull,
-#                               extraJson, 'wanted') + licenseStr
+    if not isGroup:
+        if selected == 'roles':
+            profileStr += \
+                _htmlProfileRoles(translate, nickname, domainFull,
+                                  extraJson)
+        elif selected == 'skills' and not isGroup:
+            profileStr += \
+                _htmlProfileSkills(translate, nickname, domainFull, extraJson)
+#       elif selected == 'shares':
+#           profileStr += \
+#                _htmlProfileShares(actor, translate,
+#                                   nickname, domainFull,
+#                                   extraJson, 'shares') + licenseStr
+#        elif selected == 'wanted':
+#            profileStr += \
+#                _htmlProfileShares(actor, translate,
+#                                   nickname, domainFull,
+#                                   extraJson, 'wanted') + licenseStr
     # end of #timeline
     profileStr += '</div>'
 
