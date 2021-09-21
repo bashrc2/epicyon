@@ -313,14 +313,14 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
     if postJsonObject['object'].get('attributedTo'):
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
-                ';mention=' + postJsonObject['object']['attributedTo']
+                '?mention=' + postJsonObject['object']['attributedTo']
     content = getBaseContentFromPost(postJsonObject, systemLanguage)
     if content:
         mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:
             for actorUrl in mentionedActors:
-                if ';mention=' + actorUrl not in replyToLink:
-                    replyToLink += ';mention=' + actorUrl
+                if '?mention=' + actorUrl not in replyToLink:
+                    replyToLink += '?mention=' + actorUrl
                     if len(replyToLink) > 500:
                         break
     replyToLink += pageNumberParam
