@@ -609,7 +609,7 @@ def getLinkPrefixes() -> []:
     """Returns a list of valid web link prefixes
     """
     return ('https://', 'http://', 'ftp://',
-            'dat://', 'i2p://', 'gnunet://',
+            'dat://', 'i2p://', 'gnunet://', 'payto://',
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 
