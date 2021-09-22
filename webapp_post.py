@@ -1290,17 +1290,16 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         displayName = None
         if postActorWf:
             originDomain = domain
-            (inboxUrl, pubKeyId, pubKey,
-             fromPersonId, sharedInbox,
-             avatarUrl2, displayName) = getPersonBox(signingPrivateKeyPem,
-                                                     originDomain,
-                                                     baseDir, session,
-                                                     postActorWf,
-                                                     personCache,
-                                                     projectVersion,
-                                                     httpPrefix,
-                                                     nickname, domain,
-                                                     'outbox', 72367)
+            (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
+             displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
+                                            baseDir, session,
+                                            postActorWf,
+                                            personCache,
+                                            projectVersion,
+                                            httpPrefix,
+                                            nickname, domain,
+                                            'outbox', 72367)
 
         _logPostTiming(enableTimingLog, postStartTime, '6')
 

@@ -64,15 +64,14 @@ def instancesGraph(baseDir: str, handles: str,
             return dotGraphStr + '}\n'
 
         originDomain = None
-        (personUrl, pubKeyId, pubKey,
-         personId, shaedInbox,
-         avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                                originDomain,
-                                                baseDir, session, wfRequest,
-                                                personCache,
-                                                projectVersion, httpPrefix,
-                                                nickname, domain, 'outbox',
-                                                27261)
+        (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
+         displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                        originDomain,
+                                        baseDir, session, wfRequest,
+                                        personCache,
+                                        projectVersion, httpPrefix,
+                                        nickname, domain, 'outbox',
+                                        27261)
         wordFrequency = {}
         postDomains = \
             getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,

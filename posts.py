@@ -329,7 +329,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
                  boxName: str = 'inbox',
-                 sourceId=0) -> (str, str, str, str, str, str, str, str):
+                 sourceId=0) -> (str, str, str, str, str, str, str, str, str):
     debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
@@ -367,6 +367,11 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                            sourceId)
     if not personJson:
         return None, None, None, None, None, None, None
+
+    isGroup = False
+    if personJson.get('type'):
+        if personJson['type'] == 'Group':
+            isGroup = True
 
     # get the url for the box/collection
     boxJson = None
@@ -416,7 +421,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
     storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
-        avatarUrl, displayName
+        avatarUrl, displayName, isGroup
 
 
 def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
@@ -2196,15 +2201,14 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
 
     # get the actor inbox for the To handle
     originDomain = domain
-    (inboxUrl, pubKeyId, pubKey,
-     toPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain, postToBox,
-                                            72533)
+    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain, postToBox,
+                                    72533)
 
     if not inboxUrl:
         return 3
@@ -2343,16 +2347,15 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            fromNickname,
-                                            fromDomainFull, postToBox,
-                                            82796)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    fromNickname,
+                                    fromDomainFull, postToBox,
+                                    82796)
     if not inboxUrl:
         if debug:
             print('DEBUG: post no ' + postToBox +
@@ -2553,13 +2556,13 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     # get the actor inbox/outbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 projectVersion, httpPrefix,
-                                 nickname, domain, postToBox,
-                                 sourceId)
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain, postToBox,
+                                    sourceId)
 
     print("inboxUrl: " + str(inboxUrl))
     print("toPersonId: " + str(toPersonId))
@@ -3928,15 +3931,14 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 
     if debug:
         print('Getting the outbox for ' + handle)
-    (personUrl, pubKeyId, pubKey,
-     personId, shaedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox',
-                                            62524)
+    (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain, 'outbox',
+                                    62524)
     if debug:
         print('Actor url: ' + str(personId))
     if not personId:
@@ -3982,15 +3984,14 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
               str(wfRequest))
         return domainList
 
-    (personUrl, pubKeyId, pubKey,
-     personId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox',
-                                            92522)
+    (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain, 'outbox',
+                                    92522)
     maxMentions = 99
     maxEmoji = 99
     maxAttachments = 5
@@ -4079,15 +4080,14 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
               str(wfRequest))
         return {}
 
-    (personUrl, pubKeyId, pubKey,
-     personId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox',
-                                            13863)
+    (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain, 'outbox',
+                                    13863)
     maxMentions = 99
     maxEmoji = 99
     maxAttachments = 5
@@ -4618,14 +4618,13 @@ def sendBlockViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 72652)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4699,14 +4698,13 @@ def sendMuteViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 72652)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4785,14 +4783,13 @@ def sendUndoMuteViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 72652)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4875,13 +4872,12 @@ def sendUndoBlockViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 53892)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest, personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 53892)
 
     if not inboxUrl:
         if debug:

@@ -123,14 +123,13 @@ def sendAvailabilityViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = domain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, nickname,
-                                            domain, postToBox, 57262)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, nickname,
+                                    domain, postToBox, 57262)
 
     if not inboxUrl:
         if debug:

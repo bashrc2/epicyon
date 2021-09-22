@@ -1096,10 +1096,10 @@ def sendFollowRequestViaServer(baseDir: str, session,
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                 baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 52025)
+     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
+                                    baseDir, session, wfRequest, personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 52025)
 
     if not inboxUrl:
         if debug:
@@ -1188,16 +1188,15 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session,
-                                            wfRequest, personCache,
-                                            projectVersion, httpPrefix,
-                                            fromNickname,
-                                            fromDomain, postToBox,
-                                            76536)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session,
+                                    wfRequest, personCache,
+                                    projectVersion, httpPrefix,
+                                    fromNickname,
+                                    fromDomain, postToBox,
+                                    76536)
 
     if not inboxUrl:
         if debug:

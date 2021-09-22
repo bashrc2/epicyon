@@ -399,14 +399,14 @@ def sendBookmarkViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain,
-                                            postToBox, 58391)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain,
+                                    postToBox, 58391)
 
     if not inboxUrl:
         if debug:
@@ -489,14 +489,14 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain,
-                                            postToBox, 52594)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain,
+                                    postToBox, 52594)
 
     if not inboxUrl:
         if debug:

@@ -618,15 +618,14 @@ def sendShareViaServer(baseDir, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            83653)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    83653)
 
     if not inboxUrl:
         if debug:
@@ -723,15 +722,14 @@ def sendUndoShareViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            12663)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    12663)
 
     if not inboxUrl:
         if debug:
@@ -840,15 +838,14 @@ def sendWantedViaServer(baseDir, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            23653)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    23653)
 
     if not inboxUrl:
         if debug:
@@ -945,15 +942,14 @@ def sendUndoWantedViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            12693)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    12693)
 
     if not inboxUrl:
         if debug:

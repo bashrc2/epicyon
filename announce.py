@@ -264,13 +264,13 @@ def sendAnnounceViaServer(baseDir: str, session,
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
      sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 projectVersion, httpPrefix,
-                                 fromNickname, fromDomain,
-                                 postToBox, 73528)
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    fromNickname, fromDomain,
+                                    postToBox, 73528)
 
     if not inboxUrl:
         if debug:
@@ -349,13 +349,13 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
      sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem,
-                                 originDomain,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 projectVersion, httpPrefix,
-                                 nickname, domain,
-                                 postToBox, 73528)
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain,
+                                    postToBox, 73528)
 
     if not inboxUrl:
         if debug:

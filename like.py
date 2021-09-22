@@ -202,14 +202,14 @@ def sendLikeViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            fromNickname, fromDomain,
-                                            postToBox, 72873)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    fromNickname, fromDomain,
+                                    postToBox, 72873)
 
     if not inboxUrl:
         if debug:
@@ -290,14 +290,14 @@ def sendUndoLikeViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(signingPrivateKeyPem,
-                                            originDomain,
-                                            baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            72625)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    72625)
 
     if not inboxUrl:
         if debug:

@@ -75,10 +75,10 @@ def sendDeleteViaServer(baseDir: str, session,
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                 baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 53036)
+     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
+                                    baseDir, session, wfRequest, personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 53036)
 
     if not inboxUrl:
         if debug:

@@ -575,12 +575,11 @@ def pgpPublicKeyUpload(baseDir: str, session,
 
     # get the actor inbox for the To handle
     originDomain = domain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                 baseDir, session, wfRequest, personCache,
-                                 __version__, httpPrefix, nickname,
-                                 domain, postToBox, 35725)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
+                                    baseDir, session, wfRequest, personCache,
+                                    __version__, httpPrefix, nickname,
+                                    domain, postToBox, 35725)
 
     if not inboxUrl:
         if debug:

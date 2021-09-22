@@ -2190,15 +2190,14 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                         signingPrivateKeyPem)
 
     originDomain = domain
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl2, displayName) = getPersonBox(signingPrivateKeyPem,
-                                             originDomain,
-                                             baseDir, session,
-                                             followUrlWf,
-                                             personCache, projectVersion,
-                                             httpPrefix, followUrlNickname,
-                                             domain, 'outbox', 43036)
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
+     displayName, isGroup) = getPersonBox(signingPrivateKeyPem,
+                                          originDomain,
+                                          baseDir, session,
+                                          followUrlWf,
+                                          personCache, projectVersion,
+                                          httpPrefix, followUrlNickname,
+                                          domain, 'outbox', 43036)
     if avatarUrl2:
         avatarUrl = avatarUrl2
     if displayName:
@@ -2221,11 +2220,14 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                     ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
                     translate['Block'] + '</button></a>\n'
             elif b == 'unfollow':
+                unfollowStr = 'Unfollow'
+                if isGroup:
+                    unfollowStr = 'Leave'
                 buttonsStr += \
                     '<a href="/users/' + actorNickname + \
                     '?options=' + followUrl + \
                     ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
-                    translate['Unfollow'] + '</button></a>\n'
+                    translate[unfollowStr] + '</button></a>\n'
 
     resultStr = '<div class="container">\n'
     resultStr += \
