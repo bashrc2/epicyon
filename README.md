@@ -12,7 +12,7 @@ Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant s
 
 [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md)
 
-Matrix room: **#epicyon:matrix.freedombone.net**
+Matrix room: **#epicyon:matrix.libreserver.org**
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0). Blob Cat Emoji and Meowmoji were made by Nitro Blob Hub, licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). [Digital Pets emoji](https://opengameart.org/content/16x16-emotes-for-rpgs-and-digital-pets) were made by Tomcat94 and licensed under CC0.
 
