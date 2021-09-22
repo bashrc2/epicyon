@@ -164,8 +164,6 @@ server {
     location / {
         proxy_http_version 1.1;
         client_max_body_size 31M;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
@@ -181,10 +179,6 @@ server {
         proxy_redirect off;
         proxy_request_buffering off;
         proxy_buffering off;
-        location ~ ^/accounts/(avatars|headers)/(.*).(png|jpg|gif|webp|svg) {
-          expires 1d;
-          proxy_pass http://localhost:7156;
-        }
         proxy_pass http://localhost:7156;
     }
 }
