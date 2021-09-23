@@ -715,6 +715,10 @@ class PubServer(BaseHTTPRequestHandler):
                           callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
+        self.send_header('Cache-Control', 'public')
+        self.send_header('Origin', self.server.domainFull)
+        self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         if length > -1:
             self.send_header('Content-Length', str(length))
         if callingDomain:
@@ -729,10 +733,6 @@ class PubServer(BaseHTTPRequestHandler):
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
             self.send_header('Cookie', cookieStr)
-        self.send_header('Origin', self.server.domainFull)
-        self.send_header('InstanceID', self.server.instanceId)
-        self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
-        self.send_header('Cache-Control', 'public')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
                      callingDomain: str, permissive: bool) -> None:
