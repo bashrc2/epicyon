@@ -754,7 +754,6 @@ class PubServer(BaseHTTPRequestHandler):
         datalen = len(data)
         self._set_headers_base(fileFormat, datalen, cookie, callingDomain,
                                permissive)
-        # self.send_header('Cache-Control', 'public, max-age=86400')
         etag = None
         if os.path.isfile(mediaFilename + '.etag'):
             try:
