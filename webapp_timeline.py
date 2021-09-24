@@ -398,7 +398,7 @@ def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
 def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
-    pagesWidth = 4
+    pagesWidth = 3
     minPageNumber = pageNumber - pagesWidth
     if minPageNumber < 1:
         minPageNumber = 1
@@ -406,7 +406,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
     numStr = ''
     for page in range(minPageNumber, maxPageNumber + 1):
         if numStr:
-            numStr += ' • '
+            numStr += '   •   '
         pageStr = str(page)
         if page == pageNumber:
             pageStr = '<ul>' + str(page) + '</ul>'
