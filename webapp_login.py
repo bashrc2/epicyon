@@ -57,7 +57,7 @@ def htmlLogin(cssCache: {}, translate: {},
               baseDir: str,
               httpPrefix: str, domain: str,
               systemLanguage: str,
-              autocomplete: bool = True) -> str:
+              autocomplete: bool) -> str:
     """Shows the login screen
     """
     accounts = noOfAccounts(baseDir)
@@ -146,8 +146,8 @@ def htmlLogin(cssCache: {}, translate: {},
     autocompleteNicknameStr = 'autocomplete="username"'
     autocompletePasswordStr = 'autocomplete="current-password"'
     if not autocomplete:
-        autocompleteNicknameStr = 'autocomplete="off" value=""'
-        autocompletePasswordStr = autocompleteNicknameStr
+        autocompleteNicknameStr = 'autocomplete="username" value=""'
+        autocompletePasswordStr = 'autocomplete="off" value=""'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')

@@ -13296,7 +13296,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.baseDir,
                             self.server.httpPrefix,
                             self.server.domainFull,
-                            self.server.systemLanguage).encode('utf-8')
+                            self.server.systemLanguage,
+                            True).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
             self._write(msg)
