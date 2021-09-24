@@ -404,7 +404,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
         minPageNumber = 1
     maxPageNumber = minPageNumber + 1 + (pagesWidth * 2)
     numStr = ''
-    for page in range(minPageNumber, maxPageNumber + 1):
+    for page in range(minPageNumber, maxPageNumber):
         if numStr:
             numStr += '   •   '
         pageStr = str(page)
