@@ -395,6 +395,29 @@ def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
     return tlStr
 
 
+def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
+    """Shows selactable page numbers at the bottom of the screen
+    """
+    pagesWidth = 4
+    pagesStr = '<center>'
+    minPageNumber = pageNumber - pagesWidth
+    if minPageNumber < 1:
+        minPageNumber = 1
+    maxPageNumber = minPageNumber + 1 + (pagesWidth * 2)
+    numStr = ''
+    for page in range(minPageNumber, maxPageNumber + 1):
+        if numStr:
+            numStr += ' • '
+        pageStr = str(page)
+        if page == pageNumber:
+            pageStr = '<b>' + str(page) + '</b>'
+        numStr += \
+            '<a href="' + usersPath + '/' + boxName + '?page=' + \
+            str(page) + '" class="pageslist">' + pageStr + '</a>'
+    pagesStr += '</center>'
+    return pagesStr
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -807,6 +830,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += textModeSeparator
+        tlStr += _pageNumberButtons(usersPath, boxName, pageNumber)
         tlStr += \
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
@@ -927,6 +951,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
+        tlStr += _pageNumberButtons(usersPath, boxName, pageNumber)
         tlStr += textModeSeparator
     elif itemCtr == 0:
         tlStr += _getHelpForTimeline(baseDir, boxName)

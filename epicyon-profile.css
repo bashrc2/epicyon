@@ -1687,6 +1687,8 @@ div.container {
     .columnIcons img {
         float: right;
     }
+    .pageslist {
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -2361,5 +2363,7 @@ div.container {
         width: 10%;
         float: right;
         margin-right: 1vw;
+    }
+    .pageslist {
     }
 }
