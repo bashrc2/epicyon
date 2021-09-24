@@ -828,7 +828,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += textModeSeparator
-        tlStr += _pageNumberButtons(usersPath, boxName, pageNumber)
+        tlStr += '<br>' + _pageNumberButtons(usersPath, boxName, pageNumber)
         tlStr += \
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
@@ -1063,7 +1063,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     timelineStr = ''
 
     if pageNumber > 1:
-        timelineStr += \
+        timelineStr += '<br>' + \
             _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
         timelineStr += \
             '  <center>\n' + \
