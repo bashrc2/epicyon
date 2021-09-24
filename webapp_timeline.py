@@ -413,8 +413,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
         numStr += \
             '<a href="' + usersPath + '/' + boxName + '?page=' + \
             str(page) + '" class="pageslist">' + pageStr + '</a>'
-    pagesStr += '<center>' + numStr + '</center>'
-    return pagesStr
+    return '<center>' + numStr + '</center>'
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
