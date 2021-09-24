@@ -201,6 +201,13 @@ figure {
     height: auto;
 }
 
+mark {
+    border: 1px solid var(--main-fg-color);
+    border-radius: 10%;
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+}
+
 .accesskeys {
     border: 0;
     width: 100%;
@@ -1718,7 +1725,7 @@ div.container {
         color: var(--title-color);
     }
     blockquote {
-	font-size: var(--quote-font-size-mobile);
+        font-size: var(--quote-font-size-mobile);
     }
     .accountsTable {
         width: 100%;
