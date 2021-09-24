@@ -406,7 +406,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
     numStr = ''
     for page in range(minPageNumber, maxPageNumber):
         if numStr:
-            numStr += '⸻'
+            numStr += ' ⸻ '
         pageStr = str(page)
         if page == pageNumber:
             pageStr = '<u>' + str(page) + '</u>'
