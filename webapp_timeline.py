@@ -409,7 +409,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
             numStr += '   •   '
         pageStr = str(page)
         if page == pageNumber:
-            pageStr = '<ul>' + str(page) + '</ul>'
+            pageStr = '<u>' + str(page) + '</u>'
         numStr += \
             '<a href="' + usersPath + '/' + boxName + '?page=' + \
             str(page) + '" class="pageslist">' + pageStr + '</a>'
