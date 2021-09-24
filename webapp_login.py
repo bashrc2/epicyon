@@ -143,9 +143,11 @@ def htmlLogin(cssCache: {}, translate: {},
             '<button type="submit" name="submit">' + \
             translate['Login'] + '</button>'
 
-    autocompleteStr = ''
+    autocompleteNicknameStr = 'autocomplete="username"'
+    autocompletePasswordStr = 'autocomplete="current-password"'
     if not autocomplete:
-        autocompleteStr = 'autocomplete="off" value=""'
+        autocompleteNicknameStr = 'autocomplete="off" value=""'
+        autocompletePasswordStr = autocompleteNicknameStr
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -168,14 +170,14 @@ def htmlLogin(cssCache: {}, translate: {},
         '  <div class="container">\n' + \
         '    <label for="nickname"><b>' + \
         translate['Nickname'] + '</b></label>\n' + \
-        '    <input type="text" ' + autocompleteStr + ' placeholder="' + \
-        translate['Enter Nickname'] + '" ' + \
+        '    <input type="text" ' + autocompleteNicknameStr + \
+        ' placeholder="' + translate['Enter Nickname'] + '" ' + \
         'pattern="' + nicknamePattern + '" name="username" ' + \
         'required autofocus>\n' + \
         '\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
-        '    <input type="password" ' + autocompleteStr + \
+        '    <input type="password" ' + autocompletePasswordStr + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
         'pattern="{8,256}" name="password" required>\n' + \
         loginButtonStr + registerButtonStr + '\n' + \
