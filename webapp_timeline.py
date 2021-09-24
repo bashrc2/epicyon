@@ -399,7 +399,6 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
     pagesWidth = 4
-    pagesStr = '<center>'
     minPageNumber = pageNumber - pagesWidth
     if minPageNumber < 1:
         minPageNumber = 1
@@ -414,7 +413,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
         numStr += \
             '<a href="' + usersPath + '/' + boxName + '?page=' + \
             str(page) + '" class="pageslist">' + pageStr + '</a>'
-    pagesStr += '</center>'
+    pagesStr += '<center>' + numStr + '</center>'
     return pagesStr
 
 
@@ -1066,6 +1065,8 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
 
     if pageNumber > 1:
         timelineStr += \
+            _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
+        timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
             str(pageNumber - 1) + \
@@ -1113,6 +1114,8 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             'icons/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
+        timelineStr += \
+            _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
 
     return timelineStr
 
