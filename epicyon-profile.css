@@ -206,6 +206,8 @@ mark {
     border-radius: 10%;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
+    font-size: 130%;
+    font-weight: bold;
 }
 
 .accesskeys {
