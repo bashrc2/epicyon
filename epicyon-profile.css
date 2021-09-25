@@ -202,8 +202,6 @@ figure {
 }
 
 mark {
-    border: 1px solid var(--main-fg-color);
-    border-radius: 10%;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
     font-size: 130%;
