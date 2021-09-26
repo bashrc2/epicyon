@@ -722,13 +722,12 @@ class PubServer(BaseHTTPRequestHandler):
                 'public, max-age=84600, must-revalidate, ' + \
                 'stale-while-revalidate=3600'
             self.send_header('Cache-Control', cache_control)
-            self.send_header('Accept-Ranges', 'bytes')
         else:
             self.send_header('Cache-Control', 'public')
         self.send_header('Cache-Control', cache_control)
         self.send_header('Origin', self.server.domainFull)
-        self.send_header('APInstanceID', self.server.instanceId)
-        self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        # self.send_header('APInstanceID', self.server.instanceId)
+        # self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         if length > -1:
             self.send_header('Content-Length', str(length))
         if callingDomain:
