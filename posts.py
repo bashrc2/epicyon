@@ -1090,6 +1090,7 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
+                    'next': idStr + '?only_other_accounts=true&page=true',
                     'partOf': idStr,
                     'items': []
                 }
@@ -1153,6 +1154,7 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
             'type': 'Collection',
             'first': {
                 'type': 'CollectionPage',
+                'next': idStr + '?only_other_accounts=true&page=true',
                 'partOf': idStr,
                 'items': []
             }
