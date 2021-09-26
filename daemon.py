@@ -721,8 +721,10 @@ class PubServer(BaseHTTPRequestHandler):
             cache_control = \
                 'public, max-age=84600, must-revalidate, ' + \
                 'stale-while-revalidate=3600'
+            self.send_header('Cache-Control', cache_control)
+            self.send_header('Accept-Ranges', 'bytes')
         else:
-            cache_control = 'public'
+            self.send_header('Cache-Control', 'public')
         self.send_header('Cache-Control', cache_control)
         self.send_header('Origin', self.server.domainFull)
         self.send_header('APInstanceID', self.server.instanceId)
