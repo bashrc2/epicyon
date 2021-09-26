@@ -724,7 +724,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cache-Control', cache_control)
         else:
             self.send_header('Cache-Control', 'public')
-        self.send_header('Cache-Control', cache_control)
         self.send_header('Origin', self.server.domainFull)
         # self.send_header('APInstanceID', self.server.instanceId)
         # self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
