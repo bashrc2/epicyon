@@ -329,7 +329,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
                  boxName: str = 'inbox',
-                 sourceId=0) -> (str, str, str, str, str, str, str, str, str):
+                 sourceId=0) -> (str, str, str, str, str, str, str, bool):
     debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
