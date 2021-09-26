@@ -707,7 +707,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
         self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
-        self.send_header('X-APInstanceID', self.server.instanceId)
+        self.send_header('X-AP-Instance-ID', self.server.instanceId)
         self.send_header('Content-Length', '0')
         self.end_headers()
 
@@ -725,7 +725,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             self.send_header('Cache-Control', 'public')
         self.send_header('Origin', self.server.domainFull)
-        self.send_header('X-APInstanceID', self.server.instanceId)
+        self.send_header('X-AP-Instance-ID', self.server.instanceId)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         if length > -1:
             self.send_header('Content-Length', str(length))
@@ -835,7 +835,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Set-Cookie', cookieStr)
         self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
-        self.send_header('X-APInstanceID', self.server.instanceId)
+        self.send_header('X-AP-Instance-ID', self.server.instanceId)
         self.send_header('Content-Length', '0')
         self.end_headers()
 
