@@ -715,8 +715,12 @@ class PubServer(BaseHTTPRequestHandler):
                           callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
-        cache_control = \
-            'max-age=84600, must-revalidate, stale-while-revalidate=3600'
+        if 'image/' in fileFormat or 'video/' in fileFormat:
+            cache_control = \
+                'public, max-age=84600, must-revalidate, ' + \
+                'stale-while-revalidate=3600'
+        else:
+            cache_control = 'public'
         self.send_header('Cache-Control', cache_control)
         self.send_header('Origin', self.server.domainFull)
         self.send_header('APInstanceID', self.server.instanceId)
@@ -727,12 +731,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Host', callingDomain)
         if permissive:
             self.send_header('Access-Control-Allow-Origin', '*')
-            acStr = \
-                'Server, x-goog-meta-frames, Content-Length, ' + \
-                'Content-Type, Range, X-Requested-With, ' + \
-                'If-Modified-Since, If-None-Match'
-            self.send_header('Access-Control-Allow-Headers', acStr)
-            self.send_header('Access-Control-Expose-Headers', acStr)
+            if 'image/' in fileFormat or 'video/' in fileFormat:
+                acStr = \
+                    'Server, x-goog-meta-frames, Content-Length, ' + \
+                    'Content-Type, Range, X-Requested-With, ' + \
+                    'If-Modified-Since, If-None-Match'
+                self.send_header('Access-Control-Allow-Headers', acStr)
+                self.send_header('Access-Control-Expose-Headers', acStr)
             return
         if cookie:
             cookieStr = cookie
