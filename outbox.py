@@ -329,7 +329,7 @@ def postMessageToOutbox(session, translate: {},
                     # generate a path for the uploaded image
                     mPath = getMediaPath()
                     mediaPath = mPath + '/' + \
-                        createPassword(16) + '.' + fileExtension
+                        createPassword(16).lower() + '.' + fileExtension
                     createMediaDirs(baseDir, mPath)
                     mediaFilename = baseDir + '/' + mediaPath
                     # move the uploaded image to its new path
