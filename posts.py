@@ -337,7 +337,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
     }
     if not wfRequest:
         print('No webfinger given')
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
 
     # get the actor / personUrl
     if not wfRequest.get('errors'):
@@ -355,7 +355,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
             # the final fallback is a mastodon style url
             personUrl = localActorUrl(httpPrefix, nickname, domain)
     if not personUrl:
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
 
     # get the actor json from the url
     personJson = \
@@ -366,7 +366,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                            personCache, signingPrivateKeyPem,
                            sourceId)
     if not personJson:
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
 
     isGroup = False
     if personJson.get('type'):
@@ -382,7 +382,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
     else:
         boxJson = personJson[boxName]
     if not boxJson:
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
 
     personId = None
     if personJson.get('id'):
