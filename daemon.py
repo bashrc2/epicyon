@@ -715,7 +715,9 @@ class PubServer(BaseHTTPRequestHandler):
                           callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
-        self.send_header('Cache-Control', 'public')
+        cache_control = \
+            'max-age=84600, must-revalidate, stale-while-revalidate=3600'
+        self.send_header('Cache-Control', cache_control)
         self.send_header('Origin', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
