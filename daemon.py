@@ -715,7 +715,9 @@ class PubServer(BaseHTTPRequestHandler):
                           callingDomain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
-        if 'image/' in fileFormat or 'video/' in fileFormat:
+        if 'image/' in fileFormat or \
+           'audio/' in fileFormat or \
+           'video/' in fileFormat:
             cache_control = \
                 'public, max-age=84600, must-revalidate, ' + \
                 'stale-while-revalidate=3600'
@@ -731,7 +733,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Host', callingDomain)
         if permissive:
             self.send_header('Access-Control-Allow-Origin', '*')
-            if 'image/' in fileFormat or 'video/' in fileFormat:
+            if 'image/' in fileFormat or \
+               'audio/' in fileFormat or \
+               'video/' in fileFormat:
                 acStr = \
                     'Server, x-goog-meta-frames, Content-Length, ' + \
                     'Content-Type, Range, X-Requested-With, ' + \
@@ -781,8 +785,8 @@ class PubServer(BaseHTTPRequestHandler):
                     etagFile.write(etag)
             except BaseException:
                 pass
-        if etag:
-            self.send_header('ETag', '"' + etag + '"')
+        # if etag:
+        #     self.send_header('ETag', '"' + etag + '"')
         if lastModified:
             self.send_header('last-modified', lastModified)
         self.end_headers()
@@ -6500,7 +6504,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = baseDir + '/media/' + mediaStr
             if os.path.isfile(mediaFilename):
                 # TEST
-                #if self._etag_exists(mediaFilename):
+                # if self._etag_exists(mediaFilename):
                 #    # The file has not changed
                 #    self._304()
                 #    return
