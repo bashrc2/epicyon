@@ -461,11 +461,14 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
              debug: bool) -> None:
     """ Mutes the given post
     """
+    print('mutePost: postId ' + postId)
     postFilename = locatePost(baseDir, nickname, domain, postId)
     if not postFilename:
+        print('mutePost: file not found ' + postId)
         return
     postJsonObject = loadJson(postFilename)
     if not postJsonObject:
+        print('mutePost: object not loaded ' + postId)
         return
     print('mutePost: ' + str(postJsonObject))
 
