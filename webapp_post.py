@@ -1226,7 +1226,6 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     messageId = ''
     if postJsonObject.get('id'):
         messageId = removeIdEnding(postJsonObject['id'])
-    muteMessageId = messageId
 
     _logPostTiming(enableTimingLog, postStartTime, '2')
 
@@ -1366,8 +1365,6 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce
-        if postJsonObject.get('id'):
-            muteMessageId = removeIdEnding(postJsonObject['id'])
 
         # is the announced post in the html cache?
         postHtml = \
@@ -1555,7 +1552,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     muteStr = \
         _getMuteIconHtml(isMuted,
                          postActor,
-                         muteMessageId,
+                         messageId,
                          nickname, domainFull,
                          allowDeletion,
                          pageNumberParam,
