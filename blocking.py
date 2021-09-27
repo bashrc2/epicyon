@@ -532,13 +532,11 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['json'].get(postId):
                 postJsonObject['muted'] = True
                 recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
                 print('MUTE: ' + postId +
                       ' marked as muted in recent posts memory cache')
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
+            if recentPostsCache.get('html'):
+                if recentPostsCache['html'].get(postId):
+                    del recentPostsCache['html'][postId]
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
@@ -610,13 +608,11 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['json'].get(postId):
                 postJsonObject['muted'] = False
                 recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
                 print('UNMUTE: ' + postId +
                       ' marked as unmuted in recent posts cache')
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
+            if recentPostsCache.get('html'):
+                if recentPostsCache['html'].get(postId):
+                    del recentPostsCache['html'][postId]
 
 
 def outboxMute(baseDir: str, httpPrefix: str,
