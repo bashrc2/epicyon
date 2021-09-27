@@ -1196,12 +1196,12 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
                          maxLikeCount: int,
-                         showRepeats: bool = True,
-                         showIcons: bool = False,
-                         manuallyApprovesFollowers: bool = False,
-                         showPublicOnly: bool = False,
-                         storeToCache: bool = True,
-                         useCacheOnly: bool = False) -> str:
+                         showRepeats: bool,
+                         showIcons: bool,
+                         manuallyApprovesFollowers: bool,
+                         showPublicOnly: bool,
+                         storeToCache: bool,
+                         useCacheOnly: bool) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:
@@ -1870,7 +1870,7 @@ def htmlIndividualPost(cssCache: {},
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
                              systemLanguage, maxLikeCount,
-                             False, authorized, False, False, False)
+                             False, authorized, False, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
@@ -1902,7 +1902,7 @@ def htmlIndividualPost(cssCache: {},
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, authorized,
-                                         False, False, False) + postStr
+                                         False, False, False, False) + postStr
 
     # show the following posts
     postFilename = locatePost(baseDir, nickname, domain, messageId)
@@ -1936,7 +1936,7 @@ def htmlIndividualPost(cssCache: {},
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, authorized,
-                                         False, False, False)
+                                         False, False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
@@ -1983,7 +1983,7 @@ def htmlPostReplies(cssCache: {},
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage,
                                      maxLikeCount,
-                                     False, False, False, False, False)
+                                     False, False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

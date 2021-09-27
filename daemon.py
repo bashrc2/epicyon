@@ -6968,6 +6968,7 @@ class PubServer(BaseHTTPRequestHandler):
             manuallyApproveFollowers = \
                 followerApprovalActive(baseDir,
                                        self.postToNickname, domain)
+            showRepeats = not isDM(announceJson)
             individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                  self.server.recentPostsCache,
                                  self.server.maxRecentPosts,
@@ -6990,7 +6991,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.themeName,
                                  self.server.systemLanguage,
                                  self.server.maxLikeCount,
-                                 not isDM(announceJson),
+                                 showRepeats,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False)
@@ -7422,6 +7423,7 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
+                showRepeats = not isDM(likedPostJson)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7445,7 +7447,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.maxLikeCount,
-                                     not isDM(likedPostJson),
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
@@ -7565,6 +7567,7 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
+                showRepeats = not isDM(likedPostJson)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7587,7 +7590,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.maxLikeCount,
-                                     not isDM(likedPostJson),
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
@@ -7697,6 +7700,7 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
+                showRepeats = not isDM(bookmarkPostJson)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7719,7 +7723,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.maxLikeCount,
-                                     not isDM(bookmarkPostJson),
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
@@ -7830,6 +7834,7 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
+                showRepeats = not isDM(bookmarkPostJson)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7852,7 +7857,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.maxLikeCount,
-                                     not isDM(bookmarkPostJson),
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
@@ -8031,6 +8036,7 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            nickname, domain)
+                showRepeats = not isDM(mutePostJson)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -8053,7 +8059,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.maxLikeCount,
-                                     not isDM(mutePostJson),
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
@@ -8129,8 +8135,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Unmuted post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(baseDir,
-                                           nickname, domain)
+                    followerApprovalActive(baseDir, nickname, domain)
+                showRepeats = not isDM(mutePostJson)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -8153,7 +8159,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.maxLikeCount,
-                                     not isDM(mutePostJson),
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)

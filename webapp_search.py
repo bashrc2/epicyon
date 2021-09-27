@@ -663,7 +663,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  themeName, systemLanguage, maxLikeCount,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
-                                 False, False, False)
+                                 False, False, False, False)
         if postStr:
             historySearchForm += separatorStr + postStr
         index += 1
@@ -844,7 +844,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
-                                 storeToCache)
+                                 storeToCache, False)
         if postStr:
             hashtagSearchForm += separatorStr + postStr
         index += 1

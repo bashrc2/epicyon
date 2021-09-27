@@ -79,7 +79,7 @@ def htmlConfirmDelete(cssCache: {},
                              showPublishedDateOnly,
                              peertubeInstances, allowLocalNetworkAccess,
                              themeName, systemLanguage, maxLikeCount,
-                             False, False, False, False, False)
+                             False, False, False, False, False, False)
     deletePostStr += '<center>'
     deletePostStr += \
         '  <p class="followText">' + \

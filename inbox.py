@@ -204,7 +204,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
                          themeName, systemLanguage, maxLikeCount,
-                         notDM, True, True, False, True)
+                         notDM, True, True, False, True, False)
 
 
 def validInbox(baseDir: str, nickname: str, domain: str) -> bool:

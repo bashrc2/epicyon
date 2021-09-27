@@ -80,7 +80,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
                                          maxLikeCount,
-                                         False, False, False, True, False)
+                                         False, False, False,
+                                         True, False, False)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1

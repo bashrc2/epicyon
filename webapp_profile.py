@@ -306,7 +306,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage, maxLikeCount,
-                                     False, False, False, False, False)
+                                     False, False, False, False, False, False)
             i += 1
             if i >= 8:
                 break
@@ -1007,7 +1007,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
                                          maxLikeCount,
-                                         False, False, False, True, False)
+                                         False, False, False,
+                                         True, False, False)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
