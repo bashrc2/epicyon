@@ -467,6 +467,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
     postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return
+    print('mutePost: ' + str(postJsonObject))
 
     if hasObjectDict(postJsonObject):
         domainFull = getFullDomain(domain, port)
@@ -538,10 +539,6 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
                 print('MUTE: ' + postId + ' removed cached html')
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
-                print('MUTE: ' + postId + ' removed cached json')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
@@ -619,10 +616,6 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
                 print('UNMUTE: ' + postId + ' removed cached html')
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
-                print('UNMUTE: ' + postId + ' removed cached json')
 
 
 def outboxMute(baseDir: str, httpPrefix: str,
