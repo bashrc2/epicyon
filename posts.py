@@ -4914,24 +4914,30 @@ def postIsMuted(baseDir: str, nickname: str, domain: str,
                 postJsonObject: {}, messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
-    isMuted = postJsonObject.get('muted')
+    isMuted = None
+    if 'muted' in postJsonObject:
+        isMuted = postJsonObject['muted']
     if isMuted is True or isMuted is False:
         return isMuted
+
+    isMuted = False
     postDir = acctDir(baseDir, nickname, domain)
     muteFilename = \
         postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
     if os.path.isfile(muteFilename):
-        return True
-    muteFilename = \
-        postDir + '/outbox/' + messageId.replace('/', '#') + '.json.muted'
-    if os.path.isfile(muteFilename):
-        return True
-    muteFilename = \
-        baseDir + '/accounts/cache/announce/' + nickname + \
-        '/' + messageId.replace('/', '#') + '.json.muted'
-    if os.path.isfile(muteFilename):
-        return True
-    return False
+        isMuted = True
+    else:
+        muteFilename = \
+            postDir + '/outbox/' + messageId.replace('/', '#') + '.json.muted'
+        if os.path.isfile(muteFilename):
+            isMuted = True
+        else:
+            muteFilename = \
+                baseDir + '/accounts/cache/announce/' + nickname + \
+                '/' + messageId.replace('/', '#') + '.json.muted'
+            if os.path.isfile(muteFilename):
+                isMuted = True
+    return isMuted
 
 
 def c2sBoxJson(baseDir: str, session,
