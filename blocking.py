@@ -537,6 +537,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache.get('html'):
                 if recentPostsCache['html'].get(postId):
                     del recentPostsCache['html'][postId]
+                    print('MUTE: ' + postId + ' removed cached html')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
@@ -613,6 +614,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache.get('html'):
                 if recentPostsCache['html'].get(postId):
                     del recentPostsCache['html'][postId]
+                    print('UNMUTE: ' + postId + ' removed cached html')
 
 
 def outboxMute(baseDir: str, httpPrefix: str,
