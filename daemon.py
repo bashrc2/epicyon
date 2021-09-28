@@ -8131,16 +8131,18 @@ class PubServer(BaseHTTPRequestHandler):
         muteFilename = \
             locatePost(baseDir, nickname, domain, muteUrl)
         if muteFilename:
-            print('Regenerating html post for changed unmute status')
+            print('unmutePost: ' +
+                  'Regenerating html post for changed unmute status')
             mutePostJson = loadJson(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, nickname,
                                           domain, mutePostJson)
-                print('Unmuted post json: ' + str(mutePostJson))
-                print('Unmuted post nickname: ' +
+                print('unmutePost: Unmuted post json: ' + str(mutePostJson))
+                print('unmutePost: Unmuted post nickname: ' +
                       nickname + ' ' + domain)
-                print('Unmuted post cache: ' + str(cachedPostFilename))
+                print('unmutePost: Unmuted post cache: ' +
+                      str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir, nickname, domain)
