@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import removeIdEnding
 from utils import replaceUsersWithAt
 from utils import hasGroupType
 from utils import getBaseContentFromPost
@@ -1989,7 +1990,8 @@ def createDirectMessagePost(baseDir: str,
     messageJson['cc'] = []
     messageJson['object']['cc'] = []
     if schedulePost:
-        savePostToBox(baseDir, httpPrefix, messageJson['object']['id'],
+        postId = removeIdEnding(messageJson['object']['id'])
+        savePostToBox(baseDir, httpPrefix, postId,
                       nickname, domain, messageJson, 'scheduled')
     return messageJson
 
@@ -4362,7 +4364,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
 
     postId = None
     if postJsonObject.get('id'):
-        postId = postJsonObject['id']
+        postId = removeIdEnding(postJsonObject['id'])
     announceFilename = \
         announceCacheDir + '/' + \
         postJsonObject['object'].replace('/', '#') + '.json'

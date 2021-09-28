@@ -297,7 +297,7 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
         return replyStr
 
     # reply is permitted - create reply icon
-    replyToLink = postJsonObject['object']['id']
+    replyToLink = removeIdEnding(postJsonObject['object']['id'])
 
     # see Mike MacGirvin's replyTo suggestion
     if postJsonObject['object'].get('replyTo'):
@@ -380,7 +380,7 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
         (isEditor(baseDir, nickname) and
          actor.endswith('/' + domainFull + '/users/news'))):
 
-        postId = postJsonObject['object']['id']
+        postId = removeIdEnding(postJsonObject['object']['id'])
 
         if '/statuses/' not in postId:
             return editStr
@@ -478,8 +478,9 @@ def _getAnnounceIconHtml(isAnnounced: bool,
             unannounceLinkStr = '?unannounce=' + \
                 removeIdEnding(announceJsonObject['id'])
 
+    announcePostId = removeIdEnding(postJsonObject['object']['id'])
     announceLinkStr = '?' + \
-        announceLink + '=' + postJsonObject['object']['id'] + pageNumberParam
+        announceLink + '=' + announcePostId + pageNumberParam
     announceStr = \
         '        <a class="imageAnchor" href="/users/' + \
         nickname + announceLinkStr + unannounceLinkStr + \
@@ -544,9 +545,10 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
             likeStr += '<label class="likesCount">'
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
             likeStr += '</label>\n'
+        likePostId = removeIdEnding(postJsonObject['object']['id'])
         likeStr += \
             '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-            likeLink + '=' + postJsonObject['object']['id'] + \
+            likeLink + '=' + likePostId + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
@@ -589,9 +591,10 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
         if translate.get(bookmarkTitle):
             bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
+    bookmarkPostId = removeIdEnding(postJsonObject['object']['id'])
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-        bookmarkLink + '=' + postJsonObject['object']['id'] + \
+        bookmarkLink + '=' + bookmarkPostId + \
         pageNumberParam + \
         '?actor=' + postJsonObject['actor'] + \
         '?bm=' + timelinePostBookmark + \
@@ -777,13 +780,13 @@ def _announceUnattributedHtml(translate: {},
     announcesStr = 'announces'
     if translate.get(announcesStr):
         announcesStr = translate[announcesStr]
+    postId = removeIdEnding(postJsonObject['object']['id'])
     return '    <img loading="lazy" title="' + \
         announcesStr + '" alt="' + \
         announcesStr + '" src="/icons' + \
         '/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '      <a href="' + \
-        postJsonObject['object']['id'] + \
+        '      <a href="' + postId + \
         '" class="announceOrReply">@unattributed</a>\n'
 
 
@@ -795,13 +798,13 @@ def _announceWithDisplayNameHtml(translate: {},
     announcesStr = 'announces'
     if translate.get(announcesStr):
         announcesStr = translate[announcesStr]
+    postId = removeIdEnding(postJsonObject['object']['id'])
     return '          <img loading="lazy" title="' + \
         announcesStr + '" alt="' + \
         announcesStr + '" src="/' + \
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '        <a href="' + \
-        postJsonObject['object']['id'] + '" ' + \
+        '        <a href="' + postId + '" ' + \
         'class="announceOrReply">' + announceDisplayName + '</a>\n'
 
 
@@ -1361,7 +1364,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                              blockedCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
-            rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
+            announcedPostId = removeIdEnding(postJsonObject['id'])
+            rejectPostId(baseDir, nickname, domain, announcedPostId,
                          recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce

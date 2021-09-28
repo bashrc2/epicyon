@@ -4247,8 +4247,8 @@ class PubServer(BaseHTTPRequestHandler):
                             print('ERROR: saving newswire state, ' + str(e))
 
                     # remove any previous cached news posts
-                    newsId = \
-                        postJsonObject['object']['id'].replace('/', '#')
+                    newsId = removeIdEnding(postJsonObject['object']['id'])
+                    newsId = newsId.replace('/', '#')
                     clearFromPostCaches(baseDir, self.server.recentPostsCache,
                                         newsId)
 
@@ -12429,7 +12429,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.systemLanguage)
             messageJson = {}
             if pinnedPostJson:
-                postId = pinnedPostJson['id']
+                postId = removeIdEnding(pinnedPostJson['id'])
                 messageJson = \
                     outboxMessageCreateWrap(self.server.httpPrefix,
                                             nickname,

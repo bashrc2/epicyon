@@ -2190,7 +2190,7 @@ def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     savePostToBox(baseDir, httpPrefix, None,
                   nickname, domain, postJsonObject, 'outbox')
 
-    postId = postJsonObject['object']['id']
+    postId = removeIdEnding(postJsonObject['object']['id'])
     if debug:
         print('Group announce: ' + postId)
     announceJson = \
@@ -2478,7 +2478,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                     obj = postJsonObject['object']
                     if isinstance(obj, dict):
                         if not obj.get('inReplyTo'):
-                            _bounceDM(postJsonObject['id'],
+                            bouncedId = removeIdEnding(postJsonObject['id'])
+                            _bounceDM(bouncedId,
                                       session, httpPrefix,
                                       baseDir,
                                       nickname, domain,
@@ -3444,7 +3445,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
         # if queueJson['post'].get('id'):
-        #     queueJson['post']['id']=queueJson['id']
+        #     queueJson['post']['id'] = queueJson['id']
 
         if _receiveUndo(session,
                         baseDir, httpPrefix, port,

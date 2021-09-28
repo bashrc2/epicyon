@@ -10,6 +10,7 @@ __module_group__ = "Timeline"
 from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import removeIdEnding
 from blocking import isBlocked
 from filters import isFiltered
 
@@ -88,7 +89,7 @@ def convertVideoToNote(baseDir: str, nickname: str, domain: str,
                 content += '<p>' + postJsonObject['license']['name'] + '</p>'
     content += postJsonObject['content']
 
-    conversationId = postJsonObject['id']
+    conversationId = removeIdEnding(postJsonObject['id'])
 
     mediaType = None
     mediaUrl = None
@@ -130,27 +131,28 @@ def convertVideoToNote(baseDir: str, nickname: str, domain: str,
             content += '<a href="' + mediaMagnet + '">🧲</a>'
         content += '</p>'
 
+    newPostId = removeIdEnding(postJsonObject['id'])
     newPost = {
         '@context': postJsonObject['@context'],
-        'id': postJsonObject['id'] + '/activity',
+        'id': newPostId + '/activity',
         'type': 'Create',
         'actor': attributedTo,
         'published': postJsonObject['published'],
         'to': postJsonObject['to'],
         'cc': postJsonObject['cc'],
         'object': {
-            'id': postJsonObject['id'],
+            'id': newPostId,
             'conversation': conversationId,
             'type': 'Note',
             'summary': None,
             'inReplyTo': None,
             'published': postJsonObject['published'],
-            'url': postJsonObject['id'],
+            'url': newPostId,
             'attributedTo': attributedTo,
             'to': postJsonObject['to'],
             'cc': postJsonObject['cc'],
             'sensitive': postJsonObject['sensitive'],
-            'atomUri': postJsonObject['id'],
+            'atomUri': newPostId,
             'inReplyToAtomUri': None,
             'commentsEnabled': postJsonObject['commentsEnabled'],
             'rejectReplies': not postJsonObject['commentsEnabled'],
@@ -162,11 +164,11 @@ def convertVideoToNote(baseDir: str, nickname: str, domain: str,
             'attachment': attachment,
             'tag': [],
             'replies': {
-                'id': postJsonObject['id'] + '/replies',
+                'id': newPostId + '/replies',
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
-                    'partOf': postJsonObject['id'] + '/replies',
+                    'partOf': newPostId + '/replies',
                     'items': []
                 }
             }
