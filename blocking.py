@@ -523,6 +523,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
+                print('MUTE: cached post removed ' + cachedPostFilename)
             except BaseException:
                 pass
 
