@@ -526,6 +526,8 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                 print('MUTE: cached post removed ' + cachedPostFilename)
             except BaseException:
                 pass
+        else:
+            print('MUTE: cached post not found ' + cachedPostFilename)
 
     with open(postFilename + '.muted', 'w+') as muteFile:
         muteFile.write('\n')
