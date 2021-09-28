@@ -10,6 +10,7 @@ __module_group__ = "Timeline"
 import os
 from utils import hasObjectDict
 from utils import acctDir
+from utils import removeIdEnding
 
 
 def updateConversation(baseDir: str, nickname: str, domain: str,
@@ -27,7 +28,7 @@ def updateConversation(baseDir: str, nickname: str, domain: str,
         os.mkdir(conversationDir)
     conversationId = postJsonObject['object']['conversation']
     conversationId = conversationId.replace('/', '#')
-    postId = postJsonObject['object']['id']
+    postId = removeIdEnding(postJsonObject['object']['id'])
     conversationFilename = conversationDir + '/' + conversationId
     if not os.path.isfile(conversationFilename):
         try:
