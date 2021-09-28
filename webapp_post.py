@@ -1180,24 +1180,6 @@ def _getFooterWithIcons(showIcons: bool,
     return footerStr
 
 
-def _htmlMutedStateChanged(postJsonObject: {}, postHtml: str) -> bool:
-    """Returns true if the muted status of a post is different between the
-    json and the html
-    """
-    postJsonObj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        postJsonObj = postJsonObject['object']
-    if 'muted' not in postJsonObj:
-        return False
-    if postJsonObj['muted'] is False:
-        if '?unmute=' in postHtml:
-            return True
-    else:
-        if '?mute=' in postHtml:
-            return True
-    return False
-
-
 def individualPostAsHtml(signingPrivateKeyPem: str,
                          allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
@@ -1279,8 +1261,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                 maxRecentPosts,
                                 signingPrivateKeyPem)
     if postHtml:
-        if not _htmlMutedStateChanged(postJsonObject, postHtml):
-            return postHtml
+        return postHtml
     if useCacheOnly and postJsonObject['type'] != 'Announce':
         return ''
 
@@ -1408,8 +1389,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                     maxRecentPosts,
                                     signingPrivateKeyPem)
         if postHtml:
-            if not _htmlMutedStateChanged(postJsonObject, postHtml):
-                return postHtml
+            return postHtml
 
         announceFilename = \
             locatePost(baseDir, nickname, domain, postJsonObject['id'])
