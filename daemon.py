@@ -8040,7 +8040,7 @@ class PubServer(BaseHTTPRequestHandler):
                 showPublicOnly = False
                 storeToCache = True
                 useCacheOnly = False
-                allowDownloads = True
+                allowDownloads = False
                 showAvatarOptions = True
                 avatarUrl = None
                 individualPostAsHtml(self.server.signingPrivateKeyPem,
@@ -8150,7 +8150,7 @@ class PubServer(BaseHTTPRequestHandler):
                 showPublicOnly = False
                 storeToCache = True
                 useCacheOnly = False
-                allowDownloads = True
+                allowDownloads = False
                 showAvatarOptions = True
                 avatarUrl = None
                 individualPostAsHtml(self.server.signingPrivateKeyPem,

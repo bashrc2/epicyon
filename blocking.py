@@ -473,8 +473,14 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
     print('mutePost: ' + str(postJsonObject))
 
     postJsonObj = postJsonObject
+    alsoUpdatePostId = None
     if hasObjectDict(postJsonObject):
         postJsonObj = postJsonObject['object']
+    else:
+        if postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], str):
+                alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+
     domainFull = getFullDomain(domain, port)
     actor = localActorUrl(httpPrefix, nickname, domainFull)
 
@@ -548,6 +554,10 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
                 print('MUTE: ' + postId + ' removed cached html')
+    if alsoUpdatePostId and recentPostsCache.get('html'):
+        if recentPostsCache['html'].get(alsoUpdatePostId):
+            del recentPostsCache['html'][alsoUpdatePostId]
+            print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
@@ -571,8 +581,14 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         print('UNMUTE: ' + muteFilename + ' file removed')
 
     postJsonObj = postJsonObject
+    alsoUpdatePostId = None
     if hasObjectDict(postJsonObject):
         postJsonObj = postJsonObject['object']
+    else:
+        if postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], str):
+                alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+
     if postJsonObj.get('conversation'):
         unmuteConversation(baseDir, nickname, domain,
                            postJsonObj['conversation'])
@@ -626,6 +642,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
                 print('UNMUTE: ' + postId + ' removed cached html')
+    if alsoUpdatePostId and recentPostsCache.get('html'):
+        if recentPostsCache['html'].get(alsoUpdatePostId):
+            del recentPostsCache['html'][alsoUpdatePostId]
+            print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
 
 
 def outboxMute(baseDir: str, httpPrefix: str,
