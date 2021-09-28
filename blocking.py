@@ -512,8 +512,8 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         igIt = len(itemsList)
         itemsList.append(newIgnore)
         postJsonObj['ignores']['totalItems'] = igIt
-        postJsonObject['muted'] = True
-        saveJson(postJsonObject, postFilename)
+    postJsonObject['muted'] = True
+    saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -598,8 +598,8 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         else:
             igItLen = len(postJsonObj['ignores']['items'])
             postJsonObj['ignores']['totalItems'] = igItLen
-        postJsonObject['muted'] = False
-        saveJson(postJsonObject, postFilename)
+    postJsonObject['muted'] = False
+    saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
