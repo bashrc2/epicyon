@@ -872,8 +872,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 # is the post in the memory cache of recent ones?
                 currTlStr = None
                 if boxName != 'tlmedia' and recentPostsCache.get('html'):
-                    postId = \
-                        removeIdEnding(item['id']).replace('/', '#')
+                    postId = removeIdEnding(item['id']).replace('/', '#')
                     if recentPostsCache['html'].get(postId):
                         currTlStr = recentPostsCache['html'][postId]
                         currTlStr = \
