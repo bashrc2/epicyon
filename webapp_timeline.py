@@ -875,20 +875,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                    recentPostsCache.get('index'):
                     postId = \
                         removeIdEnding(item['id']).replace('/', '#')
-                    if postId in recentPostsCache['index']:
-                        if not item.get('muted'):
-                            if recentPostsCache['html'].get(postId):
-                                currTlStr = recentPostsCache['html'][postId]
-                                currTlStr = \
-                                    preparePostFromHtmlCache(nickname,
-                                                             currTlStr,
-                                                             boxName,
-                                                             pageNumber)
-                                _logTimelineTiming(enableTimingLog,
-                                                   timelineStartTime,
-                                                   boxName, '10')
-                        else:
-                            print('Muted post in timeline ' + boxName)
+                    if recentPostsCache['html'].get(postId):
+                        currTlStr = recentPostsCache['html'][postId]
+                        currTlStr = \
+                            preparePostFromHtmlCache(nickname,
+                                                     currTlStr,
+                                                     boxName,
+                                                     pageNumber)
+                        _logTimelineTiming(enableTimingLog,
+                                           timelineStartTime,
+                                           boxName, '10')
 
                 if not currTlStr:
                     _logTimelineTiming(enableTimingLog,
