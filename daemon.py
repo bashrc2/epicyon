@@ -8022,22 +8022,29 @@ class PubServer(BaseHTTPRequestHandler):
         muteFilename = \
             locatePost(baseDir, nickname, domain, muteUrl)
         if muteFilename:
-            print('Regenerating html post for changed mute status')
+            print('mutePost: Regenerating html post for changed mute status')
             mutePostJson = loadJson(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, nickname,
                                           domain, mutePostJson)
-                print('Muted post json: ' + str(mutePostJson))
-                print('Muted post nickname: ' +
+                print('mutePost: Muted post json: ' + str(mutePostJson))
+                print('mutePost: Muted post nickname: ' +
                       nickname + ' ' + domain)
-                print('Muted post cache: ' + str(cachedPostFilename))
+                print('mutePost: Muted post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
                                            nickname, domain)
                 showRepeats = not isDM(mutePostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                showPublicOnly = False
+                storeToCache = True
+                useCacheOnly = False
+                allowDownloads = True
+                showAvatarOptions = True
+                avatarUrl = None
+                individualPostAsHtml(self.server.signingPrivateKeyPem,
+                                     allowDownloads,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
                                      self.server.translate,
@@ -8047,7 +8054,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.personCache,
                                      nickname, domain,
                                      self.server.port, mutePostJson,
-                                     None, True,
+                                     avatarUrl, showAvatarOptions,
                                      self.server.allowDeletion,
                                      httpPrefix,
                                      self.server.projectVersion, timelineStr,
@@ -8062,7 +8069,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
-                                     False, True, False)
+                                     showPublicOnly, storeToCache,
+                                     useCacheOnly)
             else:
                 print('WARN: Muted post not found: ' + muteFilename)
 
@@ -8137,7 +8145,14 @@ class PubServer(BaseHTTPRequestHandler):
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir, nickname, domain)
                 showRepeats = not isDM(mutePostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                showPublicOnly = False
+                storeToCache = True
+                useCacheOnly = False
+                allowDownloads = True
+                showAvatarOptions = True
+                avatarUrl = None
+                individualPostAsHtml(self.server.signingPrivateKeyPem,
+                                     allowDownloads,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
                                      self.server.translate,
@@ -8147,7 +8162,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.personCache,
                                      nickname, domain,
                                      self.server.port, mutePostJson,
-                                     None, True,
+                                     avatarUrl, showAvatarOptions,
                                      self.server.allowDeletion,
                                      httpPrefix,
                                      self.server.projectVersion, timelineStr,
@@ -8162,7 +8177,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      showRepeats,
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
-                                     False, True, False)
+                                     showPublicOnly, storeToCache,
+                                     useCacheOnly)
             else:
                 print('WARN: Unmuted post not found: ' + muteFilename)
         self.server.GETbusy = False
