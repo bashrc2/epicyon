@@ -472,45 +472,47 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         return
     print('mutePost: ' + str(postJsonObject))
 
+    postJsonObj = postJsonObject
     if hasObjectDict(postJsonObject):
-        domainFull = getFullDomain(domain, port)
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        postJsonObj = postJsonObject['object']
+    domainFull = getFullDomain(domain, port)
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
 
-        if postJsonObject['object'].get('conversation'):
-            muteConversation(baseDir, nickname, domain,
-                             postJsonObject['object']['conversation'])
+    if postJsonObj.get('conversation'):
+        muteConversation(baseDir, nickname, domain,
+                         postJsonObj['conversation'])
 
-        # does this post have ignores on it from differenent actors?
-        if not postJsonObject['object'].get('ignores'):
-            if debug:
-                print('DEBUG: Adding initial mute to ' + postId)
-            ignoresJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': postId,
-                'type': 'Collection',
-                "totalItems": 1,
-                'items': [{
-                    'type': 'Ignore',
-                    'actor': actor
-                }]
-            }
-            postJsonObject['object']['ignores'] = ignoresJson
-        else:
-            if not postJsonObject['object']['ignores'].get('items'):
-                postJsonObject['object']['ignores']['items'] = []
-            itemsList = postJsonObject['object']['ignores']['items']
-            for ignoresItem in itemsList:
-                if ignoresItem.get('actor'):
-                    if ignoresItem['actor'] == actor:
-                        return
-            newIgnore = {
+    # does this post have ignores on it from differenent actors?
+    if not postJsonObj.get('ignores'):
+        if debug:
+            print('DEBUG: Adding initial mute to ' + postId)
+        ignoresJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': postId,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
                 'type': 'Ignore',
                 'actor': actor
-            }
-            igIt = len(itemsList)
-            itemsList.append(newIgnore)
-            postJsonObject['object']['ignores']['totalItems'] = igIt
-            saveJson(postJsonObject, postFilename)
+            }]
+        }
+        postJsonObj['ignores'] = ignoresJson
+    else:
+        if not postJsonObj['ignores'].get('items'):
+            postJsonObj['ignores']['items'] = []
+        itemsList = postJsonObj['ignores']['items']
+        for ignoresItem in itemsList:
+            if ignoresItem.get('actor'):
+                if ignoresItem['actor'] == actor:
+                    return
+        newIgnore = {
+            'type': 'Ignore',
+            'actor': actor
+        }
+        igIt = len(itemsList)
+        itemsList.append(newIgnore)
+        postJsonObj['ignores']['totalItems'] = igIt
+        saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -564,34 +566,35 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             pass
         print('UNMUTE: ' + muteFilename + ' file removed')
 
+    postJsonObj = postJsonObject
     if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('conversation'):
-            unmuteConversation(baseDir, nickname, domain,
-                               postJsonObject['object']['conversation'])
+        postJsonObj = postJsonObject['object']
+    if postJsonObj.get('conversation'):
+        unmuteConversation(baseDir, nickname, domain,
+                           postJsonObj['conversation'])
 
-        if postJsonObject['object'].get('ignores'):
-            domainFull = getFullDomain(domain, port)
-            actor = localActorUrl(httpPrefix, nickname, domainFull)
-            totalItems = 0
-            if postJsonObject['object']['ignores'].get('totalItems'):
-                totalItems = \
-                    postJsonObject['object']['ignores']['totalItems']
-            itemsList = postJsonObject['object']['ignores']['items']
-            for ignoresItem in itemsList:
-                if ignoresItem.get('actor'):
-                    if ignoresItem['actor'] == actor:
-                        if debug:
-                            print('DEBUG: mute was removed for ' + actor)
-                        itemsList.remove(ignoresItem)
-                        break
-            if totalItems == 1:
-                if debug:
-                    print('DEBUG: mute was removed from post')
-                del postJsonObject['object']['ignores']
-            else:
-                igItLen = len(postJsonObject['object']['ignores']['items'])
-                postJsonObject['object']['ignores']['totalItems'] = igItLen
-            saveJson(postJsonObject, postFilename)
+    if postJsonObj.get('ignores'):
+        domainFull = getFullDomain(domain, port)
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        totalItems = 0
+        if postJsonObj['ignores'].get('totalItems'):
+            totalItems = postJsonObj['ignores']['totalItems']
+        itemsList = postJsonObj['ignores']['items']
+        for ignoresItem in itemsList:
+            if ignoresItem.get('actor'):
+                if ignoresItem['actor'] == actor:
+                    if debug:
+                        print('DEBUG: mute was removed for ' + actor)
+                    itemsList.remove(ignoresItem)
+                    break
+        if totalItems == 1:
+            if debug:
+                print('DEBUG: mute was removed from post')
+            del postJsonObj['ignores']
+        else:
+            igItLen = len(postJsonObj['ignores']['items'])
+            postJsonObj['ignores']['totalItems'] = igItLen
+        saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
