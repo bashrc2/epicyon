@@ -556,6 +556,21 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                 print('MUTE: ' + postId + ' removed cached html')
 
     if alsoUpdatePostId:
+        postFilename = locatePost(baseDir, nickname, domain, alsoUpdatePostId)
+        if os.path.isfile(postFilename):
+            postJsonObj = loadJson(postFilename)
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain,
+                                      postJsonObj)
+            if cachedPostFilename:
+                if os.path.isfile(cachedPostFilename):
+                    try:
+                        os.remove(cachedPostFilename)
+                        print('MUTE: cached referenced post removed ' +
+                              cachedPostFilename)
+                    except BaseException:
+                        pass
+
         if recentPostsCache.get('json'):
             if recentPostsCache['json'].get(alsoUpdatePostId):
                 del recentPostsCache['json'][alsoUpdatePostId]
@@ -649,6 +664,21 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
                 del recentPostsCache['html'][postId]
                 print('UNMUTE: ' + postId + ' removed cached html')
     if alsoUpdatePostId:
+        postFilename = locatePost(baseDir, nickname, domain, alsoUpdatePostId)
+        if os.path.isfile(postFilename):
+            postJsonObj = loadJson(postFilename)
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain,
+                                      postJsonObj)
+            if cachedPostFilename:
+                if os.path.isfile(cachedPostFilename):
+                    try:
+                        os.remove(cachedPostFilename)
+                        print('MUTE: cached referenced post removed ' +
+                              cachedPostFilename)
+                    except BaseException:
+                        pass
+
         if recentPostsCache.get('json'):
             if recentPostsCache['json'].get(alsoUpdatePostId):
                 del recentPostsCache['json'][alsoUpdatePostId]
