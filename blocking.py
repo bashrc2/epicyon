@@ -554,10 +554,16 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
                 print('MUTE: ' + postId + ' removed cached html')
-    if alsoUpdatePostId and recentPostsCache.get('html'):
-        if recentPostsCache['html'].get(alsoUpdatePostId):
-            del recentPostsCache['html'][alsoUpdatePostId]
-            print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
+
+    if alsoUpdatePostId:
+        if recentPostsCache.get('json'):
+            if recentPostsCache['json'].get(alsoUpdatePostId):
+                del recentPostsCache['json'][alsoUpdatePostId]
+                print('MUTE: ' + alsoUpdatePostId + ' removed referenced json')
+        if recentPostsCache.get('html'):
+            if recentPostsCache['html'].get(alsoUpdatePostId):
+                del recentPostsCache['html'][alsoUpdatePostId]
+                print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
@@ -642,10 +648,17 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
                 print('UNMUTE: ' + postId + ' removed cached html')
-    if alsoUpdatePostId and recentPostsCache.get('html'):
-        if recentPostsCache['html'].get(alsoUpdatePostId):
-            del recentPostsCache['html'][alsoUpdatePostId]
-            print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
+    if alsoUpdatePostId:
+        if recentPostsCache.get('json'):
+            if recentPostsCache['json'].get(alsoUpdatePostId):
+                del recentPostsCache['json'][alsoUpdatePostId]
+                print('UNMUTE: ' +
+                      alsoUpdatePostId + ' removed referenced json')
+        if recentPostsCache.get('html'):
+            if recentPostsCache['html'].get(alsoUpdatePostId):
+                del recentPostsCache['html'][alsoUpdatePostId]
+                print('UNMUTE: ' +
+                      alsoUpdatePostId + ' removed referenced html')
 
 
 def outboxMute(baseDir: str, httpPrefix: str,
