@@ -512,8 +512,9 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         igIt = len(itemsList)
         itemsList.append(newIgnore)
         postJsonObj['ignores']['totalItems'] = igIt
-    postJsonObject['muted'] = True
-    saveJson(postJsonObject, postFilename)
+    postJsonObj['muted'] = True
+    if saveJson(postJsonObject, postFilename):
+        print('mutePost: saved ' + postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -539,11 +540,10 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             removeIdEnding(postJsonObject['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('MUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = True
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                print('MUTE: ' + postId +
-                      ' marked as muted in recent posts memory cache')
+        if recentPostsCache.get('json'):
+            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+            print('MUTE: ' + postId +
+                  ' marked as muted in recent posts memory cache')
         if recentPostsCache.get('html'):
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
@@ -598,7 +598,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         else:
             igItLen = len(postJsonObj['ignores']['items'])
             postJsonObj['ignores']['totalItems'] = igItLen
-    postJsonObject['muted'] = False
+    postJsonObj['muted'] = False
     saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
@@ -618,11 +618,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             removeIdEnding(postJsonObject['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('UNMUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = False
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                print('UNMUTE: ' + postId +
-                      ' marked as unmuted in recent posts cache')
+        if recentPostsCache.get('json'):
+            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+            print('UNMUTE: ' + postId +
+                  ' marked as unmuted in recent posts cache')
         if recentPostsCache.get('html'):
             if recentPostsCache['html'].get(postId):
                 del recentPostsCache['html'][postId]
