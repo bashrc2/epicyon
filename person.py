@@ -187,78 +187,106 @@ def randomizeActorImages(personJson: {}) -> None:
         '/image' + randStr + '.' + existingExtension
 
 
-def getUpdateActorContext() -> []:
-    """Returns the context used on actor updates
+def getActorUpdateJson(actorJson: {}) -> {}:
+    """Returns the json for an Person Update
     """
-    return [
-        "https://www.w3.org/ns/activitystreams",
-        "https://w3id.org/security/v1",
-        {
-            "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
-            "toot": "http://joinmastodon.org/ns#",
-            "featured":
+    pubNumber, _ = getStatusNumber()
+    manuallyApprovesFollowers = actorJson['manuallyApprovesFollowers']
+    return {
+        '@context': [
+            "https://www.w3.org/ns/activitystreams",
+            "https://w3id.org/security/v1",
             {
-                "@id": "toot:featured",
-                "@type": "@id"
-            },
-            "featuredTags":
-            {
-                "@id": "toot:featuredTags",
-                "@type": "@id"
-            },
-            "alsoKnownAs":
-            {
-                "@id": "as:alsoKnownAs",
-                "@type": "@id"
-            },
-            "movedTo":
-            {
-                "@id": "as:movedTo",
-                "@type": "@id"
-            },
-            "schema": "http://schema.org#",
-            "PropertyValue": "schema:PropertyValue",
-            "value": "schema:value",
-            "IdentityProof": "toot:IdentityProof",
-            "discoverable": "toot:discoverable",
-            "Device": "toot:Device",
-            "Ed25519Signature": "toot:Ed25519Signature",
-            "Ed25519Key": "toot:Ed25519Key",
-            "Curve25519Key": "toot:Curve25519Key",
-            "EncryptedMessage": "toot:EncryptedMessage",
-            "publicKeyBase64": "toot:publicKeyBase64",
-            "deviceId": "toot:deviceId",
-            "claim":
-            {
-                "@type": "@id",
-                "@id": "toot:claim"
-            },
-            "fingerprintKey":
-            {
-                "@type": "@id",
-                "@id": "toot:fingerprintKey"
-            },
-            "identityKey":
-            {
-                "@type": "@id",
-                "@id": "toot:identityKey"
-            },
-            "devices":
-            {
-                "@type": "@id",
-                "@id": "toot:devices"
-            },
-            "messageFranking": "toot:messageFranking",
-            "messageType": "toot:messageType",
-            "cipherText": "toot:cipherText",
-            "suspended": "toot:suspended",
-            "focalPoint":
-            {
-                "@container": "@list",
-                "@id": "toot:focalPoint"
+                "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+                "toot": "http://joinmastodon.org/ns#",
+                "featured":
+                {
+                    "@id": "toot:featured",
+                    "@type": "@id"
+                },
+                "featuredTags":
+                {
+                    "@id": "toot:featuredTags",
+                    "@type": "@id"
+                },
+                "alsoKnownAs":
+                {
+                    "@id": "as:alsoKnownAs",
+                    "@type": "@id"
+                },
+                "movedTo":
+                {
+                    "@id": "as:movedTo",
+                    "@type": "@id"
+                },
+                "schema": "http://schema.org#",
+                "PropertyValue": "schema:PropertyValue",
+                "value": "schema:value",
+                "IdentityProof": "toot:IdentityProof",
+                "discoverable": "toot:discoverable",
+                "Device": "toot:Device",
+                "Ed25519Signature": "toot:Ed25519Signature",
+                "Ed25519Key": "toot:Ed25519Key",
+                "Curve25519Key": "toot:Curve25519Key",
+                "EncryptedMessage": "toot:EncryptedMessage",
+                "publicKeyBase64": "toot:publicKeyBase64",
+                "deviceId": "toot:deviceId",
+                "claim":
+                {
+                    "@type": "@id",
+                    "@id": "toot:claim"
+                },
+                "fingerprintKey":
+                {
+                    "@type": "@id",
+                    "@id": "toot:fingerprintKey"
+                },
+                "identityKey":
+                {
+                    "@type": "@id",
+                    "@id": "toot:identityKey"
+                },
+                "devices":
+                {
+                    "@type": "@id",
+                    "@id": "toot:devices"
+                },
+                "messageFranking": "toot:messageFranking",
+                "messageType": "toot:messageType",
+                "cipherText": "toot:cipherText",
+                "suspended": "toot:suspended",
+                "focalPoint":
+                {
+                    "@container": "@list",
+                    "@id": "toot:focalPoint"
+                }
             }
+        ],
+        'id': actorJson['id'] + '#updates/' + pubNumber,
+        'type': 'Update',
+        'actor': actorJson['id'],
+        'to': ['https://www.w3.org/ns/activitystreams#Public'],
+        'cc': [actorJson['id'] + '/followers'],
+        'object': {
+            'id': actorJson['id'],
+            'type': actorJson['type'],
+            'following': actorJson['id'] + '/following',
+            'followers': actorJson['id'] + '/followers',
+            'inbox': actorJson['id'] + '/inbox',
+            'outbox': actorJson['id'] + '/outbox',
+            'featured': actorJson['id'] + '/collections/featured',
+            'featuredTags': actorJson['id'] + '/collections/tags',
+            'preferredUsername': actorJson['preferredUsername'],
+            'name': actorJson['name'],
+            'summary': actorJson['summary'],
+            'url': actorJson['url'],
+            'manuallyApprovesFollowers': manuallyApprovesFollowers,
+            'discoverable': actorJson['discoverable'],
+            'published': actorJson['published'],
+            'devices': actorJson['devices'],
+            "publicKey": actorJson['publicKey'],
         }
-    ]
+    }
 
 
 def getDefaultPersonContext() -> str:

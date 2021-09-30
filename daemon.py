@@ -55,7 +55,7 @@ from donate import getWebsite
 from donate import setWebsite
 from person import setPersonNotes
 from person import getDefaultPersonContext
-from person import getUpdateActorContext
+from person import getActorUpdateJson
 from person import savePersonQrcode
 from person import randomizeActorImages
 from person import personUpgradeActor
@@ -5817,22 +5817,8 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['id'].replace('/', '#') + '.json'
                         saveJson(actorJson, actorCacheFilename)
                         # send profile update to followers
-                        pubStr = 'https://www.w3.org/ns/' + \
-                            'activitystreams#Public'
                         pubNumber, pubDate = getStatusNumber()
-                        # remove the context from the actor json and put it
-                        # at the start of the Upgrade activity
-                        del actorJson['@context']
-                        updateActorContext = getUpdateActorContext()
-                        updateActorJson = {
-                            '@context': updateActorContext,
-                            'id': actorJson['id'] + '#updates/' + pubNumber,
-                            'type': 'Update',
-                            'actor': actorJson['id'],
-                            'to': [pubStr],
-                            'cc': [actorJson['id'] + '/followers'],
-                            'object': actorJson
-                        }
+                        updateActorJson = getActorUpdateJson()
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
                                            self.server.projectVersion,
