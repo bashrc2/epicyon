@@ -5818,7 +5818,7 @@ class PubServer(BaseHTTPRequestHandler):
                         saveJson(actorJson, actorCacheFilename)
                         # send profile update to followers
                         pubNumber, pubDate = getStatusNumber()
-                        updateActorJson = getActorUpdateJson()
+                        updateActorJson = getActorUpdateJson(actorJson)
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
                                            self.server.projectVersion,
