@@ -270,6 +270,9 @@ def getActorUpdateJson(actorJson: {}) -> {}:
         'object': {
             'id': actorJson['id'],
             'type': actorJson['type'],
+            'icon': actorJson['icon'],
+            'image': actorJson['image'],
+            'attachment': actorJson['attachment'],
             'following': actorJson['id'] + '/following',
             'followers': actorJson['id'] + '/followers',
             'inbox': actorJson['id'] + '/inbox',
