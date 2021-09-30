@@ -55,6 +55,7 @@ from donate import getWebsite
 from donate import setWebsite
 from person import setPersonNotes
 from person import getDefaultPersonContext
+from person import getUpdateActorContext
 from person import savePersonQrcode
 from person import randomizeActorImages
 from person import personUpgradeActor
@@ -5819,12 +5820,12 @@ class PubServer(BaseHTTPRequestHandler):
                         pubStr = 'https://www.w3.org/ns/' + \
                             'activitystreams#Public'
                         pubNumber, pubDate = getStatusNumber()
-                        pubContext = actorJson['@context'].copy()
                         # remove the context from the actor json and put it
                         # at the start of the Upgrade activity
                         del actorJson['@context']
+                        updateActorContext = getUpdateActorContext()
                         updateActorJson = {
-                            '@context': pubContext,
+                            '@context': updateActorContext,
                             'id': actorJson['id'] + '#updates/' + pubNumber,
                             'type': 'Update',
                             'actor': actorJson['id'],
