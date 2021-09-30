@@ -897,7 +897,7 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
                                         updatePort,
                                         messageJson['object'],
                                         personCache, debug):
-                    print('Person Update: ' + str(messageJson['object']))
+                    print('Person Update: ' + str(messageJson))
                     if debug:
                         print('DEBUG: Profile update was received for ' +
                               messageJson['object']['url'])
