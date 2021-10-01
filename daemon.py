@@ -6490,11 +6490,10 @@ class PubServer(BaseHTTPRequestHandler):
             mediaStr = path.split('/media/')[1]
             mediaFilename = baseDir + '/media/' + mediaStr
             if os.path.isfile(mediaFilename):
-                # TEST
-                # if self._etag_exists(mediaFilename):
-                #    # The file has not changed
-                #    self._304()
-                #    return
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
 
                 mediaFileType = mediaFileMimeType(mediaFilename)
 
@@ -6690,11 +6689,10 @@ class PubServer(BaseHTTPRequestHandler):
         """
         mediaFilename = baseDir + '/cache' + path
         if os.path.isfile(mediaFilename):
-            # TEST
-            # if self._etag_exists(mediaFilename):
-            #    # The file has not changed
-            #    self._304()
-            #    return
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
             with open(mediaFilename, 'rb') as avFile:
                 mediaBinary = avFile.read()
                 mimeType = mediaFileMimeType(mediaFilename)
@@ -11397,11 +11395,10 @@ class PubServer(BaseHTTPRequestHandler):
             acctDir(baseDir, avatarNickname, domain) + '/' + avatarFile
         if not os.path.isfile(avatarFilename):
             return False
-        # TEST
-        # if self._etag_exists(avatarFilename):
-        #    # The file has not changed
-        #    self._304()
-        #    return True
+        if self._etag_exists(avatarFilename):
+            # The file has not changed
+            self._304()
+            return True
 
         t = os.path.getmtime(avatarFilename)
         lastModifiedTime = datetime.datetime.fromtimestamp(t)
