@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Client"
 
@@ -418,7 +418,8 @@ def _desktopReplyToPost(session, postId: str,
                         debug: bool, subject: str,
                         screenreader: str, systemLanguage: str,
                         espeak, conversationId: str,
-                        lowBandwidth: bool) -> None:
+                        lowBandwidth: bool,
+                        signingPrivateKeyPem: str) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in postId:
@@ -463,7 +464,7 @@ def _desktopReplyToPost(session, postId: str,
     city = 'London, England'
     sayStr = 'Sending reply'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if sendPostViaServer(__version__,
+    if sendPostViaServer(signingPrivateKeyPem, __version__,
                          baseDir, session, nickname, password,
                          domain, port,
                          toNickname, toDomain, toPort, ccUrl,
@@ -486,7 +487,8 @@ def _desktopNewPost(session,
                     cachedWebfingers: {}, personCache: {},
                     debug: bool,
                     screenreader: str, systemLanguage: str,
-                    espeak, lowBandwidth: bool) -> None:
+                    espeak, lowBandwidth: bool,
+                    signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new post
     """
     conversationId = None
@@ -527,7 +529,7 @@ def _desktopNewPost(session,
     subject = None
     sayStr = 'Sending'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if sendPostViaServer(__version__,
+    if sendPostViaServer(signingPrivateKeyPem, __version__,
                          baseDir, session, nickname, password,
                          domain, port,
                          None, '#Public', port, ccUrl,
@@ -661,7 +663,9 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                       systemLanguage: str,
                       screenreader: str, espeak,
                       translate: {}, yourActor: str,
-                      domainFull: str, personCache: {}) -> {}:
+                      domainFull: str, personCache: {},
+                      signingPrivateKeyPem: str,
+                      blockedCache: {}) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -688,6 +692,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         recentPostsCache = {}
         allowLocalNetworkAccess = False
         YTReplacementDomain = None
+        twitterReplacementDomain = None
         postJsonObject2 = \
             downloadAnnounce(session, baseDir,
                              httpPrefix,
@@ -695,10 +700,13 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              postJsonObject,
                              __version__, translate,
                              YTReplacementDomain,
+                             twitterReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, False,
                              systemLanguage,
-                             domainFull, personCache)
+                             domainFull, personCache,
+                             signingPrivateKeyPem,
+                             blockedCache)
         if postJsonObject2:
             if hasObjectDict(postJsonObject2):
                 if postJsonObject2['object'].get('attributedTo') and \
@@ -742,7 +750,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     if isPGPEncrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        content = pgpDecrypt(domain, content, actor)
+        content = pgpDecrypt(domain, content, actor, signingPrivateKeyPem)
         if isPGPEncrypted(content):
             sayStr = 'Message could not be decrypted'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
@@ -823,7 +831,7 @@ def _desktopShowProfile(session, nickname: str, domain: str,
                         systemLanguage: str,
                         screenreader: str, espeak,
                         translate: {}, yourActor: str,
-                        postJsonObject: {}) -> {}:
+                        postJsonObject: {}, signingPrivateKeyPem: str) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
@@ -854,7 +862,8 @@ def _desktopShowProfile(session, nickname: str, domain: str,
     if 'http://' in actor:
         isHttp = True
     actorJson, asHeader = \
-        getActorJson(domain, actor, isHttp, False, False, True)
+        getActorJson(domain, actor, isHttp, False, False, True,
+                     signingPrivateKeyPem)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -868,12 +877,14 @@ def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
                                   systemLanguage: str,
                                   screenreader: str, espeak,
                                   translate: {}, yourActor: str,
-                                  postJsonObject: {}) -> {}:
+                                  postJsonObject: {},
+                                  signingPrivateKeyPem: str) -> {}:
     """Shows the profile for a handle
     Returns the actor json
     """
     actorJson, asHeader = \
-        getActorJson(domain, handle, False, False, False, True)
+        getActorJson(domain, handle, False, False, False, True,
+                     signingPrivateKeyPem)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -1112,7 +1123,8 @@ def _desktopNewDM(session, toHandle: str,
                   cachedWebfingers: {}, personCache: {},
                   debug: bool,
                   screenreader: str, systemLanguage: str,
-                  espeak, lowBandwidth: bool) -> None:
+                  espeak, lowBandwidth: bool,
+                  signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
@@ -1133,7 +1145,8 @@ def _desktopNewDM(session, toHandle: str,
                           cachedWebfingers, personCache,
                           debug,
                           screenreader, systemLanguage,
-                          espeak, lowBandwidth)
+                          espeak, lowBandwidth,
+                          signingPrivateKeyPem)
 
 
 def _desktopNewDMbase(session, toHandle: str,
@@ -1142,7 +1155,8 @@ def _desktopNewDMbase(session, toHandle: str,
                       cachedWebfingers: {}, personCache: {},
                       debug: bool,
                       screenreader: str, systemLanguage: str,
-                      espeak, lowBandwidth: bool) -> None:
+                      espeak, lowBandwidth: bool,
+                      signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new direct message
     """
     conversationId = None
@@ -1201,7 +1215,8 @@ def _desktopNewDMbase(session, toHandle: str,
             for after in range(randint(1, 16)):
                 paddedMessage += ' '
         cipherText = \
-            pgpEncryptToActor(domain, paddedMessage, toHandle)
+            pgpEncryptToActor(domain, paddedMessage, toHandle,
+                              signingPrivateKeyPem)
         if not cipherText:
             sayStr = \
                 toHandle + ' has no PGP public key. ' + \
@@ -1222,7 +1237,7 @@ def _desktopNewDMbase(session, toHandle: str,
 
     sayStr = 'Sending'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    if sendPostViaServer(__version__,
+    if sendPostViaServer(signingPrivateKeyPem, __version__,
                          baseDir, session, nickname, password,
                          domain, port,
                          toNickname, toDomain, toPort, ccUrl,
@@ -1301,6 +1316,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the desktop and screen reader client,
     which announces new inbox items
     """
+    # TODO: this should probably be retrieved somehow from the server
+    signingPrivateKeyPem = None
+
+    blockedCache = {}
+
     indent = '   '
     if showNewPosts:
         indent = ''
@@ -1400,7 +1420,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                    nickname, password,
                                    domain, port, httpPrefix,
                                    cachedWebfingers, personCache,
-                                   debug, False)
+                                   debug, False,
+                                   signingPrivateKeyPem)
                 sayStr = indent + 'PGP public key uploaded'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
@@ -1410,7 +1431,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                              nickname, password,
                              domain, port, httpPrefix,
                              currTimeline, pageNumber,
-                             debug)
+                             debug, signingPrivateKeyPem)
 
         followRequestsJson = \
             getFollowRequestsViaServer(baseDir, session,
@@ -1418,14 +1439,16 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                        domain, port,
                                        httpPrefix, 1,
                                        cachedWebfingers, personCache,
-                                       debug, __version__)
+                                       debug, __version__,
+                                       signingPrivateKeyPem)
 
         if not (currTimeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
             inboxJson = c2sBoxJson(baseDir, session,
                                    nickname, password,
                                    domain, port, httpPrefix,
-                                   'inbox', 1, debug)
+                                   'inbox', 1, debug,
+                                   signingPrivateKeyPem)
         else:
             inboxJson = boxJson
         newDMsExist = False
@@ -1502,7 +1525,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
-                                     debug)
+                                     debug, signingPrivateKeyPem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
                                     yourActor, currTimeline, boxJson,
@@ -1519,7 +1542,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
-                                     debug)
+                                     debug, signingPrivateKeyPem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
                                     yourActor, currTimeline, boxJson,
@@ -1537,7 +1560,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
-                                     debug)
+                                     debug, signingPrivateKeyPem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
                                     yourActor, currTimeline, boxJson,
@@ -1556,7 +1579,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
-                                     debug)
+                                     debug, signingPrivateKeyPem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
                                     yourActor, currTimeline, boxJson,
@@ -1583,7 +1606,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
-                                     debug)
+                                     debug, signingPrivateKeyPem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
                                     yourActor, currTimeline, boxJson,
@@ -1606,7 +1629,9 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
                                           espeak, translate, yourActor,
-                                          domainFull, personCache)
+                                          domainFull, personCache,
+                                          signingPrivateKeyPem,
+                                          blockedCache)
                     print('')
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlightText(sayStr)
@@ -1628,7 +1653,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                 boxJson,
                                                 systemLanguage, screenreader,
                                                 espeak, translate, yourActor,
-                                                postJsonObject)
+                                                postJsonObject,
+                                                signingPrivateKeyPem)
                     else:
                         postIndexStr = '1'
                 else:
@@ -1643,7 +1669,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   currTimeline, profileHandle,
                                                   systemLanguage, screenreader,
                                                   espeak, translate, yourActor,
-                                                  None)
+                                                  None, signingPrivateKeyPem)
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlightText(sayStr)
                     _sayCommand(sayStr2, sayStr,
@@ -1661,7 +1687,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             pageNumber, postIndex, boxJson,
                                             systemLanguage, screenreader,
                                             espeak, translate, yourActor,
-                                            None)
+                                            None, signingPrivateKeyPem)
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlightText(sayStr)
                     _sayCommand(sayStr2, sayStr,
@@ -1689,7 +1715,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             debug, subject,
                                             screenreader, systemLanguage,
                                             espeak, conversationId,
-                                            lowBandwidth)
+                                            lowBandwidth,
+                                            signingPrivateKeyPem)
                 refreshTimeline = True
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or
@@ -1723,7 +1750,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       cachedWebfingers, personCache,
                                       debug,
                                       screenreader, systemLanguage,
-                                      espeak, lowBandwidth)
+                                      espeak, lowBandwidth,
+                                      signingPrivateKeyPem)
                         refreshTimeline = True
                 else:
                     # public post
@@ -1733,7 +1761,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     cachedWebfingers, personCache,
                                     debug,
                                     screenreader, systemLanguage,
-                                    espeak, lowBandwidth)
+                                    espeak, lowBandwidth,
+                                    signingPrivateKeyPem)
                     refreshTimeline = True
                 print('')
             elif commandStr == 'like' or commandStr.startswith('like '):
@@ -1759,7 +1788,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           domain, port, httpPrefix,
                                           postJsonObject['id'],
                                           cachedWebfingers, personCache,
-                                          False, __version__)
+                                          False, __version__,
+                                          signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'undo mute' or
@@ -1797,7 +1827,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               domain, port,
                                               httpPrefix, postJsonObject['id'],
                                               cachedWebfingers, personCache,
-                                              False, __version__)
+                                              False, __version__,
+                                              signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'mute' or
@@ -1826,7 +1857,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           domain, port,
                                           httpPrefix, postJsonObject['id'],
                                           cachedWebfingers, personCache,
-                                          False, __version__)
+                                          False, __version__,
+                                          signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'undo bookmark' or
@@ -1867,7 +1899,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   postJsonObject['id'],
                                                   cachedWebfingers,
                                                   personCache,
-                                                  False, __version__)
+                                                  False, __version__,
+                                                  signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'bookmark' or
@@ -1896,7 +1929,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               domain, port, httpPrefix,
                                               postJsonObject['id'],
                                               cachedWebfingers, personCache,
-                                              False, __version__)
+                                              False, __version__,
+                                              signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr.startswith('undo block ') or
@@ -1931,7 +1965,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                        blockActor,
                                                        cachedWebfingers,
                                                        personCache,
-                                                       False, __version__)
+                                                       False, __version__,
+                                                       signingPrivateKeyPem)
                 refreshTimeline = True
                 print('')
             elif commandStr.startswith('block '):
@@ -1976,7 +2011,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                        blockActor,
                                        cachedWebfingers,
                                        personCache,
-                                       False, __version__)
+                                       False, __version__,
+                                       signingPrivateKeyPem)
                 refreshTimeline = True
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
@@ -2003,7 +2039,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               domain, port, httpPrefix,
                                               postJsonObject['id'],
                                               cachedWebfingers, personCache,
-                                              False, __version__)
+                                              False, __version__,
+                                              signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr.startswith('announce') or
@@ -2033,7 +2070,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               domain, port,
                                               httpPrefix, postId,
                                               cachedWebfingers, personCache,
-                                              True, __version__)
+                                              True, __version__,
+                                              signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr.startswith('unannounce') or
@@ -2067,7 +2105,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                   httpPrefix, postId,
                                                   cachedWebfingers,
                                                   personCache,
-                                                  True, __version__)
+                                                  True, __version__,
+                                                  signingPrivateKeyPem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'follow requests' or
@@ -2083,7 +2122,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                domain, port,
                                                httpPrefix, currPage,
                                                cachedWebfingers, personCache,
-                                               debug, __version__)
+                                               debug, __version__,
+                                               signingPrivateKeyPem)
                 if followRequestsJson:
                     if isinstance(followRequestsJson, dict):
                         _desktopShowFollowRequests(followRequestsJson,
@@ -2102,7 +2142,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           domain, port,
                                           httpPrefix, currPage,
                                           cachedWebfingers, personCache,
-                                          debug, __version__)
+                                          debug, __version__,
+                                          signingPrivateKeyPem)
                 if followingJson:
                     if isinstance(followingJson, dict):
                         _desktopShowFollowing(followingJson, translate,
@@ -2122,7 +2163,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           domain, port,
                                           httpPrefix, currPage,
                                           cachedWebfingers, personCache,
-                                          debug, __version__)
+                                          debug, __version__,
+                                          signingPrivateKeyPem)
                 if followersJson:
                     if isinstance(followersJson, dict):
                         _desktopShowFollowing(followersJson, translate,
@@ -2161,7 +2203,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                    httpPrefix,
                                                    cachedWebfingers,
                                                    personCache,
-                                                   debug, __version__)
+                                                   debug, __version__,
+                                                   signingPrivateKeyPem)
                     else:
                         if followHandle:
                             sayStr = followHandle + ' is not valid'
@@ -2195,7 +2238,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                      httpPrefix,
                                                      cachedWebfingers,
                                                      personCache,
-                                                     debug, __version__)
+                                                     debug, __version__,
+                                                     signingPrivateKeyPem)
                     else:
                         sayStr = followHandle + ' is not valid'
                         _sayCommand(sayStr, sayStr,
@@ -2224,7 +2268,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                       cachedWebfingers,
                                                       personCache,
                                                       debug,
-                                                      __version__)
+                                                      __version__,
+                                                      signingPrivateKeyPem)
                     else:
                         if approveHandle:
                             sayStr = approveHandle + ' is not valid'
@@ -2256,7 +2301,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                    cachedWebfingers,
                                                    personCache,
                                                    debug,
-                                                   __version__)
+                                                   __version__,
+                                                   signingPrivateKeyPem)
                     else:
                         if denyHandle:
                             sayStr = denyHandle + ' is not valid'
@@ -2331,6 +2377,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         recentPostsCache = {}
                         allowLocalNetworkAccess = False
                         YTReplacementDomain = None
+                        twitterReplacementDomain = None
                         postJsonObject2 = \
                             downloadAnnounce(session, baseDir,
                                              httpPrefix,
@@ -2338,10 +2385,13 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              postJsonObject,
                                              __version__, translate,
                                              YTReplacementDomain,
+                                             twitterReplacementDomain,
                                              allowLocalNetworkAccess,
                                              recentPostsCache, False,
                                              systemLanguage,
-                                             domainFull, personCache)
+                                             domainFull, personCache,
+                                             signingPrivateKeyPem,
+                                             blockedCache)
                         if postJsonObject2:
                             postJsonObject = postJsonObject2
                 if postJsonObject:
@@ -2423,7 +2473,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                     postJsonObject['id'],
                                                     cachedWebfingers,
                                                     personCache,
-                                                    False, __version__)
+                                                    False, __version__,
+                                                    signingPrivateKeyPem)
                                 refreshTimeline = True
                 print('')
 

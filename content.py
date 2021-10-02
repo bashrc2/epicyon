@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -11,6 +11,7 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from utils import dangerousSVG
 from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import getImageExtensions
@@ -938,9 +939,15 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
             for ex in extensionTypes:
                 possibleOtherFormat = filenameBase + '.' + ex
                 if os.path.isfile(possibleOtherFormat):
-                    os.remove(possibleOtherFormat)
+                    try:
+                        os.remove(possibleOtherFormat)
+                    except BaseException:
+                        pass
             if os.path.isfile(filenameBase):
-                os.remove(filenameBase)
+                try:
+                    os.remove(filenameBase)
+                except BaseException:
+                    pass
 
         if debug:
             print('DEBUG: No media found within POST')
@@ -1006,7 +1013,17 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                                                       detectedExtension, '.' +
                                                       ex)
             if os.path.isfile(possibleOtherFormat):
-                os.remove(possibleOtherFormat)
+                try:
+                    os.remove(possibleOtherFormat)
+                except BaseException:
+                    pass
+
+    # don't allow scripts within svg files
+    if detectedExtension == 'svg':
+        svgStr = mediaBytes[startPos:]
+        svgStr = svgStr.decode()
+        if dangerousSVG(svgStr, False):
+            return None, None
 
     with open(filename, 'wb') as fp:
         fp.write(mediaBytes[startPos:])

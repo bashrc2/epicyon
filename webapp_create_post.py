@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -188,6 +188,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 mentions: [],
                 shareDescription: str,
                 reportUrl: str, pageNumber: int,
+                category: str,
                 nickname: str, domain: str,
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
@@ -211,13 +212,15 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 newPostText = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
-                newPostText = \
-                    '<p class="new-post-text">' + \
-                    translate['Write your reply to'] + \
-                    ' <a href="' + inReplyTo + \
-                    '" rel="nofollow noopener noreferrer" ' + \
-                    'target="_blank">' + \
-                    translate['this post'] + '</a></p>\n'
+                newPostText = ''
+                if category != 'accommodation':
+                    newPostText = \
+                        '<p class="new-post-text">' + \
+                        translate['Write your reply to'] + \
+                        ' <a href="' + inReplyTo + \
+                        '" rel="nofollow noopener noreferrer" ' + \
+                        'target="_blank">' + \
+                        translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'
 
@@ -298,14 +301,20 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
+    formatsString = getMediaFormats()
+    # remove svg as a permitted format
+    formatsString = formatsString.replace(', .svg', '').replace('.svg, ', '')
     newPostImageSection += \
-        '            accept="' + getMediaFormats() + '">\n'
+        '            accept="' + formatsString + '">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
     scopeDescription = translate['Public']
     if shareDescription:
-        placeholderSubject = translate['Ask about a shared item.'] + '..'
+        if category == 'accommodation':
+            placeholderSubject = translate['Request to stay']
+        else:
+            placeholderSubject = translate['Ask about a shared item.'] + '..'
     else:
         placeholderSubject = \
             translate['Subject or Content Warning (optional)'] + '...'
@@ -313,7 +322,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if inReplyTo:
         placeholderMentions = \
             translate['Replying to'] + '...'
-    placeholderMessage = translate['Write something'] + '...'
+    placeholderMessage = ''
+    if category != 'accommodation':
+        placeholderMessage = translate['Write something'] + '...'
+    else:
+        idx = 'Introduce yourself and specify the date ' + \
+            'and time when you wish to stay'
+        placeholderMessage = translate[idx]
     extraFields = ''
     endpoint = 'newpost'
     if path.endswith('/newblog'):
@@ -526,10 +541,15 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
         dateAndLocation = \
-            '<div class="container">\n' + \
-            '<p><input type="checkbox" class="profilecheckbox" ' + \
-            'name="commentsEnabled" checked><label class="labels"> ' + \
-            translate['Allow replies.'] + '</label></p>\n'
+            '<div class="container">\n'
+        if category != 'accommodation':
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="commentsEnabled" checked><label class="labels"> ' + \
+                translate['Allow replies.'] + '</label></p>\n'
+        else:
+            dateAndLocation += \
+                '<input type="hidden" name="commentsEnabled" value="true">\n'
 
         if endpoint == 'newpost':
             dateAndLocation += \

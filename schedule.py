@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Calendar"
 
@@ -46,7 +46,10 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
             if deleteSchedulePost:
                 # delete extraneous scheduled posts
                 if os.path.isfile(postFilename):
-                    os.remove(postFilename)
+                    try:
+                        os.remove(postFilename)
+                    except BaseException:
+                        pass
                 continue
             # create the new index file
             indexLines.append(line)
@@ -110,14 +113,23 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.projectVersion,
                                        httpd.debug,
                                        httpd.YTReplacementDomain,
+                                       httpd.twitterReplacementDomain,
                                        httpd.showPublishedDateOnly,
                                        httpd.allowLocalNetworkAccess,
                                        httpd.city, httpd.systemLanguage,
                                        httpd.sharedItemsFederatedDomains,
                                        httpd.sharedItemFederationTokens,
-                                       httpd.lowBandwidth):
+                                       httpd.lowBandwidth,
+                                       httpd.signingPrivateKeyPem,
+                                       httpd.peertubeInstances,
+                                       httpd.themeName,
+                                       httpd.maxLikeCount,
+                                       httpd.maxRecentPosts):
                 indexLines.remove(line)
-                os.remove(postFilename)
+                try:
+                    os.remove(postFilename)
+                except BaseException:
+                    pass
                 continue
 
             # move to the outbox
@@ -185,7 +197,10 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
     scheduleIndexFilename = \
         acctDir(baseDir, nickname, domain) + '/schedule.index'
     if os.path.isfile(scheduleIndexFilename):
-        os.remove(scheduleIndexFilename)
+        try:
+            os.remove(scheduleIndexFilename)
+        except BaseException:
+            pass
     # remove the scheduled posts
     scheduledDir = acctDir(baseDir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduledDir):
@@ -194,6 +209,9 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
         filePath = os.path.join(scheduledDir, scheduledPostFilename)
         try:
             if os.path.isfile(filePath):
-                os.remove(filePath)
+                try:
+                    os.remove(filePath)
+                except BaseException:
+                    pass
         except BaseException:
             pass

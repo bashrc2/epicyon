@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
@@ -20,6 +20,7 @@ from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
+from shares import shareCategoryIcon
 
 
 def _linksExist(baseDir: str) -> bool:
@@ -57,7 +58,11 @@ def _getLeftColumnShares(baseDir: str,
         shareId = item['shareId']
         # selecting this link calls htmlShowShare
         shareLink = actor + '?showshare=' + shareId
-        linksList.append(sharedesc + ' ' + shareLink)
+        if item.get('category'):
+            shareLink += '?category=' + item['category']
+            shareCategory = shareCategoryIcon(item['category'])
+
+        linksList.append(shareCategory + sharedesc + ' ' + shareLink)
         ctr += 1
         if ctr >= maxSharesInLeftColumn:
             break
@@ -90,7 +95,7 @@ def _getLeftColumnWanted(baseDir: str,
     ctr = 0
     for published, item in sharesJson.items():
         sharedesc = item['displayName']
-        if '<' in sharedesc or '?' in sharedesc:
+        if '<' in sharedesc or ';' in sharedesc:
             continue
         shareId = item['shareId']
         # selecting this link calls htmlShowShare

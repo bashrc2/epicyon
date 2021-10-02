@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
@@ -192,9 +192,9 @@ def parseFeedDate(pubDate: str) -> str:
     formats = ("%a, %d %b %Y %H:%M:%S %z",
                "%a, %d %b %Y %H:%M:%S EST",
                "%a, %d %b %Y %H:%M:%S UT",
+               "%a, %d %b %Y %H:%M:%S GMT",
                "%Y-%m-%dT%H:%M:%SZ",
                "%Y-%m-%dT%H:%M:%S%z")
-
     publishedDate = None
     for dateFormat in formats:
         if ',' in pubDate and ',' not in dateFormat:
@@ -207,6 +207,8 @@ def parseFeedDate(pubDate: str) -> str:
             continue
         if 'EST' not in pubDate and 'EST' in dateFormat:
             continue
+        if 'GMT' not in pubDate and 'GMT' in dateFormat:
+            continue
         if 'EST' in pubDate and 'EST' not in dateFormat:
             continue
         if 'UT' not in pubDate and 'UT' in dateFormat:
@@ -218,8 +220,6 @@ def parseFeedDate(pubDate: str) -> str:
             publishedDate = \
                 datetime.strptime(pubDate, dateFormat)
         except BaseException:
-            print('WARN: unrecognized date format: ' +
-                  pubDate + ' ' + dateFormat)
             continue
 
         if publishedDate:
@@ -238,6 +238,8 @@ def parseFeedDate(pubDate: str) -> str:
         pubDateStr = str(publishedDate)
         if not pubDateStr.endswith('+00:00'):
             pubDateStr += '+00:00'
+    else:
+        print('WARN: unrecognized date format: ' + pubDate)
 
     return pubDateStr
 
@@ -1028,7 +1030,10 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
     else:
         # remove the file if there is nothing to moderate
         if os.path.isfile(newswireModerationFilename):
-            os.remove(newswireModerationFilename)
+            try:
+                os.remove(newswireModerationFilename)
+            except BaseException:
+                pass
 
 
 def getDictFromNewswire(session, baseDir: str, domain: str,

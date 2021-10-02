@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -115,36 +115,16 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
             # peertube sites.
             peerTubeSites = peertubeInstances
         else:
-            # A default selection of the current larger peertube sites,
-            # mostly French and German language.
-            # These have only been semi-vetted, and so should be under
-            # continuous review.
+            # A default minimal set of peertube instances
             # Also see https://peertube_isolation.frama.io/list/ for
             # adversarial instances. Nothing in that list should be
             # in the defaults below.
             peerTubeSites = ('share.tube',
-                             'tube.22decembre.eu',
-                             'libre.video',
-                             'peertube.linuxrocks.online',
-                             'spacepub.space',
-                             'tube.tchncs.de',
-                             'video.irem.univ-paris-diderot.fr',
-                             'peertube.openstreetmap.fr',
-                             'video.antopie.org',
-                             'scitech.video',
-                             'video.ploud.fr',
-                             'diode.zone',
                              'visionon.tv',
                              'peertube.fr',
-                             'peertube.live',
                              'kolektiva.media',
-                             'betamax.video',
                              'peertube.social',
-                             'videos.lescommuns.org',
-                             'video.tedomum.net',
-                             'tilvids.com',
-                             'exode.me',
-                             'peertube.video')
+                             'videos.lescommuns.org')
         for site in peerTubeSites:
             site = site.strip()
             if not site:

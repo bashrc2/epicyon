@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -76,6 +76,7 @@ from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
 from speaker import updateSpeaker
 from languages import autoTranslatePost
+from blocking import isBlocked
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -188,7 +189,8 @@ def _getPostFromRecentCache(session,
                             postStartTime,
                             pageNumber: int,
                             recentPostsCache: {},
-                            maxRecentPosts: int) -> str:
+                            maxRecentPosts: int,
+                            signingPrivateKeyPem: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if boxName == 'tlmedia':
@@ -213,7 +215,8 @@ def _getPostFromRecentCache(session,
 
         _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
-    updateAvatarImageCache(session, baseDir, httpPrefix,
+    updateAvatarImageCache(signingPrivateKeyPem,
+                           session, baseDir, httpPrefix,
                            postActor, avatarUrl, personCache,
                            allowDownloads)
 
@@ -243,13 +246,20 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
     avatarLink = ''
     if '/users/news/' not in avatarUrl:
         avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
+        showProfileStr = 'Show profile'
+        if translate.get(showProfileStr):
+            showProfileStr = translate[showProfileStr]
         avatarLink += \
             '<img loading="lazy" src="' + avatarUrl + '" title="' + \
-            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            showProfileStr + '" alt=" "' + avatarPosition + \
             getBrokenLinkSubstitute() + '/></a>\n'
 
     if showAvatarOptions and \
        domainFull + '/users/' + nickname not in postActor:
+        showOptionsForThisPersonStr = 'Show options for this person'
+        if translate.get(showOptionsForThisPersonStr):
+            showOptionsForThisPersonStr = \
+                translate[showOptionsForThisPersonStr]
         if '/users/news/' not in avatarUrl:
             avatarLink = \
                 '        <a class="imageAnchor" href="/users/' + \
@@ -257,24 +267,25 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
                 ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
             avatarLink += \
                 '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'alt="👤 ' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'src="' + avatarUrl + '" ' + avatarPosition + \
                 getBrokenLinkSubstitute() + '/></a>\n'
         else:
             # don't link to the person options for the news account
             avatarLink += \
                 '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'alt="👤 ' + \
-                translate['Show options for this person'] + '" ' + \
+                showOptionsForThisPersonStr + '" ' + \
                 'src="' + avatarUrl + '" ' + avatarPosition + \
                 getBrokenLinkSubstitute() + '/>\n'
     return avatarLink.strip()
 
 
-def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
+def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
+                      isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       postJsonObject: {}, pageNumberParam: str,
                       translate: {}, systemLanguage: str,
@@ -286,7 +297,19 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
         return replyStr
 
     # reply is permitted - create reply icon
-    replyToLink = postJsonObject['object']['id']
+    replyToLink = removeIdEnding(postJsonObject['object']['id'])
+
+    # see Mike MacGirvin's replyTo suggestion
+    if postJsonObject['object'].get('replyTo'):
+        # check that the alternative replyTo url is not blocked
+        blockNickname = \
+            getNicknameFromActor(postJsonObject['object']['replyTo'])
+        blockDomain, _ = \
+            getDomainFromActor(postJsonObject['object']['replyTo'])
+        if not isBlocked(baseDir, nickname, domain,
+                         blockNickname, blockDomain, {}):
+            replyToLink = postJsonObject['object']['replyTo']
+
     if postJsonObject['object'].get('attributedTo'):
         if isinstance(postJsonObject['object']['attributedTo'], str):
             replyToLink += \
@@ -303,7 +326,9 @@ def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
     replyToLink += pageNumberParam
 
     replyStr = ''
-    replyToThisPostStr = translate['Reply to this post']
+    replyToThisPostStr = 'Reply to this post'
+    if translate.get(replyToThisPostStr):
+        replyToThisPostStr = translate[replyToThisPostStr]
     conversationStr = ''
     if conversationId:
         conversationStr = '?conversationId=' + conversationId
@@ -355,13 +380,15 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
         (isEditor(baseDir, nickname) and
          actor.endswith('/' + domainFull + '/users/news'))):
 
-        postId = postJsonObject['object']['id']
+        postId = removeIdEnding(postJsonObject['object']['id'])
 
         if '/statuses/' not in postId:
             return editStr
 
         if isBlogPost(postJsonObject):
-            editBlogPostStr = translate['Edit blog post']
+            editBlogPostStr = 'Edit blog post'
+            if translate.get(editBlogPostStr):
+                editBlogPostStr = translate[editBlogPostStr]
             if not isNewsPost(postJsonObject):
                 editStr += \
                     '        ' + \
@@ -369,7 +396,7 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                     nickname + \
                     '/tlblogs?editblogpost=' + \
                     postId.split('/statuses/')[1] + \
-                    '?actor=' + actorNickname + \
+                    ';actor=' + actorNickname + \
                     '" title="' + editBlogPostStr + '">' + \
                     '<img loading="lazy" title="' + \
                     editBlogPostStr + '" alt="' + editBlogPostStr + \
@@ -386,7 +413,9 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                     editBlogPostStr + '" alt="' + editBlogPostStr + \
                     ' |" src="/icons/edit.png"/></a>\n'
         elif isEvent:
-            editEventStr = translate['Edit event']
+            editEventStr = 'Edit event'
+            if translate.get(editEventStr):
+                editEventStr = translate[editEventStr]
             editStr += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
@@ -428,7 +457,10 @@ def _getAnnounceIconHtml(isAnnounced: bool,
     announceEmoji = ''
     if not isPublicRepeat:
         announceLink = 'repeatprivate'
-    announceTitle = translate['Repeat this post']
+    repeatThisPostStr = 'Repeat this post'
+    if translate.get(repeatThisPostStr):
+        repeatThisPostStr = translate[repeatThisPostStr]
+    announceTitle = repeatThisPostStr
     unannounceLinkStr = ''
 
     if announcedByPerson(isAnnounced,
@@ -438,13 +470,17 @@ def _getAnnounceIconHtml(isAnnounced: bool,
         announceLink = 'unrepeat'
         if not isPublicRepeat:
             announceLink = 'unrepeatprivate'
-        announceTitle = translate['Undo the repeat']
+        undoTheRepeatStr = 'Undo the repeat'
+        if translate.get(undoTheRepeatStr):
+            undoTheRepeatStr = translate[undoTheRepeatStr]
+        announceTitle = undoTheRepeatStr
         if announceJsonObject:
             unannounceLinkStr = '?unannounce=' + \
                 removeIdEnding(announceJsonObject['id'])
 
+    announcePostId = removeIdEnding(postJsonObject['object']['id'])
     announceLinkStr = '?' + \
-        announceLink + '=' + postJsonObject['object']['id'] + pageNumberParam
+        announceLink + '=' + announcePostId + pageNumberParam
     announceStr = \
         '        <a class="imageAnchor" href="/users/' + \
         nickname + announceLinkStr + unannounceLinkStr + \
@@ -476,7 +512,9 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
     if not isModerationPost and showLikeButton:
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
-        likeTitle = translate['Like this post']
+        likeTitle = 'Like this post'
+        if translate.get(likeTitle):
+            likeTitle = translate[likeTitle]
         likeEmoji = ''
         likeCount = noOfLikes(postJsonObject)
 
@@ -494,7 +532,9 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                     likeCountStr = ''
                 likeIcon = 'like.png'
                 likeLink = 'unlike'
-                likeTitle = translate['Undo the like']
+                likeTitle = 'Undo the like'
+                if translate.get(likeTitle):
+                    likeTitle = translate[likeTitle]
                 likeEmoji = '👍 '
 
         _logPostTiming(enableTimingLog, postStartTime, '12.2')
@@ -505,9 +545,10 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
             likeStr += '<label class="likesCount">'
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
             likeStr += '</label>\n'
+        likePostId = removeIdEnding(postJsonObject['object']['id'])
         likeStr += \
             '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-            likeLink + '=' + postJsonObject['object']['id'] + \
+            likeLink + '=' + likePostId + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
@@ -539,16 +580,21 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     bookmarkIcon = 'bookmark_inactive.png'
     bookmarkLink = 'bookmark'
     bookmarkEmoji = ''
-    bookmarkTitle = translate['Bookmark this post']
+    bookmarkTitle = 'Bookmark this post'
+    if translate.get(bookmarkTitle):
+        bookmarkTitle = translate[bookmarkTitle]
     if bookmarkedByPerson(postJsonObject, nickname, domainFull):
         bookmarkIcon = 'bookmark.png'
         bookmarkLink = 'unbookmark'
         bookmarkEmoji = '🔖 '
-        bookmarkTitle = translate['Undo the bookmark']
+        bookmarkTitle = 'Undo the bookmark'
+        if translate.get(bookmarkTitle):
+            bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
+    bookmarkPostId = removeIdEnding(postJsonObject['object']['id'])
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-        bookmarkLink + '=' + postJsonObject['object']['id'] + \
+        bookmarkLink + '=' + bookmarkPostId + \
         pageNumberParam + \
         '?actor=' + postJsonObject['actor'] + \
         '?bm=' + timelinePostBookmark + \
@@ -579,28 +625,33 @@ def _getMuteIconHtml(isMuted: bool,
         return muteStr
 
     if not isMuted:
+        muteThisPostStr = 'Mute this post'
+        if translate.get('Mute this post'):
+            muteThisPostStr = translate[muteThisPostStr]
         muteStr = \
             '        <a class="imageAnchor" href="/users/' + nickname + \
             '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
             '?bm=' + timelinePostBookmark + \
-            '" title="' + translate['Mute this post'] + '">\n'
+            '" title="' + muteThisPostStr + '">\n'
         muteStr += \
             '          ' + \
             '<img loading="lazy" alt="' + \
-            translate['Mute this post'] + \
-            ' |" title="' + translate['Mute this post'] + \
+            muteThisPostStr + \
+            ' |" title="' + muteThisPostStr + \
             '" src="/icons/mute.png"/></a>\n'
     else:
+        undoMuteStr = 'Undo mute'
+        if translate.get(undoMuteStr):
+            undoMuteStr = translate[undoMuteStr]
         muteStr = \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?unmute=' + messageId + \
             pageNumberParam + '?tl=' + boxName + '?bm=' + \
-            timelinePostBookmark + '" title="' + \
-            translate['Undo mute'] + '">\n'
+            timelinePostBookmark + '" title="' + undoMuteStr + '">\n'
         muteStr += \
             '          ' + \
-            '<img loading="lazy" alt="🔇 ' + translate['Undo mute'] + \
-            ' |" title="' + translate['Undo mute'] + \
+            '<img loading="lazy" alt="🔇 ' + undoMuteStr + \
+            ' |" title="' + undoMuteStr + \
             '" src="/icons/unmute.png"/></a>\n'
     return muteStr
 
@@ -620,16 +671,19 @@ def _getDeleteIconHtml(nickname: str, domainFull: str,
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             if not isNewsPost(postJsonObject):
+                deleteThisPostStr = 'Delete this post'
+                if translate.get(deleteThisPostStr):
+                    deleteThisPostStr = translate[deleteThisPostStr]
                 deleteStr = \
                     '        <a class="imageAnchor" href="/users/' + \
                     nickname + \
                     '?delete=' + messageId + pageNumberParam + \
-                    '" title="' + translate['Delete this post'] + '">\n'
+                    '" title="' + deleteThisPostStr + '">\n'
                 deleteStr += \
                     '          ' + \
                     '<img loading="lazy" alt="' + \
-                    translate['Delete this post'] + \
-                    ' |" title="' + translate['Delete this post'] + \
+                    deleteThisPostStr + \
+                    ' |" title="' + deleteThisPostStr + \
                     '" src="/icons/delete.png"/></a>\n'
     return deleteStr
 
@@ -697,7 +751,10 @@ def _getBlogCitationsHtml(boxName: str,
             '<cite>' + tagJson['name'] + '</cite></a></li>\n'
 
     if citationsStr:
-        citationsStr = '<p><b>' + translate['Citations'] + ':</b></p>' + \
+        translatedCitationsStr = 'Citations'
+        if translate.get(translatedCitationsStr):
+            translatedCitationsStr = translate[translatedCitationsStr]
+        citationsStr = '<p><b>' + translatedCitationsStr + ':</b></p>' + \
             '<ul>\n' + citationsStr + '</ul>\n'
     return citationsStr
 
@@ -705,9 +762,12 @@ def _getBlogCitationsHtml(boxName: str,
 def _boostOwnPostHtml(translate: {}) -> str:
     """The html title for announcing your own post
     """
+    announcesStr = 'announces'
+    if translate.get(announcesStr):
+        announcesStr = translate[announcesStr]
     return '        <img loading="lazy" title="' + \
-        translate['announces'] + \
-        '" alt="' + translate['announces'] + \
+        announcesStr + \
+        '" alt="' + announcesStr + \
         '" src="/icons' + \
         '/repeat_inactive.png" class="announceOrReply"/>\n'
 
@@ -717,13 +777,16 @@ def _announceUnattributedHtml(translate: {},
     """Returns the html for an announce title where there
     is no attribution on the announced post
     """
+    announcesStr = 'announces'
+    if translate.get(announcesStr):
+        announcesStr = translate[announcesStr]
+    postId = removeIdEnding(postJsonObject['object']['id'])
     return '    <img loading="lazy" title="' + \
-        translate['announces'] + '" alt="' + \
-        translate['announces'] + '" src="/icons' + \
+        announcesStr + '" alt="' + \
+        announcesStr + '" src="/icons' + \
         '/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '      <a href="' + \
-        postJsonObject['object']['id'] + \
+        '      <a href="' + postId + \
         '" class="announceOrReply">@unattributed</a>\n'
 
 
@@ -732,13 +795,16 @@ def _announceWithDisplayNameHtml(translate: {},
                                  announceDisplayName: str) -> str:
     """Returns html for an announce having a display name
     """
+    announcesStr = 'announces'
+    if translate.get(announcesStr):
+        announcesStr = translate[announcesStr]
+    postId = removeIdEnding(postJsonObject['object']['id'])
     return '          <img loading="lazy" title="' + \
-        translate['announces'] + '" alt="' + \
-        translate['announces'] + '" src="/' + \
+        announcesStr + '" alt="' + \
+        announcesStr + '" src="/' + \
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '        <a href="' + \
-        postJsonObject['object']['id'] + '" ' + \
+        '        <a href="' + postId + '" ' + \
         'class="announceOrReply">' + announceDisplayName + '</a>\n'
 
 
@@ -823,6 +889,9 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 
     idx = 'Show options for this person'
     if '/users/news/' not in announceAvatarUrl:
+        showOptionsForThisPersonStr = idx
+        if translate.get(idx):
+            showOptionsForThisPersonStr = translate[idx]
         replyAvatarImageInPost = \
             '        <div class="timeline-avatar-reply">\n' \
             '            <a class="imageAnchor" ' + \
@@ -830,7 +899,8 @@ def _getPostTitleAnnounceHtml(baseDir: str,
             announceActor + ';' + str(pageNumber) + \
             ';' + announceAvatarUrl + messageIdStr + '">' \
             '<img loading="lazy" src="' + announceAvatarUrl + '" ' + \
-            'title="' + translate[idx] + '" alt=" "' + avatarPosition + \
+            'title="' + showOptionsForThisPersonStr + \
+            '" alt=" "' + avatarPosition + \
             getBrokenLinkSubstitute() + '/></a>\n    </div>\n'
 
     return (titleStr, replyAvatarImageInPost,
@@ -840,9 +910,12 @@ def _getPostTitleAnnounceHtml(baseDir: str,
 def _replyToYourselfHtml(translate: {}) -> str:
     """Returns html for a title which is a reply to yourself
     """
+    replyingToThemselvesStr = 'replying to themselves'
+    if translate.get(replyingToThemselvesStr):
+        replyingToThemselvesStr = translate[replyingToThemselvesStr]
     return '    <img loading="lazy" title="' + \
-        translate['replying to themselves'] + \
-        '" alt="' + translate['replying to themselves'] + \
+        replyingToThemselvesStr + \
+        '" alt="' + replyingToThemselvesStr + \
         '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n'
 
@@ -851,9 +924,12 @@ def _replyToUnknownHtml(translate: {},
                         postJsonObject: {}) -> str:
     """Returns the html title for a reply to an unknown handle
     """
+    replyingToStr = 'replying to'
+    if translate.get(replyingToStr):
+        replyingToStr = translate[replyingToStr]
     return '        <img loading="lazy" title="' + \
-        translate['replying to'] + '" alt="' + \
-        translate['replying to'] + '" src="/icons' + \
+        replyingToStr + '" alt="' + \
+        replyingToStr + '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n' + \
         '        <a href="' + \
         postJsonObject['object']['inReplyTo'] + \
@@ -866,9 +942,12 @@ def _replyWithUnknownPathHtml(translate: {},
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/
     """
+    replyingToStr = 'replying to'
+    if translate.get(replyingToStr):
+        replyingToStr = translate[replyingToStr]
     return '        <img loading="lazy" title="' + \
-        translate['replying to'] + \
-        '" alt="' + translate['replying to'] + \
+        replyingToStr + \
+        '" alt="' + replyingToStr + \
         '" src="/icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + \
@@ -881,10 +960,13 @@ def _getReplyHtml(translate: {},
                   inReplyTo: str, replyDisplayName: str) -> str:
     """Returns html title for a reply
     """
+    replyingToStr = 'replying to'
+    if translate.get(replyingToStr):
+        replyingToStr = translate[replyingToStr]
     return '        ' + \
         '<img loading="lazy" title="' + \
-        translate['replying to'] + '" alt="' + \
-        translate['replying to'] + '" src="/' + \
+        replyingToStr + '" alt="' + \
+        replyingToStr + '" src="/' + \
         'icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + inReplyTo + \
@@ -985,6 +1067,9 @@ def _getPostTitleReplyHtml(baseDir: str,
     _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
     if replyAvatarUrl:
+        showProfileStr = 'Show profile'
+        if translate.get(showProfileStr):
+            showProfileStr = translate[showProfileStr]
         replyAvatarImageInPost = \
             '        <div class="timeline-avatar-reply">\n' + \
             '          <a class="imageAnchor" ' + \
@@ -992,7 +1077,7 @@ def _getPostTitleReplyHtml(baseDir: str,
             ';' + str(pageNumber) + ';' + replyAvatarUrl + \
             messageIdStr + '">\n' + \
             '          <img loading="lazy" src="' + replyAvatarUrl + '" ' + \
-            'title="' + translate['Show profile'] + \
+            'title="' + showProfileStr + \
             '" alt=" "' + avatarPosition + getBrokenLinkSubstitute() + \
             '/></a>\n        </div>\n'
 
@@ -1095,7 +1180,8 @@ def _getFooterWithIcons(showIcons: bool,
     return footerStr
 
 
-def individualPostAsHtml(allowDownloads: bool,
+def individualPostAsHtml(signingPrivateKeyPem: str,
+                         allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          translate: {},
                          pageNumber: int, baseDir: str,
@@ -1105,17 +1191,20 @@ def individualPostAsHtml(allowDownloads: bool,
                          avatarUrl: str, showAvatarOptions: bool,
                          allowDeletion: bool,
                          httpPrefix: str, projectVersion: str,
-                         boxName: str, YTReplacementDomain: str,
+                         boxName: str,
+                         YTReplacementDomain: str,
+                         twitterReplacementDomain: str,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
                          maxLikeCount: int,
-                         showRepeats: bool = True,
-                         showIcons: bool = False,
-                         manuallyApprovesFollowers: bool = False,
-                         showPublicOnly: bool = False,
-                         storeToCache: bool = True) -> str:
+                         showRepeats: bool,
+                         showIcons: bool,
+                         manuallyApprovesFollowers: bool,
+                         showPublicOnly: bool,
+                         storeToCache: bool,
+                         useCacheOnly: bool) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:
@@ -1169,9 +1258,12 @@ def individualPostAsHtml(allowDownloads: bool,
                                 postStartTime,
                                 pageNumber,
                                 recentPostsCache,
-                                maxRecentPosts)
+                                maxRecentPosts,
+                                signingPrivateKeyPem)
     if postHtml:
         return postHtml
+    if useCacheOnly and postJsonObject['type'] != 'Announce':
+        return ''
 
     _logPostTiming(enableTimingLog, postStartTime, '4')
 
@@ -1179,7 +1271,8 @@ def individualPostAsHtml(allowDownloads: bool,
         getAvatarImageUrl(session,
                           baseDir, httpPrefix,
                           postActor, personCache,
-                          avatarUrl, allowDownloads)
+                          avatarUrl, allowDownloads,
+                          signingPrivateKeyPem)
 
     _logPostTiming(enableTimingLog, postStartTime, '5')
 
@@ -1193,20 +1286,23 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorWf = \
             webfingerHandle(session, postActorHandle, httpPrefix,
                             cachedWebfingers,
-                            domain, __version__, False, False)
+                            domain, __version__, False, False,
+                            signingPrivateKeyPem)
 
         avatarUrl2 = None
         displayName = None
         if postActorWf:
-            (inboxUrl, pubKeyId, pubKey,
-             fromPersonId, sharedInbox,
-             avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                     postActorWf,
-                                                     personCache,
-                                                     projectVersion,
-                                                     httpPrefix,
-                                                     nickname, domain,
-                                                     'outbox', 72367)
+            originDomain = domain
+            (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
+             displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                            originDomain,
+                                            baseDir, session,
+                                            postActorWf,
+                                            personCache,
+                                            projectVersion,
+                                            httpPrefix,
+                                            nickname, domain,
+                                            'outbox', 72367)
 
         _logPostTiming(enableTimingLog, postStartTime, '6')
 
@@ -1253,21 +1349,47 @@ def individualPostAsHtml(allowDownloads: bool,
     announceJsonObject = None
     if postJsonObject['type'] == 'Announce':
         announceJsonObject = postJsonObject.copy()
+        blockedCache = {}
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
                              YTReplacementDomain,
+                             twitterReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, False,
                              systemLanguage,
-                             domainFull, personCache)
+                             domainFull, personCache,
+                             signingPrivateKeyPem,
+                             blockedCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
-            rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
+            announcedPostId = removeIdEnding(postJsonObject['id'])
+            rejectPostId(baseDir, nickname, domain, announcedPostId,
                          recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce
+
+        # is the announced post in the html cache?
+        postHtml = \
+            _getPostFromRecentCache(session, baseDir,
+                                    httpPrefix, nickname, domain,
+                                    postJsonObject,
+                                    postActor,
+                                    personCache,
+                                    allowDownloads,
+                                    showPublicOnly,
+                                    storeToCache,
+                                    boxName,
+                                    avatarUrl,
+                                    enableTimingLog,
+                                    postStartTime,
+                                    pageNumber,
+                                    recentPostsCache,
+                                    maxRecentPosts,
+                                    signingPrivateKeyPem)
+        if postHtml:
+            return postHtml
 
         announceFilename = \
             locatePost(baseDir, nickname, domain, postJsonObject['id'])
@@ -1365,7 +1487,8 @@ def individualPostAsHtml(allowDownloads: bool,
         if postJsonObject['object']['conversation']:
             conversationId = postJsonObject['object']['conversation']
 
-    replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
+    replyStr = _getReplyIconHtml(baseDir, nickname, domain,
+                                 isPublicRepeat,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
                                  translate, systemLanguage,
@@ -1531,7 +1654,10 @@ def individualPostAsHtml(allowDownloads: bool,
             postIsSensitive = postJsonObject['object']['sensitive']
         else:
             # add a generic summary if none is provided
-            postJsonObject['object']['summary'] = translate['Sensitive']
+            sensitiveStr = 'Sensitive'
+            if translate.get(sensitiveStr):
+                sensitiveStr = translate[sensitiveStr]
+            postJsonObject['object']['summary'] = sensitiveStr
 
     # add an extra line if there is a content warning,
     # for better vertical spacing on mobile
@@ -1583,7 +1709,10 @@ def individualPostAsHtml(allowDownloads: bool,
         else:
             objectContent = contentStr
     else:
-        objectContent = '🔒 ' + translate['Encrypted']
+        encryptedStr = 'Encrypted'
+        if translate.get(encryptedStr):
+            encryptedStr = translate[encryptedStr]
+        objectContent = '🔒 ' + encryptedStr
 
     objectContent = '<article>' + objectContent + '</article>'
 
@@ -1687,11 +1816,12 @@ def htmlIndividualPost(cssCache: {},
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
                        YTReplacementDomain: str,
+                       twitterReplacementDomain: str,
                        showPublishedDateOnly: bool,
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int) -> str:
+                       maxLikeCount: int, signingPrivateKeyPem: str) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1700,9 +1830,11 @@ def htmlIndividualPost(cssCache: {},
         likedByDomain, likedByPort = getDomainFromActor(likedBy)
         likedByDomain = getFullDomain(likedByDomain, likedByPort)
         likedByHandle = likedByNickname + '@' + likedByDomain
+        likedByStr = 'Liked by'
+        if translate.get(likedByStr):
+            likedByStr = translate[likedByStr]
         postStr += \
-            '<p>' + translate['Liked by'] + \
-            ' <a href="' + likedBy + '">@' + \
+            '<p>' + likedByStr + ' <a href="' + likedBy + '">@' + \
             likedByHandle + '</a>\n'
 
         domainFull = getFullDomain(domain, port)
@@ -1715,26 +1847,34 @@ def htmlIndividualPost(cssCache: {},
             '    <input type="hidden" name="searchtext" value="' + \
             likedByHandle + '">\n'
         if not isFollowingActor(baseDir, nickname, domainFull, likedBy):
+            translateFollowStr = 'Follow'
+            if translate.get(translateFollowStr):
+                translateFollowStr = translate[translateFollowStr]
             followStr += '    <button type="submit" class="button" ' + \
-                'name="submitSearch">' + translate['Follow'] + '</button>\n'
+                'name="submitSearch">' + translateFollowStr + '</button>\n'
+        goBackStr = 'Go Back'
+        if translate.get(goBackStr):
+            goBackStr = translate[goBackStr]
         followStr += '    <button type="submit" class="button" ' + \
-            'name="submitBack">' + translate['Go Back'] + '</button>\n'
+            'name="submitBack">' + goBackStr + '</button>\n'
         followStr += '  </form>\n'
         postStr += followStr + '</p>\n'
 
     postStr += \
-        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+        individualPostAsHtml(signingPrivateKeyPem,
+                             True, recentPostsCache, maxRecentPosts,
                              translate, None,
                              baseDir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
                              httpPrefix, projectVersion, 'inbox',
                              YTReplacementDomain,
+                             twitterReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
                              systemLanguage, maxLikeCount,
-                             False, authorized, False, False, False)
+                             False, authorized, False, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
@@ -1748,7 +1888,8 @@ def htmlIndividualPost(cssCache: {},
             postJsonObject = loadJson(postFilename)
             if postJsonObject:
                 postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session, cachedWebfingers,
@@ -1758,13 +1899,14 @@ def htmlIndividualPost(cssCache: {},
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, authorized,
-                                         False, False, False) + postStr
+                                         False, False, False, False) + postStr
 
     # show the following posts
     postFilename = locatePost(baseDir, nickname, domain, messageId)
@@ -1781,7 +1923,8 @@ def htmlIndividualPost(cssCache: {},
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr += \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session, cachedWebfingers,
@@ -1790,13 +1933,14 @@ def htmlIndividualPost(cssCache: {},
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, authorized,
-                                         False, False, False)
+                                         False, False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
@@ -1814,18 +1958,21 @@ def htmlPostReplies(cssCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     httpPrefix: str, projectVersion: str,
                     YTReplacementDomain: str,
+                    twitterReplacementDomain: str,
                     showPublishedDateOnly: bool,
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
                     themeName: str, systemLanguage: str,
-                    maxLikeCount: int) -> str:
+                    maxLikeCount: int,
+                    signingPrivateKeyPem: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr += \
-                individualPostAsHtml(True, recentPostsCache,
+                individualPostAsHtml(signingPrivateKeyPem,
+                                     True, recentPostsCache,
                                      maxRecentPosts,
                                      translate, None,
                                      baseDir, session, cachedWebfingers,
@@ -1834,12 +1981,13 @@ def htmlPostReplies(cssCache: {},
                                      None, True, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     twitterReplacementDomain,
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage,
                                      maxLikeCount,
-                                     False, False, False, False, False)
+                                     False, False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

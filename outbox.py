@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -34,12 +34,14 @@ from blocking import outboxUndoBlock
 from blocking import outboxMute
 from blocking import outboxUndoMute
 from media import replaceYouTube
+from media import replaceTwitter
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
 from announce import outboxAnnounce
 from announce import outboxUndoAnnounce
 from follow import outboxUndoFollow
+from follow import followerApprovalActive
 from skills import outboxSkills
 from availability import outboxAvailability
 from like import outboxLike
@@ -49,6 +51,7 @@ from bookmarks import outboxUndoBookmark
 from delete import outboxDelete
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
+from webapp_post import individualPostAsHtml
 
 
 def _outboxPersonReceiveUpdate(recentPostsCache: {},
@@ -189,12 +192,17 @@ def postMessageToOutbox(session, translate: {},
                         personCache: {}, allowDeletion: bool,
                         proxyType: str, version: str, debug: bool,
                         YTReplacementDomain: str,
+                        twitterReplacementDomain: str,
                         showPublishedDateOnly: bool,
                         allowLocalNetworkAccess: bool,
                         city: str, systemLanguage: str,
                         sharedItemsFederatedDomains: [],
                         sharedItemFederationTokens: {},
-                        lowBandwidth: bool) -> bool:
+                        lowBandwidth: bool,
+                        signingPrivateKeyPem: str,
+                        peertubeInstances: str, theme: str,
+                        maxLikeCount: int,
+                        maxRecentPosts: int) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -281,6 +289,9 @@ def postMessageToOutbox(session, translate: {},
             return False
         # replace youtube, so that google gets less tracking data
         replaceYouTube(messageJson, YTReplacementDomain, systemLanguage)
+        # replace twitter, so that twitter posts can be shown without
+        # having a twitter account
+        replaceTwitter(messageJson, twitterReplacementDomain, systemLanguage)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):
@@ -318,7 +329,7 @@ def postMessageToOutbox(session, translate: {},
                     # generate a path for the uploaded image
                     mPath = getMediaPath()
                     mediaPath = mPath + '/' + \
-                        createPassword(32) + '.' + fileExtension
+                        createPassword(16).lower() + '.' + fileExtension
                     createMediaDirs(baseDir, mPath)
                     mediaFilename = baseDir + '/' + mediaPath
                     # move the uploaded image to its new path
@@ -384,7 +395,10 @@ def postMessageToOutbox(session, translate: {},
                     baseDir + '/accounts/' + \
                     postToNickname + '@' + domain + '/.citations.txt'
                 if os.path.isfile(citationsFilename):
-                    os.remove(citationsFilename)
+                    try:
+                        os.remove(citationsFilename)
+                    except BaseException:
+                        pass
 
         # The following activity types get added to the index files
         indexedActivities = (
@@ -404,10 +418,13 @@ def postMessageToOutbox(session, translate: {},
                     if isImageMedia(session, baseDir, httpPrefix,
                                     postToNickname, domain,
                                     messageJson,
-                                    translate, YTReplacementDomain,
+                                    translate,
+                                    YTReplacementDomain,
+                                    twitterReplacementDomain,
                                     allowLocalNetworkAccess,
                                     recentPostsCache, debug, systemLanguage,
-                                    domainFull, personCache):
+                                    domainFull, personCache,
+                                    signingPrivateKeyPem):
                         inboxUpdateIndex('tlmedia', baseDir,
                                          postToNickname + '@' + domain,
                                          savedFilename, debug)
@@ -423,6 +440,37 @@ def postMessageToOutbox(session, translate: {},
                     inboxUpdateIndex(boxNameIndex, baseDir,
                                      postToNickname + '@' + domain,
                                      savedFilename, debug)
+
+                    # regenerate the html
+                    useCacheOnly = False
+                    pageNumber = 1
+                    showIndividualPostIcons = True
+                    manuallyApproveFollowers = \
+                        followerApprovalActive(baseDir, postToNickname, domain)
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         False, recentPostsCache,
+                                         maxRecentPosts,
+                                         translate, pageNumber,
+                                         baseDir, session,
+                                         cachedWebfingers,
+                                         personCache,
+                                         postToNickname, domain, port,
+                                         messageJson, None, True,
+                                         allowDeletion,
+                                         httpPrefix, __version__,
+                                         boxNameIndex,
+                                         YTReplacementDomain,
+                                         twitterReplacementDomain,
+                                         showPublishedDateOnly,
+                                         peertubeInstances,
+                                         allowLocalNetworkAccess,
+                                         theme, systemLanguage,
+                                         maxLikeCount,
+                                         boxNameIndex != 'dm',
+                                         showIndividualPostIcons,
+                                         manuallyApproveFollowers,
+                                         False, True, useCacheOnly)
+
     if outboxAnnounce(recentPostsCache,
                       baseDir, messageJson, debug):
         if debug:
@@ -468,7 +516,8 @@ def postMessageToOutbox(session, translate: {},
                               messageJson, debug,
                               version,
                               sharedItemsFederatedDomains,
-                              sharedItemFederationTokens)
+                              sharedItemFederationTokens,
+                              signingPrivateKeyPem)
     followersThreads.append(followersThread)
 
     if debug:
@@ -592,5 +641,6 @@ def postMessageToOutbox(session, translate: {},
                          messageJson, debug,
                          version,
                          sharedItemsFederatedDomains,
-                         sharedItemFederationTokens)
+                         sharedItemFederationTokens,
+                         signingPrivateKeyPem)
     return True

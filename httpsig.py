@@ -4,7 +4,7 @@ __credits__ = ['lamia']
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Security"
 
@@ -24,6 +24,7 @@ from time import gmtime, strftime
 import datetime
 from utils import getFullDomain
 from utils import getSHA256
+from utils import getSHA512
 from utils import localActorUrl
 
 
@@ -39,7 +40,8 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
                     toDomain: str, toPort: int,
                     path: str,
                     httpPrefix: str,
-                    messageBodyJsonStr: str) -> str:
+                    messageBodyJsonStr: str,
+                    contentType: str) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
@@ -49,13 +51,18 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
 
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-    keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
+    if nickname != domain and nickname.lower() != 'actor':
+        keyID = localActorUrl(httpPrefix, nickname, domain)
+    else:
+        # instance actor
+        keyID = httpPrefix + '://' + domain + '/actor'
+    keyID += '#main-key'
     if not messageBodyJsonStr:
         headers = {
-            '(request-target)': f'post {path}',
+            '(request-target)': f'get {path}',
             'host': toDomain,
             'date': dateStr,
-            'content-type': 'application/json'
+            'accept': contentType
         }
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
@@ -78,7 +85,8 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     signedHeaderText = ''
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
-    signedHeaderText = signedHeaderText.strip()
+    # strip the trailing linefeed
+    signedHeaderText = signedHeaderText.rstrip('\n')
     # signedHeaderText.encode('ascii') matches
     headerDigest = getSHA256(signedHeaderText.encode('ascii'))
     # print('headerDigest2: ' + str(headerDigest))
@@ -155,11 +163,18 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
     signedHeaderText = signedHeaderText.strip()
-    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
 
     # Sign the digest. Potentially other signing algorithms can be added here.
     signature = ''
-    if algorithm == 'rsa-sha256':
+    if algorithm == 'rsa-sha512':
+        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+        rawSignature = key.sign(headerDigest,
+                                padding.PKCS1v15(),
+                                hazutils.Prehashed(hashes.SHA512()))
+        signature = base64.b64encode(rawSignature).decode('ascii')
+    else:
+        # default sha256
+        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
         rawSignature = key.sign(headerDigest,
                                 padding.PKCS1v15(),
                                 hazutils.Prehashed(hashes.SHA256()))
@@ -184,27 +199,35 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     return signatureIndexHeader, signatureHeader
 
 
-def createSignedHeader(privateKeyPem: str, nickname: str,
+def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                        domain: str, port: int,
                        toDomain: str, toPort: int,
                        path: str, httpPrefix: str, withDigest: bool,
-                       messageBodyJsonStr: str) -> {}:
+                       messageBodyJsonStr: str,
+                       contentType: str) -> {}:
     """Note that the domain is the destination, not the sender
     """
-    contentType = 'application/activity+json'
     headerDomain = getFullDomain(toDomain, toPort)
 
-    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    # if no date is given then create one
+    if not dateStr:
+        dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+
+    # Content-Type or Accept header
+    if not contentType:
+        contentType = 'application/activity+json'
+
     if not withDigest:
         headers = {
-            '(request-target)': f'post {path}',
+            '(request-target)': f'get {path}',
             'host': headerDomain,
-            'date': dateStr
+            'date': dateStr,
+            'accept': contentType
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port, toDomain, toPort,
-                            path, httpPrefix, None)
+                            path, httpPrefix, None, contentType)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
         contentLength = len(messageBodyJsonStr)
@@ -220,7 +243,8 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             toDomain, toPort,
-                            path, httpPrefix, messageBodyJsonStr)
+                            path, httpPrefix, messageBodyJsonStr,
+                            contentType)
     headers['signature'] = signatureHeader
     return headers
 
@@ -302,9 +326,13 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
         }
 
+    if debug:
+        print('signatureDict: ' + str(signatureDict))
+
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
+    algorithm = 'rsa-sha256'
     for signedHeader in signatureDict[requestTargetKey].split(fieldSep2):
         signedHeader = signedHeader.strip()
         if debug:
@@ -323,6 +351,9 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             #     if ')' in appendStr:
             #         appendStr = appendStr.split(')')[0]
             signedHeaderList.append(appendStr)
+        elif signedHeader == 'algorithm':
+            if headers.get(signedHeader):
+                algorithm = headers[signedHeader]
         elif signedHeader == 'digest':
             if messageBodyDigest:
                 bodyDigest = messageBodyDigest
@@ -333,19 +364,17 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             if headers.get(signedHeader):
                 appendStr = f'content-length: {headers[signedHeader]}'
                 signedHeaderList.append(appendStr)
+            elif headers.get('Content-Length'):
+                contentLength = headers['Content-Length']
+                signedHeaderList.append(f'content-length: {contentLength}')
+            elif headers.get('Content-length'):
+                contentLength = headers['Content-length']
+                appendStr = f'content-length: {contentLength}'
+                signedHeaderList.append(appendStr)
             else:
-                if headers.get('Content-Length'):
-                    contentLength = headers['Content-Length']
-                    signedHeaderList.append(f'content-length: {contentLength}')
-                else:
-                    if headers.get('Content-length'):
-                        contentLength = headers['Content-length']
-                        appendStr = f'content-length: {contentLength}'
-                        signedHeaderList.append(appendStr)
-                    else:
-                        if debug:
-                            print('DEBUG: verifyPostHeaders ' + signedHeader +
-                                  ' not found in ' + str(headers))
+                if debug:
+                    print('DEBUG: verifyPostHeaders ' + signedHeader +
+                          ' not found in ' + str(headers))
         else:
             if headers.get(signedHeader):
                 if signedHeader == 'date' and not noRecencyCheck:
@@ -395,11 +424,10 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                         signedHeaderList.append(
                             f'{signedHeader}: {headers[signedHeaderCap]}')
 
-    if debug:
-        print('DEBUG: signedHeaderList: ' + str(signedHeaderList))
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
-    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+    if debug:
+        print('signedHeaderText:\n' + signedHeaderText + 'END')
 
     # Get the signature, verify with public key, return result
     signature = None
@@ -415,15 +443,29 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     else:
         # Original Mastodon signature
         signature = base64.b64decode(signatureDict['signature'])
+        if debug:
+            print('signature: ' + algorithm + ' ' +
+                  signatureDict['signature'])
+
+    # If extra signing algorithms need to be added then do it here
+    if algorithm == 'rsa-sha256':
+        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+        paddingStr = padding.PKCS1v15()
+        alg = hazutils.Prehashed(hashes.SHA256())
+    elif algorithm == 'rsa-sha512':
+        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+        paddingStr = padding.PKCS1v15()
+        alg = hazutils.Prehashed(hashes.SHA512())
+    else:
+        print('Unknown http signature algorithm: ' + algorithm)
+        paddingStr = padding.PKCS1v15()
+        alg = hazutils.Prehashed(hashes.SHA256())
+        headerDigest = ''
 
     try:
-        pubkey.verify(
-            signature,
-            headerDigest,
-            padding.PKCS1v15(),
-            hazutils.Prehashed(hashes.SHA256()))
+        pubkey.verify(signature, headerDigest, paddingStr, alg)
         return True
     except BaseException:
         if debug:
             print('DEBUG: verifyPostHeaders pkcs1_15 verify failure')
-        return False
+    return False

@@ -474,5 +474,18 @@
     "Create a new wanted item": "قم بإنشاء عنصر مطلوب جديد",
     "Wanted Items Search": "البحث عن العناصر المطلوبة",
     "Website": "موقع إلكتروني",
-    "Low Bandwidth": "انخفاض النطاق الترددي"
+    "Low Bandwidth": "انخفاض النطاق الترددي",
+    "accommodation": "الإقامة",
+    "Forbidden": "محرم",
+    "You're not allowed": "كنت لا يسمح",
+    "Hours after posting during which replies are allowed": "ساعات بعد النشر المسموح بها خلال الردود",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "مجال استبدال تويتر",
+    "Buy": "يشتري",
+    "Request to stay": "طلب البقاء",
+    "Profile": "الملف الشخصي",
+    "Introduce yourself and specify the date and time when you wish to stay": "عرّف عن نفسك وحدد التاريخ والوقت اللذين ترغب في الإقامة فيهما",
+    "Members": "أعضاء",
+    "Join": "انضم",
+    "Leave": "يترك"
 }

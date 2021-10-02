@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -232,7 +232,8 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     _setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
 
 
-def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
+def updateAvatarImageCache(signingPrivateKeyPem: str,
+                           session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
                            force: bool = False, debug: bool = False) -> str:
@@ -279,7 +280,10 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                           str(result.status_code))
                 # remove partial download
                 if os.path.isfile(avatarImageFilename):
-                    os.remove(avatarImageFilename)
+                    try:
+                        os.remove(avatarImageFilename)
+                    except BaseException:
+                        pass
             else:
                 with open(avatarImageFilename, 'wb') as f:
                     f.write(result.content)
@@ -299,7 +303,7 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
         personJson = \
-            getJson(session, actor, sessionHeaders, None,
+            getJson(signingPrivateKeyPem, session, actor, sessionHeaders, None,
                     debug, __version__, httpPrefix, None)
         if personJson:
             if not personJson.get('id'):
@@ -468,6 +472,16 @@ def _getImageFile(baseDir: str, name: str, directory: str,
     bannerExtensions = getImageExtensions()
     bannerFile = ''
     bannerFilename = ''
+    for ext in bannerExtensions:
+        bannerFileTest = name + '.' + ext
+        bannerFilenameTest = directory + '/' + bannerFileTest
+        if os.path.isfile(bannerFilenameTest):
+            bannerFile = name + '_' + theme + '.' + ext
+            bannerFilename = bannerFilenameTest
+            return bannerFile, bannerFilename
+    # if not found then use the default image
+    theme = 'default'
+    directory = baseDir + '/theme/' + theme
     for ext in bannerExtensions:
         bannerFileTest = name + '.' + ext
         bannerFilenameTest = directory + '/' + bannerFileTest
@@ -903,7 +917,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         if attach.get('name'):
             imageDescription = attach['name'].replace('"', "'")
         if _isImageMimeType(mediaType):
-            if _isAttachedImage(attach['url']):
+            imageUrl = attach['url']
+            if _isAttachedImage(attach['url']) and 'svg' not in mediaType:
                 if not attachmentStr:
                     attachmentStr += '<div class="media">\n'
                     mediaStyleAdded = True
@@ -913,10 +928,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                 if boxName == 'tlmedia':
                     galleryStr += '<div class="gallery">\n'
                     if not isMuted:
-                        galleryStr += '  <a href="' + attach['url'] + '">\n'
+                        galleryStr += '  <a href="' + imageUrl + '">\n'
                         galleryStr += \
                             '    <img loading="lazy" src="' + \
-                            attach['url'] + '" alt="" title="">\n'
+                            imageUrl + '" alt="" title="">\n'
                         galleryStr += '  </a>\n'
                     if postJsonObject['object'].get('url'):
                         imagePostUrl = postJsonObject['object']['url']
@@ -941,9 +956,9 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     galleryStr += '  </div>\n'
                     galleryStr += '</div>\n'
 
-                attachmentStr += '<a href="' + attach['url'] + '">'
+                attachmentStr += '<a href="' + imageUrl + '">'
                 attachmentStr += \
-                    '<img loading="lazy" src="' + attach['url'] + \
+                    '<img loading="lazy" src="' + imageUrl + \
                     '" alt="' + imageDescription + '" title="' + \
                     imageDescription + '" class="attachment"></a>\n'
                 attachmentCtr += 1
@@ -1103,7 +1118,8 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 def getAvatarImageUrl(session,
                       baseDir: str, httpPrefix: str,
                       postActor: str, personCache: {},
-                      avatarUrl: str, allowDownloads: bool) -> str:
+                      avatarUrl: str, allowDownloads: bool,
+                      signingPrivateKeyPem: str) -> str:
     """Returns the avatar image url
     """
     # get the avatar image url for the post actor
@@ -1112,11 +1128,13 @@ def getAvatarImageUrl(session,
             getPersonAvatarUrl(baseDir, postActor, personCache,
                                allowDownloads)
         avatarUrl = \
-            updateAvatarImageCache(session, baseDir, httpPrefix,
+            updateAvatarImageCache(signingPrivateKeyPem,
+                                   session, baseDir, httpPrefix,
                                    postActor, avatarUrl, personCache,
                                    allowDownloads)
     else:
-        updateAvatarImageCache(session, baseDir, httpPrefix,
+        updateAvatarImageCache(signingPrivateKeyPem,
+                               session, baseDir, httpPrefix,
                                postActor, avatarUrl, personCache,
                                allowDownloads)
 
@@ -1274,7 +1292,8 @@ def editTextArea(label: str, name: str, value: str = "",
 def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                           httpPrefix: str, domainFull: str,
                           contactNickname: str, itemID: str,
-                          actor: str, sharesFileType: str) -> str:
+                          actor: str, sharesFileType: str,
+                          category: str) -> str:
     """Returns the html for an individual shared item
     """
     sharedItemsForm = '<div class="container">\n'
@@ -1301,6 +1320,7 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
         sharedItemsForm += \
             '<b>' + translate['Location'] + ':</b> ' + \
             sharedItem['location'] + '<br>'
+    contactTitleStr = translate['Contact']
     if sharedItem.get('itemPrice') and \
        sharedItem.get('itemCurrency'):
         if isfloat(sharedItem['itemPrice']):
@@ -1309,17 +1329,24 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
                     ' <b>' + translate['Price'] + \
                     ':</b> ' + sharedItem['itemPrice'] + \
                     ' ' + sharedItem['itemCurrency']
+                contactTitleStr = translate['Buy']
     sharedItemsForm += '</p>\n'
     contactActor = \
         localActorUrl(httpPrefix, contactNickname, domainFull)
+    buttonStyleStr = 'button'
+    if category == 'accommodation':
+        contactTitleStr = translate['Request to stay']
+        buttonStyleStr = 'contactbutton'
+
     sharedItemsForm += \
         '<p>' + \
         '<a href="' + actor + '?replydm=sharedesc:' + \
         sharedItem['displayName'] + '?mention=' + contactActor + \
-        '"><button class="button">' + translate['Contact'] + \
+        '?category=' + category + \
+        '"><button class="' + buttonStyleStr + '">' + contactTitleStr + \
         '</button></a>\n' + \
         '<a href="' + contactActor + '"><button class="button">' + \
-        translate['View'] + '</button></a>\n'
+        translate['Profile'] + '</button></a>\n'
 
     # should the remove button be shown?
     showRemoveButton = False
@@ -1354,7 +1381,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
                   itemID: str, translate: {},
                   sharedItemsFederatedDomains: [],
                   defaultTimeline: str, theme: str,
-                  sharesFileType: str) -> str:
+                  sharesFileType: str, category: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
     sharesJson = None
@@ -1419,7 +1446,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     shareStr += \
         htmlSearchResultShare(baseDir, sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
-                              actor, sharesFileType)
+                              actor, sharesFileType, category)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

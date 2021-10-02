@@ -474,5 +474,18 @@
     "Create a new wanted item": "Creeu un element desitjat",
     "Wanted Items Search": "Cerca d'articles desitjats",
     "Website": "Lloc web",
-    "Low Bandwidth": "Ample de banda baixa"
+    "Low Bandwidth": "Ample de banda baixa",
+    "accommodation": "allotjament",
+    "Forbidden": "Prohibit",
+    "You're not allowed": "No està permès",
+    "Hours after posting during which replies are allowed": "Hores després de la publicació durant les respostes",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Domini de substitució de Twitter",
+    "Buy": "Comprar",
+    "Request to stay": "Sol·licitud de permanència",
+    "Profile": "Perfil",
+    "Introduce yourself and specify the date and time when you wish to stay": "Presenteu-vos i especifiqueu la data i l’hora en què voleu romandre",
+    "Members": "Membres",
+    "Join": "Uneix-te",
+    "Leave": "Marxa"
 }

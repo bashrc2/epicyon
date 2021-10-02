@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Accessibility"
 
@@ -11,6 +11,7 @@ import os
 import html
 import random
 import urllib.parse
+from utils import removeIdEnding
 from utils import isDM
 from utils import isReply
 from utils import camelCaseSplit
@@ -489,7 +490,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                 announcedHandle + '. ' + content
     postId = None
     if postJsonObject['object'].get('id'):
-        postId = postJsonObject['object']['id']
+        postId = removeIdEnding(postJsonObject['object']['id'])
 
     followRequestsExist = False
     followRequestsList = []

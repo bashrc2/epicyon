@@ -474,5 +474,18 @@
     "Create a new wanted item": "Erstelle einen neuen gesuchten Artikel",
     "Wanted Items Search": "Gesuchte Artikel suchen",
     "Website": "Webseite",
-    "Low Bandwidth": "Niedrige Bandbreite"
+    "Low Bandwidth": "Niedrige Bandbreite",
+    "accommodation": "unterkunft",
+    "Forbidden": "Verboten",
+    "You're not allowed": "Du darfst nicht",
+    "Hours after posting during which replies are allowed": "Stunden nach dem Posten, während denen Antworten erlaubt sind",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Twitter-Ersatzdomain",
+    "Buy": "Besorgen",
+    "Request to stay": "Bitte um bleiben",
+    "Profile": "Profil",
+    "Introduce yourself and specify the date and time when you wish to stay": "Stellen Sie sich vor und geben Sie Datum und Uhrzeit Ihres Aufenthalts an",
+    "Members": "Mitglieder",
+    "Join": "Verbinden",
+    "Leave": "Verlassen"
 }

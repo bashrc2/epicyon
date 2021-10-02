@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
@@ -177,7 +177,8 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
                        httpPrefix: str,
                        skill: str, skillLevelPercent: int,
                        cachedWebfingers: {}, personCache: {},
-                       debug: bool, projectVersion: str) -> {}:
+                       debug: bool, projectVersion: str,
+                       signingPrivateKeyPem: str) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
@@ -209,7 +210,8 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        domain, projectVersion, debug, False)
+                        domain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)
@@ -222,12 +224,14 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, nickname, domain,
-                                            postToBox, 86725)
+    originDomain = domain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, nickname, domain,
+                                    postToBox, 76121)
 
     if not inboxUrl:
         if debug:

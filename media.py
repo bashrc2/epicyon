@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -28,10 +28,10 @@ from shutil import move
 from city import spoofGeolocation
 
 
-def replaceYouTube(postJsonObject: {}, replacementDomain: str,
-                   systemLanguage: str) -> None:
-    """Replace YouTube with a replacement domain
-    This denies Google some, but not all, tracking data
+def _replaceSiloDomain(postJsonObject: {},
+                       siloDomain: str, replacementDomain: str,
+                       systemLanguage: str) -> None:
+    """Replace a silo domain with a replacement domain
     """
     if not replacementDomain:
         return
@@ -40,12 +40,30 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str,
     if not postJsonObject['object'].get('content'):
         return
     contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
-    if 'www.youtube.com' not in contentStr:
+    if siloDomain not in contentStr:
         return
-    contentStr = contentStr.replace('www.youtube.com', replacementDomain)
+    contentStr = contentStr.replace(siloDomain, replacementDomain)
     postJsonObject['object']['content'] = contentStr
     if postJsonObject['object'].get('contentMap'):
         postJsonObject['object']['contentMap'][systemLanguage] = contentStr
+
+
+def replaceYouTube(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
+    """Replace YouTube with a replacement domain
+    This denies Google some, but not all, tracking data
+    """
+    _replaceSiloDomain(postJsonObject, 'www.youtube.com',
+                       replacementDomain, systemLanguage)
+
+
+def replaceTwitter(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
+    """Replace Twitter with a replacement domain
+    This allows you to view twitter posts without having a twitter account
+    """
+    _replaceSiloDomain(postJsonObject, 'twitter.com',
+                       replacementDomain, systemLanguage)
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:

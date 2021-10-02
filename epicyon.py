@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Commandline Interface"
 
@@ -25,6 +25,7 @@ from roles import setRole
 from webfinger import webfingerHandle
 from bookmarks import sendBookmarkViaServer
 from bookmarks import sendUndoBookmarkViaServer
+from posts import getInstanceActorKey
 from posts import sendMuteViaServer
 from posts import sendUndoMuteViaServer
 from posts import c2sBoxJson
@@ -169,6 +170,11 @@ parser.add_argument('--dormantMonths',
                     default=3,
                     help='How many months does a followed account need to ' +
                     'be unseen for before being considered dormant')
+parser.add_argument('--defaultReplyIntervalHours',
+                    dest='defaultReplyIntervalHours', type=int,
+                    default=1000,
+                    help='How many hours after publication of a post ' +
+                    'are replies to it permitted')
 parser.add_argument('--sendThreadsTimeoutMins',
                     dest='sendThreadsTimeoutMins', type=int,
                     default=30,
@@ -217,6 +223,9 @@ parser.add_argument('--path', dest='baseDir',
 parser.add_argument('--ytdomain', dest='YTReplacementDomain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
+parser.add_argument('--twitterdomain', dest='twitterReplacementDomain',
+                    type=str, default=None,
+                    help='Domain used to replace twitter.com')
 parser.add_argument('--language', dest='language',
                     type=str, default=None,
                     help='Language code, eg. en/fr/de/es')
@@ -406,10 +415,11 @@ parser.add_argument("--debug", type=str2bool, nargs='?',
 parser.add_argument("--notificationSounds", type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Play notification sounds")
-parser.add_argument("--authenticatedFetch", type=str2bool, nargs='?',
+parser.add_argument("--secureMode", type=str2bool, nargs='?',
                     const=True, default=False,
-                    help="Enable authentication on GET requests" +
-                    " for json (authenticated fetch)")
+                    help="Requires all GET requests to be signed, " +
+                    "so that the sender can be identifies and " +
+                    "blocked  if neccessary")
 parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Skills searches only return " +
@@ -633,12 +643,13 @@ if args.tests:
     sys.exit()
 if args.testsnetwork:
     print('Network Tests')
-    testSharedItemsFederation()
-    testGroupFollow()
-    testPostMessageBetweenServers()
-    testFollowBetweenServers()
-    testClientToServer()
-    testUpdateActor()
+    baseDir = os.getcwd()
+    testSharedItemsFederation(baseDir)
+    testGroupFollow(baseDir)
+    testPostMessageBetweenServers(baseDir)
+    testFollowBetweenServers(baseDir)
+    testClientToServer(baseDir)
+    testUpdateActor(baseDir)
     print('All tests succeeded')
     sys.exit()
 
@@ -662,6 +673,12 @@ if args.libretranslateApiKey:
     setConfigParam(baseDir, 'libretranslateApiKey', args.libretranslateApiKey)
 
 if args.posts:
+    if not args.domain:
+        originDomain = getConfigParam(baseDir, 'domain')
+    else:
+        originDomain = args.domain
+    if debug:
+        print('originDomain: ' + str(originDomain))
     if '@' not in args.posts:
         if '/users/' in args.posts:
             postsNickname = getNicknameFromActor(args.posts)
@@ -688,9 +705,11 @@ if args.posts:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__, args.language)
+                           __version__, args.language,
+                           signingPrivateKeyPem, originDomain)
     sys.exit()
 
 if args.postDomains:
@@ -722,13 +741,22 @@ if args.postDomains:
     domainList = []
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
+    if not args.domain:
+        originDomain = getConfigParam(baseDir, 'domain')
+    else:
+        originDomain = args.domain
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
+                                      originDomain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__,
                                       wordFrequency, domainList,
-                                      args.language)
+                                      args.language,
+                                      signingPrivateKeyPem)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -765,13 +793,17 @@ if args.postDomainsBlocked:
     domainList = []
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     domainList = getPublicPostDomainsBlocked(None,
                                              baseDir, nickname, domain,
                                              proxyType, args.port,
                                              httpPrefix, debug,
                                              __version__,
                                              wordFrequency, domainList,
-                                             args.language)
+                                             args.language,
+                                             signingPrivateKeyPem)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -806,12 +838,16 @@ if args.checkDomains:
     maxBlockedDomains = 0
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     checkDomains(None,
                  baseDir, nickname, domain,
                  proxyType, args.port,
                  httpPrefix, debug,
                  __version__,
-                 maxBlockedDomains, False, args.language)
+                 maxBlockedDomains, False, args.language,
+                 signingPrivateKeyPem)
     sys.exit()
 
 if args.socnet:
@@ -825,10 +861,19 @@ if args.socnet:
     proxyType = 'tor'
     if not args.language:
         args.language = 'en'
+    if not args.domain:
+        args.domain = getConfigParam(baseDir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     dotGraph = instancesGraph(baseDir, args.socnet,
                               proxyType, args.port,
                               httpPrefix, debug,
-                              __version__, args.language)
+                              __version__, args.language,
+                              signingPrivateKeyPem)
     try:
         with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
@@ -838,6 +883,12 @@ if args.socnet:
     sys.exit()
 
 if args.postsraw:
+    if not args.domain:
+        originDomain = getConfigParam(baseDir, 'domain')
+    else:
+        originDomain = args.domain
+    if debug:
+        print('originDomain: ' + str(originDomain))
     if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
         sys.exit()
@@ -854,9 +905,11 @@ if args.postsraw:
         proxyType = 'gnunet'
     if not args.language:
         args.language = 'en'
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, originDomain)
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
-                           __version__, args.language)
+                           __version__, args.language,
+                           signingPrivateKeyPem, originDomain)
     sys.exit()
 
 if args.json:
@@ -865,8 +918,20 @@ if args.json:
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
-    testJson = getJson(session, args.json, asHeader, None,
-                       debug, __version__, httpPrefix, None)
+    if not args.domain:
+        args.domain = getConfigParam(baseDir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    if debug:
+        print('baseDir: ' + str(baseDir))
+        if signingPrivateKeyPem:
+            print('Obtained instance actor signing key')
+        else:
+            print('Did not obtain instance actor key for ' + domain)
+    testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
+                       None, debug, __version__, httpPrefix, domain)
     pprint(testJson)
     sys.exit()
 
@@ -1075,6 +1140,11 @@ if args.approve:
     postLog = []
     cachedWebfingers = {}
     personCache = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     manualApproveFollowRequest(session, baseDir,
                                httpPrefix,
                                args.nickname, domain, port,
@@ -1082,7 +1152,8 @@ if args.approve:
                                federationList,
                                sendThreads, postLog,
                                cachedWebfingers, personCache,
-                               debug, __version__)
+                               debug, __version__,
+                               signingPrivateKeyPem)
     sys.exit()
 
 if args.deny:
@@ -1097,6 +1168,11 @@ if args.deny:
     postLog = []
     cachedWebfingers = {}
     personCache = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     manualDenyFollowRequest(session, baseDir,
                             httpPrefix,
                             args.nickname, domain, port,
@@ -1104,7 +1180,8 @@ if args.deny:
                             federationList,
                             sendThreads, postLog,
                             cachedWebfingers, personCache,
-                            debug, __version__)
+                            debug, __version__,
+                            signingPrivateKeyPem)
     sys.exit()
 
 if args.followerspending:
@@ -1184,9 +1261,14 @@ if args.message:
     replyTo = args.replyto
     followersOnly = False
     isArticle = False
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending post to ' + args.sendto)
 
-    sendPostViaServer(__version__,
+    sendPostViaServer(signingPrivateKeyPem, __version__,
                       baseDir, session, args.nickname, args.password,
                       domain, port,
                       toNickname, toDomain, toPort, ccUrl,
@@ -1216,13 +1298,18 @@ if args.announce:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending announce/repeat of ' + args.announce)
 
     sendAnnounceViaServer(baseDir, session, args.nickname, args.password,
                           domain, port,
                           httpPrefix, args.announce,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1255,13 +1342,18 @@ if args.box:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     session = createSession(proxyType)
     boxJson = c2sBoxJson(baseDir, session,
                          args.nickname, args.password,
                          domain, port, httpPrefix,
                          args.box, args.pageNumber,
-                         args.debug)
+                         args.debug, signingPrivateKeyPem)
     if boxJson:
         pprint(boxJson)
     else:
@@ -1311,6 +1403,11 @@ if args.itemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending shared item: ' + args.itemName)
 
     sendShareViaServer(baseDir, session,
@@ -1327,7 +1424,8 @@ if args.itemName:
                        args.duration,
                        cachedWebfingers, personCache,
                        debug, __version__,
-                       args.itemPrice, args.itemCurrency)
+                       args.itemPrice, args.itemCurrency,
+                       signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1348,6 +1446,11 @@ if args.undoItemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo of shared item: ' + args.undoItemName)
 
     sendUndoShareViaServer(baseDir, session,
@@ -1356,7 +1459,7 @@ if args.undoItemName:
                            httpPrefix,
                            args.undoItemName,
                            cachedWebfingers, personCache,
-                           debug, __version__)
+                           debug, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1405,6 +1508,11 @@ if args.wantedItemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending wanted item: ' + args.wantedItemName)
 
     sendWantedViaServer(baseDir, session,
@@ -1421,7 +1529,8 @@ if args.wantedItemName:
                         args.duration,
                         cachedWebfingers, personCache,
                         debug, __version__,
-                        args.itemPrice, args.itemCurrency)
+                        args.itemPrice, args.itemCurrency,
+                        signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1442,6 +1551,11 @@ if args.undoWantedItemName:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo of wanted item: ' + args.undoWantedItemName)
 
     sendUndoWantedViaServer(baseDir, session,
@@ -1450,7 +1564,7 @@ if args.undoWantedItemName:
                             httpPrefix,
                             args.undoWantedItemName,
                             cachedWebfingers, personCache,
-                            debug, __version__)
+                            debug, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1471,6 +1585,11 @@ if args.like:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending like of ' + args.like)
 
     sendLikeViaServer(baseDir, session,
@@ -1478,7 +1597,7 @@ if args.like:
                       domain, port,
                       httpPrefix, args.like,
                       cachedWebfingers, personCache,
-                      True, __version__)
+                      True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1499,6 +1618,11 @@ if args.undolike:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo like of ' + args.undolike)
 
     sendUndoLikeViaServer(baseDir, session,
@@ -1506,7 +1630,8 @@ if args.undolike:
                           domain, port,
                           httpPrefix, args.undolike,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__,
+                          signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1527,6 +1652,11 @@ if args.bookmark:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending bookmark of ' + args.bookmark)
 
     sendBookmarkViaServer(baseDir, session,
@@ -1534,7 +1664,8 @@ if args.bookmark:
                           domain, port,
                           httpPrefix, args.bookmark,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__,
+                          signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1555,6 +1686,11 @@ if args.unbookmark:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo bookmark of ' + args.unbookmark)
 
     sendUndoBookmarkViaServer(baseDir, session,
@@ -1562,7 +1698,7 @@ if args.unbookmark:
                               domain, port,
                               httpPrefix, args.unbookmark,
                               cachedWebfingers, personCache,
-                              True, __version__)
+                              True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1583,6 +1719,11 @@ if args.delete:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending delete request of ' + args.delete)
 
     sendDeleteViaServer(baseDir, session,
@@ -1590,7 +1731,7 @@ if args.delete:
                         domain, port,
                         httpPrefix, args.delete,
                         cachedWebfingers, personCache,
-                        True, __version__)
+                        True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1623,6 +1764,11 @@ if args.follow:
     followHttpPrefix = httpPrefix
     if args.follow.startswith('https'):
         followHttpPrefix = 'https'
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     sendFollowRequestViaServer(baseDir, session,
                                args.nickname, args.password,
@@ -1630,7 +1776,7 @@ if args.follow:
                                followNickname, followDomain, followPort,
                                httpPrefix,
                                cachedWebfingers, personCache,
-                               debug, __version__)
+                               debug, __version__, signingPrivateKeyPem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1664,6 +1810,11 @@ if args.unfollow:
     followHttpPrefix = httpPrefix
     if args.follow.startswith('https'):
         followHttpPrefix = 'https'
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     sendUnfollowRequestViaServer(baseDir, session,
                                  args.nickname, args.password,
@@ -1671,7 +1822,7 @@ if args.unfollow:
                                  followNickname, followDomain, followPort,
                                  httpPrefix,
                                  cachedWebfingers, personCache,
-                                 debug, __version__)
+                                 debug, __version__, signingPrivateKeyPem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1694,6 +1845,11 @@ if args.followingList:
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     followingJson = \
         getFollowingViaServer(baseDir, session,
@@ -1701,7 +1857,7 @@ if args.followingList:
                               domain, port,
                               httpPrefix, args.pageNumber,
                               cachedWebfingers, personCache,
-                              debug, __version__)
+                              debug, __version__, signingPrivateKeyPem)
     if followingJson:
         pprint(followingJson)
     sys.exit()
@@ -1722,6 +1878,11 @@ if args.followersList:
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     followersJson = \
         getFollowersViaServer(baseDir, session,
@@ -1729,7 +1890,8 @@ if args.followersList:
                               domain, port,
                               httpPrefix, args.pageNumber,
                               cachedWebfingers, personCache,
-                              debug, __version__)
+                              debug, __version__,
+                              signingPrivateKeyPem)
     if followersJson:
         pprint(followersJson)
     sys.exit()
@@ -1750,6 +1912,11 @@ if args.followRequestsList:
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
 
     followRequestsJson = \
         getFollowRequestsViaServer(baseDir, session,
@@ -1757,7 +1924,7 @@ if args.followRequestsList:
                                    domain, port,
                                    httpPrefix, args.pageNumber,
                                    cachedWebfingers, personCache,
-                                   debug, __version__)
+                                   debug, __version__, signingPrivateKeyPem)
     if followRequestsJson:
         pprint(followRequestsJson)
     sys.exit()
@@ -1797,9 +1964,14 @@ if args.migrations:
         httpPrefix = 'https'
         port = 443
     session = createSession(proxyType)
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     ctr = migrateAccounts(baseDir, session,
                           httpPrefix, cachedWebfingers,
-                          True)
+                          True, signingPrivateKeyPem)
     if ctr == 0:
         print('No followed accounts have moved')
     else:
@@ -1807,7 +1979,17 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    getActorJson(args.domain, args.actor, args.http, args.gnunet, debug)
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    if debug:
+        print('baseDir: ' + str(baseDir))
+        if signingPrivateKeyPem:
+            print('Obtained instance actor signing key')
+        else:
+            print('Did not obtain instance actor key for ' + domain)
+    getActorJson(domain, args.actor, args.http, args.gnunet,
+                 debug, False, signingPrivateKeyPem)
     sys.exit()
 
 if args.followers:
@@ -1882,10 +2064,17 @@ if args.followers:
     if nickname == 'inbox':
         nickname = domain
 
+    hostDomain = None
+    if args.domain:
+        hostDomain = args.domain
     handle = nickname + '@' + domain
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug, False)
+                                hostDomain, __version__, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
@@ -1927,9 +2116,12 @@ if args.followers:
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     followersList = \
-        downloadFollowCollection('followers', session,
+        downloadFollowCollection(signingPrivateKeyPem,
+                                 'followers', session,
                                  httpPrefix, personUrl, 1, 3)
     if followersList:
         for actor in followersList:
@@ -2179,6 +2371,11 @@ if args.skill:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending ' + args.skill + ' skill level ' +
           str(args.skillLevelPercent) + ' for ' + nickname)
 
@@ -2188,7 +2385,7 @@ if args.skill:
                        httpPrefix,
                        args.skill, args.skillLevelPercent,
                        cachedWebfingers, personCache,
-                       True, __version__)
+                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2209,6 +2406,11 @@ if args.availability:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending availability status of ' + nickname +
           ' as ' + args.availability)
 
@@ -2217,7 +2419,7 @@ if args.availability:
                               httpPrefix,
                               args.availability,
                               cachedWebfingers, personCache,
-                              True, __version__)
+                              True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2318,13 +2520,18 @@ if args.block:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending block of ' + args.block)
 
     sendBlockViaServer(baseDir, session, nickname, args.password,
                        domain, port,
                        httpPrefix, args.block,
                        cachedWebfingers, personCache,
-                       True, __version__)
+                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2345,13 +2552,18 @@ if args.mute:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending mute of ' + args.mute)
 
     sendMuteViaServer(baseDir, session, nickname, args.password,
                       domain, port,
                       httpPrefix, args.mute,
                       cachedWebfingers, personCache,
-                      True, __version__)
+                      True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2372,13 +2584,18 @@ if args.unmute:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo mute of ' + args.unmute)
 
     sendUndoMuteViaServer(baseDir, session, nickname, args.password,
                           domain, port,
                           httpPrefix, args.unmute,
                           cachedWebfingers, personCache,
-                          True, __version__)
+                          True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2411,13 +2628,18 @@ if args.unblock:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
     print('Sending undo block of ' + args.unblock)
 
     sendUndoBlockViaServer(baseDir, session, nickname, args.password,
                            domain, port,
                            httpPrefix, args.unblock,
                            cachedWebfingers, personCache,
-                           True, __version__)
+                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2803,6 +3025,15 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
+twitterDomain = getConfigParam(baseDir, 'twitterdomain')
+if twitterDomain:
+    if '://' in twitterDomain:
+        twitterDomain = twitterDomain.split('://')[1]
+    if '/' in twitterDomain:
+        twitterDomain = twitterDomain.split('/')[0]
+    if '.' in twitterDomain:
+        args.twitterReplacementDomain = twitterDomain
+
 if setTheme(baseDir, themeName, domain,
             args.allowLocalNetworkAccess, args.language):
     print('Theme set to ' + themeName)
@@ -2833,7 +3064,8 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(args.lowBandwidth, args.maxLikeCount,
+    runDaemon(args.defaultReplyIntervalHours,
+              args.lowBandwidth, args.maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
               args.logLoginFailures,
@@ -2869,9 +3101,10 @@ if __name__ == "__main__":
               instanceId, args.client, baseDir,
               domain, onionDomain, i2pDomain,
               args.YTReplacementDomain,
+              args.twitterReplacementDomain,
               port, proxyPort, httpPrefix,
               federationList, args.maxMentions,
-              args.maxEmoji, args.authenticatedFetch,
+              args.maxEmoji, args.secureMode,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,

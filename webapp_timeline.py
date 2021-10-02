@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -395,6 +395,27 @@ def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
     return tlStr
 
 
+def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
+    """Shows selactable page numbers at the bottom of the screen
+    """
+    pagesWidth = 3
+    minPageNumber = pageNumber - pagesWidth
+    if minPageNumber < 1:
+        minPageNumber = 1
+    maxPageNumber = minPageNumber + 1 + (pagesWidth * 2)
+    numStr = ''
+    for page in range(minPageNumber, maxPageNumber):
+        if numStr:
+            numStr += ' ⸻ '
+        pageStr = str(page)
+        if page == pageNumber:
+            pageStr = '<mark>' + str(page) + '</mark>'
+        numStr += \
+            '<a href="' + usersPath + '/' + boxName + '?page=' + \
+            str(page) + '" class="pageslist">' + pageStr + '</a>'
+    return '<center>' + numStr + '</center>'
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -406,6 +427,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  manuallyApproveFollowers: bool,
                  minimal: bool,
                  YTReplacementDomain: str,
+                 twitterReplacementDomain: str,
                  showPublishedDateOnly: bool,
                  newswire: {}, moderator: bool,
                  editor: bool,
@@ -423,7 +445,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  textModeBanner: str,
                  accessKeys: {}, systemLanguage: str,
                  maxLikeCount: int,
-                 sharedItemsFederatedDomains: []) -> str:
+                 sharedItemsFederatedDomains: [],
+                 signingPrivateKeyPem: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -450,7 +473,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(dmFile):
         newDM = True
         if boxName == 'dm':
-            os.remove(dmFile)
+            try:
+                os.remove(dmFile)
+            except BaseException:
+                pass
 
     # should the Replies button be highlighted?
     newReply = False
@@ -458,7 +484,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(replyFile):
         newReply = True
         if boxName == 'tlreplies':
-            os.remove(replyFile)
+            try:
+                os.remove(replyFile)
+            except BaseException:
+                pass
 
     # should the Shares button be highlighted?
     newShare = False
@@ -466,7 +495,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(newShareFile):
         newShare = True
         if boxName == 'tlshares':
-            os.remove(newShareFile)
+            try:
+                os.remove(newShareFile)
+            except BaseException:
+                pass
 
     # should the Wanted button be highlighted?
     newWanted = False
@@ -474,7 +506,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(newWantedFile):
         newWanted = True
         if boxName == 'tlwanted':
-            os.remove(newWantedFile)
+            try:
+                os.remove(newWantedFile)
+            except BaseException:
+                pass
 
     # should the Moderation/reports button be highlighted?
     newReport = False
@@ -482,7 +517,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if os.path.isfile(newReportFile):
         newReport = True
         if boxName == 'moderation':
-            os.remove(newReportFile)
+            try:
+                os.remove(newReportFile)
+            except BaseException:
+                pass
 
     separatorStr = ''
     if boxName != 'tlmedia':
@@ -790,6 +828,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += textModeSeparator
+        tlStr += '<br>' + _pageNumberButtons(usersPath, boxName, pageNumber)
         tlStr += \
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
@@ -808,6 +847,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             print('ERROR: no orderedItems in timeline for '
                   + boxName + ' ' + str(timelineJson))
             return ''
+
+    useCacheOnly = False
+    if boxName == 'inbox':
+        useCacheOnly = True
 
     if timelineJson:
         # if this is the media timeline then add an extra gallery container
@@ -828,24 +871,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 # is the post in the memory cache of recent ones?
                 currTlStr = None
-                if boxName != 'tlmedia' and \
-                   recentPostsCache.get('index'):
-                    postId = \
-                        removeIdEnding(item['id']).replace('/', '#')
-                    if postId in recentPostsCache['index']:
-                        if not item.get('muted'):
-                            if recentPostsCache['html'].get(postId):
-                                currTlStr = recentPostsCache['html'][postId]
-                                currTlStr = \
-                                    preparePostFromHtmlCache(nickname,
-                                                             currTlStr,
-                                                             boxName,
-                                                             pageNumber)
-                                _logTimelineTiming(enableTimingLog,
-                                                   timelineStartTime,
-                                                   boxName, '10')
-                        else:
-                            print('Muted post in timeline ' + boxName)
+                if boxName != 'tlmedia' and recentPostsCache.get('html'):
+                    postId = removeIdEnding(item['id']).replace('/', '#')
+                    if recentPostsCache['html'].get(postId):
+                        currTlStr = recentPostsCache['html'][postId]
+                        currTlStr = \
+                            preparePostFromHtmlCache(nickname,
+                                                     currTlStr,
+                                                     boxName,
+                                                     pageNumber)
+                        _logTimelineTiming(enableTimingLog,
+                                           timelineStartTime,
+                                           boxName, '10')
 
                 if not currTlStr:
                     _logTimelineTiming(enableTimingLog,
@@ -854,7 +891,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                     # read the post from disk
                     currTlStr = \
-                        individualPostAsHtml(False, recentPostsCache,
+                        individualPostAsHtml(signingPrivateKeyPem,
+                                             False, recentPostsCache,
                                              maxRecentPosts,
                                              translate, pageNumber,
                                              baseDir, session,
@@ -866,6 +904,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              httpPrefix, projectVersion,
                                              boxName,
                                              YTReplacementDomain,
+                                             twitterReplacementDomain,
                                              showPublishedDateOnly,
                                              peertubeInstances,
                                              allowLocalNetworkAccess,
@@ -874,15 +913,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
-                                             False, True)
+                                             False, True, useCacheOnly)
                     _logTimelineTiming(enableTimingLog,
                                        timelineStartTime, boxName, '12')
 
                 if currTlStr:
-                    itemCtr += 1
-                    tlStr += textModeSeparator + currTlStr
-                    if separatorStr:
-                        tlStr += separatorStr
+                    if currTlStr not in tlStr:
+                        itemCtr += 1
+                        tlStr += textModeSeparator + currTlStr
+                        if separatorStr:
+                            tlStr += separatorStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
@@ -903,6 +943,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
+        tlStr += _pageNumberButtons(usersPath, boxName, pageNumber)
         tlStr += textModeSeparator
     elif itemCtr == 0:
         tlStr += _getHelpForTimeline(baseDir, boxName)
@@ -923,52 +964,62 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
 
 def htmlIndividualShare(domain: str, shareId: str,
-                        actor: str, item: {}, translate: {},
+                        actor: str, sharedItem: {}, translate: {},
                         showContact: bool, removeButton: bool,
                         sharesFileType: str) -> str:
     """Returns an individual shared item as html
     """
     profileStr = '<div class="container">\n'
-    profileStr += '<p class="share-title">' + item['displayName'] + '</p>\n'
-    if item.get('imageUrl'):
-        profileStr += '<a href="' + item['imageUrl'] + '">\n'
+    profileStr += \
+        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
+    if sharedItem.get('imageUrl'):
+        profileStr += '<a href="' + sharedItem['imageUrl'] + '">\n'
         profileStr += \
-            '<img loading="lazy" src="' + item['imageUrl'] + \
+            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
             '" alt="' + translate['Item image'] + '">\n</a>\n'
-    profileStr += '<p>' + item['summary'] + '</p>\n<p>'
-    if item.get('itemQty'):
-        if item['itemQty'] > 1:
+    profileStr += '<p>' + sharedItem['summary'] + '</p>\n<p>'
+    if sharedItem.get('itemQty'):
+        if sharedItem['itemQty'] > 1:
             profileStr += \
                 '<b>' + translate['Quantity'] + ':</b> ' + \
-                str(item['itemQty']) + '<br>'
+                str(sharedItem['itemQty']) + '<br>'
     profileStr += \
-        '<b>' + translate['Type'] + ':</b> ' + item['itemType'] + '<br>'
+        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
     profileStr += \
-        '<b>' + translate['Category'] + ':</b> ' + item['category'] + '<br>'
-    if item.get('location'):
+        '<b>' + translate['Category'] + ':</b> ' + \
+        sharedItem['category'] + '<br>'
+    if sharedItem.get('location'):
         profileStr += \
             '<b>' + translate['Location'] + ':</b> ' + \
-            item['location'] + '<br>'
-    if item.get('itemPrice') and item.get('itemCurrency'):
-        if isfloat(item['itemPrice']):
-            if float(item['itemPrice']) > 0:
+            sharedItem['location'] + '<br>'
+    contactTitleStr = translate['Contact']
+    if sharedItem.get('itemPrice') and sharedItem.get('itemCurrency'):
+        if isfloat(sharedItem['itemPrice']):
+            if float(sharedItem['itemPrice']) > 0:
                 profileStr += ' ' + \
                     '<b>' + translate['Price'] + ':</b> ' + \
-                    item['itemPrice'] + ' ' + item['itemCurrency']
+                    sharedItem['itemPrice'] + ' ' + sharedItem['itemCurrency']
+                contactTitleStr = translate['Buy']
     profileStr += '</p>\n'
-    sharedesc = item['displayName']
-    if '<' not in sharedesc and '?' not in sharedesc:
+    sharedesc = sharedItem['displayName']
+    if '<' not in sharedesc and ';' not in sharedesc:
         if showContact:
-            contactActor = item['actor']
+            buttonStyleStr = 'button'
+            if sharedItem['category'] == 'accommodation':
+                contactTitleStr = translate['Request to stay']
+                buttonStyleStr = 'contactbutton'
+
+            contactActor = sharedItem['actor']
             profileStr += \
                 '<p>' + \
                 '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
-                '?mention=' + contactActor + '"><button class="button">' + \
-                translate['Contact'] + '</button></a>\n'
+                '?mention=' + contactActor + '">' + \
+                '<button class="' + buttonStyleStr + '">' + \
+                contactTitleStr + '</button></a>\n'
             profileStr += \
                 '<a href="' + contactActor + '"><button class="button">' + \
-                translate['View'] + '</button></a>\n'
+                translate['Profile'] + '</button></a>\n'
         if removeButton and domain in shareId:
             if sharesFileType == 'shares':
                 profileStr += \
@@ -1006,6 +1057,8 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     timelineStr = ''
 
     if pageNumber > 1:
+        timelineStr += '<br>' + \
+            _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
         timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
@@ -1025,17 +1078,18 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if isModerator(baseDir, nickname):
         isModeratorAccount = True
 
-    for published, item in sharesJson.items():
+    for published, sharedItem in sharesJson.items():
         showContactButton = False
-        if item['actor'] != actor:
+        if sharedItem['actor'] != actor:
             showContactButton = True
         showRemoveButton = False
-        if '___' + domain in item['shareId']:
-            if item['actor'] == actor or isAdminAccount or isModeratorAccount:
+        if '___' + domain in sharedItem['shareId']:
+            if sharedItem['actor'] == actor or \
+               isAdminAccount or isModeratorAccount:
                 showRemoveButton = True
         timelineStr += \
-            htmlIndividualShare(domain, item['shareId'],
-                                actor, item, translate,
+            htmlIndividualShare(domain, sharedItem['shareId'],
+                                actor, sharedItem, translate,
                                 showContactButton, showRemoveButton,
                                 sharesFileType)
         timelineStr += separatorStr
@@ -1053,6 +1107,8 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             'icons/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
+        timelineStr += \
+            _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
 
     return timelineStr
 
@@ -1066,6 +1122,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                YTReplacementDomain: str,
+               twitterReplacementDomain: str,
                showPublishedDateOnly: bool,
                newswire: {}, positiveVoting: bool,
                showPublishAsIcon: bool,
@@ -1079,7 +1136,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
                maxLikeCount: int,
-               sharedItemsFederatedDomains: []) -> str:
+               sharedItemsFederatedDomains: [],
+               signingPrivateKeyPem: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -1093,7 +1151,9 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        False, YTReplacementDomain,
+                        False,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1102,7 +1162,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlWanted(cssCache: {}, defaultTimeline: str,
@@ -1114,6 +1174,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                YTReplacementDomain: str,
+               twitterReplacementDomain: str,
                showPublishedDateOnly: bool,
                newswire: {}, positiveVoting: bool,
                showPublishAsIcon: bool,
@@ -1127,7 +1188,8 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
                maxLikeCount: int,
-               sharedItemsFederatedDomains: []) -> str:
+               sharedItemsFederatedDomains: [],
+               signingPrivateKeyPem: str) -> str:
     """Show the wanted timeline as html
     """
     manuallyApproveFollowers = \
@@ -1141,7 +1203,9 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         nickname, domain, port, None,
                         'tlwanted', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        False, YTReplacementDomain,
+                        False,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1150,7 +1214,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -1161,7 +1225,9 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               nickname: str, domain: str, port: int, inboxJson: {},
               allowDeletion: bool,
               httpPrefix: str, projectVersion: str,
-              minimal: bool, YTReplacementDomain: str,
+              minimal: bool,
+              YTReplacementDomain: str,
+              twitterReplacementDomain: str,
               showPublishedDateOnly: bool,
               newswire: {}, positiveVoting: bool,
               showPublishAsIcon: bool,
@@ -1175,7 +1241,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               textModeBanner: str,
               accessKeys: {}, systemLanguage: str,
               maxLikeCount: int,
-              sharedItemsFederatedDomains: []) -> str:
+              sharedItemsFederatedDomains: [],
+              signingPrivateKeyPem: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -1189,7 +1256,9 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1198,7 +1267,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -1209,7 +1278,9 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   nickname: str, domain: str, port: int, bookmarksJson: {},
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
-                  minimal: bool, YTReplacementDomain: str,
+                  minimal: bool,
+                  YTReplacementDomain: str,
+                  twitterReplacementDomain: str,
                   showPublishedDateOnly: bool,
                   newswire: {}, positiveVoting: bool,
                   showPublishAsIcon: bool,
@@ -1223,7 +1294,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   textModeBanner: str,
                   accessKeys: {}, systemLanguage: str,
                   maxLikeCount: int,
-                  sharedItemsFederatedDomains: []) -> str:
+                  sharedItemsFederatedDomains: [],
+                  signingPrivateKeyPem: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -1237,7 +1309,9 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1246,7 +1320,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -1257,7 +1331,9 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  nickname: str, domain: str, port: int, inboxJson: {},
                  allowDeletion: bool,
                  httpPrefix: str, projectVersion: str,
-                 minimal: bool, YTReplacementDomain: str,
+                 minimal: bool,
+                 YTReplacementDomain: str,
+                 twitterReplacementDomain: str,
                  showPublishedDateOnly: bool,
                  newswire: {}, positiveVoting: bool,
                  showPublishAsIcon: bool,
@@ -1271,7 +1347,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  textModeBanner: str,
                  accessKeys: {}, systemLanguage: str,
                  maxLikeCount: int,
-                 sharedItemsFederatedDomains: []) -> str:
+                 sharedItemsFederatedDomains: [],
+                 signingPrivateKeyPem: str) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1281,7 +1358,9 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
-                        YTReplacementDomain, showPublishedDateOnly,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
+                        showPublishedDateOnly,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
@@ -1289,7 +1368,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -1300,7 +1379,9 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      nickname: str, domain: str, port: int, inboxJson: {},
                      allowDeletion: bool,
                      httpPrefix: str, projectVersion: str,
-                     minimal: bool, YTReplacementDomain: str,
+                     minimal: bool,
+                     YTReplacementDomain: str,
+                     twitterReplacementDomain: str,
                      showPublishedDateOnly: bool,
                      newswire: {}, positiveVoting: bool,
                      showPublishAsIcon: bool,
@@ -1314,7 +1395,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      textModeBanner: str,
                      accessKeys: {}, systemLanguage: str,
                      maxLikeCount: int,
-                     sharedItemsFederatedDomains: []) -> str:
+                     sharedItemsFederatedDomains: [],
+                     signingPrivateKeyPem: str) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1324,7 +1406,9 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1333,7 +1417,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -1344,7 +1428,9 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
-                   minimal: bool, YTReplacementDomain: str,
+                   minimal: bool,
+                   YTReplacementDomain: str,
+                   twitterReplacementDomain: str,
                    showPublishedDateOnly: bool,
                    newswire: {}, positiveVoting: bool,
                    showPublishAsIcon: bool,
@@ -1358,7 +1444,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
                    maxLikeCount: int,
-                   sharedItemsFederatedDomains: []) -> str:
+                   sharedItemsFederatedDomains: [],
+                   signingPrivateKeyPem: str) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1368,7 +1455,9 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1377,7 +1466,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1388,7 +1477,9 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
-                   minimal: bool, YTReplacementDomain: str,
+                   minimal: bool,
+                   YTReplacementDomain: str,
+                   twitterReplacementDomain: str,
                    showPublishedDateOnly: bool,
                    newswire: {}, positiveVoting: bool,
                    showPublishAsIcon: bool,
@@ -1402,7 +1493,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
                    maxLikeCount: int,
-                   sharedItemsFederatedDomains: []) -> str:
+                   sharedItemsFederatedDomains: [],
+                   signingPrivateKeyPem: str) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1412,7 +1504,9 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1421,7 +1515,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1432,7 +1526,9 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       nickname: str, domain: str, port: int, inboxJson: {},
                       allowDeletion: bool,
                       httpPrefix: str, projectVersion: str,
-                      minimal: bool, YTReplacementDomain: str,
+                      minimal: bool,
+                      YTReplacementDomain: str,
+                      twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       newswire: {}, positiveVoting: bool,
                       showPublishAsIcon: bool,
@@ -1447,7 +1543,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       textModeBanner: str,
                       accessKeys: {}, systemLanguage: str,
                       maxLikeCount: int,
-                      sharedItemsFederatedDomains: []) -> str:
+                      sharedItemsFederatedDomains: [],
+                      signingPrivateKeyPem: str) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1457,7 +1554,9 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlfeatures',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
@@ -1466,7 +1565,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1477,7 +1576,9 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   nickname: str, domain: str, port: int, inboxJson: {},
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
-                  minimal: bool, YTReplacementDomain: str,
+                  minimal: bool,
+                  YTReplacementDomain: str,
+                  twitterReplacementDomain: str,
                   showPublishedDateOnly: bool,
                   newswire: {}, moderator: bool, editor: bool,
                   positiveVoting: bool, showPublishAsIcon: bool,
@@ -1491,7 +1592,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   textModeBanner: str,
                   accessKeys: {}, systemLanguage: str,
                   maxLikeCount: int,
-                  sharedItemsFederatedDomains: []) -> str:
+                  sharedItemsFederatedDomains: [],
+                  signingPrivateKeyPem: str) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1501,7 +1603,9 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlnews',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain,
+                        minimal,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, moderator, editor,
                         positiveVoting, showPublishAsIcon,
@@ -1510,7 +1614,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1521,7 +1625,9 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                nickname: str, domain: str, port: int, outboxJson: {},
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
-               minimal: bool, YTReplacementDomain: str,
+               minimal: bool,
+               YTReplacementDomain: str,
+               twitterReplacementDomain: str,
                showPublishedDateOnly: bool,
                newswire: {}, positiveVoting: bool,
                showPublishAsIcon: bool,
@@ -1535,7 +1641,8 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                textModeBanner: str,
                accessKeys: {}, systemLanguage: str,
                maxLikeCount: int,
-               sharedItemsFederatedDomains: []) -> str:
+               sharedItemsFederatedDomains: [],
+               signingPrivateKeyPem: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1548,11 +1655,13 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,
                         manuallyApproveFollowers, minimal,
-                        YTReplacementDomain, showPublishedDateOnly,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
+                        showPublishedDateOnly,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
                         allowLocalNetworkAccess, textModeBanner,
                         accessKeys, systemLanguage, maxLikeCount,
-                        sharedItemsFederatedDomains)
+                        sharedItemsFederatedDomains, signingPrivateKeyPem)

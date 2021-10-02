@@ -474,5 +474,18 @@
     "Create a new wanted item": "एक नई वांछित वस्तु बनाएँ",
     "Wanted Items Search": "वांटेड आइटम सर्च",
     "Website": "वेबसाइट",
-    "Low Bandwidth": "कम बैंडविड्थ"
+    "Low Bandwidth": "कम बैंडविड्थ",
+    "accommodation": "निवास स्थान",
+    "Forbidden": "निषिद्ध",
+    "You're not allowed": "आपको अनुमति नहीं है",
+    "Hours after posting during which replies are allowed": "पोस्ट करने के कुछ घंटे जिसके बाद जवाब देने की अनुमति है",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "ट्विटर रिप्लेसमेंट डोमेन",
+    "Buy": "खरीदना",
+    "Request to stay": "रहने का अनुरोध",
+    "Profile": "प्रोफ़ाइल",
+    "Introduce yourself and specify the date and time when you wish to stay": "अपना परिचय दें और वह तारीख और समय निर्दिष्ट करें जब आप रुकना चाहते हैं",
+    "Members": "सदस्यों",
+    "Join": "शामिल हों",
+    "Leave": "छोड़ना"
 }

@@ -1,0 +1,989 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductGlossary.owl#",
+    "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.json#",
+    "dfc-p:specialize": {
+      "@type": "@id"
+    }
+  },
+  "@graph": [
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#EntirePlace",
+      "rdfs:label": [
+        {
+          "@value": "Entire Place",
+          "@language": "en"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "ar"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "ku"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "es"
+        },
+        {
+          "@value": "Posto intero",
+          "@language": "it"
+        },
+        {
+          "@value": "Gesamter Ort",
+          "@language": "de"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "sw"
+        },
+        {
+          "@value": "Lugar completo",
+          "@language": "pt"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "oc"
+        },
+        {
+          "@value": "Все место",
+          "@language": "ru"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "cy"
+        },
+        {
+          "@value": "集合場所",
+          "@language": "ja"
+        },
+        {
+          "@value": "Áit Eintire",
+          "@language": "ga"
+        },
+        {
+          "@value": "जगह",
+          "@language": "hi"
+        },
+        {
+          "@value": "入口",
+          "@language": "zh"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "fr"
+        },
+        {
+          "@value": "Entire Place",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#EntirePlace",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#PrivateRoom",
+      "rdfs:label": [
+        {
+          "@value": "Private Room",
+          "@language": "en"
+        },
+        {
+          "@value": "الغرفة الخاصة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Private Room",
+          "@language": "ku"
+        },
+        {
+          "@value": "Habitación privada",
+          "@language": "es"
+        },
+        {
+          "@value": "Stanza privata",
+          "@language": "it"
+        },
+        {
+          "@value": "Privatzimmer",
+          "@language": "de"
+        },
+        {
+          "@value": "Private Room",
+          "@language": "sw"
+        },
+        {
+          "@value": "Quarto privado",
+          "@language": "pt"
+        },
+        {
+          "@value": "Private Room",
+          "@language": "oc"
+        },
+        {
+          "@value": "Частная комната",
+          "@language": "ru"
+        },
+        {
+          "@value": "Private Room",
+          "@language": "cy"
+        },
+        {
+          "@value": "プライベートルーム",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seomra na nDaoine",
+          "@language": "ga"
+        },
+        {
+          "@value": "निजी कक्ष",
+          "@language": "hi"
+        },
+        {
+          "@value": "私人会议室",
+          "@language": "zh"
+        },
+        {
+          "@value": "Salle privée",
+          "@language": "fr"
+        },
+        {
+          "@value": "Private Room",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#PrivateRoom",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#HotelRoom",
+      "rdfs:label": [
+        {
+          "@value": "Hotel Room",
+          "@language": "en"
+        },
+        {
+          "@value": "فندق",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "ku"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "es"
+        },
+        {
+          "@value": "Camera dell'hotel",
+          "@language": "it"
+        },
+        {
+          "@value": "Hotelzimmer",
+          "@language": "de"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "sw"
+        },
+        {
+          "@value": "Quarto de Hotel",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "oc"
+        },
+        {
+          "@value": "Номер в отеле",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "cy"
+        },
+        {
+          "@value": "ホテル ルーム",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seomra Óstán",
+          "@language": "ga"
+        },
+        {
+          "@value": "होटल",
+          "@language": "hi"
+        },
+        {
+          "@value": "旅馆",
+          "@language": "zh"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hotel Room",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#HotelRoom",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#SharedRoom",
+      "rdfs:label": [
+        {
+          "@value": "Shared Room",
+          "@language": "en"
+        },
+        {
+          "@value": "الغرفة المشتركة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Shared Room",
+          "@language": "ku"
+        },
+        {
+          "@value": "Habitación compartida",
+          "@language": "es"
+        },
+        {
+          "@value": "Camera condivisa",
+          "@language": "it"
+        },
+        {
+          "@value": "Zimmer",
+          "@language": "de"
+        },
+        {
+          "@value": "Shared Room",
+          "@language": "sw"
+        },
+        {
+          "@value": "Quarto compartilhado",
+          "@language": "pt"
+        },
+        {
+          "@value": "Shared Room",
+          "@language": "oc"
+        },
+        {
+          "@value": "Общая комната",
+          "@language": "ru"
+        },
+        {
+          "@value": "Shared Room",
+          "@language": "cy"
+        },
+        {
+          "@value": "シェアルーム",
+          "@language": "ja"
+        },
+        {
+          "@value": "Seomra Comhroinnte",
+          "@language": "ga"
+        },
+        {
+          "@value": "साझा कक्ष",
+          "@language": "hi"
+        },
+        {
+          "@value": "共有会议室",
+          "@language": "zh"
+        },
+        {
+          "@value": "Salle partagée",
+          "@language": "fr"
+        },
+        {
+          "@value": "Shared Room",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#SharedRoom",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Sofa",
+      "rdfs:label": [
+        {
+          "@value": "Sofa",
+          "@language": "en"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "ar"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "ku"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "es"
+        },
+        {
+          "@value": "Divano",
+          "@language": "it"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "de"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "sw"
+        },
+        {
+          "@value": "Sofá",
+          "@language": "pt"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "oc"
+        },
+        {
+          "@value": "Диван",
+          "@language": "ru"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "cy"
+        },
+        {
+          "@value": "ソファ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Toir agus Crainn",
+          "@language": "ga"
+        },
+        {
+          "@value": "सोफा",
+          "@language": "hi"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "zh"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "fr"
+        },
+        {
+          "@value": "Sofa",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Sofa",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Boat",
+      "rdfs:label": [
+        {
+          "@value": "Boat",
+          "@language": "en"
+        },
+        {
+          "@value": "Boat",
+          "@language": "ar"
+        },
+        {
+          "@value": "Boat",
+          "@language": "ku"
+        },
+        {
+          "@value": "El barco",
+          "@language": "es"
+        },
+        {
+          "@value": "Barca",
+          "@language": "it"
+        },
+        {
+          "@value": "Boote",
+          "@language": "de"
+        },
+        {
+          "@value": "Boat",
+          "@language": "sw"
+        },
+        {
+          "@value": "Barco",
+          "@language": "pt"
+        },
+        {
+          "@value": "Boat",
+          "@language": "oc"
+        },
+        {
+          "@value": "Лодка",
+          "@language": "ru"
+        },
+        {
+          "@value": "Boat",
+          "@language": "cy"
+        },
+        {
+          "@value": "ボート",
+          "@language": "ja"
+        },
+        {
+          "@value": "taiseachas aeir: fliuch",
+          "@language": "ga"
+        },
+        {
+          "@value": "नाव",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 博塔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Boat",
+          "@language": "fr"
+        },
+        {
+          "@value": "Boat",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Boat",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Barge",
+      "rdfs:label": [
+        {
+          "@value": "Barge",
+          "@language": "en"
+        },
+        {
+          "@value": "Barge",
+          "@language": "ar"
+        },
+        {
+          "@value": "Barge",
+          "@language": "ku"
+        },
+        {
+          "@value": "Barge",
+          "@language": "es"
+        },
+        {
+          "@value": "Barge",
+          "@language": "it"
+        },
+        {
+          "@value": "Barrel",
+          "@language": "de"
+        },
+        {
+          "@value": "Barge",
+          "@language": "sw"
+        },
+        {
+          "@value": "Barco",
+          "@language": "pt"
+        },
+        {
+          "@value": "Barge",
+          "@language": "oc"
+        },
+        {
+          "@value": "Барж",
+          "@language": "ru"
+        },
+        {
+          "@value": "Barge",
+          "@language": "cy"
+        },
+        {
+          "@value": "バージ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Toir agus Crainn",
+          "@language": "ga"
+        },
+        {
+          "@value": "बार्ज",
+          "@language": "hi"
+        },
+        {
+          "@value": "律师协会",
+          "@language": "zh"
+        },
+        {
+          "@value": "Barge",
+          "@language": "fr"
+        },
+        {
+          "@value": "Barge",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Boat",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tent",
+      "rdfs:label": [
+        {
+          "@value": "Tent",
+          "@language": "en"
+        },
+        {
+          "@value": "الخيمة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Tent",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tent",
+          "@language": "es"
+        },
+        {
+          "@value": "Tenda",
+          "@language": "it"
+        },
+        {
+          "@value": "Zelt",
+          "@language": "de"
+        },
+        {
+          "@value": "Tent",
+          "@language": "sw"
+        },
+        {
+          "@value": "Tenda",
+          "@language": "pt"
+        },
+        {
+          "@value": "Tent",
+          "@language": "oc"
+        },
+        {
+          "@value": "Тент",
+          "@language": "ru"
+        },
+        {
+          "@value": "Tent",
+          "@language": "cy"
+        },
+        {
+          "@value": "テント",
+          "@language": "ja"
+        },
+        {
+          "@value": "Tent",
+          "@language": "ga"
+        },
+        {
+          "@value": "टेंट",
+          "@language": "hi"
+        },
+        {
+          "@value": "答辩",
+          "@language": "zh"
+        },
+        {
+          "@value": "Tent",
+          "@language": "fr"
+        },
+        {
+          "@value": "Tent",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tent",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Caravan",
+      "rdfs:label": [
+        {
+          "@value": "Caravan",
+          "@language": "en"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "ar"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "ku"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "es"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "it"
+        },
+        {
+          "@value": "Wohnwagen",
+          "@language": "de"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "sw"
+        },
+        {
+          "@value": "Caravana",
+          "@language": "pt"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "oc"
+        },
+        {
+          "@value": "Караван",
+          "@language": "ru"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "cy"
+        },
+        {
+          "@value": "キャラバン",
+          "@language": "ja"
+        },
+        {
+          "@value": "Amharc ar gach eolas",
+          "@language": "ga"
+        },
+        {
+          "@value": "कारवां",
+          "@language": "hi"
+        },
+        {
+          "@value": "车队",
+          "@language": "zh"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "fr"
+        },
+        {
+          "@value": "Caravan",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Caravan",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Hostel",
+      "rdfs:label": [
+        {
+          "@value": "Hostel",
+          "@language": "en"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "ku"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "es"
+        },
+        {
+          "@value": "Ostello",
+          "@language": "it"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "de"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "sw"
+        },
+        {
+          "@value": "Albergue",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "oc"
+        },
+        {
+          "@value": "Хостел",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "cy"
+        },
+        {
+          "@value": "ホステル",
+          "@language": "ja"
+        },
+        {
+          "@value": "brú",
+          "@language": "ga"
+        },
+        {
+          "@value": "छात्रावास",
+          "@language": "hi"
+        },
+        {
+          "@value": "人质",
+          "@language": "zh"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hostel",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Hostel",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Yurt",
+      "rdfs:label": [
+        {
+          "@value": "Yurt",
+          "@language": "en"
+        },
+        {
+          "@value": "يوت",
+          "@language": "ar"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "ku"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "es"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "it"
+        },
+        {
+          "@value": "Rind",
+          "@language": "de"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "sw"
+        },
+        {
+          "@value": "Yurt.",
+          "@language": "pt"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "oc"
+        },
+        {
+          "@value": "Юрт",
+          "@language": "ru"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "cy"
+        },
+        {
+          "@value": "ユルト",
+          "@language": "ja"
+        },
+        {
+          "@value": "taiseachas aeir: fliuch",
+          "@language": "ga"
+        },
+        {
+          "@value": "युर्ट",
+          "@language": "hi"
+        },
+        {
+          "@value": "导 言",
+          "@language": "zh"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "fr"
+        },
+        {
+          "@value": "Yurt",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Yurt",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tipi",
+      "rdfs:label": [
+        {
+          "@value": "Tipi",
+          "@language": "en"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "ar"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "ku"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "es"
+        },
+        {
+          "@value": "Tipi di",
+          "@language": "it"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "de"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "sw"
+        },
+        {
+          "@value": "Sugestões",
+          "@language": "pt"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "oc"
+        },
+        {
+          "@value": "Советы",
+          "@language": "ru"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "cy"
+        },
+        {
+          "@value": "ログイン",
+          "@language": "ja"
+        },
+        {
+          "@value": "An tSeapáin",
+          "@language": "ga"
+        },
+        {
+          "@value": "टीका",
+          "@language": "hi"
+        },
+        {
+          "@value": "注",
+          "@language": "zh"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "fr"
+        },
+        {
+          "@value": "Tipi",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#Tipi",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/accommodationTypes.json#RV",
+      "rdfs:label": [
+        {
+          "@value": "RV",
+          "@language": "en"
+        },
+        {
+          "@value": "RV",
+          "@language": "ar"
+        },
+        {
+          "@value": "RV",
+          "@language": "ku"
+        },
+        {
+          "@value": "RV",
+          "@language": "es"
+        },
+        {
+          "@value": "RV",
+          "@language": "it"
+        },
+        {
+          "@value": "RV",
+          "@language": "de"
+        },
+        {
+          "@value": "RV",
+          "@language": "sw"
+        },
+        {
+          "@value": "RV",
+          "@language": "pt"
+        },
+        {
+          "@value": "RV",
+          "@language": "oc"
+        },
+        {
+          "@value": "РВ",
+          "@language": "ru"
+        },
+        {
+          "@value": "RV",
+          "@language": "cy"
+        },
+        {
+          "@value": "RVの特長",
+          "@language": "ja"
+        },
+        {
+          "@value": "RV",
+          "@language": "ga"
+        },
+        {
+          "@value": "आरवी",
+          "@language": "hi"
+        },
+        {
+          "@value": "RV",
+          "@language": "zh"
+        },
+        {
+          "@value": "RV",
+          "@language": "fr"
+        },
+        {
+          "@value": "RV",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/accommodationTypes.json#RV",
+      "@type": "dfc-p:ProductType"
+    }
+  ]
+}

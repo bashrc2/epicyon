@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -23,7 +23,8 @@ from person import getActorJson
 def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
                                     session,
                                     httpPrefix: str, cachedWebfingers: {},
-                                    debug: bool) -> int:
+                                    debug: bool,
+                                    signingPrivateKeyPem: str) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
@@ -38,14 +39,14 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
                 _updateMovedHandle(baseDir, nickname, domain,
                                    followHandle, session,
                                    httpPrefix, cachedWebfingers,
-                                   debug)
+                                   debug, signingPrivateKeyPem)
     return ctr
 
 
 def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                        handle: str, session,
                        httpPrefix: str, cachedWebfingers: {},
-                       debug: bool) -> int:
+                       debug: bool, signingPrivateKeyPem: str) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
     Returns 1 if moved, 0 otherwise
@@ -59,7 +60,8 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__, debug, False)
+                                domain, __version__, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -83,7 +85,8 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
     if httpPrefix == 'gnunet':
         gnunet = True
     personJson = \
-        getActorJson(domain, personUrl, httpPrefix, gnunet, debug)
+        getActorJson(domain, personUrl, httpPrefix, gnunet, debug, False,
+                     signingPrivateKeyPem)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):
@@ -172,7 +175,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
 
 def migrateAccounts(baseDir: str, session,
                     httpPrefix: str, cachedWebfingers: {},
-                    debug: bool) -> int:
+                    debug: bool, signingPrivateKeyPem: str) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
     Returns the number of accounts migrated
@@ -188,6 +191,7 @@ def migrateAccounts(baseDir: str, session,
             ctr += \
                 _moveFollowingHandlesForAccount(baseDir, nickname, domain,
                                                 session, httpPrefix,
-                                                cachedWebfingers, debug)
+                                                cachedWebfingers, debug,
+                                                signingPrivateKeyPem)
         break
     return ctr

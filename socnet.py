@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Moderation"
 
@@ -18,7 +18,7 @@ def instancesGraph(baseDir: str, handles: str,
                    proxyType: str,
                    port: int, httpPrefix: str,
                    debug: bool, projectVersion: str,
-                   systemLanguage: str) -> str:
+                   systemLanguage: str, signingPrivateKeyPem: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
@@ -54,7 +54,8 @@ def instancesGraph(baseDir: str, handles: str,
         wfRequest = \
             webfingerHandle(session, handle, httpPrefix,
                             cachedWebfingers,
-                            domain, projectVersion, debug, False)
+                            domain, projectVersion, debug, False,
+                            signingPrivateKeyPem)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):
@@ -62,20 +63,23 @@ def instancesGraph(baseDir: str, handles: str,
                   str(wfRequest))
             return dotGraphStr + '}\n'
 
-        (personUrl, pubKeyId, pubKey,
-         personId, shaedInbox,
-         avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                                personCache,
-                                                projectVersion, httpPrefix,
-                                                nickname, domain, 'outbox',
-                                                27261)
+        originDomain = None
+        (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
+         displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                        originDomain,
+                                        baseDir, session, wfRequest,
+                                        personCache,
+                                        projectVersion, httpPrefix,
+                                        nickname, domain, 'outbox',
+                                        27261)
         wordFrequency = {}
         postDomains = \
             getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                            maxAttachments, federationList,
                            personCache, debug,
                            projectVersion, httpPrefix, domain,
-                           wordFrequency, [], systemLanguage)
+                           wordFrequency, [], systemLanguage,
+                           signingPrivateKeyPem)
         postDomains.sort()
         for fedDomain in postDomains:
             dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'

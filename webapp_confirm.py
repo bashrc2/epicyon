@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -30,11 +30,12 @@ def htmlConfirmDelete(cssCache: {},
                       cachedWebfingers: {}, personCache: {},
                       callingDomain: str,
                       YTReplacementDomain: str,
+                      twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int, signingPrivateKeyPem: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -66,17 +67,19 @@ def htmlConfirmDelete(cssCache: {},
         getConfigParam(baseDir, 'instanceTitle')
     deletePostStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     deletePostStr += \
-        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+        individualPostAsHtml(signingPrivateKeyPem,
+                             True, recentPostsCache, maxRecentPosts,
                              translate, pageNumber,
                              baseDir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
                              httpPrefix, projectVersion, 'outbox',
                              YTReplacementDomain,
+                             twitterReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances, allowLocalNetworkAccess,
                              themeName, systemLanguage, maxLikeCount,
-                             False, False, False, False, False)
+                             False, False, False, False, False, False)
     deletePostStr += '<center>'
     deletePostStr += \
         '  <p class="followText">' + \

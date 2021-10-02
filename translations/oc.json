@@ -177,7 +177,7 @@
     "Instance Logo": "Instance Logo",
     "Bookmark this post": "Save this for later viewing",
     "Undo the bookmark": "Undo the bookmark",
-    "Bookmarks": "Saves",
+    "Bookmarks": "Saved",
     "Theme": "Theme",
     "Default": "Default",
     "Light": "Light",
@@ -470,5 +470,18 @@
     "Create a new wanted item": "Create a new wanted item",
     "Wanted Items Search": "Wanted Items Search",
     "Website": "Website",
-    "Low Bandwidth": "Low Bandwidth"
+    "Low Bandwidth": "Low Bandwidth",
+    "accommodation": "accommodation",
+    "Forbidden": "Forbidden",
+    "You're not allowed": "You're not allowed",
+    "Hours after posting during which replies are allowed": "Hours after posting during which replies are allowed",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Twitter Replacement Domain",
+    "Buy": "Buy",
+    "Request to stay": "Request to stay",
+    "Profile": "Profile",
+    "Introduce yourself and specify the date and time when you wish to stay": "Introduce yourself and specify the date and time when you wish to stay",
+    "Members": "Members",
+    "Join": "Join",
+    "Leave": "Leave"
 }

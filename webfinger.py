@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
@@ -63,7 +63,8 @@ def _parseHandle(handle: str) -> (str, str, bool):
 def webfingerHandle(session, handle: str, httpPrefix: str,
                     cachedWebfingers: {},
                     fromDomain: str, projectVersion: str,
-                    debug: bool, groupAccount: bool) -> {}:
+                    debug: bool, groupAccount: bool,
+                    signingPrivateKeyPem: str) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
@@ -98,9 +99,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         }
     try:
         result = \
-            getJson(session, url, hdr, par,
-                    debug, projectVersion,
-                    httpPrefix, fromDomain)
+            getJson(signingPrivateKeyPem, session, url, hdr, par,
+                    debug, projectVersion, httpPrefix, fromDomain)
     except Exception as e:
         print('ERROR: webfingerHandle ' + str(e))
         return None
@@ -159,7 +159,6 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
-    actor = localActorUrl(httpPrefix, nickname, domain)
     account = {
         "aliases": [
             httpPrefix + "://" + domain + "/@" + personName,
@@ -170,11 +169,6 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
                 "href": profilePageHref,
                 "rel": "http://webfinger.net/rel/profile-page",
                 "type": "text/html"
-            },
-            {
-                "href": actor + ".atom",
-                "rel": "http://schemas.google.com/g/2010#updates-from",
-                "type": "application/atom+xml"
             },
             {
                 "href": personId,
@@ -267,6 +261,11 @@ def webfingerLookup(path: str, baseDir: str,
         if onionDomain in handle:
             handle = handle.replace(onionDomain, domain)
             onionify = True
+    # instance actor
+    if handle.startswith('actor@'):
+        handle = handle.replace('actor@', 'inbox@', 1)
+    elif handle.startswith('Actor@'):
+        handle = handle.replace('Actor@', 'inbox@', 1)
     filename = baseDir + '/wfendpoints/' + handle + '.json'
     if debug:
         print('DEBUG: WEBFINGER filename ' + filename)

@@ -4,7 +4,7 @@ By submitting code, documentation or artwork you agree that it will be licensed 
 
 ## Security Vulnerability Disclosure
 
-Create an issue on https://gitlab.com/bashrc2/epicyon/issues. If the vulnerability is especially sensitive then send an XMPP message to **bob@freedombone.net** or a Matrix message to **@bob:matrix.freedombone.net**.
+Create an issue on https://gitlab.com/bashrc2/epicyon/issues. If the vulnerability is especially sensitive then send an XMPP message to **bob@libreserver.org** or a Matrix message to **@bob:matrix.libreserver.org**.
 
 ## Code of Conduct
 
@@ -14,7 +14,7 @@ The code of conduct can be found [here](code-of-conduct.md).
 
 Submit to https://gitlab.com/bashrc2/epicyon/issues
 
-You can also post patches in the old-fashioned style via email to **bob@freedombone.net**. Include **[Epicyon]** in the subject line, otherwise it may be ignored.
+You can also post patches in the old-fashioned style via email to **bob@libreserver.org**. Include **[Epicyon]** in the subject line, otherwise it may be ignored.
 
 ## Development Style
 

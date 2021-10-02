@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Security"
 
@@ -44,7 +44,10 @@ def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
     personDir = acctDir(baseDir, nickname, domain)
     deviceFilename = personDir + '/devices/' + deviceId + '.json'
     if os.path.isfile(deviceFilename):
-        os.remove(deviceFilename)
+        try:
+            os.remove(deviceFilename)
+        except BaseException:
+            pass
         return True
     return False
 

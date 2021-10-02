@@ -11,8 +11,8 @@
         "author" : {
             "@type" : "Person",
             "name" : "Bob Mottram",
-	    "email": "bob@freedombone.net",
-	    "url": "https://epicyon.freedombone.net/users/bob"
+	    "email": "bob@libreserver.org",
+	    "url": "https://epicyon.libreserver.org/users/bob"
         },
         "applicationCategory" : ["server", "software", "bash", "debian", "linux", "self-hosting"],
         "downloadUrl" : "https://libreserver.org/epicyon/epicyon.tar.gz"
@@ -1370,9 +1370,6 @@
       And paste the following:
     </p>
     <div class="shell">
-      proxy_cache_path /var/www/cache levels=1:2 keys_zone=my_cache:10m max_size=10g
-                       inactive=60m use_temp_path=off;
-
       server {<br>
         listen 80;<br>
         listen [::]:80;<br>
@@ -1425,30 +1422,24 @@
         }<br>
         <br>
         location / {<br>
-          proxy_http_version 1.1;<br>
-          client_max_body_size 31M;<br>
-          proxy_set_header Upgrade $http_upgrade;<br>
-          proxy_set_header Connection "upgrade";<br>
-          proxy_set_header Host $http_host;<br>
-          proxy_set_header X-Real-IP $remote_addr;<br>
-          proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;<br>
-          proxy_set_header X-Forward-Proto http;<br>
-          proxy_set_header X-Nginx-Proxy true;<br>
-          proxy_temp_file_write_size 64k;<br>
-          proxy_connect_timeout 10080s;<br>
-          proxy_send_timeout 10080;<br>
-          proxy_read_timeout 10080;<br>
-          proxy_buffer_size 64k;<br>
-          proxy_buffers 16 32k;<br>
-          proxy_busy_buffers_size 64k;<br>
-          proxy_redirect off;<br>
-          proxy_request_buffering off;<br>
-          proxy_buffering off;<br>
-          location ~ ^/accounts/(avatars|headers)/(.*).(png|jpg|gif|webp|svg) {<br>
-            expires 1d;<br>
-            proxy_pass http://localhost:7156;<br>
-          }<br>
-          proxy_pass http://localhost:7156;<br>
+	proxy_http_version 1.1;<br>
+	client_max_body_size 31M;<br>
+	proxy_set_header Host $http_host;<br>
+	proxy_set_header X-Real-IP $remote_addr;<br>
+	proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;<br>
+	proxy_set_header X-Forward-Proto http;<br>
+	proxy_set_header X-Nginx-Proxy true;<br>
+	proxy_temp_file_write_size 64k;<br>
+	proxy_connect_timeout 10080s;<br>
+	proxy_send_timeout 10080;<br>
+	proxy_read_timeout 10080;<br>
+	proxy_buffer_size 64k;<br>
+	proxy_buffers 16 32k;<br>
+	proxy_busy_buffers_size 64k;<br>
+	proxy_redirect off;<br>
+	proxy_request_buffering off;<br>
+	proxy_buffering off;<br>
+	proxy_pass http://localhost:7156;<br>
         }<br>
       }
     </div>
@@ -1458,7 +1449,6 @@
     </p>
     <div class="shell">
       ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/<br>
-      mkdir /var/www/cache
     </div>
 
     <p class="intro">
@@ -1477,7 +1467,7 @@
       If you need to use <a href="https://www.fail2ban.org">fail2ban</a> then failed login attempts can be found in <b>accounts/loginfailures.log</b>.
     </p>
     <p class="intro">
-      If you are using the <a href="https://caddyserver.com">Caddy web server</a> then see <a href="https://code.freedombone.net/bashrc/epicyon/raw/main/caddy.example.conf">caddy.example.conf</a>
+      If you are using the <a href="https://caddyserver.com">Caddy web server</a> then see <a href="https://code.libreserver.org/bashrc/epicyon/raw/main/caddy.example.conf">caddy.example.conf</a>
     </p>
     <p class="intro">
       Now you can navigate to your domain and register an account. The first account becomes the administrator.
@@ -1505,6 +1495,6 @@ Please be aware that such installations will not federate with ordinary fedivers
     </div>
   </body>
   <footer>
-    <p>By: Bob Mottram <a href="mailto:bob@freedombone.net">bob@freedombone.net</a></p>
+    <p>By: Bob Mottram <a href="mailto:bob@libreserver.org">bob@libreserver.org</a></p>
   </footer>
 </html>
