@@ -5598,6 +5598,7 @@ def _testGetPriceFromString() -> None:
 
 
 def _translateOntology(baseDir: str) -> None:
+    return
     ontologyTypes = getCategoryTypes(baseDir)
     url = 'https://translate.astian.org'
     apiKey = None
