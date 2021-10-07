@@ -181,8 +181,8 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
         cssMatches = ('behavior:', ':expression', '?php', '.php',
                       'google', 'regexp', 'localhost',
                       '127.0.', '192.168', '10.0.', '@import')
-        for match in cssMatches:
-            if match in content:
+        for cssmatch in cssMatches:
+            if cssmatch in content:
                 return True
 
         # search for non-local web links
@@ -727,8 +727,8 @@ def _autoTag(baseDir: str, nickname: str, domain: str,
             continue
         if '->' not in tagRule:
             continue
-        match = tagRule.split('->')[0].strip()
-        if match != wordStr:
+        rulematch = tagRule.split('->')[0].strip()
+        if rulematch != wordStr:
             continue
         tagName = tagRule.split('->')[1].strip()
         if tagName.startswith('#'):

@@ -997,8 +997,8 @@ def _addAutoCW(baseDir: str, nickname: str, domain: str,
     for cwRule in autoCWList:
         if '->' not in cwRule:
             continue
-        match = cwRule.split('->')[0].strip()
-        if match not in content:
+        rulematch = cwRule.split('->')[0].strip()
+        if rulematch not in content:
             continue
         cwStr = cwRule.split('->')[1].strip()
         if newSubject:

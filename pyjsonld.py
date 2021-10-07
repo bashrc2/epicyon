@@ -340,16 +340,17 @@ def parse_link_header(header):
         return rval
     r_link_header = r'\s*<([^>]*?)>\s*(?:;\s*(.*))?'
     for entry in entries:
-        match = re.search(r_link_header, entry)
-        if not match:
+        ldmatch = re.search(r_link_header, entry)
+        if not ldmatch:
             continue
-        match = match.groups()
-        result = {'target': match[0]}
-        params = match[1]
+        ldmatch = ldmatch.groups()
+        result = {'target': ldmatch[0]}
+        params = ldmatch[1]
         r_params = r'(.*?)=(?:(?:"([^"]*?)")|([^"]*?))\s*(?:(?:;\s*)|$)'
         matches = re.findall(r_params, params)
-        for match in matches:
-            result[match[0]] = match[2] if match[1] is None else match[1]
+        for ldmatch in matches:
+            result[ldmatch[0]] = \
+                ldmatch[2] if ldmatch[1] is None else ldmatch[1]
         rel = result.get('rel', '')
         if isinstance(rval.get(rel), list):
             rval[rel].append(result)
@@ -1474,30 +1475,30 @@ class JsonLdProcessor(object):
                 continue
 
             # parse quad
-            match = re.search(quad, line)
-            if match is None:
+            ldmatch = re.search(quad, line)
+            if ldmatch is None:
                 raise JsonLdError(
                     'Error while parsing N-Quads invalid quad.',
                     'jsonld.ParseError', {'line': line_number})
-            match = match.groups()
+            ldmatch = ldmatch.groups()
 
             # create RDF triple
             triple = {'subject': {}, 'predicate': {}, 'object': {}}
 
             # get subject
-            if match[0] is not None:
-                triple['subject'] = {'type': 'IRI', 'value': match[0]}
+            if ldmatch[0] is not None:
+                triple['subject'] = {'type': 'IRI', 'value': ldmatch[0]}
             else:
-                triple['subject'] = {'type': 'blank node', 'value': match[1]}
+                triple['subject'] = {'type': 'blank node', 'value': ldmatch[1]}
 
             # get predicate
-            triple['predicate'] = {'type': 'IRI', 'value': match[2]}
+            triple['predicate'] = {'type': 'IRI', 'value': ldmatch[2]}
 
             # get object
-            if match[3] is not None:
-                triple['object'] = {'type': 'IRI', 'value': match[3]}
-            elif match[4] is not None:
-                triple['object'] = {'type': 'blank node', 'value': match[4]}
+            if ldmatch[3] is not None:
+                triple['object'] = {'type': 'IRI', 'value': ldmatch[3]}
+            elif ldmatch[4] is not None:
+                triple['object'] = {'type': 'blank node', 'value': ldmatch[4]}
             else:
                 triple['object'] = {'type': 'literal'}
                 replacements = {
@@ -1507,24 +1508,24 @@ class JsonLdProcessor(object):
                     '\\r': '\r',
                     '\\\\': '\\'
                 }
-                unescaped = match[5]
-                for match, repl in replacements.items():
-                    unescaped = unescaped.replace(match, repl)
-                if match[6] is not None:
-                    triple['object']['datatype'] = match[6]
-                elif match[7] is not None:
+                unescaped = ldmatch[5]
+                for ldmatch, repl in replacements.items():
+                    unescaped = unescaped.replace(ldmatch, repl)
+                if ldmatch[6] is not None:
+                    triple['object']['datatype'] = ldmatch[6]
+                elif ldmatch[7] is not None:
                     triple['object']['datatype'] = RDF_LANGSTRING
-                    triple['object']['language'] = match[7]
+                    triple['object']['language'] = ldmatch[7]
                 else:
                     triple['object']['datatype'] = XSD_STRING
                 triple['object']['value'] = unescaped
 
             # get graph name ('@default' is used for the default graph)
             name = '@default'
-            if match[8] is not None:
-                name = match[8]
-            elif match[9] is not None:
-                name = match[9]
+            if ldmatch[8] is not None:
+                name = ldmatch[8]
+            elif ldmatch[9] is not None:
+                name = ldmatch[9]
 
             # initialize graph in dataset
             if name not in dataset:
@@ -1623,8 +1624,8 @@ class JsonLdProcessor(object):
                 '\"': '\\"'
             }
             escaped = o['value']
-            for match, repl in replacements.items():
-                escaped = escaped.replace(match, repl)
+            for ldmatch, repl in replacements.items():
+                escaped = escaped.replace(ldmatch, repl)
             quad += '"' + escaped + '"'
             if o['datatype'] == RDF_LANGSTRING:
                 if o['language']:
