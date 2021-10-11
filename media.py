@@ -308,7 +308,6 @@ def attachMedia(baseDir: str, httpPrefix: str,
         'url': httpPrefix + '://' + domain + '/' + mediaPath
     }
     if mediaType.startswith('image/'):
-        attachmentJson['focalPoint'] = [0.0, 0.0]
         # find the dimensions of the image and add them as metadata
         attachImageWidth, attachImageHeight = \
             getImageDimensions(imageFilename)
