@@ -8756,7 +8756,20 @@ class PubServer(BaseHTTPRequestHandler):
                 if not includeCreateWrapper and \
                    postJsonObject['type'] == 'Create' and \
                    hasObjectDict(postJsonObject):
-                    msg = json.dumps(postJsonObject['object'],
+                    unwrappedJson = postJsonObject['object']
+                    unwrappedJson['@context'] = [
+                        'https://www.w3.org/ns/activitystreams',
+                        {
+                            'atomUri': 'ostatus:atomUri',
+                            'conversation': 'ostatus:conversation',
+                            'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
+                            'ostatus': 'http://ostatus.org#',
+                            'sensitive': 'as:sensitive',
+                            'toot': 'http://joinmastodon.org/ns#',
+                            'votersCount': 'toot:votersCount'
+                        }
+                    ]
+                    msg = json.dumps(unwrappedJson,
                                      ensure_ascii=False)
                 else:
                     msg = json.dumps(postJsonObject,
