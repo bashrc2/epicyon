@@ -341,6 +341,7 @@ from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
 from context import hasValidContext
+from context import getIndividualPostContext
 from speaker import getSSMLbox
 from city import getSpoofedCity
 import os
@@ -8757,18 +8758,8 @@ class PubServer(BaseHTTPRequestHandler):
                    postJsonObject['type'] == 'Create' and \
                    hasObjectDict(postJsonObject):
                     unwrappedJson = postJsonObject['object']
-                    unwrappedJson['@context'] = [
-                        'https://www.w3.org/ns/activitystreams',
-                        {
-                            'atomUri': 'ostatus:atomUri',
-                            'conversation': 'ostatus:conversation',
-                            'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
-                            'ostatus': 'http://ostatus.org#',
-                            'sensitive': 'as:sensitive',
-                            'toot': 'http://joinmastodon.org/ns#',
-                            'votersCount': 'toot:votersCount'
-                        }
-                    ]
+                    unwrappedJson['@context'] = \
+                        getIndividualPostContext()
                     msg = json.dumps(unwrappedJson,
                                      ensure_ascii=False)
                 else:
@@ -10791,14 +10782,9 @@ class PubServer(BaseHTTPRequestHandler):
         actor/collections/featuredTags
         TODO add ability to set a featured tags
         """
+        postContext = getIndividualPostContext()
         featuredTagsCollection = {
-            '@context': ['https://www.w3.org/ns/activitystreams',
-                         {'atomUri': 'ostatus:atomUri',
-                          'conversation': 'ostatus:conversation',
-                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
-                          'sensitive': 'as:sensitive',
-                          'toot': 'http://joinmastodon.org/ns#',
-                          'votersCount': 'toot:votersCount'}],
+            '@context': postContext,
             'id': httpPrefix + '://' + domainFull + path,
             'orderedItems': [],
             'totalItems': 0,

@@ -83,6 +83,7 @@ from git import convertPostToPatch
 from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
 from video import convertVideoToNote
+from context import getIndividualPostContext
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -1382,18 +1383,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                                 summary, content, schedulePost,
                                 eventUUID, location, tags)
 
-    postContext = [
-        'https://www.w3.org/ns/activitystreams',
-        {
-            "ostatus": "http://ostatus.org#",
-            "atomUri": "ostatus:atomUri",
-            "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
-            "conversation": "ostatus:conversation",
-            "sensitive": "as:sensitive",
-            "toot": "http://joinmastodon.org/ns#",
-            "votersCount": "toot:votersCount"
-        }
-    ]
+    postContext = getIndividualPostContext()
 
     # make sure that CC doesn't also contain a To address
     # eg. To: [ "https://mydomain/users/foo/followers" ]
@@ -1615,19 +1605,9 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
         itemsList = [pinnedPostJson]
 
     actor = localActorUrl(httpPrefix, nickname, domainFull)
+    postContext = getIndividualPostContext()
     return {
-        '@context': [
-            'https://www.w3.org/ns/activitystreams',
-            {
-                'atomUri': 'ostatus:atomUri',
-                'conversation': 'ostatus:conversation',
-                'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
-                'ostatus': 'http://ostatus.org#',
-                'sensitive': 'as:sensitive',
-                'toot': 'http://joinmastodon.org/ns#',
-                'votersCount': 'toot:votersCount'
-            }
-        ],
+        '@context': postContext,
         'id': actor + '/collections/featured',
         'orderedItems': itemsList,
         'totalItems': len(itemsList),
