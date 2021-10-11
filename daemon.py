@@ -720,9 +720,7 @@ class PubServer(BaseHTTPRequestHandler):
         if 'image/' in fileFormat or \
            'audio/' in fileFormat or \
            'video/' in fileFormat:
-            cache_control = \
-                'public, max-age=84600, must-revalidate, ' + \
-                'stale-while-revalidate=3600'
+            cache_control = 'public, max-age=84600, immutable'
             self.send_header('Cache-Control', cache_control)
         else:
             self.send_header('Cache-Control', 'public')
