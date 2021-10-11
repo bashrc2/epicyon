@@ -8671,13 +8671,18 @@ class PubServer(BaseHTTPRequestHandler):
             httpPrefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
 
+        includeCreateWrapper = False
+        if postSections[-1] == 'activity':
+            includeCreateWrapper = True
+
         return self._showPostFromFile(postFilename, likedBy,
                                       authorized, callingDomain, path,
                                       baseDir, httpPrefix, nickname,
                                       domain, domainFull, port,
                                       onionDomain, i2pDomain,
                                       GETstartTime, GETtimings,
-                                      proxyType, cookie, debug)
+                                      proxyType, cookie, debug,
+                                      includeCreateWrapper)
 
     def _showPostFromFile(self, postFilename: str, likedBy: str,
                           authorized: bool,
@@ -8687,7 +8692,7 @@ class PubServer(BaseHTTPRequestHandler):
                           onionDomain: str, i2pDomain: str,
                           GETstartTime, GETtimings: {},
                           proxyType: str, cookie: str,
-                          debug: str) -> bool:
+                          debug: str, includeCreateWrapper: bool) -> bool:
         """Shows an individual post from its filename
         """
         if not os.path.isfile(postFilename):
@@ -8748,8 +8753,14 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show status')
         else:
             if self._secureMode():
-                msg = json.dumps(postJsonObject,
-                                 ensure_ascii=False)
+                if not includeCreateWrapper and \
+                   postJsonObject['type'] == 'Create' and \
+                   hasObjectDict(postJsonObject):
+                    msg = json.dumps(postJsonObject['object'],
+                                     ensure_ascii=False)
+                else:
+                    msg = json.dumps(postJsonObject,
+                                     ensure_ascii=False)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json',
@@ -8793,13 +8804,18 @@ class PubServer(BaseHTTPRequestHandler):
             httpPrefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
 
+        includeCreateWrapper = False
+        if postSections[-1] == 'activity':
+            includeCreateWrapper = True
+
         return self._showPostFromFile(postFilename, likedBy,
                                       authorized, callingDomain, path,
                                       baseDir, httpPrefix, nickname,
                                       domain, domainFull, port,
                                       onionDomain, i2pDomain,
                                       GETstartTime, GETtimings,
-                                      proxyType, cookie, debug)
+                                      proxyType, cookie, debug,
+                                      includeCreateWrapper)
 
     def _showNotifyPost(self, authorized: bool,
                         callingDomain: str, path: str,
@@ -8825,13 +8841,18 @@ class PubServer(BaseHTTPRequestHandler):
         if not postFilename:
             return False
 
+        includeCreateWrapper = False
+        if path.endswith('/activity'):
+            includeCreateWrapper = True
+
         return self._showPostFromFile(postFilename, likedBy,
                                       authorized, callingDomain, path,
                                       baseDir, httpPrefix, nickname,
                                       domain, domainFull, port,
                                       onionDomain, i2pDomain,
                                       GETstartTime, GETtimings,
-                                      proxyType, cookie, debug)
+                                      proxyType, cookie, debug,
+                                      includeCreateWrapper)
 
     def _showInbox(self, authorized: bool,
                    callingDomain: str, path: str,
