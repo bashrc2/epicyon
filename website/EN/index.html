@@ -1421,6 +1421,9 @@
           try_files $uri =404;<br>
         }<br>
         <br>
+        keepalive_timeout 70;<br>
+        sendfile on;<br>
+        <br>
         location / {<br>
 	proxy_http_version 1.1;<br>
 	client_max_body_size 31M;<br>
@@ -1440,6 +1443,7 @@
 	proxy_request_buffering off;<br>
 	proxy_buffering off;<br>
 	proxy_pass http://localhost:7156;<br>
+	tcp_nodelay on;<br>
         }<br>
       }
     </div>

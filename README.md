@@ -161,6 +161,9 @@ server {
         try_files $uri =404;
     }
 
+    keepalive_timeout 70;
+    sendfile on;
+
     location / {
         proxy_http_version 1.1;
         client_max_body_size 31M;
@@ -180,6 +183,7 @@ server {
         proxy_request_buffering off;
         proxy_buffering off;
         proxy_pass http://localhost:7156;
+		tcp_nodelay on;
     }
 }
 ```
