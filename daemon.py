@@ -722,6 +722,7 @@ class PubServer(BaseHTTPRequestHandler):
            'video/' in fileFormat:
             cache_control = 'public, max-age=84600, immutable'
             self.send_header('Cache-Control', cache_control)
+            self.send_header('Content-Disposition', 'inline')
         else:
             self.send_header('Cache-Control', 'public')
         self.send_header('Origin', self.server.domainFull)
