@@ -32,7 +32,8 @@ def getIndividualPostContext() -> []:
             "conversation": "ostatus:conversation",
             "sensitive": "as:sensitive",
             "toot": "http://joinmastodon.org/ns#",
-            "votersCount": "toot:votersCount"
+            "votersCount": "toot:votersCount",
+            "blurhash": "toot:blurhash"
         }
     ]
 
