@@ -737,7 +737,7 @@ class PubServer(BaseHTTPRequestHandler):
                'audio/' in fileFormat or \
                'video/' in fileFormat:
                 acStr = \
-                    'Server, x-goog-meta-frames, Content-Length, ' + \
+                    'Host, Server, x-goog-meta-frames, Content-Length, ' + \
                     'Content-Type, Range, X-Requested-With, ' + \
                     'If-Modified-Since, If-None-Match'
                 self.send_header('Access-Control-Allow-Headers', acStr)
