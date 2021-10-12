@@ -101,6 +101,25 @@ def metaDataInstance(showAccounts: bool,
         print('WARN: json load exception metaDataInstance')
         return {}
 
+    rulesList = []
+    rulesFilename = \
+        baseDir + '/accounts/tos.md'
+    if os.path.isfile(rulesFilename):
+        with open(rulesFilename, 'r') as fp:
+            rulesLines = fp.readlines()
+            ruleCtr = 1
+            for line in rulesLines:
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith('#'):
+                    continue
+                rulesList.append({
+                    'id': str(ruleCtr),
+                    'text': line
+                })
+                ruleCtr += 1
+
     isBot = False
     isGroup = False
     if adminActor['type'] == 'Group':
@@ -122,8 +141,6 @@ def metaDataInstance(showAccounts: bool,
     createdAt = ''
     if adminActor.get('published'):
         createdAt = adminActor['published']
-
-    rulesList = []
 
     instance = {
         'approval_required': False,

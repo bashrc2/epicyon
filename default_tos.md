@@ -24,7 +24,7 @@ Moderators rely upon your reports. Don't assume that something of concern has al
 Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.
 
 ### Federation Policy
-In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet, Facebook, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
+In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet/Google, Facebook, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
 
 This system will not federate with instances whose moderation policy is incompatible with the content policy described above. If an instance lacks a moderation policy, or refuses to enforce one, it will be assumed to be incompatible.
 
