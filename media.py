@@ -325,6 +325,8 @@ def attachMedia(baseDir: str, httpPrefix: str,
         createMediaDirs(baseDir, mPath)
         mediaFilename = baseDir + '/' + mediaPath
 
+    mediaPath = \
+        mediaPath.replace('media/', 'system/media_attachments/files/', 1)
     attachmentJson = {
         'mediaType': mediaType,
         'name': description,

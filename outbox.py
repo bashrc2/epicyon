@@ -337,6 +337,10 @@ def postMessageToOutbox(session, translate: {},
                     # change the url of the attachment
                     attach['url'] = \
                         httpPrefix + '://' + domainFull + '/' + mediaPath
+                    attach['url'] = \
+                        attach['url'].replace('/media/',
+                                              '/system/' +
+                                              'media_attachments/files/')
 
     permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
                             'Update', 'Add', 'Remove', 'Block', 'Delete',

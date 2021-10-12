@@ -11387,7 +11387,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/system/accounts/headers/' not in path and \
                '/accounts/avatars/' not in path and \
                '/accounts/headers/' not in path:
-                    return False
+                return False
         if not isImageFile(path):
             return False
         if '/system/accounts/avatars/' in path:
@@ -13229,6 +13229,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show media
         # Note that this comes before the busy flag to avoid conflicts
+        # replace mastoson-style media path
+        if '/system/media_attachments/files/' in self.path:
+            self.path = self.path.replace('/system/media_attachments/files/',
+                                          '/media/')
         if '/media/' in self.path:
             self._showMedia(callingDomain,
                             self.path, self.server.baseDir,
