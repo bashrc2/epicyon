@@ -761,9 +761,9 @@ def htmlProfile(signingPrivateKeyPem: str,
 
     avatarUrl = profileJson['icon']['url']
     # use alternate path for local avatars to avoid any caching issues
-    if '://' + domainFull + '/accounts/avatars/' in avatarUrl:
+    if '://' + domainFull + '/system/accounts/avatars/' in avatarUrl:
         avatarUrl = \
-            avatarUrl.replace('://' + domainFull + '/accounts/avatars/',
+            avatarUrl.replace('://' + domainFull + '/system/accounts/avatars/',
                               '://' + domainFull + '/users/')
 
     # get pinned post content

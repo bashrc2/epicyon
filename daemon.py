@@ -1454,6 +1454,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         notAuthPaths = (
             '/icons/', '/avatars/',
+            '/system/accounts/avatars/',
+            '/system/accounts/headers/',
+            '/system/media_attachments/files/',
             '/accounts/avatars/', '/accounts/headers/',
             '/favicon.ico', '/newswire.xml',
             '/newswire_favicon.ico', '/categories.xml'
@@ -11380,13 +11383,19 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows an avatar or banner or profile background image
         """
         if '/users/' not in path:
-            if '/accounts/avatars/' not in path:
-                if '/accounts/headers/' not in path:
+            if '/system/accounts/avatars/' not in path and \
+               '/system/accounts/headers/' not in path and \
+               '/accounts/avatars/' not in path and \
+               '/accounts/headers/' not in path:
                     return False
         if not isImageFile(path):
             return False
-        if '/accounts/avatars/' in path:
+        if '/system/accounts/avatars/' in path:
+            avatarStr = path.split('/system/accounts/avatars/')[1]
+        elif '/accounts/avatars/' in path:
             avatarStr = path.split('/accounts/avatars/')[1]
+        elif '/system/accounts/headers/' in path:
+            avatarStr = path.split('/system/accounts/headers/')[1]
         elif '/accounts/headers/' in path:
             avatarStr = path.split('/accounts/headers/')[1]
         else:

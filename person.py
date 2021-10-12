@@ -177,13 +177,13 @@ def randomizeActorImages(personJson: {}) -> None:
     baseUrl = personId.split('/users/')[0]
     nickname = personJson['preferredUsername']
     personJson['icon']['url'] = \
-        baseUrl + '/accounts/avatars/' + nickname + \
+        baseUrl + '/system/accounts/avatars/' + nickname + \
         '/avatar' + randStr + '.' + existingExtension
     lastPartOfFilename = personJson['image']['url'].split('/')[-1]
     existingExtension = lastPartOfFilename.split('.')[1]
     randStr = str(randint(10000000000000, 99999999999999))  # nosec
     personJson['image']['url'] = \
-        baseUrl + '/accounts/headers/' + nickname + \
+        baseUrl + '/system/accounts/headers/' + nickname + \
         '/image' + randStr + '.' + existingExtension
 
 
