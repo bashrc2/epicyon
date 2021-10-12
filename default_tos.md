@@ -11,7 +11,7 @@ Posts can be removed on request if there is sufficient justification, but the na
 ### Content Policy
 This instance will not host content containing sexism, racism, casteism, homophobia, transphobia, misogyny, antisemitism or other forms of bigotry or discrimination on the basis of nationality or immigration status. Claims that transgressions of this type were intended to be "ironic" will be treated as a terms of service violation.
 
-Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement and anti-LGBT or anti-immigrant campaigns.
+Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement, anti-vaccination, anti-LGBT and anti-immigrant campaigns.
 
 Depictions of injury, death or medical procedures are not permitted.
 
