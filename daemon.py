@@ -6935,14 +6935,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         # generate the html for the announce
         if announceJson and announceFilename:
-            print('Generating html post for announce')
+            if debug:
+                print('Generating html post for announce')
             cachedPostFilename = \
                 getCachedPostFilename(baseDir, self.postToNickname,
                                       domain, announceJson)
-            print('Announced post json: ' + str(announceJson))
-            print('Announced post nickname: ' +
-                  self.postToNickname + ' ' + domain)
-            print('Announced post cache: ' + str(cachedPostFilename))
+            if debug:
+                print('Announced post json: ' + str(announceJson))
+                print('Announced post nickname: ' +
+                      self.postToNickname + ' ' + domain)
+                print('Announced post cache: ' + str(cachedPostFilename))
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(baseDir,
