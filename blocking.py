@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import hasObjectDict
@@ -410,13 +411,7 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not messageJson['object'].get('object'):
-        if debug:
-            print('DEBUG: no object in undo block')
-        return
-    if not isinstance(messageJson['object']['object'], str):
-        if debug:
-            print('DEBUG: undo block object is not string')
+    if not hasObjectStringObject(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s undo block request arrived in outbox')

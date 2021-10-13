@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from utils import hasObjectStringObject
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import urlPermitted
@@ -89,8 +90,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
         print('DEBUG: no actor in Follow activity')
         return
     # no, this isn't a mistake
-    if not messageJson['object'].get('object'):
-        print('DEBUG: no object within Follow activity')
+    if not hasObjectStringObject(messageJson, debug):
         return
     if not messageJson.get('to'):
         if debug:

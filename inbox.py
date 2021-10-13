@@ -15,6 +15,7 @@ import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
 from like import updateLikesCollection
+from utils import hasObjectStringObject
 from utils import getReplyIntervalHours
 from utils import canReplyTo
 from utils import getUserPaths
@@ -695,15 +696,7 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         return False
     if not hasObjectStringType(messageJson, debug):
         return False
-    if not messageJson['object'].get('object'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] +
-                  ' has no object within object')
-        return False
-    if not isinstance(messageJson['object']['object'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] +
-                  ' object within object is not a string')
+    if not hasObjectStringObject(messageJson, debug):
         return False
     if messageJson['object']['type'] == 'Follow' or \
        messageJson['object']['type'] == 'Join':
@@ -1014,14 +1007,7 @@ def _receiveUndoLike(recentPostsCache: {},
         return False
     if messageJson['object']['type'] != 'Like':
         return False
-    if not messageJson['object'].get('object'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' like has no object')
-        return False
-    if not isinstance(messageJson['object']['object'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] +
-                  ' like object is not a string')
+    if not hasObjectStringObject(messageJson, debug):
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:
@@ -1625,9 +1611,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
         return False
     if not hasObjectDict(messageJson):
         return False
-    if not messageJson['object'].get('object'):
-        return False
-    if not isinstance(messageJson['object']['object'], str):
+    if not hasObjectStringObject(messageJson, debug):
         return False
     if messageJson['object']['type'] != 'Announce':
         return False

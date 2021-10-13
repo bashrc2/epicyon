@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from utils import hasObjectStringObject
 from utils import hasGroupType
 from utils import removeDomainPort
 from utils import removeIdEnding
@@ -401,13 +402,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
         if debug:
             print('DEBUG: not a undo announce')
         return
-    if not messageJson['object'].get('object'):
-        if debug:
-            print('DEBUG: no object in undo announce')
-        return
-    if not isinstance(messageJson['object']['object'], str):
-        if debug:
-            print('DEBUG: undo announce object is not string')
+    if not hasObjectStringObject(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s undo announce request arrived in outbox')

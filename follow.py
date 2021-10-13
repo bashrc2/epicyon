@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import hasActor
 from utils import removeDomainPort
@@ -1493,11 +1494,9 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
     if not messageJson['object']['type'] == 'Follow':
         if not messageJson['object']['type'] == 'Join':
             return
-    if not messageJson['object'].get('object'):
+    if not hasObjectStringObject(messageJson, debug):
         return
     if not messageJson['object'].get('actor'):
-        return
-    if not isinstance(messageJson['object']['object'], str):
         return
     if debug:
         print('DEBUG: undo follow arrived in outbox')

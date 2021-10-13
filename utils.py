@@ -3037,7 +3037,7 @@ def hasActor(postJsonObject: {}, debug: bool) -> bool:
 
 
 def hasObjectStringType(postJsonObject: {}, debug: bool) -> bool:
-    """Dies the given post have a type field within an object dict?
+    """Does the given post have a type field within an object dict?
     """
     if not hasObjectDict(postJsonObject):
         if debug:
@@ -3052,4 +3052,23 @@ def hasObjectStringType(postJsonObject: {}, debug: bool) -> bool:
                       ' type within object is not a string')
     if debug:
         print('No type field within object ' + postJsonObject['id'])
+    return False
+
+
+def hasObjectStringObject(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have an object string field within an object dict?
+    """
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            print('hasObjectStringType no object found')
+        return False
+    if postJsonObject['object'].get('object'):
+        if isinstance(postJsonObject['object']['object'], str):
+            return True
+        elif debug:
+            if postJsonObject.get('type'):
+                print('DEBUG: ' + postJsonObject['type'] +
+                      ' object within dict is not a string')
+    if debug:
+        print('No object field within dict ' + postJsonObject['id'])
     return False
