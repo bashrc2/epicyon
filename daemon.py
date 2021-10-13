@@ -7395,11 +7395,13 @@ class PubServer(BaseHTTPRequestHandler):
                             if announceLikedFilename:
                                 updateLikesCollection(recentPostsCache,
                                                       baseDir,
-                                                      announceLikedFilename,
-                                                      announceLikeUrl,
+                                                      likedPostFilename,
+                                                      likeUrl,
                                                       likeActor,
                                                       self.postToNickname,
                                                       domain, debug)
+                                likeUrl = announceLikeUrl
+                                likedPostFilename = announceLikedFilename
             # if debug:
             print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(recentPostsCache,
@@ -7561,10 +7563,12 @@ class PubServer(BaseHTTPRequestHandler):
                             if announceLikedFilename:
                                 undoLikesCollectionEntry(recentPostsCache,
                                                          baseDir,
-                                                         announceLikedFilename,
-                                                         announceLikeUrl,
+                                                         likedPostFilename,
+                                                         likeUrl,
                                                          undoActor, domain,
                                                          debug)
+                                likeUrl = announceLikeUrl
+                                likedPostFilename = announceLikedFilename
             if debug:
                 print('Removing likes for ' + likedPostFilename)
             undoLikesCollectionEntry(recentPostsCache,
