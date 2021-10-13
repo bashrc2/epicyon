@@ -7381,16 +7381,28 @@ class PubServer(BaseHTTPRequestHandler):
         likedPostFilename = \
             locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
+            recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
                 if likedPostJson.get('type'):
                     if likedPostJson['type'] == 'Announce' and \
                        likedPostJson.get('object'):
                         if isinstance(likedPostJson['object'], str):
-                            likeUrl = likedPostJson['object']
+                            announceLikeUrl = likedPostJson['object']
+                            announceLikedFilename = \
+                                locatePost(baseDir, self.postToNickname,
+                                           domain, announceLikeUrl)
+                            if announceLikedFilename:
+                                updateLikesCollection(recentPostsCache,
+                                                      baseDir,
+                                                      announceLikedFilename,
+                                                      announceLikeUrl,
+                                                      likeActor,
+                                                      self.postToNickname,
+                                                      domain, debug)
             # if debug:
             print('Updating likes for ' + likedPostFilename)
-            updateLikesCollection(self.server.recentPostsCache,
+            updateLikesCollection(recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
                                   debug)
@@ -7536,15 +7548,26 @@ class PubServer(BaseHTTPRequestHandler):
                                        domain, likeUrl)
         if likedPostFilename:
             likedPostJson = loadJson(likedPostFilename, 0, 1)
+            recentPostsCache = self.server.recentPostsCache
             if likedPostJson:
                 if likedPostJson.get('type'):
                     if likedPostJson['type'] == 'Announce' and \
                        likedPostJson.get('object'):
                         if isinstance(likedPostJson['object'], str):
-                            likeUrl = likedPostJson['object']
+                            announceLikeUrl = likedPostJson['object']
+                            announceLikedFilename = \
+                                locatePost(baseDir, self.postToNickname,
+                                           domain, announceLikeUrl)
+                            if announceLikedFilename:
+                                undoLikesCollectionEntry(recentPostsCache,
+                                                         baseDir,
+                                                         announceLikedFilename,
+                                                         announceLikeUrl,
+                                                         undoActor, domain,
+                                                         debug)
             if debug:
                 print('Removing likes for ' + likedPostFilename)
-            undoLikesCollectionEntry(self.server.recentPostsCache,
+            undoLikesCollectionEntry(recentPostsCache,
                                      baseDir,
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug)
