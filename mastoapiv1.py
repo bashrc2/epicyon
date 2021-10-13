@@ -165,7 +165,9 @@ def mastoApiV1Response(path: str, callingDomain: str,
         sendJson = []
         sendJsonStr = 'masto API statuses sent ' + path
     elif path.startswith('/api/v1/timelines'):
-        sendJson = []
+        sendJson = {
+            'error': 'This method requires an authenticated user'
+        }
         sendJsonStr = 'masto API timelines sent ' + path
     elif path.startswith('/api/v1/custom_emojis'):
         sendJson = customEmoji
