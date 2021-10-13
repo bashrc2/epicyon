@@ -545,7 +545,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
             likeStr += '<label class="likesCount">'
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
             likeStr += '</label>\n'
-        likePostId = removeIdEnding(postJsonObject['object']['id'])
+        likePostId = removeIdEnding(postJsonObject['id'])
         likeStr += \
             '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + likePostId + \
@@ -1525,10 +1525,13 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False
 
+    likeJsonObject = postJsonObject
+    if announceJsonObject:
+        likeJsonObject = announceJsonObject
     likeStr = _getLikeIconHtml(nickname, domainFull,
                                isModerationPost,
                                showLikeButton,
-                               postJsonObject,
+                               likeJsonObject,
                                enableTimingLog,
                                postStartTime,
                                translate, pageNumberParam,

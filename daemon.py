@@ -7378,10 +7378,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
-        likedPostFilename = locatePost(baseDir,
-                                       self.postToNickname,
-                                       domain,
-                                       likeUrl)
+        likedPostFilename = \
+            locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
             # if debug:
             print('Updating likes for ' + likedPostFilename)
