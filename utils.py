@@ -1345,10 +1345,9 @@ def _getPublishedDate(postJsonObject: {}) -> str:
     published = None
     if postJsonObject.get('published'):
         published = postJsonObject['published']
-    elif postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('published'):
-                published = postJsonObject['object']['published']
+    elif hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('published'):
+            published = postJsonObject['object']['published']
     if not published:
         return None
     if not isinstance(published, str):
@@ -3071,4 +3070,19 @@ def hasObjectStringObject(postJsonObject: {}, debug: bool) -> bool:
                       ' object within dict is not a string')
     if debug:
         print('No object field within dict ' + postJsonObject['id'])
+    return False
+
+
+def hasObjectString(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have an object string field?
+    """
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], str):
+            return True
+        elif debug:
+            if postJsonObject.get('type'):
+                print('DEBUG: ' + postJsonObject['type'] +
+                      ' object is not a string')
+    if debug:
+        print('No object field within post ' + postJsonObject['id'])
     return False

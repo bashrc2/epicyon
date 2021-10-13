@@ -12,6 +12,7 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
+from utils import hasObjectString
 from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -63,9 +64,7 @@ def outboxAvailability(baseDir: str, nickname: str, messageJson: {},
         return False
     if not hasActor(messageJson, debug):
         return False
-    if not messageJson.get('object'):
-        return False
-    if not isinstance(messageJson['object'], str):
+    if not hasObjectString(messageJson, debug):
         return False
 
     actorNickname = getNicknameFromActor(messageJson['actor'])

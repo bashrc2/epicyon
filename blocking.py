@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
@@ -349,13 +350,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not a block')
         return False
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in block')
-        return False
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: block object is not string')
+    if not hasObjectString(messageJson, debug):
         return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
@@ -468,9 +463,8 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
     if hasObjectDict(postJsonObject):
         postJsonObj = postJsonObject['object']
     else:
-        if postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], str):
-                alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+        if hasObjectString(postJsonObject, debug):
+            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
 
     domainFull = getFullDomain(domain, port)
     actor = localActorUrl(httpPrefix, nickname, domainFull)
@@ -597,9 +591,8 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
     if hasObjectDict(postJsonObject):
         postJsonObj = postJsonObject['object']
     else:
-        if postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], str):
-                alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+        if hasObjectString(postJsonObject, debug):
+            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
 
     if postJsonObj.get('conversation'):
         unmuteConversation(baseDir, nickname, domain,
@@ -697,13 +690,7 @@ def outboxMute(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Ignore':
         return
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in mute')
-        return
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: mute object is not string')
+    if not hasObjectString(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s mute request arrived in outbox')

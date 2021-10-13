@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from pprint import pprint
+from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
@@ -345,13 +346,7 @@ def outboxLike(recentPostsCache: {},
         if debug:
             print('DEBUG: not a like')
         return
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in like')
-        return
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: like object is not string')
+    if not hasObjectString(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s like request arrived in outbox')

@@ -15,6 +15,7 @@ import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
 from like import updateLikesCollection
+from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import getReplyIntervalHours
 from utils import canReplyTo
@@ -896,13 +897,7 @@ def _receiveLike(recentPostsCache: {},
         return False
     if not hasActor(messageJson, debug):
         return False
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object is not a string')
+    if not hasObjectString(messageJson, debug):
         return False
     if not messageJson.get('to'):
         if debug:
@@ -1305,13 +1300,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
         return False
     if debug:
         print('DEBUG: Delete activity arrived')
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object is not a string')
+    if not hasObjectString(messageJson, debug):
         return False
     domainFull = getFullDomain(domain, port)
     deletePrefix = httpPrefix + '://' + domainFull + '/'
@@ -1400,13 +1389,7 @@ def _receiveAnnounce(recentPostsCache: {},
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object is not a string')
+    if not hasObjectString(messageJson, debug):
         return False
     if not messageJson.get('to'):
         if debug:
