@@ -16,6 +16,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import hasObjectStringType
 from utils import getBaseContentFromPost
 from utils import hasObjectDict
 from utils import getLocalNetworkAddresses
@@ -73,13 +74,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         return
     if messageJson['type'] != 'Update':
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: c2s actor update object is not dict')
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: c2s actor update - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not isinstance(messageJson['object']['type'], str):
         if debug:

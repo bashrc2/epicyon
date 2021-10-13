@@ -15,11 +15,11 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
-from utils import hasObjectDict
 from utils import acctDir
 from utils import hasGroupType
 from utils import localActorUrl
 from utils import hasActor
+from utils import hasObjectStringType
 
 
 def _createAcceptReject(baseDir: str, federationList: [],
@@ -78,9 +78,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
                   federationList: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Follow':
         if not messageJson['object']['type'] == 'Join':

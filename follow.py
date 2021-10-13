@@ -9,9 +9,9 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from utils import hasObjectStringType
 from utils import hasActor
 from utils import removeDomainPort
-from utils import hasObjectDict
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import isSystemAccount
@@ -1488,9 +1488,7 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Follow':
         if not messageJson['object']['type'] == 'Join':

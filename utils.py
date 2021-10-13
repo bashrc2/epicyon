@@ -2037,7 +2037,7 @@ def isBlogPost(postJsonObject: {}) -> bool:
         return False
     if not hasObjectDict(postJsonObject):
         return False
-    if not postJsonObject['object'].get('type'):
+    if not hasObjectStringType(postJsonObject, False):
         return False
     if not postJsonObject['object'].get('content'):
         return False
@@ -3033,4 +3033,23 @@ def hasActor(postJsonObject: {}, debug: bool) -> bool:
             if postJsonObject.get('id'):
                 msg += ' ' + postJsonObject['id']
             print(msg)
+    return False
+
+
+def hasObjectStringType(postJsonObject: {}, debug: bool) -> bool:
+    """Dies the given post have a type field within an object dict?
+    """
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            print('hasObjectStringType no object found')
+        return False
+    if postJsonObject['object'].get('type'):
+        if isinstance(postJsonObject['object']['type'], str):
+            return True
+        elif debug:
+            if postJsonObject.get('type'):
+                print('DEBUG: ' + postJsonObject['type'] +
+                      ' type within object is not a string')
+    if debug:
+        print('No type field within object ' + postJsonObject['id'])
     return False

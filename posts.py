@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import hasObjectStringType
 from utils import removeIdEnding
 from utils import replaceUsersWithAt
 from utils import hasGroupType
@@ -2711,13 +2712,14 @@ def _isProfileUpdate(postJsonObject: {}) -> bool:
     """Is the given post a profile update?
     for actor updates there is no 'to' within the object
     """
-    if postJsonObject['object'].get('type') and postJsonObject.get('type'):
-        if (postJsonObject['type'] == 'Update' and
-            (postJsonObject['object']['type'] == 'Person' or
-             postJsonObject['object']['type'] == 'Application' or
-             postJsonObject['object']['type'] == 'Group' or
-             postJsonObject['object']['type'] == 'Service')):
-            return True
+    if postJsonObject.get('type'):
+        if hasObjectStringType(postJsonObject, False):
+            if (postJsonObject['type'] == 'Update' and
+                (postJsonObject['object']['type'] == 'Person' or
+                 postJsonObject['object']['type'] == 'Application' or
+                 postJsonObject['object']['type'] == 'Group' or
+                 postJsonObject['object']['type'] == 'Service')):
+                return True
     return False
 
 
@@ -2752,7 +2754,7 @@ def sendToNamedAddresses(session, baseDir: str,
                     pprint(postJsonObject)
                     print('DEBUG: ' +
                           'no "to" field when sending to named addresses')
-                if postJsonObject['object'].get('type'):
+                if hasObjectStringType(postJsonObject, debug):
                     if postJsonObject['object']['type'] == 'Follow' or \
                        postJsonObject['object']['type'] == 'Join':
                         if isinstance(postJsonObject['object']['object'], str):
@@ -2897,9 +2899,7 @@ def _sendingProfileUpdate(postJsonObject: {}) -> bool:
     """
     if postJsonObject['type'] != 'Update':
         return False
-    if not hasObjectDict(postJsonObject):
-        return False
-    if not postJsonObject['object'].get('type'):
+    if not hasObjectStringType(postJsonObject, False):
         return False
     activityType = postJsonObject['object']['type']
     if activityType == 'Person' or \

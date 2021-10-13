@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from pprint import pprint
+from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
@@ -380,13 +381,7 @@ def outboxUndoLike(recentPostsCache: {},
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: undo like object is not dict')
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo like - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Like':
         if debug:

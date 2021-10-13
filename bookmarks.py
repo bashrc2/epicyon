@@ -27,6 +27,7 @@ from utils import hasObjectDict
 from utils import acctDir
 from utils import localActorUrl
 from utils import hasActor
+from utils import hasObjectStringType
 from posts import getPersonBox
 from session import postJson
 
@@ -542,17 +543,11 @@ def outboxBookmark(recentPostsCache: {},
         return
     if not hasActor(messageJson, debug):
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: no object in bookmark Add')
-        return
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in bookmark Add')
         return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: no object type in bookmark Add')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not isinstance(messageJson['target'], str):
         if debug:
@@ -604,17 +599,11 @@ def outboxUndoBookmark(recentPostsCache: {},
         return
     if not hasActor(messageJson, debug):
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: no object in unbookmark Remove')
-        return
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in unbookmark Remove')
         return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: no object type in bookmark Remove')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not isinstance(messageJson['target'], str):
         if debug:

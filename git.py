@@ -9,8 +9,8 @@ __module_group__ = "Profile Metadata"
 
 import os
 import html
-from utils import hasObjectDict
 from utils import acctDir
+from utils import hasObjectStringType
 
 
 def _gitFormatContent(content: str) -> str:
@@ -115,9 +115,7 @@ def convertPostToPatch(baseDir: str, nickname: str, domain: str,
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
-    if not hasObjectDict(postJsonObject):
-        return False
-    if not postJsonObject['object'].get('type'):
+    if not hasObjectStringType(postJsonObject, False):
         return False
     if postJsonObject['object']['type'] == 'Patch':
         return True

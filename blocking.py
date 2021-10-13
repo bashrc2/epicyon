@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import isAccountDir
@@ -402,14 +403,8 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: undo block object is not string')
-        return
 
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo block - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Block':
         if debug:
@@ -762,9 +757,7 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
+    if not hasObjectStringType(messageJson, debug):
         return
     if messageJson['object']['type'] != 'Ignore':
         return

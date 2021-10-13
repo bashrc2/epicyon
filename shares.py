@@ -22,6 +22,7 @@ from posts import getPersonBox
 from session import postJson
 from session import postImage
 from session import createSession
+from utils import hasObjectStringType
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
 from utils import getConfigParam
@@ -30,7 +31,6 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
-from utils import hasObjectDict
 from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acctDir
@@ -1030,11 +1030,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Add':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo block - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Offer':
         if debug:
@@ -1103,11 +1099,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Remove':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo block - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Offer':
         if debug:

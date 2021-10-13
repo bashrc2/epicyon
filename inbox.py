@@ -49,6 +49,7 @@ from utils import saveJson
 from utils import undoLikesCollectionEntry
 from utils import hasGroupType
 from utils import localActorUrl
+from utils import hasObjectStringType
 from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
@@ -692,18 +693,7 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object type')
-        return False
-    if not isinstance(messageJson['object']['type'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] +
-                  ' type within object is not a string')
+    if not hasObjectStringType(messageJson, debug):
         return False
     if not messageJson['object'].get('object'):
         if debug:
@@ -850,18 +840,7 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
         return False
     if not hasActor(messageJson, debug):
         return False
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no object')
-        return False
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' object has no type')
-        return False
-    if not isinstance(messageJson['object']['type'], str):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] +
-                  ' object type is not string')
+    if not hasObjectStringType(messageJson, debug):
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:
@@ -1031,9 +1010,7 @@ def _receiveUndoLike(recentPostsCache: {},
         return False
     if not hasActor(messageJson, debug):
         return False
-    if not hasObjectDict(messageJson):
-        return False
-    if not messageJson['object'].get('type'):
+    if not hasObjectStringType(messageJson, debug):
         return False
     if messageJson['object']['type'] != 'Like':
         return False
@@ -1133,17 +1110,11 @@ def _receiveBookmark(recentPostsCache: {},
         return False
     if not hasActor(messageJson, debug):
         return False
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: no object in inbox bookmark Add')
-        return False
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
         return False
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: no object type in inbox bookmark Add')
+    if not hasObjectStringType(messageJson, debug):
         return False
     if not isinstance(messageJson['target'], str):
         if debug:
@@ -1247,17 +1218,11 @@ def _receiveUndoBookmark(recentPostsCache: {},
         return False
     if not hasActor(messageJson, debug):
         return False
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: no object in inbox undo bookmark Remove')
-        return False
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
         return False
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: no object type in inbox bookmark Remove')
+    if not hasObjectStringType(messageJson, debug):
         return False
     if not isinstance(messageJson['target'], str):
         if debug:

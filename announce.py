@@ -9,7 +9,6 @@ __module_group__ = "ActivityPub"
 
 from utils import hasGroupType
 from utils import removeDomainPort
-from utils import hasObjectDict
 from utils import removeIdEnding
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -25,6 +24,7 @@ from utils import updateAnnounceCollection
 from utils import localActorUrl
 from utils import replaceUsersWithAt
 from utils import hasActor
+from utils import hasObjectStringType
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -81,9 +81,7 @@ def outboxAnnounce(recentPostsCache: {},
                                      nickname, domain, debug)
             return True
     elif messageJson['type'] == 'Undo':
-        if not hasObjectDict(messageJson):
-            return False
-        if not messageJson['object'].get('type'):
+        if not hasObjectStringType(messageJson, debug):
             return False
         if messageJson['object']['type'] == 'Announce':
             if not isinstance(messageJson['object']['object'], str):
@@ -397,13 +395,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: undo like object is not dict')
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo like - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Announce':
         if debug:
