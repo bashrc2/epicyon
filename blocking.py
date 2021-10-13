@@ -29,6 +29,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acctDir
 from utils import localActorUrl
+from utils import hasActor
 from conversation import muteConversation
 from conversation import unmuteConversation
 
@@ -699,7 +700,7 @@ def outboxMute(baseDir: str, httpPrefix: str,
     """
     if not messageJson.get('type'):
         return
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return
     domainFull = getFullDomain(domain, port)
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
@@ -754,7 +755,7 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
     """
     if not messageJson.get('type'):
         return
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return
     domainFull = getFullDomain(domain, port)
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):

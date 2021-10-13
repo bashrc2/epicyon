@@ -19,6 +19,7 @@ from utils import hasObjectDict
 from utils import acctDir
 from utils import hasGroupType
 from utils import localActorUrl
+from utils import hasActor
 
 
 def _createAcceptReject(baseDir: str, federationList: [],
@@ -191,9 +192,7 @@ def receiveAcceptReject(session, baseDir: str,
     """
     if messageJson['type'] != 'Accept' and messageJson['type'] != 'Reject':
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:

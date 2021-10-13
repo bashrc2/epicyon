@@ -3020,3 +3020,17 @@ def replaceUsersWithAt(actor: str) -> str:
             actor = actor.replace(path, '/@')
             break
     return actor
+
+
+def hasActor(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have an actor?
+    """
+    if postJsonObject.get('actor'):
+        return True
+    if debug:
+        if postJsonObject.get('type'):
+            msg = postJsonObject['type'] + ' has missing actor'
+            if postJsonObject.get('id'):
+                msg += ' ' + postJsonObject['id']
+            print(msg)
+    return False

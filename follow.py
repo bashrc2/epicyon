@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 from pprint import pprint
 import os
+from utils import hasActor
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import hasUsersPath
@@ -648,9 +649,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         if not messageJson['type'].startswith('Join'):
             return False
     print('Receiving follow request')
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: follow request has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:

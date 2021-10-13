@@ -73,6 +73,7 @@ from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
 from utils import isDM
 from utils import isReply
+from utils import hasActor
 from httpsig import messageContentDigest
 from posts import savePostToBox
 from posts import isCreateInsideAnnounce
@@ -307,7 +308,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
                           federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, False):
         return False
 
     actor = messageJson['actor']
@@ -685,9 +686,7 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         return False
     if debug:
         print('DEBUG: Undo activity received')
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: follow request has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:
@@ -807,7 +806,7 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
     # message url of the question
     if not messageJson.get('id'):
         return
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, False):
         return
     messageId = removeIdEnding(messageJson['id'])
     if '#' in messageId:
@@ -849,9 +848,7 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
     """
     if messageJson['type'] != 'Update':
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if not hasObjectDict(messageJson):
         if debug:
@@ -925,9 +922,7 @@ def _receiveLike(recentPostsCache: {},
     """
     if messageJson['type'] != 'Like':
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if not messageJson.get('object'):
         if debug:
@@ -1034,7 +1029,7 @@ def _receiveUndoLike(recentPostsCache: {},
     """
     if messageJson['type'] != 'Undo':
         return False
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return False
     if not hasObjectDict(messageJson):
         return False
@@ -1136,9 +1131,7 @@ def _receiveBookmark(recentPostsCache: {},
         return False
     if messageJson['type'] != 'Add':
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: no actor in inbox bookmark Add')
+    if not hasActor(messageJson, debug):
         return False
     if not hasObjectDict(messageJson):
         if debug:
@@ -1252,9 +1245,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
         return False
     if messageJson['type'] != 'Remove':
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: no actor in inbox undo bookmark Remove')
+    if not hasActor(messageJson, debug):
         return False
     if not hasObjectDict(messageJson):
         if debug:
@@ -1359,9 +1350,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
     """
     if messageJson['type'] != 'Delete':
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if debug:
         print('DEBUG: Delete activity arrived')
@@ -1456,9 +1445,7 @@ def _receiveAnnounce(recentPostsCache: {},
         if debug:
             print('DEBUG: bad handle ' + handle)
         return False
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no actor')
+    if not hasActor(messageJson, debug):
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
@@ -1669,7 +1656,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     """
     if messageJson['type'] != 'Undo':
         return False
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return False
     if not hasObjectDict(messageJson):
         return False

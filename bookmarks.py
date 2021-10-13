@@ -26,6 +26,7 @@ from utils import saveJson
 from utils import hasObjectDict
 from utils import acctDir
 from utils import localActorUrl
+from utils import hasActor
 from posts import getPersonBox
 from session import postJson
 
@@ -539,9 +540,7 @@ def outboxBookmark(recentPostsCache: {},
         return
     if messageJson['type'] != 'Add':
         return
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: no actor in bookmark Add')
+    if not hasActor(messageJson, debug):
         return
     if not hasObjectDict(messageJson):
         if debug:
@@ -603,9 +602,7 @@ def outboxUndoBookmark(recentPostsCache: {},
         return
     if messageJson['type'] != 'Remove':
         return
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: no actor in unbookmark Remove')
+    if not hasActor(messageJson, debug):
         return
     if not hasObjectDict(messageJson):
         if debug:

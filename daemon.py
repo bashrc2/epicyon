@@ -234,6 +234,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import hasActor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
 from utils import isDM
@@ -725,24 +726,15 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             self.send_header('Cache-Control', 'public')
         self.send_header('Origin', self.server.domainFull)
-        self.send_header('X-AP-Instance-ID', self.server.instanceId)
-        self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         if length > -1:
             self.send_header('Content-Length', str(length))
         if callingDomain:
             self.send_header('Host', callingDomain)
         if permissive:
             self.send_header('Access-Control-Allow-Origin', '*')
-            if 'image/' in fileFormat or \
-               'audio/' in fileFormat or \
-               'video/' in fileFormat:
-                acStr = \
-                    'Host, Server, x-goog-meta-frames, Content-Length, ' + \
-                    'Content-Type, Range, X-Requested-With, ' + \
-                    'If-Modified-Since, If-None-Match'
-                self.send_header('Access-Control-Allow-Headers', acStr)
-                self.send_header('Access-Control-Expose-Headers', acStr)
             return
+        self.send_header('X-AP-Instance-ID', self.server.instanceId)
+        self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         if cookie:
             cookieStr = cookie
             if 'HttpOnly;' not in cookieStr:
@@ -1278,7 +1270,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check for blocked domains so that they can be rejected early
         messageDomain = None
-        if not messageJson.get('actor'):
+        if not hasActor(messageJson, self.server.debug):
             print('Message arriving at inbox queue has no actor')
             self._400()
             self.server.POSTbusy = False

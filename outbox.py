@@ -28,6 +28,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import acctDir
 from utils import localActorUrl
+from utils import hasActor
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -92,9 +93,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         if debug:
             print('DEBUG: c2s actor update has no "to" field')
         return
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: c2s actor update has no actor field')
+    if not hasActor(messageJson, debug):
         return
     if not messageJson.get('id'):
         if debug:

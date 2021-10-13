@@ -1299,7 +1299,7 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
         assert attached.get('type')
         assert attached.get('url')
         assert attached['mediaType'] == 'image/png'
-        if not '/system/media_attachments/files/' in attached['url']:
+        if '/system/media_attachments/files/' not in attached['url']:
             print(attached['url'])
         assert '/system/media_attachments/files/' in attached['url']
         assert attached['url'].endswith('.png')

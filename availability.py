@@ -19,6 +19,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import acctDir
 from utils import localActorUrl
+from utils import hasActor
 
 
 def setAvailability(baseDir: str, nickname: str, domain: str,
@@ -60,7 +61,7 @@ def outboxAvailability(baseDir: str, nickname: str, messageJson: {},
         return False
     if not messageJson['type'] == 'Availability':
         return False
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return False
     if not messageJson.get('object'):
         return False
