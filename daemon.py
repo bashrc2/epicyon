@@ -7381,6 +7381,13 @@ class PubServer(BaseHTTPRequestHandler):
         likedPostFilename = \
             locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
+            likedPostJson = loadJson(likedPostFilename, 0, 1)
+            if likedPostJson:
+                if likedPostJson.get('type'):
+                    if likedPostJson['type'] == 'Announce' and \
+                       likedPostJson.get('object'):
+                        if isinstance(likedPostJson['object'], str):
+                            likeUrl = likedPostJson['object']
             # if debug:
             print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(self.server.recentPostsCache,
@@ -7389,7 +7396,6 @@ class PubServer(BaseHTTPRequestHandler):
                                   debug)
             # if debug:
             print('Regenerating html post for changed likes collection')
-            likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, self.postToNickname,
@@ -7529,6 +7535,13 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.postToNickname,
                                        domain, likeUrl)
         if likedPostFilename:
+            likedPostJson = loadJson(likedPostFilename, 0, 1)
+            if likedPostJson:
+                if likedPostJson.get('type'):
+                    if likedPostJson['type'] == 'Announce' and \
+                       likedPostJson.get('object'):
+                        if isinstance(likedPostJson['object'], str):
+                            likeUrl = likedPostJson['object']
             if debug:
                 print('Removing likes for ' + likedPostFilename)
             undoLikesCollectionEntry(self.server.recentPostsCache,
@@ -7540,7 +7553,6 @@ class PubServer(BaseHTTPRequestHandler):
                 del self.server.iconsCache['like_inactive.png']
             if debug:
                 print('Regenerating html post for changed likes collection')
-            likedPostJson = loadJson(likedPostFilename, 0, 1)
             if likedPostJson:
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
