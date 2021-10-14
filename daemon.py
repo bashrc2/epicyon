@@ -7402,22 +7402,26 @@ class PubServer(BaseHTTPRequestHandler):
                                                       domain, debug)
                                 likeUrl = announceLikeUrl
                                 likedPostFilename = announceLikedFilename
-            # if debug:
-            print('Updating likes for ' + likedPostFilename)
+            if debug:
+                print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
                                   debug)
-            # if debug:
-            print('Regenerating html post for changed likes collection')
+            if debug:
+                print('Regenerating html post for changed likes collection')
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like.png'):
+                del self.server.iconsCache['like.png']
             if likedPostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, self.postToNickname,
                                           domain, likedPostJson)
-                print('Liked post json: ' + str(likedPostJson))
-                print('Liked post nickname: ' +
-                      self.postToNickname + ' ' + domain)
-                print('Liked post cache: ' + str(cachedPostFilename))
+                if debug:
+                    print('Liked post json: ' + str(likedPostJson))
+                    print('Liked post nickname: ' +
+                          self.postToNickname + ' ' + domain)
+                    print('Liked post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     followerApprovalActive(baseDir,
