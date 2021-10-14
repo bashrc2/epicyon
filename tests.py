@@ -45,6 +45,7 @@ from posts import noOfFollowersOnDomain
 from posts import groupFollowersByDomain
 from posts import archivePostsForPerson
 from posts import sendPostViaServer
+from posts import secondsBetweenPublished
 from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
@@ -119,6 +120,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import wordsSimilarity
 from content import getPriceFromString
 from content import limitRepeatedWords
 from content import switchWords
@@ -5716,6 +5718,33 @@ def _testCanReplyTo(baseDir: str) -> None:
                           postJsonObject)
 
 
+def _testSecondsBetweenPublished() -> None:
+    print('testSecondsBetweenPublished')
+    published1 = "2021-10-14T09:39:27Z"
+    published2 = "2021-10-14T09:41:28Z"
+
+    secondsElapsed = secondsBetweenPublished(published1, published2)
+    assert secondsElapsed == 121
+    # invalid date
+    published2 = "2021-10-14N09:41:28Z"
+    secondsElapsed = secondsBetweenPublished(published1, published2)
+    assert secondsElapsed == -1
+
+
+def _testWordsSimilarity() -> None:
+    print('testWordsSimilarity')
+    minWords = 10
+    content1 = "This is the same"
+    content2 = "This is the same"
+    assert wordsSimilarity(content1, content2, minWords) == 100
+    content1 = "This is our world now... " + \
+        "the world of the electron and the switch, the beauty of the baud"
+    content2 = "This is our world now. " + \
+        "The world of the electron and the webkit, the beauty of the baud"
+    similarity = wordsSimilarity(content1, content2, minWords)
+    assert similarity > 70
+
+
 def runAllTests():
     baseDir = os.getcwd()
     print('Running tests...')
@@ -5723,6 +5752,8 @@ def runAllTests():
     _translateOntology(baseDir)
     _testGetPriceFromString()
     _testFunctions()
+    _testWordsSimilarity()
+    _testSecondsBetweenPublished()
     _testSignAndVerify()
     _testDangerousSVG(baseDir)
     _testCanReplyTo(baseDir)

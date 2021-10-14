@@ -70,6 +70,7 @@ from utils import localActorUrl
 from media import attachMedia
 from media import replaceYouTube
 from media import replaceTwitter
+from content import wordsSimilarity
 from content import limitRepeatedWords
 from content import tagExists
 from content import removeLongWords
@@ -85,6 +86,7 @@ from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
 from video import convertVideoToNote
 from context import getIndividualPostContext
+from conversation import previousConversationPostId
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -4959,3 +4961,82 @@ def c2sBoxJson(baseDir: str, session,
         print('DEBUG: GET c2sBoxJson success')
 
     return boxJson
+
+
+def secondsBetweenPublished(published1: str, published2: str) -> int:
+    """Returns the number of seconds between two published dates
+    """
+    try:
+        published1Time = \
+            datetime.datetime.strptime(published1, '%Y-%m-%dT%H:%M:%SZ')
+    except BaseException:
+        return -1
+    try:
+        published2Time = \
+            datetime.datetime.strptime(published2, '%Y-%m-%dT%H:%M:%SZ')
+    except BaseException:
+        return -1
+    return (published2Time - published1Time).seconds
+
+
+def editedPostFilename(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: {}, debug: bool,
+                       maxTimeDiffSeconds: int) -> str:
+    """Returns the filename of the edited post
+    """
+    if not hasObjectDict(postJsonObject):
+        return ''
+    if not postJsonObject['object'].get('published'):
+        return ''
+    if not postJsonObject['object'].get('id'):
+        return ''
+    if not postJsonObject['object'].get('content'):
+        return ''
+    prevConvPostId = \
+        previousConversationPostId(baseDir, nickname, domain,
+                                   postJsonObject)
+    if not prevConvPostId:
+        return ''
+    prevConvPostFilename = \
+        locatePost(baseDir, nickname, domain, prevConvPostId, False)
+    if not prevConvPostFilename:
+        return ''
+    prevPostJsonObject = loadJson(prevConvPostFilename, 0)
+    if not prevPostJsonObject:
+        return ''
+    if not hasObjectDict(prevPostJsonObject):
+        return ''
+    if not prevPostJsonObject['object'].get('published'):
+        return ''
+    if not prevPostJsonObject['object'].get('id'):
+        return ''
+    if not prevPostJsonObject['object'].get('content'):
+        return ''
+    if prevPostJsonObject['object']['id'] == postJsonObject['object']['id']:
+        return ''
+    id1 = removeIdEnding(prevPostJsonObject['object']['id'])
+    if '/' not in id1:
+        return ''
+    id2 = removeIdEnding(postJsonObject['object']['id'])
+    if '/' not in id2:
+        return ''
+    ending1 = id1.split('/')[-1]
+    if not ending1:
+        return ''
+    ending2 = id2.split('/')[-1]
+    if not ending2:
+        return ''
+    if id1.replace(ending1, '') != id2.replace(ending2, ''):
+        return ''
+    timeDiffSeconds = \
+        secondsBetweenPublished(prevPostJsonObject['object']['published'],
+                                postJsonObject['object']['published'])
+    if timeDiffSeconds > maxTimeDiffSeconds:
+        return ''
+    if debug:
+        print(id2 + ' might be an edit of ' + id1)
+    if wordsSimilarity(prevPostJsonObject['object']['content'],
+                       postJsonObject['object']['content'], 10) < 75:
+        return ''
+    print(id2 + ' is an edit of ' + id1)
+    return prevConvPostFilename

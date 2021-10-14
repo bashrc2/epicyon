@@ -13,23 +13,50 @@ from utils import acctDir
 from utils import removeIdEnding
 
 
-def updateConversation(baseDir: str, nickname: str, domain: str,
-                       postJsonObject: {}) -> bool:
-    """Ads a post to a conversation index in the /conversation subdirectory
+def _getConversationFilename(baseDir: str, nickname: str, domain: str,
+                             postJsonObject: {}) -> str:
+    """Returns the conversation filename
     """
     if not hasObjectDict(postJsonObject):
-        return False
+        return None
     if not postJsonObject['object'].get('conversation'):
-        return False
+        return None
     if not postJsonObject['object'].get('id'):
-        return False
+        return None
     conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
     if not os.path.isdir(conversationDir):
         os.mkdir(conversationDir)
     conversationId = postJsonObject['object']['conversation']
     conversationId = conversationId.replace('/', '#')
+    return conversationDir + '/' + conversationId
+
+
+def previousConversationPostId(baseDir: str, nickname: str, domain: str,
+                               postJsonObject: {}) -> str:
+    """Returns the previous conversation post id
+    """
+    conversationFilename = \
+        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
+    if not conversationFilename:
+        return False
+    if not os.path.isfile(conversationFilename):
+        return False
+    with open(conversationFilename, 'r') as fp:
+        lines = fp.readlines()
+        if lines:
+            return lines[-1].replace('\n', '')
+    return False
+
+
+def updateConversation(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: {}) -> bool:
+    """Ads a post to a conversation index in the /conversation subdirectory
+    """
+    conversationFilename = \
+        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
+    if not conversationFilename:
+        return False
     postId = removeIdEnding(postJsonObject['object']['id'])
-    conversationFilename = conversationDir + '/' + conversationId
     if not os.path.isfile(conversationFilename):
         try:
             with open(conversationFilename, 'w+') as fp:

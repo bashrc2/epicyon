@@ -78,6 +78,7 @@ from utils import isDM
 from utils import isReply
 from utils import hasActor
 from httpsig import messageContentDigest
+from posts import editedPostFilename
 from posts import savePostToBox
 from posts import isCreateInsideAnnounce
 from posts import createDirectMessagePost
@@ -2836,7 +2837,21 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   timeDiff + ' mS')
 
             handleName = handle.split('@')[0]
+
+            # is this an edit of a previous post?
+            # in Mastodon "delete and redraft"
+            # NOTE: this must be done before updateConversation is called
+            editedFilename = \
+                editedPostFilename(baseDir, handleName, domain,
+                                   postJsonObject, debug, 300)
+
             updateConversation(baseDir, handleName, domain, postJsonObject)
+
+            # If this was an edit then delete the previous version of the post
+            if editedFilename:
+                deletePost(baseDir, httpPrefix,
+                           nickname, domain, editedFilename,
+                           debug, recentPostsCache)
 
             _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 

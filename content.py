@@ -24,6 +24,7 @@ from utils import containsPGPPublicKey
 from utils import acctDir
 from utils import isfloat
 from utils import getCurrencies
+from utils import removeHtml
 from petnames import getPetName
 
 
@@ -1133,3 +1134,42 @@ def getPriceFromString(priceStr: str) -> (str, str):
     if isfloat(priceStr):
         return priceStr, "EUR"
     return "0.00", "EUR"
+
+
+def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
+    """Returns percentage similarity
+    """
+    if content1 == content2:
+        return 100
+    content1 = removeHtml(content1).lower()
+    words1 = content1.split(' ')
+    if len(words1) < minWords:
+        return 0
+    content2 = removeHtml(content2).lower()
+    words2 = content2.split(' ')
+    if len(words2) < minWords:
+        return 0
+
+    histogram1 = {}
+    for index in range(1, len(words1)):
+        combinedWords = words1[index-1] + words1[index]
+        if histogram1.get(combinedWords):
+            histogram1[combinedWords] += 1
+        else:
+            histogram1[combinedWords] = 1
+
+    histogram2 = {}
+    for index in range(1, len(words2)):
+        combinedWords = words2[index-1] + words2[index]
+        if histogram2.get(combinedWords):
+            histogram2[combinedWords] += 1
+        else:
+            histogram2[combinedWords] = 1
+
+    diff = 0
+    for combinedWords, hits in histogram1.items():
+        if not histogram2.get(combinedWords):
+            diff += 1
+        else:
+            diff += abs(histogram2[combinedWords] - histogram1[combinedWords])
+    return 100 - int(diff * 100 / len(histogram1.items()))
