@@ -1149,19 +1149,28 @@ def _wordsSimilarityHistogram(words: []) -> {}:
     return histogram
 
 
+def _wordsSimilarityWordsList(content: str) -> []:
+    """Returns a list of words for the given content
+    """
+    removePunctuation = ('.', ',', ';', '-', ':')
+    content = removeHtml(content).lower()
+    for p in removePunctuation:
+        content = content.replace(p, ' ')
+        content = content.replace('  ', ' ')
+    return content.split(' ')
+
+
 def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
     """Returns percentage similarity
     """
     if content1 == content2:
         return 100
 
-    content1 = removeHtml(content1).lower()
-    words1 = content1.split(' ')
+    words1 = _wordsSimilarityWordsList(content1)
     if len(words1) < minWords:
         return 0
 
-    content2 = removeHtml(content2).lower()
-    words2 = content2.split(' ')
+    words2 = _wordsSimilarityWordsList(content2)
     if len(words2) < minWords:
         return 0
 
