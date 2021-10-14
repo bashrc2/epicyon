@@ -425,14 +425,12 @@ def updateLikesCollection(recentPostsCache: {},
             except BaseException:
                 pass
 
-    if not hasObjectDict(postJsonObject):
-        if debug:
-            pprint(postJsonObject)
-            print('DEBUG: post ' + objectUrl + ' has no object')
-        return
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
     if not objectUrl.endswith('/likes'):
         objectUrl = objectUrl + '/likes'
-    if not postJsonObject['object'].get('likes'):
+    if not obj.get('likes'):
         if debug:
             print('DEBUG: Adding initial like to ' + objectUrl)
         likesJson = {
@@ -445,11 +443,11 @@ def updateLikesCollection(recentPostsCache: {},
                 'actor': actor
             }]
         }
-        postJsonObject['object']['likes'] = likesJson
+        obj['likes'] = likesJson
     else:
-        if not postJsonObject['object']['likes'].get('items'):
-            postJsonObject['object']['likes']['items'] = []
-        for likeItem in postJsonObject['object']['likes']['items']:
+        if not obj['likes'].get('items'):
+            obj['likes']['items'] = []
+        for likeItem in obj['likes']['items']:
             if likeItem.get('actor'):
                 if likeItem['actor'] == actor:
                     # already liked
@@ -458,9 +456,9 @@ def updateLikesCollection(recentPostsCache: {},
             'type': 'Like',
             'actor': actor
         }
-        postJsonObject['object']['likes']['items'].append(newLike)
-        itlen = len(postJsonObject['object']['likes']['items'])
-        postJsonObject['object']['likes']['totalItems'] = itlen
+        obj['likes']['items'].append(newLike)
+        itlen = len(obj['likes']['items'])
+        obj['likes']['totalItems'] = itlen
 
     if debug:
         print('DEBUG: saving post with likes added')

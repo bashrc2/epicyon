@@ -2184,27 +2184,25 @@ def undoLikesCollectionEntry(recentPostsCache: {},
         return
     if postJsonObject['type'] != 'Create':
         return
-    if not hasObjectDict(postJsonObject):
-        if debug:
-            pprint(postJsonObject)
-            print('DEBUG: post ' + objectUrl + ' has no object')
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
+    if not obj.get('likes'):
         return
-    if not postJsonObject['object'].get('likes'):
+    if not isinstance(obj['likes'], dict):
         return
-    if not isinstance(postJsonObject['object']['likes'], dict):
-        return
-    if not postJsonObject['object']['likes'].get('items'):
+    if not obj['likes'].get('items'):
         return
     totalItems = 0
-    if postJsonObject['object']['likes'].get('totalItems'):
-        totalItems = postJsonObject['object']['likes']['totalItems']
+    if obj['likes'].get('totalItems'):
+        totalItems = obj['likes']['totalItems']
     itemFound = False
-    for likeItem in postJsonObject['object']['likes']['items']:
+    for likeItem in obj['likes']['items']:
         if likeItem.get('actor'):
             if likeItem['actor'] == actor:
                 if debug:
                     print('DEBUG: like was removed for ' + actor)
-                postJsonObject['object']['likes']['items'].remove(likeItem)
+                obj['likes']['items'].remove(likeItem)
                 itemFound = True
                 break
     if not itemFound:
@@ -2212,10 +2210,10 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     if totalItems == 1:
         if debug:
             print('DEBUG: likes was removed from post')
-        del postJsonObject['object']['likes']
+        del obj['likes']
     else:
-        itlen = len(postJsonObject['object']['likes']['items'])
-        postJsonObject['object']['likes']['totalItems'] = itlen
+        itlen = len(obj['likes']['items'])
+        obj['likes']['totalItems'] = itlen
 
     saveJson(postJsonObject, postFilename)
 
