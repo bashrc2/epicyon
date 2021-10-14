@@ -929,52 +929,73 @@ def _receiveLike(recentPostsCache: {},
     if debug:
         print('DEBUG: liked post found in inbox')
 
+    likeActor = messageJson['actor']
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     if not _alreadyLiked(baseDir,
                          handleName, handleDom,
                          postLikedId,
-                         messageJson['actor']):
+                         likeActor):
         _likeNotify(baseDir, domain, onionDomain, handle,
-                    messageJson['actor'], postLikedId)
+                    likeActor, postLikedId)
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                          postLikedId, messageJson['actor'],
+                          postLikedId, likeActor,
                           handleName, domain, debug)
     # regenerate the html
     likedPostJson = loadJson(postFilename, 0, 1)
     if likedPostJson:
-        if debug:
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, handleName, domain,
-                                      likedPostJson)
-            print('Liked post json: ' + str(likedPostJson))
-            print('Liked post nickname: ' + handleName + ' ' + domain)
-            print('Liked post cache: ' + str(cachedPostFilename))
-        pageNumber = 1
-        showPublishedDateOnly = False
-        showIndividualPostIcons = True
-        manuallyApproveFollowers = \
-            followerApprovalActive(baseDir, handleName, domain)
-        notDM = not isDM(likedPostJson)
-        individualPostAsHtml(signingPrivateKeyPem, False,
-                             recentPostsCache, maxRecentPosts,
-                             translate, pageNumber, baseDir,
-                             session, cachedWebfingers, personCache,
-                             handleName, domain, port, likedPostJson,
-                             None, True, allowDeletion,
-                             httpPrefix, __version__,
-                             'inbox',
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             showPublishedDateOnly,
-                             peertubeInstances,
-                             allowLocalNetworkAccess,
-                             themeName, systemLanguage,
-                             maxLikeCount, notDM,
-                             showIndividualPostIcons,
-                             manuallyApproveFollowers,
-                             False, True, False)
-
+        if likedPostJson.get('type'):
+            if likedPostJson['type'] == 'Announce' and \
+               likedPostJson.get('object'):
+                if isinstance(likedPostJson['object'], str):
+                    announceLikeUrl = likedPostJson['object']
+                    announceLikedFilename = \
+                        locatePost(baseDir, handleName,
+                                   domain, announceLikeUrl)
+                    if announceLikedFilename:
+                        postLikedId = announceLikeUrl
+                        postFilename = announceLikedFilename
+                        updateLikesCollection(recentPostsCache,
+                                              baseDir,
+                                              postFilename,
+                                              postLikedId,
+                                              likeActor,
+                                              handleName,
+                                              domain, debug)
+                        likedPostJson = \
+                            loadJson(postFilename, 0, 1)
+        if likedPostJson:
+            if debug:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, handleName, domain,
+                                          likedPostJson)
+                print('Liked post json: ' + str(likedPostJson))
+                print('Liked post nickname: ' + handleName + ' ' + domain)
+                print('Liked post cache: ' + str(cachedPostFilename))
+            pageNumber = 1
+            showPublishedDateOnly = False
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, handleName, domain)
+            notDM = not isDM(likedPostJson)
+            individualPostAsHtml(signingPrivateKeyPem, False,
+                                 recentPostsCache, maxRecentPosts,
+                                 translate, pageNumber, baseDir,
+                                 session, cachedWebfingers, personCache,
+                                 handleName, domain, port, likedPostJson,
+                                 None, True, allowDeletion,
+                                 httpPrefix, __version__,
+                                 'inbox',
+                                 YTReplacementDomain,
+                                 twitterReplacementDomain,
+                                 showPublishedDateOnly,
+                                 peertubeInstances,
+                                 allowLocalNetworkAccess,
+                                 themeName, systemLanguage,
+                                 maxLikeCount, notDM,
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False)
     return True
 
 
@@ -1030,43 +1051,61 @@ def _receiveUndoLike(recentPostsCache: {},
         return True
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
+    likeActor = messageJson['actor']
+    postLikedId = messageJson['object']
     undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
-                             messageJson['object'],
-                             messageJson['actor'], domain, debug)
+                             postLikedId, likeActor, domain, debug)
     # regenerate the html
     likedPostJson = loadJson(postFilename, 0, 1)
     if likedPostJson:
-        if debug:
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, handleName, domain,
-                                      likedPostJson)
-            print('Unliked post json: ' + str(likedPostJson))
-            print('Unliked post nickname: ' + handleName + ' ' + domain)
-            print('Unliked post cache: ' + str(cachedPostFilename))
-        pageNumber = 1
-        showPublishedDateOnly = False
-        showIndividualPostIcons = True
-        manuallyApproveFollowers = \
-            followerApprovalActive(baseDir, handleName, domain)
-        notDM = not isDM(likedPostJson)
-        individualPostAsHtml(signingPrivateKeyPem, False,
-                             recentPostsCache, maxRecentPosts,
-                             translate, pageNumber, baseDir,
-                             session, cachedWebfingers, personCache,
-                             handleName, domain, port, likedPostJson,
-                             None, True, allowDeletion,
-                             httpPrefix, __version__,
-                             'inbox',
-                             YTReplacementDomain,
-                             twitterReplacementDomain,
-                             showPublishedDateOnly,
-                             peertubeInstances,
-                             allowLocalNetworkAccess,
-                             themeName, systemLanguage,
-                             maxLikeCount, notDM,
-                             showIndividualPostIcons,
-                             manuallyApproveFollowers,
-                             False, True, False)
+        if likedPostJson.get('type'):
+            if likedPostJson['type'] == 'Announce' and \
+               likedPostJson.get('object'):
+                if isinstance(likedPostJson['object'], str):
+                    announceLikeUrl = likedPostJson['object']
+                    announceLikedFilename = \
+                        locatePost(baseDir, handleName,
+                                   domain, announceLikeUrl)
+                    if announceLikedFilename:
+                        postLikedId = announceLikeUrl
+                        postFilename = announceLikedFilename
+                        undoLikesCollectionEntry(recentPostsCache, baseDir,
+                                                 postFilename, postLikedId,
+                                                 likeActor, domain, debug)
+                        likedPostJson = \
+                            loadJson(postFilename, 0, 1)
+        if likedPostJson:
+            if debug:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, handleName, domain,
+                                          likedPostJson)
+                print('Unliked post json: ' + str(likedPostJson))
+                print('Unliked post nickname: ' + handleName + ' ' + domain)
+                print('Unliked post cache: ' + str(cachedPostFilename))
+            pageNumber = 1
+            showPublishedDateOnly = False
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, handleName, domain)
+            notDM = not isDM(likedPostJson)
+            individualPostAsHtml(signingPrivateKeyPem, False,
+                                 recentPostsCache, maxRecentPosts,
+                                 translate, pageNumber, baseDir,
+                                 session, cachedWebfingers, personCache,
+                                 handleName, domain, port, likedPostJson,
+                                 None, True, allowDeletion,
+                                 httpPrefix, __version__,
+                                 'inbox',
+                                 YTReplacementDomain,
+                                 twitterReplacementDomain,
+                                 showPublishedDateOnly,
+                                 peertubeInstances,
+                                 allowLocalNetworkAccess,
+                                 themeName, systemLanguage,
+                                 maxLikeCount, notDM,
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False)
     return True
 
 
