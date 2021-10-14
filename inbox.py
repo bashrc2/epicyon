@@ -962,8 +962,6 @@ def _receiveLike(recentPostsCache: {},
                                               likeActor,
                                               handleName,
                                               domain, debug)
-                        likedPostJson = \
-                            loadJson(postFilename, 0, 1)
         if likedPostJson:
             if debug:
                 cachedPostFilename = \
@@ -1072,8 +1070,6 @@ def _receiveUndoLike(recentPostsCache: {},
                         undoLikesCollectionEntry(recentPostsCache, baseDir,
                                                  postFilename, postLikedId,
                                                  likeActor, domain, debug)
-                        likedPostJson = \
-                            loadJson(postFilename, 0, 1)
         if likedPostJson:
             if debug:
                 cachedPostFilename = \

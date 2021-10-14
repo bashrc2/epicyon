@@ -7402,8 +7402,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                       domain, debug)
                                 likeUrl = announceLikeUrl
                                 likedPostFilename = announceLikedFilename
-                                likedPostJson = \
-                                    loadJson(likedPostFilename, 0, 1)
             if debug:
                 print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(recentPostsCache,
@@ -7575,8 +7573,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                          debug)
                                 likeUrl = announceLikeUrl
                                 likedPostFilename = announceLikedFilename
-                                likedPostJson = \
-                                    loadJson(likedPostFilename, 0, 1)
             if debug:
                 print('Removing likes for ' + likedPostFilename)
             undoLikesCollectionEntry(recentPostsCache,
