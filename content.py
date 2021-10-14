@@ -1136,35 +1136,37 @@ def getPriceFromString(priceStr: str) -> (str, str):
     return "0.00", "EUR"
 
 
+def _wordsSimilarityHistogram(words: []) -> {}:
+    """Returns a histogram for word combinations
+    """
+    histogram = {}
+    for index in range(1, len(words)):
+        combinedWords = words[index - 1] + words[index]
+        if histogram.get(combinedWords):
+            histogram[combinedWords] += 1
+        else:
+            histogram[combinedWords] = 1
+    return histogram
+
+
 def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
     """Returns percentage similarity
     """
     if content1 == content2:
         return 100
+
     content1 = removeHtml(content1).lower()
     words1 = content1.split(' ')
     if len(words1) < minWords:
         return 0
+
     content2 = removeHtml(content2).lower()
     words2 = content2.split(' ')
     if len(words2) < minWords:
         return 0
 
-    histogram1 = {}
-    for index in range(1, len(words1)):
-        combinedWords = words1[index-1] + words1[index]
-        if histogram1.get(combinedWords):
-            histogram1[combinedWords] += 1
-        else:
-            histogram1[combinedWords] = 1
-
-    histogram2 = {}
-    for index in range(1, len(words2)):
-        combinedWords = words2[index-1] + words2[index]
-        if histogram2.get(combinedWords):
-            histogram2[combinedWords] += 1
-        else:
-            histogram2[combinedWords] = 1
+    histogram1 = _wordsSimilarityHistogram(words1)
+    histogram2 = _wordsSimilarityHistogram(words2)
 
     diff = 0
     for combinedWords, hits in histogram1.items():
