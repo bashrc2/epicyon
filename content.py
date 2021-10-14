@@ -1152,7 +1152,7 @@ def _wordsSimilarityHistogram(words: []) -> {}:
 def _wordsSimilarityWordsList(content: str) -> []:
     """Returns a list of words for the given content
     """
-    removePunctuation = ('.', ',', ';', '-', ':', '"', "'")
+    removePunctuation = ('.', ',', ';', '-', ':', '"')
     content = removeHtml(content).lower()
     for p in removePunctuation:
         content = content.replace(p, ' ')
