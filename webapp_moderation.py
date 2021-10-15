@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Moderation"
 
@@ -37,6 +37,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    YTReplacementDomain: str,
+                   twitterReplacementDomain: str,
                    showPublishedDateOnly: bool,
                    newswire: {}, positiveVoting: bool,
                    showPublishAsIcon: bool,
@@ -50,7 +51,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
                    maxLikeCount: int,
-                   sharedItemsFederatedDomains: []) -> str:
+                   sharedItemsFederatedDomains: [],
+                   signingPrivateKeyPem: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -60,25 +62,29 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
-                        YTReplacementDomain, showPublishedDateOnly,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
+                        showPublishedDateOnly,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allowLocalNetworkAccess,
                         textModeBanner, accessKeys, systemLanguage,
-                        maxLikeCount, sharedItemsFederatedDomains)
+                        maxLikeCount, sharedItemsFederatedDomains,
+                        signingPrivateKeyPem)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},
                     baseDir: str, httpPrefix: str,
                     nickname: str, domain: str, port: int,
                     searchHandle: str, debug: bool,
-                    systemLanguage: str) -> str:
+                    systemLanguage: str, signingPrivateKeyPem: str) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
     """
+    signingPrivateKeyPem = None
     msgStr1 = 'This account interacts with the following instances'
 
     infoForm = ''
@@ -112,15 +118,19 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     session = createSession(proxyType)
 
     wordFrequency = {}
+    originDomain = None
     domainDict = getPublicPostInfo(session,
                                    baseDir, searchNickname, searchDomain,
+                                   originDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
-                                   __version__, wordFrequency, systemLanguage)
+                                   __version__, wordFrequency, systemLanguage,
+                                   signingPrivateKeyPem)
 
     # get a list of any blocked followers
     followersList = \
-        downloadFollowCollection('followers', session,
+        downloadFollowCollection(signingPrivateKeyPem,
+                                 'followers', session,
                                  httpPrefix, searchActor, 1, 5)
     blockedFollowers = []
     for followerActor in followersList:
@@ -133,7 +143,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     # get a list of any blocked following
     followingList = \
-        downloadFollowCollection('following', session,
+        downloadFollowCollection(signingPrivateKeyPem,
+                                 'following', session,
                                  httpPrefix, searchActor, 1, 5)
     blockedFollowing = []
     for followingActor in followingList:

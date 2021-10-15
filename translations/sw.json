@@ -474,5 +474,18 @@
     "Create a new wanted item": "Unda kipengee kipya kinachotafutwa",
     "Wanted Items Search": "Utafutaji wa Vitu vinavyotafutwa",
     "Website": "Tovuti",
-    "Low Bandwidth": "Bandwidth ya chini"
+    "Low Bandwidth": "Bandwidth ya chini",
+    "accommodation": "malazi",
+    "Forbidden": "Imekatazwa",
+    "You're not allowed": "Hauruhusiwi",
+    "Hours after posting during which replies are allowed": "Masaa baada ya kuchapisha wakati majibu yanaruhusiwa.",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Kikoa cha Uingizwaji wa Twitter",
+    "Buy": "Nunua",
+    "Request to stay": "Omba kukaa",
+    "Profile": "Profaili",
+    "Introduce yourself and specify the date and time when you wish to stay": "Jitambulishe na taja tarehe na saa unapotaka kukaa",
+    "Members": "Wanachama",
+    "Join": "Jiunge",
+    "Leave": "Ondoka"
 }

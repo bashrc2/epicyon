@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -11,6 +11,9 @@ import os
 import json
 import time
 from datetime import datetime
+from utils import hasObjectString
+from utils import hasObjectStringObject
+from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import hasObjectDict
 from utils import isAccountDir
@@ -29,6 +32,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acctDir
 from utils import localActorUrl
+from utils import hasActor
 from conversation import muteConversation
 from conversation import unmuteConversation
 
@@ -346,13 +350,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not a block')
         return False
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in block')
-        return False
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: block object is not string')
+    if not hasObjectString(messageJson, debug):
         return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
@@ -401,26 +399,14 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: undo block object is not string')
-        return
 
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo block - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Block':
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not messageJson['object'].get('object'):
-        if debug:
-            print('DEBUG: no object in undo block')
-        return
-    if not isinstance(messageJson['object']['object'], str):
-        if debug:
-            print('DEBUG: undo block object is not string')
+    if not hasObjectStringObject(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s undo block request arrived in outbox')
@@ -461,52 +447,65 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
              debug: bool) -> None:
     """ Mutes the given post
     """
+    print('mutePost: postId ' + postId)
     postFilename = locatePost(baseDir, nickname, domain, postId)
     if not postFilename:
+        print('mutePost: file not found ' + postId)
         return
     postJsonObject = loadJson(postFilename)
     if not postJsonObject:
+        print('mutePost: object not loaded ' + postId)
         return
+    print('mutePost: ' + str(postJsonObject))
 
+    postJsonObj = postJsonObject
+    alsoUpdatePostId = None
     if hasObjectDict(postJsonObject):
-        domainFull = getFullDomain(domain, port)
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        postJsonObj = postJsonObject['object']
+    else:
+        if hasObjectString(postJsonObject, debug):
+            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
 
-        if postJsonObject['object'].get('conversation'):
-            muteConversation(baseDir, nickname, domain,
-                             postJsonObject['object']['conversation'])
+    domainFull = getFullDomain(domain, port)
+    actor = localActorUrl(httpPrefix, nickname, domainFull)
 
-        # does this post have ignores on it from differenent actors?
-        if not postJsonObject['object'].get('ignores'):
-            if debug:
-                print('DEBUG: Adding initial mute to ' + postId)
-            ignoresJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': postId,
-                'type': 'Collection',
-                "totalItems": 1,
-                'items': [{
-                    'type': 'Ignore',
-                    'actor': actor
-                }]
-            }
-            postJsonObject['object']['ignores'] = ignoresJson
-        else:
-            if not postJsonObject['object']['ignores'].get('items'):
-                postJsonObject['object']['ignores']['items'] = []
-            itemsList = postJsonObject['object']['ignores']['items']
-            for ignoresItem in itemsList:
-                if ignoresItem.get('actor'):
-                    if ignoresItem['actor'] == actor:
-                        return
-            newIgnore = {
+    if postJsonObj.get('conversation'):
+        muteConversation(baseDir, nickname, domain,
+                         postJsonObj['conversation'])
+
+    # does this post have ignores on it from differenent actors?
+    if not postJsonObj.get('ignores'):
+        if debug:
+            print('DEBUG: Adding initial mute to ' + postId)
+        ignoresJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': postId,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
                 'type': 'Ignore',
                 'actor': actor
-            }
-            igIt = len(itemsList)
-            itemsList.append(newIgnore)
-            postJsonObject['object']['ignores']['totalItems'] = igIt
-            saveJson(postJsonObject, postFilename)
+            }]
+        }
+        postJsonObj['ignores'] = ignoresJson
+    else:
+        if not postJsonObj['ignores'].get('items'):
+            postJsonObj['ignores']['items'] = []
+        itemsList = postJsonObj['ignores']['items']
+        for ignoresItem in itemsList:
+            if ignoresItem.get('actor'):
+                if ignoresItem['actor'] == actor:
+                    return
+        newIgnore = {
+            'type': 'Ignore',
+            'actor': actor
+        }
+        igIt = len(itemsList)
+        itemsList.append(newIgnore)
+        postJsonObj['ignores']['totalItems'] = igIt
+    postJsonObj['muted'] = True
+    if saveJson(postJsonObject, postFilename):
+        print('mutePost: saved ' + postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -514,7 +513,13 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+                print('MUTE: cached post removed ' + cachedPostFilename)
+            except BaseException:
+                pass
+        else:
+            print('MUTE: cached post not found ' + cachedPostFilename)
 
     with open(postFilename + '.muted', 'w+') as muteFile:
         muteFile.write('\n')
@@ -526,14 +531,39 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
             removeIdEnding(postJsonObject['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('MUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = True
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
-                print('MUTE: ' + postId +
-                      ' marked as muted in recent posts memory cache')
+        if recentPostsCache.get('json'):
+            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+            print('MUTE: ' + postId +
+                  ' marked as muted in recent posts memory cache')
+        if recentPostsCache.get('html'):
+            if recentPostsCache['html'].get(postId):
+                del recentPostsCache['html'][postId]
+                print('MUTE: ' + postId + ' removed cached html')
+
+    if alsoUpdatePostId:
+        postFilename = locatePost(baseDir, nickname, domain, alsoUpdatePostId)
+        if os.path.isfile(postFilename):
+            postJsonObj = loadJson(postFilename)
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain,
+                                      postJsonObj)
+            if cachedPostFilename:
+                if os.path.isfile(cachedPostFilename):
+                    try:
+                        os.remove(cachedPostFilename)
+                        print('MUTE: cached referenced post removed ' +
+                              cachedPostFilename)
+                    except BaseException:
+                        pass
+
+        if recentPostsCache.get('json'):
+            if recentPostsCache['json'].get(alsoUpdatePostId):
+                del recentPostsCache['json'][alsoUpdatePostId]
+                print('MUTE: ' + alsoUpdatePostId + ' removed referenced json')
+        if recentPostsCache.get('html'):
+            if recentPostsCache['html'].get(alsoUpdatePostId):
+                del recentPostsCache['html'][alsoUpdatePostId]
+                print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
@@ -550,37 +580,47 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
 
     muteFilename = postFilename + '.muted'
     if os.path.isfile(muteFilename):
-        os.remove(muteFilename)
+        try:
+            os.remove(muteFilename)
+        except BaseException:
+            pass
         print('UNMUTE: ' + muteFilename + ' file removed')
 
+    postJsonObj = postJsonObject
+    alsoUpdatePostId = None
     if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('conversation'):
-            unmuteConversation(baseDir, nickname, domain,
-                               postJsonObject['object']['conversation'])
+        postJsonObj = postJsonObject['object']
+    else:
+        if hasObjectString(postJsonObject, debug):
+            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
 
-        if postJsonObject['object'].get('ignores'):
-            domainFull = getFullDomain(domain, port)
-            actor = localActorUrl(httpPrefix, nickname, domainFull)
-            totalItems = 0
-            if postJsonObject['object']['ignores'].get('totalItems'):
-                totalItems = \
-                    postJsonObject['object']['ignores']['totalItems']
-            itemsList = postJsonObject['object']['ignores']['items']
-            for ignoresItem in itemsList:
-                if ignoresItem.get('actor'):
-                    if ignoresItem['actor'] == actor:
-                        if debug:
-                            print('DEBUG: mute was removed for ' + actor)
-                        itemsList.remove(ignoresItem)
-                        break
-            if totalItems == 1:
-                if debug:
-                    print('DEBUG: mute was removed from post')
-                del postJsonObject['object']['ignores']
-            else:
-                igItLen = len(postJsonObject['object']['ignores']['items'])
-                postJsonObject['object']['ignores']['totalItems'] = igItLen
-            saveJson(postJsonObject, postFilename)
+    if postJsonObj.get('conversation'):
+        unmuteConversation(baseDir, nickname, domain,
+                           postJsonObj['conversation'])
+
+    if postJsonObj.get('ignores'):
+        domainFull = getFullDomain(domain, port)
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        totalItems = 0
+        if postJsonObj['ignores'].get('totalItems'):
+            totalItems = postJsonObj['ignores']['totalItems']
+        itemsList = postJsonObj['ignores']['items']
+        for ignoresItem in itemsList:
+            if ignoresItem.get('actor'):
+                if ignoresItem['actor'] == actor:
+                    if debug:
+                        print('DEBUG: mute was removed for ' + actor)
+                    itemsList.remove(ignoresItem)
+                    break
+        if totalItems == 1:
+            if debug:
+                print('DEBUG: mute was removed from post')
+            del postJsonObj['ignores']
+        else:
+            igItLen = len(postJsonObj['ignores']['items'])
+            postJsonObj['ignores']['totalItems'] = igItLen
+    postJsonObj['muted'] = False
+    saveJson(postJsonObject, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
@@ -588,7 +628,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
 
     # if the post is in the recent posts cache then mark it as unmuted
     if recentPostsCache.get('index'):
@@ -596,14 +639,40 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             removeIdEnding(postJsonObject['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('UNMUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = False
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
-                print('UNMUTE: ' + postId +
-                      ' marked as unmuted in recent posts cache')
+        if recentPostsCache.get('json'):
+            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+            print('UNMUTE: ' + postId +
+                  ' marked as unmuted in recent posts cache')
+        if recentPostsCache.get('html'):
+            if recentPostsCache['html'].get(postId):
+                del recentPostsCache['html'][postId]
+                print('UNMUTE: ' + postId + ' removed cached html')
+    if alsoUpdatePostId:
+        postFilename = locatePost(baseDir, nickname, domain, alsoUpdatePostId)
+        if os.path.isfile(postFilename):
+            postJsonObj = loadJson(postFilename)
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain,
+                                      postJsonObj)
+            if cachedPostFilename:
+                if os.path.isfile(cachedPostFilename):
+                    try:
+                        os.remove(cachedPostFilename)
+                        print('MUTE: cached referenced post removed ' +
+                              cachedPostFilename)
+                    except BaseException:
+                        pass
+
+        if recentPostsCache.get('json'):
+            if recentPostsCache['json'].get(alsoUpdatePostId):
+                del recentPostsCache['json'][alsoUpdatePostId]
+                print('UNMUTE: ' +
+                      alsoUpdatePostId + ' removed referenced json')
+        if recentPostsCache.get('html'):
+            if recentPostsCache['html'].get(alsoUpdatePostId):
+                del recentPostsCache['html'][alsoUpdatePostId]
+                print('UNMUTE: ' +
+                      alsoUpdatePostId + ' removed referenced html')
 
 
 def outboxMute(baseDir: str, httpPrefix: str,
@@ -614,20 +683,14 @@ def outboxMute(baseDir: str, httpPrefix: str,
     """
     if not messageJson.get('type'):
         return
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return
     domainFull = getFullDomain(domain, port)
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         return
     if not messageJson['type'] == 'Ignore':
         return
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in mute')
-        return
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: mute object is not string')
+    if not hasObjectString(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s mute request arrived in outbox')
@@ -669,16 +732,14 @@ def outboxUndoMute(baseDir: str, httpPrefix: str,
     """
     if not messageJson.get('type'):
         return
-    if not messageJson.get('actor'):
+    if not hasActor(messageJson, debug):
         return
     domainFull = getFullDomain(domain, port)
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         return
     if not messageJson['type'] == 'Undo':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
+    if not hasObjectStringType(messageJson, debug):
         return
     if messageJson['object']['type'] != 'Ignore':
         return
@@ -740,7 +801,10 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     if not enabled:
         # remove instance allow list
         if os.path.isfile(allowFilename):
-            os.remove(allowFilename)
+            try:
+                os.remove(allowFilename)
+            except BaseException:
+                pass
             print('Broch mode turned off')
     else:
         if os.path.isfile(allowFilename):
@@ -799,11 +863,14 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
     currTime = datetime.datetime.utcnow()
     daysSinceBroch = (currTime - modifiedDate).days
     if daysSinceBroch >= lapseDays:
+        removed = False
         try:
             os.remove(allowFilename)
+            removed = True
+        except BaseException:
+            pass
+        if removed:
             setConfigParam(baseDir, "brochMode", False)
             print('Broch mode has elapsed')
             return True
-        except BaseException:
-            pass
     return False

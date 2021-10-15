@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -46,8 +46,12 @@ class threadWithTrace(threading.Thread):
 
     def __run(self):
         sys.settrace(self.globaltrace)
-        self.__run_backup()
-        self.run = self.__run_backup
+        try:
+            self.__run_backup()
+            self.run = self.__run_backup
+        except Exception as e:
+            print('ERROR: threads.py/__run failed - ' + str(e))
+            pass
 
     def globaltrace(self, frame, event, arg):
         if event == 'call':

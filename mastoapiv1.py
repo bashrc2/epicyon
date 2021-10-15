@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "API"
 
@@ -145,31 +145,33 @@ def mastoApiV1Response(path: str, callingDomain: str,
 
     if path.startswith('/api/v1/blocks'):
         sendJson = []
-        sendJsonStr = 'masto API instance blocks sent'
+        sendJsonStr = 'masto API instance blocks sent ' + path
     elif path.startswith('/api/v1/favorites'):
         sendJson = []
-        sendJsonStr = 'masto API favorites sent'
+        sendJsonStr = 'masto API favorites sent ' + path
     elif path.startswith('/api/v1/follow_requests'):
         sendJson = []
-        sendJsonStr = 'masto API follow requests sent'
+        sendJsonStr = 'masto API follow requests sent ' + path
     elif path.startswith('/api/v1/mutes'):
         sendJson = []
-        sendJsonStr = 'masto API mutes sent'
+        sendJsonStr = 'masto API mutes sent ' + path
     elif path.startswith('/api/v1/notifications'):
         sendJson = []
-        sendJsonStr = 'masto API notifications sent'
+        sendJsonStr = 'masto API notifications sent ' + path
     elif path.startswith('/api/v1/reports'):
         sendJson = []
-        sendJsonStr = 'masto API reports sent'
+        sendJsonStr = 'masto API reports sent ' + path
     elif path.startswith('/api/v1/statuses'):
         sendJson = []
-        sendJsonStr = 'masto API statuses sent'
+        sendJsonStr = 'masto API statuses sent ' + path
     elif path.startswith('/api/v1/timelines'):
-        sendJson = []
-        sendJsonStr = 'masto API timelines sent'
+        sendJson = {
+            'error': 'This method requires an authenticated user'
+        }
+        sendJsonStr = 'masto API timelines sent ' + path
     elif path.startswith('/api/v1/custom_emojis'):
         sendJson = customEmoji
-        sendJsonStr = 'masto API custom emojis sent'
+        sendJsonStr = 'masto API custom emojis sent ' + path
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname and path == '/api/v1/instance':

@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -26,6 +26,8 @@ from utils import saveJson
 from utils import hasObjectDict
 from utils import acctDir
 from utils import localActorUrl
+from utils import hasActor
+from utils import hasObjectStringType
 from posts import getPersonBox
 from session import postJson
 
@@ -47,7 +49,10 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     # remove from the index
@@ -152,7 +157,10 @@ def updateBookmarksCollection(recentPostsCache: {},
                                                    domain, postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
+                try:
+                    os.remove(cachedPostFilename)
+                except BaseException:
+                    pass
         removePostFromCache(postJsonObject, recentPostsCache)
 
         if not postJsonObject.get('object'):
@@ -348,7 +356,8 @@ def sendBookmarkViaServer(baseDir: str, session,
                           domain: str, fromPort: int,
                           httpPrefix: str, bookmarkUrl: str,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str) -> {}:
+                          debug: bool, projectVersion: str,
+                          signingPrivateKeyPem: str) -> {}:
     """Creates a bookmark via c2s
     """
     if not session:
@@ -377,7 +386,8 @@ def sendBookmarkViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False)
+                                domain, projectVersion, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: bookmark webfinger failed for ' + handle)
@@ -390,12 +400,15 @@ def sendBookmarkViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain,
-                                            postToBox, 52594)
+    originDomain = domain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain,
+                                    postToBox, 58391)
 
     if not inboxUrl:
         if debug:
@@ -433,7 +446,8 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
                               domain: str, fromPort: int,
                               httpPrefix: str, bookmarkUrl: str,
                               cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str) -> {}:
+                              debug: bool, projectVersion: str,
+                              signingPrivateKeyPem: str) -> {}:
     """Removes a bookmark via c2s
     """
     if not session:
@@ -462,7 +476,8 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False)
+                                domain, projectVersion, debug, False,
+                                signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: unbookmark webfinger failed for ' + handle)
@@ -475,12 +490,15 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain,
-                                            postToBox, 52594)
+    originDomain = domain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache,
+                                    projectVersion, httpPrefix,
+                                    nickname, domain,
+                                    postToBox, 52594)
 
     if not inboxUrl:
         if debug:
@@ -523,21 +541,13 @@ def outboxBookmark(recentPostsCache: {},
         return
     if messageJson['type'] != 'Add':
         return
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: no actor in bookmark Add')
-        return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: no object in bookmark Add')
+    if not hasActor(messageJson, debug):
         return
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in bookmark Add')
         return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: no object type in bookmark Add')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not isinstance(messageJson['target'], str):
         if debug:
@@ -587,21 +597,13 @@ def outboxUndoBookmark(recentPostsCache: {},
         return
     if messageJson['type'] != 'Remove':
         return
-    if not messageJson.get('actor'):
-        if debug:
-            print('DEBUG: no actor in unbookmark Remove')
-        return
-    if not hasObjectDict(messageJson):
-        if debug:
-            print('DEBUG: no object in unbookmark Remove')
+    if not hasActor(messageJson, debug):
         return
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in unbookmark Remove')
         return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: no object type in bookmark Remove')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not isinstance(messageJson['target'], str):
         if debug:

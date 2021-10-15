@@ -2,16 +2,16 @@
   "@context": {
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
-    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductGlossary.owl#",
     "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
-    "dfc-u": "http://static.datafoodconsortium.org/data/units.rdf#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.json#",
     "dfc-p:specialize": {
       "@type": "@id"
     }
   },
   "@graph": [
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#shirt",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#shirt",
       "rdfs:label": [
         {
           "@value": "La chemise",
@@ -82,11 +82,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/clothesTypes.rdf#shirt",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/clothesTypes.json#shirt",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#belt",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#belt",
       "rdfs:label": [
         {
           "@value": "Ceinture",
@@ -157,11 +157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#belt",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#belt",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#childrens-clothing",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#childrens-clothing",
       "rdfs:label": [
         {
           "@value": "Vêtements pour enfants",
@@ -232,11 +232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#childrens-clothing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#childrens-clothing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#coat",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#coat",
       "rdfs:label": [
         {
           "@value": "Manteau",
@@ -307,11 +307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#coat",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#coat",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#dress",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#dress",
       "rdfs:label": [
         {
           "@value": "Robe",
@@ -382,11 +382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#shoes",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#shoes",
       "rdfs:label": [
         {
           "@value": "Des chaussures",
@@ -457,11 +457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#boots",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#boots",
       "rdfs:label": [
         {
           "@value": "Bottes",
@@ -532,11 +532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#gown",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#gown",
       "rdfs:label": [
         {
           "@value": "Robe",
@@ -607,11 +607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#gown",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#gown",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#hat",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#hat",
       "rdfs:label": [
         {
           "@value": "Chapeau",
@@ -682,11 +682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#hat",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#hat",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#hosiery‎",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#hosiery‎",
       "rdfs:label": [
         {
           "@value": "Hosiery",
@@ -757,11 +757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#hosiery‎",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#hosiery‎",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#jacket",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#jacket",
       "rdfs:label": [
         {
           "@value": "Veste",
@@ -832,11 +832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#jacket",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#jacket",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#jeans",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#jeans",
       "rdfs:label": [
         {
           "@value": "Jeans",
@@ -907,11 +907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#jeans",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#jeans",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#mask",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#mask",
       "rdfs:label": [
         {
           "@value": "Masquer",
@@ -982,11 +982,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#mask",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#mask",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#neckwear",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#neckwear",
       "rdfs:label": [
         {
           "@value": "Vêtements de cou",
@@ -1057,11 +1057,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#neckwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#neckwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#scarf",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#scarf",
       "rdfs:label": [
         {
           "@value": "Écharpe",
@@ -1132,11 +1132,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#neckwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#neckwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#suit",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#suit",
       "rdfs:label": [
         {
           "@value": "Costume",
@@ -1207,11 +1207,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#suit",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#suit",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#poncho",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#poncho",
       "rdfs:label": [
         {
           "@value": "Poncho",
@@ -1282,11 +1282,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#poncho",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#poncho",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#cloak",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#cloak",
       "rdfs:label": [
         {
           "@value": "Manteau",
@@ -1357,11 +1357,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#cloak",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#cloak",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#sari",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#sari",
       "rdfs:label": [
         {
           "@value": "Sari",
@@ -1432,11 +1432,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#sash",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#sash",
       "rdfs:label": [
         {
           "@value": "Ceinture",
@@ -1507,11 +1507,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#sash",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#sash",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#shawl",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#shawl",
       "rdfs:label": [
         {
           "@value": "Châle",
@@ -1582,11 +1582,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#skirt",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#skirt",
       "rdfs:label": [
         {
           "@value": "Jupe",
@@ -1657,11 +1657,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#trousers",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#trousers",
       "rdfs:label": [
         {
           "@value": "Pantalon",
@@ -1732,11 +1732,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#trousers",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#trousers",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#shorts",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#shorts",
       "rdfs:label": [
         {
           "@value": "Shorts",
@@ -1807,11 +1807,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#shorts",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#shorts",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#underwear",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#underwear",
       "rdfs:label": [
         {
           "@value": "Sous-vêtement",
@@ -1882,11 +1882,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#underwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#underwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#socks",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#socks",
       "rdfs:label": [
         {
           "@value": "Des chaussettes",
@@ -1957,11 +1957,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#helmet",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#helmet",
       "rdfs:label": [
         {
           "@value": "Casque",
@@ -2032,11 +2032,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#helmet",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#helmet",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#gloves",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#gloves",
       "rdfs:label": [
         {
           "@value": "Gants",
@@ -2107,11 +2107,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#gloves",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#gloves",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#kurta",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#kurta",
       "rdfs:label": [
         {
           "@value": "Kurta",
@@ -2182,11 +2182,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#kurta",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#kurta",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#sherwani",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#sherwani",
       "rdfs:label": [
         {
           "@value": "Sherwani",
@@ -2257,11 +2257,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#mens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#mens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#shalwar-kameez",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#shalwar-kameez",
       "rdfs:label": [
         {
           "@value": "Shalwar Kameez",
@@ -2332,11 +2332,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#cheongsam",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#cheongsam",
       "rdfs:label": [
         {
           "@value": "Cheongsam",
@@ -2407,11 +2407,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#áo-bà-ba",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#áo-bà-ba",
       "rdfs:label": [
         {
           "@value": "Áo bà ba",
@@ -2482,11 +2482,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#áo-bà-ba",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#áo-bà-ba",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#áo-dài",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#áo-dài",
       "rdfs:label": [
         {
           "@value": "Áo dài",
@@ -2557,11 +2557,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#áo-dài",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#áo-dài",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#halter-top",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#halter-top",
       "rdfs:label": [
         {
           "@value": "Halter haut",
@@ -2632,11 +2632,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#womens",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#womens",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#sandals",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#sandals",
       "rdfs:label": [
         {
           "@value": "Des sandales",
@@ -2707,11 +2707,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#slippers",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#slippers",
       "rdfs:label": [
         {
           "@value": "Chaussons",
@@ -2782,11 +2782,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#footwear",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#footwear",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://clothes/data/clothesTypes.rdf#kilt",
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#kilt",
       "rdfs:label": [
         {
           "@value": "Kilt",
@@ -2857,7 +2857,157 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://clothes/data/toolTypes.rdf#kilt",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#kilt",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#apron",
+      "rdfs:label": [
+        {
+          "@value": "Apron",
+          "@language": "en"
+        },
+        {
+          "@value": "Apron",
+          "@language": "ar"
+        },
+        {
+          "@value": "Apron",
+          "@language": "ku"
+        },
+        {
+          "@value": "Apron",
+          "@language": "es"
+        },
+        {
+          "@value": "Grembiule",
+          "@language": "it"
+        },
+        {
+          "@value": "Apres",
+          "@language": "de"
+        },
+        {
+          "@value": "Apron",
+          "@language": "sw"
+        },
+        {
+          "@value": "Avental",
+          "@language": "pt"
+        },
+        {
+          "@value": "Apron",
+          "@language": "oc"
+        },
+        {
+          "@value": "Абон",
+          "@language": "ru"
+        },
+        {
+          "@value": "Apron",
+          "@language": "cy"
+        },
+        {
+          "@value": "エプロン",
+          "@language": "ja"
+        },
+        {
+          "@value": "An tAthrú",
+          "@language": "ga"
+        },
+        {
+          "@value": "एप्रन",
+          "@language": "hi"
+        },
+        {
+          "@value": "环境",
+          "@language": "zh"
+        },
+        {
+          "@value": "Apron",
+          "@language": "fr"
+        },
+        {
+          "@value": "Apron",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#apron",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/clothesTypes.json#corset",
+      "rdfs:label": [
+        {
+          "@value": "Corset",
+          "@language": "en"
+        },
+        {
+          "@value": "Corset",
+          "@language": "ar"
+        },
+        {
+          "@value": "Corset",
+          "@language": "ku"
+        },
+        {
+          "@value": "Corset",
+          "@language": "es"
+        },
+        {
+          "@value": "Corse",
+          "@language": "it"
+        },
+        {
+          "@value": "Korsett",
+          "@language": "de"
+        },
+        {
+          "@value": "Corset",
+          "@language": "sw"
+        },
+        {
+          "@value": "Espartilho",
+          "@language": "pt"
+        },
+        {
+          "@value": "Corset",
+          "@language": "oc"
+        },
+        {
+          "@value": "Корсет",
+          "@language": "ru"
+        },
+        {
+          "@value": "Corset",
+          "@language": "cy"
+        },
+        {
+          "@value": "コルセット",
+          "@language": "ja"
+        },
+        {
+          "@value": "Sraith",
+          "@language": "ga"
+        },
+        {
+          "@value": "कोर्सेट",
+          "@language": "hi"
+        },
+        {
+          "@value": "Cset",
+          "@language": "zh"
+        },
+        {
+          "@value": "Corset",
+          "@language": "fr"
+        },
+        {
+          "@value": "Corset",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.rdf#corset",
       "@type": "dfc-p:ProductType"
     }
   ]

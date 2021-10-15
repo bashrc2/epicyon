@@ -62,8 +62,6 @@ Create a web server configuration:
 
 And paste the following:
 
-    proxy_cache_path /var/www/cache levels=1:2 keys_zone=my_cache:10m max_size=10g
-                     inactive=60m use_temp_path=off;
     server {
         listen 80;
         listen [::]:80;
@@ -115,11 +113,12 @@ And paste the following:
           try_files $uri =404;
         }
 
+        keepalive_timeout 70;
+        sendfile on;
+
         location / {
             proxy_http_version 1.1;
             client_max_body_size 31M;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
@@ -135,18 +134,14 @@ And paste the following:
             proxy_redirect off;
             proxy_request_buffering off;
             proxy_buffering off;
-	    location ~ ^/accounts/(avatars|headers)/(.*).(png|jpg|gif|webp|svg) {
-              expires 1d;
-              proxy_pass http://localhost:7156;
-            }
             proxy_pass http://localhost:7156;
+	    tcp_nodelay on;
         }
     }
 
 Enable the site:
 
     ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
-    mkdir /var/www/cache
 
 Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured. Add a TLS certificate:
 

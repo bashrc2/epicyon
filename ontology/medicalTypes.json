@@ -2,16 +2,16 @@
   "@context": {
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
-    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductGlossary.owl#",
     "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
-    "dfc-u": "http://static.datafoodconsortium.org/data/units.rdf#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.json#",
     "dfc-p:specialize": {
       "@type": "@id"
     }
   },
   "@graph": [
     {
-      "@id": "https://medical/data/medicalTypes.rdf#gas-mask",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#gas-mask",
       "rdfs:label": [
         {
           "@value": "Gas Mask",
@@ -82,11 +82,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#body-protection",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#body-protection",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#gas-mask-filter",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#gas-mask-filter",
       "rdfs:label": [
         {
           "@value": "Gas Mask Filter",
@@ -157,11 +157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#body-protection",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#body-protection",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#bandages",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "rdfs:label": [
         {
           "@value": "Bandages",
@@ -232,11 +232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#gauze-wrap",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#gauze-wrap",
       "rdfs:label": [
         {
           "@value": "Gauze Wrap",
@@ -307,11 +307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#gauze-pad",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#gauze-pad",
       "rdfs:label": [
         {
           "@value": "Gauze Pad",
@@ -382,11 +382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#nonstick-pad",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#nonstick-pad",
       "rdfs:label": [
         {
           "@value": "Nonstick Pad",
@@ -457,11 +457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#triangle-bandage",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#triangle-bandage",
       "rdfs:label": [
         {
           "@value": "Triangle Bandage",
@@ -532,11 +532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#wound-closure-strip",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#wound-closure-strip",
       "rdfs:label": [
         {
           "@value": "Wound Closure Strip",
@@ -607,11 +607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#paper-tape",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#paper-tape",
       "rdfs:label": [
         {
           "@value": "Paper Tape",
@@ -682,11 +682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#tape",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#tape",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#plastic-tape",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#plastic-tape",
       "rdfs:label": [
         {
           "@value": "Plastic Tape",
@@ -757,11 +757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#tape",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#tape",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#examination-gloves",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#examination-gloves",
       "rdfs:label": [
         {
           "@value": "Examination Gloves",
@@ -832,11 +832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#gloves",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#gloves",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#stick-on-bandage",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#stick-on-bandage",
       "rdfs:label": [
         {
           "@value": "Stick-on Bandage",
@@ -907,11 +907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#saline-solution",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#saline-solution",
       "rdfs:label": [
         {
           "@value": "Saline Solution",
@@ -982,11 +982,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#fluid",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#fluid",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#antibiotic-ointment",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#antibiotic-ointment",
       "rdfs:label": [
         {
           "@value": "Antibiotic Ointment",
@@ -1057,11 +1057,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#medicine",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#medicine",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#anti-hemorrhagic-agent",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#anti-hemorrhagic-agent",
       "rdfs:label": [
         {
           "@value": "Anti-hemorrhagic Agent",
@@ -1132,11 +1132,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#fluids",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#fluids",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#sunblock",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#sunblock",
       "rdfs:label": [
         {
           "@value": "Sunblock",
@@ -1207,11 +1207,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#body-protection",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#body-protection",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#bandage-shears",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandage-shears",
       "rdfs:label": [
         {
           "@value": "Bandage Shears",
@@ -1282,11 +1282,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bandages",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandages",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#tweezers",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#tweezers",
       "rdfs:label": [
         {
           "@value": "Tweezers",
@@ -1357,11 +1357,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#medical-tools",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#medical-tools",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#protein-bar",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#protein-bar",
       "rdfs:label": [
         {
           "@value": "Protein Bar",
@@ -1432,11 +1432,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#energy",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#energy",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#bandanna",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#bandanna",
       "rdfs:label": [
         {
           "@value": "Bandanna",
@@ -1507,11 +1507,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#body-protection",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#body-protection",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#water-bottle",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#water-bottle",
       "rdfs:label": [
         {
           "@value": "Water Bottle",
@@ -1582,11 +1582,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#fluids",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#fluids",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#ice-pack",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#ice-pack",
       "rdfs:label": [
         {
           "@value": "Ice Pack",
@@ -1657,11 +1657,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#anti-inflamatory",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#anti-inflamatory",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#messenger-bag",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#messenger-bag",
       "rdfs:label": [
         {
           "@value": "Messenger Bag",
@@ -1732,11 +1732,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#bag",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#bag",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#glucose-tablets",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#glucose-tablets",
       "rdfs:label": [
         {
           "@value": "Glucose tablets",
@@ -1807,11 +1807,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#energy",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#energy",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#liquid-antacid-water-mixture",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#liquid-antacid-water-mixture",
       "rdfs:label": [
         {
           "@value": "Liquid Antacid Water Mixture",
@@ -1882,11 +1882,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#fluids",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#fluids",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#re-hydration-mixture",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#re-hydration-mixture",
       "rdfs:label": [
         {
           "@value": "Re-hydration Mixture",
@@ -1957,11 +1957,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#fluids",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#fluids",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#ear-plugs",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#ear-plugs",
       "rdfs:label": [
         {
           "@value": "Ear Plugs",
@@ -2032,11 +2032,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#body-protection",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#body-protection",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://medical/data/medicalTypes.rdf#cpr-mask",
+      "@id": "http://static.datafoodconsortium.org/data/medicalTypes.json#cpr-mask",
       "rdfs:label": [
         {
           "@value": "CPR Mask",
@@ -2107,7 +2107,7 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://medical/data/medicalTypes.rdf#mask",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/medicalTypes.json#mask",
       "@type": "dfc-p:ProductType"
     }
   ]

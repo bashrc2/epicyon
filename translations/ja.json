@@ -474,5 +474,18 @@
     "Create a new wanted item": "新しい欲しいアイテムを作成する",
     "Wanted Items Search": "欲しいアイテム検索",
     "Website": "Webサイト",
-    "Low Bandwidth": "低帯域幅"
+    "Low Bandwidth": "低帯域幅",
+    "accommodation": "宿泊施設",
+    "Forbidden": "禁断",
+    "You're not allowed": "あなたは許可されていません",
+    "Hours after posting during which replies are allowed": "転記後の時間返信が許可されています",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Twitterの代替ドメイン",
+    "Buy": "買う",
+    "Request to stay": "滞在リクエスト",
+    "Profile": "プロフィール",
+    "Introduce yourself and specify the date and time when you wish to stay": "自己紹介をし、滞在したい日時を指定してください",
+    "Members": "メンバー",
+    "Join": "加入",
+    "Leave": "離れる"
 }

@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -22,6 +22,7 @@ from posts import getPersonBox
 from session import postJson
 from session import postImage
 from session import createSession
+from utils import hasObjectStringType
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
 from utils import getConfigParam
@@ -30,7 +31,6 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
-from utils import hasObjectDict
 from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acctDir
@@ -47,7 +47,8 @@ from blocking import isBlocked
 
 
 def _loadDfcIds(baseDir: str, systemLanguage: str,
-                productType: str) -> {}:
+                productType: str,
+                httpPrefix: str, domainFull: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
@@ -92,7 +93,10 @@ def _loadDfcIds(baseDir: str, systemLanguage: str,
             if not label.get('@value'):
                 continue
             if label['@language'] == systemLanguage:
-                dfcIds[label['@value'].lower()] = item['@id']
+                itemId = \
+                    item['@id'].replace('http://static.datafoodconsortium.org',
+                                        httpPrefix + '://' + domainFull)
+                dfcIds[label['@value'].lower()] = itemId
                 break
     return dfcIds
 
@@ -142,7 +146,10 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
             for ext in formats:
                 if sharesJson[itemID]['imageUrl'].endswith('.' + ext):
                     if os.path.isfile(itemIDfile + '.' + ext):
-                        os.remove(itemIDfile + '.' + ext)
+                        try:
+                            os.remove(itemIDfile + '.' + ext)
+                        except BaseException:
+                            pass
         # remove the item itself
         del sharesJson[itemID]
         saveJson(sharesJson, sharesFilename)
@@ -193,7 +200,9 @@ def _dfcProductTypeFromCategory(baseDir: str,
 
 def _getshareDfcId(baseDir: str, systemLanguage: str,
                    itemType: str, itemCategory: str,
-                   translate: {}, dfcIds: {} = None) -> str:
+                   translate: {},
+                   httpPrefix: str, domainFull: str,
+                   dfcIds: {} = None) -> str:
     """Attempts to obtain a DFC Id for the shared item,
     based upon productTypes ontology.
     See https://github.com/datafoodconsortium/ontology
@@ -207,7 +216,8 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
         itemType = itemType.replace('.', '')
         return 'epicyon#' + itemType
     if not dfcIds:
-        dfcIds = _loadDfcIds(baseDir, systemLanguage, matchedProductType)
+        dfcIds = _loadDfcIds(baseDir, systemLanguage, matchedProductType,
+                             httpPrefix, domainFull)
         if not dfcIds:
             return ''
     itemTypeLower = itemType.lower()
@@ -316,7 +326,8 @@ def addShare(baseDir: str,
     actor = localActorUrl(httpPrefix, nickname, domainFull)
     itemID = _getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(baseDir, systemLanguage,
-                           itemType, itemCategory, translate)
+                           itemType, itemCategory, translate,
+                           httpPrefix, domainFull)
 
     # has an image for this share been uploaded?
     imageUrl = None
@@ -350,7 +361,10 @@ def addShare(baseDir: str,
                                 imageFilename, itemIDfile + '.' + ext,
                                 city)
                 if moveImage:
-                    os.remove(imageFilename)
+                    try:
+                        os.remove(imageFilename)
+                    except BaseException:
+                        pass
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
                     '/sharefiles/' + nickname + '/' + itemID + '.' + ext
@@ -419,7 +433,10 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(itemIDfile + '.' + ext):
-                os.remove(itemIDfile + '.' + ext)
+                try:
+                    os.remove(itemIDfile + '.' + ext)
+                except BaseException:
+                    pass
     saveJson(sharesJson, sharesFilename)
 
 
@@ -535,7 +552,8 @@ def sendShareViaServer(baseDir, session,
                        location: str, duration: str,
                        cachedWebfingers: {}, personCache: {},
                        debug: bool, projectVersion: str,
-                       itemPrice: str, itemCurrency: str) -> {}:
+                       itemPrice: str, itemCurrency: str,
+                       signingPrivateKeyPem: str) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -585,7 +603,8 @@ def sendShareViaServer(baseDir, session,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -598,13 +617,15 @@ def sendShareViaServer(baseDir, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            83653)
+    originDomain = fromDomain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    83653)
 
     if not inboxUrl:
         if debug:
@@ -652,7 +673,8 @@ def sendUndoShareViaServer(baseDir: str, session,
                            fromDomain: str, fromPort: int,
                            httpPrefix: str, displayName: str,
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str) -> {}:
+                           debug: bool, projectVersion: str,
+                           signingPrivateKeyPem: str) -> {}:
     """Undoes a share via c2s
     """
     if not session:
@@ -685,7 +707,8 @@ def sendUndoShareViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: unshare webfinger failed for ' + handle)
@@ -698,13 +721,15 @@ def sendUndoShareViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            12663)
+    originDomain = fromDomain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    12663)
 
     if not inboxUrl:
         if debug:
@@ -747,7 +772,8 @@ def sendWantedViaServer(baseDir, session,
                         location: str, duration: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, projectVersion: str,
-                        itemMaxPrice: str, itemCurrency: str) -> {}:
+                        itemMaxPrice: str, itemCurrency: str,
+                        signingPrivateKeyPem: str) -> {}:
     """Creates a wanted item via c2s
     """
     if not session:
@@ -797,7 +823,8 @@ def sendWantedViaServer(baseDir, session,
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -810,13 +837,15 @@ def sendWantedViaServer(baseDir, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            83653)
+    originDomain = fromDomain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    23653)
 
     if not inboxUrl:
         if debug:
@@ -864,7 +893,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
                             fromDomain: str, fromPort: int,
                             httpPrefix: str, displayName: str,
                             cachedWebfingers: {}, personCache: {},
-                            debug: bool, projectVersion: str) -> {}:
+                            debug: bool, projectVersion: str,
+                            signingPrivateKeyPem: str) -> {}:
     """Undoes a wanted item via c2s
     """
     if not session:
@@ -897,7 +927,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: unwant webfinger failed for ' + handle)
@@ -910,13 +941,15 @@ def sendUndoWantedViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache, projectVersion,
-                                            httpPrefix, fromNickname,
-                                            fromDomain, postToBox,
-                                            12663)
+    originDomain = fromDomain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem,
+                                    originDomain,
+                                    baseDir, session, wfRequest,
+                                    personCache, projectVersion,
+                                    httpPrefix, fromNickname,
+                                    fromDomain, postToBox,
+                                    12693)
 
     if not inboxUrl:
         if debug:
@@ -953,7 +986,8 @@ def sendUndoWantedViaServer(baseDir: str, session,
 def getSharedItemsCatalogViaServer(baseDir, session,
                                    nickname: str, password: str,
                                    domain: str, port: int,
-                                   httpPrefix: str, debug: bool) -> {}:
+                                   httpPrefix: str, debug: bool,
+                                   signingPrivateKeyPem: str) -> {}:
     """Returns the shared items catalog via c2s
     """
     if not session:
@@ -972,8 +1006,8 @@ def getSharedItemsCatalogViaServer(baseDir, session,
     url = localActorUrl(httpPrefix, nickname, domainFull) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
-    catalogJson = getJson(session, url, headers, None, debug,
-                          __version__, httpPrefix, None)
+    catalogJson = getJson(signingPrivateKeyPem, session, url, headers, None,
+                          debug, __version__, httpPrefix, None)
     if not catalogJson:
         if debug:
             print('DEBUG: GET shared items catalog failed for c2s to ' + url)
@@ -996,11 +1030,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Add':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo block - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Offer':
         if debug:
@@ -1069,11 +1099,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
         return
     if not messageJson['type'] == 'Remove':
         return
-    if not hasObjectDict(messageJson):
-        return
-    if not messageJson['object'].get('type'):
-        if debug:
-            print('DEBUG: undo block - no type')
+    if not hasObjectStringType(messageJson, debug):
         return
     if not messageJson['object']['type'] == 'Offer':
         if debug:
@@ -1129,12 +1155,14 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
                                  sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
+    Also the subdirectory ontology/DFC
     """
     today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
-        "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+        httpPrefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        "http://static.datafoodconsortium.org/data/productTypes.rdf#"
+        httpPrefix + '://' + domainFull + \
+        '/ontologies/DFC_ProductGlossary.rdf#'
     owner = localActorUrl(httpPrefix, nickname, domainFull)
     if sharesFileType == 'shares':
         dfcInstanceId = owner + '/catalog'
@@ -1217,12 +1245,14 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
                           path: str, sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
+    Also the subdirectory ontology/DFC
     """
     today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
-        "http://static.datafoodconsortium.org/ontologies/DFC_FullModel.owl#"
+        httpPrefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        "http://static.datafoodconsortium.org/data/productTypes.rdf#"
+        httpPrefix + '://' + domainFull + \
+        '/ontologies/DFC_ProductGlossary.rdf#'
     dfcInstanceId = httpPrefix + '://' + domainFull + '/catalog'
     endpoint = {
         "@context": {
@@ -1323,7 +1353,8 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
         csvStr += str(item['DFC:quantity']) + ','
         csvStr += item['DFC:price'].split(' ')[0] + ','
         csvStr += '"' + item['DFC:price'].split(' ')[1] + '",'
-        csvStr += '"' + item['DFC:Image'] + '",'
+        if item.get('DFC:Image'):
+            csvStr += '"' + item['DFC:Image'] + '",'
         description = item['DFC:description'].replace('"', "'")
         csvStr += '"' + description + '",\n'
     return csvStr
@@ -1550,7 +1581,8 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         if saveJson(catalogJson, catalogFilename):
             print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
-                                            baseDir, systemLanguage)
+                                            baseDir, systemLanguage,
+                                            httpPrefix, domainFull)
             if sharesJson:
                 sharesFilename = \
                     catalogsDir + '/' + federatedDomainFull + '.' + \
@@ -1709,7 +1741,8 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
 
 
 def _dfcToSharesFormat(catalogJson: {},
-                       baseDir: str, systemLanguage: str) -> {}:
+                       baseDir: str, systemLanguage: str,
+                       httpPrefix: str, domainFull: str) -> {}:
     """Converts DFC format into the internal formal used to store shared items.
     This simplifies subsequent search and display
     """
@@ -1720,7 +1753,8 @@ def _dfcToSharesFormat(catalogJson: {},
     dfcIds = {}
     productTypesList = getCategoryTypes(baseDir)
     for productType in productTypesList:
-        dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType)
+        dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType,
+                                          httpPrefix, domainFull)
 
     currTime = int(time.time())
     for item in catalogJson['DFC:supplies']:
@@ -1731,7 +1765,6 @@ def _dfcToSharesFormat(catalogJson: {},
            not item.get('DFC:expiryDate') or \
            not item.get('DFC:quantity') or \
            not item.get('DFC:price') or \
-           not item.get('DFC:Image') or \
            not item.get('DFC:description'):
             continue
 
@@ -1780,10 +1813,13 @@ def _dfcToSharesFormat(catalogJson: {},
         itemID = item['@id']
         description = item['DFC:description'].split(':', 1)[1].strip()
 
+        imageUrl = ''
+        if item.get('DFC:Image'):
+            imageUrl = item['DFC:Image']
         sharesJson[itemID] = {
             "displayName": item['DFC:description'].split(':')[0],
             "summary": description,
-            "imageUrl": item['DFC:Image'],
+            "imageUrl": imageUrl,
             "itemQty": float(item['DFC:quantity']),
             "dfcId": dfcId,
             "itemType": itemType,
@@ -1795,3 +1831,17 @@ def _dfcToSharesFormat(catalogJson: {},
             "itemCurrency": item['DFC:price'].split(' ')[1]
         }
     return sharesJson
+
+
+def shareCategoryIcon(category: str) -> str:
+    """Returns unicode icon for the given category
+    """
+    categoryIcons = {
+        'accommodation': '🏠',
+        'clothes':  '👚',
+        'tools': '🔧',
+        'food': '🍏'
+    }
+    if categoryIcons.get(category):
+        return categoryIcons[category]
+    return ''

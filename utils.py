@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -24,7 +24,7 @@ from cryptography.hazmat.primitives import hashes
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
 invalidCharacters = (
-    '卐', '卍', '࿕', '࿖', '࿗', '࿘'
+    '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
 )
 
 
@@ -143,6 +143,14 @@ def getSHA256(msg: str):
     """Returns a SHA256 hash of the given string
     """
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    digest.update(msg)
+    return digest.finalize()
+
+
+def getSHA512(msg: str):
+    """Returns a SHA512 hash of the given string
+    """
+    digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
     digest.update(msg)
     return digest.finalize()
 
@@ -601,7 +609,7 @@ def getLinkPrefixes() -> []:
     """Returns a list of valid web link prefixes
     """
     return ('https://', 'http://', 'ftp://',
-            'dat://', 'i2p://', 'gnunet://',
+            'dat://', 'i2p://', 'gnunet://', 'payto://',
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 
@@ -614,7 +622,10 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
         avatarFilename = \
             baseDir + '/cache/avatars/' + actorStr + '.' + extension
         if os.path.isfile(avatarFilename):
-            os.remove(avatarFilename)
+            try:
+                os.remove(avatarFilename)
+            except BaseException:
+                pass
 
 
 def saveJson(jsonObject: {}, filename: str) -> bool:
@@ -810,10 +821,10 @@ def isLocalNetworkAddress(ipAddress: str) -> bool:
     return False
 
 
-def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
-    """Returns true if the given content contains dangerous html markup
+def _isDangerousString(content: str, allowLocalNetworkAccess: bool,
+                       separators: [], invalidStrings: []) -> bool:
+    """Returns true if the given string is dangerous
     """
-    separators = (['<', '>'], ['&lt;', '&gt;'])
     for separatorStyle in separators:
         startChar = separatorStyle[0]
         endChar = separatorStyle[1]
@@ -825,10 +836,6 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
         invalidPartials = ()
         if not allowLocalNetworkAccess:
             invalidPartials = getLocalNetworkAddresses()
-        invalidStrings = ('script', 'noscript',
-                          'canvas', 'style', 'abbr',
-                          'frame', 'iframe', 'html', 'body',
-                          'hr', 'allow-popups', 'allow-scripts')
         for markup in contentSections:
             if endChar not in markup:
                 continue
@@ -845,6 +852,31 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
                     if badStr + ' ' in markup:
                         return True
     return False
+
+
+def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
+    """Returns true if the given content contains dangerous html markup
+    """
+    separators = [['<', '>'], ['&lt;', '&gt;']]
+    invalidStrings = [
+        'script', 'noscript', 'code', 'pre',
+        'canvas', 'style', 'abbr',
+        'frame', 'iframe', 'html', 'body',
+        'hr', 'allow-popups', 'allow-scripts'
+    ]
+    return _isDangerousString(content, allowLocalNetworkAccess,
+                              separators, invalidStrings)
+
+
+def dangerousSVG(content: str, allowLocalNetworkAccess: bool) -> bool:
+    """Returns true if the given svg file content contains dangerous scripts
+    """
+    separators = [['<', '>'], ['&lt;', '&gt;']]
+    invalidStrings = [
+        'script'
+    ]
+    return _isDangerousString(content, allowLocalNetworkAccess,
+                              separators, invalidStrings)
 
 
 def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
@@ -1001,14 +1033,15 @@ def getUserPaths() -> []:
     """Returns possible user paths
     e.g. /users/nickname, /channel/nickname
     """
-    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/', '/c/')
+    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
+            '/c/', '/video-channels/')
 
 
 def getGroupPaths() -> []:
     """Returns possible group paths
     e.g. https://lemmy/c/groupname
     """
-    return ['/c/']
+    return ['/c/', '/video-channels/']
 
 
 def getDomainFromActor(actor: str) -> (str, int):
@@ -1306,6 +1339,94 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     return None
 
 
+def _getPublishedDate(postJsonObject: {}) -> str:
+    """Returns the published date on the given post
+    """
+    published = None
+    if postJsonObject.get('published'):
+        published = postJsonObject['published']
+    elif hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('published'):
+            published = postJsonObject['object']['published']
+    if not published:
+        return None
+    if not isinstance(published, str):
+        return None
+    return published
+
+
+def getReplyIntervalHours(baseDir: str, nickname: str, domain: str,
+                          defaultReplyIntervalHours: int) -> int:
+    """Returns the reply interval for the given account.
+    The reply interval is the number of hours after a post being made
+    during which replies are allowed
+    """
+    replyIntervalFilename = \
+        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
+    if os.path.isfile(replyIntervalFilename):
+        with open(replyIntervalFilename, 'r') as fp:
+            hoursStr = fp.read()
+            if hoursStr.isdigit():
+                return int(hoursStr)
+    return defaultReplyIntervalHours
+
+
+def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
+                          replyIntervalHours: int) -> bool:
+    """Sets the reply interval for the given account.
+    The reply interval is the number of hours after a post being made
+    during which replies are allowed
+    """
+    replyIntervalFilename = \
+        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
+    with open(replyIntervalFilename, 'w+') as fp:
+        try:
+            fp.write(str(replyIntervalHours))
+            return True
+        except BaseException:
+            pass
+    return False
+
+
+def canReplyTo(baseDir: str, nickname: str, domain: str,
+               postUrl: str, replyIntervalHours: int,
+               currDateStr: str = None,
+               postJsonObject: {} = None) -> bool:
+    """Is replying to the given post permitted?
+    This is a spam mitigation feature, so that spammers can't
+    add a lot of replies to old post which you don't notice.
+    """
+    if '/statuses/' not in postUrl:
+        return True
+    if not postJsonObject:
+        postFilename = locatePost(baseDir, nickname, domain, postUrl)
+        if not postFilename:
+            return False
+        postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return False
+    published = _getPublishedDate(postJsonObject)
+    if not published:
+        return False
+    try:
+        pubDate = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
+    except BaseException:
+        return False
+    if not currDateStr:
+        currDate = datetime.datetime.utcnow()
+    else:
+        try:
+            currDate = datetime.datetime.strptime(currDateStr,
+                                                  '%Y-%m-%dT%H:%M:%SZ')
+        except BaseException:
+            return False
+    hoursSincePublication = int((currDate - pubDate).total_seconds() / 3600)
+    if hoursSincePublication < 0 or \
+       hoursSincePublication >= replyIntervalHours:
+        return False
+    return True
+
+
 def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
                       postJson: {}):
     if not postJson.get('attachment'):
@@ -1318,10 +1439,16 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
     mediaFilename = baseDir + '/' + \
         attachmentUrl.replace(httpPrefix + '://' + domain + '/', '')
     if os.path.isfile(mediaFilename):
-        os.remove(mediaFilename)
+        try:
+            os.remove(mediaFilename)
+        except BaseException:
+            pass
     etagFilename = mediaFilename + '.etag'
     if os.path.isfile(etagFilename):
-        os.remove(etagFilename)
+        try:
+            os.remove(etagFilename)
+        except BaseException:
+            pass
     postJson['attachment'] = []
 
 
@@ -1386,7 +1513,10 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
                            nickname, domain, replyFile, debug,
                            recentPostsCache)
     # remove the replies file
-    os.remove(repliesFilename)
+    try:
+        os.remove(repliesFilename)
+    except BaseException:
+        pass
 
 
 def _isBookmarked(baseDir: str, nickname: str, domain: str,
@@ -1442,7 +1572,10 @@ def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
 
 
 def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
@@ -1486,7 +1619,10 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             newlines += fileLine
         if not newlines.strip():
             # if there are no lines then remove the hashtag file
-            os.remove(tagIndexFilename)
+            try:
+                os.remove(tagIndexFilename)
+            except BaseException:
+                pass
         else:
             # write the new hashtag index without the given post in it
             with open(tagIndexFilename, 'w+') as f:
@@ -1521,8 +1657,14 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
             fp.write(conversationStr)
     else:
         if os.path.isfile(conversationFilename + '.muted'):
-            os.remove(conversationFilename + '.muted')
-        os.remove(conversationFilename)
+            try:
+                os.remove(conversationFilename + '.muted')
+            except BaseException:
+                pass
+        try:
+            os.remove(conversationFilename)
+        except BaseException:
+            pass
 
 
 def deletePost(baseDir: str, httpPrefix: str,
@@ -1537,7 +1679,10 @@ def deletePost(baseDir: str, httpPrefix: str,
                                  httpPrefix, postFilename,
                                  recentPostsCache, debug)
         # finally, remove the post itself
-        os.remove(postFilename)
+        try:
+            os.remove(postFilename)
+        except BaseException:
+            pass
         return
 
     # don't allow deletion of bookmarked posts
@@ -1562,7 +1707,10 @@ def deletePost(baseDir: str, httpPrefix: str,
     for ext in extensions:
         extFilename = postFilename + '.' + ext
         if os.path.isfile(extFilename):
-            os.remove(extFilename)
+            try:
+                os.remove(extFilename)
+            except BaseException:
+                pass
 
     # remove cached html version of the post
     _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
@@ -1588,7 +1736,10 @@ def deletePost(baseDir: str, httpPrefix: str,
                              httpPrefix, postFilename,
                              recentPostsCache, debug)
     # finally, remove the post itself
-    os.remove(postFilename)
+    try:
+        os.remove(postFilename)
+    except BaseException:
+        pass
 
 
 def isValidLanguage(text: str) -> bool:
@@ -1643,11 +1794,12 @@ def isValidLanguage(text: str) -> bool:
 def _getReservedWords() -> str:
     return ('inbox', 'dm', 'outbox', 'following',
             'public', 'followers', 'category',
-            'channel', 'calendar',
+            'channel', 'calendar', 'video-channels',
             'tlreplies', 'tlmedia', 'tlblogs',
             'tlblogs', 'tlfeatures',
             'moderation', 'moderationaction',
             'activity', 'undo', 'pinned',
+            'actor', 'Actor',
             'reply', 'replies', 'question', 'like',
             'likes', 'users', 'statuses', 'tags',
             'accounts', 'headers',
@@ -1659,7 +1811,8 @@ def _getReservedWords() -> str:
             'ignores', 'linksmobile', 'newswiremobile',
             'minimal', 'search', 'eventdelete',
             'searchemoji', 'catalog', 'conversationId',
-            'mention', 'http', 'https')
+            'mention', 'http', 'https',
+            'ontologies', 'data')
 
 
 def getNicknameValidationPattern() -> str:
@@ -1883,7 +2036,7 @@ def isBlogPost(postJsonObject: {}) -> bool:
         return False
     if not hasObjectDict(postJsonObject):
         return False
-    if not postJsonObject['object'].get('type'):
+    if not hasObjectStringType(postJsonObject, False):
         return False
     if not postJsonObject['object'].get('content'):
         return False
@@ -2021,34 +2174,35 @@ def undoLikesCollectionEntry(recentPostsCache: {},
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
         return
     if postJsonObject['type'] != 'Create':
         return
-    if not hasObjectDict(postJsonObject):
-        if debug:
-            pprint(postJsonObject)
-            print('DEBUG: post ' + objectUrl + ' has no object')
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
+    if not obj.get('likes'):
         return
-    if not postJsonObject['object'].get('likes'):
+    if not isinstance(obj['likes'], dict):
         return
-    if not isinstance(postJsonObject['object']['likes'], dict):
-        return
-    if not postJsonObject['object']['likes'].get('items'):
+    if not obj['likes'].get('items'):
         return
     totalItems = 0
-    if postJsonObject['object']['likes'].get('totalItems'):
-        totalItems = postJsonObject['object']['likes']['totalItems']
+    if obj['likes'].get('totalItems'):
+        totalItems = obj['likes']['totalItems']
     itemFound = False
-    for likeItem in postJsonObject['object']['likes']['items']:
+    for likeItem in obj['likes']['items']:
         if likeItem.get('actor'):
             if likeItem['actor'] == actor:
                 if debug:
                     print('DEBUG: like was removed for ' + actor)
-                postJsonObject['object']['likes']['items'].remove(likeItem)
+                obj['likes']['items'].remove(likeItem)
                 itemFound = True
                 break
     if not itemFound:
@@ -2056,72 +2210,11 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     if totalItems == 1:
         if debug:
             print('DEBUG: likes was removed from post')
-        del postJsonObject['object']['likes']
+        del obj['likes']
     else:
-        itlen = len(postJsonObject['object']['likes']['items'])
-        postJsonObject['object']['likes']['totalItems'] = itlen
+        itlen = len(obj['likes']['items'])
+        obj['likes']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
-
-
-def updateLikesCollection(recentPostsCache: {},
-                          baseDir: str, postFilename: str,
-                          objectUrl: str, actor: str,
-                          nickname: str, domain: str, debug: bool) -> None:
-    """Updates the likes collection within a post
-    """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
-        return
-    # remove any cached version of this post so that the
-    # like icon is changed
-    removePostFromCache(postJsonObject, recentPostsCache)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                               domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-
-    if not hasObjectDict(postJsonObject):
-        if debug:
-            pprint(postJsonObject)
-            print('DEBUG: post ' + objectUrl + ' has no object')
-        return
-    if not objectUrl.endswith('/likes'):
-        objectUrl = objectUrl + '/likes'
-    if not postJsonObject['object'].get('likes'):
-        if debug:
-            print('DEBUG: Adding initial like to ' + objectUrl)
-        likesJson = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-            'id': objectUrl,
-            'type': 'Collection',
-            "totalItems": 1,
-            'items': [{
-                'type': 'Like',
-                'actor': actor
-            }]
-        }
-        postJsonObject['object']['likes'] = likesJson
-    else:
-        if not postJsonObject['object']['likes'].get('items'):
-            postJsonObject['object']['likes']['items'] = []
-        for likeItem in postJsonObject['object']['likes']['items']:
-            if likeItem.get('actor'):
-                if likeItem['actor'] == actor:
-                    # already liked
-                    return
-        newLike = {
-            'type': 'Like',
-            'actor': actor
-        }
-        postJsonObject['object']['likes']['items'].append(newLike)
-        itlen = len(postJsonObject['object']['likes']['items'])
-        postJsonObject['object']['likes']['totalItems'] = itlen
-
-    if debug:
-        print('DEBUG: saving post with likes added')
-        pprint(postJsonObject)
     saveJson(postJsonObject, postFilename)
 
 
@@ -2143,7 +2236,10 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
                                                postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
@@ -2204,7 +2300,10 @@ def updateAnnounceCollection(recentPostsCache: {},
                                                postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not hasObjectDict(postJsonObject):
@@ -2907,3 +3006,81 @@ def getSharesFilesList() -> []:
     """Returns the possible shares files
     """
     return ('shares', 'wanted')
+
+
+def replaceUsersWithAt(actor: str) -> str:
+    """ https://domain/users/nick becomes https://domain/@nick
+    """
+    uPaths = getUserPaths()
+    for path in uPaths:
+        if path in actor:
+            actor = actor.replace(path, '/@')
+            break
+    return actor
+
+
+def hasActor(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have an actor?
+    """
+    if postJsonObject.get('actor'):
+        return True
+    if debug:
+        if postJsonObject.get('type'):
+            msg = postJsonObject['type'] + ' has missing actor'
+            if postJsonObject.get('id'):
+                msg += ' ' + postJsonObject['id']
+            print(msg)
+    return False
+
+
+def hasObjectStringType(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have a type field within an object dict?
+    """
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            print('hasObjectStringType no object found')
+        return False
+    if postJsonObject['object'].get('type'):
+        if isinstance(postJsonObject['object']['type'], str):
+            return True
+        elif debug:
+            if postJsonObject.get('type'):
+                print('DEBUG: ' + postJsonObject['type'] +
+                      ' type within object is not a string')
+    if debug:
+        print('No type field within object ' + postJsonObject['id'])
+    return False
+
+
+def hasObjectStringObject(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have an object string field within an object dict?
+    """
+    if not hasObjectDict(postJsonObject):
+        if debug:
+            print('hasObjectStringType no object found')
+        return False
+    if postJsonObject['object'].get('object'):
+        if isinstance(postJsonObject['object']['object'], str):
+            return True
+        elif debug:
+            if postJsonObject.get('type'):
+                print('DEBUG: ' + postJsonObject['type'] +
+                      ' object within dict is not a string')
+    if debug:
+        print('No object field within dict ' + postJsonObject['id'])
+    return False
+
+
+def hasObjectString(postJsonObject: {}, debug: bool) -> bool:
+    """Does the given post have an object string field?
+    """
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], str):
+            return True
+        elif debug:
+            if postJsonObject.get('type'):
+                print('DEBUG: ' + postJsonObject['type'] +
+                      ' object is not a string')
+    if debug:
+        print('No object field within post ' + postJsonObject['id'])
+    return False

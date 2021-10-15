@@ -474,5 +474,18 @@
     "Create a new wanted item": "Creu eitem newydd ei heisiau",
     "Wanted Items Search": "Chwilio Eitemau Eisiau",
     "Website": "Gwefan",
-    "Low Bandwidth": "Lled band isel"
+    "Low Bandwidth": "Lled band isel",
+    "accommodation": "llety",
+    "Forbidden": "Wedi'i wahardd",
+    "You're not allowed": "Ni chaniateir i chi",
+    "Hours after posting during which replies are allowed": "Oriau ar ôl postio pan ganiateir atebion",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Parth Amnewid Twitter",
+    "Buy": "Prynu",
+    "Request to stay": "Cais i aros",
+    "Profile": "Proffil",
+    "Introduce yourself and specify the date and time when you wish to stay": "Cyflwynwch eich hun a nodwch y dyddiad a'r amser pan fyddwch yn dymuno aros",
+    "Members": "Aelodau",
+    "Join": "Ymunwch",
+    "Leave": "Gadewch"
 }

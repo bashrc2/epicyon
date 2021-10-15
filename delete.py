@@ -3,12 +3,13 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
+from utils import hasObjectString
 from utils import removeDomainPort
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -30,7 +31,8 @@ def sendDeleteViaServer(baseDir: str, session,
                         fromDomain: str, fromPort: int,
                         httpPrefix: str, deleteObjectUrl: str,
                         cachedWebfingers: {}, personCache: {},
-                        debug: bool, projectVersion: str) -> {}:
+                        debug: bool, projectVersion: str,
+                        signingPrivateKeyPem: str) -> {}:
     """Creates a delete request message via c2s
     """
     if not session:
@@ -57,7 +59,8 @@ def sendDeleteViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False)
+                        fromDomain, projectVersion, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: delete webfinger failed for ' + handle)
@@ -70,11 +73,13 @@ def sendDeleteViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
+    originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox, 53036)
+     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
+                                    baseDir, session, wfRequest, personCache,
+                                    projectVersion, httpPrefix, fromNickname,
+                                    fromDomain, postToBox, 53036)
 
     if not inboxUrl:
         if debug:
@@ -122,13 +127,7 @@ def outboxDelete(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: not a delete')
         return
-    if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in delete')
-        return
-    if not isinstance(messageJson['object'], str):
-        if debug:
-            print('DEBUG: delete object is not string')
+    if not hasObjectString(messageJson, debug):
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')

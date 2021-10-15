@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Calendar"
 
@@ -22,6 +22,7 @@ from utils import getAltPath
 from utils import removeDomainPort
 from utils import acctDir
 from utils import localActorUrl
+from utils import replaceUsersWithAt
 from happening import getTodaysEvents
 from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -109,7 +110,10 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
     accountDir = acctDir(baseDir, nickname, domain)
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
-        os.remove(calendarFile)
+        try:
+            os.remove(calendarFile)
+        except BaseException:
+            pass
 
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):
@@ -175,7 +179,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
             if senderName and eventDescription:
                 # if the sender is also mentioned within the event
                 # description then this is a reminder
-                senderActor2 = senderActor.replace('/users/', '/@')
+                senderActor2 = replaceUsersWithAt(senderActor)
                 if senderActor not in eventDescription and \
                    senderActor2 not in eventDescription:
                     eventDescription = senderName + eventDescription

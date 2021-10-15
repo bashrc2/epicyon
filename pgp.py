@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
@@ -16,6 +16,7 @@ from utils import isPGPEncrypted
 from utils import getFullDomain
 from utils import getStatusNumber
 from utils import localActorUrl
+from utils import replaceUsersWithAt
 from webfinger import webfingerHandle
 from posts import getPersonBox
 from auth import createBasicAuthHeader
@@ -333,14 +334,16 @@ def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
     return encryptResult
 
 
-def _getPGPPublicKeyFromActor(domain: str, handle: str,
+def _getPGPPublicKeyFromActor(signingPrivateKeyPem: str,
+                              domain: str, handle: str,
                               actorJson: {} = None) -> str:
     """Searches tags on the actor to see if there is any PGP
     public key specified
     """
     if not actorJson:
         actorJson, asHeader = \
-            getActorJson(domain, handle, False, False, False, True)
+            getActorJson(domain, handle, False, False, False, True,
+                         signingPrivateKeyPem)
     if not actorJson:
         return None
     if not actorJson.get('attachment'):
@@ -372,18 +375,21 @@ def hasLocalPGPkey() -> bool:
     return False
 
 
-def pgpEncryptToActor(domain: str, content: str, toHandle: str) -> str:
+def pgpEncryptToActor(domain: str, content: str, toHandle: str,
+                      signingPrivateKeyPem: str) -> str:
     """PGP encrypt a message to the given actor or handle
     """
     # get the actor and extract the pgp public key from it
-    recipientPubKey = _getPGPPublicKeyFromActor(domain, toHandle)
+    recipientPubKey = \
+        _getPGPPublicKeyFromActor(signingPrivateKeyPem, domain, toHandle)
     if not recipientPubKey:
         return None
     # encrypt using the recipient public key
     return _pgpEncrypt(content, recipientPubKey)
 
 
-def pgpDecrypt(domain: str, content: str, fromHandle: str) -> str:
+def pgpDecrypt(domain: str, content: str, fromHandle: str,
+               signingPrivateKeyPem: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
     fromHandle can be a handle or actor url
     """
@@ -394,7 +400,9 @@ def pgpDecrypt(domain: str, content: str, fromHandle: str) -> str:
     if containsPGPPublicKey(content):
         pubKey = extractPGPPublicKey(content)
     else:
-        pubKey = _getPGPPublicKeyFromActor(domain, content, fromHandle)
+        pubKey = \
+            _getPGPPublicKeyFromActor(signingPrivateKeyPem,
+                                      domain, content, fromHandle)
     if pubKey:
         _pgpImportPubKey(pubKey)
 
@@ -449,7 +457,8 @@ def pgpPublicKeyUpload(baseDir: str, session,
                        domain: str, port: int,
                        httpPrefix: str,
                        cachedWebfingers: {}, personCache: {},
-                       debug: bool, test: str) -> {}:
+                       debug: bool, test: str,
+                       signingPrivateKeyPem: str) -> {}:
     if debug:
         print('pgpPublicKeyUpload')
 
@@ -481,7 +490,8 @@ def pgpPublicKeyUpload(baseDir: str, session,
         print('Getting actor for ' + handle)
 
     actorJson, asHeader = \
-        getActorJson(domain, handle, False, False, debug, True)
+        getActorJson(domainFull, handle, False, False, debug, True,
+                     signingPrivateKeyPem)
     if not actorJson:
         if debug:
             print('No actor returned for ' + handle)
@@ -491,7 +501,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
         print('Actor for ' + handle + ' obtained')
 
     actor = localActorUrl(httpPrefix, nickname, domainFull)
-    handle = actor.replace('/users/', '/@')
+    handle = replaceUsersWithAt(actor)
 
     # check that this looks like the correct actor
     if not actorJson.get('id'):
@@ -548,7 +558,8 @@ def pgpPublicKeyUpload(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, __version__, debug, False)
+                        domain, __version__, debug, False,
+                        signingPrivateKeyPem)
     if not wfRequest:
         if debug:
             print('DEBUG: pgp actor update webfinger failed for ' +
@@ -563,11 +574,12 @@ def pgpPublicKeyUpload(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 __version__, httpPrefix, nickname,
-                                 domain, postToBox, 52025)
+    originDomain = domain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
+     displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
+                                    baseDir, session, wfRequest, personCache,
+                                    __version__, httpPrefix, nickname,
+                                    domain, postToBox, 35725)
 
     if not inboxUrl:
         if debug:

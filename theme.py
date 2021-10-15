@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -14,6 +14,7 @@ from utils import saveJson
 from utils import getImageExtensions
 from utils import copytree
 from utils import acctDir
+from utils import dangerousSVG
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -70,6 +71,9 @@ def importTheme(baseDir: str, filename: str) -> bool:
     copytree(tempThemeDir, themeDir)
     if os.path.isdir(tempThemeDir):
         rmtree(tempThemeDir)
+    if scanThemesForScripts(themeDir):
+        rmtree(themeDir)
+        return False
     return os.path.isfile(themeDir + '/theme.json')
 
 
@@ -83,7 +87,10 @@ def exportTheme(baseDir: str, theme: str) -> bool:
         os.mkdir(baseDir + '/exports')
     exportFilename = baseDir + '/exports/' + theme + '.zip'
     if os.path.isfile(exportFilename):
-        os.remove(exportFilename)
+        try:
+            os.remove(exportFilename)
+        except BaseException:
+            pass
     try:
         make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
     except BaseException:
@@ -250,7 +257,10 @@ def _removeTheme(baseDir: str):
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
-            os.remove(baseDir + '/' + filename)
+            try:
+                os.remove(baseDir + '/' + filename)
+            except BaseException:
+                pass
 
 
 def setCSSparam(css: str, param: str, value: str) -> str:
@@ -432,7 +442,10 @@ def disableGrayscale(baseDir: str) -> None:
                     cssfile.write(css)
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
-        os.remove(grayscaleFilename)
+        try:
+            os.remove(grayscaleFilename)
+        except BaseException:
+            pass
 
 
 def _setCustomFont(baseDir: str):
@@ -587,7 +600,10 @@ def _setTextModeTheme(baseDir: str, name: str) -> None:
     textModeBannerFilename = \
         baseDir + '/theme/' + name + '/banner.txt'
     if os.path.isfile(baseDir + '/accounts/banner.txt'):
-        os.remove(baseDir + '/accounts/banner.txt')
+        try:
+            os.remove(baseDir + '/accounts/banner.txt')
+        except BaseException:
+            pass
     if os.path.isfile(textModeBannerFilename):
         try:
             copyfile(textModeBannerFilename,
@@ -684,7 +700,10 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                     else:
                         if os.path.isfile(accountDir +
                                           '/left_col_image.png'):
-                            os.remove(accountDir + '/left_col_image.png')
+                            try:
+                                os.remove(accountDir + '/left_col_image.png')
+                            except BaseException:
+                                pass
 
                 except BaseException:
                     pass
@@ -696,7 +715,10 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                     else:
                         if os.path.isfile(accountDir +
                                           '/right_col_image.png'):
-                            os.remove(accountDir + '/right_col_image.png')
+                            try:
+                                os.remove(accountDir + '/right_col_image.png')
+                            except BaseException:
+                                pass
                 except BaseException:
                     pass
         break
@@ -719,7 +741,10 @@ def setNewsAvatar(baseDir: str, name: str,
     filename = baseDir + '/cache/avatars/' + avatarFilename
 
     if os.path.isfile(filename):
-        os.remove(filename)
+        try:
+            os.remove(filename)
+        except BaseException:
+            pass
     if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
     accountDir = acctDir(baseDir, nickname, domain)
@@ -805,3 +830,22 @@ def updateDefaultThemesList(baseDir: str) -> None:
     with open(defaultThemesFilename, 'w+') as defaultThemesFile:
         for name in themeNames:
             defaultThemesFile.write(name + '\n')
+
+
+def scanThemesForScripts(baseDir: str) -> bool:
+    """Scans the theme directory for any svg files containing scripts
+    """
+    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+        for f in files:
+            if not f.endswith('.svg'):
+                continue
+            svgFilename = os.path.join(subdir, f)
+            content = ''
+            with open(svgFilename, 'r') as fp:
+                content = fp.read()
+            svgDangerous = dangerousSVG(content, False)
+            if svgDangerous:
+                print('svg file contains script: ' + svgFilename)
+                return True
+        # deliberately no break - should resursively scan
+    return False

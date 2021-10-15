@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -29,11 +29,13 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           session, cachedWebfingers: {}, personCache: {},
                           projectVersion: str,
                           YTReplacementDomain: str,
+                          twitterReplacementDomain: str,
                           showPublishedDateOnly: bool,
                           peertubeInstances: [],
                           allowLocalNetworkAccess: bool,
                           themeName: str, systemLanguage: str,
-                          maxLikeCount: int) -> str:
+                          maxLikeCount: int,
+                          signingPrivateKeyPem: str) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -61,7 +63,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session,
@@ -71,12 +74,14 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
                                          maxLikeCount,
-                                         False, False, False, True, False)
+                                         False, False, False,
+                                         True, False, False)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
@@ -86,7 +91,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
     return profileStr
 
 
-def htmlFrontScreen(rssIconAtTop: bool,
+def htmlFrontScreen(signingPrivateKeyPem: str,
+                    rssIconAtTop: bool,
                     cssCache: {}, iconsAsButtons: bool,
                     defaultTimeline: str,
                     recentPostsCache: {}, maxRecentPosts: int,
@@ -95,6 +101,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     profileJson: {}, selected: str,
                     session, cachedWebfingers: {}, personCache: {},
                     YTReplacementDomain: str,
+                    twitterReplacementDomain: str,
                     showPublishedDateOnly: bool,
                     newswire: {}, theme: str,
                     peertubeInstances: [],
@@ -169,11 +176,13 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               session, cachedWebfingers, personCache,
                               projectVersion,
                               YTReplacementDomain,
+                              twitterReplacementDomain,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
                               theme, systemLanguage,
-                              maxLikeCount) + licenseStr
+                              maxLikeCount,
+                              signingPrivateKeyPem) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

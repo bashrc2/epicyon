@@ -474,5 +474,18 @@
     "Create a new wanted item": "创建一个新的通缉物品",
     "Wanted Items Search": "通缉物品搜索",
     "Website": "网站",
-    "Low Bandwidth": "低带宽"
+    "Low Bandwidth": "低带宽",
+    "accommodation": "住所",
+    "Forbidden": "禁止的",
+    "You're not allowed": "你不被允许",
+    "Hours after posting during which replies are allowed": "发布后的时间允许答复",
+    "Twitter": "Twitter",
+    "Twitter Replacement Domain": "Twitter 替换域",
+    "Buy": "买",
+    "Request to stay": "要求留下",
+    "Profile": "轮廓",
+    "Introduce yourself and specify the date and time when you wish to stay": "自我介绍并指定您希望入住的日期和时间",
+    "Members": "会员",
+    "Join": "加入",
+    "Leave": "离开"
 }

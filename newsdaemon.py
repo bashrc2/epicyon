@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
@@ -526,6 +526,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     """Converts rss items in a newswire into posts
     """
     if not newswire:
+        print('No newswire to convert')
         return
 
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
@@ -542,9 +543,18 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             dateStr = dateStr.replace(' ', 'T')
             dateStr = dateStr.replace('+00:00', 'Z')
         else:
-            dateStrWithOffset = \
-                datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
-            dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
+            try:
+                dateStrWithOffset = \
+                    datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            except BaseException:
+                print('Newswire strptime failed ' + str(dateStr))
+                continue
+            try:
+                dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
+            except BaseException:
+                print('Newswire dateStrWithOffset failed ' +
+                      str(dateStrWithOffset))
+                continue
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
@@ -702,7 +712,10 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                                      blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
-                        os.remove(filename + '.arrived')
+                        try:
+                            os.remove(filename + '.arrived')
+                        except BaseException:
+                            pass
 
                 # setting the url here links to the activitypub object
                 # stored locally
@@ -750,6 +763,7 @@ def runNewswireDaemon(baseDir: str, httpd,
                 print('Newswire daemon session established')
 
         # try to update the feeds
+        print('Updating newswire feeds')
         newNewswire = \
             getDictFromNewswire(httpd.session, baseDir, domain,
                                 httpd.maxNewswirePostsPerSource,
@@ -761,16 +775,22 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.systemLanguage)
 
         if not httpd.newswire:
+            print('Newswire feeds not updated')
             if os.path.isfile(newswireStateFilename):
+                print('Loading newswire from file')
                 httpd.newswire = loadJson(newswireStateFilename)
 
+        print('Merging with previous newswire')
         _mergeWithPreviousNewswire(httpd.newswire, newNewswire)
 
         httpd.newswire = newNewswire
         if newNewswire:
             saveJson(httpd.newswire, newswireStateFilename)
             print('Newswire updated')
+        else:
+            print('No new newswire')
 
+        print('Converting newswire to activitypub format')
         _convertRSStoActivityPub(baseDir,
                                  httpPrefix, domain, port,
                                  newNewswire, translate,
@@ -792,6 +812,7 @@ def runNewswireDaemon(baseDir: str, httpd,
             archiveDir = baseDir + '/archive'
             archiveSubdir = \
                 archiveDir + '/accounts/news@' + domain + '/outbox'
+            print('Archiving news posts')
             archivePostsForPerson(httpPrefix, 'news',
                                   domain, baseDir, 'outbox',
                                   archiveSubdir,

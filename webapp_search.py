@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -112,7 +112,7 @@ def _matchSharedItem(searchStrLowerList: [],
         if sharedItem.get('location'):
             if searchSubstr in sharedItem['location'].lower():
                 return True
-        elif searchSubstr in sharedItem['summary'].lower():
+        if searchSubstr in sharedItem['summary'].lower():
             return True
         elif searchSubstr in sharedItem['displayName'].lower():
             return True
@@ -178,7 +178,8 @@ def _htmlSharesResult(baseDir: str,
                     htmlSearchResultShare(baseDir, sharedItem, translate,
                                           httpPrefix, domainFull,
                                           contactNickname,
-                                          name, actor, sharesFileType)
+                                          name, actor, sharesFileType,
+                                          sharedItem['category'])
                 if not resultsExist and currPage > 1:
                     # show the previous page button
                     sharedItemsForm += \
@@ -570,12 +571,14 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       personCache: {},
                       port: int,
                       YTReplacementDomain: str,
+                      twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, boxName: str,
                       systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int,
+                      signingPrivateKeyPem: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -641,7 +644,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         showIndividualPostIcons = True
         allowDeletion = False
         postStr = \
-            individualPostAsHtml(True, recentPostsCache,
+            individualPostAsHtml(signingPrivateKeyPem,
+                                 True, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
                                  baseDir, session, cachedWebfingers,
@@ -652,13 +656,14 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  httpPrefix, projectVersion,
                                  'search',
                                  YTReplacementDomain,
+                                 twitterReplacementDomain,
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
                                  themeName, systemLanguage, maxLikeCount,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
-                                 False, False, False)
+                                 False, False, False, False)
         if postStr:
             historySearchForm += separatorStr + postStr
         index += 1
@@ -676,11 +681,13 @@ def htmlHashtagSearch(cssCache: {},
                       session, cachedWebfingers: {}, personCache: {},
                       httpPrefix: str, projectVersion: str,
                       YTReplacementDomain: str,
+                      twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int,
+                      signingPrivateKeyPem: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -816,7 +823,8 @@ def htmlHashtagSearch(cssCache: {},
         avatarUrl = None
         showAvatarOptions = True
         postStr = \
-            individualPostAsHtml(allowDownloads, recentPostsCache,
+            individualPostAsHtml(signingPrivateKeyPem,
+                                 allowDownloads, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
                                  baseDir, session, cachedWebfingers,
@@ -828,6 +836,7 @@ def htmlHashtagSearch(cssCache: {},
                                  httpPrefix, projectVersion,
                                  'search',
                                  YTReplacementDomain,
+                                 twitterReplacementDomain,
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
@@ -835,7 +844,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
-                                 storeToCache)
+                                 storeToCache, False)
         if postStr:
             hashtagSearchForm += separatorStr + postStr
         index += 1
@@ -861,7 +870,9 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                      postsPerPage: int,
                      session, cachedWebfingers: {}, personCache: {},
                      httpPrefix: str, projectVersion: str,
-                     YTReplacementDomain: str, systemLanguage: str) -> str:
+                     YTReplacementDomain: str,
+                     twitterReplacementDomain: str,
+                     systemLanguage: str) -> str:
     """Show an rss feed for a hashtag
     """
     if hashtag.startswith('#'):

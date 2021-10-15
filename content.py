@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -11,6 +11,7 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from utils import dangerousSVG
 from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import getImageExtensions
@@ -23,6 +24,7 @@ from utils import containsPGPPublicKey
 from utils import acctDir
 from utils import isfloat
 from utils import getCurrencies
+from utils import removeHtml
 from petnames import getPetName
 
 
@@ -180,8 +182,8 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
         cssMatches = ('behavior:', ':expression', '?php', '.php',
                       'google', 'regexp', 'localhost',
                       '127.0.', '192.168', '10.0.', '@import')
-        for match in cssMatches:
-            if match in content:
+        for cssmatch in cssMatches:
+            if cssmatch in content:
                 return True
 
         # search for non-local web links
@@ -726,8 +728,8 @@ def _autoTag(baseDir: str, nickname: str, domain: str,
             continue
         if '->' not in tagRule:
             continue
-        match = tagRule.split('->')[0].strip()
-        if match != wordStr:
+        rulematch = tagRule.split('->')[0].strip()
+        if rulematch != wordStr:
             continue
         tagName = tagRule.split('->')[1].strip()
         if tagName.startswith('#'):
@@ -938,9 +940,15 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
             for ex in extensionTypes:
                 possibleOtherFormat = filenameBase + '.' + ex
                 if os.path.isfile(possibleOtherFormat):
-                    os.remove(possibleOtherFormat)
+                    try:
+                        os.remove(possibleOtherFormat)
+                    except BaseException:
+                        pass
             if os.path.isfile(filenameBase):
-                os.remove(filenameBase)
+                try:
+                    os.remove(filenameBase)
+                except BaseException:
+                    pass
 
         if debug:
             print('DEBUG: No media found within POST')
@@ -1006,7 +1014,17 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                                                       detectedExtension, '.' +
                                                       ex)
             if os.path.isfile(possibleOtherFormat):
-                os.remove(possibleOtherFormat)
+                try:
+                    os.remove(possibleOtherFormat)
+                except BaseException:
+                    pass
+
+    # don't allow scripts within svg files
+    if detectedExtension == 'svg':
+        svgStr = mediaBytes[startPos:]
+        svgStr = svgStr.decode()
+        if dangerousSVG(svgStr, False):
+            return None, None
 
     with open(filename, 'wb') as fp:
         fp.write(mediaBytes[startPos:])
@@ -1116,3 +1134,53 @@ def getPriceFromString(priceStr: str) -> (str, str):
     if isfloat(priceStr):
         return priceStr, "EUR"
     return "0.00", "EUR"
+
+
+def _wordsSimilarityHistogram(words: []) -> {}:
+    """Returns a histogram for word combinations
+    """
+    histogram = {}
+    for index in range(1, len(words)):
+        combinedWords = words[index - 1] + words[index]
+        if histogram.get(combinedWords):
+            histogram[combinedWords] += 1
+        else:
+            histogram[combinedWords] = 1
+    return histogram
+
+
+def _wordsSimilarityWordsList(content: str) -> []:
+    """Returns a list of words for the given content
+    """
+    removePunctuation = ('.', ',', ';', '-', ':', '"')
+    content = removeHtml(content).lower()
+    for p in removePunctuation:
+        content = content.replace(p, ' ')
+        content = content.replace('  ', ' ')
+    return content.split(' ')
+
+
+def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
+    """Returns percentage similarity
+    """
+    if content1 == content2:
+        return 100
+
+    words1 = _wordsSimilarityWordsList(content1)
+    if len(words1) < minWords:
+        return 0
+
+    words2 = _wordsSimilarityWordsList(content2)
+    if len(words2) < minWords:
+        return 0
+
+    histogram1 = _wordsSimilarityHistogram(words1)
+    histogram2 = _wordsSimilarityHistogram(words2)
+
+    diff = 0
+    for combinedWords, hits in histogram1.items():
+        if not histogram2.get(combinedWords):
+            diff += 1
+        else:
+            diff += abs(histogram2[combinedWords] - histogram1[combinedWords])
+    return 100 - int(diff * 100 / len(histogram1.items()))

@@ -3,32 +3,60 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
 from utils import hasObjectDict
 from utils import acctDir
+from utils import removeIdEnding
+
+
+def _getConversationFilename(baseDir: str, nickname: str, domain: str,
+                             postJsonObject: {}) -> str:
+    """Returns the conversation filename
+    """
+    if not hasObjectDict(postJsonObject):
+        return None
+    if not postJsonObject['object'].get('conversation'):
+        return None
+    if not postJsonObject['object'].get('id'):
+        return None
+    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    if not os.path.isdir(conversationDir):
+        os.mkdir(conversationDir)
+    conversationId = postJsonObject['object']['conversation']
+    conversationId = conversationId.replace('/', '#')
+    return conversationDir + '/' + conversationId
+
+
+def previousConversationPostId(baseDir: str, nickname: str, domain: str,
+                               postJsonObject: {}) -> str:
+    """Returns the previous conversation post id
+    """
+    conversationFilename = \
+        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
+    if not conversationFilename:
+        return False
+    if not os.path.isfile(conversationFilename):
+        return False
+    with open(conversationFilename, 'r') as fp:
+        lines = fp.readlines()
+        if lines:
+            return lines[-1].replace('\n', '')
+    return False
 
 
 def updateConversation(baseDir: str, nickname: str, domain: str,
                        postJsonObject: {}) -> bool:
     """Ads a post to a conversation index in the /conversation subdirectory
     """
-    if not hasObjectDict(postJsonObject):
+    conversationFilename = \
+        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
+    if not conversationFilename:
         return False
-    if not postJsonObject['object'].get('conversation'):
-        return False
-    if not postJsonObject['object'].get('id'):
-        return False
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
-    if not os.path.isdir(conversationDir):
-        os.mkdir(conversationDir)
-    conversationId = postJsonObject['object']['conversation']
-    conversationId = conversationId.replace('/', '#')
-    postId = postJsonObject['object']['id']
-    conversationFilename = conversationDir + '/' + conversationId
+    postId = removeIdEnding(postJsonObject['object']['id'])
     if not os.path.isfile(conversationFilename):
         try:
             with open(conversationFilename, 'w+') as fp:

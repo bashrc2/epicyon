@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -34,7 +34,10 @@ def setMinimal(baseDir: str, domain: str, nickname: str,
     minimalFilename = accountDir + '/.notminimal'
     minimalFileExists = os.path.isfile(minimalFilename)
     if minimal and minimalFileExists:
-        os.remove(minimalFilename)
+        try:
+            os.remove(minimalFilename)
+        except BaseException:
+            pass
     elif not minimal and not minimalFileExists:
         with open(minimalFilename, 'w+') as fp:
             fp.write('\n')

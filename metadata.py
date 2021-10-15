@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Metadata"
 
@@ -101,8 +101,30 @@ def metaDataInstance(showAccounts: bool,
         print('WARN: json load exception metaDataInstance')
         return {}
 
+    rulesList = []
+    rulesFilename = \
+        baseDir + '/accounts/tos.md'
+    if os.path.isfile(rulesFilename):
+        with open(rulesFilename, 'r') as fp:
+            rulesLines = fp.readlines()
+            ruleCtr = 1
+            for line in rulesLines:
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith('#'):
+                    continue
+                rulesList.append({
+                    'id': str(ruleCtr),
+                    'text': line
+                })
+                ruleCtr += 1
+
     isBot = False
-    if adminActor['type'] != 'Person':
+    isGroup = False
+    if adminActor['type'] == 'Group':
+        isGroup = True
+    elif adminActor['type'] != 'Person':
         isBot = True
 
     url = \
@@ -116,16 +138,25 @@ def metaDataInstance(showAccounts: bool,
         activeAccounts = 1
         localPosts = 1
 
+    createdAt = ''
+    if adminActor.get('published'):
+        createdAt = adminActor['published']
+
     instance = {
         'approval_required': False,
+        'invites_enabled': False,
+        'registrations': registration,
         'contact_account': {
             'acct': adminActor['preferredUsername'],
+            'created_at': createdAt,
             'avatar': adminActor['icon']['url'],
             'avatar_static': adminActor['icon']['url'],
-            'bot': isBot,
-            'display_name': adminActor['name'],
             'header': adminActor['image']['url'],
             'header_static': adminActor['image']['url'],
+            'bot': isBot,
+            'discoverable': True,
+            'group': isGroup,
+            'display_name': adminActor['name'],
             'locked': adminActor['manuallyApprovesFollowers'],
             'note': '<p>Admin of ' + domain + '</p>',
             'url': url,
@@ -133,10 +164,9 @@ def metaDataInstance(showAccounts: bool,
         },
         'description': instanceDescription,
         'languages': [systemLanguage],
-        'registrations': registration,
         'short_description': instanceDescriptionShort,
         'stats': {
-            'domain_count': 1,
+            'domain_count': 2,
             'status_count': localPosts,
             'user_count': activeAccounts
         },
@@ -144,7 +174,34 @@ def metaDataInstance(showAccounts: bool,
         'title': instanceTitle,
         'uri': domainFull,
         'urls': {},
-        'version': version
+        'version': version,
+        'rules': rulesList,
+        'configuration': {
+            'statuses': {
+                'max_media_attachments': 1
+            },
+            'media_attachments': {
+                'supported_mime_types': [
+                    'image/jpeg',
+                    'image/png',
+                    'image/gif',
+                    'image/webp',
+                    'image/avif',
+                    'image/svg+xml',
+                    'video/webm',
+                    'video/mp4',
+                    'video/ogv',
+                    'audio/ogg',
+                    'audio/flac',
+                    'audio/mpeg'
+                ],
+                'image_size_limit': 10485760,
+                'image_matrix_limit': 16777216,
+                'video_size_limit': 41943040,
+                'video_frame_rate_limit': 60,
+                'video_matrix_limit': 2304000
+            }
+        }
     }
 
     return instance

@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Security"
 
@@ -18,6 +18,24 @@ validContexts = (
     "*/litepub-0.1.jsonld",
     "https://litepub.social/litepub/context.jsonld"
 )
+
+
+def getIndividualPostContext() -> []:
+    """Returns the context for an individual post
+    """
+    return [
+        'https://www.w3.org/ns/activitystreams',
+        {
+            "ostatus": "http://ostatus.org#",
+            "atomUri": "ostatus:atomUri",
+            "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+            "conversation": "ostatus:conversation",
+            "sensitive": "as:sensitive",
+            "toot": "http://joinmastodon.org/ns#",
+            "votersCount": "toot:votersCount",
+            "blurhash": "toot:blurhash"
+        }
+    ]
 
 
 def hasValidContext(postJsonObject: {}) -> bool:

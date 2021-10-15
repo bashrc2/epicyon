@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
@@ -57,7 +57,7 @@ def htmlLogin(cssCache: {}, translate: {},
               baseDir: str,
               httpPrefix: str, domain: str,
               systemLanguage: str,
-              autocomplete: bool = True) -> str:
+              autocomplete: bool) -> str:
     """Shows the login screen
     """
     accounts = noOfAccounts(baseDir)
@@ -143,9 +143,11 @@ def htmlLogin(cssCache: {}, translate: {},
             '<button type="submit" name="submit">' + \
             translate['Login'] + '</button>'
 
-    autocompleteStr = ''
+    autocompleteNicknameStr = 'autocomplete="username"'
+    autocompletePasswordStr = 'autocomplete="current-password"'
     if not autocomplete:
-        autocompleteStr = 'autocomplete="off" value=""'
+        autocompleteNicknameStr = 'autocomplete="username" value=""'
+        autocompletePasswordStr = 'autocomplete="off" value=""'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -168,14 +170,14 @@ def htmlLogin(cssCache: {}, translate: {},
         '  <div class="container">\n' + \
         '    <label for="nickname"><b>' + \
         translate['Nickname'] + '</b></label>\n' + \
-        '    <input type="text" ' + autocompleteStr + ' placeholder="' + \
-        translate['Enter Nickname'] + '" ' + \
+        '    <input type="text" ' + autocompleteNicknameStr + \
+        ' placeholder="' + translate['Enter Nickname'] + '" ' + \
         'pattern="' + nicknamePattern + '" name="username" ' + \
         'required autofocus>\n' + \
         '\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
-        '    <input type="password" ' + autocompleteStr + \
+        '    <input type="password" ' + autocompletePasswordStr + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
         'pattern="{8,256}" name="password" required>\n' + \
         loginButtonStr + registerButtonStr + '\n' + \

@@ -201,6 +201,13 @@ figure {
     height: auto;
 }
 
+mark {
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+    font-size: 130%;
+    font-weight: bold;
+}
+
 .accesskeys {
     border: 0;
     width: 100%;
@@ -1383,6 +1390,26 @@ div.container {
         margin-bottom: var(--button-bottom-margin);
         margin-left: var(--button-left-margin);
     }
+    .contactbutton {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: var(--header-font);
+        padding: var(--button-height-padding);
+        width: 20%;
+        margin: var(--button-margin);
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
+        margin-bottom: var(--button-bottom-margin);
+        margin-left: var(--button-left-margin);
+    }
     .buttonDesktop {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
@@ -1667,6 +1694,8 @@ div.container {
     .columnIcons img {
         float: right;
     }
+    .pageslist {
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -1696,7 +1725,7 @@ div.container {
         color: var(--title-color);
     }
     blockquote {
-	font-size: var(--quote-font-size-mobile);
+        font-size: var(--quote-font-size-mobile);
     }
     .accountsTable {
         width: 100%;
@@ -2017,6 +2046,25 @@ div.container {
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
     }
+    .contactbutton {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        font-family: var(--header-font);
+        padding: var(--button-height-padding-mobile);
+        width: 30%;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: var(--button-margin);
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
+        margin-bottom: var(--button-bottom-margin);
+    }
     .frontPageMobileButtons{
         display: block;
         border: var(--border-width-header) solid var(--border-color);
@@ -2322,5 +2370,7 @@ div.container {
         width: 10%;
         float: right;
         margin-right: 1vw;
+    }
+    .pageslist {
     }
 }

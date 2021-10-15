@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
@@ -37,6 +37,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
+from utils import replaceUsersWithAt
 from utils import removeLineEndings
 from utils import removeDomainPort
 from utils import getStatusNumber
@@ -55,6 +56,7 @@ from utils import acctDir
 from utils import getUserPaths
 from utils import getGroupPaths
 from utils import localActorUrl
+from utils import dangerousSVG
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -175,14 +177,125 @@ def randomizeActorImages(personJson: {}) -> None:
     baseUrl = personId.split('/users/')[0]
     nickname = personJson['preferredUsername']
     personJson['icon']['url'] = \
-        baseUrl + '/accounts/avatars/' + nickname + \
+        baseUrl + '/system/accounts/avatars/' + nickname + \
         '/avatar' + randStr + '.' + existingExtension
     lastPartOfFilename = personJson['image']['url'].split('/')[-1]
     existingExtension = lastPartOfFilename.split('.')[1]
     randStr = str(randint(10000000000000, 99999999999999))  # nosec
     personJson['image']['url'] = \
-        baseUrl + '/accounts/headers/' + nickname + \
+        baseUrl + '/system/accounts/headers/' + nickname + \
         '/image' + randStr + '.' + existingExtension
+
+
+def getActorUpdateJson(actorJson: {}) -> {}:
+    """Returns the json for an Person Update
+    """
+    pubNumber, _ = getStatusNumber()
+    manuallyApprovesFollowers = actorJson['manuallyApprovesFollowers']
+    return {
+        '@context': [
+            "https://www.w3.org/ns/activitystreams",
+            "https://w3id.org/security/v1",
+            {
+                "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+                "toot": "http://joinmastodon.org/ns#",
+                "featured":
+                {
+                    "@id": "toot:featured",
+                    "@type": "@id"
+                },
+                "featuredTags":
+                {
+                    "@id": "toot:featuredTags",
+                    "@type": "@id"
+                },
+                "alsoKnownAs":
+                {
+                    "@id": "as:alsoKnownAs",
+                    "@type": "@id"
+                },
+                "movedTo":
+                {
+                    "@id": "as:movedTo",
+                    "@type": "@id"
+                },
+                "schema": "http://schema.org#",
+                "PropertyValue": "schema:PropertyValue",
+                "value": "schema:value",
+                "IdentityProof": "toot:IdentityProof",
+                "discoverable": "toot:discoverable",
+                "Device": "toot:Device",
+                "Ed25519Signature": "toot:Ed25519Signature",
+                "Ed25519Key": "toot:Ed25519Key",
+                "Curve25519Key": "toot:Curve25519Key",
+                "EncryptedMessage": "toot:EncryptedMessage",
+                "publicKeyBase64": "toot:publicKeyBase64",
+                "deviceId": "toot:deviceId",
+                "claim":
+                {
+                    "@type": "@id",
+                    "@id": "toot:claim"
+                },
+                "fingerprintKey":
+                {
+                    "@type": "@id",
+                    "@id": "toot:fingerprintKey"
+                },
+                "identityKey":
+                {
+                    "@type": "@id",
+                    "@id": "toot:identityKey"
+                },
+                "devices":
+                {
+                    "@type": "@id",
+                    "@id": "toot:devices"
+                },
+                "messageFranking": "toot:messageFranking",
+                "messageType": "toot:messageType",
+                "cipherText": "toot:cipherText",
+                "suspended": "toot:suspended",
+                "focalPoint":
+                {
+                    "@container": "@list",
+                    "@id": "toot:focalPoint"
+                }
+            }
+        ],
+        'id': actorJson['id'] + '#updates/' + pubNumber,
+        'type': 'Update',
+        'actor': actorJson['id'],
+        'to': ['https://www.w3.org/ns/activitystreams#Public'],
+        'cc': [actorJson['id'] + '/followers'],
+        'object': {
+            'id': actorJson['id'],
+            'type': actorJson['type'],
+            'icon': {
+                'type': 'Image',
+                'url': actorJson['icon']['url']
+            },
+            'image': {
+                'type': 'Image',
+                'url': actorJson['image']['url']
+            },
+            'attachment': actorJson['attachment'],
+            'following': actorJson['id'] + '/following',
+            'followers': actorJson['id'] + '/followers',
+            'inbox': actorJson['id'] + '/inbox',
+            'outbox': actorJson['id'] + '/outbox',
+            'featured': actorJson['id'] + '/collections/featured',
+            'featuredTags': actorJson['id'] + '/collections/tags',
+            'preferredUsername': actorJson['preferredUsername'],
+            'name': actorJson['name'],
+            'summary': actorJson['summary'],
+            'url': actorJson['url'],
+            'manuallyApprovesFollowers': manuallyApprovesFollowers,
+            'discoverable': actorJson['discoverable'],
+            'published': actorJson['published'],
+            'devices': actorJson['devices'],
+            "publicKey": actorJson['publicKey'],
+        }
+    }
 
 
 def getDefaultPersonContext() -> str:
@@ -702,7 +815,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
         # update domain/@nickname in actors cache
         actorCacheFilename = \
             baseDir + '/accounts/cache/actors/' + \
-            personJson['id'].replace('/users/', '/@').replace('/', '#') + \
+            replaceUsersWithAt(personJson['id']).replace('/', '#') + \
             '.json'
         if os.path.isfile(actorCacheFilename):
             saveJson(personJson, actorCacheFilename)
@@ -717,7 +830,7 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
     isSharedInbox = False
     if path == '/inbox' or path == '/users/inbox' or path == '/sharedInbox':
         # shared inbox actor on @domain@domain
-        path = '/users/' + domain
+        path = '/users/inbox'
         isSharedInbox = True
     else:
         notPersonLookup = ('/inbox', '/outbox', '/outboxarchive',
@@ -741,7 +854,8 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
     if not os.path.isfile(filename):
         return None
     personJson = loadJson(filename)
-    personUpgradeActor(baseDir, personJson, handle, filename)
+    if not isSharedInbox:
+        personUpgradeActor(baseDir, personJson, handle, filename)
     # if not personJson:
     #     personJson={"user": "unknown"}
     return personJson
@@ -917,10 +1031,16 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
 
     saltFilename = acctDir(baseDir, nickname, domain) + '/.salt'
     if os.path.isfile(saltFilename):
-        os.remove(saltFilename)
+        try:
+            os.remove(saltFilename)
+        except BaseException:
+            pass
     tokenFilename = acctDir(baseDir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
-        os.remove(tokenFilename)
+        try:
+            os.remove(tokenFilename)
+        except BaseException:
+            pass
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
@@ -1023,17 +1143,32 @@ def removeAccount(baseDir: str, nickname: str,
     if os.path.isdir(baseDir + '/accounts/' + handle):
         shutil.rmtree(baseDir + '/accounts/' + handle)
     if os.path.isfile(baseDir + '/accounts/' + handle + '.json'):
-        os.remove(baseDir + '/accounts/' + handle + '.json')
+        try:
+            os.remove(baseDir + '/accounts/' + handle + '.json')
+        except BaseException:
+            pass
     if os.path.isfile(baseDir + '/wfendpoints/' + handle + '.json'):
-        os.remove(baseDir + '/wfendpoints/' + handle + '.json')
+        try:
+            os.remove(baseDir + '/wfendpoints/' + handle + '.json')
+        except BaseException:
+            pass
     if os.path.isfile(baseDir + '/keys/private/' + handle + '.key'):
-        os.remove(baseDir + '/keys/private/' + handle + '.key')
+        try:
+            os.remove(baseDir + '/keys/private/' + handle + '.key')
+        except BaseException:
+            pass
     if os.path.isfile(baseDir + '/keys/public/' + handle + '.pem'):
-        os.remove(baseDir + '/keys/public/' + handle + '.pem')
+        try:
+            os.remove(baseDir + '/keys/public/' + handle + '.pem')
+        except BaseException:
+            pass
     if os.path.isdir(baseDir + '/sharefiles/' + nickname):
         shutil.rmtree(baseDir + '/sharefiles/' + nickname)
     if os.path.isfile(baseDir + '/wfdeactivated/' + handle + '.json'):
-        os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
+        try:
+            os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
+        except BaseException:
+            pass
     if os.path.isdir(baseDir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname)
 
@@ -1215,7 +1350,8 @@ def _detectUsersPath(url: str) -> str:
 
 
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
-                 debug: bool, quiet: bool = False) -> ({}, {}):
+                 debug: bool, quiet: bool,
+                 signingPrivateKeyPem: str) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1302,52 +1438,68 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if nickname == 'inbox':
         nickname = domain
 
-    handle = nickname + '@' + domain
-    wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
-                                None, __version__, debug,
-                                groupAccount)
-    if not wfRequest:
-        if not quiet:
-            print('getActorJson Unable to webfinger ' + handle)
-        return None, None
-    if not isinstance(wfRequest, dict):
-        if not quiet:
-            print('getActorJson Webfinger for ' + handle +
-                  ' did not return a dict. ' + str(wfRequest))
-        return None, None
-
-    if not quiet:
-        pprint(wfRequest)
-
     personUrl = None
-    if wfRequest.get('errors'):
-        if not quiet or debug:
-            print('getActorJson wfRequest error: ' +
-                  str(wfRequest['errors']))
-        if hasUsersPath(handle):
-            personUrl = originalActor
-        else:
-            if debug:
-                print('No users path in ' + handle)
+    wfRequest = None
+
+    if '://' in originalActor and \
+       originalActor.lower().endswith('/actor'):
+        if debug:
+            print(originalActor + ' is an instance actor')
+        personUrl = originalActor
+    elif '://' in originalActor and groupAccount:
+        if debug:
+            print(originalActor + ' is a group actor')
+        personUrl = originalActor
+    else:
+        handle = nickname + '@' + domain
+        wfRequest = webfingerHandle(session, handle,
+                                    httpPrefix, cachedWebfingers,
+                                    hostDomain, __version__, debug,
+                                    groupAccount, signingPrivateKeyPem)
+        if not wfRequest:
+            if not quiet:
+                print('getActorJson Unable to webfinger ' + handle)
             return None, None
+        if not isinstance(wfRequest, dict):
+            if not quiet:
+                print('getActorJson Webfinger for ' + handle +
+                      ' did not return a dict. ' + str(wfRequest))
+            return None, None
+
+        if not quiet:
+            pprint(wfRequest)
+
+        if wfRequest.get('errors'):
+            if not quiet or debug:
+                print('getActorJson wfRequest error: ' +
+                      str(wfRequest['errors']))
+            if hasUsersPath(handle):
+                personUrl = originalActor
+            else:
+                if debug:
+                    print('No users path in ' + handle)
+                return None, None
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
     headersList = (
         "activity+json", "ld+json", "jrd+json"
     )
-    if not personUrl:
+    if not personUrl and wfRequest:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
         paths = getUserPaths()
         for userPath in paths:
             personUrl = personUrl.replace(userPath, '/actor/')
+    if not personUrl and groupAccount:
+        personUrl = httpPrefix + '://' + domain + '/c/' + nickname
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain + '/' + nickname
         headersList = (
             "ld+json", "jrd+json", "activity+json"
         )
+        if debug:
+            print('Trying single user instance ' + personUrl)
     if '/channel/' in personUrl or '/accounts/' in personUrl:
         headersList = (
             "ld+json", "jrd+json", "activity+json"
@@ -1360,7 +1512,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             'Accept': headerMimeType + '; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(session, personUrl, asHeader, None,
+            getJson(signingPrivateKeyPem, session, personUrl, asHeader, None,
                     debug, __version__, httpPrefix, hostDomain, 20, quiet)
         if personJson:
             if not quiet:
@@ -1386,12 +1538,24 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
 
     imageExtension = getImageExtensions()
     for ext in imageExtension:
-        if os.path.isfile(avatarImagePath + '.' + ext):
-            return '/avatars/' + actorStr + '.' + ext
-        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
-            return '/avatars/' + actorStr.lower() + '.' + ext
+        imFilename = avatarImagePath + '.' + ext
+        imPath = '/avatars/' + actorStr + '.' + ext
+        if not os.path.isfile(imFilename):
+            imFilename = avatarImagePath.lower() + '.' + ext
+            imPath = '/avatars/' + actorStr.lower() + '.' + ext
+            if not os.path.isfile(imFilename):
+                continue
+        if ext != 'svg':
+            return imPath
+        else:
+            content = ''
+            with open(imFilename, 'r') as fp:
+                content = fp.read()
+            if not dangerousSVG(content, False):
+                return imPath
 
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
-            return personJson['icon']['url']
+            if '.svg' not in personJson['icon']['url'].lower():
+                return personJson['icon']['url']
     return None

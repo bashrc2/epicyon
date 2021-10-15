@@ -3,14 +3,15 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
-__module_group__ = "Core"
+__module_group__ = "Session"
 
 import os
 import requests
 from utils import urlPermitted
 from utils import isImageFile
+from httpsig import createSignedHeader
 import json
 from socket import error as SocketError
 import errno
@@ -84,43 +85,23 @@ def urlExists(session, url: str, timeoutSec: int = 3,
     return False
 
 
-def getJson(session, url: str, headers: {}, params: {}, debug: bool,
-            version: str = '1.2.0', httpPrefix: str = 'https',
-            domain: str = 'testdomain',
-            timeoutSec: int = 20, quiet: bool = False) -> {}:
-    if not isinstance(url, str):
-        if debug and not quiet:
-            print('url: ' + str(url))
-            print('ERROR: getJson failed, url should be a string')
-        return None
-    sessionParams = {}
-    sessionHeaders = {}
-    if headers:
-        sessionHeaders = headers
-    if params:
-        sessionParams = params
-    sessionHeaders['User-Agent'] = 'Epicyon/' + version
-    if domain:
-        sessionHeaders['User-Agent'] += \
-            '; +' + httpPrefix + '://' + domain + '/'
-    if not session:
-        if not quiet:
-            print('WARN: getJson failed, no session specified for getJson')
-        return None
-
-    if debug:
-        HTTPConnection.debuglevel = 1
-
+def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
+                    sessionParams: {}, timeoutSec: int,
+                    signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
+    """http GET for json
+    """
     try:
         result = session.get(url, headers=sessionHeaders,
                              params=sessionParams, timeout=timeoutSec)
         if result.status_code != 200:
             if result.status_code == 401:
-                print('WARN: getJson Unauthorized url: ' + url)
+                print("WARN: getJson " + url + ' rejected by secure mode')
             elif result.status_code == 403:
                 print('WARN: getJson Forbidden url: ' + url)
             elif result.status_code == 404:
                 print('WARN: getJson Not Found url: ' + url)
+            elif result.status_code == 410:
+                print('WARN: getJson no longer available url: ' + url)
             else:
                 print('WARN: getJson url: ' + url +
                       ' failed with error code ' +
@@ -149,6 +130,115 @@ def getJson(session, url: str, headers: {}, params: {}, debug: bool,
                 print('WARN: getJson failed, ' +
                       'connection was reset during getJson ' + str(e))
     return None
+
+
+def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
+                   sessionParams: {}, timeoutSec: int,
+                   signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
+    """Authorized fetch - a signed version of GET
+    """
+    if not domainFull:
+        if debug:
+            print('No sending domain for signed GET')
+        return None
+    if '://' not in url:
+        print('Invalid url: ' + url)
+        return None
+    httpPrefix = url.split('://')[0]
+    toDomainFull = url.split('://')[1]
+    if '/' in toDomainFull:
+        toDomainFull = toDomainFull.split('/')[0]
+
+    if ':' in domainFull:
+        domain = domainFull.split(':')[0]
+        port = domainFull.split(':')[1]
+    else:
+        domain = domainFull
+        if httpPrefix == 'https':
+            port = 443
+        else:
+            port = 80
+
+    if ':' in toDomainFull:
+        toDomain = toDomainFull.split(':')[0]
+        toPort = toDomainFull.split(':')[1]
+    else:
+        toDomain = toDomainFull
+        if httpPrefix == 'https':
+            toPort = 443
+        else:
+            toPort = 80
+
+    if debug:
+        print('Signed GET domain: ' + domain + ' ' + str(port))
+        print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
+        print('Signed GET url: ' + url)
+        print('Signed GET httpPrefix: ' + httpPrefix)
+    messageStr = ''
+    withDigest = False
+    if toDomainFull + '/' in url:
+        path = '/' + url.split(toDomainFull + '/')[1]
+    else:
+        path = '/actor'
+    contentType = 'application/activity+json'
+    if sessionHeaders.get('Accept'):
+        contentType = sessionHeaders['Accept']
+    signatureHeaderJson = \
+        createSignedHeader(None, signingPrivateKeyPem, 'actor', domain, port,
+                           toDomain, toPort, path, httpPrefix, withDigest,
+                           messageStr, contentType)
+    if debug:
+        print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
+    # update the session headers from the signature headers
+    sessionHeaders['Host'] = signatureHeaderJson['host']
+    sessionHeaders['Date'] = signatureHeaderJson['date']
+    sessionHeaders['Accept'] = signatureHeaderJson['accept']
+    sessionHeaders['Signature'] = signatureHeaderJson['signature']
+    sessionHeaders['Content-Length'] = '0'
+    # if debug:
+    print('Signed GET sessionHeaders ' + str(sessionHeaders))
+
+    return _getJsonRequest(session, url, domainFull, sessionHeaders,
+                           sessionParams, timeoutSec, None, quiet, debug)
+
+
+def getJson(signingPrivateKeyPem: str,
+            session, url: str, headers: {}, params: {}, debug: bool,
+            version: str = '1.2.0', httpPrefix: str = 'https',
+            domain: str = 'testdomain',
+            timeoutSec: int = 20, quiet: bool = False) -> {}:
+    if not isinstance(url, str):
+        if debug and not quiet:
+            print('url: ' + str(url))
+            print('ERROR: getJson failed, url should be a string')
+        return None
+    sessionParams = {}
+    sessionHeaders = {}
+    if headers:
+        sessionHeaders = headers
+    if params:
+        sessionParams = params
+    sessionHeaders['User-Agent'] = 'Epicyon/' + version
+    if domain:
+        sessionHeaders['User-Agent'] += \
+            '; +' + httpPrefix + '://' + domain + '/'
+    if not session:
+        if not quiet:
+            print('WARN: getJson failed, no session specified for getJson')
+        return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
+    if signingPrivateKeyPem:
+        return _getJsonSigned(session, url, domain,
+                              sessionHeaders, sessionParams,
+                              timeoutSec, signingPrivateKeyPem,
+                              quiet, debug)
+    else:
+        return _getJsonRequest(session, url, domain, sessionHeaders,
+                               sessionParams, timeoutSec,
+                               None, quiet, debug)
 
 
 def postJson(httpPrefix: str, domainFull: str,

@@ -2,16 +2,16 @@
   "@context": {
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "dfc-b": "http://static.datafoodconsortium.org/ontologies/DFC_BusinessOntology.owl#",
-    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductOntology.owl#",
+    "dfc-p": "http://static.datafoodconsortium.org/ontologies/DFC_ProductGlossary.owl#",
     "dfc-t": "http://static.datafoodconsortium.org/ontologies/DFC_TechnicalOntology.owl#",
-    "dfc-u": "http://static.datafoodconsortium.org/data/units.rdf#",
+    "dfc-u": "http://static.datafoodconsortium.org/data/units.json#",
     "dfc-p:specialize": {
       "@type": "@id"
     }
   },
   "@graph": [
     {
-      "@id": "https://tools/data/toolTypes.rdf#garden-trowel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#garden-trowel",
       "rdfs:label": [
         {
           "@value": "Truelle de jardin",
@@ -82,11 +82,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#watering-can",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#watering-can",
       "rdfs:label": [
         {
           "@value": "Arrosoir",
@@ -157,11 +157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#auger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#auger",
       "rdfs:label": [
         {
           "@value": "Tailleuse",
@@ -232,11 +232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#backpack-sprayer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#backpack-sprayer",
       "rdfs:label": [
         {
           "@value": "Pulvérisateur à dos",
@@ -307,11 +307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sprayer",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sprayer",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#border-spade",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#border-spade",
       "rdfs:label": [
         {
           "@value": "Pelle frontalière",
@@ -382,11 +382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bow-rake",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bow-rake",
       "rdfs:label": [
         {
           "@value": "Râteau d'arc",
@@ -457,11 +457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#broadfork",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#broadfork",
       "rdfs:label": [
         {
           "@value": "Larges",
@@ -532,11 +532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#budding-knife",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#budding-knife",
       "rdfs:label": [
         {
           "@value": "Couteau en herbe",
@@ -607,11 +607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bulb-planter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bulb-planter",
       "rdfs:label": [
         {
           "@value": "Planteur d'ampoule",
@@ -682,11 +682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#compost-bin",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#compost-bin",
       "rdfs:label": [
         {
           "@value": "Bac à compost",
@@ -757,11 +757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#container",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#container",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#compost-fork",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#compost-fork",
       "rdfs:label": [
         {
           "@value": "Fourchette de compost",
@@ -832,11 +832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#core-aerator",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#core-aerator",
       "rdfs:label": [
         {
           "@value": "Aérateur de noyau",
@@ -907,11 +907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#drum-aerators",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#drum-aerators",
       "rdfs:label": [
         {
           "@value": "Aérateurs de tambour",
@@ -982,11 +982,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#edging-shears",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#edging-shears",
       "rdfs:label": [
         {
           "@value": "Édition de cisailles",
@@ -1057,11 +1057,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#electric-edger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#electric-edger",
       "rdfs:label": [
         {
           "@value": "Edger électrique",
@@ -1132,11 +1132,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#flat-rake",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#flat-rake",
       "rdfs:label": [
         {
           "@value": "Râteau plat",
@@ -1207,11 +1207,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#garden-fork",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#garden-fork",
       "rdfs:label": [
         {
           "@value": "Fourche à bêcher",
@@ -1282,11 +1282,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#garden-hoe",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#garden-hoe",
       "rdfs:label": [
         {
           "@value": "Jardin houe",
@@ -1357,11 +1357,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#garden-shovel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#garden-shovel",
       "rdfs:label": [
         {
           "@value": "Pelle de jardin",
@@ -1432,11 +1432,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#gas-powered-lawn-edger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#gas-powered-lawn-edger",
       "rdfs:label": [
         {
           "@value": "Edger à gaz à gaz",
@@ -1507,11 +1507,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#gardening-gloves",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening-gloves",
       "rdfs:label": [
         {
           "@value": "Gants de jardinage",
@@ -1582,11 +1582,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hand-cultivator",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hand-cultivator",
       "rdfs:label": [
         {
           "@value": "Cultivateur de mains",
@@ -1657,11 +1657,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#handheld-sprayer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#handheld-sprayer",
       "rdfs:label": [
         {
           "@value": "Pulvérisateur de poche",
@@ -1732,11 +1732,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hand-seeder",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hand-seeder",
       "rdfs:label": [
         {
           "@value": "Semoir à la main",
@@ -1807,11 +1807,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hedge-shears",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hedge-shears",
       "rdfs:label": [
         {
           "@value": "Cisailles de haie",
@@ -1882,11 +1882,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hoe",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hoe",
       "rdfs:label": [
         {
           "@value": "Houe",
@@ -1957,11 +1957,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#kneeler",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#kneeler",
       "rdfs:label": [
         {
           "@value": "Agenouilloir",
@@ -2032,11 +2032,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#lawn-mower",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#lawn-mower",
       "rdfs:label": [
         {
           "@value": "Tondeuse à gazon",
@@ -2107,11 +2107,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#leaf-blower",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#leaf-blower",
       "rdfs:label": [
         {
           "@value": "Souffleur de feuilles",
@@ -2182,11 +2182,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#leaf-rake",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#leaf-rake",
       "rdfs:label": [
         {
           "@value": "Râteau de feuilles",
@@ -2257,11 +2257,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#machete",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#machete",
       "rdfs:label": [
         {
           "@value": "Machette",
@@ -2332,11 +2332,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#manual-edger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#manual-edger",
       "rdfs:label": [
         {
           "@value": "Edger manuel",
@@ -2407,11 +2407,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pick-mattock",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pick-mattock",
       "rdfs:label": [
         {
           "@value": "Choisi le mittock",
@@ -2482,11 +2482,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pitchfork",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pitchfork",
       "rdfs:label": [
         {
           "@value": "Pittoresque",
@@ -2557,11 +2557,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pitchfork",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#pitchfork",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#planting-dibble",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#planting-dibble",
       "rdfs:label": [
         {
           "@value": "Planter DiBble",
@@ -2632,11 +2632,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pointed-shovel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pointed-shovel",
       "rdfs:label": [
         {
           "@value": "Pelle pointue",
@@ -2707,11 +2707,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pole-pruner",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pole-pruner",
       "rdfs:label": [
         {
           "@value": "Châtrice",
@@ -2782,11 +2782,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#post-hole-pincer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#post-hole-pincer",
       "rdfs:label": [
         {
           "@value": "Pincer Pincer",
@@ -2857,11 +2857,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#potato-fork",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#potato-fork",
       "rdfs:label": [
         {
           "@value": "Fourchette de pommes de terre",
@@ -2932,11 +2932,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#powered-chainsaw",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#powered-chainsaw",
       "rdfs:label": [
         {
           "@value": "Tronçonneuse alimenté",
@@ -3007,11 +3007,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#saw",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#powered-edger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#powered-edger",
       "rdfs:label": [
         {
           "@value": "Edger alimenté",
@@ -3082,11 +3082,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pruning-knife",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pruning-knife",
       "rdfs:label": [
         {
           "@value": "Coup de couteau",
@@ -3157,11 +3157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pruning-saw",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pruning-saw",
       "rdfs:label": [
         {
           "@value": "Scie à élagité",
@@ -3232,11 +3232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#saw",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pruning-shears",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pruning-shears",
       "rdfs:label": [
         {
           "@value": "Cisailles de taille",
@@ -3307,11 +3307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#rake",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#rake",
       "rdfs:label": [
         {
           "@value": "Râteau",
@@ -3382,11 +3382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#rotary-tiller",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#rotary-tiller",
       "rdfs:label": [
         {
           "@value": "Taber rotatif",
@@ -3457,11 +3457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#round-point-shovel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#round-point-shovel",
       "rdfs:label": [
         {
           "@value": "Pelle à point rond",
@@ -3532,11 +3532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#scoop-shovel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#scoop-shovel",
       "rdfs:label": [
         {
           "@value": "Pelleteuse",
@@ -3607,11 +3607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#scuffle-hoe",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#scuffle-hoe",
       "rdfs:label": [
         {
           "@value": "Bracelet houe",
@@ -3682,11 +3682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#gardening",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#gardening",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#seeder-row-planter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#seeder-row-planter",
       "rdfs:label": [
         {
           "@value": "Planteur de rangée de semis",
@@ -3757,11 +3757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#seeder-row-planter",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#seeder-row-planter",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#shredder",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#shredder",
       "rdfs:label": [
         {
           "@value": "Déchiqueteuse",
@@ -3832,11 +3832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shredder",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shredder",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#soil-scoop",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#soil-scoop",
       "rdfs:label": [
         {
           "@value": "Écosserie",
@@ -3907,11 +3907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soil-scoop",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#soil-scoop",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#spading-fork",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#spading-fork",
       "rdfs:label": [
         {
           "@value": "Fourchette",
@@ -3982,11 +3982,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spading-fork",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#spading-fork",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#spike-aerator",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#spike-aerator",
       "rdfs:label": [
         {
           "@value": "Aérateur de pic",
@@ -4057,11 +4057,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spike-aerator",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#spike-aerator",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#spiked-aerating-shoes",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#spiked-aerating-shoes",
       "rdfs:label": [
         {
           "@value": "Chaussures d'aération à pointes",
@@ -4132,11 +4132,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shoes",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shoes",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#spreader",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#spreader",
       "rdfs:label": [
         {
           "@value": "Épandeuse",
@@ -4207,11 +4207,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spreader",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#spreader",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#sprinkler",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#sprinkler",
       "rdfs:label": [
         {
           "@value": "Arroseuse",
@@ -4282,11 +4282,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sprinkler",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sprinkler",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#square-point-shovel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#square-point-shovel",
       "rdfs:label": [
         {
           "@value": "Pelle à point carré",
@@ -4357,11 +4357,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#step-edger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#step-edger",
       "rdfs:label": [
         {
           "@value": "Step Edger",
@@ -4432,11 +4432,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#step-edger",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#step-edger",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#string-trimmer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#string-trimmer",
       "rdfs:label": [
         {
           "@value": "Tondeuse",
@@ -4507,11 +4507,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#string-trimmer",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#string-trimmer",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#trailer-sprayer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#trailer-sprayer",
       "rdfs:label": [
         {
           "@value": "Pulvérisateur de remorque",
@@ -4582,11 +4582,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sprayer",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sprayer",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#transplant-spade",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#transplant-spade",
       "rdfs:label": [
         {
           "@value": "Pache de transplantation",
@@ -4657,11 +4657,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#trench-shovel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#trench-shovel",
       "rdfs:label": [
         {
           "@value": "Tranchée",
@@ -4732,11 +4732,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#shovel",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#shovel",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#tree-pruner",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#tree-pruner",
       "rdfs:label": [
         {
           "@value": "Arbre",
@@ -4807,11 +4807,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tree-pruner",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#tree-pruner",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#twist-tiller",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#twist-tiller",
       "rdfs:label": [
         {
           "@value": "Torsadeur",
@@ -4882,11 +4882,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#twist-tiller",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#twist-tiller",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#warren-hoe",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#warren-hoe",
       "rdfs:label": [
         {
           "@value": "Warren houe",
@@ -4957,11 +4957,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#warren-hoe",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#warren-hoe",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#water-hose",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#water-hose",
       "rdfs:label": [
         {
           "@value": "Tuyau d'eau",
@@ -5032,11 +5032,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#water-hose",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#water-hose",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#weeder",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#weeder",
       "rdfs:label": [
         {
           "@value": "Weeder",
@@ -5107,11 +5107,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#weeder",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#weeder",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#wheelbarrow",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#wheelbarrow",
       "rdfs:label": [
         {
           "@value": "Brouette",
@@ -5182,11 +5182,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wheelbarrow",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wheelbarrow",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#wheel-edger",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#wheel-edger",
       "rdfs:label": [
         {
           "@value": "Edger de roue",
@@ -5257,11 +5257,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wheel-edger",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wheel-edger",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#laser-cutter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#laser-cutter",
       "rdfs:label": [
         {
           "@value": "Coupeur laser",
@@ -5332,11 +5332,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#laser-cutter",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#laser-cutter",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bandsaw",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bandsaw",
       "rdfs:label": [
         {
           "@value": "Scie à ruban",
@@ -5407,11 +5407,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#saw",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bench-grinder",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-grinder",
       "rdfs:label": [
         {
           "@value": "Broyeur",
@@ -5482,11 +5482,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-grinder",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-grinder",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bench-scroll-saw",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-scroll-saw",
       "rdfs:label": [
         {
           "@value": "Scie de défilement bancaire",
@@ -5557,11 +5557,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#saw",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cnc-mill",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cnc-mill",
       "rdfs:label": [
         {
           "@value": "Moulin à commande numérique",
@@ -5632,11 +5632,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cnc-mill",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cnc-mill",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#dremels",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#dremels",
       "rdfs:label": [
         {
           "@value": "Dramelle",
@@ -5707,11 +5707,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#dremels",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#dremels",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#floor-standing-pillar-drill",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#floor-standing-pillar-drill",
       "rdfs:label": [
         {
           "@value": "Porte debout au sol",
@@ -5782,11 +5782,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#drill",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#lathe",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#lathe",
       "rdfs:label": [
         {
           "@value": "Tour",
@@ -5857,11 +5857,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#lathe",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#lathe",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#table-saw",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#table-saw",
       "rdfs:label": [
         {
           "@value": "Banc de scie",
@@ -5932,11 +5932,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#saw",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#mitre-saw",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#mitre-saw",
       "rdfs:label": [
         {
           "@value": "Scie à onglet",
@@ -6007,11 +6007,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#saw",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#saw",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#wire-bending-tool",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#wire-bending-tool",
       "rdfs:label": [
         {
           "@value": "Outil de pliage de fil",
@@ -6082,11 +6082,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#wire-bending-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wire-bending-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#wood-vice",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#wood-vice",
       "rdfs:label": [
         {
           "@value": "Vice du bois",
@@ -6157,11 +6157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#vice",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#vice",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#metal-vice",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#metal-vice",
       "rdfs:label": [
         {
           "@value": "Vice du métal",
@@ -6232,11 +6232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#vice",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#vice",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#woodturning-lathe",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#woodturning-lathe",
       "rdfs:label": [
         {
           "@value": "Tour de bois",
@@ -6307,11 +6307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#lathe",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#lathe",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#multimeter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#multimeter",
       "rdfs:label": [
         {
           "@value": "Multimètre",
@@ -6382,11 +6382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bench-power-supply",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-power-supply",
       "rdfs:label": [
         {
           "@value": "Alimentation électrique",
@@ -6457,11 +6457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#capacitance-meter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#capacitance-meter",
       "rdfs:label": [
         {
           "@value": "Compteur de capacités",
@@ -6532,11 +6532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#oscilloscope",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#oscilloscope",
       "rdfs:label": [
         {
           "@value": "Oscilloscope",
@@ -6607,11 +6607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#oscilloscope-probes",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#oscilloscope-probes",
       "rdfs:label": [
         {
           "@value": "Sondes d'oscilloscope",
@@ -6682,11 +6682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#signal-generator",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#signal-generator",
       "rdfs:label": [
         {
           "@value": "Générateur de signal",
@@ -6757,11 +6757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#signal-generator",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#signal-generator",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#mains-transformer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#mains-transformer",
       "rdfs:label": [
         {
           "@value": "Transformateur principal",
@@ -6832,11 +6832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#electrical",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hot-air-gun",
       "rdfs:label": [
         {
           "@value": "Pistolet à air chaud",
@@ -6907,11 +6907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bench-pillar-drill",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-pillar-drill",
       "rdfs:label": [
         {
           "@value": "Percaire de banc",
@@ -6982,11 +6982,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#drill",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bench-magnifier-lamp",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-magnifier-lamp",
       "rdfs:label": [
         {
           "@value": "Lampe de loupe de banc",
@@ -7057,11 +7057,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#bench-magnifier-lamp",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bench-magnifier-lamp",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#electronic-hotplate",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#electronic-hotplate",
       "rdfs:label": [
         {
           "@value": "Plaque de feu électronique",
@@ -7132,11 +7132,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#microscope",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#microscope",
       "rdfs:label": [
         {
           "@value": "Microscope",
@@ -7207,11 +7207,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#microscope",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#microscope",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#soldering-iron",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#soldering-iron",
       "rdfs:label": [
         {
           "@value": "Fer à souder",
@@ -7282,11 +7282,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soldering",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#soldering",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#solder-reflow-oven",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#solder-reflow-oven",
       "rdfs:label": [
         {
           "@value": "Four de refusion à souder",
@@ -7357,11 +7357,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#spot-welder",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#spot-welder",
       "rdfs:label": [
         {
           "@value": "Soudeur tache",
@@ -7432,11 +7432,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#welding",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#welding",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#flat-bed-pen-plotter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#flat-bed-pen-plotter",
       "rdfs:label": [
         {
           "@value": "Traceur de stylo plat",
@@ -7507,11 +7507,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#flat-bed-pen-plotter",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#flat-bed-pen-plotter",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#printer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#printer",
       "rdfs:label": [
         {
           "@value": "Imprimante",
@@ -7582,11 +7582,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#printer",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#printer",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#laminator",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#laminator",
       "rdfs:label": [
         {
           "@value": "Laminateur",
@@ -7657,11 +7657,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#laminator",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#laminator",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#thermal-camera",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#thermal-camera",
       "rdfs:label": [
         {
           "@value": "Caméra thermique",
@@ -7732,11 +7732,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#camera",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#camera",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#glue-gun",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#glue-gun",
       "rdfs:label": [
         {
           "@value": "Pistolet à colle",
@@ -7807,11 +7807,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#glue-gun",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#glue-gun",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hot-air-gun",
       "rdfs:label": [
         {
           "@value": "Pistolet à air chaud",
@@ -7882,11 +7882,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hot-air-gun",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#hot-air-gun",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#label-printer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#label-printer",
       "rdfs:label": [
         {
           "@value": "Imprimante d'étiquettes",
@@ -7957,11 +7957,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#label-printer",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#label-printer",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#sewing-machine",
       "rdfs:label": [
         {
           "@value": "Machine à coudre",
@@ -8032,11 +8032,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sewing-machine",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sewing-machine",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#laptop",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#laptop",
       "rdfs:label": [
         {
           "@value": "Portable",
@@ -8107,11 +8107,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#desktop-computer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#desktop-computer",
       "rdfs:label": [
         {
           "@value": "Ordinateur de bureau",
@@ -8182,11 +8182,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-monitor",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-monitor",
       "rdfs:label": [
         {
           "@value": "Moniteur d'ordinateur",
@@ -8257,11 +8257,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-mouse",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-mouse",
       "rdfs:label": [
         {
           "@value": "Souris d'ordinateur",
@@ -8332,11 +8332,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-trackball",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-trackball",
       "rdfs:label": [
         {
           "@value": "Computer Shueball",
@@ -8407,11 +8407,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-drawing-tablet",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-drawing-tablet",
       "rdfs:label": [
         {
           "@value": "Tablette de dessin informatique",
@@ -8482,11 +8482,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computer-drawing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-drawing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-webcam",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-webcam",
       "rdfs:label": [
         {
           "@value": "Webcam",
@@ -8557,11 +8557,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-microphone",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-microphone",
       "rdfs:label": [
         {
           "@value": "Microphone informatique",
@@ -8632,11 +8632,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#computer-keyboard",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#computer-keyboard",
       "rdfs:label": [
         {
           "@value": "Clavier d'ordinateur",
@@ -8707,11 +8707,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#mobile-phone",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#mobile-phone",
       "rdfs:label": [
         {
           "@value": "Téléphone mobile",
@@ -8782,11 +8782,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#telecoms",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#telecoms",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#dect-phone",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#dect-phone",
       "rdfs:label": [
         {
           "@value": "Téléphone de Dec",
@@ -8857,11 +8857,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#telecoms",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#telecoms",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#dect-base-station",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#dect-base-station",
       "rdfs:label": [
         {
           "@value": "Station de base de Dec",
@@ -8932,11 +8932,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#telecoms",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#telecoms",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#network-router",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#network-router",
       "rdfs:label": [
         {
           "@value": "Routeur de réseau",
@@ -9007,11 +9007,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#wifi-router",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#wifi-router",
       "rdfs:label": [
         {
           "@value": "Routeur Wi-Fi",
@@ -9082,11 +9082,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#outdoor-router",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#outdoor-router",
       "rdfs:label": [
         {
           "@value": "Outdoor Router",
@@ -9157,11 +9157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#poe-adapter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#poe-adapter",
       "rdfs:label": [
         {
           "@value": "Power Over Ethernet Adapter",
@@ -9232,11 +9232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#network-adapter",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#network-adapter",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#network-adapter",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#network-adapter",
       "rdfs:label": [
         {
           "@value": "Network Adapter",
@@ -9307,11 +9307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cable-crimper",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable-crimper",
       "rdfs:label": [
         {
           "@value": "Cable Crimper",
@@ -9382,11 +9382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cable-stripper",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable-stripper",
       "rdfs:label": [
         {
           "@value": "Cable Stripper",
@@ -9457,11 +9457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cable-tester",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable-tester",
       "rdfs:label": [
         {
           "@value": "Cable Tester",
@@ -9532,11 +9532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#scissors",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#scissors",
       "rdfs:label": [
         {
           "@value": "Scissors",
@@ -9607,11 +9607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cutting-tool",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#tweesers",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#tweesers",
       "rdfs:label": [
         {
           "@value": "Tweesers",
@@ -9682,11 +9682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tweesers",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#tweesers",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#electrical-tape",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#electrical-tape",
       "rdfs:label": [
         {
           "@value": "Electrical Tape",
@@ -9757,11 +9757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#tape",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#masking-tape",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#masking-tape",
       "rdfs:label": [
         {
           "@value": "Masking Tape",
@@ -9832,11 +9832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#tape",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#plumbers-tape",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#plumbers-tape",
       "rdfs:label": [
         {
           "@value": "Plumbers Tape",
@@ -9907,11 +9907,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#tape",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#duct-tape",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#duct-tape",
       "rdfs:label": [
         {
           "@value": "Duct Tape",
@@ -9982,11 +9982,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#tape",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#tape",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#chordless-drill",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#chordless-drill",
       "rdfs:label": [
         {
           "@value": "Chordless Drill",
@@ -10057,11 +10057,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#drill",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#nails",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#nails",
       "rdfs:label": [
         {
           "@value": "Nails",
@@ -10132,11 +10132,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#screws",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#screws",
       "rdfs:label": [
         {
           "@value": "Screws",
@@ -10207,11 +10207,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bolts",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bolts",
       "rdfs:label": [
         {
           "@value": "Bolts",
@@ -10282,11 +10282,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#battery",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#battery",
       "rdfs:label": [
         {
           "@value": "Batterie",
@@ -10357,11 +10357,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#battery",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#battery",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cable",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable",
       "rdfs:label": [
         {
           "@value": "Câble",
@@ -10432,11 +10432,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cable",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cable",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#microcontroller",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#microcontroller",
       "rdfs:label": [
         {
           "@value": "Microcontrôleur",
@@ -10507,11 +10507,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#single-board-computer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#single-board-computer",
       "rdfs:label": [
         {
           "@value": "Ordinateur unique",
@@ -10582,11 +10582,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#computing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#computing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#screwdriver",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#screwdriver",
       "rdfs:label": [
         {
           "@value": "Tournevis",
@@ -10657,11 +10657,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#screwdriver",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#screwdriver",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#spanner",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#spanner",
       "rdfs:label": [
         {
           "@value": "Clé",
@@ -10732,11 +10732,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spanner",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#spanner",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#vise-grips",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#vise-grips",
       "rdfs:label": [
         {
           "@value": "Vise Grips",
@@ -10807,11 +10807,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pliers",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#pliers",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#adjustable-spanner",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#adjustable-spanner",
       "rdfs:label": [
         {
           "@value": "Adjustable Spanner",
@@ -10882,11 +10882,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#spanner",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#spanner",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hose-clamp",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hose-clamp",
       "rdfs:label": [
         {
           "@value": "Hose Clamp",
@@ -10957,11 +10957,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#antenna-mast",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#antenna-mast",
       "rdfs:label": [
         {
           "@value": "Antenna Mast",
@@ -11032,11 +11032,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#networking",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#networking",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#washers",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#washers",
       "rdfs:label": [
         {
           "@value": "Washers",
@@ -11107,11 +11107,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#zip-ties",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#zip-ties",
       "rdfs:label": [
         {
           "@value": "Zip Ties",
@@ -11182,11 +11182,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cable-staples",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable-staples",
       "rdfs:label": [
         {
           "@value": "Cable Staples",
@@ -11257,11 +11257,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#cable-clip",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable-clip",
       "rdfs:label": [
         {
           "@value": "Cable Fastener Clip",
@@ -11332,11 +11332,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#fixing",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#fixing",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hand-truck",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hand-truck",
       "rdfs:label": [
         {
           "@value": "Hand Truck",
@@ -11407,11 +11407,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#trolley",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#trolley",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#hammer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hammer",
       "rdfs:label": [
         {
           "@value": "Marteau",
@@ -11482,11 +11482,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#hammer",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#hammer",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#drill-bit",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#drill-bit",
       "rdfs:label": [
         {
           "@value": "Foreuse",
@@ -11557,11 +11557,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#drill",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#drill",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#socket-set",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#socket-set",
       "rdfs:label": [
         {
           "@value": "Prise de courant",
@@ -11632,11 +11632,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#socket-set",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#socket-set",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#paintbrush",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#paintbrush",
       "rdfs:label": [
         {
           "@value": "Pinceau",
@@ -11707,11 +11707,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#painting",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#painting",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#paint-roller",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#paint-roller",
       "rdfs:label": [
         {
           "@value": "Rouleau de peinture",
@@ -11782,11 +11782,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#painting",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#painting",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#water-barrel",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#water-barrel",
       "rdfs:label": [
         {
           "@value": "Baril d'eau",
@@ -11857,11 +11857,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#container",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#container",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#thermostat",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#thermostat",
       "rdfs:label": [
         {
           "@value": "Thermostat",
@@ -11932,11 +11932,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#thermometer",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#thermometer",
       "rdfs:label": [
         {
           "@value": "Thermomètre",
@@ -12007,11 +12007,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#gas-sensor",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#gas-sensor",
       "rdfs:label": [
         {
           "@value": "Capteur de gaz",
@@ -12082,11 +12082,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#fire-alarm",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#fire-alarm",
       "rdfs:label": [
         {
           "@value": "Alarme incendie",
@@ -12157,11 +12157,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#sensor",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#sensor",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#kettle",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#kettle",
       "rdfs:label": [
         {
           "@value": "Bouilloire",
@@ -12232,11 +12232,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kitchen",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#kitchen",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#coffee-machine",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#coffee-machine",
       "rdfs:label": [
         {
           "@value": "Cafetière",
@@ -12307,11 +12307,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#kitchen",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#kitchen",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#electric-heater",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#electric-heater",
       "rdfs:label": [
         {
           "@value": "Chauffage électrique",
@@ -12382,11 +12382,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#fire-extinguisher",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#fire-extinguisher",
       "rdfs:label": [
         {
           "@value": "Extincteur d'incendie",
@@ -12457,11 +12457,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#safety",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#safety",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#blow-torch",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#blow-torch",
       "rdfs:label": [
         {
           "@value": "Coup de flèche",
@@ -12532,11 +12532,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#bunsen-burner",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bunsen-burner",
       "rdfs:label": [
         {
           "@value": "Bec Bunsen",
@@ -12607,11 +12607,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#oven",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#oven",
       "rdfs:label": [
         {
           "@value": "Four",
@@ -12682,11 +12682,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#heater",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#heater",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#pliers",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#pliers",
       "rdfs:label": [
         {
           "@value": "Pinces",
@@ -12757,11 +12757,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#pliers",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#pliers",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#solder-sucker",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#solder-sucker",
       "rdfs:label": [
         {
           "@value": "Ventouse de soudure",
@@ -12832,11 +12832,11 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#soldering",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#soldering",
       "@type": "dfc-p:ProductType"
     },
     {
-      "@id": "https://tools/data/toolTypes.rdf#mains-extension-cable",
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#mains-extension-cable",
       "rdfs:label": [
         {
           "@value": "Câble d'extension secteur",
@@ -12907,7 +12907,1732 @@
           "@language": "ca"
         }
       ],
-      "dfc-p:specialize": "https://tools/data/toolTypes.rdf#cable",
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cable",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-pump",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Pump",
+          "@language": "en"
+        },
+        {
+          "@value": "مضخة دراجة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bomba de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Pompa per bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradpumpe",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "sw"
+        },
+        {
+          "@value": "Bomba de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедный насос",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車ポンプ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Caidéal Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल पम्प",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 自行车",
+          "@language": "zh"
+        },
+        {
+          "@value": "Pompe à vélo",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Pump",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-chain-tool",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "en"
+        },
+        {
+          "@value": "دراجة شاين تول",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "ku"
+        },
+        {
+          "@value": "Herramienta de cadena de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Strumento per la catena della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradkette Werkzeug",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "sw"
+        },
+        {
+          "@value": "Ferramenta de cadeia de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедная цепь Инструмент",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーンツール",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Slabhra Uirlis",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन उपकरण",
+          "@language": "hi"
+        },
+        {
+          "@value": "拜多尔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Tool",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-tire-lever",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "en"
+        },
+        {
+          "@value": "إطار الدراجة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "es"
+        },
+        {
+          "@value": "Bicicletta Tire Lever",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradreifen Lever",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "sw"
+        },
+        {
+          "@value": "Alavanca de pneus de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипед Tire Lever",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車タイヤレバー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Tire Lever",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल टायर लीवर",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 拜 循环",
+          "@language": "zh"
+        },
+        {
+          "@value": "Pneus de vélo Lever",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Tire Lever",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-cleaner",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "en"
+        },
+        {
+          "@value": "منظف الدراجات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "ku"
+        },
+        {
+          "@value": "Limpiador de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Pulizia della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradreiniger",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "sw"
+        },
+        {
+          "@value": "Limpeza de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "oc"
+        },
+        {
+          "@value": "Уборка велосипедов",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車クリーナー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Glantóir Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल क्लीनर",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 双周期清洁",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Cleaner",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-repair-stand",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "en"
+        },
+        {
+          "@value": "اعادة تدوير الدراجات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "es"
+        },
+        {
+          "@value": "Stand di riparazione della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrrad-Reparaturständer",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "sw"
+        },
+        {
+          "@value": "Suporte de reparação de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедный ремонтный стенд",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車修理スタンド",
+          "@language": "ja"
+        },
+        {
+          "@value": "Staid Deisiúchán Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल मरम्मत स्टैंड",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 双周期内",
+          "@language": "zh"
+        },
+        {
+          "@value": "Support de réparation de vélos",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Repair Stand",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#torque-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Torque Wrench",
+          "@language": "en"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "es"
+        },
+        {
+          "@value": "Avvolgitore di coppia",
+          "@language": "it"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "de"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Chave de torção",
+          "@language": "pt"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Торке Воскрес",
+          "@language": "ru"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "トルクレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "riachtanais uisce: measartha",
+          "@language": "ga"
+        },
+        {
+          "@value": "टॉर्क रिंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "zh"
+        },
+        {
+          "@value": "Clé de torsion",
+          "@language": "fr"
+        },
+        {
+          "@value": "Torque Wrench",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wrench",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#y-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Y Wrench",
+          "@language": "en"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "es"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "it"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "de"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "pt"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Y Воланч",
+          "@language": "ru"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "Yレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ga"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "hi"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "zh"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "fr"
+        },
+        {
+          "@value": "Y Wrench",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wrench",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-chain-wear-checker",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "en"
+        },
+        {
+          "@value": "دفتر أحذية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "es"
+        },
+        {
+          "@value": "Biciclette a catena",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradkettenbekleidung Checker",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "sw"
+        },
+        {
+          "@value": "Verificador de desgaste de cadeia de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипед Цепь Носить Checker",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーン ウェア チェッカー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Seain Sheiceáil Caith",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन पहनें चेकर",
+          "@language": "hi"
+        },
+        {
+          "@value": "比拜多·查宁·韦尔·查克尔",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Wear Checker",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cable-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Cable Cutter",
+          "@language": "en"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "es"
+        },
+        {
+          "@value": "Cutter del cavo",
+          "@language": "it"
+        },
+        {
+          "@value": "Kabelschneider",
+          "@language": "de"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Cortador de cabo",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кабель Cutter",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ケーブルカッター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Cábla cutter",
+          "@language": "ga"
+        },
+        {
+          "@value": "केबल कटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "物质",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cutter de câble",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cable Cutter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-chain-cleaner",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "en"
+        },
+        {
+          "@value": "منظف الدراجات النارية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "ku"
+        },
+        {
+          "@value": "Limpiador de cadena de bicicletas",
+          "@language": "es"
+        },
+        {
+          "@value": "Pulitore di catena per biciclette",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrradkettenreiniger",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "sw"
+        },
+        {
+          "@value": "Limpador de corrente de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипед Цепной Уборка",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーンクリーナー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Gluaisrothar Glantóir Slabhra",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन क्लीनर",
+          "@language": "hi"
+        },
+        {
+          "@value": "B. 比循环 Chain 清洁",
+          "@language": "zh"
+        },
+        {
+          "@value": "Nettoyeur de chaîne de vélo",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Cleaner",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#tape-measure",
+      "rdfs:label": [
+        {
+          "@value": "Tape Measure",
+          "@language": "en"
+        },
+        {
+          "@value": "قياس التايب",
+          "@language": "ar"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "ku"
+        },
+        {
+          "@value": "Medida de cinta",
+          "@language": "es"
+        },
+        {
+          "@value": "Misura del nastro",
+          "@language": "it"
+        },
+        {
+          "@value": "Bandmessung",
+          "@language": "de"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "sw"
+        },
+        {
+          "@value": "Medida de fita",
+          "@language": "pt"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "oc"
+        },
+        {
+          "@value": "Лента Measure",
+          "@language": "ru"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "cy"
+        },
+        {
+          "@value": "テープ測定",
+          "@language": "ja"
+        },
+        {
+          "@value": "Tomhais Téip",
+          "@language": "ga"
+        },
+        {
+          "@value": "टेप उपाय",
+          "@language": "hi"
+        },
+        {
+          "@value": "塔佩克测量",
+          "@language": "zh"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "fr"
+        },
+        {
+          "@value": "Tape Measure",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#measuring-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-chain-whip",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "en"
+        },
+        {
+          "@value": "درّاجة (شاين ويب)",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "ku"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "es"
+        },
+        {
+          "@value": "Bicicletta catena Whip",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrrad-Kette Whip",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "sw"
+        },
+        {
+          "@value": "Balope de corrente de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедная цепь Whip",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーンホイップ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Aoire Slabhra Rothar",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन विप",
+          "@language": "hi"
+        },
+        {
+          "@value": "比 循环 Chain Whip",
+          "@language": "zh"
+        },
+        {
+          "@value": "chaîne de vélo Whip",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Whip",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#cassette-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Cassette Wrench",
+          "@language": "en"
+        },
+        {
+          "@value": "Kaette Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "es"
+        },
+        {
+          "@value": "Avvolgica per cassette",
+          "@language": "it"
+        },
+        {
+          "@value": "Das ist ein toller",
+          "@language": "de"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Chave de fenda",
+          "@language": "pt"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Кассета Wrench",
+          "@language": "ru"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "カセットレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "cliceáil grianghraf a mhéadú",
+          "@language": "ga"
+        },
+        {
+          "@value": "कैसेट रिंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "fr"
+        },
+        {
+          "@value": "Cassette Wrench",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wrench",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle-chain-keeper",
+      "rdfs:label": [
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "en"
+        },
+        {
+          "@value": "حامض الدراجات النارية",
+          "@language": "ar"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "ku"
+        },
+        {
+          "@value": "Ciclo de cadena de mantenimiento",
+          "@language": "es"
+        },
+        {
+          "@value": "Cuscinetto della catena della bicicletta",
+          "@language": "it"
+        },
+        {
+          "@value": "Fahrrad Kettenhalter",
+          "@language": "de"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "sw"
+        },
+        {
+          "@value": "Guardador de corrente de bicicleta",
+          "@language": "pt"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "oc"
+        },
+        {
+          "@value": "Велосипедная цепь Keeper",
+          "@language": "ru"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "cy"
+        },
+        {
+          "@value": "自転車チェーン Keeper",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rothar Slabhra Coimeádaí",
+          "@language": "ga"
+        },
+        {
+          "@value": "साइकिल चेन कीपर",
+          "@language": "hi"
+        },
+        {
+          "@value": "比周期",
+          "@language": "zh"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "fr"
+        },
+        {
+          "@value": "Bicycle Chain Keeper",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#bicycle",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#battery-terminal-puller",
+      "rdfs:label": [
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "en"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "ar"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "ku"
+        },
+        {
+          "@value": "Terminal de batería",
+          "@language": "es"
+        },
+        {
+          "@value": "Caricabatterie",
+          "@language": "it"
+        },
+        {
+          "@value": "Batterie Klemmen Puller",
+          "@language": "de"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "sw"
+        },
+        {
+          "@value": "Puxador de terminal de bateria",
+          "@language": "pt"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "oc"
+        },
+        {
+          "@value": "Батарея Терминал Puller",
+          "@language": "ru"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "cy"
+        },
+        {
+          "@value": "バッテリーターミナルプルア",
+          "@language": "ja"
+        },
+        {
+          "@value": "Uirlisí ilchuspóireacha",
+          "@language": "ga"
+        },
+        {
+          "@value": "बैटरी टर्मिनल पुलर",
+          "@language": "hi"
+        },
+        {
+          "@value": "Bttery用语Puller",
+          "@language": "zh"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "fr"
+        },
+        {
+          "@value": "Battery Terminal Puller",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#battery",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#jumper-cables",
+      "rdfs:label": [
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "en"
+        },
+        {
+          "@value": "الكابلات/الرحلات",
+          "@language": "ar"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "ku"
+        },
+        {
+          "@value": "Cables de salto / cuentas",
+          "@language": "es"
+        },
+        {
+          "@value": "Cavi di salto/cavo",
+          "@language": "it"
+        },
+        {
+          "@value": "Jumper Kabel/Stecker",
+          "@language": "de"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "sw"
+        },
+        {
+          "@value": "Cabos de ligação/mangueiras",
+          "@language": "pt"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "oc"
+        },
+        {
+          "@value": "Прыжок кабели/лиды",
+          "@language": "ru"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "cy"
+        },
+        {
+          "@value": "ジャンパーケーブル/鉛",
+          "@language": "ja"
+        },
+        {
+          "@value": "cáblaí / luaidhe Léim",
+          "@language": "ga"
+        },
+        {
+          "@value": "जम्पर केबल/लीड",
+          "@language": "hi"
+        },
+        {
+          "@value": "Jumper电缆/铅",
+          "@language": "zh"
+        },
+        {
+          "@value": "Câbles de saut/perles",
+          "@language": "fr"
+        },
+        {
+          "@value": "Jumper cables/leads",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#battery",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#tube-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "en"
+        },
+        {
+          "@value": "Hose/ Tube Cutter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "es"
+        },
+        {
+          "@value": "Tubo / Tubo",
+          "@language": "it"
+        },
+        {
+          "@value": "Schlauch / Rohrschneider",
+          "@language": "de"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Mangueira / Cortador de tubos",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Шланг / Tube Cutter",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ホース/管カッター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "ga"
+        },
+        {
+          "@value": "नली / ट्यूब कटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "Hose/ Tube Cutter",
+          "@language": "zh"
+        },
+        {
+          "@value": "Cutter à l &apos; ossature",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hose / Tube Cutter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#moisture-meter",
+      "rdfs:label": [
+        {
+          "@value": "Moisture Meter",
+          "@language": "en"
+        },
+        {
+          "@value": "قياس الحركة",
+          "@language": "ar"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "es"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "it"
+        },
+        {
+          "@value": "Feuchtemesser",
+          "@language": "de"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Medidor de umidade",
+          "@language": "pt"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Метр влаги",
+          "@language": "ru"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "cy"
+        },
+        {
+          "@value": "湿気のメートル",
+          "@language": "ja"
+        },
+        {
+          "@value": "Méadar taise",
+          "@language": "ga"
+        },
+        {
+          "@value": "नमी मीटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "摩尔·梅雷",
+          "@language": "zh"
+        },
+        {
+          "@value": "Metteur en température",
+          "@language": "fr"
+        },
+        {
+          "@value": "Moisture Meter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#measuring-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#retrieval-tool",
+      "rdfs:label": [
+        {
+          "@value": "Retrieval Tool",
+          "@language": "en"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "ar"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "ku"
+        },
+        {
+          "@value": "Herramienta de recuperación",
+          "@language": "es"
+        },
+        {
+          "@value": "Strumento di recupero",
+          "@language": "it"
+        },
+        {
+          "@value": "Abrufwerkzeug",
+          "@language": "de"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "sw"
+        },
+        {
+          "@value": "Ferramenta de recuperação",
+          "@language": "pt"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "oc"
+        },
+        {
+          "@value": "Инструмент для поиска",
+          "@language": "ru"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "cy"
+        },
+        {
+          "@value": "リトリバルツール",
+          "@language": "ja"
+        },
+        {
+          "@value": "Uirlisí Retrival",
+          "@language": "ga"
+        },
+        {
+          "@value": "पुनर्प्राप्ति उपकरण",
+          "@language": "hi"
+        },
+        {
+          "@value": "雷瓦尔·托维斯",
+          "@language": "zh"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "fr"
+        },
+        {
+          "@value": "Retrieval Tool",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#retrieval-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#hatchet",
+      "rdfs:label": [
+        {
+          "@value": "Hatchet",
+          "@language": "en"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "ar"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "ku"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "es"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "it"
+        },
+        {
+          "@value": "Hasche",
+          "@language": "de"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "sw"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "pt"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "oc"
+        },
+        {
+          "@value": "Хатчет",
+          "@language": "ru"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "cy"
+        },
+        {
+          "@value": "ハチェット",
+          "@language": "ja"
+        },
+        {
+          "@value": "cineál gas: in airde",
+          "@language": "ga"
+        },
+        {
+          "@value": "हैचेट",
+          "@language": "hi"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "zh"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "fr"
+        },
+        {
+          "@value": "Hatchet",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#top-snapper",
+      "rdfs:label": [
+        {
+          "@value": "Top Snapper",
+          "@language": "en"
+        },
+        {
+          "@value": "أعلى",
+          "@language": "ar"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "ku"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "es"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "it"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "de"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "sw"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "pt"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "oc"
+        },
+        {
+          "@value": "Топ Snapper",
+          "@language": "ru"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "cy"
+        },
+        {
+          "@value": "トップスナッパー",
+          "@language": "ja"
+        },
+        {
+          "@value": "Barr an leathanaigh",
+          "@language": "ga"
+        },
+        {
+          "@value": "शीर्ष स्नैपर",
+          "@language": "hi"
+        },
+        {
+          "@value": "例 例",
+          "@language": "zh"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "fr"
+        },
+        {
+          "@value": "Top Snapper",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#top-snapper",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#rope-cutter",
+      "rdfs:label": [
+        {
+          "@value": "Rope Cutter",
+          "@language": "en"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "ar"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "ku"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "es"
+        },
+        {
+          "@value": "Cutter di corda",
+          "@language": "it"
+        },
+        {
+          "@value": "Der Kopf",
+          "@language": "de"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "sw"
+        },
+        {
+          "@value": "Cortador de corda",
+          "@language": "pt"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "oc"
+        },
+        {
+          "@value": "Веревка Cutter",
+          "@language": "ru"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "cy"
+        },
+        {
+          "@value": "ロープカッター",
+          "@language": "ja"
+        },
+        {
+          "@value": "Rope cutter",
+          "@language": "ga"
+        },
+        {
+          "@value": "रस्सी कटर",
+          "@language": "hi"
+        },
+        {
+          "@value": "求 力",
+          "@language": "zh"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "fr"
+        },
+        {
+          "@value": "Rope Cutter",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#cutting-tool",
+      "@type": "dfc-p:ProductType"
+    },
+    {
+      "@id": "http://static.datafoodconsortium.org/data/toolTypes.json#adjustable-spanner-wrench",
+      "rdfs:label": [
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "en"
+        },
+        {
+          "@value": "Spanner Wrench",
+          "@language": "ar"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "ku"
+        },
+        {
+          "@value": "Wrench de Spanner ajustable",
+          "@language": "es"
+        },
+        {
+          "@value": "Avvitatore di ricambio regolabile",
+          "@language": "it"
+        },
+        {
+          "@value": "Einstellbare Spannschraube",
+          "@language": "de"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "sw"
+        },
+        {
+          "@value": "Chave de spanner ajustável",
+          "@language": "pt"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "oc"
+        },
+        {
+          "@value": "Регулируемый Spanner Wrench",
+          "@language": "ru"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "cy"
+        },
+        {
+          "@value": "調節可能なスパナーレンチ",
+          "@language": "ja"
+        },
+        {
+          "@value": "Inoiriúnaithe Spanner Wrench",
+          "@language": "ga"
+        },
+        {
+          "@value": "समायोज्य स्पैनर रिंच",
+          "@language": "hi"
+        },
+        {
+          "@value": "A. 理应",
+          "@language": "zh"
+        },
+        {
+          "@value": "Ajustable Spanner Wrench",
+          "@language": "fr"
+        },
+        {
+          "@value": "Adjustable Spanner Wrench",
+          "@language": "ca"
+        }
+      ],
+      "dfc-p:specialize": "http://static.datafoodconsortium.org/data/toolTypes.json#wrench",
       "@type": "dfc-p:ProductType"
     }
   ]

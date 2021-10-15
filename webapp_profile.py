@@ -3,12 +3,13 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
+from utils import isGroupAccount
 from utils import hasObjectDict
 from utils import getOccupationName
 from utils import getLockedAccount
@@ -25,6 +26,7 @@ from utils import getImageFormats
 from utils import acctDir
 from utils import getSupportedLanguages
 from utils import localActorUrl
+from utils import getReplyIntervalHours
 from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
@@ -34,6 +36,7 @@ from person import getPersonAvatarUrl
 from webfinger import webfingerHandle
 from posts import parseUserFeed
 from posts import getPersonBox
+from posts import isCreateInsideAnnounce
 from donate import getDonationUrl
 from donate import getWebsite
 from xmpp import getXmppAddress
@@ -77,6 +80,7 @@ def htmlProfileAfterSearch(cssCache: {},
                            session, cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
                            YTReplacementDomain: str,
+                           twitterReplacementDomain: str,
                            showPublishedDateOnly: bool,
                            defaultTimeline: str,
                            peertubeInstances: [],
@@ -84,7 +88,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            themeName: str,
                            accessKeys: {},
                            systemLanguage: str,
-                           maxLikeCount: int) -> str:
+                           maxLikeCount: int,
+                           signingPrivateKeyPem: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -94,19 +99,29 @@ def htmlProfileAfterSearch(cssCache: {},
     elif httpPrefix == 'gnunet':
         gnunet = True
     profileJson, asHeader = \
-        getActorJson(domain, profileHandle, http, gnunet, debug, False)
+        getActorJson(domain, profileHandle, http, gnunet, debug, False,
+                     signingPrivateKeyPem)
     if not profileJson:
         return None
 
     personUrl = profileJson['id']
     searchDomain, searchPort = getDomainFromActor(personUrl)
+    if not searchDomain:
+        return None
     searchNickname = getNicknameFromActor(personUrl)
+    if not searchNickname:
+        return None
     searchDomainFull = getFullDomain(searchDomain, searchPort)
 
     profileStr = ''
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
+
+    isGroup = False
+    if profileJson.get('type'):
+        if profileJson['type'] == 'Group':
+            isGroup = True
 
     avatarUrl = ''
     if profileJson.get('icon'):
@@ -125,6 +140,8 @@ def htmlProfileAfterSearch(cssCache: {},
     movedTo = ''
     if profileJson.get('movedTo'):
         movedTo = profileJson['movedTo']
+        if '"' in movedTo:
+            movedTo = movedTo.split('"')[1]
         displayName += ' ⌂'
 
     followsYou = \
@@ -217,6 +234,10 @@ def htmlProfileAfterSearch(cssCache: {},
         followIsPermitted = False
 
     if followIsPermitted:
+        followStr = 'Follow'
+        if isGroup:
+            followStr = 'Join'
+
         profileStr += \
             '<div class="container">\n' + \
             '  <form method="POST" action="' + \
@@ -226,7 +247,7 @@ def htmlProfileAfterSearch(cssCache: {},
             personUrl + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
             'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate['Follow'] + '</button>\n' + \
+            translate[followStr] + '</button>\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + accessKeys['viewButton'] + '">' + \
             translate['View'] + '</button>\n' + \
@@ -249,37 +270,45 @@ def htmlProfileAfterSearch(cssCache: {},
             '</div>\n'
 
     userFeed = \
-        parseUserFeed(session, outboxUrl, asHeader, projectVersion,
+        parseUserFeed(signingPrivateKeyPem,
+                      session, outboxUrl, asHeader, projectVersion,
                       httpPrefix, domain, debug)
     if userFeed:
         i = 0
         for item in userFeed:
+            isAnnouncedFeedItem = False
+            if isCreateInsideAnnounce(item):
+                isAnnouncedFeedItem = True
+                item = item['object']
             if not item.get('actor'):
                 continue
-            if item['actor'] != personUrl:
+            if not isAnnouncedFeedItem and item['actor'] != personUrl:
                 continue
             if not item.get('type'):
                 continue
-            if item['type'] != 'Create':
-                continue
-            if not hasObjectDict(item):
+            if item['type'] == 'Create':
+                if not hasObjectDict(item):
+                    continue
+            if item['type'] != 'Create' and item['type'] != 'Announce':
                 continue
 
             profileStr += \
-                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                individualPostAsHtml(signingPrivateKeyPem,
+                                     True, recentPostsCache, maxRecentPosts,
                                      translate, None, baseDir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
                                      item, avatarUrl, False, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     twitterReplacementDomain,
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage, maxLikeCount,
-                                     False, False, False, False, False)
+                                     False, False, False, False, False, False)
             i += 1
-            if i >= 20:
+            if i >= 8:
                 break
 
     instanceTitle = \
@@ -398,6 +427,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     """The header of a searched for handle, containing background
     image and avatar
     """
+    if not imageUrl:
+        imageUrl = '/defaultprofilebackground'
     htmlStr = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
@@ -415,6 +446,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             translate['Switch to timeline view'] + '">\n' + \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
             'alt="" class="title"></a>\n'
+    if not displayName:
+        displayName = searchNickname
     htmlStr += \
         '        <h1>' + displayName + '</h1>\n' + \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
@@ -430,7 +463,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         if newNickname and newDomain:
             newHandle = newNickname + '@' + newDomainFull
             htmlStr += '        <p>' + translate['New account'] + \
-                ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+                ': <a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
     elif alsoKnownAs:
         otherAccountshtml = \
             '        <p>' + translate['Other accounts'] + ': '
@@ -464,7 +497,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     return htmlStr
 
 
-def htmlProfile(rssIconAtTop: bool,
+def htmlProfile(signingPrivateKeyPem: str,
+                rssIconAtTop: bool,
                 cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
@@ -473,6 +507,7 @@ def htmlProfile(rssIconAtTop: bool,
                 profileJson: {}, selected: str,
                 session, cachedWebfingers: {}, personCache: {},
                 YTReplacementDomain: str,
+                twitterReplacementDomain: str,
                 showPublishedDateOnly: bool,
                 newswire: {}, theme: str, dormantMonths: int,
                 peertubeInstances: [],
@@ -489,7 +524,8 @@ def htmlProfile(rssIconAtTop: bool,
     if not nickname:
         return ""
     if isSystemAccount(nickname):
-        return htmlFrontScreen(rssIconAtTop,
+        return htmlFrontScreen(signingPrivateKeyPem,
+                               rssIconAtTop,
                                cssCache, iconsAsButtons,
                                defaultTimeline,
                                recentPostsCache, maxRecentPosts,
@@ -498,6 +534,7 @@ def htmlProfile(rssIconAtTop: bool,
                                profileJson, selected,
                                session, cachedWebfingers, personCache,
                                YTReplacementDomain,
+                               twitterReplacementDomain,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
@@ -550,6 +587,7 @@ def htmlProfile(rssIconAtTop: bool,
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
     websiteUrl = getWebsite(profileJson, translate)
+    blogAddress = getBlogAddress(profileJson)
     PGPpubKey = getPGPpubKey(profileJson)
     PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
@@ -579,6 +617,10 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
                 emailAddress + '">' + emailAddress + '</a></p>\n'
+        if blogAddress:
+            donateSection += \
+                '<p>Blog: <a href="' + \
+                blogAddress + '">' + blogAddress + '</a></p>\n'
         if xmppAddress:
             donateSection += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
@@ -702,6 +744,8 @@ def htmlProfile(rssIconAtTop: bool,
     movedTo = ''
     if profileJson.get('movedTo'):
         movedTo = profileJson['movedTo']
+        if '"' in movedTo:
+            movedTo = movedTo.split('"')[1]
 
     alsoKnownAs = None
     if profileJson.get('alsoKnownAs'):
@@ -717,9 +761,9 @@ def htmlProfile(rssIconAtTop: bool,
 
     avatarUrl = profileJson['icon']['url']
     # use alternate path for local avatars to avoid any caching issues
-    if '://' + domainFull + '/accounts/avatars/' in avatarUrl:
+    if '://' + domainFull + '/system/accounts/avatars/' in avatarUrl:
         avatarUrl = \
-            avatarUrl.replace('://' + domainFull + '/accounts/avatars/',
+            avatarUrl.replace('://' + domainFull + '/system/accounts/avatars/',
                               '://' + domainFull + '/users/')
 
     # get pinned post content
@@ -745,19 +789,26 @@ def htmlProfile(rssIconAtTop: bool,
     # keyboard navigation
     userPathStr = '/users/' + nickname
     deft = defaultTimeline
+    isGroup = False
+    followersStr = translate['Followers']
+    if isGroupAccount(baseDir, nickname, domain):
+        isGroup = True
+        followersStr = translate['Members']
     menuTimeline = \
         htmlHideFromScreenReader('🏠') + ' ' + \
         translate['Switch to timeline view']
     menuEdit = \
         htmlHideFromScreenReader('✍') + ' ' + translate['Edit']
-    menuFollowing = \
-        htmlHideFromScreenReader('👥') + ' ' + translate['Following']
+    if not isGroup:
+        menuFollowing = \
+            htmlHideFromScreenReader('👥') + ' ' + translate['Following']
     menuFollowers = \
-        htmlHideFromScreenReader('👪') + ' ' + translate['Followers']
-    menuRoles = \
-        htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
-    menuSkills = \
-        htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
+        htmlHideFromScreenReader('👪') + ' ' + followersStr
+    if not isGroup:
+        menuRoles = \
+            htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
+        menuSkills = \
+            htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
     menuLogout = \
         htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
     navLinks = {
@@ -785,23 +836,25 @@ def htmlProfile(rssIconAtTop: bool,
         '    <a href="' + usersPath + '#buttonheader"><button class="' + \
         postsButton + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/following#buttonheader">' + \
-        '<button class="' + followingButton + '"><span>' + \
-        translate['Following'] + ' </span></button></a>'
+    if not isGroup:
+        profileStr += \
+            '    <a href="' + usersPath + '/following#buttonheader">' + \
+            '<button class="' + followingButton + '"><span>' + \
+            translate['Following'] + ' </span></button></a>'
     profileStr += \
         '    <a href="' + usersPath + '/followers#buttonheader">' + \
         '<button class="' + followersButton + \
-        '"><span>' + translate['Followers'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/roles#buttonheader">' + \
-        '<button class="' + rolesButton + '"><span>' + \
-        translate['Roles'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/skills#buttonheader">' + \
-        '<button class="' + skillsButton + '"><span>' + \
-        translate['Skills'] + ' </span></button></a>'
+        '"><span>' + followersStr + ' </span></button></a>'
+    if not isGroup:
+        profileStr += \
+            '    <a href="' + usersPath + '/roles#buttonheader">' + \
+            '<button class="' + rolesButton + '"><span>' + \
+            translate['Roles'] + \
+            ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/skills#buttonheader">' + \
+            '<button class="' + skillsButton + '"><span>' + \
+            translate['Skills'] + ' </span></button></a>'
 #    profileStr += \
 #        '    <a href="' + usersPath + '/shares#buttonheader">' + \
 #        '<button class="' + sharesButton + '"><span>' + \
@@ -838,21 +891,25 @@ def htmlProfile(rssIconAtTop: bool,
                               session, cachedWebfingers, personCache,
                               projectVersion,
                               YTReplacementDomain,
+                              twitterReplacementDomain,
                               showPublishedDateOnly,
                               peertubeInstances,
                               allowLocalNetworkAccess,
                               theme, systemLanguage,
-                              maxLikeCount) + licenseStr
-    elif selected == 'following':
-        profileStr += \
-            _htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                  authorized, nickname,
-                                  domain, port, session,
-                                  cachedWebfingers, personCache, extraJson,
-                                  projectVersion, ["unfollow"], selected,
-                                  usersPath, pageNumber, maxItemsPerPage,
-                                  dormantMonths, debug)
-    elif selected == 'followers':
+                              maxLikeCount,
+                              signingPrivateKeyPem) + licenseStr
+    if not isGroup:
+        if selected == 'following':
+            profileStr += \
+                _htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                      authorized, nickname,
+                                      domain, port, session,
+                                      cachedWebfingers, personCache, extraJson,
+                                      projectVersion, ["unfollow"], selected,
+                                      usersPath, pageNumber, maxItemsPerPage,
+                                      dormantMonths, debug,
+                                      signingPrivateKeyPem)
+    if selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
                                   authorized, nickname,
@@ -860,24 +917,26 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["block"],
                                   selected, usersPath, pageNumber,
-                                  maxItemsPerPage, dormantMonths, debug)
-    elif selected == 'roles':
-        profileStr += \
-            _htmlProfileRoles(translate, nickname, domainFull,
-                              extraJson)
-    elif selected == 'skills':
-        profileStr += \
-            _htmlProfileSkills(translate, nickname, domainFull, extraJson)
-#    elif selected == 'shares':
-#        profileStr += \
-#            _htmlProfileShares(actor, translate,
-#                               nickname, domainFull,
-#                               extraJson, 'shares') + licenseStr
-#    elif selected == 'wanted':
-#        profileStr += \
-#            _htmlProfileShares(actor, translate,
-#                               nickname, domainFull,
-#                               extraJson, 'wanted') + licenseStr
+                                  maxItemsPerPage, dormantMonths, debug,
+                                  signingPrivateKeyPem)
+    if not isGroup:
+        if selected == 'roles':
+            profileStr += \
+                _htmlProfileRoles(translate, nickname, domainFull,
+                                  extraJson)
+        elif selected == 'skills':
+            profileStr += \
+                _htmlProfileSkills(translate, nickname, domainFull, extraJson)
+#       elif selected == 'shares':
+#           profileStr += \
+#                _htmlProfileShares(actor, translate,
+#                                   nickname, domainFull,
+#                                   extraJson, 'shares') + licenseStr
+#        elif selected == 'wanted':
+#            profileStr += \
+#                _htmlProfileShares(actor, translate,
+#                                   nickname, domainFull,
+#                                   extraJson, 'wanted') + licenseStr
     # end of #timeline
     profileStr += '</div>'
 
@@ -898,11 +957,13 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       session, cachedWebfingers: {}, personCache: {},
                       projectVersion: str,
                       YTReplacementDomain: str,
+                      twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int) -> str:
+                      maxLikeCount: int,
+                      signingPrivateKeyPem: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -930,7 +991,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
+                    individualPostAsHtml(signingPrivateKeyPem,
+                                         True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
                                          baseDir, session, cachedWebfingers,
@@ -939,12 +1001,14 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
                                          maxLikeCount,
-                                         False, False, False, True, False)
+                                         False, False, False,
+                                         True, False, False)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
@@ -963,7 +1027,8 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           feedName: str, actor: str,
                           pageNumber: int,
                           maxItemsPerPage: int,
-                          dormantMonths: int, debug: bool) -> str:
+                          dormantMonths: int, debug: bool,
+                          signingPrivateKeyPem: str) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -990,7 +1055,8 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           dormantMonths)
 
         profileStr += \
-            _individualFollowAsHtml(translate, baseDir, session,
+            _individualFollowAsHtml(signingPrivateKeyPem,
+                                    translate, baseDir, session,
                                     cachedWebfingers, personCache,
                                     domain, followingActor,
                                     authorized, nickname,
@@ -1134,6 +1200,25 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
 
     graphicsStr += endEditSection()
     return graphicsStr
+
+
+def _htmlEditProfileTwitter(baseDir: str, translate: {},
+                            removeTwitter: str) -> str:
+    """Edit twitter settings within profile
+    """
+    # Twitter section
+    twitterStr = beginEditSection(translate['Twitter'])
+    twitterStr += \
+        editCheckBox(translate['Remove Twitter posts'],
+                     'removeTwitter', removeTwitter)
+    twitterReplacementDomain = getConfigParam(baseDir, "twitterdomain")
+    if not twitterReplacementDomain:
+        twitterReplacementDomain = ''
+    twitterStr += \
+        editTextField(translate['Twitter Replacement Domain'],
+                      'twitterdomain', twitterReplacementDomain)
+    twitterStr += endEditSection()
+    return twitterStr
 
 
 def _htmlEditProfileInstance(baseDir: str, translate: {},
@@ -1414,7 +1499,8 @@ def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
 
 
 def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
-                              userAgentsBlocked: str, translate: {}) -> str:
+                              userAgentsBlocked: str, translate: {},
+                              replyIntervalHours: int) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filterStr = ''
@@ -1467,6 +1553,14 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
             allowedInstancesStr = allowedInstancesFile.read()
 
     editProfileForm = beginEditSection(translate['Filtering and Blocking'])
+
+    idx = 'Hours after posting during which replies are allowed'
+    editProfileForm += \
+        '  <label class="labels">' + \
+        translate[idx] + \
+        ':</label> <input type="number" name="replyhours" ' + \
+        'min="0" max="999999999999" step="1" ' + \
+        'value="' + str(replyIntervalHours) + '"><br>\n'
 
     editProfileForm += \
         '<label class="labels">' + \
@@ -1843,7 +1937,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     peertubeInstances: [],
                     textModeBanner: str, city: str,
                     userAgentsBlocked: str,
-                    accessKeys: {}) -> str:
+                    accessKeys: {},
+                    defaultReplyIntervalHours: int) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -1864,7 +1959,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
     notifyLikes = hideLikeButton = mediaInstanceStr = ''
-    blogsInstanceStr = newsInstanceStr = movedTo = ''
+    blogsInstanceStr = newsInstanceStr = movedTo = twitterStr = ''
     bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
@@ -1956,6 +2051,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
             isAdmin = True
+            twitterStr = \
+                _htmlEditProfileTwitter(baseDir, translate, removeTwitter)
             # shared items section
             sharesFederationStr = \
                 _htmlEditProfileSharedItems(baseDir, nickname,
@@ -2027,9 +2124,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += libretranslateStr
 
     # Filtering and blocking section
+    replyIntervalHours = getReplyIntervalHours(baseDir, nickname, domain,
+                                               defaultReplyIntervalHours)
     editProfileForm += \
         _htmlEditProfileFiltering(baseDir, nickname, domain,
-                                  userAgentsBlocked, translate)
+                                  userAgentsBlocked, translate,
+                                  replyIntervalHours)
 
     # git projects section
     editProfileForm += \
@@ -2040,7 +2140,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         _htmlEditProfileSkills(baseDir, nickname, domain, translate)
 
     editProfileForm += roleAssignStr + peertubeStr + graphicsStr
-    editProfileForm += sharesFederationStr + instanceStr
+    editProfileForm += sharesFederationStr + twitterStr + instanceStr
 
     # danger zone section
     editProfileForm += _htmlEditProfileDangerZone(translate)
@@ -2059,7 +2159,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     return editProfileForm
 
 
-def _individualFollowAsHtml(translate: {},
+def _individualFollowAsHtml(signingPrivateKeyPem: str,
+                            translate: {},
                             baseDir: str, session,
                             cachedWebfingers: {},
                             personCache: {}, domain: str,
@@ -2086,15 +2187,18 @@ def _individualFollowAsHtml(translate: {},
     followUrlWf = \
         webfingerHandle(session, followUrlHandle, httpPrefix,
                         cachedWebfingers,
-                        domain, __version__, debug, False)
+                        domain, __version__, debug, False,
+                        signingPrivateKeyPem)
 
-    (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                             followUrlWf,
-                                             personCache, projectVersion,
-                                             httpPrefix, followUrlNickname,
-                                             domain, 'outbox', 43036)
+    originDomain = domain
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
+     displayName, isGroup) = getPersonBox(signingPrivateKeyPem,
+                                          originDomain,
+                                          baseDir, session,
+                                          followUrlWf,
+                                          personCache, projectVersion,
+                                          httpPrefix, followUrlNickname,
+                                          domain, 'outbox', 43036)
     if avatarUrl2:
         avatarUrl = avatarUrl2
     if displayName:
@@ -2117,11 +2221,14 @@ def _individualFollowAsHtml(translate: {},
                     ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
                     translate['Block'] + '</button></a>\n'
             elif b == 'unfollow':
+                unfollowStr = 'Unfollow'
+                if isGroup:
+                    unfollowStr = 'Leave'
                 buttonsStr += \
                     '<a href="/users/' + actorNickname + \
                     '?options=' + followUrl + \
                     ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
-                    translate['Unfollow'] + '</button></a>\n'
+                    translate[unfollowStr] + '</button></a>\n'
 
     resultStr = '<div class="container">\n'
     resultStr += \

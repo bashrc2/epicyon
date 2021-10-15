@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
@@ -139,7 +139,8 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
 def getPersonPubKey(baseDir: str, session, personUrl: str,
                     personCache: {}, debug: bool,
                     projectVersion: str, httpPrefix: str,
-                    domain: str, onionDomain: str) -> str:
+                    domain: str, onionDomain: str,
+                    signingPrivateKeyPem: str) -> str:
     if not personUrl:
         return None
     personUrl = personUrl.replace('#main-key', '')
@@ -165,7 +166,8 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(session, personUrl, asHeader, None, debug,
+            getJson(signingPrivateKeyPem,
+                    session, personUrl, asHeader, None, debug,
                     projectVersion, httpPrefix, personDomain)
         if not personJson:
             return None

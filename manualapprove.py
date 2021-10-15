@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
@@ -26,7 +26,8 @@ def manualDenyFollowRequest(session, baseDir: str,
                             sendThreads: [], postLog: [],
                             cachedWebfingers: {}, personCache: {},
                             debug: bool,
-                            projectVersion: str) -> None:
+                            projectVersion: str,
+                            signingPrivateKeyPem: str) -> None:
     """Manually deny a follow request
     """
     accountsDir = acctDir(baseDir, nickname, domain)
@@ -60,7 +61,8 @@ def manualDenyFollowRequest(session, baseDir: str,
                            federationList,
                            sendThreads, postLog,
                            cachedWebfingers, personCache,
-                           debug, projectVersion)
+                           debug, projectVersion,
+                           signingPrivateKeyPem)
 
     print('Follow request from ' + denyHandle + ' was denied.')
 
@@ -87,7 +89,8 @@ def manualApproveFollowRequest(session, baseDir: str,
                                sendThreads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
                                debug: bool,
-                               projectVersion: str) -> None:
+                               projectVersion: str,
+                               signingPrivateKeyPem: str) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -176,7 +179,8 @@ def manualApproveFollowRequest(session, baseDir: str,
                                                    cachedWebfingers,
                                                    personCache,
                                                    debug,
-                                                   projectVersion, False)
+                                                   projectVersion, False,
+                                                   signingPrivateKeyPem)
                     updateApprovedFollowers = True
                 else:
                     # this isn't the approved follow so it will remain
@@ -218,6 +222,12 @@ def manualApproveFollowRequest(session, baseDir: str,
         # remove the .follow file
         if followActivityfilename:
             if os.path.isfile(followActivityfilename):
-                os.remove(followActivityfilename)
+                try:
+                    os.remove(followActivityfilename)
+                except BaseException:
+                    pass
     else:
-        os.remove(approveFollowsFilename + '.new')
+        try:
+            os.remove(approveFollowsFilename + '.new')
+        except BaseException:
+            pass

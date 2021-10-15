@@ -3,7 +3,7 @@ __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
+__email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
@@ -11,6 +11,7 @@ import os
 import time
 import datetime
 import subprocess
+import random
 from random import randint
 from hashlib import sha1
 from auth import createPassword
@@ -28,10 +29,33 @@ from shutil import move
 from city import spoofGeolocation
 
 
-def replaceYouTube(postJsonObject: {}, replacementDomain: str,
-                   systemLanguage: str) -> None:
-    """Replace YouTube with a replacement domain
-    This denies Google some, but not all, tracking data
+def _getBlurHash() -> str:
+    """You may laugh, but this is a lot less computationally intensive,
+    especially on large images, while still providing some visual variety
+    in the timeline
+    """
+    hashes = [
+        "UfGuaW01%gRi%MM{azofozo0V@xuozn#ofs.",
+        "UFD]o8-;9FIU~qD%j[%M-;j[ofWB?bt7IURj",
+        "UyO|v_1#im=s%y#U%OxDwRt3W9R-ogjHj[WX",
+        "U96vAQt6H;WBt7ofWBa#MbWBo#j[byaze-oe",
+        "UJKA.q01M|IV%LM|RjNGIVj[f6oLjrofaeof",
+        "U9MPjn]?~Cxut~.PS1%1xXIo0fEer_$*^jxG",
+        "UtLENXWCRjju~qayaeaz00j[ofayIVkCkCfQ",
+        "UHGbeg-pbzWZ.ANI$wsQ$H-;E9W?0Nx]?FjE",
+        "UcHU%#4n_ND%?bxatRWBIU%MazxtNaRjs:of",
+        "ULR:TsWr~6xZofWWf6s-~6oK9eR,oes-WXNJ",
+        "U77VQB-:MaMx%L%MogRkMwkCxuoIS*WYjEsl",
+        "U%Nm{8R+%MxuE1t6WBNG-=RjoIt6~Vj]RkR*",
+        "UCM7u;?boft7oft7ayj[~qt7WBoft7oft7Rj"
+    ]
+    return random.choice(hashes)
+
+
+def _replaceSiloDomain(postJsonObject: {},
+                       siloDomain: str, replacementDomain: str,
+                       systemLanguage: str) -> None:
+    """Replace a silo domain with a replacement domain
     """
     if not replacementDomain:
         return
@@ -40,12 +64,30 @@ def replaceYouTube(postJsonObject: {}, replacementDomain: str,
     if not postJsonObject['object'].get('content'):
         return
     contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
-    if 'www.youtube.com' not in contentStr:
+    if siloDomain not in contentStr:
         return
-    contentStr = contentStr.replace('www.youtube.com', replacementDomain)
+    contentStr = contentStr.replace(siloDomain, replacementDomain)
     postJsonObject['object']['content'] = contentStr
     if postJsonObject['object'].get('contentMap'):
         postJsonObject['object']['contentMap'][systemLanguage] = contentStr
+
+
+def replaceYouTube(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
+    """Replace YouTube with a replacement domain
+    This denies Google some, but not all, tracking data
+    """
+    _replaceSiloDomain(postJsonObject, 'www.youtube.com',
+                       replacementDomain, systemLanguage)
+
+
+def replaceTwitter(postJsonObject: {}, replacementDomain: str,
+                   systemLanguage: str) -> None:
+    """Replace Twitter with a replacement domain
+    This allows you to view twitter posts without having a twitter account
+    """
+    _replaceSiloDomain(postJsonObject, 'twitter.com',
+                       replacementDomain, systemLanguage)
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
@@ -283,6 +325,8 @@ def attachMedia(baseDir: str, httpPrefix: str,
         createMediaDirs(baseDir, mPath)
         mediaFilename = baseDir + '/' + mediaPath
 
+    mediaPath = \
+        mediaPath.replace('media/', 'system/media_attachments/files/', 1)
     attachmentJson = {
         'mediaType': mediaType,
         'name': description,
@@ -290,7 +334,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
         'url': httpPrefix + '://' + domain + '/' + mediaPath
     }
     if mediaType.startswith('image/'):
-        attachmentJson['focialPoint'] = [0.0, 0.0]
+        attachmentJson['blurhash'] = _getBlurHash()
         # find the dimensions of the image and add them as metadata
         attachImageWidth, attachImageHeight = \
             getImageDimensions(imageFilename)
