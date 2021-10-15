@@ -41,7 +41,12 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     if noOfLikes(postJsonObject) == 0:
         return False
     actorMatch = domain + '/users/' + nickname
-    for item in postJsonObject['object']['likes']['items']:
+
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
+
+    for item in obj['likes']['items']:
         if item['actor'].endswith(actorMatch):
             return True
     return False
@@ -50,16 +55,17 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
 def noOfLikes(postJsonObject: {}) -> int:
     """Returns the number of likes ona  given post
     """
-    if not hasObjectDict(postJsonObject):
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
+    if not obj.get('likes'):
         return 0
-    if not postJsonObject['object'].get('likes'):
+    if not isinstance(obj['likes'], dict):
         return 0
-    if not isinstance(postJsonObject['object']['likes'], dict):
-        return 0
-    if not postJsonObject['object']['likes'].get('items'):
-        postJsonObject['object']['likes']['items'] = []
-        postJsonObject['object']['likes']['totalItems'] = 0
-    return len(postJsonObject['object']['likes']['items'])
+    if not obj['likes'].get('items'):
+        obj['likes']['items'] = []
+        obj['likes']['totalItems'] = 0
+    return len(obj['likes']['items'])
 
 
 def _like(recentPostsCache: {},
@@ -428,6 +434,7 @@ def updateLikesCollection(recentPostsCache: {},
     obj = postJsonObject
     if hasObjectDict(postJsonObject):
         obj = postJsonObject['object']
+
     if not objectUrl.endswith('/likes'):
         objectUrl = objectUrl + '/likes'
     if not obj.get('likes'):
