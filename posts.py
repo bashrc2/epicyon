@@ -5036,7 +5036,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     if debug:
         print(id2 + ' might be an edit of ' + id1)
     if wordsSimilarity(prevPostJsonObject['object']['content'],
-                       postJsonObject['object']['content'], 10) < 75:
+                       postJsonObject['object']['content'], 10) < 70:
         return ''
     print(id2 + ' is an edit of ' + id1)
     return prevConvPostFilename
