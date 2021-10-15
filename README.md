@@ -25,8 +25,8 @@ On Arch/Parabola:
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-cryptography \
                imagemagick python-requests \
-	       perl-image-exiftool python-dateutil \
-	       certbot flake8 bandit
+           perl-image-exiftool python-dateutil \
+           certbot flake8 bandit
 sudo pip3 install pyqrcode pypng
 ```
 
@@ -183,7 +183,7 @@ server {
         proxy_request_buffering off;
         proxy_buffering off;
         proxy_pass http://localhost:7156;
-		tcp_nodelay on;
+        tcp_nodelay on;
     }
 }
 ```
