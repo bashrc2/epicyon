@@ -130,6 +130,16 @@ server {
     listen 443 ssl;
     server_name YOUR_DOMAIN;
 
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_min_length 1024;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/ld+json application/javascript text/xml application/xml application/rdf+xml application/xml+rss text/javascript;
+
     ssl_stapling off;
     ssl_stapling_verify off;
     ssl on;
@@ -137,19 +147,19 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;
     #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;
 
-    ssl_session_cache  builtin:1000  shared:SSL:10m;
-    ssl_session_timeout 60m;
-    ssl_prefer_server_ciphers on;
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+    ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+
+    add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline'; style-src https: 'unsafe-inline'";
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Download-Options noopen;
     add_header X-Permitted-Cross-Domain-Policies none;
-
-    add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-    add_header Strict-Transport-Security max-age=15768000;
+	add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload" always;
 
     access_log /dev/null;
     error_log /dev/null;
