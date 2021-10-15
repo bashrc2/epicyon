@@ -508,57 +508,58 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                      maxLikeCount: int) -> str:
     """Returns html for like icon/button
     """
+    if not showLikeButton or isModerationPost:
+        return ''
     likeStr = ''
-    if not isModerationPost and showLikeButton:
-        likeIcon = 'like_inactive.png'
-        likeLink = 'like'
-        likeTitle = 'Like this post'
-        if translate.get(likeTitle):
-            likeTitle = translate[likeTitle]
-        likeEmoji = ''
-        likeCount = noOfLikes(postJsonObject)
+    likeIcon = 'like_inactive.png'
+    likeLink = 'like'
+    likeTitle = 'Like this post'
+    if translate.get(likeTitle):
+        likeTitle = translate[likeTitle]
+    likeEmoji = ''
+    likeCount = noOfLikes(postJsonObject)
 
-        _logPostTiming(enableTimingLog, postStartTime, '12.1')
+    _logPostTiming(enableTimingLog, postStartTime, '12.1')
 
-        likeCountStr = ''
-        if likeCount > 0:
-            if likeCount <= maxLikeCount:
-                likeCountStr = ' (' + str(likeCount) + ')'
-            else:
-                likeCountStr = ' (' + str(maxLikeCount) + '+)'
-            if likedByPerson(postJsonObject, nickname, domainFull):
-                if likeCount == 1:
-                    # liked by the reader only
-                    likeCountStr = ''
-                likeIcon = 'like.png'
-                likeLink = 'unlike'
-                likeTitle = 'Undo the like'
-                if translate.get(likeTitle):
-                    likeTitle = translate[likeTitle]
-                likeEmoji = '👍 '
+    likeCountStr = ''
+    if likeCount > 0:
+        if likeCount <= maxLikeCount:
+            likeCountStr = ' (' + str(likeCount) + ')'
+        else:
+            likeCountStr = ' (' + str(maxLikeCount) + '+)'
+        if likedByPerson(postJsonObject, nickname, domainFull):
+            if likeCount == 1:
+                # liked by the reader only
+                likeCountStr = ''
+            likeIcon = 'like.png'
+            likeLink = 'unlike'
+            likeTitle = 'Undo the like'
+            if translate.get(likeTitle):
+                likeTitle = translate[likeTitle]
+            likeEmoji = '👍 '
 
-        _logPostTiming(enableTimingLog, postStartTime, '12.2')
+    _logPostTiming(enableTimingLog, postStartTime, '12.2')
 
-        likeStr = ''
-        if likeCountStr:
-            # show the number of likes next to icon
-            likeStr += '<label class="likesCount">'
-            likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
-            likeStr += '</label>\n'
-        likePostId = removeIdEnding(postJsonObject['id'])
-        likeStr += \
-            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-            likeLink + '=' + likePostId + \
-            pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + \
-            likeTitle + likeCountStr + '">\n'
-        likeStr += \
-            '          ' + \
-            '<img loading="lazy" title="' + likeTitle + likeCountStr + \
-            '" alt="' + likeEmoji + likeTitle + \
-            ' |" src="/icons/' + likeIcon + '"/></a>\n'
+    likeStr = ''
+    if likeCountStr:
+        # show the number of likes next to icon
+        likeStr += '<label class="likesCount">'
+        likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
+        likeStr += '</label>\n'
+    likePostId = removeIdEnding(postJsonObject['id'])
+    likeStr += \
+        '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
+        likeLink + '=' + likePostId + \
+        pageNumberParam + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostBookmark + \
+        '?tl=' + boxName + '" title="' + \
+        likeTitle + likeCountStr + '">\n'
+    likeStr += \
+        '          ' + \
+        '<img loading="lazy" title="' + likeTitle + likeCountStr + \
+        '" alt="' + likeEmoji + likeTitle + \
+        ' |" src="/icons/' + likeIcon + '"/></a>\n'
     return likeStr
 
 
