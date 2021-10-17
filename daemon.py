@@ -7389,9 +7389,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
-        likedPostJson = None
-        likedPostFilename = \
-            locatePost(baseDir, self.postToNickname, domain, likeUrl)
+        likedPostJson = origFilename
+        if not likedPostJson:
+            likedPostFilename = \
+                locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
@@ -7557,10 +7558,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
 
         # directly undo the like within the post file
-        likedPostJson = None
-        likedPostFilename = locatePost(baseDir,
-                                       self.postToNickname,
-                                       domain, likeUrl)
+        likedPostJson = origFilename
+        if not likedPostJson:
+            likedPostFilename = locatePost(baseDir, self.postToNickname,
+                                           domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)

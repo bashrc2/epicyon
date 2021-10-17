@@ -5053,15 +5053,15 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
         return None, None, None
     announcePostJson = loadJson(postFilename, 0, 1)
     if not announcePostJson:
-        return None, None, None
+        return None, None, postFilename
     if not announcePostJson.get('type'):
-        return None, None, None
+        return None, None, postFilename
     if announcePostJson['type'] != 'Announce':
-        return None, None, None
+        return None, None, postFilename
     if not announcePostJson.get('object'):
-        return None, None, None
+        return None, None, postFilename
     if not isinstance(announcePostJson['object'], str):
-        return None, None, None
+        return None, None, postFilename
     actor = url = None
     # do we have the original post?
     origPostId = announcePostJson['object']
