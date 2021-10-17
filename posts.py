@@ -5040,3 +5040,52 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
         return ''
     print(id2 + ' is an edit of ' + id1)
     return prevConvPostFilename
+
+
+def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
+                                   nickname: str, domain: str) -> (str, str):
+    """From the url of an announce this returns the actor and url
+    of the original post being announced
+    """
+    postFilename = locatePost(baseDir, nickname, domain, announceUrl)
+    if not postFilename:
+        return None, None
+    announcePostJson = loadJson(postFilename, 0, 1)
+    if not announcePostJson:
+        return None, None
+    if not announcePostJson.get('type'):
+        return None, None
+    if announcePostJson['type'] != 'Announce':
+        return None, None
+    if not announcePostJson.get('object'):
+        return None, None
+    if not isinstance(announcePostJson['object'], str):
+        return None, None
+    # do we have the original post?
+    origPostId = announcePostJson['object']
+    origFilename = locatePost(baseDir, nickname, domain, origPostId)
+    actor = url = None
+    if origFilename:
+        # we have the original post
+        origPostJson = loadJson(origFilename, 0, 1)
+        if origPostJson:
+            url = announcePostJson['object']
+            if hasObjectDict(origPostJson):
+                if origPostJson['object'].get('attributedTo'):
+                    actor = origPostJson['object']['attributedTo']
+                elif origPostJson['object'].get('actor'):
+                    actor = origPostJson['actor']
+                else:
+                    url = None
+    else:
+        # we don't have the original post
+        if hasUsersPath(origPostId):
+            # get the actor from the original post url
+            origNick = getNicknameFromActor(origPostId)
+            origDomain, origPort = getDomainFromActor(origPostId)
+            if origNick and origDomain:
+                actor = \
+                    origPostId.split('/' + origNick + '/')[0] + \
+                    '/' + origNick
+                url = origPostId
+    return actor, url

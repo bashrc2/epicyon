@@ -72,6 +72,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import getOriginalPostFromAnnounceUrl
 from posts import savePostToBox
 from posts import getInstanceActorKey
 from posts import removePostInteractions
@@ -7365,12 +7366,22 @@ class PubServer(BaseHTTPRequestHandler):
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
+
+        # if this is an announce then send the like to the original post
+        origActor, origPostUrl = \
+            getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
+                                           self.postToNickname, domain)
+        likeUrl2 = likeUrl
+        if origActor and origPostUrl:
+            actorLiked = origActor
+            likeUrl2 = origPostUrl
+
         likeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
             'type': 'Like',
             'actor': likeActor,
             'to': [actorLiked],
-            'object': likeUrl
+            'object': likeUrl2
         }
 
         # send out the like to followers
@@ -7532,6 +7543,16 @@ class PubServer(BaseHTTPRequestHandler):
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
+
+        # if this is an announce then send the like to the original post
+        origActor, origPostUrl = \
+            getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
+                                           self.postToNickname, domain)
+        likeUrl2 = likeUrl
+        if origActor and origPostUrl:
+            actorLiked = origActor
+            likeUrl2 = origPostUrl
+
         undoLikeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
             'type': 'Undo',
@@ -7541,7 +7562,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'type': 'Like',
                 'actor': undoActor,
                 'to': [actorLiked],
-                'object': likeUrl
+                'object': likeUrl2
             }
         }
 
