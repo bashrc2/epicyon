@@ -7389,6 +7389,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
+        likedPostJson = None
         likedPostFilename = \
             locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
@@ -7410,8 +7411,6 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
-            if self.server.iconsCache.get('like.png'):
-                del self.server.iconsCache['like.png']
             if likedPostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, self.postToNickname,
@@ -7558,6 +7557,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
 
         # directly undo the like within the post file
+        likedPostJson = None
         likedPostFilename = locatePost(baseDir,
                                        self.postToNickname,
                                        domain, likeUrl)
@@ -7576,9 +7576,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      baseDir,
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug)
-            # clear the icon from the cache so that it gets updated
-            if self.server.iconsCache.get('like_inactive.png'):
-                del self.server.iconsCache['like_inactive.png']
             if debug:
                 print('Regenerating html post for changed likes collection')
             if likedPostJson:
@@ -7615,7 +7612,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, True, False)
             else:
                 print('WARN: Unliked post not found: ' + likedPostFilename)
-
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like_inactive.png'):
+                del self.server.iconsCache['like_inactive.png']
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \
