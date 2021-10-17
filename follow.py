@@ -1009,6 +1009,19 @@ def sendFollowRequest(session, baseDir: str,
         singleUserNickname = 'dev'
         followHandle = singleUserNickname + '@' + requestDomain
 
+    # remove follow handle from unfollowed.txt
+    unfollowedFilename = acctDir(baseDir, nickname, domain) + '/unfollowed.txt'
+    if os.path.isfile(unfollowedFilename):
+        if followHandle in open(unfollowedFilename).read():
+            unfollowedFile = None
+            with open(unfollowedFilename, 'r') as fp:
+                unfollowedFile = fp.read()
+                unfollowedFile = \
+                    unfollowedFile.replace(followHandle + '\n', '')
+            if unfollowedFile:
+                with open(unfollowedFilename, 'w+') as fp:
+                    fp.write(unfollowedFile)
+
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': followActor + '/statuses/' + str(statusNumber),
