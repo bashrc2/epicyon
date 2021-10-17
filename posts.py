@@ -5043,24 +5043,25 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
 
 
 def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
-                                   nickname: str, domain: str) -> (str, str):
-    """From the url of an announce this returns the actor and url
-    of the original post being announced
+                                   nickname: str,
+                                   domain: str) -> (str, str, str):
+    """From the url of an announce this returns the actor, url and
+    filename (if available) of the original post being announced
     """
     postFilename = locatePost(baseDir, nickname, domain, announceUrl)
     if not postFilename:
-        return None, None
+        return None, None, None
     announcePostJson = loadJson(postFilename, 0, 1)
     if not announcePostJson:
-        return None, None
+        return None, None, None
     if not announcePostJson.get('type'):
-        return None, None
+        return None, None, None
     if announcePostJson['type'] != 'Announce':
-        return None, None
+        return None, None, None
     if not announcePostJson.get('object'):
-        return None, None
+        return None, None, None
     if not isinstance(announcePostJson['object'], str):
-        return None, None
+        return None, None, None
     # do we have the original post?
     origPostId = announcePostJson['object']
     origFilename = locatePost(baseDir, nickname, domain, origPostId)
@@ -5088,4 +5089,4 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
                     origPostId.split('/' + origNick + '/')[0] + \
                     '/' + origNick
                 url = origPostId
-    return actor, url
+    return actor, url, origFilename

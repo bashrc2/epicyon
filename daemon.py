@@ -7368,7 +7368,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorLiked = actorLiked.split('?')[0]
 
         # if this is an announce then send the like to the original post
-        origActor, origPostUrl = \
+        origActor, origPostUrl, origFilename = \
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
         likeUrl2 = likeUrl
@@ -7394,25 +7394,13 @@ class PubServer(BaseHTTPRequestHandler):
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
-            if likedPostJson:
-                if likedPostJson.get('type'):
-                    if likedPostJson['type'] == 'Announce' and \
-                       likedPostJson.get('object'):
-                        if isinstance(likedPostJson['object'], str):
-                            announceLikeUrl = likedPostJson['object']
-                            announceLikedFilename = \
-                                locatePost(baseDir, self.postToNickname,
-                                           domain, announceLikeUrl)
-                            if announceLikedFilename:
-                                updateLikesCollection(recentPostsCache,
-                                                      baseDir,
-                                                      likedPostFilename,
-                                                      likeUrl,
-                                                      likeActor,
-                                                      self.postToNickname,
-                                                      domain, debug)
-                                likeUrl = announceLikeUrl
-                                likedPostFilename = announceLikedFilename
+            if origFilename and origPostUrl:
+                updateLikesCollection(recentPostsCache,
+                                      baseDir, likedPostFilename,
+                                      likeUrl, likeActor, self.postToNickname,
+                                      domain, debug)
+                likeUrl = origPostUrl
+                likedPostFilename = origFilename
             if debug:
                 print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(recentPostsCache,
@@ -7545,7 +7533,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorLiked = actorLiked.split('?')[0]
 
         # if this is an announce then send the like to the original post
-        origActor, origPostUrl = \
+        origActor, origPostUrl, origFilename = \
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
         likeUrl2 = likeUrl
@@ -7574,26 +7562,14 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.postToNickname,
                                        domain, likeUrl)
         if likedPostFilename:
-            likedPostJson = loadJson(likedPostFilename, 0, 1)
             recentPostsCache = self.server.recentPostsCache
-            if likedPostJson:
-                if likedPostJson.get('type'):
-                    if likedPostJson['type'] == 'Announce' and \
-                       likedPostJson.get('object'):
-                        if isinstance(likedPostJson['object'], str):
-                            announceLikeUrl = likedPostJson['object']
-                            announceLikedFilename = \
-                                locatePost(baseDir, self.postToNickname,
-                                           domain, announceLikeUrl)
-                            if announceLikedFilename:
-                                undoLikesCollectionEntry(recentPostsCache,
-                                                         baseDir,
-                                                         likedPostFilename,
-                                                         likeUrl,
-                                                         undoActor, domain,
-                                                         debug)
-                                likeUrl = announceLikeUrl
-                                likedPostFilename = announceLikedFilename
+            likedPostJson = loadJson(likedPostFilename, 0, 1)
+            if origFilename and origPostUrl:
+                undoLikesCollectionEntry(recentPostsCache,
+                                         baseDir, likedPostFilename,
+                                         likeUrl, undoActor, domain, debug)
+                likeUrl = origPostUrl
+                likedPostFilename = origFilename
             if debug:
                 print('Removing likes for ' + likedPostFilename)
             undoLikesCollectionEntry(recentPostsCache,
