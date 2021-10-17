@@ -940,7 +940,7 @@ def _receiveLike(recentPostsCache: {},
                     likeActor, postLikedId)
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           postLikedId, likeActor,
-                          handleName, domain, debug)
+                          handleName, domain, debug, None)
     # regenerate the html
     likedPostJson = loadJson(postFilename, 0, 1)
     if likedPostJson:
@@ -961,7 +961,7 @@ def _receiveLike(recentPostsCache: {},
                                               postLikedId,
                                               likeActor,
                                               handleName,
-                                              domain, debug)
+                                              domain, debug, None)
         if likedPostJson:
             if debug:
                 cachedPostFilename = \
@@ -1052,7 +1052,7 @@ def _receiveUndoLike(recentPostsCache: {},
     likeActor = messageJson['actor']
     postLikedId = messageJson['object']
     undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
-                             postLikedId, likeActor, domain, debug)
+                             postLikedId, likeActor, domain, debug, None)
     # regenerate the html
     likedPostJson = loadJson(postFilename, 0, 1)
     if likedPostJson:
@@ -1069,7 +1069,8 @@ def _receiveUndoLike(recentPostsCache: {},
                         postFilename = announceLikedFilename
                         undoLikesCollectionEntry(recentPostsCache, baseDir,
                                                  postFilename, postLikedId,
-                                                 likeActor, domain, debug)
+                                                 likeActor, domain, debug,
+                                                 None)
         if likedPostJson:
             if debug:
                 cachedPostFilename = \

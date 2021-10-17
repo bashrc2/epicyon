@@ -7401,7 +7401,7 @@ class PubServer(BaseHTTPRequestHandler):
                 updateLikesCollection(recentPostsCache,
                                       baseDir, likedPostFilename,
                                       likeUrl, likeActor, self.postToNickname,
-                                      domain, debug)
+                                      domain, debug, likedPostJson)
                 likeUrl = origPostUrl
                 likedPostFilename = origFilename
             if debug:
@@ -7409,7 +7409,7 @@ class PubServer(BaseHTTPRequestHandler):
             updateLikesCollection(recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
-                                  debug)
+                                  debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
@@ -7570,7 +7570,8 @@ class PubServer(BaseHTTPRequestHandler):
             if origFilename and origPostUrl:
                 undoLikesCollectionEntry(recentPostsCache,
                                          baseDir, likedPostFilename,
-                                         likeUrl, undoActor, domain, debug)
+                                         likeUrl, undoActor, domain, debug,
+                                         likedPostJson)
                 likeUrl = origPostUrl
                 likedPostFilename = origFilename
             if debug:
@@ -7578,7 +7579,7 @@ class PubServer(BaseHTTPRequestHandler):
             undoLikesCollectionEntry(recentPostsCache,
                                      baseDir,
                                      likedPostFilename, likeUrl,
-                                     undoActor, domain, debug)
+                                     undoActor, domain, debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')
             if likedPostJson:
