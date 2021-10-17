@@ -190,10 +190,21 @@ def parseFeedDate(pubDate: str) -> str:
     This tries a number of formats to see which work
     """
     formats = ("%a, %d %b %Y %H:%M:%S %z",
-               "%a, %d %b %Y %H:%M:%S EST",
-               "%a, %d %b %Y %H:%M:%S UT",
                "%a, %d %b %Y %H:%M:%S Z",
                "%a, %d %b %Y %H:%M:%S GMT",
+               "%a, %d %b %Y %H:%M:%S EST",
+               "%a, %d %b %Y %H:%M:%S PST",
+               "%a, %d %b %Y %H:%M:%S AST",
+               "%a, %d %b %Y %H:%M:%S CST",
+               "%a, %d %b %Y %H:%M:%S MST",
+               "%a, %d %b %Y %H:%M:%S AKST",
+               "%a, %d %b %Y %H:%M:%S HST",
+               "%a, %d %b %Y %H:%M:%S UT",
+<<<<<<< HEAD
+               "%a, %d %b %Y %H:%M:%S Z",
+               "%a, %d %b %Y %H:%M:%S GMT",
+=======
+>>>>>>> 619663a3c83d30b8856862a8b9b035b4513decc2
                "%Y-%m-%dT%H:%M:%SZ",
                "%Y-%m-%dT%H:%M:%S%z")
     publishedDate = None
