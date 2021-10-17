@@ -192,6 +192,7 @@ def parseFeedDate(pubDate: str) -> str:
     formats = ("%a, %d %b %Y %H:%M:%S %z",
                "%a, %d %b %Y %H:%M:%S EST",
                "%a, %d %b %Y %H:%M:%S UT",
+               "%a, %d %b %Y %H:%M:%S Z",
                "%a, %d %b %Y %H:%M:%S GMT",
                "%Y-%m-%dT%H:%M:%SZ",
                "%Y-%m-%dT%H:%M:%S%z")
