@@ -129,7 +129,7 @@ def _like(recentPostsCache: {},
         updateLikesCollection(recentPostsCache,
                               baseDir, postFilename, objectUrl,
                               newLikeJson['actor'],
-                              nickname, domain, debug)
+                              nickname, domain, debug, None)
 
         sendSignedJson(newLikeJson, session, baseDir,
                        nickname, domain, port,
@@ -368,7 +368,7 @@ def outboxLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache,
                           baseDir, postFilename, messageId,
                           messageJson['actor'],
-                          nickname, domain, debug)
+                          nickname, domain, debug, None)
     if debug:
         print('DEBUG: post liked via c2s - ' + postFilename)
 
@@ -404,7 +404,7 @@ def outboxUndoLike(recentPostsCache: {},
         return True
     undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
                              messageId, messageJson['actor'],
-                             domain, debug)
+                             domain, debug, None)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + postFilename)
 
@@ -412,10 +412,12 @@ def outboxUndoLike(recentPostsCache: {},
 def updateLikesCollection(recentPostsCache: {},
                           baseDir: str, postFilename: str,
                           objectUrl: str, actor: str,
-                          nickname: str, domain: str, debug: bool) -> None:
+                          nickname: str, domain: str, debug: bool,
+                          postJsonObject: {}) -> None:
     """Updates the likes collection within a post
     """
-    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return
 

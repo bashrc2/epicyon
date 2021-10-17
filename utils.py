@@ -2161,10 +2161,12 @@ def getFileCaseInsensitive(path: str) -> str:
 
 def undoLikesCollectionEntry(recentPostsCache: {},
                              baseDir: str, postFilename: str, objectUrl: str,
-                             actor: str, domain: str, debug: bool) -> None:
+                             actor: str, domain: str, debug: bool,
+                             postJsonObject: {}) -> None:
     """Undoes a like for a particular actor
     """
-    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return
     # remove any cached version of this post so that the

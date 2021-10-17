@@ -7372,9 +7372,11 @@ class PubServer(BaseHTTPRequestHandler):
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
         likeUrl2 = likeUrl
+        likedPostFilename = origFilename
         if origActor and origPostUrl:
             actorLiked = origActor
             likeUrl2 = origPostUrl
+            likedPostFilename = None
 
         likeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -7389,9 +7391,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
-        likedPostJson = None
-        likedPostFilename = \
-            locatePost(baseDir, self.postToNickname, domain, likeUrl)
+        if not likedPostFilename:
+            likedPostFilename = \
+                locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
@@ -7399,7 +7401,7 @@ class PubServer(BaseHTTPRequestHandler):
                 updateLikesCollection(recentPostsCache,
                                       baseDir, likedPostFilename,
                                       likeUrl, likeActor, self.postToNickname,
-                                      domain, debug)
+                                      domain, debug, likedPostJson)
                 likeUrl = origPostUrl
                 likedPostFilename = origFilename
             if debug:
@@ -7407,7 +7409,7 @@ class PubServer(BaseHTTPRequestHandler):
             updateLikesCollection(recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
-                                  debug)
+                                  debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
@@ -7536,9 +7538,11 @@ class PubServer(BaseHTTPRequestHandler):
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
         likeUrl2 = likeUrl
+        likedPostFilename = origFilename
         if origActor and origPostUrl:
             actorLiked = origActor
             likeUrl2 = origPostUrl
+            likedPostFilename = None
 
         undoLikeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -7557,17 +7561,17 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
 
         # directly undo the like within the post file
-        likedPostJson = None
-        likedPostFilename = locatePost(baseDir,
-                                       self.postToNickname,
-                                       domain, likeUrl)
+        if not likedPostFilename:
+            likedPostFilename = locatePost(baseDir, self.postToNickname,
+                                           domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
                 undoLikesCollectionEntry(recentPostsCache,
                                          baseDir, likedPostFilename,
-                                         likeUrl, undoActor, domain, debug)
+                                         likeUrl, undoActor, domain, debug,
+                                         likedPostJson)
                 likeUrl = origPostUrl
                 likedPostFilename = origFilename
             if debug:
@@ -7575,7 +7579,7 @@ class PubServer(BaseHTTPRequestHandler):
             undoLikesCollectionEntry(recentPostsCache,
                                      baseDir,
                                      likedPostFilename, likeUrl,
-                                     undoActor, domain, debug)
+                                     undoActor, domain, debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')
             if likedPostJson:
