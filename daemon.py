@@ -72,6 +72,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import getOriginalPostFromAnnounceUrl
 from posts import savePostToBox
 from posts import getInstanceActorKey
 from posts import removePostInteractions
@@ -7365,12 +7366,22 @@ class PubServer(BaseHTTPRequestHandler):
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
+
+        # if this is an announce then send the like to the original post
+        origActor, origPostUrl, origFilename = \
+            getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
+                                           self.postToNickname, domain)
+        likeUrl2 = likeUrl
+        if origActor and origPostUrl:
+            actorLiked = origActor
+            likeUrl2 = origPostUrl
+
         likeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
             'type': 'Like',
             'actor': likeActor,
             'to': [actorLiked],
-            'object': likeUrl
+            'object': likeUrl2
         }
 
         # send out the like to followers
@@ -7378,30 +7389,19 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
+        likedPostJson = None
         likedPostFilename = \
             locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
-            if likedPostJson:
-                if likedPostJson.get('type'):
-                    if likedPostJson['type'] == 'Announce' and \
-                       likedPostJson.get('object'):
-                        if isinstance(likedPostJson['object'], str):
-                            announceLikeUrl = likedPostJson['object']
-                            announceLikedFilename = \
-                                locatePost(baseDir, self.postToNickname,
-                                           domain, announceLikeUrl)
-                            if announceLikedFilename:
-                                updateLikesCollection(recentPostsCache,
-                                                      baseDir,
-                                                      likedPostFilename,
-                                                      likeUrl,
-                                                      likeActor,
-                                                      self.postToNickname,
-                                                      domain, debug)
-                                likeUrl = announceLikeUrl
-                                likedPostFilename = announceLikedFilename
+            if origFilename and origPostUrl:
+                updateLikesCollection(recentPostsCache,
+                                      baseDir, likedPostFilename,
+                                      likeUrl, likeActor, self.postToNickname,
+                                      domain, debug)
+                likeUrl = origPostUrl
+                likedPostFilename = origFilename
             if debug:
                 print('Updating likes for ' + likedPostFilename)
             updateLikesCollection(recentPostsCache,
@@ -7411,8 +7411,6 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
-            if self.server.iconsCache.get('like.png'):
-                del self.server.iconsCache['like.png']
             if likedPostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, self.postToNickname,
@@ -7532,6 +7530,16 @@ class PubServer(BaseHTTPRequestHandler):
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
+
+        # if this is an announce then send the like to the original post
+        origActor, origPostUrl, origFilename = \
+            getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
+                                           self.postToNickname, domain)
+        likeUrl2 = likeUrl
+        if origActor and origPostUrl:
+            actorLiked = origActor
+            likeUrl2 = origPostUrl
+
         undoLikeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
             'type': 'Undo',
@@ -7541,7 +7549,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'type': 'Like',
                 'actor': undoActor,
                 'to': [actorLiked],
-                'object': likeUrl
+                'object': likeUrl2
             }
         }
 
@@ -7549,39 +7557,25 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
 
         # directly undo the like within the post file
+        likedPostJson = None
         likedPostFilename = locatePost(baseDir,
                                        self.postToNickname,
                                        domain, likeUrl)
         if likedPostFilename:
-            likedPostJson = loadJson(likedPostFilename, 0, 1)
             recentPostsCache = self.server.recentPostsCache
-            if likedPostJson:
-                if likedPostJson.get('type'):
-                    if likedPostJson['type'] == 'Announce' and \
-                       likedPostJson.get('object'):
-                        if isinstance(likedPostJson['object'], str):
-                            announceLikeUrl = likedPostJson['object']
-                            announceLikedFilename = \
-                                locatePost(baseDir, self.postToNickname,
-                                           domain, announceLikeUrl)
-                            if announceLikedFilename:
-                                undoLikesCollectionEntry(recentPostsCache,
-                                                         baseDir,
-                                                         likedPostFilename,
-                                                         likeUrl,
-                                                         undoActor, domain,
-                                                         debug)
-                                likeUrl = announceLikeUrl
-                                likedPostFilename = announceLikedFilename
+            likedPostJson = loadJson(likedPostFilename, 0, 1)
+            if origFilename and origPostUrl:
+                undoLikesCollectionEntry(recentPostsCache,
+                                         baseDir, likedPostFilename,
+                                         likeUrl, undoActor, domain, debug)
+                likeUrl = origPostUrl
+                likedPostFilename = origFilename
             if debug:
                 print('Removing likes for ' + likedPostFilename)
             undoLikesCollectionEntry(recentPostsCache,
                                      baseDir,
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug)
-            # clear the icon from the cache so that it gets updated
-            if self.server.iconsCache.get('like_inactive.png'):
-                del self.server.iconsCache['like_inactive.png']
             if debug:
                 print('Regenerating html post for changed likes collection')
             if likedPostJson:
@@ -7618,7 +7612,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, True, False)
             else:
                 print('WARN: Unliked post not found: ' + likedPostFilename)
-
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like_inactive.png'):
+                del self.server.iconsCache['like_inactive.png']
         self.server.GETbusy = False
         actorAbsolute = self._getInstalceUrl(callingDomain) + actor
         actorPathStr = \

@@ -5040,3 +5040,53 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
         return ''
     print(id2 + ' is an edit of ' + id1)
     return prevConvPostFilename
+
+
+def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
+                                   nickname: str,
+                                   domain: str) -> (str, str, str):
+    """From the url of an announce this returns the actor, url and
+    filename (if available) of the original post being announced
+    """
+    postFilename = locatePost(baseDir, nickname, domain, announceUrl)
+    if not postFilename:
+        return None, None, None
+    announcePostJson = loadJson(postFilename, 0, 1)
+    if not announcePostJson:
+        return None, None, None
+    if not announcePostJson.get('type'):
+        return None, None, None
+    if announcePostJson['type'] != 'Announce':
+        return None, None, None
+    if not announcePostJson.get('object'):
+        return None, None, None
+    if not isinstance(announcePostJson['object'], str):
+        return None, None, None
+    actor = url = None
+    # do we have the original post?
+    origPostId = announcePostJson['object']
+    origFilename = locatePost(baseDir, nickname, domain, origPostId)
+    if origFilename:
+        # we have the original post
+        origPostJson = loadJson(origFilename, 0, 1)
+        if origPostJson:
+            if hasObjectDict(origPostJson):
+                if origPostJson['object'].get('attributedTo'):
+                    if isinstance(origPostJson['object']['attributedTo'], str):
+                        actor = origPostJson['object']['attributedTo']
+                        url = origPostId
+                elif origPostJson['object'].get('actor'):
+                    actor = origPostJson['actor']
+                    url = origPostId
+    else:
+        # we don't have the original post
+        if hasUsersPath(origPostId):
+            # get the actor from the original post url
+            origNick = getNicknameFromActor(origPostId)
+            origDomain, origPort = getDomainFromActor(origPostId)
+            if origNick and origDomain:
+                actor = \
+                    origPostId.split('/' + origNick + '/')[0] + \
+                    '/' + origNick
+                url = origPostId
+    return actor, url, origFilename
