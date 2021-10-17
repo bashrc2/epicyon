@@ -5062,22 +5062,22 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
         return None, None, None
     if not isinstance(announcePostJson['object'], str):
         return None, None, None
+    actor = url = None
     # do we have the original post?
     origPostId = announcePostJson['object']
     origFilename = locatePost(baseDir, nickname, domain, origPostId)
-    actor = url = None
     if origFilename:
         # we have the original post
         origPostJson = loadJson(origFilename, 0, 1)
         if origPostJson:
-            url = announcePostJson['object']
             if hasObjectDict(origPostJson):
                 if origPostJson['object'].get('attributedTo'):
-                    actor = origPostJson['object']['attributedTo']
+                    if isinstance(origPostJson['object']['attributedTo'], str):
+                        actor = origPostJson['object']['attributedTo']
+                        url = origPostId
                 elif origPostJson['object'].get('actor'):
                     actor = origPostJson['actor']
-                else:
-                    url = None
+                    url = origPostId
     else:
         # we don't have the original post
         if hasUsersPath(origPostId):
