@@ -7372,11 +7372,11 @@ class PubServer(BaseHTTPRequestHandler):
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
         likeUrl2 = likeUrl
-        likedPostJson = origFilename
+        likedPostFilename = origFilename
         if origActor and origPostUrl:
             actorLiked = origActor
             likeUrl2 = origPostUrl
-            likedPostJson = None
+            likedPostFilename = None
 
         likeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -7391,7 +7391,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
-        if not likedPostJson:
+        if not likedPostFilename:
             likedPostFilename = \
                 locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
@@ -7538,11 +7538,11 @@ class PubServer(BaseHTTPRequestHandler):
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
         likeUrl2 = likeUrl
-        likedPostJson = origFilename
+        likedPostFilename = origFilename
         if origActor and origPostUrl:
             actorLiked = origActor
             likeUrl2 = origPostUrl
-            likedPostJson = None
+            likedPostFilename = None
 
         undoLikeJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -7561,7 +7561,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
 
         # directly undo the like within the post file
-        if not likedPostJson:
+        if not likedPostFilename:
             likedPostFilename = locatePost(baseDir, self.postToNickname,
                                            domain, likeUrl)
         if likedPostFilename:

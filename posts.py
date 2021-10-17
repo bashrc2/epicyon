@@ -5089,4 +5089,5 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
                     origPostId.split('/' + origNick + '/')[0] + \
                     '/' + origNick
                 url = origPostId
+
     return actor, url, origFilename
