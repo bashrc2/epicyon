@@ -2100,6 +2100,9 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
                                inboxUrl, signatureHeaderJson,
                                debug)
             if returnCode >= 500 and returnCode < 600:
+                # if an instance is returning a code which indicates that
+                # it might have a runtime error, like 503, then don't
+                # continue to post to it
                 break
             if debug:
                 print('Obtained postJsonString for ' + inboxUrl +
