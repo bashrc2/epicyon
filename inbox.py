@@ -110,6 +110,10 @@ from content import validHashTag
 def _storeLastPostId(baseDir: str, nickname: str, domain: str,
                      postJsonObject: {}) -> None:
     """Stores the id of the last post made by an actor
+    When a new post arrives this allows it to be compared against the last
+    to see if it is an edited post.
+    It would be great if edited posts contained a back reference id to the
+    source but we don't live in that ideal world.
     """
     actor = postId = None
     if hasObjectDict(postJsonObject):
