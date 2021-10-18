@@ -5743,10 +5743,16 @@ def _testWordsSimilarity() -> None:
         "The world of the electron and the webkit, the beauty of the baud"
     similarity = wordsSimilarity(content1, content2, minWords)
     assert similarity > 70
+    content1 = "<p>We&apos;re growing! </p><p>A new writer and developer is joining TuxPhones. You probably know him already from his open-source work - but let&apos;s not spoil too much \ud83d\udd2e</p>"
+    content2 = "<p>We&apos;re growing! </p><p>A new writer and developer is joining TuxPhones. You probably know them already from their open-source work - but let&apos;s not spoil too much \ud83d\udd2e</p>"
+    similarity = wordsSimilarity(content1, content2, minWords)
+    assert similarity > 85
 
 
 def runAllTests():
     baseDir = os.getcwd()
+    _testWordsSimilarity()
+    return
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
     _translateOntology(baseDir)

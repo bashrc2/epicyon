@@ -38,14 +38,14 @@ def previousConversationPostId(baseDir: str, nickname: str, domain: str,
     conversationFilename = \
         _getConversationFilename(baseDir, nickname, domain, postJsonObject)
     if not conversationFilename:
-        return False
+        return None
     if not os.path.isfile(conversationFilename):
-        return False
+        return None
     with open(conversationFilename, 'r') as fp:
         lines = fp.readlines()
         if lines:
             return lines[-1].replace('\n', '')
-    return False
+    return None
 
 
 def updateConversation(baseDir: str, nickname: str, domain: str,
