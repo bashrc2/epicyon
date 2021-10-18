@@ -2095,10 +2095,12 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         if debug:
             print('Getting postJsonString for ' + inboxUrl)
         try:
-            postResult, unauthorized = \
+            postResult, unauthorized, returnCode = \
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
                                debug)
+            if returnCode == 500:
+                break
             if debug:
                 print('Obtained postJsonString for ' + inboxUrl +
                       ' unauthorized: ' + str(unauthorized))
@@ -2410,12 +2412,17 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
         'Authorization': authHeader
     }
     postDumps = json.dumps(postJsonObject)
-    postResult = \
+    postResult, unauthorized, returnCode = \
         postJsonString(session, postDumps, [],
                        inboxUrl, headers, debug, 5, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST failed for c2s to ' + inboxUrl)
+            if unauthorized:
+                print('DEBUG: POST failed for c2s to ' +
+                      inboxUrl + ' unathorized')
+            else:
+                print('DEBUG: POST failed for c2s to '
+                      + inboxUrl + ' return code ' + str(returnCode))
         return 5
 
     if debug:
