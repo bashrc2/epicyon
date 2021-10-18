@@ -31,23 +31,6 @@ def _getConversationFilename(baseDir: str, nickname: str, domain: str,
     return conversationDir + '/' + conversationId
 
 
-def previousConversationPostId(baseDir: str, nickname: str, domain: str,
-                               postJsonObject: {}) -> str:
-    """Returns the previous conversation post id
-    """
-    conversationFilename = \
-        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
-    if not conversationFilename:
-        return None
-    if not os.path.isfile(conversationFilename):
-        return None
-    with open(conversationFilename, 'r') as fp:
-        lines = fp.readlines()
-        if lines:
-            return lines[-1].replace('\n', '')
-    return None
-
-
 def updateConversation(baseDir: str, nickname: str, domain: str,
                        postJsonObject: {}) -> bool:
     """Ads a post to a conversation index in the /conversation subdirectory

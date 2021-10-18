@@ -107,6 +107,33 @@ from conversation import updateConversation
 from content import validHashTag
 
 
+def _storeLastPostId(baseDir: str, nickname: str, domain: str,
+                     postJsonObject: {}) -> None:
+    """Stores the id of the last post made by an actor
+    """
+    actor = postId = None
+    if hasObjectDict(postJsonObject):
+        if postJsonObject['object'].get('attributedTo'):
+            if isinstance(postJsonObject['object']['attributedTo'], str):
+                actor = postJsonObject['object']['attributedTo']
+                postId = removeIdEnding(postJsonObject['object']['id'])
+    if not actor:
+        actor = postJsonObject['actor']
+        postId = postJsonObject['id']
+    if not actor:
+        return
+    lastpostDir = acctDir(baseDir, nickname, domain) + '/lastpost'
+    if not os.path.isdir(lastpostDir):
+        os.mkdir(lastpostDir)
+    actorFilename = lastpostDir + '/' + actor.replace('/', '#')
+    try:
+        with open(actorFilename, 'w+') as fp:
+            fp.write(postId)
+    except BaseException:
+        print('Unable to write last post id to ' + actorFilename)
+        pass
+
+
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
@@ -2888,6 +2915,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 deletePost(baseDir, httpPrefix,
                            nickname, domain, editedFilename,
                            debug, recentPostsCache)
+
+            # store the id of the last post made by this actor
+            _storeLastPostId(baseDir, nickname, domain, postJsonObject)
 
             _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
