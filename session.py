@@ -334,8 +334,8 @@ def postJsonString(session, postJsonStr: str,
         else:
             if not quiet:
                 print('WARN: Failed to post to ' + inboxUrl +
-                      ' with headers ' + str(headers))
-                print('status code ' + str(postResult.status_code))
+                      ' with headers ' + str(headers) +
+                      ' status code ' + str(postResult.status_code))
             return False, False
     return True, False
 
