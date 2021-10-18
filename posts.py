@@ -2099,7 +2099,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
                                debug)
-            if returnCode == 500:
+            if returnCode >= 500 and returnCode < 600:
                 break
             if debug:
                 print('Obtained postJsonString for ' + inboxUrl +
