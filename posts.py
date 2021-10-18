@@ -4995,6 +4995,10 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     """
     if not hasObjectDict(postJsonObject):
         return ''
+    if not postJsonObject.get('type'):
+        return ''
+    if not postJsonObject['object'].get('type'):
+        return ''
     if not postJsonObject['object'].get('published'):
         return ''
     if not postJsonObject['object'].get('id'):
@@ -5029,6 +5033,14 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     lastpostJson = loadJson(lastpostFilename, 0)
     if not lastpostJson:
         return ''
+    if not lastpostJson.get('type'):
+        return ''
+    if lastpostJson['type'] != postJsonObject['type']:
+        return ''
+    if not lastpostJson['object'].get('type'):
+        return ''
+    if lastpostJson['object']['type'] != postJsonObject['object']['type']:
+        return
     if not lastpostJson['object'].get('published'):
         return ''
     if not lastpostJson['object'].get('id'):
