@@ -5752,14 +5752,14 @@ def _testWordsSimilarity() -> None:
     assert similarity > 70
     content1 = "<p>We&apos;re growing! </p><p>A new denizen " + \
         "is frequenting HackBucket. You probably know him already " + \
-        "from his epic typos - but let&apos;s not spoil too much " + \
+        "from her epic typos - but let&apos;s not spoil too much " + \
         "\ud83d\udd2e</p>"
     content2 = "<p>We&apos;re growing! </p><p>A new denizen " + \
         "is frequenting HackBucket. You probably know them already " + \
         "from their epic typos - but let&apos;s not spoil too much " + \
         "\ud83d\udd2e</p>"
     similarity = wordsSimilarity(content1, content2, minWords)
-    assert similarity > 85
+    assert similarity > 80
 
 
 def runAllTests():
