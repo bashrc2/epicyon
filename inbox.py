@@ -123,7 +123,7 @@ def _storeLastPostId(baseDir: str, nickname: str, domain: str,
                 postId = removeIdEnding(postJsonObject['object']['id'])
     if not actor:
         actor = postJsonObject['actor']
-        postId = postJsonObject['id']
+        postId = removeIdEnding(postJsonObject['id'])
     if not actor:
         return
     lastpostDir = acctDir(baseDir, nickname, domain) + '/lastpost'
