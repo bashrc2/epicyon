@@ -48,10 +48,12 @@ def fitnessPerformance(startTime, fitnessState: {},
 def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
     """Returns a sorted list of watchpoints
     """
-    if not fitness.get(fitnessId):
+    if not fitness.get('performance'):
+        return []
+    if not fitness['performance'].get(fitnessId):
         return []
     result = []
-    for watchPoint, item in fitness[fitnessId].items():
+    for watchPoint, item in fitness['performance'][fitnessId].items():
         if not item.get('total'):
             continue
         averageTime = item['total'] / item['ctr']
