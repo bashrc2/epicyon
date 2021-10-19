@@ -7,7 +7,11 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import os
 import time
+from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlFooter
+from utils import getConfigParam
 from utils import saveJson
 
 
@@ -39,6 +43,74 @@ def fitnessPerformance(startTime, fitnessState: {},
         total = fitnessState['performance'][fitnessId][watchPoint]['total']
         print('FITNESS: performance/' + fitnessId + '/' +
               watchPoint + '/' + str(total * 1000 / ctr))
+
+
+def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
+    """Returns a sorted list of watchpoints
+    """
+    if not fitness.get(fitnessId):
+        return []
+    result = []
+    for watchPoint, item in fitness[fitnessId].items():
+        if not item.get('total'):
+            continue
+        averageTime = item['total'] / item['ctr']
+        result.append(str(averageTime) + ' ' + watchPoint)
+    result.sort(reverse=True)
+    return result
+
+
+def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
+                         maxEntries: int) -> str:
+    """Returns the html for a graph of watchpoints
+    """
+    watchPointsList = sortedWatchPoints(fitness, fitnessId)
+
+    cssFilename = baseDir + '/epicyon-graph.css'
+    if os.path.isfile(baseDir + '/graph.css'):
+        cssFilename = baseDir + '/graph.css'
+
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    htmlStr += \
+        '<table class="graph">\n' + \
+        '<caption>Watchpoints for ' + fitnessId + '</caption>\n' + \
+        '<thead>\n' + \
+        '  <tr>\n' + \
+        '    <th scope="col">Item</th>\n' + \
+        '    <th scope="col">Percent</th>\n' + \
+        '  </tr>\n' + \
+        '</thead><tbody>\n'
+
+    # get the maximum time
+    maxAverageTime = float(0.00001)
+    if len(watchPointsList) > 0:
+        maxAverageTime = float(watchPointsList[0].split(' ')[0])
+    for watchPoint in watchPointsList:
+        averageTime = float(watchPoint.split(' ')[0])
+        if averageTime > maxAverageTime:
+            maxAverageTime = averageTime
+
+    ctr = 0
+    for watchPoint in watchPointsList:
+        name = watchPoint.split(' ')[1]
+        averageTime = float(watchPoint.split(' ')[0])
+        heightPercent = int(averageTime * 100 / maxAverageTime)
+        timeMS = int(averageTime * 1000)
+        if timeMS == 0:
+            break
+        htmlStr += \
+            '<tr style="height:' + str(heightPercent) + '%">\n' + \
+            '  <th scope="row">' + name + '</th>\n' + \
+            '  <td><span>' + str(timeMS) + 'mS</span></td>\n' + \
+            '</tr>\n'
+        ctr += 1
+        if ctr >= maxEntries:
+            break
+
+    htmlStr += '</tbody></table>\n' + htmlFooter()
+    return htmlStr
 
 
 def fitnessThread(baseDir: str, fitness: {}):

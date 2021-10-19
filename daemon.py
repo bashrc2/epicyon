@@ -348,6 +348,8 @@ from speaker import getSSMLbox
 from city import getSpoofedCity
 from fitnessFunctions import fitnessPerformance
 from fitnessFunctions import fitnessThread
+from fitnessFunctions import sortedWatchPoints
+from fitnessFunctions import htmlWatchPointsGraph
 import os
 
 
@@ -12674,6 +12676,33 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'rss3 done',
                            self.server.debug)
+
+        # show a performance graph
+        if authorized and self.path.startswith('/performance?graph='):
+            graph = self.path.split('?graph=')[1]
+            if htmlGET and not graph.endswith('.json'):
+                msg = \
+                    htmlWatchPointsGraph(self.server.baseDir,
+                                         self.server.fitness,
+                                         graph, 16)
+                msglen = len(msg)
+                self._set_headers('text/html', msglen,
+                                  cookie, callingDomain, False)
+                self._write(msg)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', 'graph',
+                                   self.server.debug)
+                return
+            else:
+                graph = graph.replace('.json', '')
+                watchPointsJson = sortedWatchPoints(self.server.fitness, graph)
+                msg = json.dumps(watchPointsJson,
+                                 ensure_ascii=False).encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/json',
+                                  msglen,
+                                  None, callingDomain, False)
+                self._write(msg)
 
         # show the main blog page
         if htmlGET and (self.path == '/blog' or
