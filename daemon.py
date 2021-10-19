@@ -12678,7 +12678,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # show a performance graph
-        if authorized and self.path.startswith('/performance?graph='):
+        if authorized and '/performance?graph=' in self.path:
             graph = self.path.split('?graph=')[1]
             if htmlGET and not graph.endswith('.json'):
                 msg = \
@@ -12703,6 +12703,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   msglen,
                                   None, callingDomain, False)
                 self._write(msg)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', 'graph json',
+                                   self.server.debug)
+                return
 
         # show the main blog page
         if htmlGET and (self.path == '/blog' or
