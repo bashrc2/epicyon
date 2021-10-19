@@ -12704,7 +12704,7 @@ class PubServer(BaseHTTPRequestHandler):
                 elif graph == 'get':
                     graph = '_GET'
                 watchPointsJson = sortedWatchPoints(self.server.fitness, graph)
-                print('watchPointsJson: ' + str())
+                print('watchPointsJson: ' + str(watchPointsJson))
                 msg = json.dumps(watchPointsJson,
                                  ensure_ascii=False).encode('utf-8')
                 msglen = len(msg)
