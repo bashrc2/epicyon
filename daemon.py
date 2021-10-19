@@ -12688,7 +12688,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlWatchPointsGraph(self.server.baseDir,
                                          self.server.fitness,
-                                         graph, 16)
+                                         graph, 16).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain, False)
