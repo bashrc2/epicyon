@@ -12674,7 +12674,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', 'rss3 done',
+                           '_GET', '_getFeaturedTagsCollection done',
                            self.server.debug)
 
         # show a performance graph
@@ -12682,9 +12682,9 @@ class PubServer(BaseHTTPRequestHandler):
             graph = self.path.split('?graph=')[1]
             if htmlGET and not graph.endswith('.json'):
                 if graph == 'post':
-                    graph == '_POST'
+                    graph = '_POST'
                 elif graph == 'get':
-                    graph == '_GET'
+                    graph = '_GET'
                 msg = \
                     htmlWatchPointsGraph(self.server.baseDir,
                                          self.server.fitness,
@@ -12700,9 +12700,9 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 graph = graph.replace('.json', '')
                 if graph == 'post':
-                    graph == '_POST'
+                    graph = '_POST'
                 elif graph == 'get':
-                    graph == '_GET'
+                    graph = '_GET'
                 watchPointsJson = sortedWatchPoints(self.server.fitness, graph)
                 print('watchPointsJson: ' + str())
                 msg = json.dumps(watchPointsJson,
