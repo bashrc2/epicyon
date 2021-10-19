@@ -21,11 +21,11 @@ def fitnessPerformance(startTime, fitnessState: {},
         fitnessState['performance'][fitnessId] = {}
     if watchPoint not in fitnessState['performance'][fitnessId]:
         fitnessState['performance'][fitnessId][watchPoint] = {
-            "total": 0,
-            "ctr": 0
+            "total": float(0),
+            "ctr": int(0)
         }
 
-    timeDiff = time.time() - startTime
+    timeDiff = float(time.time() - startTime)
 
     fitnessState['performance'][fitnessId][watchPoint]['total'] += timeDiff
     fitnessState['performance'][fitnessId][watchPoint]['ctr'] += 1
