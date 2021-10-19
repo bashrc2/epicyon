@@ -47,6 +47,7 @@ def fitnessPerformance(startTime, fitnessState: {},
 
 def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
     """Returns a sorted list of watchpoints
+    times are in mS
     """
     if not fitness.get('performance'):
         return []
@@ -56,7 +57,7 @@ def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
     for watchPoint, item in fitness['performance'][fitnessId].items():
         if not item.get('total'):
             continue
-        averageTime = item['total'] / item['ctr']
+        averageTime = item['total'] * 1000 / item['ctr']
         result.append(str(averageTime) + ' ' + watchPoint)
     result.sort(reverse=True)
     return result
@@ -86,7 +87,7 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
         '</thead><tbody>\n'
 
     # get the maximum time
-    maxAverageTime = float(0.00001)
+    maxAverageTime = float(1)
     if len(watchPointsList) > 0:
         maxAverageTime = float(watchPointsList[0].split(' ')[0])
     for watchPoint in watchPointsList:
@@ -99,7 +100,9 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
         name = watchPoint.split(' ')[1]
         averageTime = float(watchPoint.split(' ')[0])
         heightPercent = int(averageTime * 100 / maxAverageTime)
-        timeMS = int(averageTime * 1000)
+        print('heightPercent: ' + str(averageTime) +
+              ' ' str(heightPercent) + '%')
+        timeMS = int(averageTime)
         if timeMS == 0:
             break
         htmlStr += \
