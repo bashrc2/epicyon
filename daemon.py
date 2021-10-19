@@ -1515,25 +1515,6 @@ class PubServer(BaseHTTPRequestHandler):
                                'epicyon=; SameSite=Strict',
                                callingDomain)
 
-    def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
-                              postID: int, debug: bool) -> None:
-        """Updates a list containing how long each segment of POST takes
-        """
-        if debug:
-            timeDiff = int((time.time() - POSTstartTime) * 1000)
-            logEvent = False
-            if timeDiff > 100:
-                logEvent = True
-            if POSTtimings:
-                timeDiff = int(timeDiff - int(POSTtimings[-1]))
-            POSTtimings.append(str(timeDiff))
-            if logEvent:
-                ctr = 1
-                for timeDiff in POSTtimings:
-                    if debug:
-                        print('POST TIMING|' + str(ctr) + '|' + timeDiff)
-                    ctr += 1
-
     def _loginScreen(self, path: str, callingDomain: str, cookie: str,
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str, port: int,
@@ -15935,12 +15916,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_POST(self):
         POSTstartTime = time.time()
-        POSTtimings = []
 
         if not self.server.session:
             print('Starting new session from POST')
             self.server.session = \
                 createSession(self.server.proxyType)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', 'createSession',
+                               self.server.debug)
             if not self.server.session:
                 print('ERROR: POST failed to create session during POST')
                 self._404()
@@ -16029,8 +16012,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.outboxAuthenticated = False
         self.postToNickname = None
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 1,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'start',
+                           self.server.debug)
 
         # login screen
         if self.path.startswith('/login'):
@@ -16042,8 +16026,9 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.debug)
             return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 2,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', '_loginScreen',
+                           self.server.debug)
 
         if authorized and self.path.endswith('/sethashtagcategory'):
             self._setHashtagCategory(callingDomain, cookie,
@@ -16114,8 +16099,9 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.defaultTimeline)
             return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', '_newsPostEdit',
+                           self.server.debug)
 
         usersInPath = False
         if '/users/' in self.path:
@@ -16135,8 +16121,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug)
             return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 4,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', '_moderatorActions',
+                           self.server.debug)
 
         searchForEmoji = False
         if self.path.endswith('/searchhandleemoji'):
@@ -16147,11 +16134,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: searching for emoji')
                 print('authorized: ' + str(authorized))
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 5,
-                                   self.server.debug)
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 6,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'searchhandleemoji',
+                           self.server.debug)
 
         # a search was made
         if ((authorized or searchForEmoji) and
@@ -16171,8 +16156,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug)
             return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 7,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', '_receiveSearchQuery',
+                           self.server.debug)
 
         if not authorized:
             if self.path.endswith('/rmpost'):
@@ -16222,8 +16208,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug)
                 return
 
-            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8,
-                                       self.server.debug)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', '_removeWanted',
+                               self.server.debug)
 
             # removes a post
             if self.path.endswith('/rmpost'):
@@ -16245,8 +16232,9 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.debug)
                 return
 
-            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 9,
-                                       self.server.debug)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', '_removePost',
+                               self.server.debug)
 
             # decision to follow in the web interface is confirmed
             if self.path.endswith('/followconfirm'):
@@ -16262,8 +16250,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug)
                 return
 
-            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 10,
-                                       self.server.debug)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', '_followConfirm',
+                               self.server.debug)
 
             # decision to unfollow in the web interface is confirmed
             if self.path.endswith('/unfollowconfirm'):
@@ -16279,8 +16268,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.debug)
                 return
 
-            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 11,
-                                       self.server.debug)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', '_unfollowConfirm',
+                               self.server.debug)
 
             # decision to unblock in the web interface is confirmed
             if self.path.endswith('/unblockconfirm'):
@@ -16296,8 +16286,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug)
                 return
 
-            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 12,
-                                       self.server.debug)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', '_unblockConfirm',
+                               self.server.debug)
 
             # decision to block in the web interface is confirmed
             if self.path.endswith('/blockconfirm'):
@@ -16313,8 +16304,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug)
                 return
 
-            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 13,
-                                       self.server.debug)
+            fitnessPerformance(POSTstartTime, self.server.fitness,
+                               '_POST', '_blockConfirm',
+                               self.server.debug)
 
             # an option was chosen from person options screen
             # view/follow/block/report
@@ -16401,8 +16393,9 @@ class PubServer(BaseHTTPRequestHandler):
                           originDomain + ' ' + self.server.domainFull + ' ' +
                           str(self.server.sharedItemsFederatedDomains))
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'SharesCatalog',
+                           self.server.debug)
 
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
@@ -16460,8 +16453,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 15,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'receive post',
+                           self.server.debug)
 
         if self.path.endswith('/outbox') or \
            self.path.endswith('/wanted') or \
@@ -16477,8 +16471,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 16,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'authorized',
+                           self.server.debug)
 
         # check that the post is to an expected path
         if not (self.path.endswith('/outbox') or
@@ -16492,8 +16487,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 17,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'check path',
+                           self.server.debug)
 
         # read the message and convert it into a python dictionary
         length = int(self.headers['Content-length'])
@@ -16565,8 +16561,9 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Reading message')
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 18,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'check content type',
+                           self.server.debug)
 
         # check content length before reading bytes
         if self.path == '/sharedInbox' or self.path == '/inbox':
@@ -16621,8 +16618,9 @@ class PubServer(BaseHTTPRequestHandler):
         # convert the raw bytes to json
         messageJson = json.loads(messageBytes)
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 19,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'load json',
+                           self.server.debug)
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
@@ -16643,8 +16641,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 20,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', '_postToOutbox',
+                           self.server.debug)
 
         # check the necessary properties are available
         if self.server.debug:
@@ -16667,8 +16666,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 21,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'inboxMessageHasParams',
+                           self.server.debug)
 
         headerSignature = self._getheaderSignatureInput()
 
@@ -16682,8 +16682,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 22,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'keyId check',
+                           self.server.debug)
 
         if not self.server.unitTest:
             if not inboxPermittedMessage(self.server.domain,
@@ -16697,8 +16698,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 23,
-                                   self.server.debug)
+        fitnessPerformance(POSTstartTime, self.server.fitness,
+                           '_POST', 'inboxPermittedMessage',
+                           self.server.debug)
 
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
