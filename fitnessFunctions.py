@@ -19,25 +19,26 @@ def fitnessPerformance(startTime, fitnessState: {},
         fitnessState['performance'] = {}
     if fitnessId not in fitnessState['performance']:
         fitnessState['performance'][fitnessId] = {}
+    if watchPoint not in fitnessState['performance'][fitnessId]:
+        fitnessState['performance'][fitnessId][watchPoint] = {
+            "total": 0,
+            "ctr": 0
+        }
 
     timeDiff = time.time() - startTime
 
-    fitnessState['performance'][fitnessId][watchPoint] = timeDiff
-    if 'total' in fitnessState['performance'][fitnessId]:
-        fitnessState['performance'][fitnessId]['total'] += timeDiff
-        fitnessState['performance'][fitnessId]['ctr'] += 1
-        if fitnessState['performance'][fitnessId]['ctr'] >= 1024:
-            fitnessState['performance'][fitnessId]['total'] /= 2
-            fitnessState['performance'][fitnessId]['ctr'] = \
-                int(fitnessState['performance'][fitnessId]['ctr'] / 2)
-    else:
-        fitnessState['performance'][fitnessId]['total'] = timeDiff
-        fitnessState['performance'][fitnessId]['ctr'] = 1
+    fitnessState['performance'][fitnessId][watchPoint]['total'] += timeDiff
+    fitnessState['performance'][fitnessId][watchPoint]['ctr'] += 1
+    if fitnessState['performance'][fitnessId][watchPoint]['ctr'] >= 1024:
+        fitnessState['performance'][fitnessId][watchPoint]['total'] /= 2
+        fitnessState['performance'][fitnessId][watchPoint]['ctr'] = \
+            int(fitnessState['performance'][fitnessId][watchPoint]['ctr'] / 2)
 
     if debug:
+        ctr = fitnessState['performance'][fitnessId][watchPoint]['ctr']
+        total = fitnessState['performance'][fitnessId][watchPoint]['total']
         print('FITNESS: performance/' + fitnessId + '/' +
-              watchPoint + '/' +
-              str(fitnessState['performance'][fitnessId][watchPoint]))
+              watchPoint + '/' + str(total * 1000 / ctr))
 
 
 def fitnessThread(baseDir: str, fitness: {}):
