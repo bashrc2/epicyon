@@ -86,7 +86,6 @@ from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
 from video import convertVideoToNote
 from context import getIndividualPostContext
-from conversation import previousConversationPostId
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -2095,10 +2094,15 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         if debug:
             print('Getting postJsonString for ' + inboxUrl)
         try:
-            postResult, unauthorized = \
+            postResult, unauthorized, returnCode = \
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
                                debug)
+            if returnCode >= 500 and returnCode < 600:
+                # if an instance is returning a code which indicates that
+                # it might have a runtime error, like 503, then don't
+                # continue to post to it
+                break
             if debug:
                 print('Obtained postJsonString for ' + inboxUrl +
                       ' unauthorized: ' + str(unauthorized))
@@ -2410,12 +2414,17 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
         'Authorization': authHeader
     }
     postDumps = json.dumps(postJsonObject)
-    postResult = \
+    postResult, unauthorized, returnCode = \
         postJsonString(session, postDumps, [],
                        inboxUrl, headers, debug, 5, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST failed for c2s to ' + inboxUrl)
+            if unauthorized:
+                print('DEBUG: POST failed for c2s to ' +
+                      inboxUrl + ' unathorized')
+            else:
+                print('DEBUG: POST failed for c2s to '
+                      + inboxUrl + ' return code ' + str(returnCode))
         return 5
 
     if debug:
@@ -4986,60 +4995,74 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     """
     if not hasObjectDict(postJsonObject):
         return ''
+    if not postJsonObject.get('type'):
+        return ''
+    if not postJsonObject['object'].get('type'):
+        return ''
     if not postJsonObject['object'].get('published'):
         return ''
     if not postJsonObject['object'].get('id'):
         return ''
     if not postJsonObject['object'].get('content'):
         return ''
-    prevConvPostId = \
-        previousConversationPostId(baseDir, nickname, domain,
-                                   postJsonObject)
-    if not prevConvPostId:
+    if not postJsonObject['object'].get('attributedTo'):
         return ''
-    prevConvPostFilename = \
-        locatePost(baseDir, nickname, domain, prevConvPostId, False)
-    if not prevConvPostFilename:
+    if not isinstance(postJsonObject['object']['attributedTo'], str):
         return ''
-    prevPostJsonObject = loadJson(prevConvPostFilename, 0)
-    if not prevPostJsonObject:
+    actor = postJsonObject['object']['attributedTo']
+    actorFilename = \
+        acctDir(baseDir, nickname, domain) + '/lastpost/' + \
+        actor.replace('/', '#')
+    if not os.path.isfile(actorFilename):
         return ''
-    if not hasObjectDict(prevPostJsonObject):
+    postId = removeIdEnding(postJsonObject['object']['id'])
+    lastpostId = None
+    try:
+        with open(actorFilename, 'r') as fp:
+            lastpostId = fp.read()
+    except BaseException:
         return ''
-    if not prevPostJsonObject['object'].get('published'):
+    if not lastpostId:
         return ''
-    if not prevPostJsonObject['object'].get('id'):
+    if lastpostId == postId:
         return ''
-    if not prevPostJsonObject['object'].get('content'):
+    lastpostFilename = \
+        locatePost(baseDir, nickname, domain, lastpostId, False)
+    if not lastpostFilename:
         return ''
-    if prevPostJsonObject['object']['id'] == postJsonObject['object']['id']:
+    lastpostJson = loadJson(lastpostFilename, 0)
+    if not lastpostJson:
         return ''
-    id1 = removeIdEnding(prevPostJsonObject['object']['id'])
-    if '/' not in id1:
+    if not lastpostJson.get('type'):
         return ''
-    id2 = removeIdEnding(postJsonObject['object']['id'])
-    if '/' not in id2:
+    if lastpostJson['type'] != postJsonObject['type']:
         return ''
-    ending1 = id1.split('/')[-1]
-    if not ending1:
+    if not lastpostJson['object'].get('type'):
         return ''
-    ending2 = id2.split('/')[-1]
-    if not ending2:
+    if lastpostJson['object']['type'] != postJsonObject['object']['type']:
+        return
+    if not lastpostJson['object'].get('published'):
         return ''
-    if id1.replace(ending1, '') != id2.replace(ending2, ''):
+    if not lastpostJson['object'].get('id'):
+        return ''
+    if not lastpostJson['object'].get('content'):
+        return ''
+    if not lastpostJson['object'].get('attributedTo'):
+        return ''
+    if not isinstance(lastpostJson['object']['attributedTo'], str):
         return ''
     timeDiffSeconds = \
-        secondsBetweenPublished(prevPostJsonObject['object']['published'],
+        secondsBetweenPublished(lastpostJson['object']['published'],
                                 postJsonObject['object']['published'])
     if timeDiffSeconds > maxTimeDiffSeconds:
         return ''
     if debug:
-        print(id2 + ' might be an edit of ' + id1)
-    if wordsSimilarity(prevPostJsonObject['object']['content'],
+        print(postId + ' might be an edit of ' + lastpostId)
+    if wordsSimilarity(lastpostJson['object']['content'],
                        postJsonObject['object']['content'], 10) < 70:
         return ''
-    print(id2 + ' is an edit of ' + id1)
-    return prevConvPostFilename
+    print(postId + ' is an edit of ' + lastpostId)
+    return lastpostFilename
 
 
 def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,

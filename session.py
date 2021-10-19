@@ -296,7 +296,7 @@ def postJsonString(session, postJsonStr: str,
                    headers: {},
                    debug: bool,
                    timeoutSec: int = 30,
-                   quiet: bool = False) -> (bool, bool):
+                   quiet: bool = False) -> (bool, bool, int):
     """Post a json message string to the inbox of another person
     The second boolean returned is true if the send is unauthorized
     NOTE: Here we post a string rather than the original json so that
@@ -310,18 +310,18 @@ def postJsonString(session, postJsonStr: str,
     except requests.exceptions.RequestException as e:
         if not quiet:
             print('WARN: error during postJsonString requests ' + str(e))
-        return None, None
+        return None, None, 0
     except SocketError as e:
         if not quiet and e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during postJsonString')
         if not quiet:
             print('ERROR: postJsonString failed ' + inboxUrl + ' ' +
                   postJsonStr + ' ' + str(headers))
-        return None, None
+        return None, None, 0
     except ValueError as e:
         if not quiet:
             print('WARN: error during postJsonString ' + str(e))
-        return None, None
+        return None, None, 0
     if postResult.status_code < 200 or postResult.status_code > 202:
         if postResult.status_code >= 400 and \
            postResult.status_code <= 405 and \
@@ -330,14 +330,14 @@ def postJsonString(session, postJsonStr: str,
                 print('WARN: Post to ' + inboxUrl +
                       ' is unauthorized. Code ' +
                       str(postResult.status_code))
-            return False, True
+            return False, True, postResult.status_code
         else:
             if not quiet:
                 print('WARN: Failed to post to ' + inboxUrl +
-                      ' with headers ' + str(headers))
-                print('status code ' + str(postResult.status_code))
-            return False, False
-    return True, False
+                      ' with headers ' + str(headers) +
+                      ' status code ' + str(postResult.status_code))
+            return False, False, postResult.status_code
+    return True, False, 0
 
 
 def postImage(session, attachImageFilename: str, federationList: [],
