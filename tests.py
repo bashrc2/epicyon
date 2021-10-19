@@ -4530,6 +4530,7 @@ def _testFunctions():
         'runNewswireWatchdog',
         'runFederatedSharesWatchdog',
         'runFederatedSharesDaemon',
+        'fitnessThread',
         'threadSendPost',
         'sendToFollowers',
         'expireCache',

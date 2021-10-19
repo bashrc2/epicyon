@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import time
+from utils import saveJson
 
 
 def fitnessPerformance(startTime, fitnessState: {},
@@ -37,3 +38,13 @@ def fitnessPerformance(startTime, fitnessState: {},
         print('FITNESS: performance/' + fitnessId + '/' +
               watchPoint + '/' +
               str(fitnessState['performance'][fitnessId][watchPoint]))
+
+
+def fitnessThread(baseDir: str, fitness: {}):
+    """Thread used to save fitness function scores
+    """
+    fitnessFilename = baseDir + '/accounts/fitness.json'
+    while True:
+        # every 10 mins
+        time.sleep(60 * 10)
+        saveJson(fitness, fitnessFilename)

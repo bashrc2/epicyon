@@ -347,6 +347,7 @@ from context import getIndividualPostContext
 from speaker import getSSMLbox
 from city import getSpoofedCity
 from fitnessFunctions import fitnessPerformance
+from fitnessFunctions import fitnessThread
 import os
 
 
@@ -16917,7 +16918,10 @@ def runDaemon(defaultReplyIntervalHours: int,
     assert not scanThemesForScripts(baseDir)
 
     # fitness metrics
+    fitnessFilename = baseDir + '/accounts/fitness.json'
     httpd.fitness = {}
+    if os.path.isfile(fitnessFilename):
+        httpd.fitness = loadJson(fitnessFilename)
 
     # initialize authorized fetch key
     httpd.signingPrivateKeyPem = None
@@ -17222,6 +17226,12 @@ def runDaemon(defaultReplyIntervalHours: int,
     if not os.path.isdir(baseDir + '/sharefiles'):
         print('Creating shared item files directory')
         os.mkdir(baseDir + '/sharefiles')
+
+    print('Creating fitness thread')
+    httpd.thrFitness = \
+        threadWithTrace(target=fitnessThread,
+                        args=(baseDir, httpd.fitness), daemon=True)
+    httpd.thrFitness.start()
 
     print('Creating cache expiry thread')
     httpd.thrCache = \
