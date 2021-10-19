@@ -12681,6 +12681,10 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and '/performance?graph=' in self.path:
             graph = self.path.split('?graph=')[1]
             if htmlGET and not graph.endswith('.json'):
+                if graph == 'post':
+                    graph == '_POST'
+                elif graph == 'get':
+                    graph == '_GET'
                 msg = \
                     htmlWatchPointsGraph(self.server.baseDir,
                                          self.server.fitness,
@@ -12695,12 +12699,15 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             else:
                 graph = graph.replace('.json', '')
+                if graph == 'post':
+                    graph == '_POST'
+                elif graph == 'get':
+                    graph == '_GET'
                 watchPointsJson = sortedWatchPoints(self.server.fitness, graph)
                 msg = json.dumps(watchPointsJson,
                                  ensure_ascii=False).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/json',
-                                  msglen,
+                self._set_headers('application/json', msglen,
                                   None, callingDomain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
