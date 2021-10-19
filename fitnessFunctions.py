@@ -103,8 +103,8 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
         print('heightPercent: ' + str(averageTime) +
               ' ' + str(heightPercent) + '%')
         timeMS = int(averageTime)
-        if timeMS == 0:
-            break
+        if heightPercent == 0:
+            continue
         htmlStr += \
             '<tr style="height:' + str(heightPercent) + '%">\n' + \
             '  <th scope="row">' + name + '</th>\n' + \
