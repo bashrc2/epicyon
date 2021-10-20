@@ -7348,6 +7348,9 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton1',
+                           self.server.debug)
         if not self.server.session:
             print('Starting new session during like')
             self.server.session = createSession(proxyType)
@@ -7356,6 +7359,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 self.server.GETbusy = False
                 return
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton2',
+                           self.server.debug)
         likeActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
@@ -7366,6 +7372,9 @@ class PubServer(BaseHTTPRequestHandler):
         origActor, origPostUrl, origFilename = \
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton3',
+                           self.server.debug)
         likeUrl2 = likeUrl
         likedPostFilename = origFilename
         if origActor and origPostUrl:
@@ -7383,6 +7392,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # send out the like to followers
         self._postToOutbox(likeJson, self.server.projectVersion, None)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton4',
+                           self.server.debug)
 
         print('Locating liked post ' + likeUrl)
         # directly like the post file
@@ -7390,6 +7402,9 @@ class PubServer(BaseHTTPRequestHandler):
             likedPostFilename = \
                 locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_likeButton5',
+                               self.server.debug)
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
@@ -7401,6 +7416,9 @@ class PubServer(BaseHTTPRequestHandler):
                 likedPostFilename = origFilename
             if debug:
                 print('Updating likes for ' + likedPostFilename)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_likeButton6',
+                               self.server.debug)
             updateLikesCollection(recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
@@ -7409,6 +7427,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
             if likedPostJson:
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_likeButton6',
+                                   self.server.debug)
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, self.postToNickname,
                                           domain, likedPostJson)
@@ -7422,6 +7443,9 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(likedPostJson)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_likeButton7',
+                                   self.server.debug)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7449,6 +7473,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_likeButton8',
+                                   self.server.debug)
             else:
                 print('WARN: Liked post not found: ' + likedPostFilename)
             # clear the icon from the cache so that it gets updated
