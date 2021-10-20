@@ -419,8 +419,21 @@ def htmlSearch(cssCache: {}, translate: {},
         'name="submitSearch" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
-    followStr += '  <p class="hashtagswarm">' + \
-        htmlHashTagSwarm(baseDir, actor, translate) + '</p>\n'
+
+    cachedHashtagSwarmFilename = \
+        acctDir(baseDir, searchNickname, domain) + '/.hashtagSwarm'
+    swarmStr = ''
+    if os.path.isfile(cachedHashtagSwarmFilename):
+        try:
+            with open(cachedHashtagSwarmFilename, 'r') as fp:
+                swarmStr = fp.read()
+        except BaseException:
+            print('WARN: Unable to read cached hashtag swarm')
+            pass
+    if not swarmStr:
+        swarmStr = htmlHashTagSwarm(baseDir, actor, translate)
+
+    followStr += '  <p class="hashtagswarm">' + swarmStr + '</p>\n'
     followStr += '  </center>\n'
     followStr += '  </div>\n'
     followStr += '</div>\n'
