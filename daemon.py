@@ -7391,7 +7391,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the like to followers
-        #self._postToOutbox(likeJson, self.server.projectVersion, None)
+        # self._postToOutbox(likeJson, self.server.projectVersion, None)
         self._postToOutboxThread(likeJson)
 
         fitnessPerformance(GETstartTime, self.server.fitness,
