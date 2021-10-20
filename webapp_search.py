@@ -432,6 +432,13 @@ def htmlSearch(cssCache: {}, translate: {},
             pass
     if not swarmStr:
         swarmStr = htmlHashTagSwarm(baseDir, actor, translate)
+        if swarmStr:
+            try:
+                with open(cachedHashtagSwarmFilename, 'w+') as fp:
+                    fp.write(swarmStr)
+            except BaseException:
+                print('WARN: Unable to save cached hashtag swarm')
+                pass
 
     followStr += '  <p class="hashtagswarm">' + swarmStr + '</p>\n'
     followStr += '  </center>\n'

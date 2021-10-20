@@ -161,7 +161,7 @@ def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
         if modifiedDate:
             currDate = datetime.datetime.utcnow()
             timeDiff = currDate - modifiedDate
-            diffMins = divmod(timeDiff.total_seconds(), 60)
+            diffMins = int(timeDiff.total_seconds() / 60)
             if diffMins < 10:
                 # was saved recently, so don't save again
                 # This avoids too much disk I/O
