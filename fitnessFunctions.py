@@ -112,7 +112,7 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
         htmlStr += \
             '<tr style="height:' + str(heightPercent) + '%">\n' + \
             '  <th scope="row">' + name + '</th>\n' + \
-            '  <td><span>' + str(timeMS) + 'mS</span></td>\n' + \
+            '  <td><span>' + str(timeMS) + '</span></td>\n' + \
             '</tr>\n'
         ctr += 1
         if ctr >= maxEntries:
