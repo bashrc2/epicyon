@@ -7391,8 +7391,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the like to followers
-        # self._postToOutbox(likeJson, self.server.projectVersion, None)
-        self._postToOutboxThread(likeJson)
+        self._postToOutbox(likeJson, self.server.projectVersion, None)
 
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_likeButton4',
@@ -7582,8 +7581,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the undo like to followers
-        # self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
-        self._postToOutboxThread(undoLikeJson)
+        self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
 
         # directly undo the like within the post file
         if not likedPostFilename:
