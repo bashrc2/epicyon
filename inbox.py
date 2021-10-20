@@ -169,6 +169,8 @@ def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
             else:
                 print('Updating cached hashtag swarm, last changed ' +
                       str(diffMins) + ' minutes ago')
+        else:
+            print('WARN: no modified date for ' + str(lastModified))
     if saveSwarm:
         actor = httpPrefix + '://' + domainFull + '/users/' + nickname
         newSwarmStr = htmlHashTagSwarm(baseDir, actor, translate)
