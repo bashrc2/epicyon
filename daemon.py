@@ -356,6 +356,9 @@ import os
 # maximum number of posts to list in outbox feed
 maxPostsInFeed = 12
 
+# maximum number of posts in a hashtag feed
+maxPostsInHashtagFeed = 6
+
 # reduced posts for media feed because it can take a while
 maxPostsInMediaFeed = 6
 
@@ -2990,7 +2993,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.translate,
                                       baseDir,
                                       searchStr[1:], 1,
-                                      maxPostsInFeed,
+                                      maxPostsInHashtagFeed,
                                       self.server.session,
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
@@ -6711,7 +6714,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.maxRecentPosts,
                               self.server.translate,
                               baseDir, hashtag, pageNumber,
-                              maxPostsInFeed, self.server.session,
+                              maxPostsInHashtagFeed, self.server.session,
                               self.server.cachedWebfingers,
                               self.server.personCache,
                               httpPrefix,
