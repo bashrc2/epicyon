@@ -57,17 +57,13 @@ def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
     for watchPoint, item in fitness['performance'][fitnessId].items():
         if not item.get('total'):
             continue
-        averageTimeStr = str(item['total'] * 1000 / item['ctr'])
-        if item['total'] < 10:
-            averageTimeStr = '0' + averageTimeStr
-        if item['total'] < 100:
-            averageTimeStr = '0' + averageTimeStr
-        if item['total'] < 1000:
-            averageTimeStr = '0' + averageTimeStr
-        if item['total'] < 10000:
-            averageTimeStr = '0' + averageTimeStr
-        if item['total'] < 100000:
-            averageTimeStr = '0' + averageTimeStr
+        averageTime = item['total'] * 1000 / item['ctr']
+        averageTimeStr = str(averageTime)
+        threshold = 10
+        while threshold < 100000:
+            if averageTime < threshold:
+                averageTimeStr = '0' + averageTimeStr
+            threshold *= 10
         result.append(averageTimeStr + ' ' + watchPoint)
     result.sort(reverse=True)
     return result
