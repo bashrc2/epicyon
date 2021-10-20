@@ -22,7 +22,7 @@ body, table, input, select, textarea {
 
 	.graph {
 	    display:block;
-	    width:600px;
+	    width:100%;
 	    height:300px;
 	}
 
@@ -63,12 +63,12 @@ body, table, input, select, textarea {
 	}
 
 	.graph tbody:before {
-	    content:"100%";
+	    content:"Max";
 	    top:-0.6em;
 	}
 
 	.graph tbody:after {
-	    content:"0%";
+	    content:"0";
 	    bottom:-0.6em;
 	}
 

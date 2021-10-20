@@ -58,7 +58,13 @@ def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
         if not item.get('total'):
             continue
         averageTime = item['total'] * 1000 / item['ctr']
-        result.append(str(averageTime) + ' ' + watchPoint)
+        averageTimeStr = str(averageTime)
+        threshold = 10
+        while threshold < 100000:
+            if averageTime < threshold:
+                averageTimeStr = '0' + averageTimeStr
+            threshold *= 10
+        result.append(averageTimeStr + ' ' + watchPoint)
     result.sort(reverse=True)
     return result
 
@@ -97,7 +103,7 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
 
     ctr = 0
     for watchPoint in watchPointsList:
-        name = watchPoint.split(' ')[1]
+        name = watchPoint.split(' ', 1)[1]
         averageTime = float(watchPoint.split(' ')[0])
         heightPercent = int(averageTime * 100 / maxAverageTime)
         timeMS = int(averageTime)

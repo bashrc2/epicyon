@@ -4507,6 +4507,7 @@ def _testFunctions():
         'do_POST',
         'do_HEAD',
         '__run',
+        '_sendToNamedAddresses',
         'globaltrace',
         'localtrace',
         'kill',

@@ -15,6 +15,7 @@ import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
 from like import updateLikesCollection
+from utils import fileLastModified
 from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import getReplyIntervalHours
@@ -105,6 +106,7 @@ from announce import createAnnounce
 from notifyOnPost import notifyWhenPersonPosts
 from conversation import updateConversation
 from content import validHashTag
+from webapp_hashtagswarm import htmlHashTagSwarm
 
 
 def _storeLastPostId(baseDir: str, nickname: str, domain: str,
@@ -138,7 +140,55 @@ def _storeLastPostId(baseDir: str, nickname: str, domain: str,
         pass
 
 
-def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
+def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
+                              httpPrefix: str, domainFull: str,
+                              translate: {}) -> bool:
+    """Updates the hashtag swarm stored as a file
+    """
+    cachedHashtagSwarmFilename = \
+        acctDir(baseDir, nickname, domain) + '/.hashtagSwarm'
+    saveSwarm = True
+    if os.path.isfile(cachedHashtagSwarmFilename):
+        lastModified = fileLastModified(cachedHashtagSwarmFilename)
+        modifiedDate = None
+        try:
+            modifiedDate = \
+                datetime.datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
+        except BaseException:
+            print('WARN: unable to parse last modified cache date ' +
+                  str(lastModified))
+            pass
+        if modifiedDate:
+            currDate = datetime.datetime.utcnow()
+            timeDiff = currDate - modifiedDate
+            diffMins = int(timeDiff.total_seconds() / 60)
+            if diffMins < 10:
+                # was saved recently, so don't save again
+                # This avoids too much disk I/O
+                saveSwarm = False
+            else:
+                print('Updating cached hashtag swarm, last changed ' +
+                      str(diffMins) + ' minutes ago')
+        else:
+            print('WARN: no modified date for ' + str(lastModified))
+    if saveSwarm:
+        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        newSwarmStr = htmlHashTagSwarm(baseDir, actor, translate)
+        if newSwarmStr:
+            try:
+                with open(cachedHashtagSwarmFilename, 'w+') as fp:
+                    fp.write(newSwarmStr)
+                    return True
+            except BaseException:
+                print('WARN: unable to write cached hashtag swarm ' +
+                      cachedHashtagSwarmFilename)
+                pass
+    return False
+
+
+def storeHashTags(baseDir: str, nickname: str, domain: str,
+                  httpPrefix: str, domainFull: str,
+                  postJsonObject: {}, translate: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
@@ -161,6 +211,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
 
     hashtagCategories = getHashtagCategories(baseDir)
 
+    hashtagsCtr = 0
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
             continue
@@ -179,6 +230,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
         daysDiff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         daysSinceEpoch = daysDiff.days
         tagline = str(daysSinceEpoch) + '  ' + nickname + '  ' + postUrl + '\n'
+        hashtagsCtr += 1
         if not os.path.isfile(tagsFilename):
             with open(tagsFilename, 'w+') as tagsFile:
                 tagsFile.write(tagline)
@@ -202,6 +254,12 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
                 guessHashtagCategory(tagName, hashtagCategories)
             if categoryStr:
                 setHashtagCategory(baseDir, tagName, categoryStr, False)
+
+    # if some hashtags were found then recalculate the swarm
+    # ready for later display
+    if hashtagsCtr > 0:
+        _updateCachedHashtagSwarm(baseDir, nickname, domain,
+                                  httpPrefix, domainFull, translate)
 
 
 def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
@@ -1594,7 +1652,9 @@ def _receiveAnnounce(recentPostsCache: {},
         if debug:
             print('DEBUG: Announce post downloaded for ' +
                   messageJson['actor'] + ' -> ' + messageJson['object'])
-        storeHashTags(baseDir, nickname, postJsonObject)
+        storeHashTags(baseDir, nickname, domain,
+                      httpPrefix, domainFull,
+                      postJsonObject, translate)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookupActor = None
@@ -2925,7 +2985,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
-            storeHashTags(baseDir, handleName, postJsonObject)
+            storeHashTags(baseDir, handleName, domain,
+                          httpPrefix, domainFull,
+                          postJsonObject, translate)
 
             # send the post out to group members
             if isGroup:

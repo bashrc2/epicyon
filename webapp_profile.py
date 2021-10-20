@@ -1415,6 +1415,18 @@ def _htmlEditProfileDangerZone(translate: {}) -> str:
     return editProfileForm
 
 
+def _htmlSystemMonitor(nickname: str, translate: {}) -> str:
+    """Links to performance graphs
+    """
+    systemMonitorStr = beginEditSection(translate['System Monitor'])
+    systemMonitorStr += '<p><a href="/users/' + nickname + \
+        '/performance?graph=get">📊 GET</a></p>'
+    systemMonitorStr += '<p><a href="/users/' + nickname + \
+        '/performance?graph=post">📊 POST</a></p>'
+    systemMonitorStr += endEditSection()
+    return systemMonitorStr
+
+
 def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
                            translate: {}) -> str:
     """skills section of Edit Profile screen
@@ -2038,6 +2050,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     roleAssignStr = ''
     peertubeStr = ''
     libretranslateStr = ''
+    systemMonitorStr = ''
     graphicsStr = ''
     sharesFederationStr = ''
 
@@ -2063,6 +2076,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                          mediaInstanceStr,
                                          blogsInstanceStr,
                                          newsInstanceStr)
+            systemMonitorStr = _htmlSystemMonitor(nickname, translate)
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
@@ -2122,6 +2136,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # automatic translations
     editProfileForm += libretranslateStr
+
+    # system monitor
+    editProfileForm += systemMonitorStr
 
     # Filtering and blocking section
     replyIntervalHours = getReplyIntervalHours(baseDir, nickname, domain,

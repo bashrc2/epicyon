@@ -281,7 +281,8 @@ def hashtagRuleTree(operators: [],
 
 def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
                 postJsonObject: {},
-                actionStr: str, hashtags: [], systemLanguage: str) -> None:
+                actionStr: str, hashtags: [], systemLanguage: str,
+                translate: {}) -> None:
     """Adds a hashtag via a hashtag rule
     """
     addHashtag = actionStr.split('add ', 1)[1].strip()
@@ -326,7 +327,12 @@ def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
     else:
         content += hashtagHtml
     postJsonObject['object']['content'] = content
-    storeHashTags(baseDir, 'news', postJsonObject)
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    storeHashTags(baseDir, 'news', domain,
+                  httpPrefix, domainFull,
+                  postJsonObject, translate)
 
 
 def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
@@ -369,7 +375,8 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                                federationList: [],
                                sendThreads: [], postLog: [],
                                moderated: bool, url: str,
-                               systemLanguage: str) -> bool:
+                               systemLanguage: str,
+                               translate: {}) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -413,7 +420,8 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         if actionStr.startswith('add '):
             # add a hashtag
             _hashtagAdd(baseDir, httpPrefix, domainFull,
-                        postJsonObject, actionStr, hashtags, systemLanguage)
+                        postJsonObject, actionStr, hashtags, systemLanguage,
+                        translate)
         elif actionStr.startswith('remove '):
             # remove a hashtag
             _hashtagRemove(httpPrefix, domainFull, postJsonObject,
@@ -659,7 +667,8 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                                               personCache, cachedWebfingers,
                                               federationList,
                                               sendThreads, postLog,
-                                              moderated, url, systemLanguage)
+                                              moderated, url, systemLanguage,
+                                              translate)
 
         # save the post and update the index
         if savePost:
@@ -698,7 +707,9 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 if tag not in newswire[originalDateStr][6]:
                     newswire[originalDateStr][6].append(tag)
 
-            storeHashTags(baseDir, 'news', blog)
+            storeHashTags(baseDir, 'news', domain,
+                          httpPrefix, domainFull,
+                          blog, translate)
 
             clearFromPostCaches(baseDir, recentPostsCache, postId)
             if saveJson(blog, filename):

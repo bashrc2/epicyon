@@ -419,8 +419,28 @@ def htmlSearch(cssCache: {}, translate: {},
         'name="submitSearch" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
-    followStr += '  <p class="hashtagswarm">' + \
-        htmlHashTagSwarm(baseDir, actor, translate) + '</p>\n'
+
+    cachedHashtagSwarmFilename = \
+        acctDir(baseDir, searchNickname, domain) + '/.hashtagSwarm'
+    swarmStr = ''
+    if os.path.isfile(cachedHashtagSwarmFilename):
+        try:
+            with open(cachedHashtagSwarmFilename, 'r') as fp:
+                swarmStr = fp.read()
+        except BaseException:
+            print('WARN: Unable to read cached hashtag swarm')
+            pass
+    if not swarmStr:
+        swarmStr = htmlHashTagSwarm(baseDir, actor, translate)
+        if swarmStr:
+            try:
+                with open(cachedHashtagSwarmFilename, 'w+') as fp:
+                    fp.write(swarmStr)
+            except BaseException:
+                print('WARN: Unable to save cached hashtag swarm')
+                pass
+
+    followStr += '  <p class="hashtagswarm">' + swarmStr + '</p>\n'
     followStr += '  </center>\n'
     followStr += '  </div>\n'
     followStr += '</div>\n'
@@ -777,7 +797,8 @@ def htmlHashtagSearch(cssCache: {},
         # previous page link
         hashtagSearchForm += \
             '  <center>\n' + \
-            '    <a href="/tags/' + hashtag + '?page=' + \
+            '    <a href="/users/' + nickname + \
+            '/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
@@ -853,7 +874,7 @@ def htmlHashtagSearch(cssCache: {},
         # next page link
         hashtagSearchForm += \
             '  <center>\n' + \
-            '    <a href="/tags/' + hashtag + \
+            '    <a href="/users/' + nickname + '/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \

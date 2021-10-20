@@ -15,7 +15,7 @@ from posts import isImageMedia
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
-from posts import sendToNamedAddresses
+from posts import sendToNamedAddressesThread
 from utils import hasObjectStringType
 from utils import getBaseContentFromPost
 from utils import hasObjectDict
@@ -627,18 +627,20 @@ def postMessageToOutbox(session, translate: {},
         else:
             print('c2s sender: ' +
                   postToNickname + '@' + domain + ':' + str(port))
-    sendToNamedAddresses(server.session, baseDir,
-                         postToNickname,
-                         domain, onionDomain, i2pDomain, port,
-                         httpPrefix,
-                         federationList,
-                         sendThreads,
-                         postLog,
-                         cachedWebfingers,
-                         personCache,
-                         messageJson, debug,
-                         version,
-                         sharedItemsFederatedDomains,
-                         sharedItemFederationTokens,
-                         signingPrivateKeyPem)
+    namedAddressesThread = \
+        sendToNamedAddressesThread(server.session, baseDir,
+                                   postToNickname,
+                                   domain, onionDomain, i2pDomain, port,
+                                   httpPrefix,
+                                   federationList,
+                                   sendThreads,
+                                   postLog,
+                                   cachedWebfingers,
+                                   personCache,
+                                   messageJson, debug,
+                                   version,
+                                   sharedItemsFederatedDomains,
+                                   sharedItemFederationTokens,
+                                   signingPrivateKeyPem)
+    followersThreads.append(namedAddressesThread)
     return True

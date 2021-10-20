@@ -356,6 +356,9 @@ import os
 # maximum number of posts to list in outbox feed
 maxPostsInFeed = 12
 
+# maximum number of posts in a hashtag feed
+maxPostsInHashtagFeed = 6
+
 # reduced posts for media feed because it can take a while
 maxPostsInMediaFeed = 6
 
@@ -387,7 +390,7 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _getInstalceUrl(self, callingDomain: str) -> str:
+    def _getInstanceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
         """
         if callingDomain.endswith('.onion') and \
@@ -1064,7 +1067,7 @@ class PubServer(BaseHTTPRequestHandler):
         if brochMode:
             showNodeInfoAccounts = False
 
-        instanceUrl = self._getInstalceUrl(callingDomain)
+        instanceUrl = self._getInstanceUrl(callingDomain)
         aboutUrl = instanceUrl + '/about'
         termsOfServiceUrl = instanceUrl + '/terms'
         info = metaDataNodeInfo(self.server.baseDir,
@@ -1725,7 +1728,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         if not isModerator(self.server.baseDir, nickname):
             self._redirect_headers(actorStr + '/moderation',
                                    cookie, callingDomain)
@@ -2943,7 +2946,7 @@ class PubServer(BaseHTTPRequestHandler):
             path = path.split('?page=')[0]
 
         usersPath = path.replace('/searchhandle', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         length = int(self.headers['Content-length'])
         try:
             searchParams = self.rfile.read(length).decode('utf-8')
@@ -2990,7 +2993,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.translate,
                                       baseDir,
                                       searchStr[1:], 1,
-                                      maxPostsInFeed,
+                                      maxPostsInHashtagFeed,
                                       self.server.session,
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
@@ -3115,7 +3118,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.endswith(':') or \
                    searchStr.endswith(';') or \
                    searchStr.endswith('.'):
-                    actorStr = self._getInstalceUrl(callingDomain) + usersPath
+                    actorStr = self._getInstanceUrl(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3214,7 +3217,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
                 else:
-                    actorStr = self._getInstalceUrl(callingDomain) + usersPath
+                    actorStr = self._getInstanceUrl(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3286,7 +3289,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         self._redirect_headers(actorStr + '/' +
                                self.server.defaultTimeline,
                                cookie, callingDomain)
@@ -3683,7 +3686,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/linksdata', '')
         usersPath = usersPath.replace('/editlinks', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -3814,7 +3817,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         usersPath = usersPath.split('/tags/')[0]
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         tagScreenStr = actorStr + '/tags/' + hashtag
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -3897,7 +3900,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newswiredata', '')
         usersPath = usersPath.replace('/editnewswire', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4020,7 +4023,7 @@ class PubServer(BaseHTTPRequestHandler):
         update button on the citations screen
         """
         usersPath = path.replace('/citationsdata', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         nickname = getNicknameFromActor(actorStr)
 
         citationsFilename = \
@@ -4105,7 +4108,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4241,7 +4244,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/profiledata', '')
         usersPath = usersPath.replace('/editprofile', '')
-        actorStr = self._getInstalceUrl(callingDomain) + usersPath
+        actorStr = self._getInstanceUrl(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -5897,7 +5900,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('Sent manifest: ' + callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_progressiveWebAppManifest', 'send manifest',
+                           '_GET', '_progressiveWebAppManifest',
                            self.server.debug)
 
     def _getFavicon(self, callingDomain: str,
@@ -6040,7 +6043,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('font sent from cache: ' +
                           path + ' ' + callingDomain)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_getFonts', 'send font from cache',
+                                   '_GET', '_getFonts cache',
                                    self.server.debug)
                 return
             else:
@@ -6058,7 +6061,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('font sent from file: ' +
                               path + ' ' + callingDomain)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_getFonts', 'send font from file',
+                                       '_GET', '_getFonts',
                                        self.server.debug)
                     return
         if debug:
@@ -6111,7 +6114,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Sent rss2 feed: ' +
                               path + ' ' + callingDomain)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_getRSS2feed', 'blog rss2',
+                                       '_GET', '_getRSS2feed',
                                        debug)
                     return
         if debug:
@@ -6172,7 +6175,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Sent rss2 feed: ' +
                       path + ' ' + callingDomain)
             fitnessPerformance(GETstartTime, self.server.fitness,
-                               '_getRSS2site', 'blog rss2',
+                               '_GET', '_getRSS2site',
                                debug)
             return
         if debug:
@@ -6212,7 +6215,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Sent rss2 newswire feed: ' +
                       path + ' ' + callingDomain)
             fitnessPerformance(GETstartTime, self.server.fitness,
-                               '_getNewswireFeed', 'newswire rss2',
+                               '_GET', '_getNewswireFeed',
                                debug)
             return
         if debug:
@@ -6251,8 +6254,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Sent rss2 categories feed: ' +
                       path + ' ' + callingDomain)
             fitnessPerformance(GETstartTime, self.server.fitness,
-                               '_getHashtagCategoriesFeed',
-                               'categories rss2', debug)
+                               '_GET', '_getHashtagCategoriesFeed', debug)
             return
         if debug:
             print('Failed to get rss2 categories feed: ' +
@@ -6300,8 +6302,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Sent rss3 feed: ' +
                               path + ' ' + callingDomain)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_getRSS3feed',
-                                       'blog rss3', debug)
+                                       '_GET', '_getRSS3feed', debug)
                     return
         if debug:
             print('Failed to get rss3 feed: ' +
@@ -6428,8 +6429,7 @@ class PubServer(BaseHTTPRequestHandler):
                               cookie, callingDomain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
-                               '_showPersonOptions',
-                               'person options', debug)
+                               '_GET', '_showPersonOptions', debug)
             return
 
         if '/users/news/' in path:
@@ -6480,8 +6480,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            lastModifiedTimeStr)
                     self._write(mediaBinary)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showMedia',
-                                   'show media', self.server.debug)
+                                   '_GET', '_showMedia', self.server.debug)
                 return
         self._404()
 
@@ -6525,8 +6524,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, callingDomain, False)
                     self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_getOntology',
-                                   'get ontology', self.server.debug)
+                                   '_GET', '_getOntology', self.server.debug)
                 return
         self._404()
 
@@ -6553,8 +6551,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            False, None)
                     self._write(mediaBinary)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showEmoji',
-                                   'show emoji', self.server.debug)
+                                   '_GET', '_showEmoji', self.server.debug)
                 return
         self._404()
 
@@ -6589,8 +6586,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, None)
                 self._write(mediaBinary)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showIcon',
-                                   'icon shown cache', self.server.debug)
+                                   '_GET', '_showIcon', self.server.debug)
                 return
             else:
                 if os.path.isfile(mediaFilename):
@@ -6605,8 +6601,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(mediaBinary)
                         self.server.iconsCache[mediaStr] = mediaBinary
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_showIcon',
-                                       'icon shown file', self.server.debug)
+                                       '_GET', '_showIcon', self.server.debug)
                     return
         self._404()
 
@@ -6647,8 +6642,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, None)
                 self._write(mediaBinary)
             fitnessPerformance(GETstartTime, self.server.fitness,
-                               '_showHelpScreenImage',
-                               'help image shown', self.server.debug)
+                               '_GET', '_showHelpScreenImage',
+                               self.server.debug)
             return
         self._404()
 
@@ -6672,8 +6667,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, None)
                 self._write(mediaBinary)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showCachedAvatar',
-                                   'avatar shown', self.server.debug)
+                                   '_GET', '_showCachedAvatar',
+                                   self.server.debug)
                 return
         self._404()
 
@@ -6719,7 +6714,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.maxRecentPosts,
                               self.server.translate,
                               baseDir, hashtag, pageNumber,
-                              maxPostsInFeed, self.server.session,
+                              maxPostsInHashtagFeed, self.server.session,
                               self.server.cachedWebfingers,
                               self.server.personCache,
                               httpPrefix,
@@ -6753,8 +6748,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, callingDomain)
         self.server.GETbusy = False
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_hashtagSearch',
-                           'hashtag search', self.server.debug)
+                           '_GET', '_hashtagSearch',
+                           self.server.debug)
 
     def _hashtagSearchRSS2(self, callingDomain: str,
                            path: str, cookie: str,
@@ -6810,8 +6805,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, callingDomain)
         self.server.GETbusy = False
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_hashtagSearchRSS2',
-                           'hashtag rss feed', self.server.debug)
+                           '_GET', '_hashtagSearchRSS2',
+                           self.server.debug)
 
     def _announceButton(self, callingDomain: str, path: str,
                         baseDir: str,
@@ -6852,13 +6847,16 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_announceButton1',
+                           self.server.debug)
         if not self.server.session:
             print('Starting new session during repeat button')
             self.server.session = createSession(proxyType)
@@ -6868,6 +6866,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 self.server.GETbusy = False
                 return
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_announceButton2',
+                           self.server.debug)
         self.server.actorRepeat = path.split('?actor=')[1]
         announceToStr = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull) + \
@@ -6890,6 +6891,9 @@ class PubServer(BaseHTTPRequestHandler):
                            debug,
                            self.server.projectVersion,
                            self.server.signingPrivateKeyPem)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_announceButton3',
+                           self.server.debug)
         announceFilename = None
         if announceJson:
             # save the announce straight to the outbox
@@ -6901,12 +6905,20 @@ class PubServer(BaseHTTPRequestHandler):
                               self.postToNickname, domainFull,
                               announceJson, 'outbox')
 
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_announceButton4',
+                               self.server.debug)
+
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('repeat.png'):
                 del self.server.iconsCache['repeat.png']
 
             # send out the announce within a separate thread
             self._postToOutboxThread(announceJson)
+
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_announceButton5',
+                               self.server.debug)
 
         # generate the html for the announce
         if announceJson and announceFilename:
@@ -6915,6 +6927,9 @@ class PubServer(BaseHTTPRequestHandler):
             cachedPostFilename = \
                 getCachedPostFilename(baseDir, self.postToNickname,
                                       domain, announceJson)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_announceButton6',
+                               self.server.debug)
             if debug:
                 print('Announced post json: ' + str(announceJson))
                 print('Announced post nickname: ' +
@@ -6925,6 +6940,9 @@ class PubServer(BaseHTTPRequestHandler):
                 followerApprovalActive(baseDir,
                                        self.postToNickname, domain)
             showRepeats = not isDM(announceJson)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_announceButton7',
+                               self.server.debug)
             individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                  self.server.recentPostsCache,
                                  self.server.maxRecentPosts,
@@ -6951,16 +6969,19 @@ class PubServer(BaseHTTPRequestHandler):
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_announceButton8',
+                               self.server.debug)
 
         self.server.GETbusy = False
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
         self._redirect_headers(actorPathStr, cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_announceButton',
-                           'show announce', self.server.debug)
+                           '_GET', '_announceButton',
+                           self.server.debug)
 
     def _undoAnnounceButton(self, callingDomain: str, path: str,
                             baseDir: str,
@@ -7004,7 +7025,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
                 str(pageNumber)
@@ -7060,14 +7081,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._postToOutboxThread(newUndoAnnounce)
         self.server.GETbusy = False
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
         self._redirect_headers(actorPathStr, cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_undoAnnounceButton',
-                           'unannounce', self.server.debug)
+                           '_GET', '_undoAnnounceButton',
+                           self.server.debug)
 
     def _followApproveButton(self, callingDomain: str, path: str,
                              cookie: str,
@@ -7120,8 +7141,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_followApproveButton',
-                           'follow approve shown', self.server.debug)
+                           '_GET', '_followApproveButton',
+                           self.server.debug)
         self.server.GETbusy = False
 
     def _newswireVote(self, callingDomain: str, path: str,
@@ -7177,8 +7198,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_newswireVote',
-                           'vote for newswite item', self.server.debug)
+                           '_GET', '_newswireVote',
+                           self.server.debug)
         self.server.GETbusy = False
 
     def _newswireUnvote(self, callingDomain: str, path: str,
@@ -7232,8 +7253,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_newswireUnvote',
-                           'unvote for newswite item', self.server.debug)
+                           '_GET', '_newswireUnvote',
+                           self.server.debug)
         self.server.GETbusy = False
 
     def _followDenyButton(self, callingDomain: str, path: str,
@@ -7279,8 +7300,8 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.GETbusy = False
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_followDenyButton',
-                           'follow deny shown', self.server.debug)
+                           '_GET', '_followDenyButton',
+                           self.server.debug)
 
     def _likeButton(self, callingDomain: str, path: str,
                     baseDir: str, httpPrefix: str,
@@ -7320,13 +7341,16 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton1',
+                           self.server.debug)
         if not self.server.session:
             print('Starting new session during like')
             self.server.session = createSession(proxyType)
@@ -7335,6 +7359,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 self.server.GETbusy = False
                 return
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton2',
+                           self.server.debug)
         likeActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
@@ -7345,6 +7372,9 @@ class PubServer(BaseHTTPRequestHandler):
         origActor, origPostUrl, origFilename = \
             getOriginalPostFromAnnounceUrl(likeUrl, baseDir,
                                            self.postToNickname, domain)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton3',
+                           self.server.debug)
         likeUrl2 = likeUrl
         likedPostFilename = origFilename
         if origActor and origPostUrl:
@@ -7363,12 +7393,19 @@ class PubServer(BaseHTTPRequestHandler):
         # send out the like to followers
         self._postToOutbox(likeJson, self.server.projectVersion, None)
 
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_likeButton4',
+                           self.server.debug)
+
         print('Locating liked post ' + likeUrl)
         # directly like the post file
         if not likedPostFilename:
             likedPostFilename = \
                 locatePost(baseDir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_likeButton5',
+                               self.server.debug)
             recentPostsCache = self.server.recentPostsCache
             likedPostJson = loadJson(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
@@ -7380,6 +7417,9 @@ class PubServer(BaseHTTPRequestHandler):
                 likedPostFilename = origFilename
             if debug:
                 print('Updating likes for ' + likedPostFilename)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_likeButton6',
+                               self.server.debug)
             updateLikesCollection(recentPostsCache,
                                   baseDir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
@@ -7388,6 +7428,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
             if likedPostJson:
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_likeButton6',
+                                   self.server.debug)
                 cachedPostFilename = \
                     getCachedPostFilename(baseDir, self.postToNickname,
                                           domain, likedPostJson)
@@ -7401,6 +7444,9 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(baseDir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(likedPostJson)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_likeButton7',
+                                   self.server.debug)
                 individualPostAsHtml(self.server.signingPrivateKeyPem, False,
                                      self.server.recentPostsCache,
                                      self.server.maxRecentPosts,
@@ -7428,6 +7474,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      showIndividualPostIcons,
                                      manuallyApproveFollowers,
                                      False, True, False)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_likeButton8',
+                                   self.server.debug)
             else:
                 print('WARN: Liked post not found: ' + likedPostFilename)
             # clear the icon from the cache so that it gets updated
@@ -7438,15 +7487,15 @@ class PubServer(BaseHTTPRequestHandler):
                   likeUrl)
 
         self.server.GETbusy = False
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_likeButton',
-                           'like shown', self.server.debug)
+                           '_GET', '_likeButton',
+                           self.server.debug)
 
     def _undoLikeButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -7485,7 +7534,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -7594,15 +7643,15 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
         self.server.GETbusy = False
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_undoLikeButton',
-                           'unlike shown', self.server.debug)
+                           '_GET', '_undoLikeButton',
+                           self.server.debug)
 
     def _bookmarkButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -7642,7 +7691,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -7727,15 +7776,15 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Bookmarked post not found: ' + bookmarkFilename)
         # self._postToOutbox(bookmarkJson, self.server.projectVersion, None)
         self.server.GETbusy = False
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_bookmarkButton',
-                           'bookmark shown', self.server.debug)
+                           '_GET', '_bookmarkButton',
+                           self.server.debug)
 
     def _undoBookmarkButton(self, callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -7774,7 +7823,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             self.server.GETbusy = False
-            actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -7860,15 +7909,15 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Unbookmarked post not found: ' + bookmarkFilename)
         self.server.GETbusy = False
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_undoBookmarkButton',
-                           'unbookmark shown', self.server.debug)
+                           '_GET', '_undoBookmarkButton',
+                           self.server.debug)
 
     def _deleteButton(self, callingDomain: str, path: str,
                       baseDir: str, httpPrefix: str,
@@ -7974,8 +8023,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(actor + '/' + timelineStr,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_deleteButton',
-                           'delete shown', self.server.debug)
+                           '_GET', '_deleteButton',
+                           self.server.debug)
 
     def _muteButton(self, callingDomain: str, path: str,
                     baseDir: str, httpPrefix: str,
@@ -8083,8 +8132,7 @@ class PubServer(BaseHTTPRequestHandler):
                                timelineStr + timelineBookmark,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_muteButton',
-                           'post muted', self.server.debug)
+                           '_GET', '_muteButton', self.server.debug)
 
     def _undoMuteButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -8190,8 +8238,7 @@ class PubServer(BaseHTTPRequestHandler):
                                timelineBookmark,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_undoMuteButton',
-                           'unmute activated', self.server.debug)
+                           '_GET', '_undoMuteButton', self.server.debug)
 
     def _showRepliesToPost(self, authorized: bool,
                            callingDomain: str, path: str,
@@ -8307,8 +8354,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showRepliesToPost',
-                                   'post replies empty', self.server.debug)
+                                   '_GET', '_showRepliesToPost',
+                                   self.server.debug)
             else:
                 if self._secureMode():
                     msg = json.dumps(repliesJson, ensure_ascii=False)
@@ -8319,8 +8366,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       callingDomain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_showRepliesToPost',
-                                       'post replies empty json',
+                                       '_GET', '_showRepliesToPost json',
                                        self.server.debug)
                 else:
                     self._404()
@@ -8407,8 +8453,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showRepliesToPost',
-                                   'post replies done', self.server.debug)
+                                   '_GET', '_showRepliesToPost',
+                                   self.server.debug)
             else:
                 if self._secureMode():
                     msg = json.dumps(repliesJson,
@@ -8420,8 +8466,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, callingDomain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_showRepliesToPost',
-                                       'post replies json', self.server.debug)
+                                       '_GET', '_showRepliesToPost json',
+                                       self.server.debug)
                 else:
                     self._404()
             self.server.GETbusy = False
@@ -8516,8 +8562,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       cookie, callingDomain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_showRoles',
-                                       'show roles', self.server.debug)
+                                       '_GET', '_showRoles',
+                                       self.server.debug)
             else:
                 if self._secureMode():
                     rolesList = getActorRolesList(actorJson)
@@ -8529,8 +8575,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, callingDomain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_showRoles',
-                                       'show roles json', self.server.debug)
+                                       '_GET', '_showRoles json',
+                                       self.server.debug)
                 else:
                     self._404()
             self.server.GETbusy = False
@@ -8630,8 +8676,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._write(msg)
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
-                                                   '_showSkills',
-                                                   'show skills',
+                                                   '_GET', '_showSkills',
                                                    self.server.debug)
                         else:
                             if self._secureMode():
@@ -8648,15 +8693,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._write(msg)
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
-                                                   '_showSkills',
-                                                   'show skills json',
+                                                   '_GET', '_showSkills json',
                                                    self.server.debug)
                             else:
                                 self._404()
                         self.server.GETbusy = False
                         return True
         actor = path.replace('/skills', '')
-        actorAbsolute = self._getInstalceUrl(callingDomain) + actor
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         self._redirect_headers(actorAbsolute, cookie, callingDomain)
         self.server.GETbusy = False
         return True
@@ -8713,8 +8757,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         proxyType, cookie, debug,
                                         includeCreateWrapper)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_showIndividualAtPost',
-                           'show', self.server.debug)
+                           '_GET', '_showIndividualAtPost',
+                           self.server.debug)
         return result
 
     def _showPostFromFile(self, postFilename: str, likedBy: str,
@@ -8780,8 +8824,8 @@ class PubServer(BaseHTTPRequestHandler):
                               cookie, callingDomain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
-                               '_showPostFromFile',
-                               'show status', self.server.debug)
+                               '_GET', '_showPostFromFile',
+                               self.server.debug)
         else:
             if self._secureMode():
                 if not includeCreateWrapper and \
@@ -8802,8 +8846,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   None, callingDomain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_showPostFromFile',
-                                   'show status json', self.server.debug)
+                                   '_GET', '_showPostFromFile json',
+                                   self.server.debug)
             else:
                 self._404()
         self.server.GETbusy = False
@@ -8854,8 +8898,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         proxyType, cookie, debug,
                                         includeCreateWrapper)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_showIndividualPost',
-                           'show post', self.server.debug)
+                           '_GET', '_showIndividualPost',
+                           self.server.debug)
         return result
 
     def _showNotifyPost(self, authorized: bool,
@@ -8895,8 +8939,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         proxyType, cookie, debug,
                                         includeCreateWrapper)
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_showNotifyPost',
-                           'show notify', self.server.debug)
+                           '_GET', '_showNotifyPost',
+                           self.server.debug)
         return result
 
     def _showInbox(self, authorized: bool,
@@ -8938,8 +8982,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if GETstartTime:
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showInbox',
-                                           'show inbox json',
+                                           '_GET', '_showInbox',
                                            self.server.debug)
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -8970,8 +9013,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if GETstartTime:
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
-                                                   '_showInbox',
-                                                   'show inbox page',
+                                                   '_GET', '_showInbox2',
                                                    self.server.debug)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
@@ -9025,8 +9067,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if GETstartTime:
                             fitnessPerformance(GETstartTime,
                                                self.server.fitness,
-                                               '_showInbox',
-                                               'show inbox html',
+                                               '_GET', '_showInbox3',
                                                self.server.debug)
                         if msg:
                             msg = msg.encode('utf-8')
@@ -9038,8 +9079,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if GETstartTime:
                             fitnessPerformance(GETstartTime,
                                                self.server.fitness,
-                                               '_showInbox',
-                                               'show inbox',
+                                               '_GET', '_showInbox4',
                                                self.server.debug)
                     else:
                         # don't need authorized fetch here because
@@ -9052,8 +9092,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showInbox',
-                                           'show inbox json',
+                                           '_GET', '_showInbox5',
                                            self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -9180,7 +9219,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showDMs', 'show dms',
+                                           '_GET', '_showDMs',
                                            self.server.debug)
                     else:
                         # don't need authorized fetch here because
@@ -9194,7 +9233,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showDMs', 'show dms json',
+                                           '_GET', '_showDMs json',
                                            self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -9321,7 +9360,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showReplies', 'show replies 2',
+                                       '_GET', '_showReplies',
                                        self.server.debug)
                 else:
                     # don't need authorized fetch here because there is
@@ -9335,7 +9374,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showReplies', 'show replies 2 json',
+                                       '_GET', '_showReplies json',
                                        self.server.debug)
                 self.server.GETbusy = False
                 return True
@@ -9461,7 +9500,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showMediaTimeline', 'show media 2',
+                                       '_GET', '_showMediaTimeline',
                                        self.server.debug)
                 else:
                     # don't need authorized fetch here because there is
@@ -9475,8 +9514,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showMediaTimeline',
-                                       'show media 2 json',
+                                       '_GET', '_showMediaTimeline json',
                                        self.server.debug)
                 self.server.GETbusy = False
                 return True
@@ -9602,8 +9640,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showBlogsTimeline',
-                                       'show blogs 2',
+                                       '_GET', '_showBlogsTimeline',
                                        self.server.debug)
                 else:
                     # don't need authorized fetch here because there is
@@ -9618,8 +9655,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showBlogsTimeline',
-                                       'show blogs 2 json',
+                                       '_GET', '_showBlogsTimeline json',
                                        self.server.debug)
                 self.server.GETbusy = False
                 return True
@@ -9753,8 +9789,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showNewsTimeline',
-                                       'show news 2',
+                                       '_GET', '_showNewsTimeline',
                                        self.server.debug)
                 else:
                     # don't need authorized fetch here because there is
@@ -9769,8 +9804,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showNewsTimeline',
-                                       'show news 2 json',
+                                       '_GET', '_showNewsTimeline json',
                                        self.server.debug)
                 self.server.GETbusy = False
                 return True
@@ -9902,8 +9936,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showFeaturesTimeline',
-                                       'show news 2',
+                                       '_GET', '_showFeaturesTimeline',
                                        self.server.debug)
                 else:
                     # don't need authorized fetch here because there is
@@ -9918,8 +9951,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showFeaturesTimeline',
-                                       'show news 2 json',
+                                       '_GET', '_showFeaturesTimeline json',
                                        self.server.debug)
                 self.server.GETbusy = False
                 return True
@@ -10010,8 +10042,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showSharesTimeline',
-                                       'show shares 2',
+                                       '_GET', '_showSharesTimeline',
                                        self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -10095,8 +10126,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showWantedTimeline',
-                                       'show wanted 2',
+                                       '_GET', '_showWantedTimeline',
                                        self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -10217,8 +10247,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showBookmarksTimeline',
-                                           'show bookmarks 2',
+                                           '_GET', '_showBookmarksTimeline',
                                            self.server.debug)
                     else:
                         # don't need authorized fetch here because
@@ -10232,8 +10261,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showBookmarksTimeline',
-                                           'show bookmarks 2',
+                                           '_GET',
+                                           '_showBookmarksTimeline json',
                                            self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -10356,8 +10385,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
-                                   '_showOutboxTimeline',
-                                   'show outbox',
+                                   '_GET', '_showOutboxTimeline',
                                    self.server.debug)
             else:
                 if self._secureMode():
@@ -10370,8 +10398,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showOutboxTimeline',
-                                       'show outbox',
+                                       '_GET', '_showOutboxTimeline json',
                                        self.server.debug)
                 else:
                     self._404()
@@ -10487,8 +10514,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showModTimeline',
-                                           'show moderation',
+                                           '_GET', '_showModTimeline',
                                            self.server.debug)
                     else:
                         # don't need authorized fetch here because
@@ -10502,8 +10528,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
-                                           '_showModTimeline',
-                                           'show moderation json',
+                                           '_GET', '_showModTimeline json',
                                            self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -10616,8 +10641,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showSharesFeed',
-                                       'show profile 2',
+                                       '_GET', '_showSharesFeed',
                                        self.server.debug)
                     self.server.GETbusy = False
                     return True
@@ -10632,8 +10656,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showSharesFeed',
-                                       'show profile 2 json',
+                                       '_GET', '_showSharesFeed json',
                                        self.server.debug)
                 else:
                     self._404()
@@ -10742,8 +10765,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy = False
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showFollowingFeed',
-                                       'show profile 3',
+                                       '_GET', '_showFollowingFeed',
                                        self.server.debug)
                     return True
             else:
@@ -10756,8 +10778,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showFollowingFeed',
-                                       'show profile 3 json',
+                                       '_GET', '_showFollowingFeed json',
                                        self.server.debug)
                 else:
                     self._404()
@@ -10867,8 +10888,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy = False
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showFollowersFeed',
-                                       'show profile 4',
+                                       '_GET', '_showFollowersFeed',
                                        self.server.debug)
                     return True
             else:
@@ -10881,8 +10901,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
-                                       '_showFollowersFeed',
-                                       'show profile 4 json',
+                                       '_GET', '_showFollowersFeed json',
                                        self.server.debug)
                 else:
                     self._404()
@@ -11007,8 +11026,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
-                               '_showPersonProfile',
-                               'show profile posts',
+                               '_GET', '_showPersonProfile',
                                self.server.debug)
         else:
             if self._secureMode():
@@ -11028,8 +11046,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
-                                   '_showPersonProfile',
-                                   'show profile posts json',
+                                   '_GET', '_showPersonProfile json',
                                    self.server.debug)
             else:
                 self._404()
@@ -11108,8 +11125,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         fitnessPerformance(GETstartTime,
                            self.server.fitness,
-                           '_showInstanceActor',
-                           'actor',
+                           '_GET', '_showInstanceActor',
                            self.server.debug)
         return True
 
@@ -11168,8 +11184,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
-                               '_showBlogPage',
-                               'blog page',
+                               '_GET', '_showBlogPage',
                                self.server.debug)
             return True
         self._404()
@@ -11233,8 +11248,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        divertPath, None, callingDomain)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
-                               '_redirectToLoginScreen',
-                               'show login screen',
+                               '_GET', '_redirectToLoginScreen',
                                self.server.debug)
             return True
         return False
@@ -11266,8 +11280,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
-                               '_getStyleSheet',
-                               'show profile.css',
+                               '_GET', '_getStyleSheet',
                                self.server.debug)
             return True
         self._404()
@@ -11308,8 +11321,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(mediaBinary)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
-                                   '_showQRcode',
-                                   'account qrcode',
+                                   '_GET', '_showQRcode',
                                    self.server.debug)
                 return True
         self._404()
@@ -11354,8 +11366,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(mediaBinary)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
-                                   '_searchScreenBanner',
-                                   'search screen banner',
+                                   '_GET', '_searchScreenBanner',
                                    self.server.debug)
                 return True
         self._404()
@@ -11398,8 +11409,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(mediaBinary)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
-                                   '_columnImage',
-                                   side + ' col image',
+                                   '_GET', '_columnImage ' + side,
                                    self.server.debug)
                 return True
         self._404()
@@ -11446,8 +11456,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._write(bgBinary)
                             fitnessPerformance(GETstartTime,
                                                self.server.fitness,
-                                               '_showBackgroundImage',
-                                               'background shown',
+                                               '_GET', '_showBackgroundImage',
                                                self.server.debug)
                             return True
         self._404()
@@ -11492,8 +11501,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(bgBinary)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
+                                       '_GET',
                                        '_showDefaultProfileBackground',
-                                       'background shown',
                                        self.server.debug)
                     return True
                 break
@@ -11531,8 +11540,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(mediaBinary)
         fitnessPerformance(GETstartTime,
                            self.server.fitness,
-                           '_showShareImage',
-                           'share files shown',
+                           '_GET', '_showShareImage',
                            self.server.debug)
         return True
 
@@ -11601,8 +11609,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(mediaBinary)
         fitnessPerformance(GETstartTime,
                            self.server.fitness,
-                           '_showAvatarOrBanner',
-                           'avatar background shown',
+                           '_GET', '_showAvatarOrBanner',
                            self.server.debug)
         return True
 
@@ -11654,8 +11661,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, callingDomain)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
-                               '_confirmDeleteEvent',
-                               'calendar delete shown',
+                               '_GET', '_confirmDeleteEvent',
                                self.server.debug)
             return True
         msg = msg.encode('utf-8')
@@ -11740,8 +11746,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
-                               '_showNewPost',
-                               'new post made',
+                               '_GET', '_showNewPost',
                                self.server.debug)
             return True
         return False

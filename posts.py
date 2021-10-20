@@ -2734,17 +2734,17 @@ def _isProfileUpdate(postJsonObject: {}) -> bool:
     return False
 
 
-def sendToNamedAddresses(session, baseDir: str,
-                         nickname: str, domain: str,
-                         onionDomain: str, i2pDomain: str, port: int,
-                         httpPrefix: str, federationList: [],
-                         sendThreads: [], postLog: [],
-                         cachedWebfingers: {}, personCache: {},
-                         postJsonObject: {}, debug: bool,
-                         projectVersion: str,
-                         sharedItemsFederatedDomains: [],
-                         sharedItemFederationTokens: {},
-                         signingPrivateKeyPem: str) -> None:
+def _sendToNamedAddresses(session, baseDir: str,
+                          nickname: str, domain: str,
+                          onionDomain: str, i2pDomain: str, port: int,
+                          httpPrefix: str, federationList: [],
+                          sendThreads: [], postLog: [],
+                          cachedWebfingers: {}, personCache: {},
+                          postJsonObject: {}, debug: bool,
+                          projectVersion: str,
+                          sharedItemsFederatedDomains: [],
+                          sharedItemFederationTokens: {},
+                          signingPrivateKeyPem: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -2883,6 +2883,45 @@ def sendToNamedAddresses(session, baseDir: str,
                        personCache, debug, projectVersion,
                        sharedItemsToken, groupAccount,
                        signingPrivateKeyPem, 34436782)
+
+
+def sendToNamedAddressesThread(session, baseDir: str,
+                               nickname: str, domain: str,
+                               onionDomain: str, i2pDomain: str, port: int,
+                               httpPrefix: str, federationList: [],
+                               sendThreads: [], postLog: [],
+                               cachedWebfingers: {}, personCache: {},
+                               postJsonObject: {}, debug: bool,
+                               projectVersion: str,
+                               sharedItemsFederatedDomains: [],
+                               sharedItemFederationTokens: {},
+                               signingPrivateKeyPem: str):
+    """Returns a thread used to send a post to named addresses
+    """
+    sendThread = \
+        threadWithTrace(target=_sendToNamedAddresses,
+                        args=(session, baseDir,
+                              nickname, domain,
+                              onionDomain, i2pDomain, port,
+                              httpPrefix, federationList,
+                              sendThreads, postLog,
+                              cachedWebfingers, personCache,
+                              postJsonObject, debug,
+                              projectVersion,
+                              sharedItemsFederatedDomains,
+                              sharedItemFederationTokens,
+                              signingPrivateKeyPem), daemon=True)
+    try:
+        sendThread.start()
+    except SocketError as e:
+        print('WARN: socket error while starting ' +
+              'thread to send to named addresses. ' + str(e))
+        return None
+    except ValueError as e:
+        print('WARN: error while starting ' +
+              'thread to send to named addresses. ' + str(e))
+        return None
+    return sendThread
 
 
 def _hasSharedInbox(session, httpPrefix: str, domain: str,
