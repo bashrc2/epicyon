@@ -153,7 +153,7 @@ def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
         modifiedDate = None
         try:
             modifiedDate = \
-                datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
+                datetime.datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
         except BaseException:
             print('WARN: unable to parse last modified cache date ' +
                   str(lastModified))
