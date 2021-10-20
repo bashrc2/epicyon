@@ -1415,12 +1415,14 @@ def _htmlEditProfileDangerZone(translate: {}) -> str:
     return editProfileForm
 
 
-def _htmlSystemMonitor(translate: {}) -> str:
+def _htmlSystemMonitor(nickname: str, translate: {}) -> str:
     """Links to performance graphs
     """
     systemMonitorStr = beginEditSection(translate['System Monitor'])
-    systemMonitorStr += '<p><a href="/performance?graph=get">📊 GET</a></p>'
-    systemMonitorStr += '<p><a href="/performance?graph=post">📊 POST</a></p>'
+    systemMonitorStr += '<p><a href="/users/' + nickname + \
+        '/performance?graph=get">📊 GET</a></p>'
+    systemMonitorStr += '<p><a href="/users/' + nickname + \
+        '/performance?graph=post">📊 POST</a></p>'
     systemMonitorStr += endEditSection()
     return systemMonitorStr
 
@@ -2074,7 +2076,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                          mediaInstanceStr,
                                          blogsInstanceStr,
                                          newsInstanceStr)
-            systemMonitorStr = _htmlSystemMonitor(translate)
+            systemMonitorStr = _htmlSystemMonitor(nickname, translate)
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
