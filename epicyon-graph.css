@@ -68,7 +68,7 @@ body, table, input, select, textarea {
 	}
 
 	.graph tbody:after {
-	    content:"0%";
+	    content:"0";
 	    bottom:-0.6em;
 	}
 
