@@ -797,7 +797,8 @@ def htmlHashtagSearch(cssCache: {},
         # previous page link
         hashtagSearchForm += \
             '  <center>\n' + \
-            '    <a href="/tags/' + hashtag + '?page=' + \
+            '    <a href="/users/' + nickname + \
+            '/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
@@ -873,7 +874,7 @@ def htmlHashtagSearch(cssCache: {},
         # next page link
         hashtagSearchForm += \
             '  <center>\n' + \
-            '    <a href="/tags/' + hashtag + \
+            '    <a href="/users/' + nickname + '/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
