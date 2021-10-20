@@ -97,7 +97,7 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
 
     ctr = 0
     for watchPoint in watchPointsList:
-        name = watchPoint.split(' ')[1]
+        name = watchPoint.split(' ', 1)[1]
         averageTime = float(watchPoint.split(' ')[0])
         heightPercent = int(averageTime * 100 / maxAverageTime)
         timeMS = int(averageTime)
