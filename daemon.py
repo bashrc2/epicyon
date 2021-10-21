@@ -17199,8 +17199,6 @@ def runDaemon(defaultReplyIntervalHours: int,
         updateBlockedCache(baseDir, httpd.blockedCache,
                            httpd.blockedCacheLastUpdated,
                            httpd.blockedCacheUpdateSecs)
-    httpd.listsEnabled = getConfigParam(baseDir, "listsEnabled")
-    httpd.CWlists = loadCWLists(baseDir, True, httpd.listsEnabled)
 
     # cache to store css files
     httpd.cssCache = {}
@@ -17219,6 +17217,10 @@ def runDaemon(defaultReplyIntervalHours: int,
     if not os.path.isdir(baseDir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
         createNewsInbox(baseDir, domain, port, httpPrefix)
+        setConfigParam(baseDir, "listsEnabled", "Murdoch press")
+
+    httpd.listsEnabled = getConfigParam(baseDir, "listsEnabled")
+    httpd.CWlists = loadCWLists(baseDir, True, httpd.listsEnabled)
 
     # set the avatar for the news account
     httpd.themeName = getConfigParam(baseDir, 'theme')
