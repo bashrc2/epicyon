@@ -164,6 +164,8 @@ from shares import updateSharedItemFederationToken
 from shares import mergeSharedItemTokens
 from shares import sendShareViaServer
 from shares import getSharedItemsCatalogViaServer
+from blocking import loadCWLists
+from blocking import addCWfromLists
 
 testServerGroupRunning = False
 testServerAliceRunning = False
@@ -5764,6 +5766,46 @@ def _testWordsSimilarity() -> None:
     assert similarity > 80
 
 
+def _testAddCWfromLists(baseDir: str) -> None:
+    print('testAddCWfromLists')
+    translate = {}
+    CWlists = loadCWLists(baseDir, True)
+    assert CWlists
+
+    postJsonObject = {
+        "object": {
+            "sensitive": False,
+            "summary": None,
+            "content": ""
+        }
+    }
+    addCWfromLists(postJsonObject, CWlists, translate)
+    assert postJsonObject['object']['sensitive'] is False
+    assert postJsonObject['object']['summary'] is None
+
+    postJsonObject = {
+        "object": {
+            "sensitive": False,
+            "summary": None,
+            "content": "Blah blah news.co.uk blah blah"
+        }
+    }
+    addCWfromLists(postJsonObject, CWlists, translate)
+    assert postJsonObject['object']['sensitive'] is True
+    assert postJsonObject['object']['summary'] == "Murdoch Press"
+
+    postJsonObject = {
+        "object": {
+            "sensitive": True,
+            "summary": "Existing CW",
+            "content": "Blah blah news.co.uk blah blah"
+        }
+    }
+    addCWfromLists(postJsonObject, CWlists, translate)
+    assert postJsonObject['object']['sensitive'] is True
+    assert postJsonObject['object']['summary'] == "Murdoch Press / Existing CW"
+
+
 def runAllTests():
     baseDir = os.getcwd()
     print('Running tests...')
@@ -5771,6 +5813,7 @@ def runAllTests():
     _translateOntology(baseDir)
     _testGetPriceFromString()
     _testFunctions()
+    _testAddCWfromLists(baseDir)
     _testWordsSimilarity()
     _testSecondsBetweenPublished()
     _testSignAndVerify()

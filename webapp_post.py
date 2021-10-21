@@ -77,6 +77,7 @@ from webfinger import webfingerHandle
 from speaker import updateSpeaker
 from languages import autoTranslatePost
 from blocking import isBlocked
+from blocking import addCWfromLists
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -1205,7 +1206,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          manuallyApprovesFollowers: bool,
                          showPublicOnly: bool,
                          storeToCache: bool,
-                         useCacheOnly: bool) -> str:
+                         useCacheOnly: bool,
+                         CWlists: {}) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:
@@ -1651,6 +1653,9 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if newFooterStr:
         footerStr = newFooterStr
 
+    # add any content warning from the cwlists directory
+    addCWfromLists(postJsonObject, CWlists, translate)
+
     postIsSensitive = False
     if postJsonObject['object'].get('sensitive'):
         # sensitive posts should have a summary
@@ -1825,7 +1830,8 @@ def htmlIndividualPost(cssCache: {},
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int, signingPrivateKeyPem: str) -> str:
+                       maxLikeCount: int, signingPrivateKeyPem: str,
+                       CWlists: {}) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1878,7 +1884,8 @@ def htmlIndividualPost(cssCache: {},
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
                              systemLanguage, maxLikeCount,
-                             False, authorized, False, False, False, False)
+                             False, authorized, False, False, False, False,
+                             CWlists)
     messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
@@ -1910,7 +1917,8 @@ def htmlIndividualPost(cssCache: {},
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, authorized,
-                                         False, False, False, False) + postStr
+                                         False, False, False, False,
+                                         CWlists) + postStr
 
     # show the following posts
     postFilename = locatePost(baseDir, nickname, domain, messageId)
@@ -1944,7 +1952,8 @@ def htmlIndividualPost(cssCache: {},
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, authorized,
-                                         False, False, False, False)
+                                         False, False, False, False,
+                                         CWlists)
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
@@ -1968,7 +1977,7 @@ def htmlPostReplies(cssCache: {},
                     allowLocalNetworkAccess: bool,
                     themeName: str, systemLanguage: str,
                     maxLikeCount: int,
-                    signingPrivateKeyPem: str) -> str:
+                    signingPrivateKeyPem: str, CWlists: {}) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1991,7 +2000,8 @@ def htmlPostReplies(cssCache: {},
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage,
                                      maxLikeCount,
-                                     False, False, False, False, False, False)
+                                     False, False, False, False, False, False,
+                                     CWlists)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

@@ -35,7 +35,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           allowLocalNetworkAccess: bool,
                           themeName: str, systemLanguage: str,
                           maxLikeCount: int,
-                          signingPrivateKeyPem: str) -> str:
+                          signingPrivateKeyPem: str, CWlists: {}) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -81,7 +81,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, False, False,
-                                         True, False, False)
+                                         True, False, False,
+                                         CWlists)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
@@ -109,9 +110,10 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                     accessKeys: {},
                     systemLanguage: str, maxLikeCount: int,
                     sharedItemsFederatedDomains: [],
-                    extraJson: {} = None,
-                    pageNumber: int = None,
-                    maxItemsPerPage: int = None) -> str:
+                    extraJson: {},
+                    pageNumber: int,
+                    maxItemsPerPage: int,
+                    CWlists: {}) -> str:
     """Show the news instance front screen
     """
     nickname = profileJson['preferredUsername']
@@ -182,7 +184,8 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                               allowLocalNetworkAccess,
                               theme, systemLanguage,
                               maxLikeCount,
-                              signingPrivateKeyPem) + licenseStr
+                              signingPrivateKeyPem,
+                              CWlists) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

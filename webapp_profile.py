@@ -89,7 +89,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            accessKeys: {},
                            systemLanguage: str,
                            maxLikeCount: int,
-                           signingPrivateKeyPem: str) -> str:
+                           signingPrivateKeyPem: str,
+                           CWlists: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -306,7 +307,8 @@ def htmlProfileAfterSearch(cssCache: {},
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage, maxLikeCount,
-                                     False, False, False, False, False, False)
+                                     False, False, False, False, False, False,
+                                     CWlists)
             i += 1
             if i >= 8:
                 break
@@ -516,8 +518,9 @@ def htmlProfile(signingPrivateKeyPem: str,
                 debug: bool, accessKeys: {}, city: str,
                 systemLanguage: str, maxLikeCount: int,
                 sharedItemsFederatedDomains: [],
-                extraJson: {} = None, pageNumber: int = None,
-                maxItemsPerPage: int = None) -> str:
+                extraJson: {}, pageNumber: int,
+                maxItemsPerPage: int,
+                CWlists: {}) -> str:
     """Show the profile page as html
     """
     nickname = profileJson['preferredUsername']
@@ -539,8 +542,8 @@ def htmlProfile(signingPrivateKeyPem: str,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
                                systemLanguage, maxLikeCount,
-                               sharedItemsFederatedDomains,
-                               pageNumber, maxItemsPerPage)
+                               sharedItemsFederatedDomains, None,
+                               pageNumber, maxItemsPerPage, CWlists)
 
     domain, port = getDomainFromActor(profileJson['id'])
     if not domain:
@@ -897,7 +900,8 @@ def htmlProfile(signingPrivateKeyPem: str,
                               allowLocalNetworkAccess,
                               theme, systemLanguage,
                               maxLikeCount,
-                              signingPrivateKeyPem) + licenseStr
+                              signingPrivateKeyPem,
+                              CWlists) + licenseStr
     if not isGroup:
         if selected == 'following':
             profileStr += \
@@ -963,7 +967,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
                       maxLikeCount: int,
-                      signingPrivateKeyPem: str) -> str:
+                      signingPrivateKeyPem: str,
+                      CWlists: {}) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1008,7 +1013,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          themeName, systemLanguage,
                                          maxLikeCount,
                                          False, False, False,
-                                         True, False, False)
+                                         True, False, False,
+                                         CWlists)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1

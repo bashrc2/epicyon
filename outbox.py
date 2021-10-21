@@ -196,7 +196,7 @@ def postMessageToOutbox(session, translate: {},
                         signingPrivateKeyPem: str,
                         peertubeInstances: str, theme: str,
                         maxLikeCount: int,
-                        maxRecentPosts: int) -> bool:
+                        maxRecentPosts: int, CWlists: {}) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -467,7 +467,8 @@ def postMessageToOutbox(session, translate: {},
                                          boxNameIndex != 'dm',
                                          showIndividualPostIcons,
                                          manuallyApproveFollowers,
-                                         False, True, useCacheOnly)
+                                         False, True, useCacheOnly,
+                                         CWlists)
 
     if outboxAnnounce(recentPostsCache,
                       baseDir, messageJson, debug):

@@ -876,26 +876,81 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
     return False
 
 
-def loadLists(baseDir: str, verbose: bool) -> {}:
-    """Load lists used for blocking or warnings
+def loadCWLists(baseDir: str, verbose: bool) -> {}:
+    """Load lists used for content warnings
     """
-    if not os.path.isdir(baseDir + '/lists'):
+    if not os.path.isdir(baseDir + '/cwlists'):
         return {}
     result = {}
-    for subdir, dirs, files in os.walk(baseDir + '/lists'):
+    for subdir, dirs, files in os.walk(baseDir + '/cwlists'):
         for f in files:
             if not f.endswith('.json'):
                 continue
-            listFilename = os.path.join(baseDir + '/lists', f)
-            listJson = loadJson(listFilename)
+            listFilename = os.path.join(baseDir + '/cwlists', f)
+            print('listFilename: ' + listFilename)
+            listJson = loadJson(listFilename, 0, 1)
             if not listJson:
                 continue
             if not listJson.get('name'):
                 continue
-            if not listJson('words') and not listJson.get('domains'):
+            if not listJson.get('words') and not listJson.get('domains'):
                 continue
             name = listJson['name']
             if verbose:
                 print('List: ' + name)
             result[name] = listJson
     return result
+
+
+def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {}) -> None:
+    """Adds content warnings by matching the post content
+    against domains or keywords
+    """
+    if not postJsonObject['object'].get('content'):
+        return
+    cw = ''
+    if postJsonObject['object'].get('summary'):
+        cw = postJsonObject['object']['summary']
+
+    content = postJsonObject['object']['content']
+    for name, item in CWlists.items():
+        if not item.get('warning'):
+            continue
+        warning = item['warning']
+
+        # is there a translated version of the warning?
+        if translate.get(warning):
+            warning = translate[warning]
+
+        # is the warning already in the CW?
+        if warning in cw:
+            continue
+
+        matched = False
+
+        # match domains within the content
+        if item.get('domains'):
+            for domain in item['domains']:
+                if domain in content:
+                    if cw:
+                        cw = warning + ' / ' + cw
+                    else:
+                        cw = warning
+                    matched = True
+                    break
+
+        if matched:
+            continue
+
+        # match words within the content
+        if item.get('words'):
+            for wordStr in item['words']:
+                if wordStr in content:
+                    if cw:
+                        cw = warning + ' / ' + cw
+                    else:
+                        cw = warning
+                    break
+    if cw:
+        postJsonObject['object']['summary'] = cw
+        postJsonObject['object']['sensitive'] = True

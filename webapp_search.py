@@ -598,7 +598,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       themeName: str, boxName: str,
                       systemLanguage: str,
                       maxLikeCount: int,
-                      signingPrivateKeyPem: str) -> str:
+                      signingPrivateKeyPem: str,
+                      CWlists: {}) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -683,7 +684,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  themeName, systemLanguage, maxLikeCount,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
-                                 False, False, False, False)
+                                 False, False, False, False,
+                                 CWlists)
         if postStr:
             historySearchForm += separatorStr + postStr
         index += 1
@@ -707,7 +709,8 @@ def htmlHashtagSearch(cssCache: {},
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
                       maxLikeCount: int,
-                      signingPrivateKeyPem: str) -> str:
+                      signingPrivateKeyPem: str,
+                      CWlists: {}) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -865,7 +868,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
-                                 storeToCache, False)
+                                 storeToCache, False, CWlists)
         if postStr:
             hashtagSearchForm += separatorStr + postStr
         index += 1
