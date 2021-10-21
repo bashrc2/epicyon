@@ -1677,18 +1677,15 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
                      200, '', False)
 
     CWlistsStr = ''
-    if listsEnabled:
-        print('CWlistsStr 0: ' + str(CWlists))
-        for name, item in CWlists.items():
-            print('CWlistsStr: ' + name)
-            variableName = 'list' + name.replace(' ', '').replace("'", '')
+    for name, item in CWlists.items():
+        variableName = 'list' + name.replace(' ', '').replace("'", '')
+        listIsEnabled = False
+        if listsEnabled:
             if name in listsEnabled:
                 listIsEnabled = True
-            else:
-                listIsEnabled = False
-            if translate.get(name):
-                name = translate[name]
-                CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
+        if translate.get(name):
+            name = translate[name]
+            CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
     if CWlistsStr:
         idx = 'Add content warnings for the following sites'
         editProfileForm += \
