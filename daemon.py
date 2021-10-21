@@ -5696,9 +5696,7 @@ class PubServer(BaseHTTPRequestHandler):
                             except BaseException:
                                 pass
 
-                    # save blocked user agents
-                    # This is admin lebel and global to the instance
-                    if path.startswith('/users/' + adminNickname + '/'):
+                    if isModerator(self.server.baseDir, nickname):
                         # set selected content warning lists
                         newListsEnabled = ''
                         for name, item in self.server.CWlists.items():
@@ -5715,6 +5713,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            "listsEnabled",
                                            newListsEnabled)
 
+                        # save blocked user agents
                         userAgentsBlocked = []
                         if fields.get('userAgentsBlockedStr'):
                             userAgentsBlockedStr = \

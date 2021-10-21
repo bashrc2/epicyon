@@ -34,6 +34,7 @@ from person import personBoxJson
 from person import getActorJson
 from person import getPersonAvatarUrl
 from webfinger import webfingerHandle
+from posts import isModerator
 from posts import parseUserFeed
 from posts import getPersonBox
 from posts import isCreateInsideAnnounce
@@ -1667,31 +1668,32 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
 
-    userAgentsBlockedStr = ''
-    for ua in userAgentsBlocked:
-        if userAgentsBlockedStr:
-            userAgentsBlockedStr += '\n'
-        userAgentsBlockedStr += ua
-    editProfileForm += \
-        editTextArea(translate['Blocked User Agents'],
-                     'userAgentsBlockedStr', userAgentsBlockedStr,
-                     200, '', False)
-
-    CWlistsStr = ''
-    for name, item in CWlists.items():
-        variableName = getCWlistVariable(name)
-        listIsEnabled = False
-        if listsEnabled:
-            if name in listsEnabled:
-                listIsEnabled = True
-        if translate.get(name):
-            name = translate[name]
-        CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
-    if CWlistsStr:
-        idx = 'Add content warnings for the following sites'
+    if isModerator(baseDir, nickname):
+        userAgentsBlockedStr = ''
+        for ua in userAgentsBlocked:
+            if userAgentsBlockedStr:
+                userAgentsBlockedStr += '\n'
+            userAgentsBlockedStr += ua
         editProfileForm += \
-            '<label class="labels">' + translate[idx] + ':</label>\n' + \
-            '<br>' + CWlistsStr
+            editTextArea(translate['Blocked User Agents'],
+                         'userAgentsBlockedStr', userAgentsBlockedStr,
+                         200, '', False)
+
+        CWlistsStr = ''
+        for name, item in CWlists.items():
+            variableName = getCWlistVariable(name)
+            listIsEnabled = False
+            if listsEnabled:
+                if name in listsEnabled:
+                    listIsEnabled = True
+            if translate.get(name):
+                name = translate[name]
+            CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
+        if CWlistsStr:
+            idx = 'Add content warnings for the following sites'
+            editProfileForm += \
+                '<label class="labels">' + translate[idx] + ':</label>\n' + \
+                '<br>' + CWlistsStr
 
     editProfileForm += endEditSection()
     return editProfileForm
