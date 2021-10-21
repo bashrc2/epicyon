@@ -125,7 +125,8 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.themeName,
                                        httpd.maxLikeCount,
                                        httpd.maxRecentPosts,
-                                       httpd.CWlists):
+                                       httpd.CWlists,
+                                       httpd.listsEnabled):
                 indexLines.remove(line)
                 try:
                     os.remove(postFilename)

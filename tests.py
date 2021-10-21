@@ -5773,7 +5773,7 @@ def _testWordsSimilarity() -> None:
 def _testAddCWfromLists(baseDir: str) -> None:
     print('testAddCWfromLists')
     translate = {}
-    CWlists = loadCWLists(baseDir, True, "Murdoch press")
+    CWlists = loadCWLists(baseDir, True)
     assert CWlists
 
     postJsonObject = {
@@ -5783,7 +5783,7 @@ def _testAddCWfromLists(baseDir: str) -> None:
             "content": ""
         }
     }
-    addCWfromLists(postJsonObject, CWlists, translate)
+    addCWfromLists(postJsonObject, CWlists, translate, 'Murdoch press')
     assert postJsonObject['object']['sensitive'] is False
     assert postJsonObject['object']['summary'] is None
 
@@ -5794,7 +5794,7 @@ def _testAddCWfromLists(baseDir: str) -> None:
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    addCWfromLists(postJsonObject, CWlists, translate)
+    addCWfromLists(postJsonObject, CWlists, translate, 'Murdoch press')
     assert postJsonObject['object']['sensitive'] is True
     assert postJsonObject['object']['summary'] == "Murdoch Press"
 
@@ -5805,7 +5805,7 @@ def _testAddCWfromLists(baseDir: str) -> None:
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    addCWfromLists(postJsonObject, CWlists, translate)
+    addCWfromLists(postJsonObject, CWlists, translate, 'Murdoch press')
     assert postJsonObject['object']['sensitive'] is True
     assert postJsonObject['object']['summary'] == "Murdoch Press / Existing CW"
 

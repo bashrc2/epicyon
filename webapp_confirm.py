@@ -36,7 +36,7 @@ def htmlConfirmDelete(cssCache: {},
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
                       maxLikeCount: int, signingPrivateKeyPem: str,
-                      CWlists: {}) -> str:
+                      CWlists: {}, listsEnabled: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -81,7 +81,7 @@ def htmlConfirmDelete(cssCache: {},
                              peertubeInstances, allowLocalNetworkAccess,
                              themeName, systemLanguage, maxLikeCount,
                              False, False, False, False, False, False,
-                             CWlists)
+                             CWlists, listsEnabled)
     deletePostStr += '<center>'
     deletePostStr += \
         '  <p class="followText">' + \

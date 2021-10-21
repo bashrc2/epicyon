@@ -876,11 +876,9 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
     return False
 
 
-def loadCWLists(baseDir: str, verbose: bool, listsEnabled: str) -> {}:
+def loadCWLists(baseDir: str, verbose: bool) -> {}:
     """Load lists used for content warnings
     """
-    if not listsEnabled:
-        return {}
     if not os.path.isdir(baseDir + '/cwlists'):
         return {}
     result = {}
@@ -895,8 +893,6 @@ def loadCWLists(baseDir: str, verbose: bool, listsEnabled: str) -> {}:
                 continue
             if not listJson.get('name'):
                 continue
-            if listJson['name'] not in listsEnabled:
-                continue
             if not listJson.get('words') and not listJson.get('domains'):
                 continue
             name = listJson['name']
@@ -906,10 +902,13 @@ def loadCWLists(baseDir: str, verbose: bool, listsEnabled: str) -> {}:
     return result
 
 
-def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {}) -> None:
+def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
+                   listsEnabled: str) -> None:
     """Adds content warnings by matching the post content
     against domains or keywords
     """
+    if not listsEnabled:
+        return
     if not postJsonObject['object'].get('content'):
         return
     cw = ''
@@ -918,6 +917,8 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {}) -> None:
 
     content = postJsonObject['object']['content']
     for name, item in CWlists.items():
+        if name not in listsEnabled:
+            continue
         if not item.get('warning'):
             continue
         warning = item['warning']

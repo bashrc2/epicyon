@@ -1207,7 +1207,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          showPublicOnly: bool,
                          storeToCache: bool,
                          useCacheOnly: bool,
-                         CWlists: {}) -> str:
+                         CWlists: {},
+                         listsEnabled: str) -> str:
     """ Shows a single post as html
     """
     if not postJsonObject:
@@ -1654,7 +1655,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         footerStr = newFooterStr
 
     # add any content warning from the cwlists directory
-    addCWfromLists(postJsonObject, CWlists, translate)
+    addCWfromLists(postJsonObject, CWlists, translate, listsEnabled)
 
     postIsSensitive = False
     if postJsonObject['object'].get('sensitive'):
@@ -1831,7 +1832,7 @@ def htmlIndividualPost(cssCache: {},
                        allowLocalNetworkAccess: bool,
                        themeName: str, systemLanguage: str,
                        maxLikeCount: int, signingPrivateKeyPem: str,
-                       CWlists: {}) -> str:
+                       CWlists: {}, listsEnabled: str) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1885,7 +1886,7 @@ def htmlIndividualPost(cssCache: {},
                              allowLocalNetworkAccess, themeName,
                              systemLanguage, maxLikeCount,
                              False, authorized, False, False, False, False,
-                             CWlists)
+                             CWlists, listsEnabled)
     messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
@@ -1918,7 +1919,7 @@ def htmlIndividualPost(cssCache: {},
                                          maxLikeCount,
                                          False, authorized,
                                          False, False, False, False,
-                                         CWlists) + postStr
+                                         CWlists, listsEnabled) + postStr
 
     # show the following posts
     postFilename = locatePost(baseDir, nickname, domain, messageId)
@@ -1953,7 +1954,7 @@ def htmlIndividualPost(cssCache: {},
                                          maxLikeCount,
                                          False, authorized,
                                          False, False, False, False,
-                                         CWlists)
+                                         CWlists, listsEnabled)
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
@@ -1977,7 +1978,8 @@ def htmlPostReplies(cssCache: {},
                     allowLocalNetworkAccess: bool,
                     themeName: str, systemLanguage: str,
                     maxLikeCount: int,
-                    signingPrivateKeyPem: str, CWlists: {}) -> str:
+                    signingPrivateKeyPem: str, CWlists: {},
+                    listsEnabled: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -2001,7 +2003,7 @@ def htmlPostReplies(cssCache: {},
                                      themeName, systemLanguage,
                                      maxLikeCount,
                                      False, False, False, False, False, False,
-                                     CWlists)
+                                     CWlists, listsEnabled)
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
