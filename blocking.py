@@ -879,6 +879,8 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
 def loadCWLists(baseDir: str, verbose: bool, listsEnabled: str) -> {}:
     """Load lists used for content warnings
     """
+    if not listsEnabled:
+        return {}
     if not os.path.isdir(baseDir + '/cwlists'):
         return {}
     result = {}
