@@ -17227,6 +17227,7 @@ def runDaemon(listsEnabled: str,
     else:
         httpd.listsEnabled = getConfigParam(baseDir, "listsEnabled")
     httpd.CWlists = loadCWLists(baseDir, True, httpd.listsEnabled)
+    print('CWlistsStr httpd.CWlists: ' + str(httpd.CWlists))
 
     # set the avatar for the news account
     httpd.themeName = getConfigParam(baseDir, 'theme')
