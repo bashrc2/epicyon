@@ -1685,7 +1685,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
                 listIsEnabled = True
         if translate.get(name):
             name = translate[name]
-            CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
+        CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
     if CWlistsStr:
         idx = 'Add content warnings for the following sites'
         editProfileForm += \
