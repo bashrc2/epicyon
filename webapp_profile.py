@@ -1676,10 +1676,11 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
                      200, '', False)
 
     CWlistsStr = ''
+    print('CWlistsStr 0: ' + str(CWlists))
     for name, item in CWlists.items():
         print('CWlistsStr: ' + name)
         variableName = 'list' + name.replace(' ', '').replace("'", '')
-        if listName in listsEnabled:
+        if name in listsEnabled:
             listIsEnabled = True
         else:
             listIsEnabled = False
