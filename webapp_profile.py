@@ -1690,7 +1690,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         idx = 'Add content warnings for the following sites'
         editProfileForm += \
             '<label class="labels">' + translate[idx] + ':</label>\n' + \
-            CWlistsStr
+            '<br>' + CWlistsStr
 
     editProfileForm += endEditSection()
     return editProfileForm
