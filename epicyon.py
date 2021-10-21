@@ -112,6 +112,10 @@ def str2bool(v) -> bool:
 
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('--listsEnabled', type=str,
+                    default=None,
+                    help='Names of content warning lists enabled. ' +
+                    'See the cwlists directory')
 parser.add_argument('--userAgentBlocks', type=str,
                     default=None,
                     help='List of blocked user agents, separated by commas')
@@ -3011,6 +3015,13 @@ if userAgentsBlockedStr:
     for agentBlockStr in agentBlocksList:
         userAgentsBlocked.append(agentBlockStr.strip())
 
+listsEnabled = ''
+if args.listsEnabled:
+    listsEnabled = args.listsEnabled
+    setConfigParam(baseDir, 'listsEnabled', listsEnabled)
+else:
+    listsEnabled = getConfigParam(baseDir, 'listsEnabled')
+
 city = \
     getConfigParam(baseDir, 'city')
 if city is not None:
@@ -3064,7 +3075,8 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(args.defaultReplyIntervalHours,
+    runDaemon(listsEnabled,
+              args.defaultReplyIntervalHours,
               args.lowBandwidth, args.maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,

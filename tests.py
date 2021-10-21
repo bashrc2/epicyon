@@ -817,8 +817,9 @@ def createServerAlice(path: str, domain: str, port: int,
     userAgentsBlocked = []
     maxLikeCount = 10
     defaultReplyIntervalHours = 9999999999
+    listsEnabled = ''
     print('Server running: Alice')
-    runDaemon(defaultReplyIntervalHours,
+    runDaemon(listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
@@ -955,8 +956,9 @@ def createServerBob(path: str, domain: str, port: int,
     userAgentsBlocked = []
     maxLikeCount = 10
     defaultReplyIntervalHours = 9999999999
+    listsEnabled = ''
     print('Server running: Bob')
-    runDaemon(defaultReplyIntervalHours,
+    runDaemon(listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
@@ -1022,8 +1024,9 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxLikeCount = 10
     lowBandwidth = True
     defaultReplyIntervalHours = 9999999999
+    listsEnabled = ''
     print('Server running: Eve')
-    runDaemon(defaultReplyIntervalHours,
+    runDaemon(listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
@@ -1091,8 +1094,9 @@ def createServerGroup(path: str, domain: str, port: int,
     maxLikeCount = 10
     lowBandwidth = True
     defaultReplyIntervalHours = 9999999999
+    listsEnabled = ''
     print('Server running: Group')
-    runDaemon(defaultReplyIntervalHours,
+    runDaemon(listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,

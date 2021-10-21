@@ -16864,7 +16864,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(defaultReplyIntervalHours: int,
+def runDaemon(listsEnabled: str,
+              defaultReplyIntervalHours: int,
               lowBandwidth: bool,
               maxLikeCount: int,
               sharedItemsFederatedDomains: [],
@@ -17219,7 +17220,10 @@ def runDaemon(defaultReplyIntervalHours: int,
         createNewsInbox(baseDir, domain, port, httpPrefix)
         setConfigParam(baseDir, "listsEnabled", "Murdoch press")
 
-    httpd.listsEnabled = getConfigParam(baseDir, "listsEnabled")
+    if listsEnabled:
+        httpd.listsEnabled = listsEnabled
+    else:
+        httpd.listsEnabled = getConfigParam(baseDir, "listsEnabled")
     httpd.CWlists = loadCWLists(baseDir, True, httpd.listsEnabled)
 
     # set the avatar for the news account
