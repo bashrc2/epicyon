@@ -125,6 +125,7 @@ from media import replaceTwitter
 from media import attachMedia
 from media import pathIsVideo
 from media import pathIsAudio
+from blocking import getCWlistVariable
 from blocking import loadCWLists
 from blocking import updateBlockedCache
 from blocking import mutePost
@@ -5698,6 +5699,22 @@ class PubServer(BaseHTTPRequestHandler):
                     # save blocked user agents
                     # This is admin lebel and global to the instance
                     if path.startswith('/users/' + adminNickname + '/'):
+                        # set selected content warning lists
+                        newListsEnabled = ''
+                        for name, item in self.server.CWlists.items():
+                            listVarName = getCWlistVariable(name)
+                            if fields.get(listVarName):
+                                if fields[listVarName] == 'on':
+                                    if newListsEnabled:
+                                        newListsEnabled += ', ' + name
+                                    else:
+                                        newListsEnabled += name
+                        if newListsEnabled != self.server.listsEnabled:
+                            self.server.listsEnabled = newListsEnabled
+                            setConfigParam(self.server.baseDir,
+                                           "listsEnabled",
+                                           newListsEnabled)
+
                         userAgentsBlocked = []
                         if fields.get('userAgentsBlockedStr'):
                             userAgentsBlockedStr = \
