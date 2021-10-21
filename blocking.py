@@ -874,3 +874,25 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
             print('Broch mode has elapsed')
             return True
     return False
+
+
+def loadLists(baseDir: str, verbose: bool) -> {}:
+    """Load lists used for blocking or warnings
+    """
+    if not os.path.isdir(baseDir + '/lists'):
+        return {}
+    result = {}
+    for subdir, dirs, files in os.walk(baseDir + '/lists'):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            listFilename = os.path.join(baseDir + '/lists', f)
+            listJson = loadJson(listFilename)
+            if not listJson:
+                continue
+            if listJson.get('name') and listJson.get('domains'):
+                name = listJson['name']
+                if verbose:
+                    print('List: ' + name)
+                result[name] = listJson
+    return result

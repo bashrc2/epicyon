@@ -125,6 +125,7 @@ from media import replaceTwitter
 from media import attachMedia
 from media import pathIsVideo
 from media import pathIsAudio
+from blocking import loadLists
 from blocking import updateBlockedCache
 from blocking import mutePost
 from blocking import unmutePost
@@ -17164,6 +17165,7 @@ def runDaemon(defaultReplyIntervalHours: int,
         updateBlockedCache(baseDir, httpd.blockedCache,
                            httpd.blockedCacheLastUpdated,
                            httpd.blockedCacheUpdateSecs)
+    httpd.lists = loadLists(baseDir, True)
 
     # cache to store css files
     httpd.cssCache = {}
