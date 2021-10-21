@@ -959,3 +959,9 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
     if cw:
         postJsonObject['object']['summary'] = cw
         postJsonObject['object']['sensitive'] = True
+
+
+def getCWlistVariable(listName: str) -> str:
+    """Returns the variable associated with a CW list
+    """
+    return 'list' + listName.replace(' ', '').replace("'", '')

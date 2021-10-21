@@ -69,6 +69,7 @@ from webapp_utils import endEditSection
 from blog import getBlogAddress
 from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
+from blocking import getCWlistVariable
 
 
 def htmlProfileAfterSearch(cssCache: {},
@@ -1678,7 +1679,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
 
     CWlistsStr = ''
     for name, item in CWlists.items():
-        variableName = 'list' + name.replace(' ', '').replace("'", '')
+        variableName = getCWlistVariable(name)
         listIsEnabled = False
         if listsEnabled:
             if name in listsEnabled:
