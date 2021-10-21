@@ -1,6 +1,7 @@
 {
     "name": "Murdoch press",
     "warning": "Murdoch Press",
+    "words": [],
     "domains": [
 	api.news,
 	content.api.news,

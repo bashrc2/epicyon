@@ -890,9 +890,12 @@ def loadLists(baseDir: str, verbose: bool) -> {}:
             listJson = loadJson(listFilename)
             if not listJson:
                 continue
-            if listJson.get('name') and listJson.get('domains'):
-                name = listJson['name']
-                if verbose:
-                    print('List: ' + name)
-                result[name] = listJson
+            if not listJson.get('name'):
+                continue
+            if not listJson('words') and not listJson.get('domains'):
+                continue
+            name = listJson['name']
+            if verbose:
+                print('List: ' + name)
+            result[name] = listJson
     return result
