@@ -11774,7 +11774,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   city,
                                   self.server.userAgentsBlocked,
                                   accessKeys,
-                                  defaultReplyIntervalHours).encode('utf-8')
+                                  defaultReplyIntervalHours,
+                                  self.server.CWlists,
+                                  self.server.listsEnabled).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,

@@ -1518,7 +1518,8 @@ def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
 
 def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
                               userAgentsBlocked: str, translate: {},
-                              replyIntervalHours: int) -> str:
+                              replyIntervalHours: int,
+                              CWlists: {}, listsEnabled: str) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filterStr = ''
@@ -1673,6 +1674,21 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         editTextArea(translate['Blocked User Agents'],
                      'userAgentsBlockedStr', userAgentsBlockedStr,
                      200, '', False)
+
+    idx = 'Add content warnings for the following sites'
+    editProfileForm += \
+        '<label class="labels">' + translate[idx] + ':</label>\n'
+
+    for listName, item in CWlists.items():
+        name = listName
+        variableName = 'list' + name.replace(' ', '').replace("'", '')
+        if listName in listsEnabled:
+            listIsEnabled = True
+        else:
+            listIsEnabled = False
+        if translate.get(name):
+            name = translate[name]
+        editProfileForm += editCheckBox(name, variableName, listIsEnabled)
 
     editProfileForm += endEditSection()
     return editProfileForm
@@ -1956,7 +1972,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     textModeBanner: str, city: str,
                     userAgentsBlocked: str,
                     accessKeys: {},
-                    defaultReplyIntervalHours: int) -> str:
+                    defaultReplyIntervalHours: int,
+                    CWlists: {}, listsEnabled: str) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2152,7 +2169,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         _htmlEditProfileFiltering(baseDir, nickname, domain,
                                   userAgentsBlocked, translate,
-                                  replyIntervalHours)
+                                  replyIntervalHours,
+                                  CWlists, listsEnabled)
 
     # git projects section
     editProfileForm += \
