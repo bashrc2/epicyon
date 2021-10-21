@@ -17199,7 +17199,8 @@ def runDaemon(defaultReplyIntervalHours: int,
         updateBlockedCache(baseDir, httpd.blockedCache,
                            httpd.blockedCacheLastUpdated,
                            httpd.blockedCacheUpdateSecs)
-    httpd.CWlists = loadCWLists(baseDir, True)
+    httpd.listsEnabled = getConfigParam(baseDir, "listsEnabled")
+    httpd.CWlists = loadCWLists(baseDir, True, httpd.listsEnabled)
 
     # cache to store css files
     httpd.cssCache = {}

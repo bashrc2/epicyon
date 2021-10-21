@@ -5769,7 +5769,7 @@ def _testWordsSimilarity() -> None:
 def _testAddCWfromLists(baseDir: str) -> None:
     print('testAddCWfromLists')
     translate = {}
-    CWlists = loadCWLists(baseDir, True)
+    CWlists = loadCWLists(baseDir, True, "Murdoch press")
     assert CWlists
 
     postJsonObject = {

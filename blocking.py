@@ -876,7 +876,7 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
     return False
 
 
-def loadCWLists(baseDir: str, verbose: bool) -> {}:
+def loadCWLists(baseDir: str, verbose: bool, listsEnabled: str) -> {}:
     """Load lists used for content warnings
     """
     if not os.path.isdir(baseDir + '/cwlists'):
@@ -892,6 +892,8 @@ def loadCWLists(baseDir: str, verbose: bool) -> {}:
             if not listJson:
                 continue
             if not listJson.get('name'):
+                continue
+            if listJson['name'] not in listsEnabled:
                 continue
             if not listJson.get('words') and not listJson.get('domains'):
                 continue
