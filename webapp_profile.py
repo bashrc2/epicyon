@@ -1675,10 +1675,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
                      'userAgentsBlockedStr', userAgentsBlockedStr,
                      200, '', False)
 
-    idx = 'Add content warnings for the following sites'
-    editProfileForm += \
-        '<label class="labels">' + translate[idx] + ':</label>\n'
-
+    CWlistsStr = ''
     for listName, item in CWlists.items():
         name = listName
         variableName = 'list' + name.replace(' ', '').replace("'", '')
@@ -1688,7 +1685,12 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
             listIsEnabled = False
         if translate.get(name):
             name = translate[name]
-        editProfileForm += editCheckBox(name, variableName, listIsEnabled)
+        CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
+    if CWlistsStr:
+        idx = 'Add content warnings for the following sites'
+        editProfileForm += \
+            '<label class="labels">' + translate[idx] + ':</label>\n' + \
+            CWlistsStr
 
     editProfileForm += endEditSection()
     return editProfileForm
