@@ -3497,7 +3497,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareActor = shareActor.split('&')[0]
             adminNickname = getConfigParam(baseDir, 'admin')
             adminActor = \
-                httpPrefix + '://' + domainFull + '/users' + adminNickname
+                localActorUrl(httpPrefix, domainFull, adminNickname)
             actor = originPathStr
             actorNickname = getNicknameFromActor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -3564,7 +3564,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareActor = shareActor.split('&')[0]
             adminNickname = getConfigParam(baseDir, 'admin')
             adminActor = \
-                httpPrefix + '://' + domainFull + '/users' + adminNickname
+                localActorUrl(httpPrefix, domainFull, adminNickname)
             actor = originPathStr
             actorNickname = getNicknameFromActor(actor)
             if actor == shareActor or actor == adminActor or \
