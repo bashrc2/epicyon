@@ -1091,7 +1091,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json', msglen,
                                   None, callingDomain, True)
             self._write(msg)
-            print('nodeinfo sent')
+            print('nodeinfo sent to ' + callingDomain)
             return True
         self._404()
         return True

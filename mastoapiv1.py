@@ -208,7 +208,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                              registration,
                              systemLanguage,
                              projectVersion)
-        sendJsonStr = 'masto API instance metadata sent'
+        sendJsonStr = 'masto API instance metadata sent ' + callingDomain
     elif path.startswith('/api/v1/instance/peers'):
         # This is just a dummy result.
         # Showing the full list of peers would have privacy implications.
@@ -216,8 +216,8 @@ def mastoApiV1Response(path: str, callingDomain: str,
         # small instances a full list of peers would convey a lot of
         # information about the interests of a small number of accounts
         sendJson = ['mastodon.social', domainFull]
-        sendJsonStr = 'masto API peers metadata sent'
+        sendJsonStr = 'masto API peers metadata sent ' + callingDomain
     elif path.startswith('/api/v1/instance/activity'):
         sendJson = []
-        sendJsonStr = 'masto API activity metadata sent'
+        sendJsonStr = 'masto API activity metadata sent ' + callingDomain
     return sendJson, sendJsonStr
