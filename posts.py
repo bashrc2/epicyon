@@ -1846,7 +1846,7 @@ def createUnlistedPost(baseDir: str,
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domainFull = getFullDomain(domain, port)
-    localActor = localActorUrl(httpPrefix, domainFull, nickname)
+    localActor = localActorUrl(httpPrefix, nickname, domainFull)
     return _createPostBase(baseDir, nickname, domain, port,
                            localActor + '/followers',
                            'https://www.w3.org/ns/activitystreams#Public',
@@ -1879,7 +1879,7 @@ def createFollowersOnlyPost(baseDir: str,
     """Followers only post
     """
     domainFull = getFullDomain(domain, port)
-    localActor = localActorUrl(httpPrefix, domainFull, nickname)
+    localActor = localActorUrl(httpPrefix, nickname, domainFull)
     return _createPostBase(baseDir, nickname, domain, port,
                            localActor + '/followers',
                            None,

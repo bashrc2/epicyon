@@ -296,8 +296,8 @@ from utils import dangerousMarkup
 from utils import refreshNewswire
 from utils import isImageFile
 from utils import hasGroupType
-from manualapprove import manualDenyFollowRequest
-from manualapprove import manualApproveFollowRequest
+from manualapprove import manualDenyFollowRequestThread
+from manualapprove import manualApproveFollowRequestThread
 from announce import createAnnounce
 from content import getPriceFromString
 from content import replaceEmojiFromTags
@@ -1235,6 +1235,37 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.CWlists,
                                    self.server.listsEnabled)
 
+    def _getOutboxThreadIndex(self, nickname: str,
+                              maxOutboxThreadsPerAccount: int) -> int:
+        """Returns the outbox thread index for the given account
+        This is a ring buffer used to store the thread objects which
+        are sending out posts
+        """
+        accountOutboxThreadName = nickname
+        if not accountOutboxThreadName:
+            accountOutboxThreadName = '*'
+
+        # create the buffer for the given account
+        if not self.server.outboxThread.get(accountOutboxThreadName):
+            self.server.outboxThread[accountOutboxThreadName] = \
+                [None] * maxOutboxThreadsPerAccount
+            self.server.outboxThreadIndex[accountOutboxThreadName] = 0
+            return 0
+
+        # increment the ring buffer index
+        index = self.server.outboxThreadIndex[accountOutboxThreadName] + 1
+        if index >= maxOutboxThreadsPerAccount:
+            index = 0
+
+        self.server.outboxThreadIndex[accountOutboxThreadName] = index
+
+        # remove any existing thread from the current index in the buffer
+        if self.server.outboxThread.get(accountOutboxThreadName):
+            acct = accountOutboxThreadName
+            if self.server.outboxThread[acct][index].is_alive():
+                self.server.outboxThread[acct][index].kill()
+        return index
+
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
         """
@@ -1242,24 +1273,18 @@ class PubServer(BaseHTTPRequestHandler):
         if not accountOutboxThreadName:
             accountOutboxThreadName = '*'
 
-        if self.server.outboxThread.get(accountOutboxThreadName):
-            print('Waiting for previous outbox thread to end')
-            waitCtr = 0
-            thName = accountOutboxThreadName
-            while self.server.outboxThread[thName].is_alive() and waitCtr < 8:
-                time.sleep(1)
-                waitCtr += 1
-            if waitCtr >= 8:
-                self.server.outboxThread[accountOutboxThreadName].kill()
+        index = self._getOutboxThreadIndex(accountOutboxThreadName, 8)
 
-        print('Creating outbox thread')
-        self.server.outboxThread[accountOutboxThreadName] = \
+        print('Creating outbox thread ' +
+              accountOutboxThreadName + '/' +
+              str(self.server.outboxThreadIndex[accountOutboxThreadName]))
+        self.server.outboxThread[accountOutboxThreadName][index] = \
             threadWithTrace(target=self._postToOutbox,
                             args=(messageJson.copy(),
                                   self.server.projectVersion, None),
                             daemon=True)
         print('Starting outbox thread')
-        self.server.outboxThread[accountOutboxThreadName].start()
+        self.server.outboxThread[accountOutboxThreadName][index].start()
         return True
 
     def _updateInboxQueue(self, nickname: str, messageJson: {},
@@ -3497,7 +3522,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareActor = shareActor.split('&')[0]
             adminNickname = getConfigParam(baseDir, 'admin')
             adminActor = \
-                localActorUrl(httpPrefix, domainFull, adminNickname)
+                localActorUrl(httpPrefix, adminNickname, domainFull)
             actor = originPathStr
             actorNickname = getNicknameFromActor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -3564,7 +3589,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareActor = shareActor.split('&')[0]
             adminNickname = getConfigParam(baseDir, 'admin')
             adminActor = \
-                localActorUrl(httpPrefix, domainFull, adminNickname)
+                localActorUrl(httpPrefix, adminNickname, domainFull)
             actor = originPathStr
             actorNickname = getNicknameFromActor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -6930,7 +6955,8 @@ class PubServer(BaseHTTPRequestHandler):
                 del self.server.iconsCache['repeat.png']
 
             # send out the announce within a separate thread
-            self._postToOutboxThread(announceJson)
+            self._postToOutbox(announceJson,
+                               self.server.projectVersion, self.postToNickname)
 
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_announceButton postToOutboxThread',
@@ -7088,7 +7114,9 @@ class PubServer(BaseHTTPRequestHandler):
                            nickname, domain, postFilename,
                            debug, recentPostsCache)
 
-        self._postToOutboxThread(newUndoAnnounce)
+        self._postToOutbox(newUndoAnnounce,
+                           self.server.projectVersion, self.postToNickname)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7126,19 +7154,19 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return
-            manualApproveFollowRequest(self.server.session,
-                                       baseDir, httpPrefix,
-                                       followerNickname,
-                                       domain, port,
-                                       followingHandle,
-                                       self.server.federationList,
-                                       self.server.sendThreads,
-                                       self.server.postLog,
-                                       self.server.cachedWebfingers,
-                                       self.server.personCache,
-                                       debug,
-                                       self.server.projectVersion,
-                                       self.server.signingPrivateKeyPem)
+            manualApproveFollowRequestThread(self.server.session,
+                                             baseDir, httpPrefix,
+                                             followerNickname,
+                                             domain, port,
+                                             followingHandle,
+                                             self.server.federationList,
+                                             self.server.sendThreads,
+                                             self.server.postLog,
+                                             self.server.cachedWebfingers,
+                                             self.server.personCache,
+                                             debug,
+                                             self.server.projectVersion,
+                                             self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onionDomain:
@@ -7284,19 +7312,19 @@ class PubServer(BaseHTTPRequestHandler):
             followingHandle = \
                 handleNickname + '@' + getFullDomain(handleDomain, handlePort)
         if '@' in followingHandle:
-            manualDenyFollowRequest(self.server.session,
-                                    baseDir, httpPrefix,
-                                    followerNickname,
-                                    domain, port,
-                                    followingHandle,
-                                    self.server.federationList,
-                                    self.server.sendThreads,
-                                    self.server.postLog,
-                                    self.server.cachedWebfingers,
-                                    self.server.personCache,
-                                    debug,
-                                    self.server.projectVersion,
-                                    self.server.signingPrivateKeyPem)
+            manualDenyFollowRequestThread(self.server.session,
+                                          baseDir, httpPrefix,
+                                          followerNickname,
+                                          domain, port,
+                                          followingHandle,
+                                          self.server.federationList,
+                                          self.server.sendThreads,
+                                          self.server.postLog,
+                                          self.server.cachedWebfingers,
+                                          self.server.personCache,
+                                          debug,
+                                          self.server.projectVersion,
+                                          self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onionDomain:
@@ -17197,6 +17225,7 @@ def runDaemon(listsEnabled: str,
         httpd.registration = False
     httpd.enableSharedInbox = enableSharedInbox
     httpd.outboxThread = {}
+    httpd.outboxThreadIndex = {}
     httpd.newPostThread = {}
     httpd.projectVersion = projectVersion
     httpd.secureMode = secureMode
