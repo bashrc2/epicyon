@@ -6955,7 +6955,8 @@ class PubServer(BaseHTTPRequestHandler):
                 del self.server.iconsCache['repeat.png']
 
             # send out the announce within a separate thread
-            self._postToOutboxThread(announceJson)
+            self._postToOutbox(announceJson,
+                               self.server.projectVersion, self.postToNickname)
 
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_announceButton postToOutboxThread',
@@ -7113,7 +7114,9 @@ class PubServer(BaseHTTPRequestHandler):
                            nickname, domain, postFilename,
                            debug, recentPostsCache)
 
-        self._postToOutboxThread(newUndoAnnounce)
+        self._postToOutbox(newUndoAnnounce,
+                           self.server.projectVersion, self.postToNickname)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
