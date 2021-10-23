@@ -521,9 +521,9 @@ class PubServer(BaseHTTPRequestHandler):
         """Should a GET or POST be blocked based upon its user agent?
         """
         agentStrLower = agentStr.lower()
-        defaultAgentBlocks = (
+        defaultAgentBlocks = [
             'fedilist.com'
-        )
+        ]
         for uaBlock in defaultAgentBlocks:
             if uaBlock in agentStrLower:
                 print('Blocked User agent: ' + uaBlock)
