@@ -121,57 +121,73 @@ def mastoApiV1Response(path: str, callingDomain: str,
                 path = path.split('?')[0]
             if path.endswith('/followers'):
                 sendJson = []
-                sendJsonStr = 'masto API followers sent for ' + nickname
+                sendJsonStr = \
+                    'masto API followers sent for ' + nickname + \
+                    ' ' + callingDomain
             elif path.endswith('/following'):
                 sendJson = []
-                sendJsonStr = 'masto API following sent for ' + nickname
+                sendJsonStr = \
+                    'masto API following sent for ' + nickname + \
+                    ' ' + callingDomain
             elif path.endswith('/statuses'):
                 sendJson = []
-                sendJsonStr = 'masto API statuses sent for ' + nickname
+                sendJsonStr = \
+                    'masto API statuses sent for ' + nickname + \
+                    ' ' + callingDomain
             elif path.endswith('/search'):
                 sendJson = []
-                sendJsonStr = 'masto API search sent ' + originalPath
+                sendJsonStr = \
+                    'masto API search sent ' + originalPath + \
+                    ' ' + callingDomain
             elif path.endswith('/relationships'):
                 sendJson = []
                 sendJsonStr = \
-                    'masto API relationships sent ' + originalPath
+                    'masto API relationships sent ' + originalPath + \
+                    ' ' + callingDomain
             else:
                 sendJson = \
                     _getMastoApiV1Account(baseDir, pathNickname, domain)
-                sendJsonStr = 'masto API account sent for ' + nickname
+                sendJsonStr = \
+                    'masto API account sent for ' + nickname + \
+                    ' ' + callingDomain
 
     # NOTE: adding support for '/api/v1/directory seems to create
     # federation problems, so avoid implementing that
 
     if path.startswith('/api/v1/blocks'):
         sendJson = []
-        sendJsonStr = 'masto API instance blocks sent ' + path
+        sendJsonStr = \
+            'masto API instance blocks sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/favorites'):
         sendJson = []
-        sendJsonStr = 'masto API favorites sent ' + path
+        sendJsonStr = 'masto API favorites sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/follow_requests'):
         sendJson = []
-        sendJsonStr = 'masto API follow requests sent ' + path
+        sendJsonStr = \
+            'masto API follow requests sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/mutes'):
         sendJson = []
-        sendJsonStr = 'masto API mutes sent ' + path
+        sendJsonStr = \
+            'masto API mutes sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/notifications'):
         sendJson = []
-        sendJsonStr = 'masto API notifications sent ' + path
+        sendJsonStr = \
+            'masto API notifications sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/reports'):
         sendJson = []
-        sendJsonStr = 'masto API reports sent ' + path
+        sendJsonStr = 'masto API reports sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/statuses'):
         sendJson = []
-        sendJsonStr = 'masto API statuses sent ' + path
+        sendJsonStr = 'masto API statuses sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/timelines'):
         sendJson = {
             'error': 'This method requires an authenticated user'
         }
-        sendJsonStr = 'masto API timelines sent ' + path
+        sendJsonStr = 'masto API timelines sent ' + path + ' ' + callingDomain
     elif path.startswith('/api/v1/custom_emojis'):
         sendJson = customEmoji
-        sendJsonStr = 'masto API custom emojis sent ' + path
+        sendJsonStr = \
+            'masto API custom emojis sent ' + path + ' ' + callingDomain
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname and path == '/api/v1/instance':
