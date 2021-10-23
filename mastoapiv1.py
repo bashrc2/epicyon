@@ -108,7 +108,8 @@ def mastoApiV1Response(path: str, callingDomain: str,
     if authorized and nickname:
         if path == '/api/v1/accounts/verify_credentials':
             sendJson = _getMastoApiV1Account(baseDir, nickname, domain)
-            sendJsonStr = 'masto API account sent for ' + nickname
+            sendJsonStr = \
+                'masto API account sent for ' + nickname + ' ' + usStr
 
     # Parts of the api which don't need authorization
     mastoId = _getMastApiV1Id(path)
