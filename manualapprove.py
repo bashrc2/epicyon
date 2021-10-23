@@ -16,6 +16,7 @@ from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import getUserPaths
 from utils import acctDir
+from threads import threadWithTrace
 
 
 def manualDenyFollowRequest(session, baseDir: str,
@@ -65,6 +66,35 @@ def manualDenyFollowRequest(session, baseDir: str,
                            signingPrivateKeyPem)
 
     print('Follow request from ' + denyHandle + ' was denied.')
+
+
+def manualDenyFollowRequestThread(session, baseDir: str,
+                                  httpPrefix: str,
+                                  nickname: str, domain: str, port: int,
+                                  denyHandle: str,
+                                  federationList: [],
+                                  sendThreads: [], postLog: [],
+                                  cachedWebfingers: {}, personCache: {},
+                                  debug: bool,
+                                  projectVersion: str,
+                                  signingPrivateKeyPem: str) -> None:
+    """Manually deny a follow request, within a thread so that the
+    user interface doesn't lag
+    """
+    thr = \
+        threadWithTrace(target=manualDenyFollowRequest,
+                        args=(session, baseDir,
+                              httpPrefix,
+                              nickname, domain, port,
+                              denyHandle,
+                              federationList,
+                              sendThreads, postLog,
+                              cachedWebfingers, personCache,
+                              debug,
+                              projectVersion,
+                              signingPrivateKeyPem), daemon=True)
+    thr.start()
+    sendThreads.append(thr)
 
 
 def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
@@ -231,3 +261,32 @@ def manualApproveFollowRequest(session, baseDir: str,
             os.remove(approveFollowsFilename + '.new')
         except BaseException:
             pass
+
+
+def manualApproveFollowRequestThread(session, baseDir: str,
+                                     httpPrefix: str,
+                                     nickname: str, domain: str, port: int,
+                                     approveHandle: str,
+                                     federationList: [],
+                                     sendThreads: [], postLog: [],
+                                     cachedWebfingers: {}, personCache: {},
+                                     debug: bool,
+                                     projectVersion: str,
+                                     signingPrivateKeyPem: str) -> None:
+    """Manually approve a follow request, in a thread so as not to cause
+    the UI to lag
+    """
+    thr = \
+        threadWithTrace(target=manualApproveFollowRequest,
+                        args=(session, baseDir,
+                              httpPrefix,
+                              nickname, domain, port,
+                              approveHandle,
+                              federationList,
+                              sendThreads, postLog,
+                              cachedWebfingers, personCache,
+                              debug,
+                              projectVersion,
+                              signingPrivateKeyPem), daemon=True)
+    thr.start()
+    sendThreads.append(thr)
