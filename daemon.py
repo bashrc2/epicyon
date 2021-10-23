@@ -969,6 +969,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _mastoApiV1(self, path: str, callingDomain: str,
+                    uaStr: str,
                     authorized: bool,
                     httpPrefix: str,
                     baseDir: str, nickname: str, domain: str,
@@ -993,6 +994,7 @@ class PubServer(BaseHTTPRequestHandler):
         brochMode = brochModeIsActive(baseDir)
         sendJson, sendJsonStr = mastoApiV1Response(path,
                                                    callingDomain,
+                                                   uaStr,
                                                    authorized,
                                                    httpPrefix,
                                                    baseDir,
@@ -1031,6 +1033,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _mastoApi(self, path: str, callingDomain: str,
+                  uaStr: str,
                   authorized: bool, httpPrefix: str,
                   baseDir: str, nickname: str, domain: str,
                   domainFull: str,
@@ -1041,7 +1044,7 @@ class PubServer(BaseHTTPRequestHandler):
                   projectVersion: str,
                   customEmoji: [],
                   showNodeInfoAccounts: bool) -> bool:
-        return self._mastoApiV1(path, callingDomain, authorized,
+        return self._mastoApiV1(path, callingDomain, uaStr, authorized,
                                 httpPrefix, baseDir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
@@ -12446,7 +12449,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # minimal mastodon api
-        if self._mastoApi(self.path, callingDomain, authorized,
+        if self._mastoApi(self.path, callingDomain, uaStr,
+                          authorized,
                           self.server.httpPrefix,
                           self.server.baseDir,
                           self.authorizedNickname,
