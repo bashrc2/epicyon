@@ -172,7 +172,7 @@ def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(lastModified))
     if saveSwarm:
-        actor = localActorUrl(httpPrefix, domainFull, nickname)
+        actor = localActorUrl(httpPrefix, nickname, domainFull)
         newSwarmStr = htmlHashTagSwarm(baseDir, actor, translate)
         if newSwarmStr:
             try:
