@@ -715,7 +715,7 @@ def getStatusNumber(publishedStr: str = None) -> (str, str):
 
 
 def evilIncarnate() -> []:
-    return ('gab.com', 'gabfed.com', 'spinster.xyz',
+    return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz',
             'kiwifarms.cc', 'djitter.com')
 
 

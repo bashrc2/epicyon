@@ -520,11 +520,19 @@ class PubServer(BaseHTTPRequestHandler):
     def _blockedUserAgent(self, callingDomain: str, agentStr: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
+        agentStrLower = agentStr.lower()
+        defaultAgentBlocks = (
+            'fedilist.com'
+        )
+        for uaBlock in defaultAgentBlocks:
+            if uaBlock in agentStrLower:
+                print('Blocked User agent: ' + uaBlock)
+                return True
+
         agentDomain = None
 
         if agentStr:
             # is this a web crawler? If so the block it
-            agentStrLower = agentStr.lower()
             if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
                 if self.server.newsInstance:
                     return False
