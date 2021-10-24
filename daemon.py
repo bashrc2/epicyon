@@ -396,6 +396,9 @@ class PubServer(BaseHTTPRequestHandler):
         """Updates a dictionary of known crawlers accessing nodeinfo
         or the masto API
         """
+        if not uaStr:
+            return
+
         currTime = int(time.time())
         if self.server.knownCrawlers.get(uaStr):
             self.server.knownCrawlers[uaStr]['hits'] += 1
