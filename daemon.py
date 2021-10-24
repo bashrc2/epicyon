@@ -408,7 +408,16 @@ class PubServer(BaseHTTPRequestHandler):
                 "lastseen": currTime,
                 "hits": 1
             }
-        if currTime - self.server.lastKnownCrawler >= 10:
+
+        if currTime - self.server.lastKnownCrawler >= 30:
+            # remove any old observations
+            removeCrawlers = []
+            for ua, item in self.server.knownCrawlers.items():
+                if currTime - item['lastseen'] >= 60 * 60 * 24 * 30:
+                    removeCrawlers.append(ua)
+            for ua in removeCrawlers:
+                del self.server.knownCrawlers[ua]
+            # save the list of crawlers
             saveJson(self.server.knownCrawlers,
                      self.server.baseDir + '/accounts/knownCrawlers.json')
         self.server.lastKnownCrawler = currTime
