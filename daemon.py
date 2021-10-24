@@ -396,17 +396,19 @@ class PubServer(BaseHTTPRequestHandler):
         """Updates a dictionary of known crawlers accessing nodeinfo
         or the masto API
         """
+        currTime = int(time.time())
         if self.server.knownCrawlers.get(uaStr):
             self.server.knownCrawlers[uaStr]['hits'] += 1
-            self.server.knownCrawlers[uaStr]['lastseen'] = \
-                int(time.time())
+            self.server.knownCrawlers[uaStr]['lastseen'] = currTime
         else:
             self.server.knownCrawlers[uaStr] = {
-                "lastseen": int(time.time()),
+                "lastseen": currTime,
                 "hits": 1
             }
-        saveJson(self.server.knownCrawlers,
-                 self.server.baseDir + '/accounts/knownCrawlers.json')
+        if currTime - self.server.lastKnownCrawler >= 10:
+            saveJson(self.server.knownCrawlers,
+                     self.server.baseDir + '/accounts/knownCrawlers.json')
+        self.server.lastKnownCrawler = currTime
 
     def _getInstanceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
@@ -17374,6 +17376,8 @@ def runDaemon(listsEnabled: str,
     knownCrawlersFilename = baseDir + '/accounts/knownCrawlers.json'
     if os.path.isfile(knownCrawlersFilename):
         httpd.knownCrawlers = loadJson(knownCrawlersFilename)
+    # when was the last crawler seen?
+    httpd.lastKnownCrawler = 0
 
     if listsEnabled:
         httpd.listsEnabled = listsEnabled
