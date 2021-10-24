@@ -489,5 +489,6 @@
     "Join": "加入",
     "Leave": "離れる",
     "System Monitor": "システムモニター",
-    "Add content warnings for the following sites": "次のサイトのコンテンツ警告を追加します"
+    "Add content warnings for the following sites": "次のサイトのコンテンツ警告を追加します",
+    "Known Web Crawlers": "既知のWebクローラー"
 }

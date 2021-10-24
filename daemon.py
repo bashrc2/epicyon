@@ -392,6 +392,36 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _updateKnownCrawlers(self, uaStr: str) -> None:
+        """Updates a dictionary of known crawlers accessing nodeinfo
+        or the masto API
+        """
+        if not uaStr:
+            return
+
+        currTime = int(time.time())
+        if self.server.knownCrawlers.get(uaStr):
+            self.server.knownCrawlers[uaStr]['hits'] += 1
+            self.server.knownCrawlers[uaStr]['lastseen'] = currTime
+        else:
+            self.server.knownCrawlers[uaStr] = {
+                "lastseen": currTime,
+                "hits": 1
+            }
+
+        if currTime - self.server.lastKnownCrawler >= 30:
+            # remove any old observations
+            removeCrawlers = []
+            for ua, item in self.server.knownCrawlers.items():
+                if currTime - item['lastseen'] >= 60 * 60 * 24 * 30:
+                    removeCrawlers.append(ua)
+            for ua in removeCrawlers:
+                del self.server.knownCrawlers[ua]
+            # save the list of crawlers
+            saveJson(self.server.knownCrawlers,
+                     self.server.baseDir + '/accounts/knownCrawlers.json')
+        self.server.lastKnownCrawler = currTime
+
     def _getInstanceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
         """
@@ -520,11 +550,22 @@ class PubServer(BaseHTTPRequestHandler):
     def _blockedUserAgent(self, callingDomain: str, agentStr: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
+        if not agentStr:
+            return False
+
+        agentStrLower = agentStr.lower()
+        defaultAgentBlocks = [
+            'fedilist.com'
+        ]
+        for uaBlock in defaultAgentBlocks:
+            if uaBlock in agentStrLower:
+                print('Blocked User agent: ' + uaBlock)
+                return True
+
         agentDomain = None
 
         if agentStr:
             # is this a web crawler? If so the block it
-            agentStrLower = agentStr.lower()
             if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
                 if self.server.newsInstance:
                     return False
@@ -969,6 +1010,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _mastoApiV1(self, path: str, callingDomain: str,
+                    uaStr: str,
                     authorized: bool,
                     httpPrefix: str,
                     baseDir: str, nickname: str, domain: str,
@@ -989,10 +1031,12 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
+        self._updateKnownCrawlers(uaStr)
 
         brochMode = brochModeIsActive(baseDir)
         sendJson, sendJsonStr = mastoApiV1Response(path,
                                                    callingDomain,
+                                                   uaStr,
                                                    authorized,
                                                    httpPrefix,
                                                    baseDir,
@@ -1031,6 +1075,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _mastoApi(self, path: str, callingDomain: str,
+                  uaStr: str,
                   authorized: bool, httpPrefix: str,
                   baseDir: str, nickname: str, domain: str,
                   domainFull: str,
@@ -1041,18 +1086,19 @@ class PubServer(BaseHTTPRequestHandler):
                   projectVersion: str,
                   customEmoji: [],
                   showNodeInfoAccounts: bool) -> bool:
-        return self._mastoApiV1(path, callingDomain, authorized,
+        return self._mastoApiV1(path, callingDomain, uaStr, authorized,
                                 httpPrefix, baseDir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
                                 projectVersion, customEmoji,
                                 showNodeInfoAccounts)
 
-    def _nodeinfo(self, callingDomain: str) -> bool:
+    def _nodeinfo(self, uaStr: str, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
+        self._updateKnownCrawlers(uaStr)
 
         # If we are in broch mode then don't show potentially
         # sensitive metadata.
@@ -1091,7 +1137,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json', msglen,
                                   None, callingDomain, True)
             self._write(msg)
-            print('nodeinfo sent')
+            print('nodeinfo sent to ' + callingDomain)
             return True
         self._404()
         return True
@@ -11819,6 +11865,36 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showKnownCrawlers(self, callingDomain: str, path: str,
+                           baseDir: str, knownCrawlers: {}) -> bool:
+        """Show a list of known web crawlers
+        """
+        if '/users/' not in path:
+            return False
+        if not path.endswith('/crawlers'):
+            return False
+        nickname = getNicknameFromActor(path)
+        if not nickname:
+            return False
+        if not isModerator(baseDir, nickname):
+            return False
+        crawlersList = []
+        currTime = int(time.time())
+        recentCrawlers = 60 * 60 * 24 * 30
+        for uaStr, item in knownCrawlers.items():
+            if item['lastseen'] - currTime < recentCrawlers:
+                crawlersList.append(str(item['hits']) + ' ' + uaStr)
+        crawlersList.sort(reverse=True)
+        msg = ''
+        for lineStr in crawlersList:
+            msg += lineStr + '\n'
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('text/plain; charset=utf-8', msglen,
+                          None, callingDomain, True)
+        self._write(msg)
+        return True
+
     def _editProfile(self, callingDomain: str, path: str,
                      translate: {}, baseDir: str,
                      httpPrefix: str, domain: str, port: int,
@@ -12113,7 +12189,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo(callingDomain):
+        if self._nodeinfo(uaStr, callingDomain):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -12446,7 +12522,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # minimal mastodon api
-        if self._mastoApi(self.path, callingDomain, authorized,
+        if self._mastoApi(self.path, callingDomain, uaStr,
+                          authorized,
                           self.server.httpPrefix,
                           self.server.baseDir,
                           self.authorizedNickname,
@@ -14348,6 +14425,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.GETbusy = False
                         return
+
+            # list of known crawlers accessing nodeinfo or masto API
+            if self._showKnownCrawlers(callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.knownCrawlers):
+                return
 
             # edit profile in web interface
             if self._editProfile(callingDomain, self.path,
@@ -17301,6 +17384,15 @@ def runDaemon(listsEnabled: str,
         print('Creating news inbox: news@' + domain)
         createNewsInbox(baseDir, domain, port, httpPrefix)
         setConfigParam(baseDir, "listsEnabled", "Murdoch press")
+
+    # dict of known web crawlers accessing nodeinfo or the masto API
+    # and how many times they have been seen
+    httpd.knownCrawlers = {}
+    knownCrawlersFilename = baseDir + '/accounts/knownCrawlers.json'
+    if os.path.isfile(knownCrawlersFilename):
+        httpd.knownCrawlers = loadJson(knownCrawlersFilename)
+    # when was the last crawler seen?
+    httpd.lastKnownCrawler = 0
 
     if listsEnabled:
         httpd.listsEnabled = listsEnabled

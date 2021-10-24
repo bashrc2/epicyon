@@ -82,6 +82,7 @@ def _getMastoApiV1Account(baseDir: str, nickname: str, domain: str) -> {}:
 
 
 def mastoApiV1Response(path: str, callingDomain: str,
+                       uaStr: str,
                        authorized: bool,
                        httpPrefix: str,
                        baseDir: str, nickname: str, domain: str,
@@ -100,12 +101,18 @@ def mastoApiV1Response(path: str, callingDomain: str,
     """
     sendJson = None
     sendJsonStr = ''
+    if not uaStr:
+        uaStr = ''
 
     # parts of the api needing authorization
     if authorized and nickname:
         if path == '/api/v1/accounts/verify_credentials':
             sendJson = _getMastoApiV1Account(baseDir, nickname, domain)
-            sendJsonStr = 'masto API account sent for ' + nickname
+            sendJsonStr = \
+                'masto API account sent for ' + nickname + ' ' + uaStr
+
+    # information about where the request is coming from
+    callingInfo = ' ' + uaStr + ', ' + callingDomain
 
     # Parts of the api which don't need authorization
     mastoId = _getMastApiV1Id(path)
@@ -121,57 +128,73 @@ def mastoApiV1Response(path: str, callingDomain: str,
                 path = path.split('?')[0]
             if path.endswith('/followers'):
                 sendJson = []
-                sendJsonStr = 'masto API followers sent for ' + nickname
+                sendJsonStr = \
+                    'masto API followers sent for ' + nickname + \
+                    callingInfo
             elif path.endswith('/following'):
                 sendJson = []
-                sendJsonStr = 'masto API following sent for ' + nickname
+                sendJsonStr = \
+                    'masto API following sent for ' + nickname + \
+                    callingInfo
             elif path.endswith('/statuses'):
                 sendJson = []
-                sendJsonStr = 'masto API statuses sent for ' + nickname
+                sendJsonStr = \
+                    'masto API statuses sent for ' + nickname + \
+                    callingInfo
             elif path.endswith('/search'):
                 sendJson = []
-                sendJsonStr = 'masto API search sent ' + originalPath
+                sendJsonStr = \
+                    'masto API search sent ' + originalPath + \
+                    callingInfo
             elif path.endswith('/relationships'):
                 sendJson = []
                 sendJsonStr = \
-                    'masto API relationships sent ' + originalPath
+                    'masto API relationships sent ' + originalPath + \
+                    callingInfo
             else:
                 sendJson = \
                     _getMastoApiV1Account(baseDir, pathNickname, domain)
-                sendJsonStr = 'masto API account sent for ' + nickname
+                sendJsonStr = \
+                    'masto API account sent for ' + nickname + \
+                    callingInfo
 
     # NOTE: adding support for '/api/v1/directory seems to create
     # federation problems, so avoid implementing that
 
     if path.startswith('/api/v1/blocks'):
         sendJson = []
-        sendJsonStr = 'masto API instance blocks sent ' + path
+        sendJsonStr = \
+            'masto API instance blocks sent ' + path + callingInfo
     elif path.startswith('/api/v1/favorites'):
         sendJson = []
-        sendJsonStr = 'masto API favorites sent ' + path
+        sendJsonStr = 'masto API favorites sent ' + path + callingInfo
     elif path.startswith('/api/v1/follow_requests'):
         sendJson = []
-        sendJsonStr = 'masto API follow requests sent ' + path
+        sendJsonStr = \
+            'masto API follow requests sent ' + path + callingInfo
     elif path.startswith('/api/v1/mutes'):
         sendJson = []
-        sendJsonStr = 'masto API mutes sent ' + path
+        sendJsonStr = \
+            'masto API mutes sent ' + path + callingInfo
     elif path.startswith('/api/v1/notifications'):
         sendJson = []
-        sendJsonStr = 'masto API notifications sent ' + path
+        sendJsonStr = \
+            'masto API notifications sent ' + path + callingInfo
     elif path.startswith('/api/v1/reports'):
         sendJson = []
-        sendJsonStr = 'masto API reports sent ' + path
+        sendJsonStr = 'masto API reports sent ' + path + callingInfo
     elif path.startswith('/api/v1/statuses'):
         sendJson = []
-        sendJsonStr = 'masto API statuses sent ' + path
+        sendJsonStr = 'masto API statuses sent ' + path + callingInfo
     elif path.startswith('/api/v1/timelines'):
         sendJson = {
             'error': 'This method requires an authenticated user'
         }
-        sendJsonStr = 'masto API timelines sent ' + path
+        sendJsonStr = 'masto API timelines sent ' + path + callingInfo
     elif path.startswith('/api/v1/custom_emojis'):
         sendJson = customEmoji
-        sendJsonStr = 'masto API custom emojis sent ' + path
+        sendJsonStr = \
+            'masto API custom emojis sent ' + path + callingInfo
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname and path == '/api/v1/instance':
@@ -208,7 +231,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                              registration,
                              systemLanguage,
                              projectVersion)
-        sendJsonStr = 'masto API instance metadata sent'
+        sendJsonStr = 'masto API instance metadata sent ' + uaStr
     elif path.startswith('/api/v1/instance/peers'):
         # This is just a dummy result.
         # Showing the full list of peers would have privacy implications.
@@ -216,8 +239,8 @@ def mastoApiV1Response(path: str, callingDomain: str,
         # small instances a full list of peers would convey a lot of
         # information about the interests of a small number of accounts
         sendJson = ['mastodon.social', domainFull]
-        sendJsonStr = 'masto API peers metadata sent'
+        sendJsonStr = 'masto API peers metadata sent ' + uaStr
     elif path.startswith('/api/v1/instance/activity'):
         sendJson = []
-        sendJsonStr = 'masto API activity metadata sent'
+        sendJsonStr = 'masto API activity metadata sent ' + uaStr
     return sendJson, sendJsonStr
