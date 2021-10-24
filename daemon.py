@@ -538,6 +538,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _blockedUserAgent(self, callingDomain: str, agentStr: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
+        if not agentStr:
+            return False
+
         agentStrLower = agentStr.lower()
         defaultAgentBlocks = [
             'fedilist.com'
