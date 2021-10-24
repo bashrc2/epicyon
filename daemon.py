@@ -392,6 +392,17 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _updateKnownCrawlers(self, uaStr: str) -> None:
+        """Updates a dictionary of known crawlers accessing nodeinfo
+        or the masto API
+        """
+        if self.server.knownCrawlers.get(uaStr):
+            self.server.knownCrawlers[uaStr]['hits'] += 1
+        else:
+            self.server.knownCrawlers[uaStr] = {
+                "hits": 1
+            }
+
     def _getInstanceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
         """
@@ -998,6 +1009,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
+        self._updateKnownCrawlers(uaStr)
 
         brochMode = brochModeIsActive(baseDir)
         sendJson, sendJsonStr = mastoApiV1Response(path,
@@ -1059,11 +1071,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 projectVersion, customEmoji,
                                 showNodeInfoAccounts)
 
-    def _nodeinfo(self, callingDomain: str) -> bool:
+    def _nodeinfo(self, uaStr: str, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
+        self._updateKnownCrawlers(uaStr)
 
         # If we are in broch mode then don't show potentially
         # sensitive metadata.
@@ -12124,7 +12137,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo(callingDomain):
+        if self._nodeinfo(uaStr, callingDomain):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -17113,6 +17126,10 @@ def runDaemon(listsEnabled: str,
 
     # list of blocked user agent types within the User-Agent header
     httpd.userAgentsBlocked = userAgentsBlocked
+
+    # dict of known web crawlers accessing nodeinfo or the masto API
+    # and how many times they have been seen
+    httpd.knownCrawlers = {}
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
