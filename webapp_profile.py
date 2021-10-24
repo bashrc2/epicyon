@@ -1520,8 +1520,8 @@ def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
 
 
 def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
-                              userAgentsBlocked: str, translate: {},
-                              replyIntervalHours: int,
+                              userAgentsBlocked: str,
+                              translate: {}, replyIntervalHours: int,
                               CWlists: {}, listsEnabled: str) -> str:
     """Filtering and blocking section of edit profile screen
     """
@@ -1669,6 +1669,10 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         allowedInstancesStr + '</textarea>\n'
 
     if isModerator(baseDir, nickname):
+        editProfileForm += \
+            '<a href="/users/' + nickname + '/crawlers">' + \
+            translate['Known Web Crawlers'] + '</a><br>\n'
+
         userAgentsBlockedStr = ''
         for ua in userAgentsBlocked:
             if userAgentsBlockedStr:

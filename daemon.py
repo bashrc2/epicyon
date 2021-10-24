@@ -11843,6 +11843,33 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showKnownCrawlers(self, callingDomain: str, path: str,
+                           baseDir: str, knownCrawlers: {}) -> bool:
+        """Show a list of known web crawlers
+        """
+        if '/users/' not in path:
+            return False
+        if not path.endswith('/crawlers'):
+            return False
+        nickname = getNicknameFromActor(path)
+        if not nickname:
+            return False
+        if not isModerator(baseDir, nickname):
+            return False
+        crawlersList = []
+        for uaStr, item in knownCrawlers.items():
+            crawlersList.append(str(item['hits']) + ' ' + uaStr)
+        crawlersList.sort(reverse=True)
+        msg = ''
+        for lineStr in crawlersList:
+            msg += lineStr + '\n'
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('text/plain; charset=utf-8', msglen,
+                          None, callingDomain, True)
+        self._write(msg)
+        return True
+
     def _editProfile(self, callingDomain: str, path: str,
                      translate: {}, baseDir: str,
                      httpPrefix: str, domain: str, port: int,
@@ -14373,6 +14400,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.GETbusy = False
                         return
+
+            # list of known crawlers accessing nodeinfo or masto API
+            if self._showKnownCrawlers(callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.knownCrawlers):
+                return
 
             # edit profile in web interface
             if self._editProfile(callingDomain, self.path,
