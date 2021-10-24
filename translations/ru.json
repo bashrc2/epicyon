@@ -489,5 +489,6 @@
     "Join": "Присоединиться",
     "Leave": "Оставлять",
     "System Monitor": "Системный монитор",
-    "Add content warnings for the following sites": "Добавить предупреждения о содержании для следующих сайтов"
+    "Add content warnings for the following sites": "Добавить предупреждения о содержании для следующих сайтов",
+    "Known Web Crawlers": "Известные веб-сканеры"
 }
