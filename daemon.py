@@ -405,8 +405,8 @@ class PubServer(BaseHTTPRequestHandler):
                 "lastseen": int(time.time()),
                 "hits": 1
             }
-            saveJson(self.server.knownCrawlers,
-                     self.server.baseDir + '/accounts/knownCrawlers.json')
+        saveJson(self.server.knownCrawlers,
+                 self.server.baseDir + '/accounts/knownCrawlers.json')
 
     def _getInstanceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
@@ -11862,8 +11862,11 @@ class PubServer(BaseHTTPRequestHandler):
         if not isModerator(baseDir, nickname):
             return False
         crawlersList = []
+        currTime = int(time.time())
+        recentCrawlers = 60 * 60 * 24 * 30
         for uaStr, item in knownCrawlers.items():
-            crawlersList.append(str(item['hits']) + ' ' + uaStr)
+            if item['lastseen'] - currTime < recentCrawlers:
+                crawlersList.append(str(item['hits']) + ' ' + uaStr)
         crawlersList.sort(reverse=True)
         msg = ''
         for lineStr in crawlersList:
@@ -17370,7 +17373,7 @@ def runDaemon(listsEnabled: str,
     httpd.knownCrawlers = {}
     knownCrawlersFilename = baseDir + '/accounts/knownCrawlers.json'
     if os.path.isfile(knownCrawlersFilename):
-        httpd.knownCrawlers = loadJson(baseDir + '/accounts/knownCrawlers.json')
+        httpd.knownCrawlers = loadJson(knownCrawlersFilename)
 
     if listsEnabled:
         httpd.listsEnabled = listsEnabled
