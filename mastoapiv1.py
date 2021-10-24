@@ -111,6 +111,9 @@ def mastoApiV1Response(path: str, callingDomain: str,
             sendJsonStr = \
                 'masto API account sent for ' + nickname + ' ' + uaStr
 
+    # information about where the request is coming from
+    callingInfo = ' ' + uaStr + ', ' + callingDomain
+
     # Parts of the api which don't need authorization
     mastoId = _getMastApiV1Id(path)
     if mastoId is not None:
@@ -127,33 +130,33 @@ def mastoApiV1Response(path: str, callingDomain: str,
                 sendJson = []
                 sendJsonStr = \
                     'masto API followers sent for ' + nickname + \
-                    ' ' + uaStr
+                    callingInfo
             elif path.endswith('/following'):
                 sendJson = []
                 sendJsonStr = \
                     'masto API following sent for ' + nickname + \
-                    ' ' + uaStr
+                    callingInfo
             elif path.endswith('/statuses'):
                 sendJson = []
                 sendJsonStr = \
                     'masto API statuses sent for ' + nickname + \
-                    ' ' + uaStr
+                    callingInfo
             elif path.endswith('/search'):
                 sendJson = []
                 sendJsonStr = \
                     'masto API search sent ' + originalPath + \
-                    ' ' + uaStr
+                    callingInfo
             elif path.endswith('/relationships'):
                 sendJson = []
                 sendJsonStr = \
                     'masto API relationships sent ' + originalPath + \
-                    ' ' + uaStr
+                    callingInfo
             else:
                 sendJson = \
                     _getMastoApiV1Account(baseDir, pathNickname, domain)
                 sendJsonStr = \
                     'masto API account sent for ' + nickname + \
-                    ' ' + uaStr
+                    callingInfo
 
     # NOTE: adding support for '/api/v1/directory seems to create
     # federation problems, so avoid implementing that
@@ -161,37 +164,37 @@ def mastoApiV1Response(path: str, callingDomain: str,
     if path.startswith('/api/v1/blocks'):
         sendJson = []
         sendJsonStr = \
-            'masto API instance blocks sent ' + path + ' ' + uaStr
+            'masto API instance blocks sent ' + path + callingInfo
     elif path.startswith('/api/v1/favorites'):
         sendJson = []
-        sendJsonStr = 'masto API favorites sent ' + path + ' ' + uaStr
+        sendJsonStr = 'masto API favorites sent ' + path + callingInfo
     elif path.startswith('/api/v1/follow_requests'):
         sendJson = []
         sendJsonStr = \
-            'masto API follow requests sent ' + path + ' ' + uaStr
+            'masto API follow requests sent ' + path + callingInfo
     elif path.startswith('/api/v1/mutes'):
         sendJson = []
         sendJsonStr = \
-            'masto API mutes sent ' + path + ' ' + uaStr
+            'masto API mutes sent ' + path + callingInfo
     elif path.startswith('/api/v1/notifications'):
         sendJson = []
         sendJsonStr = \
-            'masto API notifications sent ' + path + ' ' + uaStr
+            'masto API notifications sent ' + path + callingInfo
     elif path.startswith('/api/v1/reports'):
         sendJson = []
-        sendJsonStr = 'masto API reports sent ' + path + ' ' + uaStr
+        sendJsonStr = 'masto API reports sent ' + path + callingInfo
     elif path.startswith('/api/v1/statuses'):
         sendJson = []
-        sendJsonStr = 'masto API statuses sent ' + path + ' ' + uaStr
+        sendJsonStr = 'masto API statuses sent ' + path + callingInfo
     elif path.startswith('/api/v1/timelines'):
         sendJson = {
             'error': 'This method requires an authenticated user'
         }
-        sendJsonStr = 'masto API timelines sent ' + path + ' ' + uaStr
+        sendJsonStr = 'masto API timelines sent ' + path + callingInfo
     elif path.startswith('/api/v1/custom_emojis'):
         sendJson = customEmoji
         sendJsonStr = \
-            'masto API custom emojis sent ' + path + ' ' + uaStr
+            'masto API custom emojis sent ' + path + callingInfo
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname and path == '/api/v1/instance':
