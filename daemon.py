@@ -398,10 +398,15 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if self.server.knownCrawlers.get(uaStr):
             self.server.knownCrawlers[uaStr]['hits'] += 1
+            self.server.knownCrawlers[uaStr]['lastseen'] = \
+                int(time.time())
         else:
             self.server.knownCrawlers[uaStr] = {
+                "lastseen": int(time.time()),
                 "hits": 1
             }
+            saveJson(self.server.knownCrawlers,
+                     self.server.baseDir + '/accounts/knownCrawlers.json')
 
     def _getInstanceUrl(self, callingDomain: str) -> str:
         """Returns the URL for this instance
@@ -17160,10 +17165,6 @@ def runDaemon(listsEnabled: str,
     # list of blocked user agent types within the User-Agent header
     httpd.userAgentsBlocked = userAgentsBlocked
 
-    # dict of known web crawlers accessing nodeinfo or the masto API
-    # and how many times they have been seen
-    httpd.knownCrawlers = {}
-
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
     if unitTest:
@@ -17363,6 +17364,13 @@ def runDaemon(listsEnabled: str,
         print('Creating news inbox: news@' + domain)
         createNewsInbox(baseDir, domain, port, httpPrefix)
         setConfigParam(baseDir, "listsEnabled", "Murdoch press")
+
+    # dict of known web crawlers accessing nodeinfo or the masto API
+    # and how many times they have been seen
+    httpd.knownCrawlers = {}
+    knownCrawlersFilename = baseDir + '/accounts/knownCrawlers.json'
+    if os.path.isfile(knownCrawlersFilename):
+        httpd.knownCrawlers = loadJson(baseDir + '/accounts/knownCrawlers.json')
 
     if listsEnabled:
         httpd.listsEnabled = listsEnabled
