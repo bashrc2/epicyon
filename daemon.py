@@ -299,6 +299,7 @@ from utils import hasGroupType
 from manualapprove import manualDenyFollowRequestThread
 from manualapprove import manualApproveFollowRequestThread
 from announce import createAnnounce
+from content import containsInvalidLocalLinks
 from content import getPriceFromString
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -1488,6 +1489,11 @@ class PubServer(BaseHTTPRequestHandler):
         beginSaveTime = time.time()
         # save the json for later queue processing
         messageBytesDecoded = messageBytes.decode('utf-8')
+
+        if containsInvalidLocalLinks(messageBytesDecoded):
+            print('WARN: post contains invalid local links ' +
+                  str(originalMessageJson))
+            return 4
 
         self.server.blockedCacheLastUpdated = \
             updateBlockedCache(self.server.baseDir,

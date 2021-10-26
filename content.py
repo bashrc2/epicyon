@@ -1184,3 +1184,25 @@ def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
         else:
             diff += abs(histogram2[combinedWords] - histogram1[combinedWords])
     return 100 - int(diff * 100 / len(histogram1.items()))
+
+
+def containsInvalidLocalLinks(content: str) -> bool:
+    """Returns true if the given content has invalid links
+    """
+    invalidStrings = (
+        'mute', 'unmute', 'editeventpost', 'notifypost',
+        'delete', 'options', 'page', 'repeat',
+        'bm', 'tl', 'actor', 'unrepeat',
+        'unannounce', 'like', 'unlike', 'bookmark',
+        'unbookmark', 'likedBy', 'id', 'time',
+        'year', 'month', 'day', 'editnewpost',
+        'graph', 'showshare', 'category', 'showwanted',
+        'rmshare', 'rmwanted', 'repeatprivate',
+        'unrepeatprivate', 'replyto',
+        'replyfollowers', 'replydm', 'editblogpost',
+        'handle', 'blockdomain'
+    )
+    for invStr in invalidStrings:
+        if '/?' + invStr + '=' in content:
+            return True
+    return False
