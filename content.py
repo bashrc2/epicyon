@@ -1203,6 +1203,6 @@ def containsInvalidLocalLinks(content: str) -> bool:
         'handle', 'blockdomain'
     )
     for invStr in invalidStrings:
-        if '/?' + invStr + '=' in content:
+        if '?' + invStr + '=' in content:
             return True
     return False
