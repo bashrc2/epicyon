@@ -293,6 +293,8 @@ def htmlProfileAfterSearch(cssCache: {},
                     continue
                 if not item.get('to'):
                     continue
+                if not item.get('id'):
+                    continue
                 # wrap in create
                 cc = []
                 if item.get('cc'):
@@ -301,6 +303,7 @@ def htmlProfileAfterSearch(cssCache: {},
                     'object': item,
                     'to': item['to'],
                     'cc': cc,
+                    'id': item['id'],
                     'actor': personUrl,
                     'type': 'Create'
                 }
