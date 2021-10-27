@@ -311,18 +311,7 @@ def htmlProfileAfterSearch(cssCache: {},
             if not item.get('actor'):
                 continue
             if not isAnnouncedFeedItem and item['actor'] != personUrl:
-                # if the actor is different then check the cc field
-                if not item.get('cc'):
-                    continue
-                if not isinstance(item['cc'], list):
-                    continue
-                if personUrl not in item['cc']:
-                    continue
-                # switch actor with cc
-                item['actor'] = item['cc']
-                item['object']['actor'] = item['cc']
-                item['cc'] = []
-                item['object']['cc'] = []
+                continue
 
             profileStr += \
                 individualPostAsHtml(signingPrivateKeyPem,
