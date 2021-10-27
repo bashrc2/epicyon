@@ -862,20 +862,19 @@ def _getPostsForBlockedDomains(baseDir: str,
                 if not tagItem.get('type'):
                     continue
                 tagType = tagItem['type'].lower()
-                if tagType == 'mention':
-                    if tagItem.get('href'):
-                        postDomain, postPort = \
-                            getDomainFromActor(tagItem['href'])
-                        if isBlockedDomain(baseDir, postDomain):
-                            if item['object'].get('url'):
-                                url = item['object']['url']
-                            else:
-                                url = item['object']['id']
-                            if not blockedPosts.get(postDomain):
-                                blockedPosts[postDomain] = [url]
-                            else:
-                                if url not in blockedPosts[postDomain]:
-                                    blockedPosts[postDomain].append(url)
+                if tagType == 'mention' and tagItem.get('href'):
+                    postDomain, postPort = \
+                        getDomainFromActor(tagItem['href'])
+                    if isBlockedDomain(baseDir, postDomain):
+                        if item['object'].get('url'):
+                            url = item['object']['url']
+                        else:
+                            url = item['object']['id']
+                        if not blockedPosts.get(postDomain):
+                            blockedPosts[postDomain] = [url]
+                        else:
+                            if url not in blockedPosts[postDomain]:
+                                blockedPosts[postDomain].append(url)
     return blockedPosts
 
 
