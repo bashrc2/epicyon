@@ -283,16 +283,31 @@ def htmlProfileAfterSearch(cssCache: {},
             if isCreateInsideAnnounce(item):
                 isAnnouncedFeedItem = True
                 item = item['object']
-            if not item.get('actor'):
-                continue
-            if not isAnnouncedFeedItem and item['actor'] != personUrl:
-                continue
             if not item.get('type'):
                 continue
             if item['type'] == 'Create':
                 if not hasObjectDict(item):
                     continue
             if item['type'] != 'Create' and item['type'] != 'Announce':
+                if item['type'] != 'Note':
+                    continue
+                if not item.get('to'):
+                    continue
+                # wrap in create
+                cc = []
+                if item.get('cc'):
+                    cc = item['cc']
+                newItem = {
+                    'object': item,
+                    'to': item['to'],
+                    'cc': cc,
+                    'actor': personUrl,
+                    'type': 'Create'
+                }
+                item = newItem
+            if not item.get('actor'):
+                continue
+            if not isAnnouncedFeedItem and item['actor'] != personUrl:
                 continue
 
             profileStr += \
