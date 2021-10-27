@@ -446,7 +446,7 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
         return False
     if item['type'] != 'Create' and item['type'] != 'Announce':
         if debug:
-            print('Not Create type')
+            print('Not a Create type')
         return False
     if item.get('object'):
         if isinstance(item['object'], dict):
