@@ -596,6 +596,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         if isinstance(thisItem, dict):
             if thisItem.get('tag'):
                 for tagItem in thisItem['tag']:
+                    if not tagItem.get('type'):
+                        continue
                     tagType = tagItem['type'].lower()
                     if tagType == 'emoji':
                         if tagItem.get('name') and tagItem.get('icon'):
@@ -787,6 +789,8 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
 
         if item['object'].get('tag'):
             for tagItem in item['object']['tag']:
+                if not tagItem.get('type'):
+                    continue
                 tagType = tagItem['type'].lower()
                 if tagType == 'mention':
                     if tagItem.get('href'):
@@ -855,6 +859,8 @@ def _getPostsForBlockedDomains(baseDir: str,
 
         if item['object'].get('tag'):
             for tagItem in item['object']['tag']:
+                if not tagItem.get('type'):
+                    continue
                 tagType = tagItem['type'].lower()
                 if tagType == 'mention':
                     if tagItem.get('href'):
