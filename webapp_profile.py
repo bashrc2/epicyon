@@ -318,6 +318,11 @@ def htmlProfileAfterSearch(cssCache: {},
                     continue
                 if personUrl not in item['cc']:
                     continue
+                # switch actor with cc
+                item['actor'] = item['cc']
+                item['object']['actor'] = item['cc']
+                item['cc'] = []
+                item['object']['cc'] = []
 
             profileStr += \
                 individualPostAsHtml(signingPrivateKeyPem,
