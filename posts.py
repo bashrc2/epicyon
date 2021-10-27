@@ -444,9 +444,11 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
         if debug:
             print('No type')
         return False
-    if item['type'] != 'Create' and item['type'] != 'Announce':
+    if item['type'] != 'Create' and \
+       item['type'] != 'Announce' and \
+       item['type'] != 'Note':
         if debug:
-            print('Not a Create type')
+            print('Not a Create/Note/Announce type')
         return False
     if item.get('object'):
         if isinstance(item['object'], dict):
@@ -463,19 +465,27 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
             if debug:
                 print('object is not a dict or string')
             return False
+    elif item['type'] == 'Note':
+        if not item.get('published'):
+            if debug:
+                print('No published attribute')
+            return False
     if not personPosts.get(item['id']):
+        thisItem = item
+        if item.get('object'):
+            thisItem = item['object']
         # check that this is a public post
         # #Public should appear in the "to" list
-        if isinstance(item['object'], dict):
-            if item['object'].get('to'):
+        if isinstance(thisItem, dict):
+            if thisItem.get('to'):
                 isPublic = False
-                for recipient in item['object']['to']:
+                for recipient in thisItem['to']:
                     if recipient.endswith('#Public'):
                         isPublic = True
                         break
                 if not isPublic:
                     return False
-        elif isinstance(item['object'], str):
+        elif isinstance(thisItem, str) or item['type'] == 'Note':
             if item.get('to'):
                 isPublic = False
                 for recipient in item['to']:
@@ -570,6 +580,10 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         if not _isPublicFeedPost(item, personPosts, debug):
             continue
 
+        thisItem = item
+        if item['type'] != 'Note':
+            thisItem = item['object']
+
         content = getBaseContentFromPost(item, systemLanguage)
         content = content.replace('&apos;', "'")
 
@@ -579,9 +593,9 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         inReplyTo = ''
         attachment = []
         sensitive = False
-        if isinstance(item['object'], dict):
-            if item['object'].get('tag'):
-                for tagItem in item['object']['tag']:
+        if isinstance(thisItem, dict):
+            if thisItem.get('tag'):
+                for tagItem in thisItem['tag']:
                     tagType = tagItem['type'].lower()
                     if tagType == 'emoji':
                         if tagItem.get('name') and tagItem.get('icon'):
@@ -609,25 +623,25 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     print('max emojis reached')
                 continue
 
-            if item['object'].get('summary'):
-                if item['object']['summary']:
-                    summary = item['object']['summary']
+            if thisItem.get('summary'):
+                if thisItem['summary']:
+                    summary = thisItem['summary']
 
-            if item['object'].get('inReplyTo'):
-                if item['object']['inReplyTo']:
-                    if isinstance(item['object']['inReplyTo'], str):
+            if thisItem.get('inReplyTo'):
+                if thisItem['inReplyTo']:
+                    if isinstance(thisItem['inReplyTo'], str):
                         # No replies to non-permitted domains
-                        if not urlPermitted(item['object']['inReplyTo'],
+                        if not urlPermitted(thisItem['inReplyTo'],
                                             federationList):
                             if debug:
                                 print('url not permitted ' +
-                                      item['object']['inReplyTo'])
+                                      thisItem['inReplyTo'])
                             continue
-                        inReplyTo = item['object']['inReplyTo']
+                        inReplyTo = thisItem['inReplyTo']
 
-            if item['object'].get('attachment'):
-                if item['object']['attachment']:
-                    for attach in item['object']['attachment']:
+            if thisItem.get('attachment'):
+                if thisItem['attachment']:
+                    for attach in thisItem['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             if urlPermitted(attach['url'],
@@ -640,8 +654,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                                           attach['url'])
 
             sensitive = False
-            if item['object'].get('sensitive'):
-                sensitive = item['object']['sensitive']
+            if thisItem.get('sensitive'):
+                sensitive = thisItem['sensitive']
 
         if content:
             if simple:
