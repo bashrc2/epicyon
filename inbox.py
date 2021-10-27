@@ -3204,8 +3204,7 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                 baseDir + '/accounts/unknownContexts.txt'
             unknownContext = str(originalJson['@context'])
 
-            print('unrecognized @context: ' +
-                  unknownContext)
+            print('unrecognized @context: ' + unknownContext)
 
             alreadyUnknown = False
             if os.path.isfile(unknownContextsFile):
@@ -3217,8 +3216,7 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                 with open(unknownContextsFile, 'a+') as unknownFile:
                     unknownFile.write(unknownContext + '\n')
     else:
-        print('Unrecognized jsonld signature type: ' +
-              jwebsigType)
+        print('Unrecognized jsonld signature type: ' + jwebsigType)
 
         unknownSignaturesFile = \
             baseDir + '/accounts/unknownJsonSignatures.txt'
