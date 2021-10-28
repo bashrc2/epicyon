@@ -5878,6 +5878,9 @@ class PubServer(BaseHTTPRequestHandler):
                         updatedTime = datetime.datetime.utcnow()
                         actorJson['updated'] = \
                             updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        # add updated timestamp to avatar and banner
+                        actorJson['icon']['updated'] = actorJson['updated']
+                        actorJson['image']['updated'] = actorJson['updated']
                         # save the actor
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,
