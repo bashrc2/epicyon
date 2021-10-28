@@ -320,6 +320,37 @@ def _webfingerUpdateAvatar(wfJson: {}, actorJson: {}) -> bool:
     return True
 
 
+def _webfingerAddBlogLink(wfJson: {}, actorJson: {}) -> bool:
+    """Adds a blog link to webfinger if needed
+    """
+    found = False
+    if '/users/' in actorJson['id']:
+        blogUrl = \
+            actorJson['id'].split('/users/')[0] + '/blog/' + \
+            actorJson['id'].split('/users/')[1]
+    else:
+        blogUrl = \
+            actorJson['id'].split('/@')[0] + '/blog/' + \
+            actorJson['id'].split('/@')[1]
+    for link in wfJson['links']:
+        if not link.get('rel'):
+            continue
+        if not link['rel'].endswith('://webfinger.net/rel/blog'):
+            continue
+        found = True
+        if link['href'] != blogUrl:
+            link['href'] = blogUrl
+            return True
+        break
+    if found:
+        return False
+    wfJson['links'].append({
+        "href": blogUrl,
+        "rel": "http://webfinger.net/rel/blog"
+    })
+    return True
+
+
 def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
     """Updates webfinger Email/blog/xmpp links from profile
     Returns true if one or more tags has been changed
@@ -395,6 +426,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         changed = True
 
     if _webfingerUpdateAvatar(wfJson, actorJson):
+        changed = True
+
+    if _webfingerAddBlogLink(wfJson, actorJson):
         changed = True
 
     return changed
