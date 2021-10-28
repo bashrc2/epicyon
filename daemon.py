@@ -14404,8 +14404,8 @@ class PubServer(BaseHTTPRequestHandler):
                '?editblogpost=' in self.path and \
                ';actor=' in self.path:
                 messageId = self.path.split('?editblogpost=')[1]
-                if '?' in messageId:
-                    messageId = messageId.split('?')[0]
+                if ';' in messageId:
+                    messageId = messageId.split(';')[0]
                 actor = self.path.split(';actor=')[1]
                 if ';' in actor:
                     actor = actor.split(';')[0]
