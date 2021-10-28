@@ -5874,6 +5874,11 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['featuredTags'] = \
                                 actorJson['id'] + '/collections/tags'
                         randomizeActorImages(actorJson)
+                        # add an updated timestamp to the actor
+                        updatedTime = datetime.datetime.utcnow()
+                        actorJson['updated'] = \
+                            updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        # save the actor
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,
                                         nickname, domain,
