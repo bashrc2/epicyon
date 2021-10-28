@@ -237,6 +237,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import malformedCiphertext
 from utils import hasActor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
@@ -1490,10 +1491,15 @@ class PubServer(BaseHTTPRequestHandler):
         # save the json for later queue processing
         messageBytesDecoded = messageBytes.decode('utf-8')
 
+        if malformedCiphertext(messageBytesDecoded):
+            print('WARN: post contains malformed ciphertext ' +
+                  str(originalMessageJson))
+            return 4
+
         if containsInvalidLocalLinks(messageBytesDecoded):
             print('WARN: post contains invalid local links ' +
                   str(originalMessageJson))
-            return 4
+            return 5
 
         self.server.blockedCacheLastUpdated = \
             updateBlockedCache(self.server.baseDir,
@@ -5868,6 +5874,14 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['featuredTags'] = \
                                 actorJson['id'] + '/collections/tags'
                         randomizeActorImages(actorJson)
+                        # add an updated timestamp to the actor
+                        updatedTime = datetime.datetime.utcnow()
+                        actorJson['updated'] = \
+                            updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        # add updated timestamp to avatar and banner
+                        actorJson['icon']['updated'] = actorJson['updated']
+                        actorJson['image']['updated'] = actorJson['updated']
+                        # save the actor
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,
                                         nickname, domain,
@@ -14402,13 +14416,13 @@ class PubServer(BaseHTTPRequestHandler):
             if authorized and \
                '/users/' in self.path and \
                '?editblogpost=' in self.path and \
-               '?actor=' in self.path:
+               ';actor=' in self.path:
                 messageId = self.path.split('?editblogpost=')[1]
-                if '?' in messageId:
-                    messageId = messageId.split('?')[0]
-                actor = self.path.split('?actor=')[1]
-                if '?' in actor:
-                    actor = actor.split('?')[0]
+                if ';' in messageId:
+                    messageId = messageId.split(';')[0]
+                actor = self.path.split(';actor=')[1]
+                if ';' in actor:
+                    actor = actor.split(';')[0]
                 nickname = getNicknameFromActor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \

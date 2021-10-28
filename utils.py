@@ -2537,6 +2537,16 @@ def isPGPEncrypted(content: str) -> bool:
     return False
 
 
+def malformedCiphertext(content: str) -> bool:
+    """Returns true if the given content contains a malformed key
+    """
+    if '----BEGIN ' in content or '----END ' in content:
+        if not containsPGPPublicKey(content) and \
+           not isPGPEncrypted(content):
+            return True
+    return False
+
+
 def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
     """Returns the translations dictionary
     """

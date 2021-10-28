@@ -159,12 +159,22 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
+    personLink = httpPrefix + "://" + domain + "/@" + personName
     account = {
         "aliases": [
-            httpPrefix + "://" + domain + "/@" + personName,
+            personLink,
             personId
         ],
         "links": [
+            {
+                "href": personLink + "/avatar.png",
+                "rel": "http://webfinger.net/rel/avatar",
+                "type": "image/png"
+            },
+            {
+                "href": httpPrefix + "://" + domain + "/blog/" + personName,
+                "rel": "http://webfinger.net/rel/blog"
+            },
             {
                 "href": profilePageHref,
                 "rel": "http://webfinger.net/rel/profile-page",
@@ -242,8 +252,7 @@ def webfingerLookup(path: str, baseDir: str,
         return None
     if '&' in handle:
         handle = handle.split('&')[0].strip()
-        if debug:
-            print('DEBUG: WEBFINGER handle with & removed ' + handle)
+        print('DEBUG: WEBFINGER handle with & removed ' + handle)
     if '@' not in handle:
         if debug:
             print('DEBUG: WEBFINGER no @ in handle ' + handle)
@@ -281,6 +290,64 @@ def webfingerLookup(path: str, baseDir: str,
     if not wfJson:
         wfJson = {"nickname": "unknown"}
     return wfJson
+
+
+def _webfingerUpdateAvatar(wfJson: {}, actorJson: {}) -> bool:
+    """Updates the avatar image link
+    """
+    found = False
+    avatarUrl = actorJson['icon']['url']
+    mediaType = actorJson['icon']['mediaType']
+    for link in wfJson['links']:
+        if not link.get('rel'):
+            continue
+        if not link['rel'].endswith('://webfinger.net/rel/avatar'):
+            continue
+        found = True
+        if link['href'] != avatarUrl or link['type'] != mediaType:
+            link['href'] = avatarUrl
+            link['type'] = mediaType
+            return True
+        break
+    if found:
+        return False
+    wfJson['links'].append({
+        "href": avatarUrl,
+        "rel": "http://webfinger.net/rel/avatar",
+        "type": mediaType
+    })
+    return True
+
+
+def _webfingerAddBlogLink(wfJson: {}, actorJson: {}) -> bool:
+    """Adds a blog link to webfinger if needed
+    """
+    found = False
+    if '/users/' in actorJson['id']:
+        blogUrl = \
+            actorJson['id'].split('/users/')[0] + '/blog/' + \
+            actorJson['id'].split('/users/')[1]
+    else:
+        blogUrl = \
+            actorJson['id'].split('/@')[0] + '/blog/' + \
+            actorJson['id'].split('/@')[1]
+    for link in wfJson['links']:
+        if not link.get('rel'):
+            continue
+        if not link['rel'].endswith('://webfinger.net/rel/blog'):
+            continue
+        found = True
+        if link['href'] != blogUrl:
+            link['href'] = blogUrl
+            return True
+        break
+    if found:
+        return False
+    wfJson['links'].append({
+        "href": blogUrl,
+        "rel": "http://webfinger.net/rel/blog"
+    })
+    return True
 
 
 def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
@@ -355,6 +422,12 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
                 removeAlias.append(fullAlias)
     for fullAlias in removeAlias:
         wfJson['aliases'].remove(fullAlias)
+        changed = True
+
+    if _webfingerUpdateAvatar(wfJson, actorJson):
+        changed = True
+
+    if _webfingerAddBlogLink(wfJson, actorJson):
         changed = True
 
     return changed
