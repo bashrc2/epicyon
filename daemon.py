@@ -984,17 +984,6 @@ class PubServer(BaseHTTPRequestHandler):
             tries += 1
         return False
 
-    def _robotsTxt(self) -> bool:
-        if not self.path.lower().startswith('/robot'):
-            return False
-        msg = 'User-agent: *\nDisallow: /'
-        msg = msg.encode('utf-8')
-        msglen = len(msg)
-        self._set_headers('text/plain; charset=utf-8', msglen,
-                          None, self.server.domainFull, True)
-        self._write(msg)
-        return True
-
     def _hasAccept(self, callingDomain: str) -> bool:
         """Do the http headers have an Accept field?
         """
@@ -13298,14 +13287,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'show about screen done',
-                           self.server.debug)
-
-        # send robots.txt if asked
-        if self._robotsTxt():
-            return
-
-        fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', 'robots txt',
                            self.server.debug)
 
         # the initial welcome screen after first logging in
