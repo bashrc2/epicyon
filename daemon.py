@@ -237,6 +237,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import malformedCiphertext
 from utils import hasActor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
@@ -1490,10 +1491,15 @@ class PubServer(BaseHTTPRequestHandler):
         # save the json for later queue processing
         messageBytesDecoded = messageBytes.decode('utf-8')
 
+        if malformedCiphertext(messageBytesDecoded):
+            print('WARN: post contains malformed ciphertext ' +
+                  str(originalMessageJson))
+            return 4
+
         if containsInvalidLocalLinks(messageBytesDecoded):
             print('WARN: post contains invalid local links ' +
                   str(originalMessageJson))
-            return 4
+            return 5
 
         self.server.blockedCacheLastUpdated = \
             updateBlockedCache(self.server.baseDir,
