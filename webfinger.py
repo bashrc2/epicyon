@@ -252,8 +252,7 @@ def webfingerLookup(path: str, baseDir: str,
         return None
     if '&' in handle:
         handle = handle.split('&')[0].strip()
-        if debug:
-            print('DEBUG: WEBFINGER handle with & removed ' + handle)
+        print('DEBUG: WEBFINGER handle with & removed ' + handle)
     if '@' not in handle:
         if debug:
             print('DEBUG: WEBFINGER no @ in handle ' + handle)
