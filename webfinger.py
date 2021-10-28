@@ -159,10 +159,11 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
-    avatarUrl = httpPrefix + "://" + domain + "/@" + personName + "/avatar.png"
+    personLink = httpPrefix + "://" + domain + "/@" + personName
+    avatarUrl = personLink + "/avatar.png"
     account = {
         "aliases": [
-            httpPrefix + "://" + domain + "/@" + personName,
+            personLink,
             personId
         ],
         "links": [
