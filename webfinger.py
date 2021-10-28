@@ -159,12 +159,18 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
         profilePageHref = httpPrefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
+    avatarUrl = httpPrefix + "://" + domain + "/@" + personName + "/avatar.png"
     account = {
         "aliases": [
             httpPrefix + "://" + domain + "/@" + personName,
             personId
         ],
         "links": [
+            {
+                "href": avatarUrl,
+                "rel": "http://webfinger.net/rel/avatar",
+                "type": "image/png"
+            },
             {
                 "href": profilePageHref,
                 "rel": "http://webfinger.net/rel/profile-page",
