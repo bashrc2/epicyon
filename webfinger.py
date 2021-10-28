@@ -160,7 +160,6 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
             '/about/more?instance_actor=true'
 
     personLink = httpPrefix + "://" + domain + "/@" + personName
-    avatarUrl = personLink + "/avatar.png"
     account = {
         "aliases": [
             personLink,
@@ -294,6 +293,33 @@ def webfingerLookup(path: str, baseDir: str,
     return wfJson
 
 
+def _webfingerUpdateAvatar(wfJson: {}, actorJson: {}) -> bool:
+    """Updates the avatar image link
+    """
+    found = False
+    avatarUrl = actorJson['icon']['url']
+    mediaType = actorJson['icon']['mediaType']
+    for link in wfJson['links']:
+        if not link.get('rel'):
+            continue
+        if not link['rel'].endswith('://webfinger.net/rel/avatar'):
+            continue
+        found = True
+        if link['href'] != avatarUrl or link['type'] != mediaType:
+            link['href'] = avatarUrl
+            link['type'] = mediaType
+            return True
+        break
+    if found:
+        return False
+    wfJson['links'].append({
+        "href": avatarUrl,
+        "rel": "http://webfinger.net/rel/avatar",
+        "type": mediaType
+    })
+    return True
+
+
 def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
     """Updates webfinger Email/blog/xmpp links from profile
     Returns true if one or more tags has been changed
@@ -366,6 +392,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
                 removeAlias.append(fullAlias)
     for fullAlias in removeAlias:
         wfJson['aliases'].remove(fullAlias)
+        changed = True
+
+    if _webfingerUpdateAvatar(wfJson, actorJson):
         changed = True
 
     return changed
