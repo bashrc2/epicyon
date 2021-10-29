@@ -132,7 +132,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     followersList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'followers', session,
-                                 httpPrefix, searchActor, 1, 5)
+                                 httpPrefix, searchActor, 1, 5, debug)
     blockedFollowers = []
     for followerActor in followersList:
         followerNickname = getNicknameFromActor(followerActor)
@@ -146,7 +146,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     followingList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'following', session,
-                                 httpPrefix, searchActor, 1, 5)
+                                 httpPrefix, searchActor, 1, 5, debug)
     blockedFollowing = []
     for followingActor in followingList:
         followingNickname = getNicknameFromActor(followingActor)

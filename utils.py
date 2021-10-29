@@ -16,9 +16,9 @@ import json
 import idna
 import locale
 from pprint import pprint
-from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+from followingCalendar import addPersonToCalendar
 
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
@@ -209,8 +209,7 @@ def hasUsersPath(pathStr: str) -> bool:
     return False
 
 
-def validPostDate(published: str, maxAgeDays: int = 90,
-                  debug: bool = False) -> bool:
+def validPostDate(published: str, maxAgeDays: int, debug: bool) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
     baselineTime = datetime.datetime(1970, 1, 1)
@@ -222,6 +221,8 @@ def validPostDate(published: str, maxAgeDays: int = 90,
         postTimeObject = \
             datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
+        if debug:
+            print('EX: validPostDate invalid published date ' + str(published))
         return False
 
     daysDiff = postTimeObject - baselineTime
@@ -252,7 +253,7 @@ def getFullDomain(domain: str, port: int) -> str:
 
 
 def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
-              dormantMonths: int = 3) -> bool:
+              dormantMonths: int) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
@@ -625,6 +626,8 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
             try:
                 os.remove(avatarFilename)
             except BaseException:
+                print('EX: removeAvatarFromCache ' +
+                      'unable to delete cached avatar ' + str(avatarFilename))
                 pass
 
 
@@ -638,7 +641,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
                 fp.write(json.dumps(jsonObject))
                 return True
         except BaseException:
-            print('WARN: saveJson ' + str(tries))
+            print('EX: saveJson ' + str(tries))
             time.sleep(1)
             tries += 1
     return False
@@ -656,7 +659,7 @@ def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
                 jsonObject = json.loads(data)
                 break
         except BaseException:
-            print('WARN: loadJson exception')
+            print('EX: loadJson exception ' + str(filename))
             if delaySec > 0:
                 time.sleep(delaySec)
             tries += 1
@@ -681,7 +684,7 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
                 jsonObject = json.loads(data)
                 break
         except BaseException:
-            print('WARN: loadJson exception')
+            print('EX: loadJsonOnionify exception ' + str(filename))
             if delaySec > 0:
                 time.sleep(delaySec)
             tries += 1
@@ -1285,8 +1288,8 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
                 try:
                     os.remove(postFilename)
                 except BaseException:
-                    print('WARN: clearFromPostCaches file not removed ' +
-                          postFilename)
+                    print('EX: clearFromPostCaches file not removed ' +
+                          str(postFilename))
                     pass
             # if the post is in the recent posts cache then remove it
             if recentPostsCache.get('index'):
@@ -1384,6 +1387,9 @@ def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
             fp.write(str(replyIntervalHours))
             return True
         except BaseException:
+            print('EX: setReplyIntervalHours unable to save reply interval ' +
+                  str(replyIntervalFilename) + ' ' +
+                  str(replyIntervalHours))
             pass
     return False
 
@@ -1411,6 +1417,7 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
     try:
         pubDate = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
+        print('EX: canReplyTo unrecognized published date ' + str(published))
         return False
     if not currDateStr:
         currDate = datetime.datetime.utcnow()
@@ -1419,6 +1426,8 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
             currDate = datetime.datetime.strptime(currDateStr,
                                                   '%Y-%m-%dT%H:%M:%SZ')
         except BaseException:
+            print('EX: canReplyTo unrecognized current date ' +
+                  str(currDateStr))
             return False
     hoursSincePublication = int((currDate - pubDate).total_seconds() / 3600)
     if hoursSincePublication < 0 or \
@@ -1442,12 +1451,16 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
         try:
             os.remove(mediaFilename)
         except BaseException:
+            print('EX: _removeAttachment unable to delete media file ' +
+                  str(mediaFilename))
             pass
     etagFilename = mediaFilename + '.etag'
     if os.path.isfile(etagFilename):
         try:
             os.remove(etagFilename)
         except BaseException:
+            print('EX: _removeAttachment unable to delete etag file ' +
+                  str(etagFilename))
             pass
     postJson['attachment'] = []
 
@@ -1516,6 +1529,8 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
     try:
         os.remove(repliesFilename)
     except BaseException:
+        print('EX: _deletePostRemoveReplies unable to delete replies file ' +
+              str(repliesFilename))
         pass
 
 
@@ -1575,6 +1590,9 @@ def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                print('EX: _deleteCachedHtml ' +
+                      'unable to delete cached post file ' +
+                      str(cachedPostFilename))
                 pass
 
 
@@ -1622,6 +1640,8 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             try:
                 os.remove(tagIndexFilename)
             except BaseException:
+                print('EX: _deleteHashtagsOnPost unable to delete tag index ' +
+                      str(tagIndexFilename))
                 pass
         else:
             # write the new hashtag index without the given post in it
@@ -1660,10 +1680,16 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
             try:
                 os.remove(conversationFilename + '.muted')
             except BaseException:
+                print('EX: _deleteConversationPost ' +
+                      'unable to remove conversation ' +
+                      str(conversationFilename) + '.muted')
                 pass
         try:
             os.remove(conversationFilename)
         except BaseException:
+            print('EX: _deleteConversationPost ' +
+                  'unable to remove conversation ' +
+                  str(conversationFilename))
             pass
 
 
@@ -1682,6 +1708,9 @@ def deletePost(baseDir: str, httpPrefix: str,
         try:
             os.remove(postFilename)
         except BaseException:
+            if debug:
+                print('EX: deletePost unable to delete post ' +
+                      str(postFilename))
             pass
         return
 
@@ -1710,6 +1739,8 @@ def deletePost(baseDir: str, httpPrefix: str,
             try:
                 os.remove(extFilename)
             except BaseException:
+                print('EX: deletePost unable to remove ext ' +
+                      str(extFilename))
                 pass
 
     # remove cached html version of the post
@@ -1739,6 +1770,8 @@ def deletePost(baseDir: str, httpPrefix: str,
     try:
         os.remove(postFilename)
     except BaseException:
+        if debug:
+            print('EX: deletePost unable to delete post ' + str(postFilename))
         pass
 
 
@@ -2179,6 +2212,9 @@ def undoLikesCollectionEntry(recentPostsCache: {},
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                print('EX: undoLikesCollectionEntry ' +
+                      'unable to delete cached post ' +
+                      str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
@@ -2241,6 +2277,10 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                if debug:
+                    print('EX: undoAnnounceCollectionEntry ' +
+                          'unable to delete cached post ' +
+                          str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
@@ -2305,6 +2345,10 @@ def updateAnnounceCollection(recentPostsCache: {},
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                if debug:
+                    print('EX: updateAnnounceCollection ' +
+                          'unable to delete cached post ' +
+                          str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
@@ -2388,7 +2432,7 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def isRecentPost(postJsonObject: {}, maxDays: int = 3) -> bool:
+def isRecentPost(postJsonObject: {}, maxDays: int) -> bool:
     """ Is the given post recent?
     """
     if not hasObjectDict(postJsonObject):
@@ -2407,6 +2451,8 @@ def isRecentPost(postJsonObject: {}, maxDays: int = 3) -> bool:
             datetime.datetime.strptime(publishedDateStr,
                                        "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
+        print('EX: isRecentPost unrecognized published date ' +
+              str(publishedDateStr))
         return False
 
     publishedDaysSinceEpoch = \
@@ -2552,7 +2598,7 @@ def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
     """
     if not os.path.isdir(baseDir + '/translations'):
         print('ERROR: translations directory not found')
-        return
+        return None, None
     if not language:
         systemLanguage = locale.getdefaultlocale()[0]
     else:
@@ -2849,6 +2895,7 @@ def dateStringToSeconds(dateStr: str) -> int:
         expiryTime = \
             datetime.datetime.strptime(dateStr, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
+        print('EX: dateStringToSeconds unable to parse date ' + str(dateStr))
         return None
     return int(datetime.datetime.timestamp(expiryTime))
 
@@ -2983,7 +3030,7 @@ def getSupportedLanguages(baseDir: str) -> []:
     """
     translationsDir = baseDir + '/translations'
     languagesStr = []
-    for subdir, dirs, files in os.walk(translationsDir):
+    for _, _, files in os.walk(translationsDir):
         for f in files:
             if not f.endswith('.json'):
                 continue
@@ -2999,7 +3046,7 @@ def getCategoryTypes(baseDir: str) -> []:
     """
     ontologyDir = baseDir + '/ontology'
     categories = []
-    for subdir, dirs, files in os.walk(ontologyDir):
+    for _, _, files in os.walk(ontologyDir):
         for f in files:
             if not f.endswith('.json'):
                 continue

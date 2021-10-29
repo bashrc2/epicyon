@@ -283,6 +283,8 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                     try:
                         os.remove(avatarImageFilename)
                     except BaseException:
+                        print('EX: updateAvatarImageCache unable to delete ' +
+                              avatarImageFilename)
                         pass
             else:
                 with open(avatarImageFilename, 'wb') as f:
@@ -1217,9 +1219,9 @@ def editTextField(label: str, name: str, value: str = "",
         value + '"' + placeholderStr + requiredStr + '>\n'
 
 
-def editNumberField(label: str, name: str, value: int = 1,
-                    minValue: int = 1, maxValue: int = 999999,
-                    placeholder: int = 1) -> str:
+def editNumberField(label: str, name: str, value: int,
+                    minValue: int, maxValue: int,
+                    placeholder: int) -> str:
     """Returns html for editing an integer number field
     """
     if value is None:
@@ -1234,9 +1236,8 @@ def editNumberField(label: str, name: str, value: int = 1,
         'min="' + str(minValue) + '" max="' + str(maxValue) + '" step="1">\n'
 
 
-def editCurrencyField(label: str, name: str, value: str = "0.00",
-                      placeholder: str = "0.00",
-                      required: bool = False) -> str:
+def editCurrencyField(label: str, name: str, value: str,
+                      placeholder: str, required: bool) -> str:
     """Returns html for editing a currency field
     """
     if value is None:
@@ -1256,7 +1257,7 @@ def editCurrencyField(label: str, name: str, value: str = "0.00",
         requiredStr + '>\n'
 
 
-def editCheckBox(label: str, name: str, checked: bool = False) -> str:
+def editCheckBox(label: str, name: str, checked: bool) -> str:
     """Returns html for editing a checkbox field
     """
     checkedStr = ''
@@ -1268,10 +1269,8 @@ def editCheckBox(label: str, name: str, checked: bool = False) -> str:
         'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
 
 
-def editTextArea(label: str, name: str, value: str = "",
-                 height: int = 600,
-                 placeholder: str = "",
-                 spellcheck: bool = False) -> str:
+def editTextArea(label: str, name: str, value: str,
+                 height: int, placeholder: str, spellcheck: bool) -> str:
     """Returns html for editing a textarea field
     """
     if value is None:

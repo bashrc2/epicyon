@@ -517,6 +517,8 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                 os.remove(cachedPostFilename)
                 print('MUTE: cached post removed ' + cachedPostFilename)
             except BaseException:
+                print('EX: MUTE cached post not removed ' +
+                      cachedPostFilename)
                 pass
         else:
             print('MUTE: cached post not found ' + cachedPostFilename)
@@ -554,6 +556,9 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                         print('MUTE: cached referenced post removed ' +
                               cachedPostFilename)
                     except BaseException:
+                        print('EX: ' +
+                              'MUTE cached referenced post not removed ' +
+                              cachedPostFilename)
                         pass
 
         if recentPostsCache.get('json'):
@@ -583,6 +588,9 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
         try:
             os.remove(muteFilename)
         except BaseException:
+            if debug:
+                print('EX: unmutePost mute filename not deleted ' +
+                      str(muteFilename))
             pass
         print('UNMUTE: ' + muteFilename + ' file removed')
 
@@ -631,6 +639,9 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                if debug:
+                    print('EX: unmutePost cached post not deleted ' +
+                          str(cachedPostFilename))
                 pass
 
     # if the post is in the recent posts cache then mark it as unmuted
@@ -661,6 +672,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
                         print('MUTE: cached referenced post removed ' +
                               cachedPostFilename)
                     except BaseException:
+                        if debug:
+                            print('EX: ' +
+                                  'unmutePost cached ref post not removed ' +
+                                  str(cachedPostFilename))
                         pass
 
         if recentPostsCache.get('json'):
@@ -804,6 +819,8 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
             try:
                 os.remove(allowFilename)
             except BaseException:
+                print('EX: setBrochMode allow file not deleted ' +
+                      str(allowFilename))
                 pass
             print('Broch mode turned off')
     else:
@@ -844,7 +861,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     setConfigParam(baseDir, "brochMode", enabled)
 
 
-def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
+def brochModeLapses(baseDir: str, lapseDays: int) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
@@ -857,6 +874,7 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
         modifiedDate = \
             datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
+        print('EX: brochModeLapses date not parsed ' + str(lastModified))
         return False
     if not modifiedDate:
         return False
@@ -868,6 +886,8 @@ def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
             os.remove(allowFilename)
             removed = True
         except BaseException:
+            print('EX: brochModeLapses allow file not deleted ' +
+                  str(allowFilename))
             pass
         if removed:
             setConfigParam(baseDir, "brochMode", False)

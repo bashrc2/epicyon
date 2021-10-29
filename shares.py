@@ -149,6 +149,8 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
                         try:
                             os.remove(itemIDfile + '.' + ext)
                         except BaseException:
+                            print('EX: removeSharedItem unable to delete ' +
+                                  itemIDfile + '.' + ext)
                             pass
         # remove the item itself
         del sharesJson[itemID]
@@ -293,6 +295,8 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
                     else:
                         fp.write(localActor + '/tlwanted')
             except BaseException:
+                print('EX: _indicateNewShareAvailable unable to write ' +
+                      str(newShareFile))
                 pass
         break
 
@@ -364,6 +368,8 @@ def addShare(baseDir: str,
                     try:
                         os.remove(imageFilename)
                     except BaseException:
+                        print('EX: addShare unable to delete ' +
+                              str(imageFilename))
                         pass
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
@@ -436,6 +442,8 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
                 try:
                     os.remove(itemIDfile + '.' + ext)
                 except BaseException:
+                    print('EX: _expireSharesForAccount unable to delete ' +
+                          itemIDfile + '.' + ext)
                     pass
     saveJson(sharesJson, sharesFilename)
 
@@ -444,7 +452,7 @@ def getSharesFeedForPerson(baseDir: str,
                            domain: str, port: int,
                            path: str, httpPrefix: str,
                            sharesFileType: str,
-                           sharesPerPage: int = 12) -> {}:
+                           sharesPerPage: int) -> {}:
     """Returns the shares for an account from GET requests
     """
     if '/' + sharesFileType not in path:
@@ -460,6 +468,8 @@ def getSharesFeedForPerson(baseDir: str,
             try:
                 pageNumber = int(pageNumber)
             except BaseException:
+                print('EX: getSharesFeedForPerson unable to convert to int ' +
+                      str(pageNumber))
                 pass
         path = path.split('?page=')[0]
         headerOnly = False
@@ -1564,7 +1574,7 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         if not tokensJson.get(federatedDomainFull):
             # token has been obtained for the other domain
             continue
-        if not siteIsActive(httpPrefix + '://' + federatedDomainFull):
+        if not siteIsActive(httpPrefix + '://' + federatedDomainFull, 10):
             continue
         if sharesFileType == 'shares':
             url = httpPrefix + '://' + federatedDomainFull + '/catalog'

@@ -245,7 +245,7 @@ def _testHttpSignedGET(baseDir: str):
 
     path = baseDir + '/.testHttpsigGET'
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
 
@@ -290,7 +290,7 @@ def _testHttpSignedGET(baseDir: str):
                              boxpath, GETmethod, None,
                              messageBodyJsonStr, debug, noRecencyCheck)
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
 def _testSignAndVerify() -> None:
@@ -561,7 +561,7 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
 
     path = baseDir + '/.testHttpsigBase'
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
 
@@ -662,7 +662,7 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
                              messageBodyJsonStr, False) is False
 
     os.chdir(baseDir)
-    shutil.rmtree(path)
+    shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
 def _testHttpsig(baseDir: str):
@@ -709,7 +709,7 @@ def createServerAlice(path: str, domain: str, port: int,
                       sendThreads: []):
     print('Creating test server: Alice on port ' + str(port))
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
     sharedItemsFederatedDomains = []
@@ -850,7 +850,7 @@ def createServerBob(path: str, domain: str, port: int,
                     sendThreads: []):
     print('Creating test server: Bob on port ' + str(port))
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
     sharedItemsFederatedDomains = []
@@ -988,7 +988,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
                     sendThreads: []):
     print('Creating test server: Eve on port ' + str(port))
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
     sharedItemsFederatedDomains = []
@@ -1055,7 +1055,7 @@ def createServerGroup(path: str, domain: str, port: int,
                       sendThreads: []):
     print('Creating test server: Group on port ' + str(port))
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
     sharedItemsFederatedDomains = []
@@ -1134,7 +1134,7 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
     proxyType = None
 
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     os.mkdir(baseDir + '/.tests')
 
     # create the servers
@@ -1417,8 +1417,8 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
     assert thrBob.is_alive() is False
 
     os.chdir(baseDir)
-    shutil.rmtree(aliceDir)
-    shutil.rmtree(bobDir)
+    shutil.rmtree(aliceDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(bobDir, ignore_errors=False, onerror=None)
 
 
 def testFollowBetweenServers(baseDir: str) -> None:
@@ -1435,7 +1435,7 @@ def testFollowBetweenServers(baseDir: str) -> None:
     federationList = []
 
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     os.mkdir(baseDir + '/.tests')
 
     # create the servers
@@ -1605,7 +1605,7 @@ def testFollowBetweenServers(baseDir: str) -> None:
                 if os.path.isfile(os.path.join(queuePath, name))]) == 0
 
     os.chdir(baseDir)
-    shutil.rmtree(baseDir + '/.tests')
+    shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
 
 
 def testSharedItemsFederation(baseDir: str) -> None:
@@ -1622,7 +1622,7 @@ def testSharedItemsFederation(baseDir: str) -> None:
     federationList = []
 
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     os.mkdir(baseDir + '/.tests')
 
     # create the servers
@@ -1767,7 +1767,7 @@ def testSharedItemsFederation(baseDir: str) -> None:
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
     if os.path.isdir(bobDir + '/ontology'):
-        shutil.rmtree(bobDir + '/ontology')
+        shutil.rmtree(bobDir + '/ontology', ignore_errors=False, onerror=None)
     os.mkdir(bobDir + '/ontology')
     copyfile(baseDir + '/img/logo.png', bobDir + '/logo.png')
     copyfile(baseDir + '/ontology/foodTypes.json',
@@ -2004,7 +2004,7 @@ def testSharedItemsFederation(baseDir: str) -> None:
     assert thrBob.is_alive() is False
 
     os.chdir(baseDir)
-    shutil.rmtree(baseDir + '/.tests')
+    shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     print('Testing federation of shared items between ' +
           'Alice and Bob is complete')
 
@@ -2026,7 +2026,7 @@ def testGroupFollow(baseDir: str) -> None:
     federationList = []
 
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     os.mkdir(baseDir + '/.tests')
 
     # create the servers
@@ -2412,7 +2412,7 @@ def testGroupFollow(baseDir: str) -> None:
                 if os.path.isfile(os.path.join(queuePath, name))]) == 0
 
     os.chdir(baseDir)
-    shutil.rmtree(baseDir + '/.tests')
+    shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     print('Testing following of a group is complete')
 
 
@@ -2427,7 +2427,7 @@ def _testFollowersOfPerson(baseDir: str) -> None:
     federationList = []
     baseDir = currDir + '/.tests_followersofperson'
     if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
+        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
     os.mkdir(baseDir)
     os.chdir(baseDir)
     createPerson(baseDir, nickname, domain, port,
@@ -2462,7 +2462,7 @@ def _testFollowersOfPerson(baseDir: str) -> None:
     assert 'drokk@' + domain in followList
     assert 'sausagedog@' + domain in followList
     os.chdir(currDir)
-    shutil.rmtree(baseDir)
+    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
 
 
 def _testNoOfFollowersOnDomain(baseDir: str) -> None:
@@ -2477,7 +2477,7 @@ def _testNoOfFollowersOnDomain(baseDir: str) -> None:
     federationList = []
     baseDir = currDir + '/.tests_nooffollowersOndomain'
     if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
+        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
     os.mkdir(baseDir)
     os.chdir(baseDir)
     createPerson(baseDir, nickname, domain, port, httpPrefix, True,
@@ -2524,7 +2524,7 @@ def _testNoOfFollowersOnDomain(baseDir: str) -> None:
     assert followersOnOtherDomain == 2
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir)
+    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
 
 
 def _testGroupFollowers(baseDir: str) -> None:
@@ -2539,7 +2539,7 @@ def _testGroupFollowers(baseDir: str) -> None:
     federationList = []
     baseDir = currDir + '/.tests_testgroupfollowers'
     if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
+        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
     os.mkdir(baseDir)
     os.chdir(baseDir)
     createPerson(baseDir, nickname, domain, port, httpPrefix, True,
@@ -2569,7 +2569,7 @@ def _testGroupFollowers(baseDir: str) -> None:
     assert len(grouped['clutterly.domain']) == 1
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir)
+    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
 
 
 def _testFollows(baseDir: str) -> None:
@@ -2583,7 +2583,7 @@ def _testFollows(baseDir: str) -> None:
     federationList = ['wild.com', 'mesh.com']
     baseDir = currDir + '/.tests_testfollows'
     if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
+        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
     os.mkdir(baseDir)
     os.chdir(baseDir)
     createPerson(baseDir, nickname, domain, port, httpPrefix, True,
@@ -2647,7 +2647,7 @@ def _testFollows(baseDir: str) -> None:
             assert(False)
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir)
+    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
 
 
 def _testCreatePerson(baseDir: str):
@@ -2662,7 +2662,7 @@ def _testCreatePerson(baseDir: str):
     clientToServer = False
     baseDir = currDir + '/.tests_createperson'
     if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
+        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
     os.mkdir(baseDir)
     os.chdir(baseDir)
 
@@ -2703,7 +2703,7 @@ def _testCreatePerson(baseDir: str):
                      lowBandwidth)
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir)
+    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
 
 
 def showTestBoxes(name: str, inboxPath: str, outboxPath: str) -> None:
@@ -2726,7 +2726,7 @@ def _testAuthentication(baseDir: str) -> None:
 
     baseDir = currDir + '/.tests_authentication'
     if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir)
+        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
     os.mkdir(baseDir)
     os.chdir(baseDir)
 
@@ -2755,7 +2755,7 @@ def _testAuthentication(baseDir: str) -> None:
                           authHeader, False)
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir)
+    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
 
 
 def testClientToServer(baseDir: str):
@@ -2773,7 +2773,7 @@ def testClientToServer(baseDir: str):
     lowBandwidth = False
 
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
     os.mkdir(baseDir + '/.tests')
 
     # create the servers
@@ -3163,8 +3163,8 @@ def testClientToServer(baseDir: str):
     assert thrBob.is_alive() is False
 
     os.chdir(baseDir)
-    # shutil.rmtree(aliceDir)
-    # shutil.rmtree(bobDir)
+    # shutil.rmtree(aliceDir, ignore_errors=False, onerror=None)
+    # shutil.rmtree(bobDir, ignore_errors=False, onerror=None)
 
 
 def _testActorParsing():
@@ -3356,12 +3356,12 @@ def _testAddEmoji(baseDir: str):
         os.mkdir(path)
     path = baseDir + '/.tests/emoji'
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     baseDir = path
     path = baseDir + '/emoji'
     if os.path.isdir(path):
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     copytree(baseDirOriginal + '/emoji', baseDir + '/emoji')
     os.chdir(baseDir)
@@ -3384,7 +3384,8 @@ def _testAddEmoji(baseDir: str):
     assert contentModified == '<p>Emoji 🍋 🍓 🍌</p>'
 
     os.chdir(baseDirOriginal)
-    shutil.rmtree(baseDirOriginal + '/.tests')
+    shutil.rmtree(baseDirOriginal + '/.tests',
+                  ignore_errors=False, onerror=None)
 
 
 def _testGetStatusNumber():
@@ -3578,9 +3579,10 @@ def _testJsonld():
 
 def _testSiteIsActive():
     print('testSiteIsActive')
-    assert(siteIsActive('https://archive.org'))
-    assert(siteIsActive('https://mastodon.social'))
-    assert(not siteIsActive('https://notarealwebsite.a.b.c'))
+    timeout = 10
+    assert(siteIsActive('https://archive.org', timeout))
+    assert(siteIsActive('https://mastodon.social', timeout))
+    assert(not siteIsActive('https://notarealwebsite.a.b.c', timeout))
 
 
 def _testRemoveHtml():
@@ -4987,7 +4989,8 @@ def testUpdateActor(baseDir: str):
     federationList = []
 
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests',
+                      ignore_errors=False, onerror=None)
     os.mkdir(baseDir + '/.tests')
 
     # create the server
@@ -5089,7 +5092,7 @@ def testUpdateActor(baseDir: str):
 
     os.chdir(baseDir)
     if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests')
+        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
 
 
 def _testRemovePostInteractions() -> None:

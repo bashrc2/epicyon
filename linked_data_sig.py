@@ -87,6 +87,7 @@ def verifyJsonSignature(doc: {}, publicKeyPem: str) -> bool:
             hazutils.Prehashed(hashes.SHA256()))
         return True
     except BaseException:
+        print('EX: verifyJsonSignature unable to verify')
         return False
 
 

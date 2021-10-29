@@ -74,6 +74,7 @@ def insertQuestion(baseDir: str, translate: {},
             try:
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
+                print('EX: insertQuestion unable to convert to int')
                 pass
             if votes > maxVotes:
                 maxVotes = int(votes+1)
@@ -89,6 +90,7 @@ def insertQuestion(baseDir: str, translate: {},
             try:
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
+                print('EX: insertQuestion unable to convert to int 2')
                 pass
             votesPercent = str(int(votes * 100 / maxVotes))
             content += \

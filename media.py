@@ -126,6 +126,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
             with open(decoySeedFilename, 'w+') as fp:
                 fp.write(str(decoySeed))
         except BaseException:
+            print('EX: unable to write ' + decoySeedFilename)
             pass
 
     if os.path.isfile('/usr/bin/exiftool'):
@@ -166,6 +167,8 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
         try:
             os.remove(lowBandwidthFilename)
         except BaseException:
+            print('EX: convertImageToLowBandwidth unable to delete ' +
+                  lowBandwidthFilename)
             pass
 
     cmd = \
@@ -187,6 +190,8 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
         try:
             os.remove(imageFilename)
         except BaseException:
+            print('EX: convertImageToLowBandwidth unable to delete ' +
+                  imageFilename)
             pass
         os.rename(lowBandwidthFilename, imageFilename)
         if os.path.isfile(imageFilename):
@@ -273,6 +278,7 @@ def _updateEtag(mediaFilename: str) -> None:
         with open(mediaFilename, 'rb') as mediaFile:
             data = mediaFile.read()
     except BaseException:
+        print('EX: _updateEtag unable to read ' + str(mediaFilename))
         pass
 
     if not data:
@@ -284,6 +290,8 @@ def _updateEtag(mediaFilename: str) -> None:
         with open(mediaFilename + '.etag', 'w+') as etagFile:
             etagFile.write(etag)
     except BaseException:
+        print('EX: _updateEtag unable to write ' +
+              str(mediaFilename) + '.etag')
         pass
 
 
@@ -357,8 +365,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
     return postJson
 
 
-def archiveMedia(baseDir: str, archiveDirectory: str,
-                 maxWeeks: int = 4) -> None:
+def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks: int) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:
@@ -382,7 +389,8 @@ def archiveMedia(baseDir: str, archiveDirectory: str,
                          archiveDirectory + '/media')
                 else:
                     # archive to /dev/null
-                    rmtree(os.path.join(baseDir + '/media', weekDir))
+                    rmtree(os.path.join(baseDir + '/media', weekDir),
+                           ignore_errors=False, onerror=None)
         break
 
 
@@ -407,6 +415,7 @@ def getImageDimensions(imageFilename: str) -> (int, int):
         result = subprocess.run(['identify', '-format', '"%wx%h"',
                                  imageFilename], stdout=subprocess.PIPE)
     except BaseException:
+        print('EX: getImageDimensions unable to run identify command')
         return None, None
     if not result:
         return None, None

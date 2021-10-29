@@ -244,7 +244,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             publishedDate = \
                 datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
         except BaseException:
-            print('WARN: bad date format ' + dateStr)
+            print('EX: _htmlNewswire bad date format ' + dateStr)
             continue
         dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 

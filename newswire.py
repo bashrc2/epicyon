@@ -132,8 +132,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
                           votesStatus: str, postFilename: str,
                           description: str, moderated: bool,
                           mirrored: bool,
-                          tags: [] = [],
-                          maxTags: int = 32) -> None:
+                          tags: [],
+                          maxTags: int) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -229,8 +229,7 @@ def parseFeedDate(pubDate: str) -> str:
             continue
 
         try:
-            publishedDate = \
-                datetime.strptime(pubDate, dateFormat)
+            publishedDate = datetime.strptime(pubDate, dateFormat)
         except BaseException:
             continue
 
@@ -384,7 +383,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -471,7 +470,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -546,7 +545,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -568,6 +567,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
     try:
         feedJson = json.loads(xmlStr)
     except BaseException:
+        print('EX: _jsonFeedV1ToDict unable to load json ' + str(xmlStr))
         return {}
     maxBytes = maxFeedItemSizeKb * 1024
     if not feedJson.get('version'):
@@ -656,7 +656,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -727,7 +727,8 @@ def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
-                                      description, moderated, mirrored)
+                                      description, moderated, mirrored,
+                                      [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -1045,6 +1046,8 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
             try:
                 os.remove(newswireModerationFilename)
             except BaseException:
+                print('EX: _addBlogsToNewswire unable to delete ' +
+                      str(newswireModerationFilename))
                 pass
 
 

@@ -397,6 +397,8 @@ def postMessageToOutbox(session, translate: {},
                     try:
                         os.remove(citationsFilename)
                     except BaseException:
+                        print('EX: postMessageToOutbox unable to delete ' +
+                              citationsFilename)
                         pass
 
         # The following activity types get added to the index files

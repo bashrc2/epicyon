@@ -53,6 +53,7 @@ from donate import getDonationUrl
 from donate import setDonationUrl
 from donate import getWebsite
 from donate import setWebsite
+from person import addActorUpdateTimestamp
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import getActorUpdateJson
@@ -540,6 +541,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 try:
                                     os.remove(cachedPostFilename)
                                 except BaseException:
+                                    print('EX: _sendReplyToQuestion ' +
+                                          'unable to delete ' +
+                                          cachedPostFilename)
                                     pass
                         # remove from memory cache
                         removePostFromCache(postJsonObject,
@@ -822,6 +826,8 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename + '.etag', 'r') as etagFile:
                     etag = etagFile.read()
             except BaseException:
+                print('EX: _set_headers_etag ' +
+                      'unable to read ' + mediaFilename + '.etag')
                 pass
         if not etag:
             etag = md5(data).hexdigest()  # nosec
@@ -829,6 +835,8 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
             except BaseException:
+                print('EX: _set_headers_etag ' +
+                      'unable to write ' + mediaFilename + '.etag')
                 pass
         # if etag:
         #     self.send_header('ETag', '"' + etag + '"')
@@ -854,6 +862,8 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(mediaFilename, 'r') as etagFile:
                         currEtag = etagFile.read()
                 except BaseException:
+                    print('EX: _etag_exists unable to read ' +
+                          str(mediaFilename))
                     pass
                 if currEtag and oldEtag == currEtag:
                     # The file has not changed
@@ -983,17 +993,6 @@ class PubServer(BaseHTTPRequestHandler):
                 time.sleep(0.5)
             tries += 1
         return False
-
-    def _robotsTxt(self) -> bool:
-        if not self.path.lower().startswith('/robot'):
-            return False
-        msg = 'User-agent: *\nDisallow: /'
-        msg = msg.encode('utf-8')
-        msglen = len(msg)
-        self._set_headers('text/plain; charset=utf-8', msglen,
-                          None, self.server.domainFull, True)
-        self._write(msg)
-        return True
 
     def _hasAccept(self, callingDomain: str) -> bool:
         """Do the http headers have an Accept field?
@@ -2339,6 +2338,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(newswireBlockedFilename)
                         except BaseException:
+                            print('EX: _personOptions unable to delete ' +
+                                  newswireBlockedFilename)
                             pass
                         refreshNewswire(self.server.baseDir)
                 else:
@@ -2377,6 +2378,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(featuresBlockedFilename)
                         except BaseException:
+                            print('EX: _personOptions unable to delete ' +
+                                  featuresBlockedFilename)
                             pass
                         refreshNewswire(self.server.baseDir)
                 else:
@@ -2415,6 +2418,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(newswireModFilename)
                         except BaseException:
+                            print('EX: _personOptions unable to delete ' +
+                                  newswireModFilename)
                             pass
                 else:
                     if os.path.isdir(accountDir):
@@ -3848,6 +3853,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(linksFilename)
                     except BaseException:
+                        print('EX: _linksUpdate unable to delete ' +
+                              linksFilename)
                         pass
 
             adminNickname = \
@@ -3864,6 +3871,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(aboutFilename)
                         except BaseException:
+                            print('EX: _linksUpdate unable to delete ' +
+                                  aboutFilename)
                             pass
 
                 if fields.get('editedTOS'):
@@ -3877,6 +3886,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(TOSFilename)
                         except BaseException:
+                            print('EX: _linksUpdate unable to delete ' +
+                                  TOSFilename)
                             pass
 
         # redirect back to the default timeline
@@ -3978,6 +3989,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(categoryFilename)
                     except BaseException:
+                        print('EX: _setHashtagCategory unable to delete ' +
+                              categoryFilename)
                         pass
 
         # redirect back to the default timeline
@@ -4059,6 +4072,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(newswireFilename)
                     except BaseException:
+                        print('EX: _newswireUpdate unable to delete ' +
+                              newswireFilename)
                         pass
 
             # save filtered words list for the newswire
@@ -4073,6 +4088,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(filterNewswireFilename)
                     except BaseException:
+                        print('EX: _newswireUpdate unable to delete ' +
+                              filterNewswireFilename)
                         pass
 
             # save news tagging rules
@@ -4086,6 +4103,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(hashtagRulesFilename)
                     except BaseException:
+                        print('EX: _newswireUpdate unable to delete ' +
+                              hashtagRulesFilename)
                         pass
 
             newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
@@ -4100,6 +4119,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(newswireTrustedFilename)
                     except BaseException:
+                        print('EX: _newswireUpdate unable to delete ' +
+                              newswireTrustedFilename)
                         pass
 
         # redirect back to the default timeline
@@ -4128,6 +4149,8 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 os.remove(citationsFilename)
             except BaseException:
+                print('EX: _citationsUpdate unable to delete ' +
+                      citationsFilename)
                 pass
 
         if newswire and \
@@ -4433,6 +4456,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(filenameBase)
                         except BaseException:
+                            print('EX: _profileUpdate unable to delete ' +
+                                  filenameBase)
                             pass
                 else:
                     filenameBase = \
@@ -4468,6 +4493,8 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         os.remove(postImageFilename + '.etag')
                     except BaseException:
+                        print('EX: _profileUpdate unable to delete ' +
+                              postImageFilename + '.etag')
                         pass
 
                 city = getSpoofedCity(self.server.city,
@@ -5503,6 +5530,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         os.remove(baseDir +
                                                   '/fonts/custom.' + ext)
                                     except BaseException:
+                                        print('EX: _profileUpdate ' +
+                                              'unable to delete ' +
+                                              baseDir + '/fonts/custom.' + ext)
                                         pass
                                 if os.path.isfile(baseDir +
                                                   '/fonts/custom.' + ext +
@@ -5512,6 +5542,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                   '/fonts/custom.' + ext +
                                                   '.etag')
                                     except BaseException:
+                                        print('EX: _profileUpdate ' +
+                                              'unable to delete ' +
+                                              baseDir + '/fonts/custom.' +
+                                              ext + '.etag')
                                         pass
                             currTheme = getTheme(baseDir)
                             if currTheme:
@@ -5563,6 +5597,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 try:
                                     os.remove(followDMsFilename)
                                 except BaseException:
+                                    print('EX: _profileUpdate ' +
+                                          'unable to delete ' +
+                                          followDMsFilename)
                                     pass
 
                     # remove Twitter retweets
@@ -5581,6 +5618,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(removeTwitterFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      removeTwitterFilename)
                                 pass
 
                     # hide Like button
@@ -5601,12 +5641,18 @@ class PubServer(BaseHTTPRequestHandler):
                                 try:
                                     os.remove(notifyLikesFilename)
                                 except BaseException:
+                                    print('EX: _profileUpdate ' +
+                                          'unable to delete ' +
+                                          notifyLikesFilename)
                                     pass
                     if not hideLikeButtonActive:
                         if os.path.isfile(hideLikeButtonFile):
                             try:
                                 os.remove(hideLikeButtonFile)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      hideLikeButtonFile)
                                 pass
 
                     # notify about new Likes
@@ -5628,6 +5674,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 try:
                                     os.remove(notifyLikesFilename)
                                 except BaseException:
+                                    print('EX: _profileUpdate ' +
+                                          'unable to delete ' +
+                                          notifyLikesFilename)
                                     pass
 
                     # this account is a bot
@@ -5690,6 +5739,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(filterFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      filterFilename)
                                 pass
 
                     # word replacements
@@ -5704,6 +5756,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(switchFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      switchFilename)
                                 pass
 
                     # autogenerated tags
@@ -5718,6 +5773,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(autoTagsFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      autoTagsFilename)
                                 pass
 
                     # autogenerated content warnings
@@ -5732,6 +5790,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(autoCWFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      autoCWFilename)
                                 pass
 
                     # save blocked accounts list
@@ -5746,6 +5807,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(blockedFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      blockedFilename)
                                 pass
 
                     # Save DM allowed instances list.
@@ -5762,6 +5826,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(dmAllowedInstancesFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      dmAllowedInstancesFilename)
                                 pass
 
                     # save allowed instances list
@@ -5777,6 +5844,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(allowedInstancesFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      allowedInstancesFilename)
                                 pass
 
                     if isModerator(self.server.baseDir, nickname):
@@ -5840,6 +5910,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 try:
                                     os.remove(peertubeInstancesFile)
                                 except BaseException:
+                                    print('EX: _profileUpdate ' +
+                                          'unable to delete ' +
+                                          peertubeInstancesFile)
                                     pass
                             self.server.peertubeInstances.clear()
 
@@ -5855,6 +5928,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(gitProjectsFilename)
                             except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      gitProjectsFilename)
                                 pass
 
                     # save actor json file within accounts
@@ -5874,13 +5950,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['featuredTags'] = \
                                 actorJson['id'] + '/collections/tags'
                         randomizeActorImages(actorJson)
-                        # add an updated timestamp to the actor
-                        updatedTime = datetime.datetime.utcnow()
-                        actorJson['updated'] = \
-                            updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-                        # add updated timestamp to avatar and banner
-                        actorJson['icon']['updated'] = actorJson['updated']
-                        actorJson['image']['updated'] = actorJson['updated']
+                        addActorUpdateTimestamp(actorJson)
                         # save the actor
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,
@@ -13300,14 +13370,6 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'show about screen done',
                            self.server.debug)
 
-        # send robots.txt if asked
-        if self._robotsTxt():
-            return
-
-        fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', 'robots txt',
-                           self.server.debug)
-
         # the initial welcome screen after first logging in
         if htmlGET and authorized and \
            '/users/' in self.path and self.path.endswith('/welcome'):
@@ -15106,6 +15168,8 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(mediaTagFilename, 'r') as etagFile:
                                 etag = etagFile.read()
                         except BaseException:
+                            print('EX: do_HEAD unable to read ' +
+                                  mediaTagFilename)
                             pass
                     else:
                         with open(mediaFilename, 'rb') as avFile:
@@ -15115,6 +15179,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
                             except BaseException:
+                                print('EX: do_HEAD unable to write ' +
+                                      mediaTagFilename)
                                 pass
 
         mediaFileType = mediaFileMimeType(checkPath)
@@ -15281,6 +15347,8 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(lastUsedFilename, 'w+') as lastUsedFile:
                         lastUsedFile.write(str(int(time.time())))
                 except BaseException:
+                    print('EX: _receiveNewPostProcess unable to write ' +
+                          lastUsedFilename)
                     pass
 
             mentionsStr = ''
@@ -15444,6 +15512,8 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 os.remove(cachedFilename)
                             except BaseException:
+                                print('EX: _receiveNewPostProcess ' +
+                                      'unable to delete ' + cachedFilename)
                                 pass
                         # remove from memory cache
                         removePostFromCache(postJsonObject,
@@ -15867,6 +15937,8 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             os.remove(filename)
                         except BaseException:
+                            print('EX: _receiveNewPostProcess ' +
+                                  'unable to delete ' + filename)
                             pass
                 self.postToNickname = nickname
                 return 1

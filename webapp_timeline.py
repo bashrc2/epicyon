@@ -477,6 +477,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             try:
                 os.remove(dmFile)
             except BaseException:
+                print('EX: htmlTimeline unable to delete ' + dmFile)
                 pass
 
     # should the Replies button be highlighted?
@@ -488,6 +489,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             try:
                 os.remove(replyFile)
             except BaseException:
+                print('EX: htmlTimeline unable to delete ' + replyFile)
                 pass
 
     # should the Shares button be highlighted?
@@ -499,6 +501,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             try:
                 os.remove(newShareFile)
             except BaseException:
+                print('EX: htmlTimeline unable to delete ' + newShareFile)
                 pass
 
     # should the Wanted button be highlighted?
@@ -510,6 +513,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             try:
                 os.remove(newWantedFile)
             except BaseException:
+                print('EX: htmlTimeline unable to delete ' + newWantedFile)
                 pass
 
     # should the Moderation/reports button be highlighted?
@@ -521,6 +525,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             try:
                 os.remove(newReportFile)
             except BaseException:
+                print('EX: htmlTimeline unable to delete ' + newReportFile)
                 pass
 
     separatorStr = ''

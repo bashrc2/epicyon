@@ -113,6 +113,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
         try:
             os.remove(calendarFile)
         except BaseException:
+            print('EX: _htmlCalendarDay unable to delete ' + calendarFile)
             pass
 
     cssFilename = baseDir + '/epicyon-calendar.css'

@@ -46,6 +46,8 @@ def updateConversation(baseDir: str, nickname: str, domain: str,
                 fp.write(postId + '\n')
                 return True
         except BaseException:
+            print('EX: updateConversation ' +
+                  'unable to write to ' + conversationFilename)
             pass
     elif postId + '\n' not in open(conversationFilename).read():
         try:
@@ -53,6 +55,8 @@ def updateConversation(baseDir: str, nickname: str, domain: str,
                 fp.write(postId + '\n')
                 return True
         except BaseException:
+            print('EX: updateConversation 2 ' +
+                  'unable to write to ' + conversationFilename)
             pass
     return False
 
@@ -86,4 +90,6 @@ def unmuteConversation(baseDir: str, nickname: str, domain: str,
     try:
         os.remove(conversationFilename + '.muted')
     except BaseException:
+        print('EX: unmuteConversation unable to delete ' +
+              conversationFilename + '.muted')
         pass

@@ -11,6 +11,7 @@ import time
 import os
 import subprocess
 import shutil
+import datetime
 import pyqrcode
 from random import randint
 from pathlib import Path
@@ -894,6 +895,8 @@ def personBoxJson(recentPostsCache: {},
             try:
                 pageNumber = int(pageNumber)
             except BaseException:
+                print('EX: personBoxJson unable to convert to int ' +
+                      str(pageNumber))
                 pass
         path = path.split('?page=')[0]
         headerOnly = False
@@ -1034,12 +1037,14 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(saltFilename)
         except BaseException:
+            print('EX: suspendAccount unable to delete ' + saltFilename)
             pass
     tokenFilename = acctDir(baseDir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
         try:
             os.remove(tokenFilename)
         except BaseException:
+            print('EX: suspendAccount unable to delete ' + tokenFilename)
             pass
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
@@ -1100,6 +1105,8 @@ def _removeTagsForNickname(baseDir: str, nickname: str,
         try:
             tagFilename = os.path.join(directory, filename)
         except BaseException:
+            print('EX: _removeTagsForNickname unable to join ' +
+                  str(directory) + ' ' + str(filename))
             continue
         if not os.path.isfile(tagFilename):
             continue
@@ -1139,38 +1146,52 @@ def removeAccount(baseDir: str, nickname: str,
     removePassword(baseDir, nickname)
     _removeTagsForNickname(baseDir, nickname, domain, port)
     if os.path.isdir(baseDir + '/deactivated/' + handle):
-        shutil.rmtree(baseDir + '/deactivated/' + handle)
+        shutil.rmtree(baseDir + '/deactivated/' + handle,
+                      ignore_errors=False, onerror=None)
     if os.path.isdir(baseDir + '/accounts/' + handle):
-        shutil.rmtree(baseDir + '/accounts/' + handle)
+        shutil.rmtree(baseDir + '/accounts/' + handle,
+                      ignore_errors=False, onerror=None)
     if os.path.isfile(baseDir + '/accounts/' + handle + '.json'):
         try:
             os.remove(baseDir + '/accounts/' + handle + '.json')
         except BaseException:
+            print('EX: removeAccount unable to delete ' +
+                  baseDir + '/accounts/' + handle + '.json')
             pass
     if os.path.isfile(baseDir + '/wfendpoints/' + handle + '.json'):
         try:
             os.remove(baseDir + '/wfendpoints/' + handle + '.json')
         except BaseException:
+            print('EX: removeAccount unable to delete ' +
+                  baseDir + '/wfendpoints/' + handle + '.json')
             pass
     if os.path.isfile(baseDir + '/keys/private/' + handle + '.key'):
         try:
             os.remove(baseDir + '/keys/private/' + handle + '.key')
         except BaseException:
+            print('EX: removeAccount unable to delete ' +
+                  baseDir + '/keys/private/' + handle + '.key')
             pass
     if os.path.isfile(baseDir + '/keys/public/' + handle + '.pem'):
         try:
             os.remove(baseDir + '/keys/public/' + handle + '.pem')
         except BaseException:
+            print('EX: removeAccount unable to delete ' +
+                  baseDir + '/keys/public/' + handle + '.pem')
             pass
     if os.path.isdir(baseDir + '/sharefiles/' + nickname):
-        shutil.rmtree(baseDir + '/sharefiles/' + nickname)
+        shutil.rmtree(baseDir + '/sharefiles/' + nickname,
+                      ignore_errors=False, onerror=None)
     if os.path.isfile(baseDir + '/wfdeactivated/' + handle + '.json'):
         try:
             os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
         except BaseException:
+            print('EX: removeAccount unable to delete ' +
+                  baseDir + '/wfdeactivated/' + handle + '.json')
             pass
     if os.path.isdir(baseDir + '/sharefilesdeactivated/' + nickname):
-        shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname)
+        shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname,
+                      ignore_errors=False, onerror=None)
 
     refreshNewswire(baseDir)
 
@@ -1559,3 +1580,14 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
             if '.svg' not in personJson['icon']['url'].lower():
                 return personJson['icon']['url']
     return None
+
+
+def addActorUpdateTimestamp(actorJson: {}) -> None:
+    """Adds 'updated' fields with a timestamp
+    """
+    updatedTime = datetime.datetime.utcnow()
+    currDateStr = updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    actorJson['updated'] = currDateStr
+    # add updated timestamp to avatar and banner
+    actorJson['icon']['updated'] = currDateStr
+    actorJson['image']['updated'] = currDateStr

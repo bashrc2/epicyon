@@ -954,9 +954,9 @@ def _desktopShowBox(indent: str,
                     yourActor: str, boxName: str, boxJson: {},
                     translate: {},
                     screenreader: str, systemLanguage: str, espeak,
-                    pageNumber: int = 1,
-                    newReplies: bool = False,
-                    newDMs: bool = False) -> bool:
+                    pageNumber: int,
+                    newReplies: bool,
+                    newDMs: bool) -> bool:
     """Shows online timeline
     """
     numberWidth = 2

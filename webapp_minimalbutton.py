@@ -37,6 +37,7 @@ def setMinimal(baseDir: str, domain: str, nickname: str,
         try:
             os.remove(minimalFilename)
         except BaseException:
+            print('EX: setMinimal unable to delete ' + minimalFilename)
             pass
     elif not minimal and not minimalFileExists:
         with open(minimalFilename, 'w+') as fp:

@@ -196,7 +196,7 @@ def _cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}, sourceId: int = 0, debug: bool = False) -> str:
+def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wfRequest.get('links'):
@@ -893,7 +893,7 @@ def deleteAllPosts(baseDir: str,
             if os.path.isfile(filePath):
                 os.unlink(filePath)
             elif os.path.isdir(filePath):
-                shutil.rmtree(filePath)
+                shutil.rmtree(filePath, ignore_errors=False, onerror=None)
         except Exception as e:
             print('ERROR: deleteAllPosts ' + str(e))
 
@@ -1569,6 +1569,7 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(pinnedFilename)
         except BaseException:
+            print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
             pass
 
 
@@ -2094,6 +2095,7 @@ def createReportPost(baseDir: str,
             with open(newReportFile, 'w+') as fp:
                 fp.write(toUrl + '/moderation')
         except BaseException:
+            print('EX: createReportPost unable to write ' + newReportFile)
             pass
 
     return postJsonObject
@@ -2534,7 +2536,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     toDomain = getFullDomain(toDomain, toPort)
 
     toDomainUrl = httpPrefix + '://' + toDomain
-    if not siteIsActive(toDomainUrl):
+    if not siteIsActive(toDomainUrl, 10):
         print('Domain is inactive: ' + toDomainUrl)
         return 9
     print('Domain is active: ' + toDomainUrl)
@@ -3041,7 +3043,7 @@ def sendToFollowers(session, baseDir: str,
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
-        if not siteIsActive(followerDomainUrl):
+        if not siteIsActive(followerDomainUrl, 10):
             print('Sending post to followers domain is inactive: ' +
                   followerDomainUrl)
             continue
@@ -3195,7 +3197,7 @@ def sendToFollowersThread(session, baseDir: str,
 def createInbox(recentPostsCache: {},
                 session, baseDir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                pageNumber: int = None) -> {}:
+                pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache,
                              session, baseDir, 'inbox',
                              nickname, domain, port, httpPrefix,
@@ -3205,7 +3207,7 @@ def createInbox(recentPostsCache: {},
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             port: int, httpPrefix: str, itemsPerPage: int,
-                            headerOnly: bool, pageNumber: int = None) -> {}:
+                            headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                              nickname, domain,
                              port, httpPrefix, itemsPerPage, headerOnly,
@@ -3215,7 +3217,7 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
 def createDMTimeline(recentPostsCache: {},
                      session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
-                     headerOnly: bool, pageNumber: int = None) -> {}:
+                     headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache,
                              session, baseDir, 'dm', nickname,
                              domain, port, httpPrefix, itemsPerPage,
@@ -3225,7 +3227,7 @@ def createDMTimeline(recentPostsCache: {},
 def createRepliesTimeline(recentPostsCache: {},
                           session, baseDir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
-                          headerOnly: bool, pageNumber: int = None) -> {}:
+                          headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3234,7 +3236,7 @@ def createRepliesTimeline(recentPostsCache: {},
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber: int = None) -> {}:
+                        headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3243,7 +3245,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
 
 def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str, itemsPerPage: int,
-                           headerOnly: bool, pageNumber: int = None) -> {}:
+                           headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlfeatures', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3252,7 +3254,7 @@ def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber: int = None) -> {}:
+                        headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3263,7 +3265,7 @@ def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
                        positiveVoting: bool, votingTimeMins: int,
-                       pageNumber: int = None) -> {}:
+                       pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'outbox', 'news',
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3274,7 +3276,7 @@ def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
                  port: int, httpPrefix: str,
                  itemsPerPage: int, headerOnly: bool, authorized: bool,
-                 pageNumber: int = None) -> {}:
+                 pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'outbox',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, authorized,
@@ -3283,7 +3285,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                     pageNumber: int = None) -> {}:
+                     pageNumber: int) -> {}:
     boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
     boxname = 'moderation'
 
@@ -3545,7 +3547,7 @@ def _createBoxIndexed(recentPostsCache: {},
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
                       newswireVotesThreshold: int, positiveVoting: bool,
-                      votingTimeMins: int, pageNumber: int = None) -> {}:
+                      votingTimeMins: int, pageNumber: int) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -3584,6 +3586,8 @@ def _createBoxIndexed(recentPostsCache: {},
         try:
             pageStr = '?page=' + str(pageNumber)
         except BaseException:
+            print('EX: _createBoxIndexed ' +
+                  'unable to convert page number to string')
             pass
     boxUrl = localActorUrl(httpPrefix, nickname, domain) + '/' + boxname
     boxHeader = {
@@ -3743,6 +3747,7 @@ def _createBoxIndexed(recentPostsCache: {},
         try:
             p = json.loads(postStr)
         except BaseException:
+            print('EX: _createBoxIndexed unable to load json ' + postStr)
             continue
 
         # Does this post have replies?
@@ -3925,6 +3930,8 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
             try:
                 os.remove(postCacheFilename)
             except BaseException:
+                print('EX: archivePostsForPerson unable to delete ' +
+                      postCacheFilename)
                 pass
 
         noOfPosts -= 1
@@ -4065,8 +4072,8 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
 def downloadFollowCollection(signingPrivateKeyPem: str,
                              followType: str,
                              session, httpPrefix: str,
-                             actor: str, pageNumber: int = 1,
-                             noOfPages: int = 1, debug: bool = False) -> []:
+                             actor: str, pageNumber: int,
+                             noOfPages: int, debug: bool) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """
@@ -5037,11 +5044,15 @@ def secondsBetweenPublished(published1: str, published2: str) -> int:
         published1Time = \
             datetime.datetime.strptime(published1, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
+        print('EX: secondsBetweenPublished unable to parse date 1 ' +
+              str(published1))
         return -1
     try:
         published2Time = \
             datetime.datetime.strptime(published2, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
+        print('EX: secondsBetweenPublished unable to parse date 2 ' +
+              str(published2))
         return -1
     return (published2Time - published1Time).seconds
 
@@ -5079,6 +5090,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
         with open(actorFilename, 'r') as fp:
             lastpostId = fp.read()
     except BaseException:
+        print('EX: editedPostFilename unable to read ' + actorFilename)
         return ''
     if not lastpostId:
         return ''
