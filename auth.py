@@ -255,4 +255,5 @@ def recordLoginFailure(baseDir: str, ipAddress: str,
                      ipAddress + ' port 443: ' +
                      'Too many authentication failures [preauth]\n')
     except BaseException:
+        print('WARN: recordLoginFailure failed ' + str(failureLog))
         pass
