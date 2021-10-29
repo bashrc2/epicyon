@@ -224,8 +224,7 @@ def parseFeedDate(pubDate: str) -> str:
             continue
 
         try:
-            publishedDate = \
-                datetime.strptime(pubDate, dateFormat)
+            publishedDate = datetime.strptime(pubDate, dateFormat)
         except BaseException:
             continue
 
