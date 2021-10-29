@@ -132,8 +132,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
                           votesStatus: str, postFilename: str,
                           description: str, moderated: bool,
                           mirrored: bool,
-                          tags: [] = [],
-                          maxTags: int = 32) -> None:
+                          tags: [],
+                          maxTags: int) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -378,7 +378,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -465,7 +465,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -540,7 +540,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -651,7 +651,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored)
+                                      mirrored, [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -722,7 +722,8 @@ def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
-                                      description, moderated, mirrored)
+                                      description, moderated, mirrored,
+                                      [], 32)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break

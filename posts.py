@@ -196,7 +196,7 @@ def _cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}, sourceId: int = 0, debug: bool = False) -> str:
+def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wfRequest.get('links'):
@@ -3197,7 +3197,7 @@ def sendToFollowersThread(session, baseDir: str,
 def createInbox(recentPostsCache: {},
                 session, baseDir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                pageNumber: int = None) -> {}:
+                pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache,
                              session, baseDir, 'inbox',
                              nickname, domain, port, httpPrefix,
@@ -3207,7 +3207,7 @@ def createInbox(recentPostsCache: {},
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             port: int, httpPrefix: str, itemsPerPage: int,
-                            headerOnly: bool, pageNumber: int = None) -> {}:
+                            headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                              nickname, domain,
                              port, httpPrefix, itemsPerPage, headerOnly,
@@ -3217,7 +3217,7 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
 def createDMTimeline(recentPostsCache: {},
                      session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
-                     headerOnly: bool, pageNumber: int = None) -> {}:
+                     headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache,
                              session, baseDir, 'dm', nickname,
                              domain, port, httpPrefix, itemsPerPage,
@@ -3227,7 +3227,7 @@ def createDMTimeline(recentPostsCache: {},
 def createRepliesTimeline(recentPostsCache: {},
                           session, baseDir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
-                          headerOnly: bool, pageNumber: int = None) -> {}:
+                          headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3236,7 +3236,7 @@ def createRepliesTimeline(recentPostsCache: {},
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber: int = None) -> {}:
+                        headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3245,7 +3245,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
 
 def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str, itemsPerPage: int,
-                           headerOnly: bool, pageNumber: int = None) -> {}:
+                           headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlfeatures', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3254,7 +3254,7 @@ def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber: int = None) -> {}:
+                        headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3265,7 +3265,7 @@ def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
                        positiveVoting: bool, votingTimeMins: int,
-                       pageNumber: int = None) -> {}:
+                       pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'outbox', 'news',
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
@@ -3276,7 +3276,7 @@ def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
                  port: int, httpPrefix: str,
                  itemsPerPage: int, headerOnly: bool, authorized: bool,
-                 pageNumber: int = None) -> {}:
+                 pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, baseDir, 'outbox',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, authorized,
@@ -3285,7 +3285,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                     pageNumber: int = None) -> {}:
+                     pageNumber: int) -> {}:
     boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
     boxname = 'moderation'
 

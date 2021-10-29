@@ -365,8 +365,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
     return postJson
 
 
-def archiveMedia(baseDir: str, archiveDirectory: str,
-                 maxWeeks: int = 4) -> None:
+def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks: int) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:

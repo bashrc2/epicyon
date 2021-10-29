@@ -203,7 +203,7 @@ def authorize(baseDir: str, path: str, authHeader: str, debug: bool) -> bool:
     return False
 
 
-def createPassword(length: int = 10):
+def createPassword(length: int):
     validChars = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return ''.join((secrets.choice(validChars) for i in range(length)))

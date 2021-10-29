@@ -20,7 +20,7 @@ from utils import hasObjectDict
 from utils import acctDir
 
 
-def _validUuid(testUuid: str, version: int = 4):
+def _validUuid(testUuid: str, version: int):
     """Check if uuid_to_test is a valid UUID
     """
     try:
@@ -77,7 +77,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
 
     if eventJson.get('name') and eventJson.get('actor') and \
        eventJson.get('uuid') and eventJson.get('content'):
-        if not _validUuid(eventJson['uuid']):
+        if not _validUuid(eventJson['uuid'], 4):
             return False
         print('Mobilizon type event')
         # if this is a full description of an event then save it
@@ -166,8 +166,8 @@ def _isHappeningPost(postJsonObject: {}) -> bool:
 
 
 def getTodaysEvents(baseDir: str, nickname: str, domain: str,
-                    currYear: int = None, currMonthNumber: int = None,
-                    currDayOfMonth: int = None) -> {}:
+                    currYear: int, currMonthNumber: int,
+                    currDayOfMonth: int) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
