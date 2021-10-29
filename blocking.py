@@ -517,7 +517,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                 os.remove(cachedPostFilename)
                 print('MUTE: cached post removed ' + cachedPostFilename)
             except BaseException:
-                print('WARN: MUTE cached post not removed ' +
+                print('EX: MUTE cached post not removed ' +
                       cachedPostFilename)
                 pass
         else:
@@ -556,7 +556,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
                         print('MUTE: cached referenced post removed ' +
                               cachedPostFilename)
                     except BaseException:
-                        print('WARN: ' +
+                        print('EX: ' +
                               'MUTE cached referenced post not removed ' +
                               cachedPostFilename)
                         pass
@@ -589,7 +589,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
             os.remove(muteFilename)
         except BaseException:
             if debug:
-                print('WARN: unmutePost mute filename not deleted ' +
+                print('EX: unmutePost mute filename not deleted ' +
                       str(muteFilename))
             pass
         print('UNMUTE: ' + muteFilename + ' file removed')
@@ -640,7 +640,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
                 os.remove(cachedPostFilename)
             except BaseException:
                 if debug:
-                    print('WARN: unmutePost cached post not deleted ' +
+                    print('EX: unmutePost cached post not deleted ' +
                           str(cachedPostFilename))
                 pass
 
@@ -673,7 +673,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, port: int,
                               cachedPostFilename)
                     except BaseException:
                         if debug:
-                            print('WARN: ' +
+                            print('EX: ' +
                                   'unmutePost cached ref post not removed ' +
                                   str(cachedPostFilename))
                         pass
@@ -819,7 +819,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
             try:
                 os.remove(allowFilename)
             except BaseException:
-                print('WARN: setBrochMode allow file not deleted ' +
+                print('EX: setBrochMode allow file not deleted ' +
                       str(allowFilename))
                 pass
             print('Broch mode turned off')
@@ -874,7 +874,7 @@ def brochModeLapses(baseDir: str, lapseDays: int) -> bool:
         modifiedDate = \
             datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        print('WARN: brochModeLapses date not parsed ' + str(lastModified))
+        print('EX: brochModeLapses date not parsed ' + str(lastModified))
         return False
     if not modifiedDate:
         return False
@@ -886,7 +886,7 @@ def brochModeLapses(baseDir: str, lapseDays: int) -> bool:
             os.remove(allowFilename)
             removed = True
         except BaseException:
-            print('WARN: brochModeLapses allow file not deleted ' +
+            print('EX: brochModeLapses allow file not deleted ' +
                   str(allowFilename))
             pass
         if removed:

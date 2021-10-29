@@ -52,6 +52,10 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                if debug:
+                    print('EX: undoBookmarksCollectionEntry ' +
+                          'unable to delete cached post file ' +
+                          str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
@@ -160,6 +164,10 @@ def updateBookmarksCollection(recentPostsCache: {},
                 try:
                     os.remove(cachedPostFilename)
                 except BaseException:
+                    if debug:
+                        print('EX: updateBookmarksCollection ' +
+                              'unable to delete cached post ' +
+                              str(cachedPostFilename))
                     pass
         removePostFromCache(postJsonObject, recentPostsCache)
 

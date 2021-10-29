@@ -96,6 +96,9 @@ def updateHashtagCategories(baseDir: str) -> None:
             try:
                 os.remove(categoryListFilename)
             except BaseException:
+                print('EX: updateHashtagCategories ' +
+                      'unable to delete cached category list ' +
+                      categoryListFilename)
                 pass
         return
 

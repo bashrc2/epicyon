@@ -272,6 +272,8 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                 content = content.replace(tagItem['name'],
                                                           replaceChar)
                             except BaseException:
+                                print('EX: replaceEmojiFromTags name ' +
+                                      str(iconName))
                                 pass
                         else:
                             # sequence of codes
@@ -283,6 +285,8 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                                                 icode, 16))
                                 except BaseException:
                                     iconCodeSequence = ''
+                                    print('EX: replaceEmojiFromTags code ' +
+                                          str(icode))
                                     break
                             if iconCodeSequence:
                                 content = content.replace(tagItem['name'],
@@ -943,11 +947,19 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                     try:
                         os.remove(possibleOtherFormat)
                     except BaseException:
+                        if debug:
+                            print('EX: saveMediaInFormPOST ' +
+                                  'unable to delete other ' +
+                                  str(possibleOtherFormat))
                         pass
             if os.path.isfile(filenameBase):
                 try:
                     os.remove(filenameBase)
                 except BaseException:
+                    if debug:
+                        print('EX: saveMediaInFormPOST ' +
+                              'unable to delete ' +
+                              str(filenameBase))
                     pass
 
         if debug:
@@ -1017,6 +1029,10 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 try:
                     os.remove(possibleOtherFormat)
                 except BaseException:
+                    if debug:
+                        print('EX: saveMediaInFormPOST ' +
+                              'unable to delete other 2 ' +
+                              str(possibleOtherFormat))
                     pass
 
     # don't allow scripts within svg files
