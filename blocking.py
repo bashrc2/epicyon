@@ -861,7 +861,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     setConfigParam(baseDir, "brochMode", enabled)
 
 
-def brochModeLapses(baseDir: str, lapseDays: int = 7) -> bool:
+def brochModeLapses(baseDir: str, lapseDays: int) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
