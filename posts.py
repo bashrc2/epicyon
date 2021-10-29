@@ -2536,7 +2536,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     toDomain = getFullDomain(toDomain, toPort)
 
     toDomainUrl = httpPrefix + '://' + toDomain
-    if not siteIsActive(toDomainUrl):
+    if not siteIsActive(toDomainUrl, 10):
         print('Domain is inactive: ' + toDomainUrl)
         return 9
     print('Domain is active: ' + toDomainUrl)
@@ -3043,7 +3043,7 @@ def sendToFollowers(session, baseDir: str,
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
-        if not siteIsActive(followerDomainUrl):
+        if not siteIsActive(followerDomainUrl, 10):
             print('Sending post to followers domain is inactive: ' +
                   followerDomainUrl)
             continue
@@ -3547,7 +3547,7 @@ def _createBoxIndexed(recentPostsCache: {},
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
                       newswireVotesThreshold: int, positiveVoting: bool,
-                      votingTimeMins: int, pageNumber: int = None) -> {}:
+                      votingTimeMins: int, pageNumber: int) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -4072,8 +4072,8 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
 def downloadFollowCollection(signingPrivateKeyPem: str,
                              followType: str,
                              session, httpPrefix: str,
-                             actor: str, pageNumber: int = 1,
-                             noOfPages: int = 1, debug: bool = False) -> []:
+                             actor: str, pageNumber: int,
+                             noOfPages: int, debug: bool) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """

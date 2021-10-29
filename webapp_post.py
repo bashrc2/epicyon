@@ -1403,7 +1403,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                      postActor, nickname, domainFull, False)
 
             # create a file for use by text-to-speech
-            if isRecentPost(postJsonObject):
+            if isRecentPost(postJsonObject, 3):
                 if postJsonObject.get('actor'):
                     if not os.path.isfile(announceFilename + '.tts'):
                         updateSpeaker(baseDir, httpPrefix,

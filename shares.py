@@ -452,7 +452,7 @@ def getSharesFeedForPerson(baseDir: str,
                            domain: str, port: int,
                            path: str, httpPrefix: str,
                            sharesFileType: str,
-                           sharesPerPage: int = 12) -> {}:
+                           sharesPerPage: int) -> {}:
     """Returns the shares for an account from GET requests
     """
     if '/' + sharesFileType not in path:
@@ -1574,7 +1574,7 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         if not tokensJson.get(federatedDomainFull):
             # token has been obtained for the other domain
             continue
-        if not siteIsActive(httpPrefix + '://' + federatedDomainFull):
+        if not siteIsActive(httpPrefix + '://' + federatedDomainFull, 10):
             continue
         if sharesFileType == 'shares':
             url = httpPrefix + '://' + federatedDomainFull + '/catalog'

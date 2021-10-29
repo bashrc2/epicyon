@@ -1688,7 +1688,7 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                if isRecentPost(postJsonObject):
+                if isRecentPost(postJsonObject, 3):
                     if not os.path.isfile(postFilename + '.tts'):
                         domainFull = getFullDomain(domain, port)
                         updateSpeaker(baseDir, httpPrefix,
@@ -2945,7 +2945,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
-                        if isRecentPost(postJsonObject):
+                        if isRecentPost(postJsonObject, 3):
                             domainFull = getFullDomain(domain, port)
                             updateSpeaker(baseDir, httpPrefix,
                                           nickname, domain, domainFull,

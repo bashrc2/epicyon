@@ -2127,7 +2127,7 @@ if args.followers:
     followersList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'followers', session,
-                                 httpPrefix, personUrl, 1, 3)
+                                 httpPrefix, personUrl, 1, 3, args.debug)
     if followersList:
         for actor in followersList:
             print(actor)

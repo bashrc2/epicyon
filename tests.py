@@ -3579,9 +3579,10 @@ def _testJsonld():
 
 def _testSiteIsActive():
     print('testSiteIsActive')
-    assert(siteIsActive('https://archive.org'))
-    assert(siteIsActive('https://mastodon.social'))
-    assert(not siteIsActive('https://notarealwebsite.a.b.c'))
+    timeout = 10
+    assert(siteIsActive('https://archive.org', timeout))
+    assert(siteIsActive('https://mastodon.social', timeout))
+    assert(not siteIsActive('https://notarealwebsite.a.b.c', timeout))
 
 
 def _testRemoveHtml():

@@ -209,8 +209,7 @@ def hasUsersPath(pathStr: str) -> bool:
     return False
 
 
-def validPostDate(published: str, maxAgeDays: int = 90,
-                  debug: bool = False) -> bool:
+def validPostDate(published: str, maxAgeDays: int, debug: bool) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
     baselineTime = datetime.datetime(1970, 1, 1)
@@ -254,7 +253,7 @@ def getFullDomain(domain: str, port: int) -> str:
 
 
 def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
-              dormantMonths: int = 3) -> bool:
+              dormantMonths: int) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
@@ -2433,7 +2432,7 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def isRecentPost(postJsonObject: {}, maxDays: int = 3) -> bool:
+def isRecentPost(postJsonObject: {}, maxDays: int) -> bool:
     """ Is the given post recent?
     """
     if not hasObjectDict(postJsonObject):
