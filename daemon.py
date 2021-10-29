@@ -53,6 +53,7 @@ from donate import getDonationUrl
 from donate import setDonationUrl
 from donate import getWebsite
 from donate import setWebsite
+from person import addActorUpdateTimestamp
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import getActorUpdateJson
@@ -5863,13 +5864,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['featuredTags'] = \
                                 actorJson['id'] + '/collections/tags'
                         randomizeActorImages(actorJson)
-                        # add an updated timestamp to the actor
-                        updatedTime = datetime.datetime.utcnow()
-                        actorJson['updated'] = \
-                            updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-                        # add updated timestamp to avatar and banner
-                        actorJson['icon']['updated'] = actorJson['updated']
-                        actorJson['image']['updated'] = actorJson['updated']
+                        addActorUpdateTimestamp(actorJson)
                         # save the actor
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,

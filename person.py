@@ -11,6 +11,7 @@ import time
 import os
 import subprocess
 import shutil
+import datetime
 import pyqrcode
 from random import randint
 from pathlib import Path
@@ -1559,3 +1560,14 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
             if '.svg' not in personJson['icon']['url'].lower():
                 return personJson['icon']['url']
     return None
+
+
+def addActorUpdateTimestamp(actorJson: {}) -> None:
+    """Adds 'updated' fields with a timestamp
+    """
+    updatedTime = datetime.datetime.utcnow()
+    currDateStr = updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    actorJson['updated'] = currDateStr
+    # add updated timestamp to avatar and banner
+    actorJson['icon']['updated'] = currDateStr
+    actorJson['image']['updated'] = currDateStr
