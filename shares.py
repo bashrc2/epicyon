@@ -149,6 +149,8 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
                         try:
                             os.remove(itemIDfile + '.' + ext)
                         except BaseException:
+                            print('EX: removeSharedItem unable to delete ' +
+                                  itemIDfile + '.' + ext)
                             pass
         # remove the item itself
         del sharesJson[itemID]
@@ -293,6 +295,8 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
                     else:
                         fp.write(localActor + '/tlwanted')
             except BaseException:
+                print('EX: _indicateNewShareAvailable unable to write ' +
+                      str(newShareFile))
                 pass
         break
 
@@ -364,6 +368,8 @@ def addShare(baseDir: str,
                     try:
                         os.remove(imageFilename)
                     except BaseException:
+                        print('EX: addShare unable to delete ' +
+                              str(imageFilename))
                         pass
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
@@ -436,6 +442,8 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
                 try:
                     os.remove(itemIDfile + '.' + ext)
                 except BaseException:
+                    print('EX: _expireSharesForAccount unable to delete ' +
+                          itemIDfile + '.' + ext)
                     pass
     saveJson(sharesJson, sharesFilename)
 
@@ -460,6 +468,8 @@ def getSharesFeedForPerson(baseDir: str,
             try:
                 pageNumber = int(pageNumber)
             except BaseException:
+                print('EX: getSharesFeedForPerson unable to convert to int ' +
+                      str(pageNumber))
                 pass
         path = path.split('?page=')[0]
         headerOnly = False

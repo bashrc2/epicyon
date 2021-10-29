@@ -118,5 +118,6 @@ def siteIsActive(url: str, timeout: int = 10) -> bool:
         return True
 
     except BaseException:
+        print('EX: siteIsActive ' + str(loc))
         pass
     return False

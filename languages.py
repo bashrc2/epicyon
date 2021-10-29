@@ -259,7 +259,7 @@ def libretranslate(url: str, text: str,
     try:
         response = request.urlopen(req)
     except BaseException:
-        print('Unable to translate: ' + text)
+        print('EX: Unable to translate: ' + text)
         return originalText
 
     response_str = response.read().decode()

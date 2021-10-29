@@ -319,6 +319,7 @@ def clearFollows(baseDir: str, nickname: str, domain: str,
         try:
             os.remove(filename)
         except BaseException:
+            print('EX: clearFollows unable to delete ' + filename)
             pass
 
 
@@ -390,6 +391,8 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
             try:
                 pageNumber = int(pageNumber)
             except BaseException:
+                print('EX: getFollowingFeed unable to convert to int ' +
+                      str(pageNumber))
                 pass
         path = path.split('?page=')[0]
         headerOnly = False
@@ -883,6 +886,8 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
             try:
                 os.remove(followActivityfilename)
             except BaseException:
+                print('EX: followedAccountAccepts unable to delete ' +
+                      followActivityfilename)
                 pass
 
     groupAccount = False
@@ -956,6 +961,8 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
     try:
         os.remove(followActivityfilename)
     except BaseException:
+        print('EX: followedAccountRejects unable to delete ' +
+              followActivityfilename)
         pass
     # send the reject activity
     return sendSignedJson(rejectJson, session, baseDir,

@@ -47,6 +47,7 @@ def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
         try:
             os.remove(deviceFilename)
         except BaseException:
+            print('EX: E2EEremoveDevice unable to delete ' + deviceFilename)
             pass
         return True
     return False

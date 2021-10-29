@@ -467,5 +467,5 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         return True
     except BaseException:
         if debug:
-            print('DEBUG: verifyPostHeaders pkcs1_15 verify failure')
+            print('EX: verifyPostHeaders pkcs1_15 verify failure')
     return False

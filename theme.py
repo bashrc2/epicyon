@@ -30,7 +30,7 @@ def importTheme(baseDir: str, filename: str) -> bool:
         return False
     tempThemeDir = baseDir + '/imports/files'
     if os.path.isdir(tempThemeDir):
-        rmtree(tempThemeDir)
+        rmtree(tempThemeDir, ignore_errors=False, onerror=None)
     os.mkdir(tempThemeDir)
     unpack_archive(filename, tempThemeDir, 'zip')
     essentialThemeFiles = ('name.txt', 'theme.json')
@@ -71,9 +71,9 @@ def importTheme(baseDir: str, filename: str) -> bool:
         os.mkdir(themeDir)
     copytree(tempThemeDir, themeDir)
     if os.path.isdir(tempThemeDir):
-        rmtree(tempThemeDir)
+        rmtree(tempThemeDir, ignore_errors=False, onerror=None)
     if scanThemesForScripts(themeDir):
-        rmtree(themeDir)
+        rmtree(themeDir, ignore_errors=False, onerror=None)
         return False
     return os.path.isfile(themeDir + '/theme.json')
 
@@ -91,10 +91,13 @@ def exportTheme(baseDir: str, theme: str) -> bool:
         try:
             os.remove(exportFilename)
         except BaseException:
+            print('EX: exportTheme unable to delete ' + str(exportFilename))
             pass
     try:
         make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
     except BaseException:
+        print('EX: exportTheme unable to archive ' +
+              baseDir + '/exports/' + str(theme))
         pass
     return os.path.isfile(exportFilename)
 
@@ -257,11 +260,14 @@ def _removeTheme(baseDir: str):
     """
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
-        if os.path.isfile(baseDir + '/' + filename):
-            try:
-                os.remove(baseDir + '/' + filename)
-            except BaseException:
-                pass
+        if not os.path.isfile(baseDir + '/' + filename):
+            continue
+        try:
+            os.remove(baseDir + '/' + filename)
+        except BaseException:
+            print('EX: _removeTheme unable to delete ' +
+                  baseDir + '/' + filename)
+            pass
 
 
 def setCSSparam(css: str, param: str, value: str) -> str:
@@ -446,6 +452,8 @@ def disableGrayscale(baseDir: str) -> None:
         try:
             os.remove(grayscaleFilename)
         except BaseException:
+            print('EX: disableGrayscale unable to delete ' +
+                  grayscaleFilename)
             pass
 
 
@@ -589,12 +597,18 @@ def _setTextModeTheme(baseDir: str, name: str) -> None:
             copyfile(textModeLogoFilename,
                      baseDir + '/accounts/logo.txt')
         except BaseException:
+            print('EX: _setTextModeTheme unable to copy ' +
+                  textModeLogoFilename + ' ' +
+                  baseDir + '/accounts/logo.txt')
             pass
     else:
         try:
             copyfile(baseDir + '/img/logo.txt',
                      baseDir + '/accounts/logo.txt')
         except BaseException:
+            print('EX: _setTextModeTheme unable to copy ' +
+                  baseDir + '/img/logo.txt ' +
+                  baseDir + '/accounts/logo.txt')
             pass
 
     # set the text mode banner which appears in browsers such as Lynx
@@ -604,12 +618,17 @@ def _setTextModeTheme(baseDir: str, name: str) -> None:
         try:
             os.remove(baseDir + '/accounts/banner.txt')
         except BaseException:
+            print('EX: _setTextModeTheme unable to delete ' +
+                  baseDir + '/accounts/banner.txt')
             pass
     if os.path.isfile(textModeBannerFilename):
         try:
             copyfile(textModeBannerFilename,
                      baseDir + '/accounts/banner.txt')
         except BaseException:
+            print('EX: _setTextModeTheme unable to copy ' +
+                  textModeBannerFilename + ' ' +
+                  baseDir + '/accounts/banner.txt')
             pass
 
 
@@ -641,8 +660,7 @@ def _setThemeImages(baseDir: str, name: str) -> None:
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = \
-                os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(baseDir + '/accounts', acct)
 
             for backgroundType in backgroundNames:
                 for ext in extensions:
@@ -662,6 +680,8 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                                      backgroundType + '-background.' + ext)
                             continue
                         except BaseException:
+                            print('EX: _setThemeImages unable to copy ' +
+                                  backgroundImageFilename)
                             pass
                     # background image was not found
                     # so remove any existing file
@@ -671,6 +691,9 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                             os.remove(baseDir + '/accounts/' +
                                       backgroundType + '-background.' + ext)
                         except BaseException:
+                            print('EX: _setThemeImages unable to delete ' +
+                                  baseDir + '/accounts/' +
+                                  backgroundType + '-background.' + ext)
                             pass
 
             if os.path.isfile(profileImageFilename) and \
@@ -679,12 +702,16 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                     copyfile(profileImageFilename,
                              accountDir + '/image.png')
                 except BaseException:
+                    print('EX: _setThemeImages unable to copy ' +
+                          profileImageFilename)
                     pass
 
                 try:
                     copyfile(bannerFilename,
                              accountDir + '/banner.png')
                 except BaseException:
+                    print('EX: _setThemeImages unable to copy ' +
+                          bannerFilename)
                     pass
 
                 try:
@@ -692,21 +719,25 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                         copyfile(searchBannerFilename,
                                  accountDir + '/search_banner.png')
                 except BaseException:
+                    print('EX: _setThemeImages unable to copy ' +
+                          searchBannerFilename)
                     pass
 
                 try:
                     if os.path.isfile(leftColImageFilename):
                         copyfile(leftColImageFilename,
                                  accountDir + '/left_col_image.png')
-                    else:
-                        if os.path.isfile(accountDir +
-                                          '/left_col_image.png'):
-                            try:
-                                os.remove(accountDir + '/left_col_image.png')
-                            except BaseException:
-                                pass
-
+                    elif os.path.isfile(accountDir +
+                                        '/left_col_image.png'):
+                        try:
+                            os.remove(accountDir + '/left_col_image.png')
+                        except BaseException:
+                            print('EX: _setThemeImages unable to delete ' +
+                                  accountDir + '/left_col_image.png')
+                            pass
                 except BaseException:
+                    print('EX: _setThemeImages unable to copy ' +
+                          leftColImageFilename)
                     pass
 
                 try:
@@ -719,8 +750,12 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                             try:
                                 os.remove(accountDir + '/right_col_image.png')
                             except BaseException:
+                                print('EX: _setThemeImages unable to delete ' +
+                                      accountDir + '/right_col_image.png')
                                 pass
                 except BaseException:
+                    print('EX: _setThemeImages unable to copy ' +
+                          rightColImageFilename)
                     pass
         break
 
@@ -745,6 +780,7 @@ def setNewsAvatar(baseDir: str, name: str,
         try:
             os.remove(filename)
         except BaseException:
+            print('EX: setNewsAvatar unable to delete ' + filename)
             pass
     if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
@@ -780,6 +816,7 @@ def setTheme(baseDir: str, name: str, domain: str,
                 globals()['setTheme' + themeName](baseDir,
                                                   allowLocalNetworkAccess)
             except BaseException:
+                print('EX: setTheme unable to set theme ' + themeName)
                 pass
 
             if prevThemeName:

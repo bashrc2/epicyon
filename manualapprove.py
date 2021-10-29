@@ -255,11 +255,15 @@ def manualApproveFollowRequest(session, baseDir: str,
                 try:
                     os.remove(followActivityfilename)
                 except BaseException:
+                    print('EX: manualApproveFollowRequest unable to delete ' +
+                          followActivityfilename)
                     pass
     else:
         try:
             os.remove(approveFollowsFilename + '.new')
         except BaseException:
+            print('EX: manualApproveFollowRequest unable to delete ' +
+                  approveFollowsFilename + '.new')
             pass
 
 

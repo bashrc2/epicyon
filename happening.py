@@ -42,7 +42,7 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
             with open(tlEventsFilename, 'w+') as fp2:
                 fp2.write(eventsTimeline)
         except BaseException:
-            print('ERROR: unable to save events timeline')
+            print('EX: ERROR: unable to save events timeline')
             pass
 
 

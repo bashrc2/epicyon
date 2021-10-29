@@ -227,6 +227,7 @@ def parseFeedDate(pubDate: str) -> str:
             publishedDate = \
                 datetime.strptime(pubDate, dateFormat)
         except BaseException:
+            print('EX: parseFeedDate unable to parse date ' + str(pubDate))
             continue
 
         if publishedDate:
@@ -563,6 +564,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
     try:
         feedJson = json.loads(xmlStr)
     except BaseException:
+        print('EX: _jsonFeedV1ToDict unable to load json ' + str(xmlStr))
         return {}
     maxBytes = maxFeedItemSizeKb * 1024
     if not feedJson.get('version'):
@@ -1040,6 +1042,8 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
             try:
                 os.remove(newswireModerationFilename)
             except BaseException:
+                print('EX: _addBlogsToNewswire unable to delete ' +
+                      str(newswireModerationFilename))
                 pass
 
 

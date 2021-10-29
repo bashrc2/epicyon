@@ -81,6 +81,7 @@ def urlExists(session, url: str, timeoutSec: int = 3,
                 print('urlExists for ' + url + ' returned ' +
                       str(result.status_code))
     except BaseException:
+        print('EX: urlExists GET failed ' + str(url))
         pass
     return False
 

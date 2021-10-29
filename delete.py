@@ -202,4 +202,5 @@ def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
         try:
             os.remove(removeFilename)
         except BaseException:
+            print('EX: removeOldHashtags unable to delete ' + removeFilename)
             pass

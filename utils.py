@@ -223,7 +223,7 @@ def validPostDate(published: str, maxAgeDays: int = 90,
             datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
         if debug:
-            print('WARN: Invalid published date ' + str(published))
+            print('EX: validPostDate invalid published date ' + str(published))
         return False
 
     daysDiff = postTimeObject - baselineTime
@@ -627,8 +627,8 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
             try:
                 os.remove(avatarFilename)
             except BaseException:
-                print('WARN: Unable to delete cached avatar ' +
-                      str(avatarFilename))
+                print('EX: removeAvatarFromCache ' +
+                      'unable to delete cached avatar ' + str(avatarFilename))
                 pass
 
 
@@ -642,7 +642,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
                 fp.write(json.dumps(jsonObject))
                 return True
         except BaseException:
-            print('WARN: saveJson ' + str(tries))
+            print('EX: saveJson ' + str(tries))
             time.sleep(1)
             tries += 1
     return False
@@ -660,7 +660,7 @@ def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
                 jsonObject = json.loads(data)
                 break
         except BaseException:
-            print('WARN: loadJson exception ' + str(filename))
+            print('EX: loadJson exception ' + str(filename))
             if delaySec > 0:
                 time.sleep(delaySec)
             tries += 1
@@ -685,7 +685,7 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
                 jsonObject = json.loads(data)
                 break
         except BaseException:
-            print('WARN: loadJson exception ' + str(filename))
+            print('EX: loadJsonOnionify exception ' + str(filename))
             if delaySec > 0:
                 time.sleep(delaySec)
             tries += 1
@@ -1289,7 +1289,7 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
                 try:
                     os.remove(postFilename)
                 except BaseException:
-                    print('WARN: clearFromPostCaches file not removed ' +
+                    print('EX: clearFromPostCaches file not removed ' +
                           str(postFilename))
                     pass
             # if the post is in the recent posts cache then remove it
@@ -1388,7 +1388,7 @@ def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
             fp.write(str(replyIntervalHours))
             return True
         except BaseException:
-            print('WARN: unable to save reply interval ' +
+            print('EX: setReplyIntervalHours unable to save reply interval ' +
                   str(replyIntervalFilename) + ' ' +
                   str(replyIntervalHours))
             pass
@@ -1418,7 +1418,7 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
     try:
         pubDate = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('WARN: Unrecognized published date ' + str(published))
+        print('EX: canReplyTo unrecognized published date ' + str(published))
         return False
     if not currDateStr:
         currDate = datetime.datetime.utcnow()
@@ -1427,7 +1427,8 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
             currDate = datetime.datetime.strptime(currDateStr,
                                                   '%Y-%m-%dT%H:%M:%SZ')
         except BaseException:
-            print('WARN: Unrecognized current date ' + str(currDateStr))
+            print('EX: canReplyTo unrecognized current date ' +
+                  str(currDateStr))
             return False
     hoursSincePublication = int((currDate - pubDate).total_seconds() / 3600)
     if hoursSincePublication < 0 or \
@@ -1451,14 +1452,16 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
         try:
             os.remove(mediaFilename)
         except BaseException:
-            print('WARN: unable to delete media file ' + str(mediaFilename))
+            print('EX: _removeAttachment unable to delete media file ' +
+                  str(mediaFilename))
             pass
     etagFilename = mediaFilename + '.etag'
     if os.path.isfile(etagFilename):
         try:
             os.remove(etagFilename)
         except BaseException:
-            print('WARN: unable to delete etag file ' + str(etagFilename))
+            print('EX: _removeAttachment unable to delete etag file ' +
+                  str(etagFilename))
             pass
     postJson['attachment'] = []
 
@@ -1527,7 +1530,8 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
     try:
         os.remove(repliesFilename)
     except BaseException:
-        print('WARN: unable to delete replies file ' + str(repliesFilename))
+        print('EX: _deletePostRemoveReplies unable to delete replies file ' +
+              str(repliesFilename))
         pass
 
 
@@ -1587,7 +1591,8 @@ def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
-                print('WARN: unable to delete cached post file ' +
+                print('EX: _deleteCachedHtml ' +
+                      'unable to delete cached post file ' +
                       str(cachedPostFilename))
                 pass
 
@@ -1636,7 +1641,7 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             try:
                 os.remove(tagIndexFilename)
             except BaseException:
-                print('WARN: Unable to delete tag index ' +
+                print('EX: _deleteHashtagsOnPost unable to delete tag index ' +
                       str(tagIndexFilename))
                 pass
         else:
@@ -1676,13 +1681,15 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
             try:
                 os.remove(conversationFilename + '.muted')
             except BaseException:
-                print('WARN: Unable to remove conversation ' +
+                print('EX: _deleteConversationPost ' +
+                      'unable to remove conversation ' +
                       str(conversationFilename) + '.muted')
                 pass
         try:
             os.remove(conversationFilename)
         except BaseException:
-            print('WARN: Unable to remove conversation ' +
+            print('EX: _deleteConversationPost ' +
+                  'unable to remove conversation ' +
                   str(conversationFilename))
             pass
 
@@ -1703,7 +1710,8 @@ def deletePost(baseDir: str, httpPrefix: str,
             os.remove(postFilename)
         except BaseException:
             if debug:
-                print('WARN: Unable to delete post ' + str(postFilename))
+                print('EX: deletePost unable to delete post ' +
+                      str(postFilename))
             pass
         return
 
@@ -1732,7 +1740,8 @@ def deletePost(baseDir: str, httpPrefix: str,
             try:
                 os.remove(extFilename)
             except BaseException:
-                print('WARN: unable to remove ext ' + str(extFilename))
+                print('EX: deletePost unable to remove ext ' +
+                      str(extFilename))
                 pass
 
     # remove cached html version of the post
@@ -1763,7 +1772,7 @@ def deletePost(baseDir: str, httpPrefix: str,
         os.remove(postFilename)
     except BaseException:
         if debug:
-            print('WARN: Unable to delete post ' + str(postFilename))
+            print('EX: deletePost unable to delete post ' + str(postFilename))
         pass
 
 
@@ -2204,7 +2213,8 @@ def undoLikesCollectionEntry(recentPostsCache: {},
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
-                print('WARN: Unable to delete cached post ' +
+                print('EX: undoLikesCollectionEntry ' +
+                      'unable to delete cached post ' +
                       str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
@@ -2269,7 +2279,8 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
                 os.remove(cachedPostFilename)
             except BaseException:
                 if debug:
-                    print('WARN: Unable to delete cached post ' +
+                    print('EX: undoAnnounceCollectionEntry ' +
+                          'unable to delete cached post ' +
                           str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
@@ -2336,7 +2347,8 @@ def updateAnnounceCollection(recentPostsCache: {},
                 os.remove(cachedPostFilename)
             except BaseException:
                 if debug:
-                    print('WARN: Unable to delete cached post ' +
+                    print('EX: updateAnnounceCollection ' +
+                          'unable to delete cached post ' +
                           str(cachedPostFilename))
                 pass
     removePostFromCache(postJsonObject, recentPostsCache)
@@ -2440,7 +2452,8 @@ def isRecentPost(postJsonObject: {}, maxDays: int = 3) -> bool:
             datetime.datetime.strptime(publishedDateStr,
                                        "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        print('WARN: Unrecognized published date ' + str(publishedDateStr))
+        print('EX: isRecentPost unrecognized published date ' +
+              str(publishedDateStr))
         return False
 
     publishedDaysSinceEpoch = \
@@ -2883,7 +2896,7 @@ def dateStringToSeconds(dateStr: str) -> int:
         expiryTime = \
             datetime.datetime.strptime(dateStr, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('WARN: Unable to parse date ' + str(dateStr))
+        print('EX: dateStringToSeconds unable to parse date ' + str(dateStr))
         return None
     return int(datetime.datetime.timestamp(expiryTime))
 

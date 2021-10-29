@@ -883,6 +883,7 @@ if args.socnet:
             fp.write(dotGraph)
             print('Saved to socnet.dot')
     except BaseException:
+        print('EX: commandline unable to write socnet.dot')
         pass
     sys.exit()
 
@@ -2673,17 +2674,19 @@ if args.testdata:
     print('Generating some test data for user: ' + nickname)
 
     if os.path.isdir(baseDir + '/tags'):
-        shutil.rmtree(baseDir + '/tags')
+        shutil.rmtree(baseDir + '/tags', ignore_errors=False, onerror=None)
     if os.path.isdir(baseDir + '/accounts'):
-        shutil.rmtree(baseDir + '/accounts')
+        shutil.rmtree(baseDir + '/accounts', ignore_errors=False, onerror=None)
     if os.path.isdir(baseDir + '/keys'):
-        shutil.rmtree(baseDir + '/keys')
+        shutil.rmtree(baseDir + '/keys', ignore_errors=False, onerror=None)
     if os.path.isdir(baseDir + '/media'):
-        shutil.rmtree(baseDir + '/media')
+        shutil.rmtree(baseDir + '/media', ignore_errors=False, onerror=None)
     if os.path.isdir(baseDir + '/sharefiles'):
-        shutil.rmtree(baseDir + '/sharefiles')
+        shutil.rmtree(baseDir + '/sharefiles',
+                      ignore_errors=False, onerror=None)
     if os.path.isdir(baseDir + '/wfendpoints'):
-        shutil.rmtree(baseDir + '/wfendpoints')
+        shutil.rmtree(baseDir + '/wfendpoints',
+                      ignore_errors=False, onerror=None)
 
     setConfigParam(baseDir, 'registrationsRemaining',
                    str(maxRegistrations))

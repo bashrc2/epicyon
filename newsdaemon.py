@@ -471,7 +471,7 @@ def _createNewsMirror(baseDir: str, domain: str,
                 postId = postId.strip()
                 mirrorArticleDir = mirrorDir + '/' + postId
                 if os.path.isdir(mirrorArticleDir):
-                    rmtree(mirrorArticleDir)
+                    rmtree(mirrorArticleDir, ignore_errors=False, onerror=None)
                     removals.append(postId)
                     noOfDirs -= 1
 
@@ -555,12 +555,12 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 dateStrWithOffset = \
                     datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
             except BaseException:
-                print('Newswire strptime failed ' + str(dateStr))
+                print('EX: Newswire strptime failed ' + str(dateStr))
                 continue
             try:
                 dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
             except BaseException:
-                print('Newswire dateStrWithOffset failed ' +
+                print('EX: Newswire dateStrWithOffset failed ' +
                       str(dateStrWithOffset))
                 continue
 
@@ -726,6 +726,8 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                         try:
                             os.remove(filename + '.arrived')
                         except BaseException:
+                            print('EX: _convertRSStoActivityPub ' +
+                                  'unable to delete ' + filename + '.arrived')
                             pass
 
                 # setting the url here links to the activitypub object
@@ -839,6 +841,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                 try:
                     os.remove(refreshFilename)
                 except BaseException:
+                    print('EX: runNewswireDaemon unable to delete ' +
+                          str(refreshFilename))
                     pass
                 break
 

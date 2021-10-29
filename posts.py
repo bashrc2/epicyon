@@ -893,7 +893,7 @@ def deleteAllPosts(baseDir: str,
             if os.path.isfile(filePath):
                 os.unlink(filePath)
             elif os.path.isdir(filePath):
-                shutil.rmtree(filePath)
+                shutil.rmtree(filePath, ignore_errors=False, onerror=None)
         except Exception as e:
             print('ERROR: deleteAllPosts ' + str(e))
 
@@ -1569,6 +1569,7 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(pinnedFilename)
         except BaseException:
+            print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
             pass
 
 
@@ -2094,6 +2095,7 @@ def createReportPost(baseDir: str,
             with open(newReportFile, 'w+') as fp:
                 fp.write(toUrl + '/moderation')
         except BaseException:
+            print('EX: createReportPost unable to write ' + newReportFile)
             pass
 
     return postJsonObject
@@ -3584,6 +3586,8 @@ def _createBoxIndexed(recentPostsCache: {},
         try:
             pageStr = '?page=' + str(pageNumber)
         except BaseException:
+            print('EX: _createBoxIndexed ' +
+                  'unable to convert page number to string')
             pass
     boxUrl = localActorUrl(httpPrefix, nickname, domain) + '/' + boxname
     boxHeader = {
@@ -3743,6 +3747,7 @@ def _createBoxIndexed(recentPostsCache: {},
         try:
             p = json.loads(postStr)
         except BaseException:
+            print('EX: _createBoxIndexed unable to load json ' + postStr)
             continue
 
         # Does this post have replies?
@@ -3925,6 +3930,8 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
             try:
                 os.remove(postCacheFilename)
             except BaseException:
+                print('EX: archivePostsForPerson unable to delete ' +
+                      postCacheFilename)
                 pass
 
         noOfPosts -= 1
@@ -5037,11 +5044,15 @@ def secondsBetweenPublished(published1: str, published2: str) -> int:
         published1Time = \
             datetime.datetime.strptime(published1, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
+        print('EX: secondsBetweenPublished unable to parse date 1 ' +
+              str(published1))
         return -1
     try:
         published2Time = \
             datetime.datetime.strptime(published2, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
+        print('EX: secondsBetweenPublished unable to parse date 2 ' +
+              str(published2))
         return -1
     return (published2Time - published1Time).seconds
 
@@ -5079,6 +5090,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
         with open(actorFilename, 'r') as fp:
             lastpostId = fp.read()
     except BaseException:
+        print('EX: editedPostFilename unable to read ' + actorFilename)
         return ''
     if not lastpostId:
         return ''

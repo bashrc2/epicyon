@@ -431,6 +431,8 @@ def updateLikesCollection(recentPostsCache: {},
             try:
                 os.remove(cachedPostFilename)
             except BaseException:
+                print('EX: updateLikesCollection unable to delete ' +
+                      cachedPostFilename)
                 pass
 
     obj = postJsonObject

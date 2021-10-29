@@ -150,4 +150,6 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
                               ',' + str(noOfActiveThreads) +
                               ',' + str(len(threadsList)) + '\n')
         except BaseException:
+            print('EX: removeDormantThreads unable to write ' +
+                  sendLogFilename)
             pass
