@@ -1615,6 +1615,8 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
     # get the id of the post
     postId = removeIdEnding(postJsonObject['object']['id'])
     for tag in postJsonObject['object']['tag']:
+        if not tag.get('type'):
+            continue
         if tag['type'] != 'Hashtag':
             continue
         if not tag.get('name'):
