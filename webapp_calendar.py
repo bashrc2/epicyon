@@ -51,8 +51,6 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     if not postJsonObject:
         return None
 
-    setCustomBackground(baseDir, 'delete-background')
-
     deletePostStr = None
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -284,7 +282,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
 
     nickname = getNicknameFromActor(actor)
 
-    setCustomBackground(baseDir, 'calendar-background')
+    setCustomBackground(baseDir, 'calendar-background', 'calendar-background')
 
     months = ('January', 'February', 'March', 'April',
               'May', 'June', 'July', 'August', 'September',

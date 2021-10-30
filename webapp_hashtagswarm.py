@@ -201,7 +201,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     categoryStr = path.split('/category/')[1].strip()
     searchNickname = getNicknameFromActor(actor)
 
-    backgroundExt = setCustomBackground(baseDir, 'search-background')
+    setCustomBackground(baseDir, 'search-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-search.css'
     if os.path.isfile(baseDir + '/search.css'):
@@ -210,11 +210,6 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    if backgroundExt:
-        if backgroundExt != 'jpg':
-            htmlStr = htmlStr.replace('"follow-background.jpg"',
-                                      '"follow-background.' +
-                                      backgroundExt + '"')
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \

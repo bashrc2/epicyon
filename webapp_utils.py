@@ -1458,16 +1458,18 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
         shareStr + htmlFooter()
 
 
-def setCustomBackground(baseDir: str, background: str) -> str:
+def setCustomBackground(baseDir: str, background: str,
+                        newBackground: str) -> str:
     """Sets a custom background
     Returns the extension, if found
     """
-    extensions = getImageExtensions()
-    for ext in extensions:
-        if os.path.isfile(baseDir + '/img/' + background + '.' + ext):
-            if not os.path.isfile(baseDir + '/accounts/' +
-                                  background + '.' + ext):
-                copyfile(baseDir + '/img/' + background + '.' + ext,
-                         baseDir + '/accounts/' + background + '.' + ext)
-            return ext
+    ext = 'jpg'
+    if os.path.isfile(baseDir + '/img/' + background + '.' + ext):
+        if not newBackground:
+            newBackground = background
+        if not os.path.isfile(baseDir + '/accounts/' +
+                              newBackground + '.' + ext):
+            copyfile(baseDir + '/img/' + background + '.' + ext,
+                     baseDir + '/accounts/' + newBackground + '.' + ext)
+        return ext
     return None

@@ -93,7 +93,7 @@ def htmlLogin(cssCache: {}, translate: {},
     textModeLogo = getTextModeLogo(baseDir)
     textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {}, {})
 
-    backgroundExt = setCustomBackground(baseDir, 'login-background-custom')
+    setCustomBackground(baseDir, 'login-background-custom', 'login-background')
 
     if accounts > 0:
         loginText = \
@@ -153,10 +153,6 @@ def htmlLogin(cssCache: {}, translate: {},
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     httpPrefix, domain,
                                     systemLanguage)
-    if backgroundExt:
-        loginForm = loginForm.replace('"login-background.jpg"',
-                                      '"login-background-custom.' +
-                                      backgroundExt + '"')
 
     nicknamePattern = getNicknameValidationPattern()
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')

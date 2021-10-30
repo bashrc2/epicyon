@@ -55,8 +55,6 @@ def htmlConfirmDelete(cssCache: {},
     if not postJsonObject:
         return None
 
-    setCustomBackground(baseDir, 'delete-background')
-
     deletePostStr = None
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -132,7 +130,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if sharesJson[itemID].get('imageUrl'):
         sharedItemImageUrl = sharesJson[itemID]['imageUrl']
 
-    setCustomBackground(baseDir, 'shares-background')
+    setCustomBackground(baseDir, 'shares-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -273,7 +271,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
     """
     blockDomain, port = getDomainFromActor(blockActor)
 
-    setCustomBackground(baseDir, 'block-background')
+    setCustomBackground(baseDir, 'block-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):

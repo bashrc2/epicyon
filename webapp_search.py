@@ -328,7 +328,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     actor = path.replace('/search', '')
     domain, port = getDomainFromActor(actor)
 
-    backgroundExt = setCustomBackground(baseDir, 'search-background')
+    setCustomBackground(baseDir, 'search-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -337,11 +337,6 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    if backgroundExt:
-        if backgroundExt != 'jpg':
-            emojiStr = emojiStr.replace('"follow-background.jpg"',
-                                        '"follow-background.' +
-                                        backgroundExt + '"')
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -373,7 +368,7 @@ def htmlSearch(cssCache: {}, translate: {},
     actor = path.replace('/search', '')
     searchNickname = getNicknameFromActor(actor)
 
-    backgroundExt = setCustomBackground(baseDir, 'search-background')
+    setCustomBackground(baseDir, 'search-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-search.css'
     if os.path.isfile(baseDir + '/search.css'):
@@ -381,11 +376,6 @@ def htmlSearch(cssCache: {}, translate: {},
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    if backgroundExt:
-        if backgroundExt != 'jpg':
-            followStr = followStr.replace('"follow-background.jpg"',
-                                          '"follow-background.' +
-                                          backgroundExt + '"')
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
