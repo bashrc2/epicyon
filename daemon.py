@@ -11973,7 +11973,8 @@ class PubServer(BaseHTTPRequestHandler):
         recentCrawlers = 60 * 60 * 24 * 30
         for uaStr, item in knownCrawlers.items():
             if item['lastseen'] - currTime < recentCrawlers:
-                crawlersList.append(str(item['hits']) + ' ' + uaStr)
+                hitsStr = str(item['hits']).zfill(8)
+                crawlersList.append(hitsStr + ' ' + uaStr)
         crawlersList.sort(reverse=True)
         msg = ''
         for lineStr in crawlersList:
