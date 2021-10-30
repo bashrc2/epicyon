@@ -13,6 +13,7 @@ from shutil import copyfile
 from utils import getConfigParam
 from utils import noOfAccounts
 from utils import getNicknameValidationPattern
+from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
 from webapp_utils import htmlKeyboardNavigation
@@ -92,10 +93,7 @@ def htmlLogin(cssCache: {}, translate: {},
     textModeLogo = getTextModeLogo(baseDir)
     textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {}, {})
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
-            copyfile(baseDir + '/accounts/login-background-custom.jpg',
-                     baseDir + '/accounts/login-background.jpg')
+    backgroundExt = setCustomBackground(baseDir, 'login-background-custom')
 
     if accounts > 0:
         loginText = \
@@ -155,6 +153,11 @@ def htmlLogin(cssCache: {}, translate: {},
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     httpPrefix, domain,
                                     systemLanguage)
+    if backgroundExt:
+        loginForm = loginForm.replace('"login-background.jpg"',
+                                      '"login-background-custom.' +
+                                      backgroundExt + '"')
+
     nicknamePattern = getNicknameValidationPattern()
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     loginForm += \
