@@ -60,6 +60,10 @@ It is usually safe to assume that the federated network beyond your instance is 
 
 Where Json linked data signatures are supported there should not be arbitrary schema lookups via the web. Instead, recognized contexts should be added to *context.py*. This is in order to follow the principle of *no processing without full recognition*, in which the recognition step is not endlessly extendable by untrusted parties.
 
+### Avoid Web Frameworks
+
+In general avoid using web frameworks and instead use local modules which are prefixed with *webapp_*. Web frameworks are built for conventional software engineering by large companies who are designing for scale. They typically have database dependencies and contain a lot of hardcoded Google stuff or other things which will leak metadata or be incompatible with onion routing. Keeping up with web frameworks is a constant firefight. They also create a massive attack surface requiring constant vigilance.
+
 
 ## High Level Architecture
 
