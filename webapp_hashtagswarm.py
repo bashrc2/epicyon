@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from shutil import copyfile
 from datetime import datetime
 from utils import getNicknameFromActor
 from utils import getConfigParam
 from categories import getHashtagCategories
 from categories import getHashtagCategory
+from webapp_utils import setCustomBackground
 from webapp_utils import getSearchBannerFile
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -201,10 +201,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     categoryStr = path.split('/category/')[1].strip()
     searchNickname = getNicknameFromActor(actor)
 
-    if os.path.isfile(baseDir + '/img/search-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/search-background.png'):
-            copyfile(baseDir + '/img/search-background.png',
-                     baseDir + '/accounts/search-background.png')
+    backgroundExt = setCustomBackground(baseDir, 'search-background')
 
     cssFilename = baseDir + '/epicyon-search.css'
     if os.path.isfile(baseDir + '/search.css'):
@@ -213,6 +210,11 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    if backgroundExt:
+        if backgroundExt != 'jpg':
+            htmlStr = htmlStr.replace('"follow-background.jpg"',
+                                      '"follow-background.' +
+                                      backgroundExt + '"')
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \

@@ -17,6 +17,7 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import getAltPath
 from utils import acctDir
+from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
@@ -54,10 +55,7 @@ def htmlConfirmDelete(cssCache: {},
     if not postJsonObject:
         return None
 
-    if os.path.isfile(baseDir + '/img/delete-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/delete-background.png'):
-            copyfile(baseDir + '/img/delete-background.png',
-                     baseDir + '/accounts/delete-background.png')
+    setCustomBackground(baseDir, 'delete-background')
 
     deletePostStr = None
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -134,10 +132,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if sharesJson[itemID].get('imageUrl'):
         sharedItemImageUrl = sharesJson[itemID]['imageUrl']
 
-    if os.path.isfile(baseDir + '/img/shares-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/shares-background.png'):
-            copyfile(baseDir + '/img/shares-background.png',
-                     baseDir + '/accounts/shares-background.png')
+    setCustomBackground(baseDir, 'shares-background')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -278,10 +273,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
     """
     blockDomain, port = getDomainFromActor(blockActor)
 
-    if os.path.isfile(baseDir + '/img/block-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/block-background.png'):
-            copyfile(baseDir + '/img/block-background.png',
-                     baseDir + '/accounts/block-background.png')
+    setCustomBackground(baseDir, 'block-background')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):

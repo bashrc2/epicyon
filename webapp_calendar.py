@@ -10,7 +10,6 @@ __module_group__ = "Calendar"
 import os
 from datetime import datetime
 from datetime import date
-from shutil import copyfile
 from utils import getDisplayName
 from utils import getConfigParam
 from utils import getNicknameFromActor
@@ -25,6 +24,7 @@ from utils import localActorUrl
 from utils import replaceUsersWithAt
 from happening import getTodaysEvents
 from happening import getCalendarEvents
+from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import htmlHideFromScreenReader
@@ -51,10 +51,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     if not postJsonObject:
         return None
 
-    if os.path.isfile(baseDir + '/img/delete-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/delete-background.png'):
-            copyfile(baseDir + '/img/delete-background.png',
-                     baseDir + '/accounts/delete-background.png')
+    setCustomBackground(baseDir, 'delete-background')
 
     deletePostStr = None
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -287,10 +284,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
 
     nickname = getNicknameFromActor(actor)
 
-    if os.path.isfile(baseDir + '/img/calendar-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/calendar-background.png'):
-            copyfile(baseDir + '/img/calendar-background.png',
-                     baseDir + '/accounts/calendar-background.png')
+    setCustomBackground(baseDir, 'calendar-background')
 
     months = ('January', 'February', 'March', 'April',
               'May', 'June', 'July', 'August', 'September',
