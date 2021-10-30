@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from shutil import copyfile
 from collections import OrderedDict
 from session import getJson
 from utils import isAccountDir
@@ -1455,3 +1456,20 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
 
     return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
         shareStr + htmlFooter()
+
+
+def setCustomBackground(baseDir: str, background: str,
+                        newBackground: str) -> str:
+    """Sets a custom background
+    Returns the extension, if found
+    """
+    ext = 'jpg'
+    if os.path.isfile(baseDir + '/img/' + background + '.' + ext):
+        if not newBackground:
+            newBackground = background
+        if not os.path.isfile(baseDir + '/accounts/' +
+                              newBackground + '.' + ext):
+            copyfile(baseDir + '/img/' + background + '.' + ext,
+                     baseDir + '/accounts/' + newBackground + '.' + ext)
+        return ext
+    return None

@@ -31,6 +31,7 @@ from skills import getSkillsFromList
 from categories import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
+from webapp_utils import setCustomBackground
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -327,10 +328,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     actor = path.replace('/search', '')
     domain, port = getDomainFromActor(actor)
 
-    if os.path.isfile(baseDir + '/img/search-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/search-background.png'):
-            copyfile(baseDir + '/img/search-background.png',
-                     baseDir + '/accounts/search-background.png')
+    setCustomBackground(baseDir, 'search-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -370,10 +368,7 @@ def htmlSearch(cssCache: {}, translate: {},
     actor = path.replace('/search', '')
     searchNickname = getNicknameFromActor(actor)
 
-    if os.path.isfile(baseDir + '/img/search-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/search-background.png'):
-            copyfile(baseDir + '/img/search-background.png',
-                     baseDir + '/accounts/search-background.png')
+    setCustomBackground(baseDir, 'search-background', 'follow-background')
 
     cssFilename = baseDir + '/epicyon-search.css'
     if os.path.isfile(baseDir + '/search.css'):
