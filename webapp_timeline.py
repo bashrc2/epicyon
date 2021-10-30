@@ -941,6 +941,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if itemCtr > 0:
         tlStr += textModeSeparator
         tlStr += \
+            '      <br>\n' + \
             '      <center>\n' + \
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
