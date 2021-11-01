@@ -300,9 +300,9 @@ def replaceEmojiFromTags(session, baseDir: str,
                         iconName = iconName.split('.')[0]
                         # see https://unicode.org/
                         # emoji/charts/full-emoji-list.html
-                        replaced = False
                         if '-' not in iconName:
                             # a single code
+                            replaced = False
                             try:
                                 replaceChar = chr(int("0x" + iconName, 16))
                                 content = content.replace(tagItem['name'],
@@ -325,6 +325,7 @@ def replaceEmojiFromTags(session, baseDir: str,
                             iconCodes = iconName.split('-')
                             iconCodeSequence = ''
                             for icode in iconCodes:
+                                replaced = False
                                 try:
                                     iconCodeSequence += chr(int("0x" +
                                                                 icode, 16))
@@ -336,7 +337,6 @@ def replaceEmojiFromTags(session, baseDir: str,
                                           str(icode) + ' to chr ' +
                                           tagItem['name'] + ' ' +
                                           tagItem['icon']['url'])
-                                    break
                                 if not replaced:
                                     _saveCustomEmoji(session, baseDir,
                                                      tagItem['name'],
