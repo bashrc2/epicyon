@@ -1344,6 +1344,7 @@ def _createPostBase(baseDir: str,
     tags = []
     for tagName, tag in hashtagsDict.items():
         tags.append(tag)
+
     # get list of tags
     if nickname != 'news':
         content = \

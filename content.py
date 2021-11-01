@@ -245,16 +245,17 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
                      debug: bool) -> None:
     """Saves custom emoji to file
     """
+    debug = True
     if not session:
         if debug:
-            print('_saveCustomEmoji no session')
+            print('EX: _saveCustomEmoji no session')
         return
     if '.' not in url:
         return
     ext = url.split('.')[-1]
     if ext != 'png':
         if debug:
-            print('Custom emoji is wrong format ' + url)
+            print('EX: Custom emoji is wrong format ' + url)
         return
     emojiName = emojiName.replace(':').strip().lower()
     customEmojiDir = baseDir + '/emojicustom'
@@ -263,6 +264,8 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
     emojiImageFilename = customEmojiDir + '/' + emojiName + '.' + ext
     if not downloadImage(session, baseDir, url,
                          emojiImageFilename, debug, False):
+        if debug:
+            print('EX: custom emoji not downloaded ' + url)
         return
     emojiJsonFilename = customEmojiDir + '/emoji.json'
     emojiJson = {}
@@ -274,7 +277,9 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
         emojiJson[emojiName] = emojiName
         saveJson(emojiJson, emojiJsonFilename)
         if debug:
-            print('Saved custom emoji ' + emojiJsonFilename)
+            print('EX: Saved custom emoji ' + emojiJsonFilename)
+    elif debug:
+        print('EX: cusom emoji already saved')
 
 
 def replaceEmojiFromTags(session, baseDir: str,
@@ -314,7 +319,7 @@ def replaceEmojiFromTags(session, baseDir: str,
                                                           replaceChar)
                                 replaced = True
                             except BaseException:
-                                print('EX: replaceEmojiFromTags ' +
+                                print('EX: replaceEmojiFromTags 1 ' +
                                       'no conversion of ' +
                                       str(iconName) + ' to chr ' +
                                       tagItem['name'] + ' ' +
@@ -337,7 +342,7 @@ def replaceEmojiFromTags(session, baseDir: str,
                                     replaced = True
                                 except BaseException:
                                     iconCodeSequence = ''
-                                    print('EX: replaceEmojiFromTags ' +
+                                    print('EX: replaceEmojiFromTags 2 ' +
                                           'no conversion of ' +
                                           str(icode) + ' to chr ' +
                                           tagItem['name'] + ' ' +
