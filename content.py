@@ -900,6 +900,13 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                                  baseDir + '/emoji/emoji.json')
                 emojiDict = loadJson(baseDir + '/emoji/emoji.json')
 
+                # append custom emoji to the dict
+                if os.path.isfile(baseDir + '/emojicustom/emoji.json'):
+                    customEmojiDict = \
+                        loadJson(baseDir + '/emojicustom/emoji.json')
+                    emojiDict = \
+                        dict(emojiDict.items() + customEmojiDict.items())
+
 #                print('TAG: looking up emoji for :' + wordStr2 + ':')
                 _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
                           originalDomain, replaceEmoji, hashtags,
