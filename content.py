@@ -905,8 +905,8 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                     customEmojiDict = \
                         loadJson(baseDir + '/emojicustom/emoji.json')
                     if customEmojiDict:
-                        emojiDict = \
-                            dict(emojiDict, **customEmojiDict)
+                        newEmojiDict = dict(emojiDict, **customEmojiDict)
+                        emojiDict = newEmojiDict
 
 #                print('TAG: looking up emoji for :' + wordStr2 + ':')
                 _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,

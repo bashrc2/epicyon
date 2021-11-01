@@ -80,7 +80,8 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
     if emojiJson:
         if os.path.isfile(customEmojiLookupFilename):
             customEmojiJson = loadJson(customEmojiLookupFilename)
-            emojiJson = dict(emojiJson, **customEmojiJson)
+            newEmojiJson = dict(emojiJson, **customEmojiJson)
+            emojiDict = newEmojiJson
         results = {}
         for emojiName, filename in emojiJson.items():
             if searchStr in emojiName:
