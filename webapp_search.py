@@ -95,15 +95,15 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         msgStr1 = translate['Copy the text then paste it into your post']
         msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
         for emojiName, filename in results.items():
-            if os.path.isfile(baseDir + '/emoji/' + filename):
-                if not headingShown:
-                    emojiForm += \
-                        '<center><h5>' + msgStr1 + \
-                        '</h5></center>'
-                    headingShown = True
+            if not os.path.isfile(baseDir + '/emoji/' + filename):
+                if not os.path.isfile(baseDir + '/customemoji/' + filename):
+                    continue
+            if not headingShown:
                 emojiForm += \
-                    '<h3>:' + emojiName + msgStr2 + \
-                    filename + '"/></h3>'
+                    '<center><h5>' + msgStr1 + '</h5></center>'
+                headingShown = True
+            emojiForm += \
+                '<h3>:' + emojiName + msgStr2 + filename + '"/></h3>'
         emojiForm += '</center>'
 
     emojiForm += htmlFooter()
