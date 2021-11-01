@@ -272,8 +272,11 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                 content = content.replace(tagItem['name'],
                                                           replaceChar)
                             except BaseException:
-                                print('EX: replaceEmojiFromTags name ' +
-                                      str(iconName))
+                                print('EX: replaceEmojiFromTags ' +
+                                      'no conversion of ' +
+                                      str(iconName) + ' to chr ' +
+                                      tagItem['name'] + ' ' +
+                                      tagItem['icon']['url'])
                                 pass
                         else:
                             # sequence of codes
@@ -285,8 +288,11 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                                                 icode, 16))
                                 except BaseException:
                                     iconCodeSequence = ''
-                                    print('EX: replaceEmojiFromTags code ' +
-                                          str(icode))
+                                    print('EX: replaceEmojiFromTags ' +
+                                          'no conversion of ' +
+                                          str(icode) + ' to chr ' +
+                                          tagItem['name'] + ' ' +
+                                          tagItem['icon']['url'])
                                     break
                             if iconCodeSequence:
                                 content = content.replace(tagItem['name'],
