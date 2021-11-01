@@ -71,17 +71,17 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
 
     # does the lookup file exist?
     if not os.path.isfile(emojiLookupFilename):
-        if not os.path.isfile(customEmojiLookupFilename):
-            emojiForm += '<center><h5>' + \
-                translate['No results'] + '</h5></center>'
-            emojiForm += htmlFooter()
-            return emojiForm
+        emojiForm += '<center><h5>' + \
+            translate['No results'] + '</h5></center>'
+        emojiForm += htmlFooter()
+        return emojiForm
 
     emojiJson = loadJson(emojiLookupFilename)
     if emojiJson:
         if os.path.isfile(customEmojiLookupFilename):
             customEmojiJson = loadJson(customEmojiLookupFilename)
-            emojiJson = dict(emojiJson, **customEmojiJson)
+            if customEmojiJson:
+                emojiJson = dict(emojiJson, **customEmojiJson)
         results = {}
         for emojiName, filename in emojiJson.items():
             if searchStr in emojiName:
