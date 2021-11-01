@@ -257,7 +257,7 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
         if debug:
             print('EX: Custom emoji is wrong format ' + url)
         return
-    emojiName = emojiName.replace(':').strip().lower()
+    emojiName = emojiName.replace(':', '').strip().lower()
     customEmojiDir = baseDir + '/emojicustom'
     if not os.path.isdir(customEmojiDir):
         os.mkdir(customEmojiDir)
