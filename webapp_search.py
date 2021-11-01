@@ -82,6 +82,7 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
             customEmojiJson = loadJson(customEmojiLookupFilename)
             if customEmojiJson:
                 emojiJson = dict(emojiJson, **customEmojiJson)
+
         results = {}
         for emojiName, filename in emojiJson.items():
             if searchStr in emojiName:
@@ -89,6 +90,11 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         for emojiName, filename in emojiJson.items():
             if emojiName in searchStr:
                 results[emojiName] = filename + '.png'
+
+        if not results:
+            emojiForm += '<center><h5>' + \
+                translate['No results'] + '</h5></center>'
+
         headingShown = False
         emojiForm += '<center>'
         msgStr1 = translate['Copy the text then paste it into your post']
