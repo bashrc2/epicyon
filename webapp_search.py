@@ -59,6 +59,7 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         cssFilename = baseDir + '/epicyon.css'
 
     emojiLookupFilename = baseDir + '/emoji/emoji.json'
+    customEmojiLookupFilename = baseDir + '/emojicustom/emoji.json'
 
     # create header
     instanceTitle = \
@@ -77,6 +78,11 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
 
     emojiJson = loadJson(emojiLookupFilename)
     if emojiJson:
+        customEmojiJson = None
+        if os.path.isfile(customEmojiLookupFilename):
+            customEmojiJson = loadJson(customEmojiLookupFilename)
+        if customEmojiJson:
+            emojiJson = dict(emojiJson, **customEmojiJson)
         results = {}
         for emojiName, filename in emojiJson.items():
             if searchStr in emojiName:
