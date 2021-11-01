@@ -246,14 +246,17 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
     """Saves custom emoji to file
     """
     if not session:
+        if debug:
+            print('_saveCustomEmoji no session')
         return
     if '.' not in url:
         return
     ext = url.split('.')[-1]
     if ext != 'png':
-        print('Custom emoji is wrong format ' + url)
+        if debug:
+            print('Custom emoji is wrong format ' + url)
         return
-    emojiName = emojiName.replace(':').strip()
+    emojiName = emojiName.replace(':').strip().lower()
     customEmojiDir = baseDir + '/emojicustom'
     if not os.path.isdir(customEmojiDir):
         os.mkdir(customEmojiDir)
@@ -270,6 +273,8 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
     if not emojiJson.get(emojiName):
         emojiJson[emojiName] = emojiName
         saveJson(emojiJson, emojiJsonFilename)
+        if debug:
+            print('Saved custom emoji ' + emojiJsonFilename)
 
 
 def replaceEmojiFromTags(session, baseDir: str,
