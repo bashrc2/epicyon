@@ -101,7 +101,7 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
         for emojiName, filename in results.items():
             if not os.path.isfile(baseDir + '/emoji/' + filename):
-                if not os.path.isfile(baseDir + '/customemoji/' + filename):
+                if not os.path.isfile(baseDir + '/emojicustom/' + filename):
                     continue
             if not headingShown:
                 emojiForm += \
