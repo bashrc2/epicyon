@@ -6723,6 +6723,8 @@ class PubServer(BaseHTTPRequestHandler):
         if isImageFile(path):
             emojiStr = path.split('/emoji/')[1]
             emojiFilename = baseDir + '/emoji/' + emojiStr
+            if not os.path.isfile(emojiFilename):
+                emojiFilename = baseDir + '/emojicustom/' + emojiStr
             if os.path.isfile(emojiFilename):
                 if self._etag_exists(emojiFilename):
                     # The file has not changed
