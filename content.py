@@ -324,7 +324,6 @@ def replaceEmojiFromTags(session, baseDir: str,
                                       str(iconName) + ' to chr ' +
                                       tagItem['name'] + ' ' +
                                       tagItem['icon']['url'])
-                                pass
                             if not replaced:
                                 _saveCustomEmoji(session, baseDir,
                                                  tagItem['name'],
