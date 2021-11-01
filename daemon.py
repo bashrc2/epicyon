@@ -6723,6 +6723,8 @@ class PubServer(BaseHTTPRequestHandler):
         if isImageFile(path):
             emojiStr = path.split('/emoji/')[1]
             emojiFilename = baseDir + '/emoji/' + emojiStr
+            if not os.path.isfile(emojiFilename):
+                emojiFilename = baseDir + '/emojicustom/' + emojiStr
             if os.path.isfile(emojiFilename):
                 if self._etag_exists(emojiFilename):
                     # The file has not changed
@@ -11379,7 +11381,8 @@ class PubServer(BaseHTTPRequestHandler):
                            maxPostsInBlogsFeed, pageNumber,
                            self.server.peertubeInstances,
                            self.server.systemLanguage,
-                           self.server.personCache)
+                           self.server.personCache,
+                           self.server.debug)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -12983,7 +12986,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    maxPostsInBlogsFeed,
                                    self.server.peertubeInstances,
                                    self.server.systemLanguage,
-                                   self.server.personCache)
+                                   self.server.personCache,
+                                   self.server.debug)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -13076,7 +13080,8 @@ class PubServer(BaseHTTPRequestHandler):
             if blogFilename and nickname:
                 postJsonObject = loadJson(blogFilename)
                 if isBlogPost(postJsonObject):
-                    msg = htmlBlogPost(authorized,
+                    msg = htmlBlogPost(self.server.session,
+                                       authorized,
                                        self.server.baseDir,
                                        self.server.httpPrefix,
                                        self.server.translate,
@@ -13085,7 +13090,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        postJsonObject,
                                        self.server.peertubeInstances,
                                        self.server.systemLanguage,
-                                       self.server.personCache)
+                                       self.server.personCache,
+                                       self.server.debug)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -15538,8 +15544,11 @@ class PubServer(BaseHTTPRequestHandler):
                             tags.append(tag)
                         # get list of tags
                         fields['message'] = \
-                            replaceEmojiFromTags(fields['message'],
-                                                 tags, 'content')
+                            replaceEmojiFromTags(self.server.session,
+                                                 self.server.baseDir,
+                                                 fields['message'],
+                                                 tags, 'content',
+                                                 self.server.debug)
 
                         postJsonObject['object']['content'] = fields['message']
                         contentMap = postJsonObject['object']['contentMap']

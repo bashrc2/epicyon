@@ -59,6 +59,7 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         cssFilename = baseDir + '/epicyon.css'
 
     emojiLookupFilename = baseDir + '/emoji/emoji.json'
+    customEmojiLookupFilename = baseDir + '/emojicustom/emoji.json'
 
     # create header
     instanceTitle = \
@@ -77,6 +78,11 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
 
     emojiJson = loadJson(emojiLookupFilename)
     if emojiJson:
+        if os.path.isfile(customEmojiLookupFilename):
+            customEmojiJson = loadJson(customEmojiLookupFilename)
+            if customEmojiJson:
+                emojiJson = dict(emojiJson, **customEmojiJson)
+
         results = {}
         for emojiName, filename in emojiJson.items():
             if searchStr in emojiName:
@@ -84,20 +90,25 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         for emojiName, filename in emojiJson.items():
             if emojiName in searchStr:
                 results[emojiName] = filename + '.png'
+
+        if not results:
+            emojiForm += '<center><h5>' + \
+                translate['No results'] + '</h5></center>'
+
         headingShown = False
         emojiForm += '<center>'
         msgStr1 = translate['Copy the text then paste it into your post']
         msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
         for emojiName, filename in results.items():
-            if os.path.isfile(baseDir + '/emoji/' + filename):
-                if not headingShown:
-                    emojiForm += \
-                        '<center><h5>' + msgStr1 + \
-                        '</h5></center>'
-                    headingShown = True
+            if not os.path.isfile(baseDir + '/emoji/' + filename):
+                if not os.path.isfile(baseDir + '/emojicustom/' + filename):
+                    continue
+            if not headingShown:
                 emojiForm += \
-                    '<h3>:' + emojiName + msgStr2 + \
-                    filename + '"/></h3>'
+                    '<center><h5>' + msgStr1 + '</h5></center>'
+                headingShown = True
+            emojiForm += \
+                '<h3>:' + emojiName + msgStr2 + filename + '"/></h3>'
         emojiForm += '</center>'
 
     emojiForm += htmlFooter()

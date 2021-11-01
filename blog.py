@@ -164,7 +164,7 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     return ''
 
 
-def _htmlBlogPostContent(authorized: bool,
+def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                          baseDir: str, httpPrefix: str, translate: {},
                          nickname: str, domain: str, domainFull: str,
                          postJsonObject: {},
@@ -255,9 +255,9 @@ def _htmlBlogPostContent(authorized: bool,
         contentStr = addEmbeddedElements(translate, jsonContent,
                                          peertubeInstances)
         if postJsonObject['object'].get('tag'):
-            contentStr = replaceEmojiFromTags(contentStr,
+            contentStr = replaceEmojiFromTags(session, baseDir, contentStr,
                                               postJsonObject['object']['tag'],
-                                              'content')
+                                              'content', debug)
         if articleAdded:
             blogStr += '<br>' + contentStr + '</article>\n'
         else:
@@ -414,12 +414,13 @@ def _getSnippetFromBlogContent(postJsonObject: {}, systemLanguage: str) -> str:
     return content
 
 
-def htmlBlogPost(authorized: bool,
+def htmlBlogPost(session, authorized: bool,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
                  postJsonObject: {},
                  peertubeInstances: [],
-                 systemLanguage: str, personCache: {}) -> str:
+                 systemLanguage: str, personCache: {},
+                 debug: bool) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -438,7 +439,7 @@ def htmlBlogPost(authorized: bool,
                                        title, snippet)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogStr += _htmlBlogPostContent(authorized, baseDir,
+    blogStr += _htmlBlogPostContent(debug, session, authorized, baseDir,
                                     httpPrefix, translate,
                                     nickname, domain,
                                     domainFull, postJsonObject,
@@ -473,7 +474,7 @@ def htmlBlogPage(authorized: bool, session,
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
                  peertubeInstances: [], systemLanguage: str,
-                 personCache: {}) -> str:
+                 personCache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -530,7 +531,7 @@ def htmlBlogPage(authorized: bool, session,
         if item['type'] != 'Create':
             continue
 
-        blogStr += _htmlBlogPostContent(authorized, baseDir,
+        blogStr += _htmlBlogPostContent(debug, session, authorized, baseDir,
                                         httpPrefix, translate,
                                         nickname, domain,
                                         domainFull, item,
@@ -696,7 +697,7 @@ def htmlBlogView(authorized: bool,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
                  peertubeInstances: [], systemLanguage: str,
-                 personCache: {}) -> str:
+                 personCache: {}, debug: bool) -> str:
     """Show the blog main page
     """
     blogStr = ''
@@ -715,7 +716,7 @@ def htmlBlogView(authorized: bool,
                                 baseDir, httpPrefix, translate,
                                 nickname, domain, port,
                                 noOfItems, 1, peertubeInstances,
-                                systemLanguage, personCache)
+                                systemLanguage, personCache, debug)
 
     domainFull = getFullDomain(domain, port)
 
