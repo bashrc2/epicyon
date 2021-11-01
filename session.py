@@ -389,3 +389,64 @@ def postImage(session, attachImageFilename: str, federationList: [],
         if postResult:
             return postResult.text
     return None
+
+
+def downloadImage(session, baseDir: str, url: str,
+                  imageFilename: str, debug: bool,
+                  force: bool = False) -> bool:
+    """Downloads an image
+    """
+    if not url:
+        return None
+
+    # try different image types
+    imageFormats = {
+        'png': 'png',
+        'jpg': 'jpeg',
+        'jpeg': 'jpeg',
+        'gif': 'gif',
+        'svg': 'svg+xml',
+        'webp': 'webp',
+        'avif': 'avif'
+    }
+    sessionHeaders = None
+    for imFormat, mimeType in imageFormats.items():
+        if url.endswith('.' + imFormat) or \
+           '.' + imFormat + '?' in url:
+            sessionHeaders = {
+                'Accept': 'image/' + mimeType
+            }
+
+    if not sessionHeaders:
+        return False
+
+    if not os.path.isfile(imageFilename) or force:
+        try:
+            if debug:
+                print('Downloading image url: ' + url)
+            result = session.get(url,
+                                 headers=sessionHeaders,
+                                 params=None)
+            if result.status_code < 200 or \
+               result.status_code > 202:
+                if debug:
+                    print('Image download failed with status ' +
+                          str(result.status_code))
+                # remove partial download
+                if os.path.isfile(imageFilename):
+                    try:
+                        os.remove(imageFilename)
+                    except BaseException:
+                        print('EX: downloadImage unable to delete ' +
+                              imageFilename)
+                        pass
+            else:
+                with open(imageFilename, 'wb') as f:
+                    f.write(result.content)
+                    if debug:
+                        print('Image downloaded from ' + url)
+                    return True
+        except Exception as e:
+            print('EX: Failed to download image: ' +
+                  str(url) + ' ' + str(e))
+    return False

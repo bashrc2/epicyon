@@ -16,6 +16,7 @@ from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import getImageExtensions
 from utils import loadJson
+from utils import saveJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
 from utils import dangerousMarkup
@@ -26,6 +27,7 @@ from utils import isfloat
 from utils import getCurrencies
 from utils import removeHtml
 from petnames import getPetName
+from session import downloadImage
 
 
 def removeHtmlTag(htmlStr: str, tag: str) -> str:
@@ -239,7 +241,40 @@ def switchWords(baseDir: str, nickname: str, domain: str, content: str,
     return content
 
 
-def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
+def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
+                     debug: bool) -> None:
+    """Saves custom emoji to file
+    """
+    if not session:
+        return
+    if '.' not in url:
+        return
+    ext = url.split('.')[-1]
+    if ext != 'png':
+        print('Custom emoji is wrong format ' + url)
+        return
+    emojiName = emojiName.replace(':').strip()
+    customEmojiDir = baseDir + '/emojicustom'
+    if not os.path.isdir(customEmojiDir):
+        os.mkdir(customEmojiDir)
+    emojiImageFilename = customEmojiDir + '/' + emojiName + '.' + ext
+    if not downloadImage(session, baseDir, url,
+                         emojiImageFilename, debug, False):
+        return
+    emojiJsonFilename = customEmojiDir + '/emoji.json'
+    emojiJson = {}
+    if os.path.isfile(emojiJsonFilename):
+        emojiJson = loadJson(emojiJsonFilename, 0, 1)
+        if not emojiJson:
+            emojiJson = {}
+    if not emojiJson.get(emojiName):
+        emojiJson[emojiName] = emojiName
+        saveJson(emojiJson, emojiJsonFilename)
+
+
+def replaceEmojiFromTags(session, baseDir: str,
+                         content: str, tag: [], messageType: str,
+                         debug: bool) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tagItem in tag:
@@ -265,12 +300,14 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                         iconName = iconName.split('.')[0]
                         # see https://unicode.org/
                         # emoji/charts/full-emoji-list.html
+                        replaced = False
                         if '-' not in iconName:
                             # a single code
                             try:
                                 replaceChar = chr(int("0x" + iconName, 16))
                                 content = content.replace(tagItem['name'],
                                                           replaceChar)
+                                replaced = True
                             except BaseException:
                                 print('EX: replaceEmojiFromTags ' +
                                       'no conversion of ' +
@@ -278,6 +315,11 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                       tagItem['name'] + ' ' +
                                       tagItem['icon']['url'])
                                 pass
+                            if not replaced:
+                                _saveCustomEmoji(session, baseDir,
+                                                 tagItem['name'],
+                                                 tagItem['icon']['url'],
+                                                 debug)
                         else:
                             # sequence of codes
                             iconCodes = iconName.split('-')
@@ -286,6 +328,7 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                 try:
                                     iconCodeSequence += chr(int("0x" +
                                                                 icode, 16))
+                                    replaced = True
                                 except BaseException:
                                     iconCodeSequence = ''
                                     print('EX: replaceEmojiFromTags ' +
@@ -294,6 +337,11 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
                                           tagItem['name'] + ' ' +
                                           tagItem['icon']['url'])
                                     break
+                                if not replaced:
+                                    _saveCustomEmoji(session, baseDir,
+                                                     tagItem['name'],
+                                                     tagItem['icon']['url'],
+                                                     debug)
                             if iconCodeSequence:
                                 content = content.replace(tagItem['name'],
                                                           iconCodeSequence)

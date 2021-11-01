@@ -1292,7 +1292,8 @@ def _createPostModReport(baseDir: str,
         modFile.write(newPostId + '\n')
 
 
-def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
+def _createPostBase(baseDir: str,
+                    nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                     followersOnly: bool, saveToFile: bool,
                     clientToServer: bool, commentsEnabled: bool,
@@ -1345,7 +1346,9 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         tags.append(tag)
     # get list of tags
     if nickname != 'news':
-        content = replaceEmojiFromTags(content, tags, 'content')
+        content = \
+            replaceEmojiFromTags(None, baseDir, content, tags, 'content',
+                                 False)
     # remove replaced emoji
     hashtagsDictCopy = hashtagsDict.copy()
     for tagName, tag in hashtagsDictCopy.items():

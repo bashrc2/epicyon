@@ -3379,7 +3379,8 @@ def _testAddEmoji(baseDir: str):
     for tagName, tag in hashtags.items():
         tags.append(tag)
     content = contentModified
-    contentModified = replaceEmojiFromTags(content, tags, 'content')
+    contentModified = \
+        replaceEmojiFromTags(None, baseDir, content, tags, 'content', True)
     # print('contentModified: ' + contentModified)
     assert contentModified == '<p>Emoji 🍋 🍓 🍌</p>'
 

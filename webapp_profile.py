@@ -570,12 +570,12 @@ def htmlProfile(signingPrivateKeyPem: str,
     if not domain:
         return ""
     displayName = \
-        addEmojiToDisplayName(baseDir, httpPrefix,
+        addEmojiToDisplayName(session, baseDir, httpPrefix,
                               nickname, domain,
                               profileJson['name'], True)
     domainFull = getFullDomain(domain, port)
     profileDescription = \
-        addEmojiToDisplayName(baseDir, httpPrefix,
+        addEmojiToDisplayName(session, baseDir, httpPrefix,
                               nickname, domain,
                               profileJson['summary'], False)
     postsButton = 'button'
@@ -2271,7 +2271,7 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
         avatarUrl = avatarUrl2
     if displayName:
         displayName = \
-            addEmojiToDisplayName(baseDir, httpPrefix,
+            addEmojiToDisplayName(None, baseDir, httpPrefix,
                                   actorNickname, domain,
                                   displayName, False)
         titleStr = displayName

@@ -872,7 +872,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     # add any emoji to the display name
     if ':' in announceDisplayName:
         announceDisplayName = \
-            addEmojiToDisplayName(baseDir, httpPrefix, nickname, domain,
+            addEmojiToDisplayName(None, baseDir, httpPrefix, nickname, domain,
                                   announceDisplayName, False)
     _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
     titleStr += \
@@ -1054,7 +1054,7 @@ def _getPostTitleReplyHtml(baseDir: str,
         _logPostTiming(enableTimingLog, postStartTime, '13.5')
 
         replyDisplayName = \
-            addEmojiToDisplayName(baseDir, httpPrefix, nickname, domain,
+            addEmojiToDisplayName(None, baseDir, httpPrefix, nickname, domain,
                                   replyDisplayName, False)
         _logPostTiming(enableTimingLog, postStartTime, '13.6')
 
@@ -1316,7 +1316,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             # add any emoji to the display name
             if ':' in displayName:
                 displayName = \
-                    addEmojiToDisplayName(baseDir, httpPrefix,
+                    addEmojiToDisplayName(session, baseDir, httpPrefix,
                                           nickname, domain,
                                           displayName, False)
 
@@ -1442,7 +1442,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if displayName:
         if ':' in displayName:
             displayName = \
-                addEmojiToDisplayName(baseDir, httpPrefix,
+                addEmojiToDisplayName(session, baseDir, httpPrefix,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
@@ -1740,7 +1740,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if postJsonObject['object'].get('summary'):
             cwStr = str(postJsonObject['object']['summary'])
             cwStr = \
-                addEmojiToDisplayName(baseDir, httpPrefix,
+                addEmojiToDisplayName(session, baseDir, httpPrefix,
                                       nickname, domain,
                                       cwStr, False)
             contentStr += \
@@ -1768,9 +1768,9 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
-            replaceEmojiFromTags(contentStr,
+            replaceEmojiFromTags(session, baseDir, contentStr,
                                  postJsonObject['object']['tag'],
-                                 'content')
+                                 'content', False)
 
     if isMuted:
         contentStr = ''

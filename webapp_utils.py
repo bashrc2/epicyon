@@ -294,7 +294,7 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                         print('avatar image downloaded for ' + actor)
                     return avatarImageFilename.replace(baseDir + '/cache', '')
         except Exception as e:
-            print('WARN: Failed to download avatar image: ' +
+            print('EX: Failed to download avatar image: ' +
                   str(avatarUrl) + ' ' + str(e))
         prof = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
@@ -781,7 +781,7 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
         return postHtml
 
 
-def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
+def addEmojiToDisplayName(session, baseDir: str, httpPrefix: str,
                           nickname: str, domain: str,
                           displayName: str, inProfileName: bool) -> str:
     """Adds emoji icons to display names or CW on individual posts
@@ -804,10 +804,14 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
 #    print('TAG: emoji tags list: ' + str(emojiTagsList))
     if not inProfileName:
         displayName = \
-            replaceEmojiFromTags(displayName, emojiTagsList, 'post header')
+            replaceEmojiFromTags(session, baseDir,
+                                 displayName, emojiTagsList, 'post header',
+                                 False)
     else:
         displayName = \
-            replaceEmojiFromTags(displayName, emojiTagsList, 'profile')
+            replaceEmojiFromTags(session, baseDir,
+                                 displayName, emojiTagsList, 'profile',
+                                 False)
 #    print('TAG: displayName after tags 2: ' + displayName)
 
     # remove any stray emoji
