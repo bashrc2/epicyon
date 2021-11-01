@@ -245,7 +245,6 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
                      debug: bool) -> None:
     """Saves custom emoji to file
     """
-    debug = True
     if not session:
         if debug:
             print('EX: _saveCustomEmoji no session')

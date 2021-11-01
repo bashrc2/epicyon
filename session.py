@@ -416,8 +416,11 @@ def downloadImage(session, baseDir: str, url: str,
             sessionHeaders = {
                 'Accept': 'image/' + mimeType
             }
+            break
 
     if not sessionHeaders:
+        if debug:
+            print('downloadImage: no session headers')
         return False
 
     if not os.path.isfile(imageFilename) or force:
