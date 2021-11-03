@@ -289,11 +289,14 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if '?' in path:
         path = path.split('?')[0]
-    pathBase = path.replace('/newreport', '').replace('/newpost', '')
-    pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
-    pathBase = pathBase.replace('/newunlisted', '').replace('/newwanted', '')
-    pathBase = pathBase.replace('/newreminder', '')
-    pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
+    newPostEndpoints = (
+        '/newreport', '/newpost', '/newblog', '/newshare',
+        '/newunlisted', '/newwanted', '/newreminder',
+        '/newfollowers', '/newdm'
+    )
+    pathBase = path
+    for newPostReplace in newPostEndpoints:
+        pathBase = pathBase.replace(newPostReplace, '')
 
     newPostImageSection = '    <div class="container">'
     newPostImageSection += \
