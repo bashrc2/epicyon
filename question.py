@@ -15,42 +15,42 @@ from utils import hasObjectDict
 
 
 def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
-                        replyJson: {}) -> {}:
+                        replyJson: {}) -> ({}, str):
     """ For a given reply update the votes on a question
     Returns the question json object if the vote totals were changed
     """
     if not hasObjectDict(replyJson):
-        return None
+        return None, None
     if not replyJson['object'].get('inReplyTo'):
-        return None
+        return None, None
     if not replyJson['object']['inReplyTo']:
-        return None
+        return None, None
     if not isinstance(replyJson['object']['inReplyTo'], str):
-        return None
+        return None, None
     if not replyJson['object'].get('name'):
-        return None
+        return None, None
     inReplyTo = replyJson['object']['inReplyTo']
     questionPostFilename = locatePost(baseDir, nickname, domain, inReplyTo)
     if not questionPostFilename:
-        return None
+        return None, None
     questionJson = loadJson(questionPostFilename)
     if not questionJson:
-        return None
+        return None, None
     if not hasObjectDict(questionJson):
-        return None
+        return None, None
     if not questionJson['object'].get('type'):
-        return None
+        return None, None
     if questionJson['type'] != 'Question':
-        return None
+        return None, None
     if not questionJson['object'].get('oneOf'):
-        return None
+        return None, None
     if not isinstance(questionJson['object']['oneOf'], list):
-        return None
+        return None, None
     if not questionJson['object'].get('content'):
-        return None
+        return None, None
     replyVote = replyJson['object']['name']
     # does the reply name field match any possible question option?
-    foundAnswer = None
+    foundAnswer = None, None
     for possibleAnswer in questionJson['object']['oneOf']:
         if not possibleAnswer.get('name'):
             continue
@@ -58,7 +58,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
             foundAnswer = possibleAnswer
             break
     if not foundAnswer:
-        return None
+        return None, None
     # update the voters file
     votersFileSeparator = ';;;'
     votersFilename = questionPostFilename.replace('.json', '.voters')
@@ -97,7 +97,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
                         for voteLine in newlines:
                             votersFile.write(voteLine)
                 else:
-                    return None
+                    return None, None
     # update the vote counts
     questionTotalsChanged = False
     for possibleAnswer in questionJson['object']['oneOf']:
@@ -114,10 +114,10 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
             possibleAnswer['replies']['totalItems'] = totalItems
             questionTotalsChanged = True
     if not questionTotalsChanged:
-        return None
+        return None, None
     # save the question with altered totals
     saveJson(questionJson, questionPostFilename)
-    return questionJson
+    return questionJson, questionPostFilename
 
 
 def isQuestion(postObjectJson: {}) -> bool:

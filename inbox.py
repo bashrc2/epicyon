@@ -913,7 +913,6 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
             except BaseException:
                 print('EX: _receiveUpdateToQuestion unable to delete ' +
                       cachedPostFilename)
-                pass
     # remove from memory cache
     removePostFromCache(messageJson, recentPostsCache)
 
@@ -2789,9 +2788,24 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         maxReplies, debug)
 
         # if this is a reply to a question then update the votes
-        questionJson = questionUpdateVotes(baseDir, nickname, domain,
-                                           postJsonObject)
-        if questionJson:
+        questionJson, questionPostFilename = \
+            questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
+        if questionJson and questionPostFilename:
+            removePostFromCache(questionJson, recentPostsCache)
+            # add id to inbox index
+            inboxUpdateIndex('inbox', baseDir, handle,
+                             questionPostFilename, debug)
+            # ensure that the cached post is removed if it exists, so
+            # that it then will be recreated
+            cachedPostFilename = \
+                getCachedPostFilename(baseDir, nickname, domain, questionJson)
+            if cachedPostFilename:
+                if os.path.isfile(cachedPostFilename):
+                    try:
+                        os.remove(cachedPostFilename)
+                    except BaseException:
+                        print('EX: replytoQuestion unable to delete ' +
+                              cachedPostFilename)
             # Is this a question created by this instance?
             idPrefix = httpPrefix + '://' + domain
             if questionJson['object']['id'].startswith(idPrefix):
