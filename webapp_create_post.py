@@ -292,8 +292,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         path = path.split('?')[0]
     newPostEndpoints = getNewPostEndpoints()
     pathBase = path
-    for newPostReplace in newPostEndpoints:
-        pathBase = pathBase.replace('/' + newPostReplace, '')
+    for currPostType in newPostEndpoints:
+        pathBase = pathBase.replace('/' + currPostType, '')
 
     newPostImageSection = '    <div class="container">'
     newPostImageSection += \

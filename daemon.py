@@ -11894,9 +11894,9 @@ class PubServer(BaseHTTPRequestHandler):
         isNewPostEndpoint = False
         if '/users/' in path and '/new' in path:
             # Various types of new post in the web interface
-            newPostEnd = getNewPostEndpoints()
-            for postType in newPostEnd:
-                if path.endswith('/' + postType):
+            newPostEndpoints = getNewPostEndpoints()
+            for currPostType in newPostEndpoints:
+                if path.endswith('/' + currPostType):
                     isNewPostEndpoint = True
                     break
         if isNewPostEndpoint:
@@ -16697,8 +16697,8 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # receive different types of post created by htmlNewPost
-        postTypes = getNewPostEndpoints()
-        for currPostType in postTypes:
+        newPostEndpoints = getNewPostEndpoints()
+        for currPostType in newPostEndpoints:
             if not authorized:
                 if self.server.debug:
                     print('POST was not authorized')
