@@ -205,10 +205,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         isNewReminder = True
 
     # the date and time
-    dateAndTimeStr = \
-        '<p><img loading="lazy" alt="" title="" ' + \
-        'class="emojicalendar" src="/' + \
-        'icons/calendar.png"/>\n'
+    dateAndTimeStr = '<p>\n'
+    if not isNewReminder:
+        dateAndTimeStr += \
+            '<img loading="lazy" alt="" title="" ' + \
+            'class="emojicalendar" src="/' + \
+            'icons/calendar.png"/>\n'
     # select a date and time for this post
     dateAndTimeStr += '<label class="labels">' + \
         translate['Date'] + ': </label>\n'
@@ -216,7 +218,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     dateAndTimeStr += '<label class="labelsright">' + \
         translate['Time'] + ': '
     dateAndTimeStr += \
-        '<input type="time" name="eventTime"></label></p>\n'
+        '<input type="time" name="eventTime"></label>\n</p>\n'
 
     showPublicOnDropdown = True
     messageBoxHeight = 400
@@ -745,7 +747,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     # for reminders show the date and time at the top
     if isNewReminder:
-        newPostForm += '<div class="container">\n'
+        newPostForm += '<div class="containerNoOverflow">\n'
         newPostForm += dateAndTimeStr
         newPostForm += '</div>\n'
 
