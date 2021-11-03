@@ -558,7 +558,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
        endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-    
+
         if not isNewReminder:
             dateAndLocation = \
                 '<div class="container">\n'
