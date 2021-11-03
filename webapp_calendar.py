@@ -456,7 +456,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
 
     newEventStr = \
         '<br><center>\n<p>\n' + \
-        '<a href="' + calActor + '/newreminder">📅 ' + \
+        '<a href="' + calActor + '/newreminder">➕ ' + \
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
     calStr = \
