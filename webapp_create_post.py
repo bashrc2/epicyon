@@ -313,7 +313,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     for currPostType in newPostEndpoints:
         pathBase = pathBase.replace('/' + currPostType, '')
 
-    newPostImageSection = '    <div class="container">'
+    newPostImageSection = '    <div class="container">\n'
     newPostImageSection += \
         editTextField(translate['Image description'], 'imageDescription', '')
 
