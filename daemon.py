@@ -238,6 +238,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import getNewPostEndpoints
 from utils import malformedCiphertext
 from utils import hasActor
 from utils import setReplyIntervalHours
@@ -11893,12 +11894,9 @@ class PubServer(BaseHTTPRequestHandler):
         isNewPostEndpoint = False
         if '/users/' in path and '/new' in path:
             # Various types of new post in the web interface
-            newPostEnd = ('newpost', 'newblog', 'newunlisted',
-                          'newfollowers', 'newdm', 'newreminder',
-                          'newreport', 'newquestion',
-                          'newshare', 'newwanted')
-            for postType in newPostEnd:
-                if path.endswith('/' + postType):
+            newPostEndpoints = getNewPostEndpoints()
+            for currPostType in newPostEndpoints:
+                if path.endswith('/' + currPostType):
                     isNewPostEndpoint = True
                     break
         if isNewPostEndpoint:
@@ -16699,10 +16697,8 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # receive different types of post created by htmlNewPost
-        postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
-                     "newdm", "newreport", "newshare", "newwanted",
-                     "newquestion", "editblogpost", "newreminder")
-        for currPostType in postTypes:
+        newPostEndpoints = getNewPostEndpoints()
+        for currPostType in newPostEndpoints:
             if not authorized:
                 if self.server.debug:
                     print('POST was not authorized')

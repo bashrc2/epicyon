@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import getNewPostEndpoints
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -199,6 +200,24 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     """
     replyStr = ''
 
+    isNewReminder = False
+    if path.endswith('/newreminder'):
+        isNewReminder = True
+
+    # the date and time
+    dateAndTimeStr = \
+        '<p><img loading="lazy" alt="" title="" ' + \
+        'class="emojicalendar" src="/' + \
+        'icons/calendar.png"/>\n'
+    # select a date and time for this post
+    dateAndTimeStr += '<label class="labels">' + \
+        translate['Date'] + ': </label>\n'
+    dateAndTimeStr += '<input type="date" name="eventDate">\n'
+    dateAndTimeStr += '<label class="labelsright">' + \
+        translate['Time'] + ': '
+    dateAndTimeStr += \
+        '<input type="time" name="eventTime"></label></p>\n'
+
     showPublicOnDropdown = True
     messageBoxHeight = 400
 
@@ -208,7 +227,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
-            if not inReplyTo or path.endswith('/newreminder'):
+            if not inReplyTo or isNewReminder:
                 newPostText = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
@@ -289,13 +308,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if '?' in path:
         path = path.split('?')[0]
-    pathBase = path.replace('/newreport', '').replace('/newpost', '')
-    pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
-    pathBase = pathBase.replace('/newunlisted', '').replace('/newwanted', '')
-    pathBase = pathBase.replace('/newreminder', '')
-    pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
+    newPostEndpoints = getNewPostEndpoints()
+    pathBase = path
+    for currPostType in newPostEndpoints:
+        pathBase = pathBase.replace('/' + currPostType, '')
 
-    newPostImageSection = '    <div class="container">'
+    newPostImageSection = '    <div class="container">\n'
     newPostImageSection += \
         editTextField(translate['Image description'], 'imageDescription', '')
 
@@ -351,7 +369,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         scopeIcon = 'scope_dm.png'
         scopeDescription = translate['DM']
         endpoint = 'newdm'
-    elif path.endswith('/newreminder'):
+    elif isNewReminder:
         scopeIcon = 'scope_reminder.png'
         scopeDescription = translate['Reminder']
         endpoint = 'newreminder'
@@ -540,43 +558,37 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
        endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = \
-            '<div class="container">\n'
-        if category != 'accommodation':
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="commentsEnabled" checked><label class="labels"> ' + \
-                translate['Allow replies.'] + '</label></p>\n'
-        else:
-            dateAndLocation += \
-                '<input type="hidden" name="commentsEnabled" value="true">\n'
 
-        if endpoint == 'newpost':
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="pinToProfile"><label class="labels"> ' + \
-                translate['Pin this post to your profile.'] + '</label></p>\n'
+        if not isNewReminder:
+            dateAndLocation = \
+                '<div class="container">\n'
+            if category != 'accommodation':
+                dateAndLocation += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="commentsEnabled" ' + \
+                    'checked><label class="labels"> ' + \
+                    translate['Allow replies.'] + '</label></p>\n'
+            else:
+                dateAndLocation += \
+                    '<input type="hidden" name="commentsEnabled" ' + \
+                    'value="true">\n'
 
-        if not inReplyTo:
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="schedulePost"><label class="labels"> ' + \
-                translate['This is a scheduled post.'] + '</label></p>\n'
+            if endpoint == 'newpost':
+                dateAndLocation += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="pinToProfile"><label class="labels"> ' + \
+                    translate['Pin this post to your profile.'] + \
+                    '</label></p>\n'
 
-        dateAndLocation += \
-            '<p><img loading="lazy" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            'icons/calendar.png"/>\n'
-        # select a date and time for this post
-        dateAndLocation += '<label class="labels">' + \
-            translate['Date'] + ': </label>\n'
-        dateAndLocation += '<input type="date" name="eventDate">\n'
-        dateAndLocation += '<label class="labelsright">' + \
-            translate['Time'] + ':'
-        dateAndLocation += \
-            '<input type="time" name="eventTime"></label></p>\n'
+            if not inReplyTo:
+                dateAndLocation += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="schedulePost"><label class="labels"> ' + \
+                    translate['This is a scheduled post.'] + '</label></p>\n'
 
-        dateAndLocation += '</div>\n'
+            dateAndLocation += dateAndTimeStr
+            dateAndLocation += '</div>\n'
+
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += \
             editTextField(translate['Location'], 'location', '')
@@ -730,6 +742,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if not shareDescription:
         shareDescription = ''
+
+    # for reminders show the date and time at the top
+    if isNewReminder:
+        newPostForm += '<div class="container">\n'
+        newPostForm += dateAndTimeStr
+        newPostForm += '</div>\n'
+
     newPostForm += \
         editTextField(placeholderSubject, 'subject', shareDescription)
     newPostForm += ''

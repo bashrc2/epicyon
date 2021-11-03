@@ -19,6 +19,8 @@
     --calendar-horizontal-padding: 0;
     --calendar-cell-size: 1.5vw;
     --calendar-cell-size-mobile: 1.5vw;
+    --font-size-calendar: 20px;
+    --font-size-calendar-mobile: 30px;
     --font-size-calendar-header: 3rem;
     --font-size-calendar-day: 1rem;
     --font-size-calendar-cell: 2rem;
@@ -248,6 +250,9 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     .calendar__day__cell {
         padding: var(--calendar-cell-size) 0 var(--calendar-cell-size);
     }
+    body {
+	font-size: var(--font-size-calendar);
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -264,5 +269,8 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     .calendar__day__header,
     .calendar__day__cell {
         padding: var(--calendar-cell-size-mobile) 0 var(--calendar-cell-size-mobile);
+    }
+    body {
+	font-size: var(--font-size-calendar-mobile);
     }
 }

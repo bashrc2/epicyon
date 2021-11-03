@@ -284,9 +284,10 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
 
     setCustomBackground(baseDir, 'calendar-background', 'calendar-background')
 
-    months = ('January', 'February', 'March', 'April',
-              'May', 'June', 'July', 'August', 'September',
-              'October', 'November', 'December')
+    months = (
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    )
     monthName = translate[months[monthNumber - 1]]
 
     if dayNumber:
@@ -453,4 +454,12 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
         htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
                                monthName)
 
-    return headerStr + screenReaderCal + calendarStr + htmlFooter()
+    newEventStr = \
+        '<br><center>\n<p>\n' + \
+        '<a href="' + calActor + '/newreminder">➕ ' + \
+        translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
+
+    calStr = \
+        headerStr + screenReaderCal + calendarStr + newEventStr + htmlFooter()
+
+    return calStr

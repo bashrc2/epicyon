@@ -3145,3 +3145,13 @@ def hasObjectString(postJsonObject: {}, debug: bool) -> bool:
     if debug:
         print('No object field within post ' + postJsonObject['id'])
     return False
+
+
+def getNewPostEndpoints() -> []:
+    """Returns a list of endpoints for new posts
+    """
+    return (
+        'newpost', 'newblog', 'newunlisted', 'newfollowers', 'newdm',
+        'newreminder', 'newreport', 'newquestion', 'newshare', 'newwanted',
+        'editblogpost'
+    )
