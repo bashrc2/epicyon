@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import getNewPostEndpoints
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -289,14 +290,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if '?' in path:
         path = path.split('?')[0]
-    newPostEndpoints = (
-        '/newreport', '/newpost', '/newblog', '/newshare',
-        '/newunlisted', '/newwanted', '/newreminder',
-        '/newfollowers', '/newdm'
-    )
+    newPostEndpoints = getNewPostEndpoints()
     pathBase = path
     for newPostReplace in newPostEndpoints:
-        pathBase = pathBase.replace(newPostReplace, '')
+        pathBase = pathBase.replace('/' + newPostReplace, '')
 
     newPostImageSection = '    <div class="container">'
     newPostImageSection += \

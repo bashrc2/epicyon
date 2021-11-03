@@ -238,6 +238,7 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from utils import getNewPostEndpoints
 from utils import malformedCiphertext
 from utils import hasActor
 from utils import setReplyIntervalHours
@@ -11893,10 +11894,7 @@ class PubServer(BaseHTTPRequestHandler):
         isNewPostEndpoint = False
         if '/users/' in path and '/new' in path:
             # Various types of new post in the web interface
-            newPostEnd = ('newpost', 'newblog', 'newunlisted',
-                          'newfollowers', 'newdm', 'newreminder',
-                          'newreport', 'newquestion',
-                          'newshare', 'newwanted')
+            newPostEnd = getNewPostEndpoints()
             for postType in newPostEnd:
                 if path.endswith('/' + postType):
                     isNewPostEndpoint = True
