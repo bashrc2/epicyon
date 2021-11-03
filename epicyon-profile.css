@@ -1290,6 +1290,14 @@ div.container {
         margin-right: 20px;
         border-radius: var(--image-corners);
     }
+    .containerNoOverflow img {
+        float: left;
+        max-width: 400px;
+        width: 5%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: var(--image-corners);
+    }
     .containerHeader img {
         float: left;
         max-width: 400px;
@@ -1972,6 +1980,14 @@ div.container {
         text-align: center;
     }
     .container img {
+        float: left;
+        max-width: 400px;
+        width: 15%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: var(--image-corners);
+    }
+    .containerNoOverflow img {
         float: left;
         max-width: 400px;
         width: 15%;
