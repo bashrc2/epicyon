@@ -745,7 +745,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     # for reminders show the date and time at the top
     if isNewReminder:
-        newPostForm += '<div class="container">\n'
+        newPostForm += '<div class="containerNoOverflow">\n'
         newPostForm += dateAndTimeStr
         newPostForm += '</div>\n'
 
