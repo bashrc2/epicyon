@@ -214,7 +214,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         translate['Date'] + ': </label>\n'
     dateAndTimeStr += '<input type="date" name="eventDate">\n'
     dateAndTimeStr += '<label class="labelsright">' + \
-        translate['Time'] + ':'
+        translate['Time'] + ': '
     dateAndTimeStr += \
         '<input type="time" name="eventTime"></label></p>\n'
 
