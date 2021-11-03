@@ -2789,9 +2789,13 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         maxReplies, debug)
 
         # if this is a reply to a question then update the votes
-        questionJson = questionUpdateVotes(baseDir, nickname, domain,
-                                           postJsonObject)
-        if questionJson:
+        questionJson, questionPostFilename = \
+            questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
+        if questionJson and questionPostFilename:
+            removePostFromCache(postJsonObject, recentPostsCache)
+            # add id to inbox index
+            inboxUpdateIndex('inbox', baseDir, handle,
+                             questionPostFilename, debug)
             # Is this a question created by this instance?
             idPrefix = httpPrefix + '://' + domain
             if questionJson['object']['id'].startswith(idPrefix):
