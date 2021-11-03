@@ -200,6 +200,24 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     """
     replyStr = ''
 
+    isNewReminder = False
+    if path.endswith('/newreminder'):
+        isNewReminder = True
+
+    # the date and time
+    dateAndTimeStr = \
+        '<p><img loading="lazy" alt="" title="" ' + \
+        'class="emojicalendar" src="/' + \
+        'icons/calendar.png"/>\n'
+    # select a date and time for this post
+    dateAndTimeStr += '<label class="labels">' + \
+        translate['Date'] + ': </label>\n'
+    dateAndTimeStr += '<input type="date" name="eventDate">\n'
+    dateAndTimeStr += '<label class="labelsright">' + \
+        translate['Time'] + ':'
+    dateAndTimeStr += \
+        '<input type="time" name="eventTime"></label></p>\n'
+
     showPublicOnDropdown = True
     messageBoxHeight = 400
 
@@ -209,7 +227,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
-            if not inReplyTo or path.endswith('/newreminder'):
+            if not inReplyTo or isNewReminder:
                 newPostText = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
@@ -351,7 +369,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         scopeIcon = 'scope_dm.png'
         scopeDescription = translate['DM']
         endpoint = 'newdm'
-    elif path.endswith('/newreminder'):
+    elif isNewReminder:
         scopeIcon = 'scope_reminder.png'
         scopeDescription = translate['Reminder']
         endpoint = 'newreminder'
@@ -563,18 +581,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 'name="schedulePost"><label class="labels"> ' + \
                 translate['This is a scheduled post.'] + '</label></p>\n'
 
-        dateAndLocation += \
-            '<p><img loading="lazy" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            'icons/calendar.png"/>\n'
-        # select a date and time for this post
-        dateAndLocation += '<label class="labels">' + \
-            translate['Date'] + ': </label>\n'
-        dateAndLocation += '<input type="date" name="eventDate">\n'
-        dateAndLocation += '<label class="labelsright">' + \
-            translate['Time'] + ':'
-        dateAndLocation += \
-            '<input type="time" name="eventTime"></label></p>\n'
+        if not isNewReminder:
+            dateAndLocation += dateAndTimeStr
 
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
@@ -730,6 +738,11 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if not shareDescription:
         shareDescription = ''
+
+    # for reminders show the date and time at the top
+    if path.endswith('/newreminder'):
+        newPostForm += dateAndTimeStr
+
     newPostForm += \
         editTextField(placeholderSubject, 'subject', shareDescription)
     newPostForm += ''
