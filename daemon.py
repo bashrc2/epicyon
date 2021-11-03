@@ -16697,9 +16697,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # receive different types of post created by htmlNewPost
-        postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
-                     "newdm", "newreport", "newshare", "newwanted",
-                     "newquestion", "editblogpost", "newreminder")
+        postTypes = getNewPostEndpoints()
         for currPostType in postTypes:
             if not authorized:
                 if self.server.debug:

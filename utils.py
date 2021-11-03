@@ -3152,5 +3152,6 @@ def getNewPostEndpoints() -> []:
     """
     return (
         'newpost', 'newblog', 'newunlisted', 'newfollowers', 'newdm',
-        'newreminder', 'newreport', 'newquestion', 'newshare', 'newwanted'
+        'newreminder', 'newreport', 'newquestion', 'newshare', 'newwanted',
+        'editblogpost'
     )
