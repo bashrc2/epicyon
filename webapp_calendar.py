@@ -453,4 +453,12 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
         htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
                                monthName)
 
-    return headerStr + screenReaderCal + calendarStr + htmlFooter()
+    newEventStr = \
+        '<center>\n<p>\n' + \
+        '<a href="' + calActor + '/newreminder">📅 ' + \
+        translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
+
+    calStr = \
+        headerStr + screenReaderCal + calendarStr + newEventStr + htmlFooter()
+
+    return calStr
