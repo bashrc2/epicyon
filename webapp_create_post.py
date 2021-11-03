@@ -558,33 +558,37 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
        endpoint != 'newwanted' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = \
-            '<div class="container">\n'
-        if category != 'accommodation':
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="commentsEnabled" checked><label class="labels"> ' + \
-                translate['Allow replies.'] + '</label></p>\n'
-        else:
-            dateAndLocation += \
-                '<input type="hidden" name="commentsEnabled" value="true">\n'
-
-        if endpoint == 'newpost':
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="pinToProfile"><label class="labels"> ' + \
-                translate['Pin this post to your profile.'] + '</label></p>\n'
-
-        if not inReplyTo:
-            dateAndLocation += \
-                '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="schedulePost"><label class="labels"> ' + \
-                translate['This is a scheduled post.'] + '</label></p>\n'
-
+    
         if not isNewReminder:
-            dateAndLocation += dateAndTimeStr
+            dateAndLocation = \
+                '<div class="container">\n'
+            if category != 'accommodation':
+                dateAndLocation += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="commentsEnabled" ' + \
+                    'checked><label class="labels"> ' + \
+                    translate['Allow replies.'] + '</label></p>\n'
+            else:
+                dateAndLocation += \
+                    '<input type="hidden" name="commentsEnabled" ' + \
+                    'value="true">\n'
 
-        dateAndLocation += '</div>\n'
+            if endpoint == 'newpost':
+                dateAndLocation += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="pinToProfile"><label class="labels"> ' + \
+                    translate['Pin this post to your profile.'] + \
+                    '</label></p>\n'
+
+            if not inReplyTo:
+                dateAndLocation += \
+                    '<p><input type="checkbox" class="profilecheckbox" ' + \
+                    'name="schedulePost"><label class="labels"> ' + \
+                    translate['This is a scheduled post.'] + '</label></p>\n'
+
+            dateAndLocation += dateAndTimeStr
+            dateAndLocation += '</div>\n'
+
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += \
             editTextField(translate['Location'], 'location', '')
