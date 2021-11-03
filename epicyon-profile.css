@@ -513,13 +513,6 @@ a:focus {
     color: var(--button-text-hover);
 }
 
-.containerNewPost {
-    border: var(--border-width) solid var(--border-color);
-    border-radius: var(--timeline-border-radius);
-    background-color: var(--main-bg-color);
-    margin: var(--vertical-between-posts);
-}
-
 .containerSubmitNewPost {
     border: 0;
     background-color: var(--main-bg-color);
@@ -1058,6 +1051,16 @@ div.container {
         padding-bottom: var(--container-padding-bottom);
         margin: var(--vertical-between-posts);
     }
+    .containerNewPost {
+	border: var(--border-width) solid var(--border-color);
+	background-color: var(--main-bg-color);
+	border-radius: var(--timeline-border-radius);
+	padding-left: var(--container-padding);
+        padding-right: var(--container-padding);
+        padding-top: var(--container-padding);
+        padding-bottom: var(--container-padding-bottom);
+     	margin: var(--vertical-between-posts);
+    }    
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
@@ -1754,6 +1757,16 @@ div.container {
         padding-bottom: var(--container-padding-bottom-mobile);
         margin: var(--vertical-between-posts);
     }
+    .containerNewPost {
+	border: var(--border-width) solid var(--border-color);
+	background-color: var(--main-bg-color);
+	border-radius: var(--timeline-border-radius);
+	padding-left: var(--container-padding);
+        padding-right: var(--container-padding);
+        padding-top: var(--container-padding);
+        padding-bottom: var(--container-padding-bottom-mobile);
+     	margin: var(--vertical-between-posts);
+    }    
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
