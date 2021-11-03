@@ -740,8 +740,10 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         shareDescription = ''
 
     # for reminders show the date and time at the top
-    if path.endswith('/newreminder'):
+    if isNewReminder:
+        newPostForm += '<div class="container">\n'
         newPostForm += dateAndTimeStr
+        newPostForm += '</div>\n'
 
     newPostForm += \
         editTextField(placeholderSubject, 'subject', shareDescription)
