@@ -659,6 +659,13 @@ a:focus {
     padding: 0 0;
     margin: 0 0;
 }
+.containerNoOverflow img.right {
+    float: var(--icons-side);
+    margin-left: 0px;
+    margin-right:0;
+    padding: 0 0;
+    margin: 0 0;
+}
 .containerHeader img.right {
     float: var(--icons-side);
     margin-left: 0px;
@@ -1062,15 +1069,15 @@ div.container {
         margin: var(--vertical-between-posts);
     }
     .containerNewPost {
-	border: var(--border-width) solid var(--border-color);
-	background-color: var(--main-bg-color);
-	border-radius: var(--timeline-border-radius);
-	padding-left: var(--container-padding);
+        border: var(--border-width) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding-left: var(--container-padding);
         padding-right: var(--container-padding);
         padding-top: var(--container-padding);
         padding-bottom: var(--container-padding-bottom);
-     	margin: var(--vertical-between-posts);
-    }    
+        margin: var(--vertical-between-posts);
+    }
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
@@ -1778,15 +1785,15 @@ div.container {
         margin: var(--vertical-between-posts);
     }
     .containerNewPost {
-	border: var(--border-width) solid var(--border-color);
-	background-color: var(--main-bg-color);
-	border-radius: var(--timeline-border-radius);
-	padding-left: var(--container-padding);
+        border: var(--border-width) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding-left: var(--container-padding);
         padding-right: var(--container-padding);
         padding-top: var(--container-padding);
         padding-bottom: var(--container-padding-bottom-mobile);
-     	margin: var(--vertical-between-posts);
-    }    
+        margin: var(--vertical-between-posts);
+    }
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
