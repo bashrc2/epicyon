@@ -2547,6 +2547,172 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
     return True
 
 
+def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
+                         httpPrefix: str, handle: str, debug: bool,
+                         postJsonObject: {}, recentPostsCache: {},
+                         session, onionDomain: str, i2pDomain: str, port: int,
+                         federationList: [], sendThreads: [], postLog: [],
+                         cachedWebfingers: {}, personCache: {},
+                         signingPrivateKeyPem: str) -> None:
+    """Updates the votes on a Question/poll
+    """
+    # if this is a reply to a question then update the votes
+    questionJson, questionPostFilename = \
+        questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
+    if not questionJson:
+        return
+    if not questionPostFilename:
+        return
+
+    removePostFromCache(questionJson, recentPostsCache)
+    # add id to inbox index
+    inboxUpdateIndex('inbox', baseDir, handle,
+                     questionPostFilename, debug)
+    # ensure that the cached post is removed if it exists, so
+    # that it then will be recreated
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, questionJson)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                print('EX: replytoQuestion unable to delete ' +
+                      cachedPostFilename)
+    # Is this a question created by this instance?
+    idPrefix = httpPrefix + '://' + domain
+    if not questionJson['object']['id'].startswith(idPrefix):
+        return
+    # if the votes on a question have changed then
+    # send out an update
+    questionJson['type'] = 'Update'
+    sharedItemsFederatedDomains = []
+    sharedItemFederationTokens = {}
+    sendToFollowersThread(session, baseDir, nickname, domain,
+                          onionDomain, i2pDomain, port,
+                          httpPrefix, federationList,
+                          sendThreads, postLog,
+                          cachedWebfingers, personCache,
+                          postJsonObject, debug, __version__,
+                          sharedItemsFederatedDomains,
+                          sharedItemFederationTokens,
+                          signingPrivateKeyPem)
+
+
+def _createReplyNotificationFile(baseDir: str, nickname: str, domain: str,
+                                 handle: str, debug: bool, postIsDM: bool,
+                                 postJsonObject: {}, actor: str,
+                                 updateIndexList: [], httpPrefix: str,
+                                 defaultReplyIntervalHours: int) -> bool:
+    """Generates a file indicating that a new reply has arrived
+    The file can then be used by other systems to create a notification
+    xmpp, matrix, email, etc
+    """
+    isReplyToMutedPost = False
+    if postIsDM:
+        return isReplyToMutedPost
+    if not isReply(postJsonObject, actor):
+        return isReplyToMutedPost
+    if nickname == 'inbox':
+        return isReplyToMutedPost
+    # replies index will be updated
+    updateIndexList.append('tlreplies')
+
+    conversationId = None
+    if postJsonObject['object'].get('conversation'):
+        conversationId = postJsonObject['object']['conversation']
+
+    if not postJsonObject['object'].get('inReplyTo'):
+        return isReplyToMutedPost
+    inReplyTo = postJsonObject['object']['inReplyTo']
+    if not inReplyTo:
+        return isReplyToMutedPost
+    if not isinstance(inReplyTo, str):
+        return isReplyToMutedPost
+    if not isMuted(baseDir, nickname, domain, inReplyTo, conversationId):
+        # check if the reply is within the allowed time period
+        # after publication
+        replyIntervalHours = \
+            getReplyIntervalHours(baseDir, nickname, domain,
+                                  defaultReplyIntervalHours)
+        if canReplyTo(baseDir, nickname, domain, inReplyTo,
+                      replyIntervalHours):
+            actUrl = localActorUrl(httpPrefix, nickname, domain)
+            _replyNotify(baseDir, handle, actUrl + '/tlreplies')
+        else:
+            if debug:
+                print('Reply to ' + inReplyTo + ' is outside of the ' +
+                      'permitted interval of ' + str(replyIntervalHours) +
+                      ' hours')
+            return False
+    else:
+        isReplyToMutedPost = True
+    return isReplyToMutedPost
+
+
+def _lowFrequencyPostNotification(baseDir: str, httpPrefix: str, nickname: str,
+                                  domain: str, port: int, handle: str,
+                                  postIsDM: bool, jsonObj: {}) -> None:
+    """Should we notify that a post from this person has arrived?
+    This is for cases where the notify checkbox is enabled on the
+    person options screen
+    """
+    if postIsDM:
+        return
+    if not jsonObj:
+        return
+    if not jsonObj.get('attributedTo'):
+        return
+    if not jsonObj.get('id'):
+        return
+    attributedTo = jsonObj['attributedTo']
+    if not isinstance(attributedTo, str):
+        return
+    fromNickname = getNicknameFromActor(attributedTo)
+    fromDomain, fromPort = getDomainFromActor(attributedTo)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    if notifyWhenPersonPosts(baseDir, nickname, domain,
+                             fromNickname, fromDomainFull):
+        postId = removeIdEnding(jsonObj['id'])
+        domFull = getFullDomain(domain, port)
+        postLink = \
+            localActorUrl(httpPrefix, nickname, domFull) + \
+            '?notifypost=' + postId.replace('/', '-')
+        _notifyPostArrival(baseDir, handle, postLink)
+
+
+def _checkForGitPatches(baseDir: str, nickname: str, domain: str,
+                        handle: str, jsonObj: {}) -> int:
+    """check for incoming git patches
+    """
+    if not jsonObj:
+        return 0
+    if not jsonObj.get('content'):
+        return 0
+    if not jsonObj.get('summary'):
+        return 0
+    if not jsonObj.get('attributedTo'):
+        return 0
+    attributedTo = jsonObj['attributedTo']
+    if not isinstance(attributedTo, str):
+        return 0
+    fromNickname = getNicknameFromActor(attributedTo)
+    fromDomain, fromPort = getDomainFromActor(attributedTo)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    if receiveGitPatch(baseDir, nickname, domain,
+                       jsonObj['type'], jsonObj['summary'],
+                       jsonObj['content'],
+                       fromNickname, fromDomainFull):
+        _gitPatchNotify(baseDir, handle,
+                        jsonObj['summary'], jsonObj['content'],
+                        fromNickname, fromDomainFull)
+        return 1
+    elif '[PATCH]' in jsonObj['content']:
+        print('WARN: git patch not accepted - ' + jsonObj['summary'])
+        return 2
+    return 0
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2751,29 +2917,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 jsonObj = None
         else:
             jsonObj = postJsonObject
-        # check for incoming git patches
-        if jsonObj:
-            if jsonObj.get('content') and \
-               jsonObj.get('summary') and \
-               jsonObj.get('attributedTo'):
-                attributedTo = jsonObj['attributedTo']
-                if isinstance(attributedTo, str):
-                    fromNickname = getNicknameFromActor(attributedTo)
-                    fromDomain, fromPort = getDomainFromActor(attributedTo)
-                    fromDomain = getFullDomain(fromDomain, fromPort)
-                    if receiveGitPatch(baseDir, nickname, domain,
-                                       jsonObj['type'],
-                                       jsonObj['summary'],
-                                       jsonObj['content'],
-                                       fromNickname, fromDomain):
-                        _gitPatchNotify(baseDir, handle,
-                                        jsonObj['summary'],
-                                        jsonObj['content'],
-                                        fromNickname, fromDomain)
-                    elif '[PATCH]' in jsonObj['content']:
-                        print('WARN: git patch not accepted - ' +
-                              jsonObj['summary'])
-                        return False
+
+        if _checkForGitPatches(baseDir, nickname, domain,
+                               handle, jsonObj) == 2:
+            return False
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
@@ -2787,56 +2934,13 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         populateReplies(baseDir, httpPrefix, domain, postJsonObject,
                         maxReplies, debug)
 
-        # if this is a reply to a question then update the votes
-        questionJson, questionPostFilename = \
-            questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
-        if questionJson and questionPostFilename:
-            removePostFromCache(questionJson, recentPostsCache)
-            # add id to inbox index
-            inboxUpdateIndex('inbox', baseDir, handle,
-                             questionPostFilename, debug)
-            # ensure that the cached post is removed if it exists, so
-            # that it then will be recreated
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, nickname, domain, questionJson)
-            if cachedPostFilename:
-                if os.path.isfile(cachedPostFilename):
-                    try:
-                        os.remove(cachedPostFilename)
-                    except BaseException:
-                        print('EX: replytoQuestion unable to delete ' +
-                              cachedPostFilename)
-            # Is this a question created by this instance?
-            idPrefix = httpPrefix + '://' + domain
-            if questionJson['object']['id'].startswith(idPrefix):
-                # if the votes on a question have changed then
-                # send out an update
-                questionJson['type'] = 'Update'
-                sharedItemsFederatedDomains = []
-                sharedItemFederationTokens = {}
-
-                sharedItemFederationTokens = {}
-                sharedItemsFederatedDomains = []
-                sharedItemsFederatedDomainsStr = \
-                    getConfigParam(baseDir, 'sharedItemsFederatedDomains')
-                if sharedItemsFederatedDomainsStr:
-                    siFederatedDomainsList = \
-                        sharedItemsFederatedDomainsStr.split(',')
-                    for sharedFederatedDomain in siFederatedDomainsList:
-                        domainStr = sharedFederatedDomain.strip()
-                        sharedItemsFederatedDomains.append(domainStr)
-
-                sendToFollowersThread(session, baseDir,
-                                      nickname, domain,
-                                      onionDomain, i2pDomain, port,
-                                      httpPrefix, federationList,
-                                      sendThreads, postLog,
-                                      cachedWebfingers, personCache,
-                                      postJsonObject, debug,
-                                      __version__,
-                                      sharedItemsFederatedDomains,
-                                      sharedItemFederationTokens,
-                                      signingPrivateKeyPem)
+        _receiveQuestionVote(baseDir, nickname, domain,
+                             httpPrefix, handle, debug,
+                             postJsonObject, recentPostsCache,
+                             session, onionDomain, i2pDomain, port,
+                             federationList, sendThreads, postLog,
+                             cachedWebfingers, personCache,
+                             signingPrivateKeyPem)
 
         isReplyToMutedPost = False
 
@@ -2861,47 +2965,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             actor = localActorUrl(httpPrefix, nickname, domainFull)
 
             # create a reply notification file if needed
-            if not postIsDM and isReply(postJsonObject, actor):
-                if nickname != 'inbox':
-                    # replies index will be updated
-                    updateIndexList.append('tlreplies')
-
-                    conversationId = None
-                    if postJsonObject['object'].get('conversation'):
-                        conversationId = \
-                            postJsonObject['object']['conversation']
-
-                    if postJsonObject['object'].get('inReplyTo'):
-                        inReplyTo = postJsonObject['object']['inReplyTo']
-                        if inReplyTo:
-                            if isinstance(inReplyTo, str):
-                                if not isMuted(baseDir, nickname, domain,
-                                               inReplyTo, conversationId):
-                                    # check if the reply is within the allowed
-                                    # time period after publication
-                                    hrs = defaultReplyIntervalHours
-                                    replyIntervalHours = \
-                                        getReplyIntervalHours(baseDir,
-                                                              nickname,
-                                                              domain, hrs)
-                                    if canReplyTo(baseDir, nickname, domain,
-                                                  inReplyTo,
-                                                  replyIntervalHours):
-                                        actUrl = \
-                                            localActorUrl(httpPrefix,
-                                                          nickname, domain)
-                                        _replyNotify(baseDir, handle,
-                                                     actUrl + '/tlreplies')
-                                    else:
-                                        if debug:
-                                            print('Reply to ' + inReplyTo +
-                                                  ' is outside of the ' +
-                                                  'permitted interval of ' +
-                                                  str(replyIntervalHours) +
-                                                  ' hours')
-                                        return False
-                                else:
-                                    isReplyToMutedPost = True
+            isReplyToMutedPost = \
+                _createReplyNotificationFile(baseDir, nickname, domain,
+                                             handle, debug, postIsDM,
+                                             postJsonObject, actor,
+                                             updateIndexList, httpPrefix,
+                                             defaultReplyIntervalHours)
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
@@ -2925,25 +2994,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
-            # should we notify that a post from this person has arrived?
-            # This is for cases where the notify checkbox is enabled
-            # on the person options screen
-            if not postIsDM and jsonObj:
-                if jsonObj.get('attributedTo') and jsonObj.get('id'):
-                    attributedTo = jsonObj['attributedTo']
-                    if isinstance(attributedTo, str):
-                        fromNickname = getNicknameFromActor(attributedTo)
-                        fromDomain, fromPort = getDomainFromActor(attributedTo)
-                        fromDomainFull = getFullDomain(fromDomain, fromPort)
-                        if notifyWhenPersonPosts(baseDir, nickname, domain,
-                                                 fromNickname, fromDomainFull):
-                            postId = removeIdEnding(jsonObj['id'])
-                            domFull = getFullDomain(domain, port)
-                            postLink = \
-                                localActorUrl(httpPrefix,
-                                              nickname, domFull) + \
-                                '?notifypost=' + postId.replace('/', '-')
-                            _notifyPostArrival(baseDir, handle, postLink)
+            _lowFrequencyPostNotification(baseDir, httpPrefix,
+                                          nickname, domain, port,
+                                          handle, postIsDM, jsonObj)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
