@@ -2681,6 +2681,38 @@ def _lowFrequencyPostNotification(baseDir: str, httpPrefix: str, nickname: str,
         _notifyPostArrival(baseDir, handle, postLink)
 
 
+def _checkForGitPatches(baseDir: str, nickname: str, domain: str,
+                        handle: str, jsonObj: {}) -> int:
+    """check for incoming git patches
+    """
+    if not jsonObj:
+        return 0
+    if not jsonObj.get('content'):
+        return 0
+    if not jsonObj.get('summary'):
+        return 0
+    if not jsonObj.get('attributedTo'):
+        return 0
+    attributedTo = jsonObj['attributedTo']
+    if not isinstance(attributedTo, str):
+        return 0
+    fromNickname = getNicknameFromActor(attributedTo)
+    fromDomain, fromPort = getDomainFromActor(attributedTo)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    if receiveGitPatch(baseDir, nickname, domain,
+                       jsonObj['type'], jsonObj['summary'],
+                       jsonObj['content'],
+                       fromNickname, fromDomainFull):
+        _gitPatchNotify(baseDir, handle,
+                        jsonObj['summary'], jsonObj['content'],
+                        fromNickname, fromDomainFull)
+        return 1
+    elif '[PATCH]' in jsonObj['content']:
+        print('WARN: git patch not accepted - ' + jsonObj['summary'])
+        return 2
+    return 0
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2885,29 +2917,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 jsonObj = None
         else:
             jsonObj = postJsonObject
-        # check for incoming git patches
-        if jsonObj:
-            if jsonObj.get('content') and \
-               jsonObj.get('summary') and \
-               jsonObj.get('attributedTo'):
-                attributedTo = jsonObj['attributedTo']
-                if isinstance(attributedTo, str):
-                    fromNickname = getNicknameFromActor(attributedTo)
-                    fromDomain, fromPort = getDomainFromActor(attributedTo)
-                    fromDomain = getFullDomain(fromDomain, fromPort)
-                    if receiveGitPatch(baseDir, nickname, domain,
-                                       jsonObj['type'],
-                                       jsonObj['summary'],
-                                       jsonObj['content'],
-                                       fromNickname, fromDomain):
-                        _gitPatchNotify(baseDir, handle,
-                                        jsonObj['summary'],
-                                        jsonObj['content'],
-                                        fromNickname, fromDomain)
-                    elif '[PATCH]' in jsonObj['content']:
-                        print('WARN: git patch not accepted - ' +
-                              jsonObj['summary'])
-                        return False
+
+        if _checkForGitPatches(baseDir, nickname, domain,
+                               handle, jsonObj) == 2:
+            return False
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
