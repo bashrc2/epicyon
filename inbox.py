@@ -2599,6 +2599,57 @@ def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
                           signingPrivateKeyPem)
 
 
+def _createReplyNotificationFile(baseDir: str, nickname: str, domain: str,
+                                 handle: str, debug: bool, postIsDM: bool,
+                                 postJsonObject: {}, actor: str,
+                                 updateIndexList: [], httpPrefix: str,
+                                 defaultReplyIntervalHours: int) -> bool:
+    """Generates a file indicating that a new reply has arrived
+    The file can then be used by other systems to create a notification
+    xmpp, matrix, email, etc
+    """
+    isReplyToMutedPost = False
+    if postIsDM:
+        return isReplyToMutedPost
+    if not isReply(postJsonObject, actor):
+        return isReplyToMutedPost
+    if nickname == 'inbox':
+        return isReplyToMutedPost
+    # replies index will be updated
+    updateIndexList.append('tlreplies')
+
+    conversationId = None
+    if postJsonObject['object'].get('conversation'):
+        conversationId = postJsonObject['object']['conversation']
+
+    if not postJsonObject['object'].get('inReplyTo'):
+        return isReplyToMutedPost
+    inReplyTo = postJsonObject['object']['inReplyTo']
+    if not inReplyTo:
+        return isReplyToMutedPost
+    if not isinstance(inReplyTo, str):
+        return isReplyToMutedPost
+    if not isMuted(baseDir, nickname, domain, inReplyTo, conversationId):
+        # check if the reply is within the allowed time period
+        # after publication
+        replyIntervalHours = \
+            getReplyIntervalHours(baseDir, nickname, domain,
+                                  defaultReplyIntervalHours)
+        if canReplyTo(baseDir, nickname, domain, inReplyTo,
+                      replyIntervalHours):
+            actUrl = localActorUrl(httpPrefix, nickname, domain)
+            _replyNotify(baseDir, handle, actUrl + '/tlreplies')
+        else:
+            if debug:
+                print('Reply to ' + inReplyTo + ' is outside of the ' +
+                      'permitted interval of ' + str(replyIntervalHours) +
+                      ' hours')
+            return False
+    else:
+        isReplyToMutedPost = True
+    return isReplyToMutedPost
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2870,47 +2921,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             actor = localActorUrl(httpPrefix, nickname, domainFull)
 
             # create a reply notification file if needed
-            if not postIsDM and isReply(postJsonObject, actor):
-                if nickname != 'inbox':
-                    # replies index will be updated
-                    updateIndexList.append('tlreplies')
-
-                    conversationId = None
-                    if postJsonObject['object'].get('conversation'):
-                        conversationId = \
-                            postJsonObject['object']['conversation']
-
-                    if postJsonObject['object'].get('inReplyTo'):
-                        inReplyTo = postJsonObject['object']['inReplyTo']
-                        if inReplyTo:
-                            if isinstance(inReplyTo, str):
-                                if not isMuted(baseDir, nickname, domain,
-                                               inReplyTo, conversationId):
-                                    # check if the reply is within the allowed
-                                    # time period after publication
-                                    hrs = defaultReplyIntervalHours
-                                    replyIntervalHours = \
-                                        getReplyIntervalHours(baseDir,
-                                                              nickname,
-                                                              domain, hrs)
-                                    if canReplyTo(baseDir, nickname, domain,
-                                                  inReplyTo,
-                                                  replyIntervalHours):
-                                        actUrl = \
-                                            localActorUrl(httpPrefix,
-                                                          nickname, domain)
-                                        _replyNotify(baseDir, handle,
-                                                     actUrl + '/tlreplies')
-                                    else:
-                                        if debug:
-                                            print('Reply to ' + inReplyTo +
-                                                  ' is outside of the ' +
-                                                  'permitted interval of ' +
-                                                  str(replyIntervalHours) +
-                                                  ' hours')
-                                        return False
-                                else:
-                                    isReplyToMutedPost = True
+            isReplyToMutedPost = \
+                _createReplyNotificationFile(baseDir, nickname, domain,
+                                             handle, debug, postIsDM,
+                                             postJsonObject, actor,
+                                             updateIndexList, httpPrefix,
+                                             defaultReplyIntervalHours)
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
