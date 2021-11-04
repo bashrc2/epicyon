@@ -2650,6 +2650,37 @@ def _createReplyNotificationFile(baseDir: str, nickname: str, domain: str,
     return isReplyToMutedPost
 
 
+def _lowFrequencyPostNotification(baseDir: str, httpPrefix: str, nickname: str,
+                                  domain: str, port: int, handle: str,
+                                  postIsDM: bool, jsonObj: {}) -> None:
+    """Should we notify that a post from this person has arrived?
+    This is for cases where the notify checkbox is enabled on the
+    person options screen
+    """
+    if postIsDM:
+        return
+    if not jsonObj:
+        return
+    if not jsonObj.get('attributedTo'):
+        return
+    if not jsonObj.get('id'):
+        return
+    attributedTo = jsonObj['attributedTo']
+    if not isinstance(attributedTo, str):
+        return
+    fromNickname = getNicknameFromActor(attributedTo)
+    fromDomain, fromPort = getDomainFromActor(attributedTo)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    if notifyWhenPersonPosts(baseDir, nickname, domain,
+                             fromNickname, fromDomainFull):
+        postId = removeIdEnding(jsonObj['id'])
+        domFull = getFullDomain(domain, port)
+        postLink = \
+            localActorUrl(httpPrefix, nickname, domFull) + \
+            '?notifypost=' + postId.replace('/', '-')
+        _notifyPostArrival(baseDir, handle, postLink)
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2950,25 +2981,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
-            # should we notify that a post from this person has arrived?
-            # This is for cases where the notify checkbox is enabled
-            # on the person options screen
-            if not postIsDM and jsonObj:
-                if jsonObj.get('attributedTo') and jsonObj.get('id'):
-                    attributedTo = jsonObj['attributedTo']
-                    if isinstance(attributedTo, str):
-                        fromNickname = getNicknameFromActor(attributedTo)
-                        fromDomain, fromPort = getDomainFromActor(attributedTo)
-                        fromDomainFull = getFullDomain(fromDomain, fromPort)
-                        if notifyWhenPersonPosts(baseDir, nickname, domain,
-                                                 fromNickname, fromDomainFull):
-                            postId = removeIdEnding(jsonObj['id'])
-                            domFull = getFullDomain(domain, port)
-                            postLink = \
-                                localActorUrl(httpPrefix,
-                                              nickname, domFull) + \
-                                '?notifypost=' + postId.replace('/', '-')
-                            _notifyPostArrival(baseDir, handle, postLink)
+            _lowFrequencyPostNotification(baseDir, httpPrefix,
+                                          nickname, domain, port,
+                                          handle, postIsDM, jsonObj)
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
