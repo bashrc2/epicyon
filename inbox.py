@@ -2547,6 +2547,58 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
     return True
 
 
+def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
+                         httpPrefix: str, handle: str, debug: bool,
+                         postJsonObject: {}, recentPostsCache: {},
+                         session, onionDomain: str, i2pDomain: str, port: int,
+                         federationList: [], sendThreads: [], postLog: [],
+                         cachedWebfingers: {}, personCache: {},
+                         signingPrivateKeyPem: str) -> None:
+    """Updates the votes on a Question/poll
+    """
+    # if this is a reply to a question then update the votes
+    questionJson, questionPostFilename = \
+        questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
+    if not questionJson:
+        return
+    if not questionPostFilename:
+        return
+
+    removePostFromCache(questionJson, recentPostsCache)
+    # add id to inbox index
+    inboxUpdateIndex('inbox', baseDir, handle,
+                     questionPostFilename, debug)
+    # ensure that the cached post is removed if it exists, so
+    # that it then will be recreated
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, questionJson)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                print('EX: replytoQuestion unable to delete ' +
+                      cachedPostFilename)
+    # Is this a question created by this instance?
+    idPrefix = httpPrefix + '://' + domain
+    if not questionJson['object']['id'].startswith(idPrefix):
+        return
+    # if the votes on a question have changed then
+    # send out an update
+    questionJson['type'] = 'Update'
+    sharedItemsFederatedDomains = []
+    sharedItemFederationTokens = {}
+    sendToFollowersThread(session, baseDir, nickname, domain,
+                          onionDomain, i2pDomain, port,
+                          httpPrefix, federationList,
+                          sendThreads, postLog,
+                          cachedWebfingers, personCache,
+                          postJsonObject, debug, __version__,
+                          sharedItemsFederatedDomains,
+                          sharedItemFederationTokens,
+                          signingPrivateKeyPem)
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2787,56 +2839,13 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         populateReplies(baseDir, httpPrefix, domain, postJsonObject,
                         maxReplies, debug)
 
-        # if this is a reply to a question then update the votes
-        questionJson, questionPostFilename = \
-            questionUpdateVotes(baseDir, nickname, domain, postJsonObject)
-        if questionJson and questionPostFilename:
-            removePostFromCache(questionJson, recentPostsCache)
-            # add id to inbox index
-            inboxUpdateIndex('inbox', baseDir, handle,
-                             questionPostFilename, debug)
-            # ensure that the cached post is removed if it exists, so
-            # that it then will be recreated
-            cachedPostFilename = \
-                getCachedPostFilename(baseDir, nickname, domain, questionJson)
-            if cachedPostFilename:
-                if os.path.isfile(cachedPostFilename):
-                    try:
-                        os.remove(cachedPostFilename)
-                    except BaseException:
-                        print('EX: replytoQuestion unable to delete ' +
-                              cachedPostFilename)
-            # Is this a question created by this instance?
-            idPrefix = httpPrefix + '://' + domain
-            if questionJson['object']['id'].startswith(idPrefix):
-                # if the votes on a question have changed then
-                # send out an update
-                questionJson['type'] = 'Update'
-                sharedItemsFederatedDomains = []
-                sharedItemFederationTokens = {}
-
-                sharedItemFederationTokens = {}
-                sharedItemsFederatedDomains = []
-                sharedItemsFederatedDomainsStr = \
-                    getConfigParam(baseDir, 'sharedItemsFederatedDomains')
-                if sharedItemsFederatedDomainsStr:
-                    siFederatedDomainsList = \
-                        sharedItemsFederatedDomainsStr.split(',')
-                    for sharedFederatedDomain in siFederatedDomainsList:
-                        domainStr = sharedFederatedDomain.strip()
-                        sharedItemsFederatedDomains.append(domainStr)
-
-                sendToFollowersThread(session, baseDir,
-                                      nickname, domain,
-                                      onionDomain, i2pDomain, port,
-                                      httpPrefix, federationList,
-                                      sendThreads, postLog,
-                                      cachedWebfingers, personCache,
-                                      postJsonObject, debug,
-                                      __version__,
-                                      sharedItemsFederatedDomains,
-                                      sharedItemFederationTokens,
-                                      signingPrivateKeyPem)
+        _receiveQuestionVote(baseDir, nickname, domain,
+                             httpPrefix, handle, debug,
+                             postJsonObject, recentPostsCache,
+                             session, onionDomain, i2pDomain, port,
+                             federationList, sendThreads, postLog,
+                             cachedWebfingers, personCache,
+                             signingPrivateKeyPem)
 
         isReplyToMutedPost = False
 
