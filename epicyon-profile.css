@@ -159,6 +159,12 @@
     --header-font: 'Arial, Helvetica, sans-serif';
     --button-bottom-margin: 10px;
     --rendering: normal;
+    --voteresult-color: #dddddd;
+    --voteresult-border-color: #aaaaaa;
+    --voteresult-height: 32px;
+    --voteresult-height-mobile: 32px;
+    --voteresult-width: 80%;
+    --voteresult-width-mobile: 80%;
 }
 
 @font-face {
@@ -1724,6 +1730,16 @@ div.container {
     }
     .pageslist {
     }
+    .voteresult {
+	width: var(--voteresult-width);
+	height: var(--voteresult-height);
+    }
+    .voteresultbar {
+	height: var(--voteresult-height);
+	fill: var(--voteresult-color);
+	stroke-width: 10;
+	stroke: var(--voteresult-border-color)
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -2428,5 +2444,15 @@ div.container {
         margin-right: 1vw;
     }
     .pageslist {
+    }
+    .voteresult {
+	width: var(--voteresult-width-mobile);
+	height: var(--voteresult-height-mobile);
+    }
+    .voteresultbar {
+	height: var(--voteresult-height-mobile);
+	fill: var(--voteresult-color);
+	stroke-width: 10;
+	stroke: var(--voteresult-border-color)
     }
 }

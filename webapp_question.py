@@ -75,7 +75,6 @@ def insertQuestion(baseDir: str, translate: {},
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
                 print('EX: insertQuestion unable to convert to int')
-                pass
             if votes > maxVotes:
                 maxVotes = int(votes+1)
 
@@ -91,18 +90,19 @@ def insertQuestion(baseDir: str, translate: {},
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
                 print('EX: insertQuestion unable to convert to int 2')
-                pass
             votesPercent = str(int(votes * 100 / maxVotes))
+
             content += \
-                '<p><input type="text" title="' + str(votes) + \
-                '" name="skillName' + str(questionCtr) + \
-                '" value="' + questionOption['name'] + \
-                ' (' + str(votes) + ')" style="width:40%">\n'
-            content += \
-                '<input type="range" min="1" max="100" ' + \
-                'class="slider" title="' + \
-                str(votes) + '" name="skillValue' + str(questionCtr) + \
-                '" value="' + votesPercent + '"></p>\n'
+                '<p>\n' + \
+                '  <label class="labels">' + \
+                questionOption['name'] + '</label><br>\n' + \
+                '  <svg class="voteresult">\n' + \
+                '    <rect width="' + votesPercent + \
+                '%" class="voteresultbar" />\n' + \
+                '  </svg>' + \
+                '  <label class="labels">' + votesPercent + '%</label>\n' + \
+                '</p>\n'
+
             questionCtr += 1
         content += '</div>\n'
     return content
