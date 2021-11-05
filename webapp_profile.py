@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
+from utils import getDisplayName
 from utils import isGroupAccount
 from utils import hasObjectDict
 from utils import getOccupationName
@@ -33,10 +34,8 @@ from theme import getThemesList
 from person import personBoxJson
 from person import getActorJson
 from person import getPersonAvatarUrl
-from webfinger import webfingerHandle
 from posts import isModerator
 from posts import parseUserFeed
-from posts import getPersonBox
 from posts import isCreateInsideAnnounce
 from donate import getDonationUrl
 from donate import getWebsite
@@ -1102,6 +1101,7 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 translate['Page down'] + '" alt="' + \
                 translate['Page down'] + '"></a>\n' + \
                 '  </center>\n'
+
     return profileStr
 
 
@@ -2250,25 +2250,8 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
 
-    # lookup the correct webfinger for the followUrl
-    followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
-    followUrlWf = \
-        webfingerHandle(session, followUrlHandle, httpPrefix,
-                        cachedWebfingers,
-                        domain, __version__, debug, False,
-                        signingPrivateKeyPem)
+    displayName = getDisplayName(baseDir, followUrl, personCache)
 
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
-     displayName, isGroup) = getPersonBox(signingPrivateKeyPem,
-                                          originDomain,
-                                          baseDir, session,
-                                          followUrlWf,
-                                          personCache, projectVersion,
-                                          httpPrefix, followUrlNickname,
-                                          domain, 'outbox', 43036)
-    if avatarUrl2:
-        avatarUrl = avatarUrl2
     if displayName:
         displayName = \
             addEmojiToDisplayName(None, baseDir, httpPrefix,
@@ -2290,7 +2273,8 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                     translate['Block'] + '</button></a>\n'
             elif b == 'unfollow':
                 unfollowStr = 'Unfollow'
-                if isGroup:
+                if isGroupAccount(baseDir,
+                                  followUrlNickname, followUrlDomain):
                     unfollowStr = 'Leave'
                 buttonsStr += \
                     '<a href="/users/' + actorNickname + \
