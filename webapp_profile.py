@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
+from webfinger import webfingerHandle
 from utils import getDisplayName
 from utils import isGroupAccount
 from utils import hasObjectDict
@@ -34,6 +35,7 @@ from theme import getThemesList
 from person import personBoxJson
 from person import getActorJson
 from person import getPersonAvatarUrl
+from posts import getPersonBox
 from posts import isModerator
 from posts import parseUserFeed
 from posts import isCreateInsideAnnounce
@@ -2251,6 +2253,27 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
         avatarUrl = followUrl + '/avatar.png'
 
     displayName = getDisplayName(baseDir, followUrl, personCache)
+    isGroup = False
+    if not displayName:
+        # lookup the correct webfinger for the followUrl
+        followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
+        followUrlWf = \
+            webfingerHandle(session, followUrlHandle, httpPrefix,
+                            cachedWebfingers,
+                            domain, __version__, debug, False,
+                            signingPrivateKeyPem)
+
+        originDomain = domain
+        (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
+         displayName, isGroup) = getPersonBox(signingPrivateKeyPem,
+                                              originDomain,
+                                              baseDir, session,
+                                              followUrlWf,
+                                              personCache, projectVersion,
+                                              httpPrefix, followUrlNickname,
+                                              domain, 'outbox', 43036)
+        if avatarUrl2:
+            avatarUrl = avatarUrl2
 
     if displayName:
         displayName = \
@@ -2273,7 +2296,8 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                     translate['Block'] + '</button></a>\n'
             elif b == 'unfollow':
                 unfollowStr = 'Unfollow'
-                if isGroupAccount(baseDir,
+                if isGroup or \
+                   isGroupAccount(baseDir,
                                   followUrlNickname, followUrlDomain):
                     unfollowStr = 'Leave'
                 buttonsStr += \
