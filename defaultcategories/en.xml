@@ -577,13 +577,13 @@
 </item>
 <item>
   <title>automotive</title>
-  <description>volkswagen</description>
+  <description>volkswagen porsche kia tesla mazda toyota honda jaguar mitsubishi volvo lexus peugeot skoda mercedes suzuki hyundai volkswagen nissan renault bmw landrover audi vauxhall ford dacia citreon</description>
   <link/>
   <pubDate>Fri, 05 Nov 2021 10:48:28 UT</pubDate>
 </item>
 <item>
   <title>fantasy</title>
-  <description>discworld godzilla</description>
+  <description>discworld godzilla steampunk tolkien harrypotter narnia myst wonderland middleearth earthsea splatterpunk dieselpunk ghoststory mythpunk fairytale</description>
   <link/>
   <pubDate>Fri, 05 Nov 2021 10:48:28 UT</pubDate>
 </item>
@@ -703,13 +703,7 @@
 </item>
 <item>
   <title>accommodation</title>
-  <description>househunting accommodation MovingHouse</description>
-  <link/>
-  <pubDate>Fri, 05 Nov 2021 10:48:28 UT</pubDate>
-</item>
-<item>
-  <title>housing</title>
-  <description>squat</description>
+  <description>househunting squat accommodation MovingHouse</description>
   <link/>
   <pubDate>Fri, 05 Nov 2021 10:48:28 UT</pubDate>
 </item>
