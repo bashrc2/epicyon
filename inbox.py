@@ -2574,9 +2574,6 @@ def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
         return
 
     removePostFromCache(questionJson, recentPostsCache)
-    # add id to inbox index
-    inboxUpdateIndex('inbox', baseDir, handle,
-                     questionPostFilename, debug)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \
@@ -2614,6 +2611,10 @@ def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
                          manuallyApproveFollowers,
                          False, True, False, CWlists,
                          listsEnabled)
+
+    # add id to inbox index
+    inboxUpdateIndex('inbox', baseDir, handle,
+                     questionPostFilename, debug)
 
     # Is this a question created by this instance?
     idPrefix = httpPrefix + '://' + domain
