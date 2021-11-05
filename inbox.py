@@ -2553,7 +2553,16 @@ def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
                          session, onionDomain: str, i2pDomain: str, port: int,
                          federationList: [], sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
-                         signingPrivateKeyPem: str) -> None:
+                         signingPrivateKeyPem: str,
+                         maxRecentPosts: int, translate: {},
+                         allowDeletion: bool,
+                         YTReplacementDomain: str,
+                         twitterReplacementDomain: str,
+                         peertubeInstances: [],
+                         allowLocalNetworkAccess: bool,
+                         themeName: str, systemLanguage: str,
+                         maxLikeCount: int,
+                         CWlists: {}, listsEnabled: bool) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -2579,6 +2588,33 @@ def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
             except BaseException:
                 print('EX: replytoQuestion unable to delete ' +
                       cachedPostFilename)
+
+    pageNumber = 1
+    showPublishedDateOnly = False
+    showIndividualPostIcons = True
+    manuallyApproveFollowers = \
+        followerApprovalActive(baseDir, nickname, domain)
+    notDM = not isDM(questionJson)
+    individualPostAsHtml(signingPrivateKeyPem, False,
+                         recentPostsCache, maxRecentPosts,
+                         translate, pageNumber, baseDir,
+                         session, cachedWebfingers, personCache,
+                         nickname, domain, port, questionJson,
+                         None, True, allowDeletion,
+                         httpPrefix, __version__,
+                         'inbox',
+                         YTReplacementDomain,
+                         twitterReplacementDomain,
+                         showPublishedDateOnly,
+                         peertubeInstances,
+                         allowLocalNetworkAccess,
+                         themeName, systemLanguage,
+                         maxLikeCount, notDM,
+                         showIndividualPostIcons,
+                         manuallyApproveFollowers,
+                         False, True, False, CWlists,
+                         listsEnabled)
+
     # Is this a question created by this instance?
     idPrefix = httpPrefix + '://' + domain
     if not questionJson['object']['id'].startswith(idPrefix):
@@ -2940,7 +2976,16 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                              session, onionDomain, i2pDomain, port,
                              federationList, sendThreads, postLog,
                              cachedWebfingers, personCache,
-                             signingPrivateKeyPem)
+                             signingPrivateKeyPem,
+                             maxRecentPosts, translate,
+                             allowDeletion,
+                             YTReplacementDomain,
+                             twitterReplacementDomain,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount,
+                             CWlists, listsEnabled)
 
         isReplyToMutedPost = False
 
