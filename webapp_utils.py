@@ -693,10 +693,6 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes website markup
     https://schema.org/WebSite
     """
-    htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None,
-                                    systemLanguage)
-
     licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
     # social networking category
@@ -727,7 +723,9 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      ]\n' + \
         '    }\n' + \
         '    </script>\n'
-    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, websiteMarkup,
+                                    systemLanguage)
     return htmlStr
 
 
