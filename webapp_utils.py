@@ -666,19 +666,20 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         "    <meta content=\"" + description + \
         "\" name='description'>\n" + \
         "    <meta content=\"" + actorJson['url'] + \
-        "\" property=\"og:url\" />" + \
+        "\" property=\"og:url\" />\n" + \
         "    <meta content=\"" + domainFull + \
-        "\" property=\"og:site_name\" />" + \
+        "\" property=\"og:site_name\" />\n" + \
         "    <meta content=\"" + nameStr + " (@" + handle + \
-        ")\" property=\"og:title\" />" + \
+        ")\" property=\"og:title\" />\n" + \
         "    <meta content=\"" + description + \
-        "\" property=\"og:description\" />" + \
+        "\" property=\"og:description\" />\n" + \
         "    <meta content=\"" + actorJson['icon']['url'] + \
-        "\" property=\"og:image\" />" + \
+        "\" property=\"og:image\" />\n" + \
         "    <meta content=\"400\" property=\"og:image:width\" />\n" + \
-        "    <meta content=\"400\" property=\"og:image:height\" />" + \
-        "    <meta content=\"summary\" property=\"twitter:card\" />" + \
-        "    <meta content=\"" + handle + "\" property=\"profile:username\" />"
+        "    <meta content=\"400\" property=\"og:image:height\" />\n" + \
+        "    <meta content=\"summary\" property=\"twitter:card\" />\n" + \
+        "    <meta content=\"" + handle + \
+        "\" property=\"profile:username\" />\n"
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
