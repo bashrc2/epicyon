@@ -563,7 +563,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             country = city.split(',', 1)[1].strip().title()
             city = city.split(',', 1)[0]
             countryMarkup = \
-                '        "addressCountry": "' + country + '"\n'
+                '          "addressCountry": "' + country + '"\n'
             addComma = ','
         cityMarkup = \
             '        "address": {\n' + \
