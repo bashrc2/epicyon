@@ -123,6 +123,10 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
             continue
         if not attachJson.get('mediaType'):
             continue
+        if not attachJson.get('url'):
+            continue
+        if not attachJson.get('name'):
+            continue
         description = None
         if attachJson['mediaType'].startswith('image/'):
             description = 'Attached: 1 image'
@@ -130,9 +134,7 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
             description = 'Attached: 1 video'
         elif attachJson['mediaType'].startswith('audio/'):
             description = 'Attached: 1 audio'
-        if description and \
-           attachJson.get('name') and \
-           attachJson.get('url'):
+        if description:
             if objJson.get('content'):
                 description += '\n\n' + removeHtml(objJson['content'])
             metadata += \
