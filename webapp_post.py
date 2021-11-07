@@ -108,7 +108,7 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
         metadata += \
             "    <meta content=\"" + objJson['published'] + \
             "\" property=\"og:published_time\" />\n"
-    if not objJson.get('attachment'):
+    if not objJson.get('attachment') or objJson.get('sensitive'):
         if objJson.get('content') and not objJson.get('sensitive'):
             description = removeHtml(objJson['content'])
             metadata += \
