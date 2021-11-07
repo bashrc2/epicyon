@@ -112,10 +112,11 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
         if objJson.get('content'):
             description = removeHtml(objJson['content'])
             metadata += \
-                "    <meta content='" + description + "' name='description'>\n"
+                "    <meta content=\"" + description + \
+                "\" name=\"description\">\n"
             metadata += \
-                "    <meta content='" + description + \
-                "' name='og:description'>\n"
+                "    <meta content=\"" + description + \
+                "\" name=\"og:description\">\n"
         return metadata
 
     # metadata for attachment    
@@ -139,10 +140,11 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
             if objJson.get('content'):
                 description += '\n\n' + removeHtml(objJson['content'])
             metadata += \
-                "    <meta content='" + description + "' name='description'>\n"
+                "    <meta content=\"" + description + \
+                "\" name=\"description\">\n"
             metadata += \
-                "    <meta content='" + description + \
-                "' name='og:description'>\n"
+                "    <meta content=\"" + description + \
+                "\" name=\"og:description\">\n"
             metadata += \
                 "    <meta content=\"" + attachJson['url'] + \
                 "\" property=\"og:image\" />\n"
