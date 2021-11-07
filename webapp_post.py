@@ -119,7 +119,7 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
                 "\" name=\"og:description\">\n"
         return metadata
 
-    # metadata for attachment    
+    # metadata for attachment
     for attachJson in objJson['attachment']:
         if not isinstance(attachJson, dict):
             continue
@@ -153,11 +153,11 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
                 "\" property=\"og:image:type\" />\n"
             if attachJson.get('width'):
                 metadata += \
-                    "    <meta content=\"" + attachJson['width'] + \
+                    "    <meta content=\"" + str(attachJson['width']) + \
                     "\" property=\"og:image:width\" />\n"
             if attachJson.get('height'):
                 metadata += \
-                    "    <meta content=\"" + attachJson['height'] + \
+                    "    <meta content=\"" + str(attachJson['height']) + \
                     "\" property=\"og:image:height\" />\n"
             metadata += \
                 "    <meta content=\"" + attachJson['name'] + \

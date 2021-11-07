@@ -549,9 +549,9 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes person markup
     https://schema.org/Person
     """
-    htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None, lang)
     if not actorJson:
+        htmlStr = \
+            htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None, lang)
         return htmlStr
 
     cityMarkup = ''
@@ -645,6 +645,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     description = removeHtml(actorJson['summary'])
     nameStr = removeHtml(actorJson['name'])
+    domainFull = actorJson['id'].split('://')[1].split('/')[0]
+    handle = actorJson['preferredUsername'] + '@' + domainFull
     personMarkup = \
         '    <script type="application/ld+json">\n' + \
         '    {\n' + \
@@ -657,6 +659,30 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "url": "' + actorJson['id'] + '"\n' + \
         '    }\n' + \
         '    </script>\n'
+
+    description = removeHtml(description)
+    ogMetadata = \
+        "    <meta content=\"profile\" property=\"og:type\" />\n" + \
+        "    <meta content=\"" + description + \
+        "\" name='description'>\n" + \
+        "    <meta content=\"" + actorJson['url'] + \
+        "\" property=\"og:url\" />" + \
+        "    <meta content=\"" + domainFull + \
+        "\" property=\"og:site_name\" />" + \
+        "    <meta content=\"" + nameStr + " (@" + handle + \
+        ")\" property=\"og:title\" />" + \
+        "    <meta content=\"" + description + \
+        "\" property=\"og:description\" />" + \
+        "    <meta content=\"" + actorJson['icon']['url'] + \
+        "\" property=\"og:image\" />" + \
+        "    <meta content=\"400\" property=\"og:image:width\" />\n" + \
+        "    <meta content=\"400\" property=\"og:image:height\" />" + \
+        "    <meta content=\"summary\" property=\"twitter:card\" />" + \
+        "    <meta content=\"" + handle + "\" property=\"profile:username\" />"
+
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                    ogMetadata, lang)
     htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
     return htmlStr
 
