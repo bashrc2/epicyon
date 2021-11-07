@@ -85,9 +85,9 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
     """Returns html OpenGraph metadata for a post
     """
     metadata = \
-        "<meta content=\"" + domain + "\" property=\"og:site_name\" />\n"
+        "    <meta content=\"" + domain + "\" property=\"og:site_name\" />\n"
     metadata += \
-        "<meta content=\"article\" property=\"og:type\" />\n"
+        "    <meta content=\"article\" property=\"og:type\" />\n"
     objJson = postJsonObject
     if hasObjectDict(postJsonObject):
         objJson = postJsonObject['object']
@@ -98,23 +98,24 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
             actorDomain, _ = getDomainFromActor(attrib)
             actorHandle = actorNick + '@' + actorDomain
             metadata += \
-                "<meta content=\"@" + actorHandle + \
+                "    <meta content=\"@" + actorHandle + \
                 "\" property=\"og:title\" />\n"
     if objJson.get('url'):
         metadata += \
-            "<meta content=\"" + objJson['url'] + \
+            "    <meta content=\"" + objJson['url'] + \
             "\" property=\"og:url\" />\n"
     if objJson.get('published'):
         metadata += \
-            "<meta content=\"" + objJson['published'] + \
+            "    <meta content=\"" + objJson['published'] + \
             "\" property=\"og:published_time\" />\n"
     if not objJson.get('attachment'):
         if objJson.get('content'):
             description = removeHtml(objJson['content'])
             metadata += \
-                "<meta content='" + description + "' name='description'>\n"
+                "    <meta content='" + description + "' name='description'>\n"
             metadata += \
-                "<meta content='" + description + "' name='og:description'>\n"
+                "    <meta content='" + description + \
+                "' name='og:description'>\n"
         return metadata
 
     # metadata for attachment    
@@ -138,29 +139,30 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
             if objJson.get('content'):
                 description += '\n\n' + removeHtml(objJson['content'])
             metadata += \
-                "<meta content='" + description + "' name='description'>\n"
+                "    <meta content='" + description + "' name='description'>\n"
             metadata += \
-                "<meta content='" + description + "' name='og:description'>\n"
+                "    <meta content='" + description + \
+                "' name='og:description'>\n"
             metadata += \
-                "<meta content=\"" + attachJson['url'] + \
+                "    <meta content=\"" + attachJson['url'] + \
                 "\" property=\"og:image\" />\n"
             metadata += \
-                "<meta content=\"" + attachJson['mediaType'] + \
+                "    <meta content=\"" + attachJson['mediaType'] + \
                 "\" property=\"og:image:type\" />\n"
             if attachJson.get('width'):
                 metadata += \
-                    "<meta content=\"" + attachJson['width'] + \
+                    "    <meta content=\"" + attachJson['width'] + \
                     "\" property=\"og:image:width\" />\n"
             if attachJson.get('height'):
                 metadata += \
-                    "<meta content=\"" + attachJson['height'] + \
+                    "    <meta content=\"" + attachJson['height'] + \
                     "\" property=\"og:image:height\" />\n"
             metadata += \
-                "<meta content=\"" + attachJson['name'] + \
+                "    <meta content=\"" + attachJson['name'] + \
                 "\" property=\"og:image:alt\" />\n"
             if attachJson['mediaType'].startswith('image/'):
                 metadata += \
-                    "<meta content=\"summary_large_image\" " + \
+                    "    <meta content=\"summary_large_image\" " + \
                     "property=\"twitter:card\" />\n"
     return metadata
 
