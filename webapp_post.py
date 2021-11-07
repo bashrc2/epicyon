@@ -22,6 +22,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import removeHtml
 from utils import getActorLanguagesList
 from utils import getBaseContentFromPost
 from utils import getContentFromPost
@@ -78,6 +79,88 @@ from speaker import updateSpeaker
 from languages import autoTranslatePost
 from blocking import isBlocked
 from blocking import addCWfromLists
+
+
+def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
+    """Returns html OpenGraph metadata for a post
+    """
+    metadata = \
+        "<meta content=\"" + domain + "\" property=\"og:site_name\" />\n"
+    metadata += \
+        "<meta content=\"article\" property=\"og:type\" />\n"
+    objJson = postJsonObject
+    if hasObjectDict(postJsonObject):
+        objJson = postJsonObject['object']
+    if objJson.get('attributedTo'):
+        if isinstance(objJson['attributedTo'], str):
+            attrib = objJson['attributedTo']
+            actorNick = getNicknameFromActor(attrib)
+            actorDomain, _ = getDomainFromActor(attrib)
+            actorHandle = actorNick + '@' + actorDomain
+            metadata += \
+                "<meta content=\"@" + actorHandle + \
+                "\" property=\"og:title\" />\n"
+    if objJson.get('url'):
+        metadata += \
+            "<meta content=\"" + objJson['url'] + \
+            "\" property=\"og:url\" />\n"
+    if objJson.get('published'):
+        metadata += \
+            "<meta content=\"" + objJson['published'] + \
+            "\" property=\"og:published_time\" />\n"
+    if not objJson.get('attachment'):
+        if objJson.get('content'):
+            description = '\n\n' + removeHtml(objJson['content'])
+            metadata += \
+                "<meta content='" + description + "' name='description'>\n"
+            metadata += \
+                "<meta content='" + description + "' name='og:description'>\n"
+        return metadata
+
+    # metadata for attachment    
+    for attachJson in objJson['attachment']:
+        if not isinstance(attachJson, dict):
+            continue
+        if not attachJson.get('mediaType'):
+            continue
+        description = None
+        if attachJson['mediaType'].startswith('image/'):
+            description = 'Attached: 1 image'
+        elif attachJson['mediaType'].startswith('video/'):
+            description = 'Attached: 1 video'
+        elif attachJson['mediaType'].startswith('audio/'):
+            description = 'Attached: 1 audio'
+        if description and \
+           attachJson.get('name') and \
+           attachJson.get('url'):
+            if objJson.get('content'):
+                description += '\n\n' + removeHtml(objJson['content'])
+            metadata += \
+                "<meta content='" + description + "' name='description'>\n"
+            metadata += \
+                "<meta content='" + description + "' name='og:description'>\n"
+            metadata += \
+                "<meta content=\"" + attachJson['url'] + \
+                "\" property=\"og:image\" />\n"
+            metadata += \
+                "<meta content=\"" + attachJson['mediaType'] + \
+                "\" property=\"og:image:type\" />\n"
+            if attachJson.get('width'):
+                metadata += \
+                    "<meta content=\"" + attachJson['width'] + \
+                    "\" property=\"og:image:width\" />\n"
+            if attachJson.get('height'):
+                metadata += \
+                    "<meta content=\"" + attachJson['height'] + \
+                    "\" property=\"og:image:height\" />\n"
+            metadata += \
+                "<meta content=\"" + attachJson['name'] + \
+                "\" property=\"og:image:alt\" />\n"
+            if attachJson['mediaType'].startswith('image/'):
+                metadata += \
+                    "<meta content=\"summary_large_image\" " + \
+                    "property=\"twitter:card\" />\n"
+    return metadata
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -1961,8 +2044,10 @@ def htmlIndividualPost(cssCache: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
-        postStr + htmlFooter()
+    metadataStr = _htmlPostMetadataOpenGraph(domain, postJsonObject)
+    headerStr = htmlHeaderWithExternalStyle(cssFilename,
+                                            instanceTitle, metadataStr)
+    return headerStr + postStr + htmlFooter()
 
 
 def htmlPostReplies(cssCache: {},
@@ -2011,5 +2096,8 @@ def htmlPostReplies(cssCache: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
-        repliesStr + htmlFooter()
+    # TODO
+    metadata = ''
+    headerStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
+    return headerStr + repliesStr + htmlFooter()

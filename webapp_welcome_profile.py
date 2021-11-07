@@ -67,7 +67,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/welcome.css'):
         cssFilename = baseDir + '/welcome.css'
 
-    profileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    profileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # get the url of the avatar
     for ext in getImageExtensions():

@@ -62,7 +62,8 @@ def htmlConfirmDelete(cssCache: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    deletePostStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    deletePostStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
         individualPostAsHtml(signingPrivateKeyPem,
                              True, recentPostsCache, maxRecentPosts,
@@ -137,7 +138,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
         cssFilename = baseDir + '/follow.css'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
     sharesStr += '  <center>\n'
@@ -190,7 +191,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
         cssFilename = baseDir + '/follow.css'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
@@ -235,7 +236,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
         cssFilename = baseDir + '/follow.css'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
@@ -278,7 +279,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
         cssFilename = baseDir + '/follow.css'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'
     blockStr += '  <center>\n'

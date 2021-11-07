@@ -209,7 +209,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \

@@ -61,7 +61,7 @@ def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/welcome.css'):
         cssFilename = baseDir + '/welcome.css'
 
-    finalForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    finalForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     finalForm += \
         '<div class="container">' + finalText + '</div>\n' + \

@@ -55,8 +55,8 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
 
             instanceTitle = \
                 getConfigParam(baseDir, 'instanceTitle')
-            followingListHtml = htmlHeaderWithExternalStyle(cssFilename,
-                                                            instanceTitle)
+            followingListHtml = \
+                htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
             for followingAddress in followingList:
                 if followingAddress:
                     followingListHtml += \
@@ -77,8 +77,8 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    blockedHashtagForm = htmlHeaderWithExternalStyle(cssFilename,
-                                                     instanceTitle)
+    blockedHashtagForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockedHashtagForm += '<div><center>\n'
     blockedHashtagForm += \
         '  <p class="screentitle">' + \
@@ -524,7 +524,9 @@ def getRightImageFile(baseDir: str,
 
 
 def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
-                                lang='en') -> str:
+                                metadata: str, lang='en') -> str:
+    if metadata is None:
+        metadata = ''
     cssFile = '/' + cssFilename.split('/')[-1]
     htmlStr = \
         '<!DOCTYPE html>\n' + \
@@ -534,6 +536,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
         '    <link rel="stylesheet" href="' + cssFile + '">\n' + \
         '    <link rel="manifest" href="/manifest.json">\n' + \
         '    <meta name="theme-color" content="grey">\n' + \
+        metadata + \
         '    <title>' + instanceTitle + '</title>\n' + \
         '  </head>\n' + \
         '  <body>\n'
@@ -546,7 +549,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes person markup
     https://schema.org/Person
     """
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, lang)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None, lang)
     if not actorJson:
         return htmlStr
 
@@ -663,8 +667,9 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes website markup
     https://schema.org/WebSite
     """
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                          systemLanguage)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None,
+                                    systemLanguage)
 
     licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
@@ -707,8 +712,9 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                          systemLanguage)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None,
+                                    systemLanguage)
 
     authorUrl = localActorUrl(httpPrefix, nickname, domain)
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
@@ -1458,7 +1464,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
 
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         shareStr + htmlFooter()
 
 

@@ -487,7 +487,7 @@ def htmlBlogPage(authorized: bool, session,
         cssFilename = baseDir + '/epicyon.css'
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
@@ -707,7 +707,7 @@ def htmlBlogView(authorized: bool,
         cssFilename = baseDir + '/epicyon.css'
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     if _noOfBlogAccounts(baseDir) <= 1:
         nickname = _singleBlogAccountNickname(baseDir)
@@ -810,7 +810,8 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    editBlogForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    editBlogForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     editBlogForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

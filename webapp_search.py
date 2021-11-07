@@ -64,7 +64,7 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
     # create header
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     emojiForm += '<center><h1>' + \
         translate['Emoji Search'] + \
         '</h1></center>'
@@ -241,7 +241,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     sharedItemsForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     if sharesFileType == 'shares':
         titleStr = translate['Shared Items Search']
     else:
@@ -347,7 +347,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -386,7 +386,7 @@ def htmlSearch(cssCache: {}, translate: {},
         cssFilename = baseDir + '/search.css'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
@@ -550,7 +550,8 @@ def htmlSkillsSearch(actor: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    skillSearchForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     skillSearchForm += \
         '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
@@ -627,7 +628,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     historySearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # add the page title
     domainFull = getFullDomain(domain, port)
@@ -769,7 +770,7 @@ def htmlHashtagSearch(cssCache: {},
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     hashtagSearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \

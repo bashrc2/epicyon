@@ -361,7 +361,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # top banner
     bannerFile, bannerFilename = \
@@ -476,7 +476,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
@@ -545,7 +545,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    editNewswireForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # top banner
     editNewswireForm += \
@@ -667,7 +668,8 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    editNewsPostForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'

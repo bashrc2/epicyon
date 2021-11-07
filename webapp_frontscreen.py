@@ -207,6 +207,6 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         profileStr + profileFooterStr + htmlFooter()
     return profileStr

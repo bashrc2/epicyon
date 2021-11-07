@@ -677,7 +677,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    tlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    tlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
 

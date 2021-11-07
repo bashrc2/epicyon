@@ -95,7 +95,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     searchNickname = getNicknameFromActor(searchHandle)
     searchDomain, searchPort = getDomainFromActor(searchHandle)
@@ -282,7 +282,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
