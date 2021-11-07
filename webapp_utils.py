@@ -764,8 +764,24 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      ]\n' + \
         '    }\n' + \
         '    </script>\n'
+
+    ogMetadata = \
+        '    <meta content="Epicyon hosted on ' + domain + \
+        '" property="og:site_name" />\n' + \
+        '    <meta content="' + httpPrefix + '://' + domain + \
+        '/about" property="og:url" />\n' + \
+        '    <meta content="website" property="og:type" />\n' + \
+        '    <meta content="' + instanceTitle + \
+        '" property="og:title" />\n' + \
+        '    <meta content="' + httpPrefix + '://' + domain + \
+        '/logo.png" property="og:image" />\n' + \
+        '    <meta content="' + systemLanguage + \
+        '" property="og:locale" />\n' + \
+        '    <meta content="summary_large_image" property="twitter:card" />\n'
+
     htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, websiteMarkup,
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                    ogMetadata + websiteMarkup,
                                     systemLanguage)
     return htmlStr
 
