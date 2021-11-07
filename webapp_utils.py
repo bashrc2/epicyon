@@ -647,16 +647,39 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     nameStr = removeHtml(actorJson['name'])
     domainFull = actorJson['id'].split('://')[1].split('/')[0]
     handle = actorJson['preferredUsername'] + '@' + domainFull
+
     personMarkup = \
+        '      "about": {\n' + \
+        '        "@type" : "Person",\n' + \
+        '        "name": "' + nameStr + '",\n' + \
+        '        "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '        "description": "' + description + '",\n' + \
+        cityMarkup + skillsMarkup + \
+        '        "url": "' + actorJson['id'] + '"\n' + \
+        '      },\n'
+
+    licenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    profileMarkup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
-        '      "@context" : "http://schema.org",\n' + \
-        '      "@type" : "Person",\n' + \
+        '      "@context":"https://schema.org",\n' + \
+        '      "@type": "ProfilePage",\n' + \
+        '      "mainEntityOfPage": {\n' + \
+        '        "@type": "WebPage",\n' + \
+        "        \"@id\": \"" + actorJson['id'] + "\"\n" + \
+        '      },\n' + personMarkup + \
+        '      "accountablePerson": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nameStr + '"\n' + \
+        '      },\n' + \
+        '      "copyrightHolder": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nameStr + '"\n' + \
+        '      },\n' + \
         '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
-        cityMarkup + skillsMarkup + \
-        '      "url": "' + actorJson['id'] + '"\n' + \
+        '      "license": "' + licenseUrl + '"\n' + \
         '    }\n' + \
         '    </script>\n'
 
@@ -683,7 +706,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                    ogMetadata + personMarkup, lang)
+                                    ogMetadata + profileMarkup, lang)
     return htmlStr
 
 
