@@ -703,6 +703,24 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         "    <meta content=\"summary\" property=\"twitter:card\" />\n" + \
         "    <meta content=\"" + handle + \
         "\" property=\"profile:username\" />\n"
+    if actorJson.get('attachment'):
+        ogTags = (
+            'email', 'openpgp', 'blog', 'xmpp', 'matrix', 'briar',
+            'jami', 'cwtch', 'languages'
+        )
+        for attachJson in actorJson['attachment']:
+            if not attachJson.get('name'):
+                continue
+            if not attachJson.get('value'):
+                continue
+            name = attachJson['name'].lower()
+            value = attachJson['value']
+            for ogTag in ogTags:
+                if name != ogTag:
+                    continue
+                ogMetadata += \
+                    "    <meta content=\"" + value + \
+                    "\" property=\"og:" + ogTag + "\" />\n"
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
