@@ -60,7 +60,8 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    accessKeysForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    accessKeysForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     accessKeysForm += '<div class="container">\n'
 
     accessKeysForm += \

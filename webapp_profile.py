@@ -336,7 +336,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         profileStr + htmlFooter()
 
 
@@ -2131,7 +2131,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             systemMonitorStr = _htmlSystemMonitor(nickname, translate)
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    editProfileForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname

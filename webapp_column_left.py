@@ -364,7 +364,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
@@ -430,7 +430,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    editLinksForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    editLinksForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # top banner
     editLinksForm += \

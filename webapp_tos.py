@@ -42,7 +42,7 @@ def htmlTermsOfService(cssCache: {}, baseDir: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     TOSForm += '<div class="container">' + TOSText + '</div>\n'
     if adminNickname:
         adminActor = localActorUrl(httpPrefix, adminNickname, domainFull)

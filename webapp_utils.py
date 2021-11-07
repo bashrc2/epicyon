@@ -55,8 +55,8 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
 
             instanceTitle = \
                 getConfigParam(baseDir, 'instanceTitle')
-            followingListHtml = htmlHeaderWithExternalStyle(cssFilename,
-                                                            instanceTitle)
+            followingListHtml = \
+                htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
             for followingAddress in followingList:
                 if followingAddress:
                     followingListHtml += \
@@ -77,8 +77,8 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    blockedHashtagForm = htmlHeaderWithExternalStyle(cssFilename,
-                                                     instanceTitle)
+    blockedHashtagForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockedHashtagForm += '<div><center>\n'
     blockedHashtagForm += \
         '  <p class="screentitle">' + \
@@ -524,7 +524,9 @@ def getRightImageFile(baseDir: str,
 
 
 def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
-                                lang='en') -> str:
+                                metadata: str, lang='en') -> str:
+    if metadata is None:
+        metadata = ''
     cssFile = '/' + cssFilename.split('/')[-1]
     htmlStr = \
         '<!DOCTYPE html>\n' + \
@@ -534,6 +536,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
         '    <link rel="stylesheet" href="' + cssFile + '">\n' + \
         '    <link rel="manifest" href="/manifest.json">\n' + \
         '    <meta name="theme-color" content="grey">\n' + \
+        metadata + \
         '    <title>' + instanceTitle + '</title>\n' + \
         '  </head>\n' + \
         '  <body>\n'
@@ -546,8 +549,9 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes person markup
     https://schema.org/Person
     """
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, lang)
     if not actorJson:
+        htmlStr = \
+            htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None, lang)
         return htmlStr
 
     cityMarkup = ''
@@ -559,19 +563,19 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             country = city.split(',', 1)[1].strip().title()
             city = city.split(',', 1)[0]
             countryMarkup = \
-                '        "addressCountry": "' + country + '"\n'
+                '          "addressCountry": "' + country + '"\n'
             addComma = ','
         cityMarkup = \
-            '      "address": {\n' + \
-            '        "@type": "PostalAddress",\n' + \
-            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            '        "address": {\n' + \
+            '          "@type": "PostalAddress",\n' + \
+            '          "addressLocality": "' + city + '"' + addComma + '\n' + \
             countryMarkup + \
-            '      },\n'
+            '        },\n'
 
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
         if isinstance(actorJson['hasOccupation'], list):
-            skillsMarkup = '      "hasOccupation": [\n'
+            skillsMarkup = '        "hasOccupation": [\n'
             firstEntry = True
             for skillDict in actorJson['hasOccupation']:
                 if skillDict['@type'] == 'Role':
@@ -637,23 +641,90 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                         '          "skills": ' + skillsListStr + '\n' + \
                         '        }'
                 firstEntry = False
-            skillsMarkup += '\n      ],\n'
+            skillsMarkup += '\n        ],\n'
 
     description = removeHtml(actorJson['summary'])
     nameStr = removeHtml(actorJson['name'])
+    domainFull = actorJson['id'].split('://')[1].split('/')[0]
+    handle = actorJson['preferredUsername'] + '@' + domainFull
+
     personMarkup = \
-        '    <script type="application/ld+json">\n' + \
+        '      "about": {\n' + \
+        '        "@type" : "Person",\n' + \
+        '        "name": "' + nameStr + '",\n' + \
+        '        "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '        "description": "' + description + '",\n' + \
+        cityMarkup + skillsMarkup + \
+        '        "url": "' + actorJson['id'] + '"\n' + \
+        '      },\n'
+
+    licenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    profileMarkup = \
+        '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
-        '      "@context" : "http://schema.org",\n' + \
-        '      "@type" : "Person",\n' + \
+        '      "@context":"https://schema.org",\n' + \
+        '      "@type": "ProfilePage",\n' + \
+        '      "mainEntityOfPage": {\n' + \
+        '        "@type": "WebPage",\n' + \
+        "        \"@id\": \"" + actorJson['id'] + "\"\n" + \
+        '      },\n' + personMarkup + \
+        '      "accountablePerson": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nameStr + '"\n' + \
+        '      },\n' + \
+        '      "copyrightHolder": {\n' + \
+        '        "@type": "Person",\n' + \
+        '        "name": "' + nameStr + '"\n' + \
+        '      },\n' + \
         '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
-        cityMarkup + skillsMarkup + \
-        '      "url": "' + actorJson['id'] + '"\n' + \
+        '      "license": "' + licenseUrl + '"\n' + \
         '    }\n' + \
         '    </script>\n'
-    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
+
+    description = removeHtml(description)
+    ogMetadata = \
+        "    <meta content=\"profile\" property=\"og:type\" />\n" + \
+        "    <meta content=\"" + description + \
+        "\" name='description'>\n" + \
+        "    <meta content=\"" + actorJson['url'] + \
+        "\" property=\"og:url\" />\n" + \
+        "    <meta content=\"" + domainFull + \
+        "\" property=\"og:site_name\" />\n" + \
+        "    <meta content=\"" + nameStr + " (@" + handle + \
+        ")\" property=\"og:title\" />\n" + \
+        "    <meta content=\"" + description + \
+        "\" property=\"og:description\" />\n" + \
+        "    <meta content=\"" + actorJson['icon']['url'] + \
+        "\" property=\"og:image\" />\n" + \
+        "    <meta content=\"400\" property=\"og:image:width\" />\n" + \
+        "    <meta content=\"400\" property=\"og:image:height\" />\n" + \
+        "    <meta content=\"summary\" property=\"twitter:card\" />\n" + \
+        "    <meta content=\"" + handle + \
+        "\" property=\"profile:username\" />\n"
+    if actorJson.get('attachment'):
+        ogTags = (
+            'email', 'openpgp', 'blog', 'xmpp', 'matrix', 'briar',
+            'jami', 'cwtch', 'languages'
+        )
+        for attachJson in actorJson['attachment']:
+            if not attachJson.get('name'):
+                continue
+            if not attachJson.get('value'):
+                continue
+            name = attachJson['name'].lower()
+            value = attachJson['value']
+            for ogTag in ogTags:
+                if name != ogTag:
+                    continue
+                ogMetadata += \
+                    "    <meta content=\"" + value + \
+                    "\" property=\"og:" + ogTag + "\" />\n"
+
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                    ogMetadata + profileMarkup, lang)
     return htmlStr
 
 
@@ -663,16 +734,13 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes website markup
     https://schema.org/WebSite
     """
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                          systemLanguage)
-
     licenseUrl = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
     # social networking category
     genreUrl = 'http://vocab.getty.edu/aat/300312270'
 
     websiteMarkup = \
-        '    <script type="application/ld+json">\n' + \
+        '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "WebSite",\n' + \
@@ -696,7 +764,9 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      ]\n' + \
         '    }\n' + \
         '    </script>\n'
-    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + websiteMarkup)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, websiteMarkup,
+                                    systemLanguage)
     return htmlStr
 
 
@@ -707,9 +777,6 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                          systemLanguage)
-
     authorUrl = localActorUrl(httpPrefix, nickname, domain)
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
 
@@ -718,7 +785,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
 
     blogMarkup = \
-        '    <script type="application/ld+json">\n' + \
+        '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "BlogPosting",\n' + \
@@ -739,7 +806,9 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'
-    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + blogMarkup)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, blogMarkup,
+                                    systemLanguage)
     return htmlStr
 
 
@@ -1458,7 +1527,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
 
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         shareStr + htmlFooter()
 
 

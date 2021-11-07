@@ -76,7 +76,7 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     htmlStr += \
         '<table class="graph">\n' + \
         '<caption>Watchpoints for ' + fitnessId + '</caption>\n' + \

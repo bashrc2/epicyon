@@ -23,7 +23,8 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    suspendedForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    suspendedForm = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     suspendedForm += \
         '<div><center>\n' + \
         '  <p class="screentitle">Account Suspended</p>\n' + \

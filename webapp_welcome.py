@@ -86,7 +86,7 @@ def htmlWelcomeScreen(baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/welcome.css'):
         cssFilename = baseDir + '/welcome.css'
 
-    welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     welcomeForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \

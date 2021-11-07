@@ -597,7 +597,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dateAndLocation += '</div>\n'
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     newPostForm += \
         '<header>\n' + \

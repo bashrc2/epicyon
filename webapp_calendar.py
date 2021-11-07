@@ -58,7 +58,8 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    deletePostStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    deletePostStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
         '<center><h1>' + postTime + ' ' + str(year) + '/' + \
         str(monthNumber) + \
@@ -120,7 +121,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
         calActor = '/users/' + actor.split('/users/')[1]
 
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
@@ -340,7 +341,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # the main graphical calendar as a table
     calendarStr = '<main><table class="calendar">\n'
