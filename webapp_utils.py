@@ -683,8 +683,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                    ogMetadata, lang)
-    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + personMarkup)
+                                    ogMetadata + personMarkup, lang)
     return htmlStr
 
 
