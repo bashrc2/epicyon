@@ -109,7 +109,7 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
             "    <meta content=\"" + objJson['published'] + \
             "\" property=\"og:published_time\" />\n"
     if not objJson.get('attachment'):
-        if objJson.get('content'):
+        if objJson.get('content') and not objJson.get('sensitive'):
             description = removeHtml(objJson['content'])
             metadata += \
                 "    <meta content=\"" + description + \
@@ -137,7 +137,7 @@ def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
         elif attachJson['mediaType'].startswith('audio/'):
             description = 'Attached: 1 audio'
         if description:
-            if objJson.get('content'):
+            if objJson.get('content') and not objJson.get('sensitive'):
                 description += '\n\n' + removeHtml(objJson['content'])
             metadata += \
                 "    <meta content=\"" + description + \
