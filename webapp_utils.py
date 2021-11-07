@@ -736,10 +736,6 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None,
-                                    systemLanguage)
-
     authorUrl = localActorUrl(httpPrefix, nickname, domain)
     aboutUrl = httpPrefix + '://' + domain + '/about.html'
 
@@ -769,7 +765,9 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'
-    htmlStr = htmlStr.replace('<head>\n', '<head>\n' + blogMarkup)
+    htmlStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, blogMarkup,
+                                    systemLanguage)
     return htmlStr
 
 
