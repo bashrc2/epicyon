@@ -1922,6 +1922,7 @@ def htmlIndividualPost(cssCache: {},
                        CWlists: {}, listsEnabled: str) -> str:
     """Show an individual post as html
     """
+    originalPostJson = postJsonObject
     postStr = ''
     if likedBy:
         likedByNickname = getNicknameFromActor(likedBy)
@@ -2048,7 +2049,7 @@ def htmlIndividualPost(cssCache: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    metadataStr = _htmlPostMetadataOpenGraph(domain, postJsonObject)
+    metadataStr = _htmlPostMetadataOpenGraph(domain, originalPostJson)
     headerStr = htmlHeaderWithExternalStyle(cssFilename,
                                             instanceTitle, metadataStr)
     return headerStr + postStr + htmlFooter()
