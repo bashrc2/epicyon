@@ -566,16 +566,16 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 '        "addressCountry": "' + country + '"\n'
             addComma = ','
         cityMarkup = \
-            '      "address": {\n' + \
-            '        "@type": "PostalAddress",\n' + \
-            '        "addressLocality": "' + city + '"' + addComma + '\n' + \
+            '        "address": {\n' + \
+            '          "@type": "PostalAddress",\n' + \
+            '          "addressLocality": "' + city + '"' + addComma + '\n' + \
             countryMarkup + \
-            '      },\n'
+            '        },\n'
 
     skillsMarkup = ''
     if actorJson.get('hasOccupation'):
         if isinstance(actorJson['hasOccupation'], list):
-            skillsMarkup = '      "hasOccupation": [\n'
+            skillsMarkup = '        "hasOccupation": [\n'
             firstEntry = True
             for skillDict in actorJson['hasOccupation']:
                 if skillDict['@type'] == 'Role':
@@ -641,7 +641,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                         '          "skills": ' + skillsListStr + '\n' + \
                         '        }'
                 firstEntry = False
-            skillsMarkup += '\n      ],\n'
+            skillsMarkup += '\n        ],\n'
 
     description = removeHtml(actorJson['summary'])
     nameStr = removeHtml(actorJson['name'])
