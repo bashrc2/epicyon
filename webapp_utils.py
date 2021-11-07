@@ -648,7 +648,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
     domainFull = actorJson['id'].split('://')[1].split('/')[0]
     handle = actorJson['preferredUsername'] + '@' + domainFull
     personMarkup = \
-        '    <script type="application/ld+json">\n' + \
+        '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "Person",\n' + \
@@ -699,7 +699,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     genreUrl = 'http://vocab.getty.edu/aat/300312270'
 
     websiteMarkup = \
-        '    <script type="application/ld+json">\n' + \
+        '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "WebSite",\n' + \
@@ -744,7 +744,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
 
     blogMarkup = \
-        '    <script type="application/ld+json">\n' + \
+        '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "BlogPosting",\n' + \
