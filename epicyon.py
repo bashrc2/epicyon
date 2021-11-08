@@ -112,6 +112,9 @@ def str2bool(v) -> bool:
 
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('--contentLicenseUrl', type=str,
+                    default='https://creativecommons.org/licenses/by/4.0',
+                    help='Url of the license used for the instance content')
 parser.add_argument('--listsEnabled', type=str,
                     default=None,
                     help='Names of content warning lists enabled. ' +
@@ -2884,6 +2887,13 @@ minimumvotes = getConfigParam(baseDir, 'minvotes')
 if minimumvotes:
     args.minimumvotes = int(minimumvotes)
 
+contentLicenseUrl = ''
+if args.contentLicenseUrl:
+    contentLicenseUrl = args.contentLicenseUrl
+    setConfigParam(baseDir, 'contentLicenseUrl', contentLicenseUrl)
+else:
+    contentLicenseUrl = getConfigParam(baseDir, 'contentLicenseUrl')
+
 votingtime = getConfigParam(baseDir, 'votingtime')
 if votingtime:
     args.votingtime = votingtime
@@ -3078,7 +3088,8 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(listsEnabled,
+    runDaemon(contentLicenseUrl,
+              listsEnabled,
               args.defaultReplyIntervalHours,
               args.lowBandwidth, args.maxLikeCount,
               sharedItemsFederatedDomains,

@@ -8758,7 +8758,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.sharedItemsFederatedDomains,
                                     rolesList,
                                     None, None, self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.listsEnabled,
+                                    self.server.contentLicenseUrl)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8873,7 +8874,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 skills,
                                                 None, None,
                                                 self.server.CWlists,
-                                                self.server.listsEnabled)
+                                                self.server.listsEnabled,
+                                                self.server.contentLicenseUrl)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -10866,7 +10868,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     shares,
                                     pageNumber, sharesPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.listsEnabled,
+                                    self.server.contentLicenseUrl)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -10958,6 +10961,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         city = getSpoofedCity(self.server.city,
                                               baseDir, nickname, domain)
+                    contentLicenseUrl = \
+                        self.server.contentLicenseUrl
                     msg = \
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rssIconAtTop,
@@ -10992,7 +10997,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber,
                                     followsPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled).encode('utf-8')
+                                    self.server.listsEnabled,
+                                    contentLicenseUrl).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, callingDomain, False)
@@ -11082,6 +11088,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         city = getSpoofedCity(self.server.city,
                                               baseDir, nickname, domain)
+                    contentLicenseUrl = \
+                        self.server.contentLicenseUrl
                     msg = \
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rssIconAtTop,
@@ -11117,7 +11125,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber,
                                     followsPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled).encode('utf-8')
+                                    self.server.listsEnabled,
+                                    contentLicenseUrl).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, callingDomain, False)
@@ -11258,7 +11267,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.sharedItemsFederatedDomains,
                             None, None, None,
                             self.server.CWlists,
-                            self.server.listsEnabled).encode('utf-8')
+                            self.server.listsEnabled,
+                            self.server.contentLicenseUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -13138,7 +13148,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.peertubeInstances,
                                        self.server.systemLanguage,
                                        self.server.personCache,
-                                       self.server.debug)
+                                       self.server.debug,
+                                       self.server.contentLicenseUrl)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -17179,7 +17190,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(listsEnabled: str,
+def runDaemon(contentLicenseUrl: str,
+              listsEnabled: str,
               defaultReplyIntervalHours: int,
               lowBandwidth: bool,
               maxLikeCount: int,
@@ -17266,6 +17278,11 @@ def runDaemon(listsEnabled: str,
 
     # scan the theme directory for any svg files containing scripts
     assert not scanThemesForScripts(baseDir)
+
+    # license for content of the instance
+    if not contentLicenseUrl:
+        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    httpd.contentLicenseUrl = contentLicenseUrl
 
     # fitness metrics
     fitnessFilename = baseDir + '/accounts/fitness.json'

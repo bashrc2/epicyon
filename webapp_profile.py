@@ -542,7 +542,8 @@ def htmlProfile(signingPrivateKeyPem: str,
                 sharedItemsFederatedDomains: [],
                 extraJson: {}, pageNumber: int,
                 maxItemsPerPage: int,
-                CWlists: {}, listsEnabled: str) -> str:
+                CWlists: {}, listsEnabled: str,
+                contentLicenseUrl: str) -> str:
     """Show the profile page as html
     """
     nickname = profileJson['preferredUsername']
@@ -985,7 +986,8 @@ def htmlProfile(signingPrivateKeyPem: str,
         getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
-                                   profileJson, city) + \
+                                   profileJson, city,
+                                   contentLicenseUrl) + \
         profileStr + htmlFooter()
     return profileStr
 

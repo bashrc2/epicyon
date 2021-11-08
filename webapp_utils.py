@@ -552,6 +552,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
 
 def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                                actorJson: {}, city: str,
+                               contentLicenseUrl: str,
                                lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
@@ -665,7 +666,6 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '        "url": "' + actorJson['id'] + '"\n' + \
         '      },\n'
 
-    licenseUrl = 'https://creativecommons.org/licenses/by/4.0'
     profileMarkup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
@@ -686,7 +686,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
-        '      "license": "' + licenseUrl + '"\n' + \
+        '      "license": "' + contentLicenseUrl + '"\n' + \
         '    }\n' + \
         '    </script>\n'
 
@@ -798,7 +798,8 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                              systemLanguage: str,
                              published: str, modified: str,
                              title: str, snippet: str,
-                             translate: {}, url: str) -> str:
+                             translate: {}, url: str,
+                             contentLicenseUrl: str) -> str:
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
@@ -807,7 +808,6 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
 
     # license for content on the site may be different from
     # the software license
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
 
     blogMarkup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
