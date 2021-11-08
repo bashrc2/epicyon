@@ -12277,7 +12277,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if path == '/' or path == '/about' or \
            path.startswith('/api/') or \
-           path.startswith('/nodeinfo/'):
+           path.startswith('/nodeinfo/') or \
+           path.startswith('/blog/'):
             return True
         return False
 
