@@ -209,6 +209,28 @@ def followerOfPerson(baseDir: str, nickname: str, domain: str,
                         federationList, debug, groupAccount, 'followers.txt')
 
 
+def getFollowerDomains(baseDir: str, nickname: str, domain: str) -> []:
+    """Returns a list of domains for followers
+    """
+    domain = removeDomainPort(domain)
+    followersFile = acctDir(baseDir, nickname, domain) + '/followers.txt'
+    if not os.path.isfile(followersFile):
+        return []
+
+    lines = []
+    with open(followersFile, 'r') as fpFollowers:
+        lines = fpFollowers.readlines()
+
+    domainsList = []
+    for handle in lines:
+        followerDomain, _ = getDomainFromActor(handle)
+        if not followerDomain:
+            continue
+        if followerDomain not in domainsList:
+            domainsList.append(followerDomain)
+    return domainsList
+
+
 def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
                        followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?

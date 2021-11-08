@@ -53,6 +53,7 @@ from jami import getJamiAddress
 from cwtch import getCwtchAddress
 from filters import isFiltered
 from follow import isFollowerOfPerson
+from follow import getFollowerDomains
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHideFromScreenReader
@@ -716,6 +717,8 @@ def htmlProfile(signingPrivateKeyPem: str,
                         break
         if selected == 'followers':
             if followApprovals:
+                currFollowerDomains = \
+                    getFollowerDomains(baseDir, nickname, domain)
                 with open(followRequestsFilename, 'r') as f:
                     for followerHandle in f:
                         if len(line) > 0:
@@ -726,13 +729,25 @@ def htmlProfile(signingPrivateKeyPem: str,
                                 dom = followerHandle.split('@')[1]
                                 followerActor = \
                                     localActorUrl(httpPrefix, nick, dom)
+
+                            # is this a new domain?
+                            # if so then append a new instance indicator
+                            followerDomain, _ = \
+                                getDomainFromActor(followerActor)
+                            newFollowerDomain = ''
+                            if followerDomain not in currFollowerDomains:
+                                newFollowerDomain = ' ✨'
+
                             basePath = '/users/' + nickname
                             followApprovalsSection += '<div class="container">'
                             followApprovalsSection += \
                                 '<a href="' + followerActor + '">'
                             followApprovalsSection += \
                                 '<span class="followRequestHandle">' + \
-                                followerHandle + '</span></a>'
+                                followerHandle + \
+                                newFollowerDomain + '</span></a>'
+
+                            # show Approve and Deny buttons
                             followApprovalsSection += \
                                 '<a href="' + basePath + \
                                 '/followapprove=' + followerHandle + '">'
