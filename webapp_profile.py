@@ -1286,6 +1286,10 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         getConfigParam(baseDir, 'instanceDescriptionShort')
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
+    contentLicenseUrl = \
+        getConfigParam(baseDir, 'contentLicenseUrl')
+    if not contentLicenseUrl:
+        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     instanceStr = beginEditSection(translate['Instance Settings'])
 
@@ -1301,6 +1305,10 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         editTextArea(translate['Instance Description'],
                      'instanceDescription', instanceDescription, 200,
                      '', True)
+    instanceStr += \
+        editTextField(translate['Content License'],
+                      'contentLicenseUrl', contentLicenseUrl)
+    instanceStr += '<br>\n'
     instanceStr += \
         editTextField(translate['Custom post submit button text'],
                       'customSubmitText', customSubmitText)

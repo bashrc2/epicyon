@@ -4904,6 +4904,24 @@ class PubServer(BaseHTTPRequestHandler):
                                                'libretranslateApiKey', '')
 
                         # change instance short description
+                        if fields.get('contentLicenseUrl'):
+                            if fields['contentLicenseUrl'] != \
+                               self.server.contentLicenseUrl:
+                                licenseStr = fields['contentLicenseUrl']
+                                setConfigParam(baseDir,
+                                               'contentLicenseUrl',
+                                               licenseStr)
+                                self.server.contentLicenseUrl = \
+                                    licenseStr
+                        else:
+                            licenseStr = \
+                                'https://creativecommons.org/licenses/by/4.0'
+                            setConfigParam(baseDir,
+                                           'contentLicenseUrl',
+                                           licenseStr)
+                            self.server.contentLicenseUrl = licenseStr
+
+                        # change instance short description
                         currInstanceDescriptionShort = \
                             getConfigParam(baseDir,
                                            'instanceDescriptionShort')
