@@ -723,6 +723,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 with open(followRequestsFilename, 'r') as f:
                     for followerHandle in f:
                         if len(line) > 0:
+                            followerHandle = followerHandle.replace('\n', '')
                             if '://' in followerHandle:
                                 followerActor = followerHandle
                             else:
