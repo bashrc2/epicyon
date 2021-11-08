@@ -12306,7 +12306,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Is the given path permitted to be crawled by a search engine?
         this should only allow through basic information, such as nodeinfo
         """
-        if path == '/' or path == '/about' or \
+        if path == '/' or path == '/about' or path == '/login' or \
            path.startswith('/api/') or \
            path.startswith('/nodeinfo/') or \
            path.startswith('/blog/'):
