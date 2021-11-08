@@ -843,7 +843,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '    <meta property="article:published_time" content="' + \
         published + '" />\n' + \
         '    <meta property="article:modified_time" content="' + \
-        modified + '" />'
+        modified + '" />\n'
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
