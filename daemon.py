@@ -12440,11 +12440,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/browserconfig.xml' in self.path:
             if self._hasAccept(callingDomain):
-                if not self._requestHTTP():
-                    self._browserConfig(callingDomain, GETstartTime)
-                    return
-                else:
-                    self.path = '/'
+                self._browserConfig(callingDomain, GETstartTime)
+                return
 
         # default newswire favicon, for links to sites which
         # have no favicon
