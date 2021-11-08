@@ -533,8 +533,15 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
         '<html lang="' + lang + '">\n' + \
         '  <head>\n' + \
         '    <meta charset="utf-8">\n' + \
-        '    <link rel="stylesheet" href="' + cssFile + '">\n' + \
+        '    <link rel="stylesheet" media="all" ' + \
+        'href="' + cssFile + '">\n' + \
         '    <link rel="manifest" href="/manifest.json">\n' + \
+        '    <link href="/favicon.ico" rel="icon" type="image/x-icon">\n' + \
+        '    <meta content="/browserconfig.xml" ' + \
+        'name="msapplication-config">\n' + \
+        '    <meta content="yes" name="apple-mobile-web-app-capable">\n' + \
+        '    <link href="/apple-touch-icon.png" rel="apple-touch-icon" ' + \
+        'sizes="180x180">\n' + \
         '    <meta name="theme-color" content="grey">\n' + \
         metadata + \
         '    <title>' + instanceTitle + '</title>\n' + \
