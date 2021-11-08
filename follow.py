@@ -223,6 +223,7 @@ def getFollowerDomains(baseDir: str, nickname: str, domain: str) -> []:
 
     domainsList = []
     for handle in lines:
+        handle = handle.replace('\n', '')
         followerDomain, _ = getDomainFromActor(handle)
         if not followerDomain:
             continue
