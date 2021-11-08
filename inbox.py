@@ -2374,7 +2374,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
               cachedWebfingers: {}, personCache: {},
               translate: {}, debug: bool,
               lastBounceMessage: [], systemLanguage: str,
-              signingPrivateKeyPem: str) -> bool:
+              signingPrivateKeyPem: str,
+              contentLicenseUrl: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2433,7 +2434,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                                 inReplyTo, inReplyToAtomUri,
                                 subject, debug, schedulePost,
                                 eventDate, eventTime, location,
-                                systemLanguage, conversationId, lowBandwidth)
+                                systemLanguage, conversationId, lowBandwidth,
+                                contentLicenseUrl)
     if not postJsonObject:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False
@@ -2459,7 +2461,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                translate: {}, debug: bool,
                lastBounceMessage: [],
                handle: str, systemLanguage: str,
-               signingPrivateKeyPem: str) -> bool:
+               signingPrivateKeyPem: str,
+               contentLicenseUrl: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2537,7 +2540,8 @@ def _isValidDM(baseDir: str, nickname: str, domain: str, port: int,
                                       translate, debug,
                                       lastBounceMessage,
                                       systemLanguage,
-                                      signingPrivateKeyPem)
+                                      signingPrivateKeyPem,
+                                      contentLicenseUrl)
                 return False
 
     # dm index will be updated
@@ -2772,7 +2776,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        maxLikeCount: int,
                        signingPrivateKeyPem: str,
                        defaultReplyIntervalHours: int,
-                       CWlists: {}, listsEnabled: str) -> bool:
+                       CWlists: {}, listsEnabled: str,
+                       contentLicenseUrl: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -3004,7 +3009,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   translate, debug,
                                   lastBounceMessage,
                                   handle, systemLanguage,
-                                  signingPrivateKeyPem):
+                                  signingPrivateKeyPem,
+                                  contentLicenseUrl):
                     return False
 
             # get the actor being replied to
@@ -3786,6 +3792,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 saveJson(queueJson['post'], sharedInboxPostFilename)
 
         listsEnabled = getConfigParam(baseDir, "listsEnabled")
+        contentLicenseUrl = getConfigParam(baseDir, "contentLicenseUrl")
 
         # for posts addressed to specific accounts
         for handle, capsId in recipientsDict.items():
@@ -3818,7 +3825,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                maxLikeCount,
                                signingPrivateKeyPem,
                                defaultReplyIntervalHours,
-                               CWlists, listsEnabled)
+                               CWlists, listsEnabled,
+                               contentLicenseUrl)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')

@@ -508,7 +508,8 @@ class PubServer(BaseHTTPRequestHandler):
                              location, False,
                              self.server.systemLanguage,
                              conversationId,
-                             self.server.lowBandwidth)
+                             self.server.lowBandwidth,
+                             self.server.contentLicenseUrl)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -1281,7 +1282,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.maxLikeCount,
                                    self.server.maxRecentPosts,
                                    self.server.CWlists,
-                                   self.server.listsEnabled)
+                                   self.server.listsEnabled,
+                                   self.server.contentLicenseUrl)
 
     def _getOutboxThreadIndex(self, nickname: str,
                               maxOutboxThreadsPerAccount: int) -> int:
@@ -4357,7 +4359,7 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
                        debug: bool, allowLocalNetworkAccess: bool,
-                       systemLanguage: str) -> None:
+                       systemLanguage: str, contentLicenseUrl: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -4504,7 +4506,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.lowBandwidth:
                     convertImageToLowBandwidth(filename)
                 processMetaData(baseDir, nickname, domain,
-                                filename, postImageFilename, city)
+                                filename, postImageFilename, city,
+                                contentLicenseUrl)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image, zip or font saved to ' +
@@ -15259,7 +15262,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str,
                                callingDomain: str, cookie: str,
-                               authorized: bool) -> int:
+                               authorized: bool,
+                               contentLicenseUrl: str) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
         # 1=new post success
@@ -15336,7 +15340,8 @@ class PubServer(BaseHTTPRequestHandler):
                         convertImageToLowBandwidth(filename)
                     processMetaData(self.server.baseDir,
                                     nickname, self.server.domain,
-                                    filename, postImageFilename, city)
+                                    filename, postImageFilename, city,
+                                    contentLicenseUrl)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -15463,7 +15468,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['location'], False,
                                      self.server.systemLanguage,
                                      conversationId,
-                                     self.server.lowBandwidth)
+                                     self.server.lowBandwidth,
+                                     self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15545,7 +15551,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['location'],
                                    self.server.systemLanguage,
                                    conversationId,
-                                   self.server.lowBandwidth)
+                                   self.server.lowBandwidth,
+                                   self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15637,7 +15644,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             attachmentMediaType,
                                             imgDescription,
                                             city,
-                                            self.server.lowBandwidth)
+                                            self.server.lowBandwidth,
+                                            self.server.contentLicenseUrl)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain,
@@ -15695,7 +15703,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['location'],
                                        self.server.systemLanguage,
                                        conversationId,
-                                       self.server.lowBandwidth)
+                                       self.server.lowBandwidth,
+                                       self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15746,7 +15755,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'],
                                             self.server.systemLanguage,
                                             conversationId,
-                                            self.server.lowBandwidth)
+                                            self.server.lowBandwidth,
+                                            self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15801,7 +15811,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['location'],
                                                 self.server.systemLanguage,
                                                 conversationId,
-                                                self.server.lowBandwidth)
+                                                self.server.lowBandwidth,
+                                                self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15854,7 +15865,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'],
                                             self.server.systemLanguage,
                                             conversationId,
-                                            self.server.lowBandwidth)
+                                            self.server.lowBandwidth,
+                                            self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15890,7 +15902,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      city,
                                      self.server.debug, fields['subject'],
                                      self.server.systemLanguage,
-                                     self.server.lowBandwidth)
+                                     self.server.lowBandwidth,
+                                     self.server.contentLicenseUrl)
                 if messageJson:
                     if self._postToOutbox(messageJson,
                                           self.server.projectVersion,
@@ -15931,7 +15944,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['subject'],
                                        intDuration,
                                        self.server.systemLanguage,
-                                       self.server.lowBandwidth)
+                                       self.server.lowBandwidth,
+                                       self.server.contentLicenseUrl)
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -16003,7 +16017,8 @@ class PubServer(BaseHTTPRequestHandler):
                          city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
                          self.server.translate, sharesFileType,
-                         self.server.lowBandwidth)
+                         self.server.lowBandwidth,
+                         self.server.contentLicenseUrl)
                 if filename:
                     if os.path.isfile(filename):
                         try:
@@ -16018,7 +16033,8 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receiveNewPost(self, postType: str, path: str,
                         callingDomain: str, cookie: str,
-                        authorized: bool) -> int:
+                        authorized: bool,
+                        contentLicenseUrl: str) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -16120,7 +16136,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             path, headers, length,
                                             postBytes, boundary,
                                             callingDomain, cookie,
-                                            authorized)
+                                            authorized,
+                                            contentLicenseUrl)
         return pageNumber
 
     def _cryptoAPIreadHandle(self):
@@ -16417,7 +16434,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.onionDomain,
                                 self.server.i2pDomain, self.server.debug,
                                 self.server.allowLocalNetworkAccess,
-                                self.server.systemLanguage)
+                                self.server.systemLanguage,
+                                self.server.contentLicenseUrl)
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -16777,7 +16795,8 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
                                      callingDomain, cookie,
-                                     authorized)
+                                     authorized,
+                                     self.server.contentLicenseUrl)
             if pageNumber:
                 print(currPostType + ' post received')
                 nickname = self.path.split('/users/')[1]

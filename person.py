@@ -88,7 +88,8 @@ def generateRSAKey() -> (str, str):
 
 def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
                     port: int, imageFilename: str, imageType: str,
-                    resolution: str, city: str) -> bool:
+                    resolution: str, city: str,
+                    contentLicenseUrl: str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
@@ -151,7 +152,8 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
         processMetaData(baseDir, nickname, domain,
-                        profileFilename, profileFilename, city)
+                        profileFilename, profileFilename, city,
+                        contentLicenseUrl)
         return True
     return False
 
