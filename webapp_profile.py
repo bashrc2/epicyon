@@ -737,9 +737,6 @@ def htmlProfile(signingPrivateKeyPem: str,
                             followerDomain, _ = \
                                 getDomainFromActor(followerActor)
                             newFollowerDomain = ''
-                            print('currFollowerDomains: ' +
-                                  str(currFollowerDomains) +
-                                  ' followerDomain: ' + followerDomain)
                             if followerDomain not in currFollowerDomains:
                                 newFollowerDomain = ' ✨'
 
