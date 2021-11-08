@@ -6054,11 +6054,6 @@ class PubServer(BaseHTTPRequestHandler):
                     "sizes": "150x150"
                 },
                 {
-                    "src": "/logo152.png",
-                    "type": "image/png",
-                    "sizes": "152x152"
-                },
-                {
                     "src": "/apple-touch-icon.png",
                     "type": "image/png",
                     "sizes": "180x180"
@@ -13525,7 +13520,6 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/logo128.png' or \
            self.path == '/logo144.png' or \
            self.path == '/logo150.png' or \
-           self.path == '/logo152.png' or \
            self.path == '/logo192.png' or \
            self.path == '/logo256.png' or \
            self.path == '/logo512.png' or \
