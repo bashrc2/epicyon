@@ -6039,11 +6039,6 @@ class PubServer(BaseHTTPRequestHandler):
                     "sizes": "96x96"
                 },
                 {
-                    "src": "/logo120.png",
-                    "type": "image/png",
-                    "sizes": "120x120"
-                },
-                {
                     "src": "/logo128.png",
                     "type": "image/png",
                     "sizes": "128x128"
@@ -6052,6 +6047,11 @@ class PubServer(BaseHTTPRequestHandler):
                     "src": "/logo144.png",
                     "type": "image/png",
                     "sizes": "144x144"
+                },
+                {
+                    "src": "/logo150.png",
+                    "type": "image/png",
+                    "sizes": "150x150"
                 },
                 {
                     "src": "/logo152.png",
@@ -6100,6 +6100,33 @@ class PubServer(BaseHTTPRequestHandler):
             print('Sent manifest: ' + callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_progressiveWebAppManifest',
+                           self.server.debug)
+
+    def _browserConfig(self, callingDomain: str, GETstartTime) -> None:
+        """Used by MS Windows to put an icon on the desktop if you
+        link to a website
+        """
+        xmlStr = \
+            '<?xml version="1.0" encoding="utf-8"?>\n' + \
+            '<browserconfig>\n' + \
+            '  <msapplication>\n' + \
+            '    <tile>\n' + \
+            '      <square150x150logo src="/logo150.png"/>\n' + \
+            '      <TileColor>#eeeeee</TileColor>\n' + \
+            '    </tile>\n' + \
+            '  </msapplication>\n' + \
+            '</browserconfig>'
+
+        msg = json.dumps(xmlStr,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/xml', msglen,
+                          None, callingDomain, False)
+        self._write(msg)
+        if self.server.debug:
+            print('Sent browserconfig: ' + callingDomain)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_browserConfig',
                            self.server.debug)
 
     def _getFavicon(self, callingDomain: str,
@@ -12411,6 +12438,14 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self.path = '/'
 
+        if '/browserconfig.xml' in self.path:
+            if self._hasAccept(callingDomain):
+                if not self._requestHTTP():
+                    self._browserConfig(callingDomain, GETstartTime)
+                    return
+                else:
+                    self.path = '/'
+
         # default newswire favicon, for links to sites which
         # have no favicon
         if 'newswire_favicon.ico' in self.path:
@@ -13490,9 +13525,9 @@ class PubServer(BaseHTTPRequestHandler):
         # which support progressive web apps
         if self.path == '/logo72.png' or \
            self.path == '/logo96.png' or \
-           self.path == '/logo120.png' or \
            self.path == '/logo128.png' or \
            self.path == '/logo144.png' or \
+           self.path == '/logo150.png' or \
            self.path == '/logo152.png' or \
            self.path == '/logo192.png' or \
            self.path == '/logo256.png' or \
