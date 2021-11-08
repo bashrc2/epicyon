@@ -6039,6 +6039,11 @@ class PubServer(BaseHTTPRequestHandler):
                     "sizes": "96x96"
                 },
                 {
+                    "src": "/logo120.png",
+                    "type": "image/png",
+                    "sizes": "120x120"
+                },
+                {
                     "src": "/logo128.png",
                     "type": "image/png",
                     "sizes": "128x128"
@@ -6052,6 +6057,11 @@ class PubServer(BaseHTTPRequestHandler):
                     "src": "/logo152.png",
                     "type": "image/png",
                     "sizes": "152x152"
+                },
+                {
+                    "src": "/apple-touch-icon.png",
+                    "type": "image/png",
+                    "sizes": "180x180"
                 },
                 {
                     "src": "/logo192.png",
@@ -13480,12 +13490,14 @@ class PubServer(BaseHTTPRequestHandler):
         # which support progressive web apps
         if self.path == '/logo72.png' or \
            self.path == '/logo96.png' or \
+           self.path == '/logo120.png' or \
            self.path == '/logo128.png' or \
            self.path == '/logo144.png' or \
            self.path == '/logo152.png' or \
            self.path == '/logo192.png' or \
            self.path == '/logo256.png' or \
-           self.path == '/logo512.png':
+           self.path == '/logo512.png' or \
+           self.path == '/apple-touch-icon.png':
             mediaFilename = \
                 self.server.baseDir + '/img' + self.path
             if os.path.isfile(mediaFilename):
