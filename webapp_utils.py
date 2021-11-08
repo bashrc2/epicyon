@@ -795,8 +795,10 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
 
 def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                              httpPrefix: str, domain: str, nickname: str,
-                             systemLanguage: str, published: str,
-                             title: str, snippet: str) -> str:
+                             systemLanguage: str,
+                             published: str, modified: str,
+                             title: str, snippet: str,
+                             translate: {}, url: str) -> str:
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
@@ -814,7 +816,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "@type" : "BlogPosting",\n' + \
         '      "headline": "' + title + '",\n' + \
         '      "datePublished": "' + published + '",\n' + \
-        '      "dateModified": "' + published + '",\n' + \
+        '      "dateModified": "' + modified + '",\n' + \
         '      "author": {\n' + \
         '        "@type": "Person",\n' + \
         '        "name": "' + nickname + '",\n' + \
@@ -829,9 +831,23 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'
+
+    ogMetadata = \
+        '    <meta property="og:locale" content="' + \
+        systemLanguage + '" />\n' + \
+        '    <meta property="og:type" content="article" />\n' + \
+        '    <meta property="og:title" content="' + title + '" />\n' + \
+        '    <meta property="og:url" content="' + url + '" />\n' + \
+        '    <meta content="Epicyon hosted on ' + domain + \
+        '" property="og:site_name" />\n' + \
+        '    <meta property="article:published_time" content="' + \
+        published + '" />\n' + \
+        '    <meta property="article:modified_time" content="' + \
+        modified + '" />'
+
     htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, blogMarkup,
-                                    systemLanguage)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                    ogMetadata + blogMarkup, systemLanguage)
     return htmlStr
 
 
