@@ -12271,6 +12271,16 @@ class PubServer(BaseHTTPRequestHandler):
             uaStr = self.headers['User-agent']
         return uaStr
 
+    def _permittedCrawlerPath(self, path: str) -> bool:
+        """Is the given path permitted to be crawled by a search engine?
+        this should only allow through basic information, such as nodeinfo
+        """
+        if path == '/' or path == '/about' or \
+           path.startswith('/api/') or \
+           path.startswith('/nodeinfo/'):
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
 
@@ -12299,9 +12309,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         uaStr = self._getUserAgent()
 
-        if self._blockedUserAgent(callingDomain, uaStr):
-            self._400()
-            return
+        if not self._permittedCrawlerPath(self.path):
+            if self._blockedUserAgent(callingDomain, uaStr):
+                self._400()
+                return
 
         refererDomain = self._getRefererDomain(uaStr)
 
@@ -13698,6 +13709,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                GETstartTime)
             return
 
+        # show a background image on the login or person options page
         if '-background.' in self.path:
             if self._showBackgroundImage(callingDomain, self.path,
                                          self.server.baseDir,
@@ -13887,6 +13899,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'login shown done',
                            self.server.debug)
 
+        # the newswire screen on mobile
         if htmlGET and self.path.startswith('/users/') and \
            self.path.endswith('/newswiremobile'):
             if (authorized or
@@ -14656,6 +14669,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'post replies done',
                            self.server.debug)
 
+        # roles on profile screen
         if self.path.endswith('/roles') and usersInPath:
             if self._showRoles(authorized,
                                callingDomain, self.path,
