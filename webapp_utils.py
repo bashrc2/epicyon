@@ -533,8 +533,15 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
         '<html lang="' + lang + '">\n' + \
         '  <head>\n' + \
         '    <meta charset="utf-8">\n' + \
-        '    <link rel="stylesheet" href="' + cssFile + '">\n' + \
+        '    <link rel="stylesheet" media="all" ' + \
+        'href="' + cssFile + '">\n' + \
         '    <link rel="manifest" href="/manifest.json">\n' + \
+        '    <link href="/favicon.ico" rel="icon" type="image/x-icon">\n' + \
+        '    <meta content="/browserconfig.xml" ' + \
+        'name="msapplication-config">\n' + \
+        '    <meta content="yes" name="apple-mobile-web-app-capable">\n' + \
+        '    <link href="/apple-touch-icon.png" rel="apple-touch-icon" ' + \
+        'sizes="180x180">\n' + \
         '    <meta name="theme-color" content="grey">\n' + \
         metadata + \
         '    <title>' + instanceTitle + '</title>\n' + \
@@ -545,6 +552,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
 
 def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                                actorJson: {}, city: str,
+                               contentLicenseUrl: str,
                                lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
@@ -658,7 +666,6 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '        "url": "' + actorJson['id'] + '"\n' + \
         '      },\n'
 
-    licenseUrl = 'https://creativecommons.org/licenses/by/4.0'
     profileMarkup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
@@ -679,7 +686,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
-        '      "license": "' + licenseUrl + '"\n' + \
+        '      "license": "' + contentLicenseUrl + '"\n' + \
         '    }\n' + \
         '    </script>\n'
 
@@ -788,8 +795,11 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
 
 def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                              httpPrefix: str, domain: str, nickname: str,
-                             systemLanguage: str, published: str,
-                             title: str, snippet: str) -> str:
+                             systemLanguage: str,
+                             published: str, modified: str,
+                             title: str, snippet: str,
+                             translate: {}, url: str,
+                             contentLicenseUrl: str) -> str:
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
@@ -798,7 +808,6 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
 
     # license for content on the site may be different from
     # the software license
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/3.0'
 
     blogMarkup = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
@@ -807,7 +816,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "@type" : "BlogPosting",\n' + \
         '      "headline": "' + title + '",\n' + \
         '      "datePublished": "' + published + '",\n' + \
-        '      "dateModified": "' + published + '",\n' + \
+        '      "dateModified": "' + modified + '",\n' + \
         '      "author": {\n' + \
         '        "@type": "Person",\n' + \
         '        "name": "' + nickname + '",\n' + \
@@ -822,9 +831,23 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'
+
+    ogMetadata = \
+        '    <meta property="og:locale" content="' + \
+        systemLanguage + '" />\n' + \
+        '    <meta property="og:type" content="article" />\n' + \
+        '    <meta property="og:title" content="' + title + '" />\n' + \
+        '    <meta property="og:url" content="' + url + '" />\n' + \
+        '    <meta content="Epicyon hosted on ' + domain + \
+        '" property="og:site_name" />\n' + \
+        '    <meta property="article:published_time" content="' + \
+        published + '" />\n' + \
+        '    <meta property="article:modified_time" content="' + \
+        modified + '" />\n'
+
     htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, blogMarkup,
-                                    systemLanguage)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
+                                    ogMetadata + blogMarkup, systemLanguage)
     return htmlStr
 
 

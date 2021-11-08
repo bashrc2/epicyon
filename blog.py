@@ -420,7 +420,7 @@ def htmlBlogPost(session, authorized: bool,
                  postJsonObject: {},
                  peertubeInstances: [],
                  systemLanguage: str, personCache: {},
-                 debug: bool) -> str:
+                 debug: bool, contentLicenseUrl: str) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -431,12 +431,19 @@ def htmlBlogPost(session, authorized: bool,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     published = postJsonObject['object']['published']
+    modified = published
+    if postJsonObject['object'].get('updated'):
+        modified = postJsonObject['object']['updated']
     title = postJsonObject['object']['summary']
+    url = ''
+    if postJsonObject['object'].get('url'):
+        url = postJsonObject['object']['url']
     snippet = _getSnippetFromBlogContent(postJsonObject, systemLanguage)
     blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
                                        httpPrefix, domainFull, nickname,
-                                       systemLanguage, published,
-                                       title, snippet)
+                                       systemLanguage, published, modified,
+                                       title, snippet, translate, url,
+                                       contentLicenseUrl)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogStr += _htmlBlogPostContent(debug, session, authorized, baseDir,

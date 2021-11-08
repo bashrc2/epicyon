@@ -53,6 +53,7 @@ from jami import getJamiAddress
 from cwtch import getCwtchAddress
 from filters import isFiltered
 from follow import isFollowerOfPerson
+from follow import getFollowerDomains
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHideFromScreenReader
@@ -541,7 +542,8 @@ def htmlProfile(signingPrivateKeyPem: str,
                 sharedItemsFederatedDomains: [],
                 extraJson: {}, pageNumber: int,
                 maxItemsPerPage: int,
-                CWlists: {}, listsEnabled: str) -> str:
+                CWlists: {}, listsEnabled: str,
+                contentLicenseUrl: str) -> str:
     """Show the profile page as html
     """
     nickname = profileJson['preferredUsername']
@@ -716,9 +718,12 @@ def htmlProfile(signingPrivateKeyPem: str,
                         break
         if selected == 'followers':
             if followApprovals:
+                currFollowerDomains = \
+                    getFollowerDomains(baseDir, nickname, domain)
                 with open(followRequestsFilename, 'r') as f:
                     for followerHandle in f:
                         if len(line) > 0:
+                            followerHandle = followerHandle.replace('\n', '')
                             if '://' in followerHandle:
                                 followerActor = followerHandle
                             else:
@@ -726,13 +731,25 @@ def htmlProfile(signingPrivateKeyPem: str,
                                 dom = followerHandle.split('@')[1]
                                 followerActor = \
                                     localActorUrl(httpPrefix, nick, dom)
+
+                            # is this a new domain?
+                            # if so then append a new instance indicator
+                            followerDomain, _ = \
+                                getDomainFromActor(followerActor)
+                            newFollowerDomain = ''
+                            if followerDomain not in currFollowerDomains:
+                                newFollowerDomain = ' ✨'
+
                             basePath = '/users/' + nickname
                             followApprovalsSection += '<div class="container">'
                             followApprovalsSection += \
                                 '<a href="' + followerActor + '">'
                             followApprovalsSection += \
                                 '<span class="followRequestHandle">' + \
-                                followerHandle + '</span></a>'
+                                followerHandle + \
+                                newFollowerDomain + '</span></a>'
+
+                            # show Approve and Deny buttons
                             followApprovalsSection += \
                                 '<a href="' + basePath + \
                                 '/followapprove=' + followerHandle + '">'
@@ -970,7 +987,8 @@ def htmlProfile(signingPrivateKeyPem: str,
         getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
-                                   profileJson, city) + \
+                                   profileJson, city,
+                                   contentLicenseUrl) + \
         profileStr + htmlFooter()
     return profileStr
 
@@ -1268,6 +1286,10 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         getConfigParam(baseDir, 'instanceDescriptionShort')
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
+    contentLicenseUrl = \
+        getConfigParam(baseDir, 'contentLicenseUrl')
+    if not contentLicenseUrl:
+        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     instanceStr = beginEditSection(translate['Instance Settings'])
 
@@ -1283,6 +1305,10 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
         editTextArea(translate['Instance Description'],
                      'instanceDescription', instanceDescription, 200,
                      '', True)
+    instanceStr += \
+        editTextField(translate['Content License'],
+                      'contentLicenseUrl', contentLicenseUrl)
+    instanceStr += '<br>\n'
     instanceStr += \
         editTextField(translate['Custom post submit button text'],
                       'customSubmitText', customSubmitText)

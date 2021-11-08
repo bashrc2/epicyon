@@ -508,7 +508,8 @@ class PubServer(BaseHTTPRequestHandler):
                              location, False,
                              self.server.systemLanguage,
                              conversationId,
-                             self.server.lowBandwidth)
+                             self.server.lowBandwidth,
+                             self.server.contentLicenseUrl)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -1281,7 +1282,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.maxLikeCount,
                                    self.server.maxRecentPosts,
                                    self.server.CWlists,
-                                   self.server.listsEnabled)
+                                   self.server.listsEnabled,
+                                   self.server.contentLicenseUrl)
 
     def _getOutboxThreadIndex(self, nickname: str,
                               maxOutboxThreadsPerAccount: int) -> int:
@@ -4357,7 +4359,7 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
                        debug: bool, allowLocalNetworkAccess: bool,
-                       systemLanguage: str) -> None:
+                       systemLanguage: str, contentLicenseUrl: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -4504,7 +4506,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.lowBandwidth:
                     convertImageToLowBandwidth(filename)
                 processMetaData(baseDir, nickname, domain,
-                                filename, postImageFilename, city)
+                                filename, postImageFilename, city,
+                                contentLicenseUrl)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image, zip or font saved to ' +
@@ -4899,6 +4902,24 @@ class PubServer(BaseHTTPRequestHandler):
                             if currLibretranslateApiKey:
                                 setConfigParam(baseDir,
                                                'libretranslateApiKey', '')
+
+                        # change instance short description
+                        if fields.get('contentLicenseUrl'):
+                            if fields['contentLicenseUrl'] != \
+                               self.server.contentLicenseUrl:
+                                licenseStr = fields['contentLicenseUrl']
+                                setConfigParam(baseDir,
+                                               'contentLicenseUrl',
+                                               licenseStr)
+                                self.server.contentLicenseUrl = \
+                                    licenseStr
+                        else:
+                            licenseStr = \
+                                'https://creativecommons.org/licenses/by/4.0'
+                            setConfigParam(baseDir,
+                                           'contentLicenseUrl',
+                                           licenseStr)
+                            self.server.contentLicenseUrl = licenseStr
 
                         # change instance short description
                         currInstanceDescriptionShort = \
@@ -6049,9 +6070,14 @@ class PubServer(BaseHTTPRequestHandler):
                     "sizes": "144x144"
                 },
                 {
-                    "src": "/logo152.png",
+                    "src": "/logo150.png",
                     "type": "image/png",
-                    "sizes": "152x152"
+                    "sizes": "150x150"
+                },
+                {
+                    "src": "/apple-touch-icon.png",
+                    "type": "image/png",
+                    "sizes": "180x180"
                 },
                 {
                     "src": "/logo192.png",
@@ -6090,6 +6116,33 @@ class PubServer(BaseHTTPRequestHandler):
             print('Sent manifest: ' + callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_progressiveWebAppManifest',
+                           self.server.debug)
+
+    def _browserConfig(self, callingDomain: str, GETstartTime) -> None:
+        """Used by MS Windows to put an icon on the desktop if you
+        link to a website
+        """
+        xmlStr = \
+            '<?xml version="1.0" encoding="utf-8"?>\n' + \
+            '<browserconfig>\n' + \
+            '  <msapplication>\n' + \
+            '    <tile>\n' + \
+            '      <square150x150logo src="/logo150.png"/>\n' + \
+            '      <TileColor>#eeeeee</TileColor>\n' + \
+            '    </tile>\n' + \
+            '  </msapplication>\n' + \
+            '</browserconfig>'
+
+        msg = json.dumps(xmlStr,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/xrd+xml', msglen,
+                          None, callingDomain, False)
+        self._write(msg)
+        if self.server.debug:
+            print('Sent browserconfig: ' + callingDomain)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_browserConfig',
                            self.server.debug)
 
     def _getFavicon(self, callingDomain: str,
@@ -8726,7 +8779,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.sharedItemsFederatedDomains,
                                     rolesList,
                                     None, None, self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.listsEnabled,
+                                    self.server.contentLicenseUrl)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8841,7 +8895,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 skills,
                                                 None, None,
                                                 self.server.CWlists,
-                                                self.server.listsEnabled)
+                                                self.server.listsEnabled,
+                                                self.server.contentLicenseUrl)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -10834,7 +10889,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     shares,
                                     pageNumber, sharesPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.listsEnabled,
+                                    self.server.contentLicenseUrl)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -10926,6 +10982,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         city = getSpoofedCity(self.server.city,
                                               baseDir, nickname, domain)
+                    contentLicenseUrl = \
+                        self.server.contentLicenseUrl
                     msg = \
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rssIconAtTop,
@@ -10960,7 +11018,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber,
                                     followsPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled).encode('utf-8')
+                                    self.server.listsEnabled,
+                                    contentLicenseUrl).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, callingDomain, False)
@@ -11050,6 +11109,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         city = getSpoofedCity(self.server.city,
                                               baseDir, nickname, domain)
+                    contentLicenseUrl = \
+                        self.server.contentLicenseUrl
                     msg = \
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rssIconAtTop,
@@ -11085,7 +11146,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber,
                                     followsPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled).encode('utf-8')
+                                    self.server.listsEnabled,
+                                    contentLicenseUrl).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, callingDomain, False)
@@ -11226,7 +11288,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.sharedItemsFederatedDomains,
                             None, None, None,
                             self.server.CWlists,
-                            self.server.listsEnabled).encode('utf-8')
+                            self.server.listsEnabled,
+                            self.server.contentLicenseUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -12239,6 +12302,17 @@ class PubServer(BaseHTTPRequestHandler):
             uaStr = self.headers['User-agent']
         return uaStr
 
+    def _permittedCrawlerPath(self, path: str) -> bool:
+        """Is the given path permitted to be crawled by a search engine?
+        this should only allow through basic information, such as nodeinfo
+        """
+        if path == '/' or path == '/about' or path == '/login' or \
+           path.startswith('/api/') or \
+           path.startswith('/nodeinfo/') or \
+           path.startswith('/blog/'):
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
 
@@ -12267,9 +12341,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         uaStr = self._getUserAgent()
 
-        if self._blockedUserAgent(callingDomain, uaStr):
-            self._400()
-            return
+        if not self._permittedCrawlerPath(self.path):
+            if self._blockedUserAgent(callingDomain, uaStr):
+                self._400()
+                return
 
         refererDomain = self._getRefererDomain(uaStr)
 
@@ -12400,6 +12475,11 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 else:
                     self.path = '/'
+
+        if '/browserconfig.xml' in self.path:
+            if self._hasAccept(callingDomain):
+                self._browserConfig(callingDomain, GETstartTime)
+                return
 
         # default newswire favicon, for links to sites which
         # have no favicon
@@ -13089,7 +13169,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.peertubeInstances,
                                        self.server.systemLanguage,
                                        self.server.personCache,
-                                       self.server.debug)
+                                       self.server.debug,
+                                       self.server.contentLicenseUrl)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -13482,10 +13563,11 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/logo96.png' or \
            self.path == '/logo128.png' or \
            self.path == '/logo144.png' or \
-           self.path == '/logo152.png' or \
+           self.path == '/logo150.png' or \
            self.path == '/logo192.png' or \
            self.path == '/logo256.png' or \
-           self.path == '/logo512.png':
+           self.path == '/logo512.png' or \
+           self.path == '/apple-touch-icon.png':
             mediaFilename = \
                 self.server.baseDir + '/img' + self.path
             if os.path.isfile(mediaFilename):
@@ -13660,6 +13742,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                GETstartTime)
             return
 
+        # show a background image on the login or person options page
         if '-background.' in self.path:
             if self._showBackgroundImage(callingDomain, self.path,
                                          self.server.baseDir,
@@ -13849,6 +13932,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'login shown done',
                            self.server.debug)
 
+        # the newswire screen on mobile
         if htmlGET and self.path.startswith('/users/') and \
            self.path.endswith('/newswiremobile'):
             if (authorized or
@@ -14618,6 +14702,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'post replies done',
                            self.server.debug)
 
+        # roles on profile screen
         if self.path.endswith('/roles') and usersInPath:
             if self._showRoles(authorized,
                                callingDomain, self.path,
@@ -15195,7 +15280,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str,
                                callingDomain: str, cookie: str,
-                               authorized: bool) -> int:
+                               authorized: bool,
+                               contentLicenseUrl: str) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
         # 1=new post success
@@ -15272,7 +15358,8 @@ class PubServer(BaseHTTPRequestHandler):
                         convertImageToLowBandwidth(filename)
                     processMetaData(self.server.baseDir,
                                     nickname, self.server.domain,
-                                    filename, postImageFilename, city)
+                                    filename, postImageFilename, city,
+                                    contentLicenseUrl)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -15399,7 +15486,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['location'], False,
                                      self.server.systemLanguage,
                                      conversationId,
-                                     self.server.lowBandwidth)
+                                     self.server.lowBandwidth,
+                                     self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15481,7 +15569,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['location'],
                                    self.server.systemLanguage,
                                    conversationId,
-                                   self.server.lowBandwidth)
+                                   self.server.lowBandwidth,
+                                   self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15573,7 +15662,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             attachmentMediaType,
                                             imgDescription,
                                             city,
-                                            self.server.lowBandwidth)
+                                            self.server.lowBandwidth,
+                                            self.server.contentLicenseUrl)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain,
@@ -15631,7 +15721,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['location'],
                                        self.server.systemLanguage,
                                        conversationId,
-                                       self.server.lowBandwidth)
+                                       self.server.lowBandwidth,
+                                       self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15682,7 +15773,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'],
                                             self.server.systemLanguage,
                                             conversationId,
-                                            self.server.lowBandwidth)
+                                            self.server.lowBandwidth,
+                                            self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15737,7 +15829,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['location'],
                                                 self.server.systemLanguage,
                                                 conversationId,
-                                                self.server.lowBandwidth)
+                                                self.server.lowBandwidth,
+                                                self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15790,7 +15883,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'],
                                             self.server.systemLanguage,
                                             conversationId,
-                                            self.server.lowBandwidth)
+                                            self.server.lowBandwidth,
+                                            self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -15826,7 +15920,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      city,
                                      self.server.debug, fields['subject'],
                                      self.server.systemLanguage,
-                                     self.server.lowBandwidth)
+                                     self.server.lowBandwidth,
+                                     self.server.contentLicenseUrl)
                 if messageJson:
                     if self._postToOutbox(messageJson,
                                           self.server.projectVersion,
@@ -15867,7 +15962,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['subject'],
                                        intDuration,
                                        self.server.systemLanguage,
-                                       self.server.lowBandwidth)
+                                       self.server.lowBandwidth,
+                                       self.server.contentLicenseUrl)
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -15939,7 +16035,8 @@ class PubServer(BaseHTTPRequestHandler):
                          city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
                          self.server.translate, sharesFileType,
-                         self.server.lowBandwidth)
+                         self.server.lowBandwidth,
+                         self.server.contentLicenseUrl)
                 if filename:
                     if os.path.isfile(filename):
                         try:
@@ -15954,7 +16051,8 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receiveNewPost(self, postType: str, path: str,
                         callingDomain: str, cookie: str,
-                        authorized: bool) -> int:
+                        authorized: bool,
+                        contentLicenseUrl: str) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -16056,7 +16154,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             path, headers, length,
                                             postBytes, boundary,
                                             callingDomain, cookie,
-                                            authorized)
+                                            authorized,
+                                            contentLicenseUrl)
         return pageNumber
 
     def _cryptoAPIreadHandle(self):
@@ -16353,7 +16452,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.onionDomain,
                                 self.server.i2pDomain, self.server.debug,
                                 self.server.allowLocalNetworkAccess,
-                                self.server.systemLanguage)
+                                self.server.systemLanguage,
+                                self.server.contentLicenseUrl)
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -16713,7 +16813,8 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
                                      callingDomain, cookie,
-                                     authorized)
+                                     authorized,
+                                     self.server.contentLicenseUrl)
             if pageNumber:
                 print(currPostType + ' post received')
                 nickname = self.path.split('/users/')[1]
@@ -17126,7 +17227,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(listsEnabled: str,
+def runDaemon(contentLicenseUrl: str,
+              listsEnabled: str,
               defaultReplyIntervalHours: int,
               lowBandwidth: bool,
               maxLikeCount: int,
@@ -17213,6 +17315,11 @@ def runDaemon(listsEnabled: str,
 
     # scan the theme directory for any svg files containing scripts
     assert not scanThemesForScripts(baseDir)
+
+    # license for content of the instance
+    if not contentLicenseUrl:
+        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    httpd.contentLicenseUrl = contentLicenseUrl
 
     # fitness metrics
     fitnessFilename = baseDir + '/accounts/fitness.json'

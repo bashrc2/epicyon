@@ -419,6 +419,7 @@ def _desktopReplyToPost(session, postId: str,
                         screenreader: str, systemLanguage: str,
                         espeak, conversationId: str,
                         lowBandwidth: bool,
+                        contentLicenseUrl: str,
                         signingPrivateKeyPem: str) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
@@ -473,6 +474,7 @@ def _desktopReplyToPost(session, postId: str,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          systemLanguage, lowBandwidth,
+                         contentLicenseUrl,
                          debug, postId, postId,
                          conversationId, subject) == 0:
         sayStr = 'Reply sent'
@@ -488,6 +490,7 @@ def _desktopNewPost(session,
                     debug: bool,
                     screenreader: str, systemLanguage: str,
                     espeak, lowBandwidth: bool,
+                    contentLicenseUrl: str,
                     signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new post
     """
@@ -538,6 +541,7 @@ def _desktopNewPost(session,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          systemLanguage, lowBandwidth,
+                         contentLicenseUrl,
                          debug, None, None,
                          conversationId, subject) == 0:
         sayStr = 'Post sent'
@@ -1124,6 +1128,7 @@ def _desktopNewDM(session, toHandle: str,
                   debug: bool,
                   screenreader: str, systemLanguage: str,
                   espeak, lowBandwidth: bool,
+                  contentLicenseUrl: str,
                   signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
@@ -1146,6 +1151,7 @@ def _desktopNewDM(session, toHandle: str,
                           debug,
                           screenreader, systemLanguage,
                           espeak, lowBandwidth,
+                          contentLicenseUrl,
                           signingPrivateKeyPem)
 
 
@@ -1156,6 +1162,7 @@ def _desktopNewDMbase(session, toHandle: str,
                       debug: bool,
                       screenreader: str, systemLanguage: str,
                       espeak, lowBandwidth: bool,
+                      contentLicenseUrl: str,
                       signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new direct message
     """
@@ -1246,6 +1253,7 @@ def _desktopNewDMbase(session, toHandle: str,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
                          systemLanguage, lowBandwidth,
+                         contentLicenseUrl,
                          debug, None, None,
                          conversationId, subject) == 0:
         sayStr = 'Direct message sent'
@@ -1318,6 +1326,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     """
     # TODO: this should probably be retrieved somehow from the server
     signingPrivateKeyPem = None
+
+    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     blockedCache = {}
 
@@ -1716,6 +1726,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             screenreader, systemLanguage,
                                             espeak, conversationId,
                                             lowBandwidth,
+                                            contentLicenseUrl,
                                             signingPrivateKeyPem)
                 refreshTimeline = True
                 print('')
@@ -1751,6 +1762,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       debug,
                                       screenreader, systemLanguage,
                                       espeak, lowBandwidth,
+                                      contentLicenseUrl,
                                       signingPrivateKeyPem)
                         refreshTimeline = True
                 else:
@@ -1762,6 +1774,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     debug,
                                     screenreader, systemLanguage,
                                     espeak, lowBandwidth,
+                                    contentLicenseUrl,
                                     signingPrivateKeyPem)
                     refreshTimeline = True
                 print('')
