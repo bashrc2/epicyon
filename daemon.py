@@ -6120,7 +6120,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = json.dumps(xmlStr,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
-        self._set_headers('application/xml', msglen,
+        self._set_headers('application/xrd+xml', msglen,
                           None, callingDomain, False)
         self._write(msg)
         if self.server.debug:
