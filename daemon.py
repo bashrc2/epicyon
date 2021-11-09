@@ -12994,13 +12994,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     nickname, self.server.domain,
                                     self.server.domainFull,
                                     self.server.systemLanguage):
-                if not self._secureMode(True):
-                    # GET request signature failed
+                followerActor = self._secureModeActor()
+                if not followerActor:
                     showPinned = False
                 else:
-                    # the GET signature passes, but is this someone
-                    # that follows us?
-                    followerActor = self._secureModeActor()
                     followerNickname = getNicknameFromActor(followerActor)
                     followerDomain, followerPort = \
                         getDomainFromActor(followerActor)
@@ -13011,6 +13008,11 @@ class PubServer(BaseHTTPRequestHandler):
                                               followerNickname,
                                               followerDomainFull):
                         showPinned = False
+                    else:
+                        # does their GET signature verify?
+                        if not self._secureMode(True):
+                            # GET request signature failed
+                            showPinned = False
             if not showPinned:
                 # follower check failed, so just return an empty collection
                 postContext = getIndividualPostContext()
