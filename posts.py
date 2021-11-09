@@ -1570,18 +1570,6 @@ def pinPost(baseDir: str, nickname: str, domain: str,
     with open(pinnedFilename, 'w+') as pinFile:
         pinFile.write(pinnedContent)
 
-    privatePinnedFilename = accountDir + '/pinToProfile.private'
-    if followersOnly:
-        with open(privatePinnedFilename, 'w+') as pinFile:
-            pinFile.write('\n')
-    else:
-        if os.path.isfile(privatePinnedFilename):
-            try:
-                os.remove(privatePinnedFilename)
-            except BaseException:
-                print('EX: pinPost unable to delete private ' +
-                      privatePinnedFilename)
-
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
@@ -1593,14 +1581,6 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
             os.remove(pinnedFilename)
         except BaseException:
             print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
-
-    privatePinnedFilename = accountDir + '/pinToProfile.private'
-    if os.path.isfile(privatePinnedFilename):
-        try:
-            os.remove(privatePinnedFilename)
-        except BaseException:
-            print('EX: undoPinnedPost unable to delete private ' +
-                  privatePinnedFilename)
 
 
 def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
@@ -1665,22 +1645,6 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
         'totalItems': len(itemsList),
         'type': 'OrderedCollection'
     }
-
-
-def hasPrivatePinnedPost(baseDir: str, httpPrefix: str,
-                         nickname: str, domain: str,
-                         domainFull: str, systemLanguage: str) -> bool:
-    """Whether the given account has a private pinned post
-    """
-    pinnedPostJson = \
-        getPinnedPostAsJson(baseDir, httpPrefix,
-                            nickname, domain,
-                            domainFull, systemLanguage)
-    if not pinnedPostJson:
-        return False
-    if not isPublicPost(pinnedPostJson):
-        return True
-    return False
 
 
 def regenerateIndexForBox(baseDir: str,

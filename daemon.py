@@ -73,7 +73,6 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
-from posts import hasPrivatePinnedPost
 from posts import getOriginalPostFromAnnounceUrl
 from posts import savePostToBox
 from posts import getInstanceActorKey
@@ -101,7 +100,6 @@ from inbox import runInboxQueue
 from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
-from follow import isFollowerOfPerson
 from follow import followerApprovalActive
 from follow import isFollowingActor
 from follow import getFollowingFeed
@@ -656,7 +654,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
-    def _secureModeActor(self) -> str:
+    def _signedGETkeyId(self) -> str:
         """Returns the actor from the signed GET keyId
         """
         signature = None
@@ -691,7 +689,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.secureMode and not force:
             return True
 
-        keyId = self._secureModeActor()
+        keyId = self._signedGETkeyId()
         if not keyId:
             if self.server.debug:
                 print('AUTH: secure mode, ' +
@@ -12987,52 +12985,6 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-            showPinned = True
-            # is the pinned post for followers only?
-            if hasPrivatePinnedPost(self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    nickname, self.server.domain,
-                                    self.server.domainFull,
-                                    self.server.systemLanguage):
-                followerActor = self._secureModeActor()
-                if not followerActor:
-                    showPinned = False
-                else:
-                    followerNickname = getNicknameFromActor(followerActor)
-                    followerDomain, followerPort = \
-                        getDomainFromActor(followerActor)
-                    followerDomainFull = \
-                        getFullDomain(followerDomain, followerPort)
-                    if not isFollowerOfPerson(self.server.baseDir,
-                                              nickname, self.server.domain,
-                                              followerNickname,
-                                              followerDomainFull):
-                        showPinned = False
-                    else:
-                        # does their GET signature verify?
-                        if not self._secureMode(True):
-                            # GET request signature failed
-                            showPinned = False
-            if not showPinned:
-                # follower check failed, so just return an empty collection
-                postContext = getIndividualPostContext()
-                actor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + '/users/' + nickname
-                emptyCollectionJson = {
-                    '@context': postContext,
-                    'id': actor + '/collections/featured',
-                    'orderedItems': [],
-                    'totalItems': 0,
-                    'type': 'OrderedCollection'
-                }
-                msg = json.dumps(emptyCollectionJson,
-                                 ensure_ascii=False).encode('utf-8')
-                msglen = len(msg)
-                self._set_headers('application/json',
-                                  msglen, None, callingDomain, False)
-                self._write(msg)
-                return
             # return the featured posts collection
             self._getFeaturedCollection(callingDomain,
                                         self.server.baseDir,
@@ -15795,16 +15747,6 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newfollowers':
-                if not fields.get('pinToProfile'):
-                    pinToProfile = False
-                else:
-                    pinToProfile = True
-                    # is the post message empty?
-                    if not fields['message']:
-                        # remove the pinned content from profile screen
-                        undoPinnedPost(self.server.baseDir,
-                                       nickname, self.server.domain)
-                        return 1
                 city = getSpoofedCity(self.server.city,
                                       self.server.baseDir,
                                       nickname,
@@ -15843,15 +15785,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
-                        return 1
-                    if pinToProfile:
-                        contentStr = \
-                            getBaseContentFromPost(messageJson,
-                                                   self.server.systemLanguage)
-                        followersOnly = True
-                        pinPost(self.server.baseDir,
-                                nickname, self.server.domain, contentStr,
-                                followersOnly)
                         return 1
                     if self._postToOutbox(messageJson,
                                           self.server.projectVersion,
