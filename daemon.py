@@ -73,6 +73,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import hasPrivatePinnedPost
 from posts import getOriginalPostFromAnnounceUrl
 from posts import savePostToBox
 from posts import getInstanceActorKey
@@ -100,6 +101,7 @@ from inbox import runInboxQueue
 from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
+from follow import isFollowerOfPerson
 from follow import followerApprovalActive
 from follow import isFollowingActor
 from follow import getFollowingFeed
@@ -654,12 +656,9 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
-    def _secureMode(self) -> bool:
-        """http authentication of GET requests for json
+    def _secureModeActor(self) -> str:
+        """Returns the actor from the signed GET keyId
         """
-        if not self.server.secureMode:
-            return True
-
         signature = None
         if self.headers.get('signature'):
             signature = self.headers['signature']
@@ -669,9 +668,9 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the headers are signed
         if not signature:
             if self.server.debug:
-                print('AUTH: secure mode, ' +
+                print('AUTH: secure mode actor, ' +
                       'GET has no signature in headers')
-            return False
+            return None
 
         # get the keyId, which is typically the instance actor
         keyId = None
@@ -680,16 +679,24 @@ class PubServer(BaseHTTPRequestHandler):
             if signatureItem.startswith('keyId='):
                 if '"' in signatureItem:
                     keyId = signatureItem.split('"')[1]
-                    break
+                    # remove #main-key
+                    if '#' in keyId:
+                        keyId = keyId.split('#')[0]
+                    return keyId
+        return None
+
+    def _secureMode(self, force: bool = False) -> bool:
+        """http authentication of GET requests for json
+        """
+        if not self.server.secureMode and not force:
+            return True
+
+        keyId = self._secureModeActor()
         if not keyId:
             if self.server.debug:
                 print('AUTH: secure mode, ' +
                       'failed to obtain keyId from signature')
             return False
-
-        # remove #main-key
-        if '#' in keyId:
-            keyId = keyId.split('#')[0]
 
         # is the keyId (actor) valid?
         if not urlPermitted(keyId, self.server.federationList):
@@ -12980,6 +12987,51 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            showPinned = True
+            # is the pinned post for followers only?
+            if hasPrivatePinnedPost(self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    nickname, self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.systemLanguage):
+                if not self._secureMode(True):
+                    # GET request signature failed
+                    showPinned = False
+                else:
+                    # the GET signature passes, but is this someone
+                    # that follows us?
+                    followerActor = self._secureModeActor()
+                    followerNickname = getNicknameFromActor(followerActor)
+                    followerDomain, followerPort = \
+                        getDomainFromActor(followerActor)
+                    followerDomainFull = \
+                        getFullDomain(followerDomain, followerPort)
+                    if not isFollowerOfPerson(self.server.baseDir,
+                                              nickname, self.server.domain,
+                                              followerNickname,
+                                              followerDomainFull):
+                        showPinned = False
+            if not showPinned:
+                # follower check failed, so just return an empty collection
+                postContext = getIndividualPostContext()
+                actor = \
+                    self.server.httpPrefix + '://' + \
+                    self.server.domainFull + '/users/' + nickname
+                emptyCollectionJson = {
+                    '@context': postContext,
+                    'id': actor + '/collections/featured',
+                    'orderedItems': [],
+                    'totalItems': 0,
+                    'type': 'OrderedCollection'
+                }
+                msg = json.dumps(emptyCollectionJson,
+                                 ensure_ascii=False).encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/json',
+                                  msglen, None, callingDomain, False)
+                self._write(msg)
+                return
+            # return the featured posts collection
             self._getFeaturedCollection(callingDomain,
                                         self.server.baseDir,
                                         self.path,

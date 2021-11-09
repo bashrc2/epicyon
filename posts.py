@@ -1648,6 +1648,22 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
     }
 
 
+def hasPrivatePinnedPost(baseDir: str, httpPrefix: str,
+                         nickname: str, domain: str,
+                         domainFull: str, systemLanguage: str) -> bool:
+    """Whether the given account has a private pinned post
+    """
+    pinnedPostJson = \
+        getPinnedPostAsJson(baseDir, httpPrefix,
+                            nickname, domain,
+                            domainFull, systemLanguage)
+    if not pinnedPostJson:
+        return False
+    if not isPublicPost(pinnedPostJson):
+        return True
+    return False
+
+
 def regenerateIndexForBox(baseDir: str,
                           nickname: str, domain: str, boxName: str) -> None:
     """Generates an index for the given box if it doesn't exist
