@@ -575,7 +575,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     '<input type="hidden" name="commentsEnabled" ' + \
                     'value="true">\n'
 
-            if endpoint == 'newpost':
+            if endpoint == 'newpost' or \
+               endpoint == 'newfollowers':
                 dateAndLocation += \
                     '<p><input type="checkbox" class="profilecheckbox" ' + \
                     'name="pinToProfile"><label class="labels"> ' + \
