@@ -15547,8 +15547,10 @@ class PubServer(BaseHTTPRequestHandler):
                         contentStr = \
                             getBaseContentFromPost(messageJson,
                                                    self.server.systemLanguage)
+                        followersOnly = False
                         pinPost(self.server.baseDir,
-                                nickname, self.server.domain, contentStr)
+                                nickname, self.server.domain, contentStr,
+                                followersOnly)
                         return 1
                     if self._postToOutbox(messageJson,
                                           self.server.projectVersion,
@@ -15791,6 +15793,16 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newfollowers':
+                if not fields.get('pinToProfile'):
+                    pinToProfile = False
+                else:
+                    pinToProfile = True
+                    # is the post message empty?
+                    if not fields['message']:
+                        # remove the pinned content from profile screen
+                        undoPinnedPost(self.server.baseDir,
+                                       nickname, self.server.domain)
+                        return 1
                 city = getSpoofedCity(self.server.city,
                                       self.server.baseDir,
                                       nickname,
@@ -15829,6 +15841,15 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.contentLicenseUrl)
                 if messageJson:
                     if fields['schedulePost']:
+                        return 1
+                    if pinToProfile:
+                        contentStr = \
+                            getBaseContentFromPost(messageJson,
+                                                   self.server.systemLanguage)
+                        followersOnly = True
+                        pinPost(self.server.baseDir,
+                                nickname, self.server.domain, contentStr,
+                                followersOnly)
                         return 1
                     if self._postToOutbox(messageJson,
                                           self.server.projectVersion,

@@ -811,10 +811,12 @@ def htmlProfile(signingPrivateKeyPem: str,
     # get pinned post content
     accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
+    privatePinnedFilename = accountDir + '/pinToProfile.private'
     pinnedContent = None
     if os.path.isfile(pinnedFilename):
-        with open(pinnedFilename, 'r') as pinFile:
-            pinnedContent = pinFile.read()
+        if not os.path.isfile(privatePinnedFilename):
+            with open(pinnedFilename, 'r') as pinFile:
+                pinnedContent = pinFile.read()
 
     profileHeaderStr = \
         _getProfileHeader(baseDir, httpPrefix,

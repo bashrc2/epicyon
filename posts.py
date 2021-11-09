@@ -1562,13 +1562,25 @@ def _postIsAddressedToFollowers(baseDir: str,
 
 
 def pinPost(baseDir: str, nickname: str, domain: str,
-            pinnedContent: str) -> None:
+            pinnedContent: str, followersOnly: bool) -> None:
     """Pins the given post Id to the profile of then given account
     """
     accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     with open(pinnedFilename, 'w+') as pinFile:
         pinFile.write(pinnedContent)
+
+    privatePinnedFilename = accountDir + '/pinToProfile.private'
+    if followersOnly:
+        with open(privatePinnedFilename, 'w+') as pinFile:
+            pinFile.write('\n')
+    else:
+        if os.path.isfile(privatePinnedFilename):
+            try:
+                os.remove(privatePinnedFilename)
+            except BaseException:
+                print('EX: pinPost unable to delete private ' +
+                      privatePinnedFilename)
 
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
@@ -1581,7 +1593,14 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
             os.remove(pinnedFilename)
         except BaseException:
             print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
-            pass
+
+    privatePinnedFilename = accountDir + '/pinToProfile.private'
+    if os.path.isfile(privatePinnedFilename):
+        try:
+            os.remove(privatePinnedFilename)
+        except BaseException:
+            print('EX: undoPinnedPost unable to delete private ' +
+                  privatePinnedFilename)
 
 
 def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
