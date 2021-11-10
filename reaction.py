@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 import re
+import urllib.parse
 from pprint import pprint
 from utils import hasObjectString
 from utils import hasObjectStringObject
@@ -530,7 +531,7 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
     if len(reactions.items()) == 0:
         return ''
     reactBy = removeIdEnding(postJsonObject['object']['id'])
-    baseUrl = actor + '?reactBy=' + reactBy + ';emoj='
+    baseUrl = actor + '?react=' + reactBy + '?emojreact='
     htmlStr = '<div class="emojiReactionBar">\n'
     for emojiContent, count in reactions.items():
         htmlStr += '  <div class="emojiReactionButton">\n'
@@ -541,7 +542,7 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
         emojiContentStr = emojiContent + countStr
         if interactive:
             # urlencode the emoji
-            emojiContentEncoded = emojiContent
+            emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
             emojiContentStr = \
                 '    <a href="' + baseUrl + emojiContentEncoded + '">' + \
                 emojiContentStr + '</a>\n'

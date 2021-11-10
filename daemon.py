@@ -238,6 +238,8 @@ from categories import updateHashtagCategories
 from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
+from reaction import updateReactionCollection
+from utils import undoReactionCollectionEntry
 from utils import getNewPostEndpoints
 from utils import malformedCiphertext
 from utils import hasActor
@@ -7895,6 +7897,375 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_undoLikeButton',
                            self.server.debug)
 
+    def _reactionButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime,
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """Press an emoji reaction button
+        """
+        pageNumber = 1
+        reactionUrl = path.split('?react=')[1]
+        if '?' in reactionUrl:
+            reactionUrl = reactionUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        actor = path.split('?react=')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        emojiContentEncoded = None
+        if '?emojreact=' in path:
+            emojiContentEncoded = path.split('?emojreact=')[1]
+            if '?' in emojiContentEncoded:
+                emojiContentEncoded = emojiContentEncoded.split('?')[0]
+        if not emojiContentEncoded:
+            print('WARN: no emoji reaction ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorPathStr = \
+                actorAbsolute + '/' + timelineStr + \
+                '?page=' + str(pageNumber) + timelineBookmark
+            self._redirect_headers(actorPathStr, cookie,
+                                   callingDomain)
+            return
+        emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorPathStr = \
+                actorAbsolute + '/' + timelineStr + \
+                '?page=' + str(pageNumber) + timelineBookmark
+            self._redirect_headers(actorPathStr, cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during emoji reaction')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: ' +
+                      'GET failed to create session during emoji reaction')
+                self._404()
+                self.server.GETbusy = False
+                return
+        reactionActor = \
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+        actorReaction = path.split('?actor=')[1]
+        if '?' in actorReaction:
+            actorReaction = actorReaction.split('?')[0]
+
+        # if this is an announce then send the emoji reaction
+        # to the original post
+        origActor, origPostUrl, origFilename = \
+            getOriginalPostFromAnnounceUrl(reactionUrl, baseDir,
+                                           self.postToNickname, domain)
+        reactionUrl2 = reactionUrl
+        reactionPostFilename = origFilename
+        if origActor and origPostUrl:
+            actorReaction = origActor
+            reactionUrl2 = origPostUrl
+            reactionPostFilename = None
+
+        reactionJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'EmojiReact',
+            'actor': reactionActor,
+            'to': [actorReaction],
+            'object': reactionUrl2,
+            'content': emojiContent
+        }
+
+        # send out the emoji reaction to followers
+        self._postToOutbox(reactionJson, self.server.projectVersion, None)
+
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_reactionButton postToOutbox',
+                           self.server.debug)
+
+        print('Locating emoji reaction post ' + reactionUrl)
+        # directly emoji reaction the post file
+        if not reactionPostFilename:
+            reactionPostFilename = \
+                locatePost(baseDir, self.postToNickname, domain, reactionUrl)
+        if reactionPostFilename:
+            recentPostsCache = self.server.recentPostsCache
+            reactionPostJson = loadJson(reactionPostFilename, 0, 1)
+            if origFilename and origPostUrl:
+                updateReactionCollection(recentPostsCache,
+                                         baseDir, reactionPostFilename,
+                                         reactionUrl,
+                                         reactionActor, self.postToNickname,
+                                         domain, debug, reactionPostJson,
+                                         emojiContent)
+                reactionUrl = origPostUrl
+                reactionPostFilename = origFilename
+            if debug:
+                print('Updating emoji reaction for ' + reactionPostFilename)
+            updateReactionCollection(recentPostsCache,
+                                     baseDir, reactionPostFilename,
+                                     reactionUrl,
+                                     reactionActor,
+                                     self.postToNickname, domain,
+                                     debug, None, emojiContent)
+            if debug:
+                print('Regenerating html post for changed ' +
+                      'emoji reaction collection')
+            # clear the icon from the cache so that it gets updated
+            if reactionPostJson:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, self.postToNickname,
+                                          domain, reactionPostJson)
+                if debug:
+                    print('Reaction post json: ' + str(reactionPostJson))
+                    print('Reaction post nickname: ' +
+                          self.postToNickname + ' ' + domain)
+                    print('Reaction post cache: ' + str(cachedPostFilename))
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                showRepeats = not isDM(reactionPostJson)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, reactionPostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix,
+                                     self.server.projectVersion,
+                                     timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.twitterReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     showRepeats,
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False,
+                                     self.server.CWlists,
+                                     self.server.listsEnabled)
+            else:
+                print('WARN: Emoji reaction post not found: ' +
+                      reactionPostFilename)
+        else:
+            print('WARN: unable to locate file for emoji reaction post ' +
+                  reactionUrl)
+
+        self.server.GETbusy = False
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorPathStr = \
+            actorAbsolute + '/' + timelineStr + \
+            '?page=' + str(pageNumber) + timelineBookmark
+        self._redirect_headers(actorPathStr, cookie,
+                               callingDomain)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_reactionButton',
+                           self.server.debug)
+
+    def _undoReactionButton(self, callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime,
+                            proxyType: str, cookie: str,
+                            debug: str):
+        """A button is pressed to undo emoji reaction
+        """
+        pageNumber = 1
+        reactionUrl = path.split('?unreact=')[1]
+        if '?' in reactionUrl:
+            reactionUrl = reactionUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?unreact=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorPathStr = \
+                actorAbsolute + '/' + timelineStr + \
+                '?page=' + str(pageNumber)
+            self._redirect_headers(actorPathStr, cookie,
+                                   callingDomain)
+            return
+        emojiContentEncoded = None
+        if '?emojreact=' in path:
+            emojiContentEncoded = path.split('?emojreact=')[1]
+            if '?' in emojiContentEncoded:
+                emojiContentEncoded = emojiContentEncoded.split('?')[0]
+        if not emojiContentEncoded:
+            print('WARN: no emoji reaction ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorPathStr = \
+                actorAbsolute + '/' + timelineStr + \
+                '?page=' + str(pageNumber) + timelineBookmark
+            self._redirect_headers(actorPathStr, cookie,
+                                   callingDomain)
+            return
+        emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
+        if not self.server.session:
+            print('Starting new session during undo emoji reaction')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during undo emoji reaction')
+                self._404()
+                self.server.GETbusy = False
+                return
+        undoActor = \
+            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+        actorReaction = path.split('?actor=')[1]
+        if '?' in actorReaction:
+            actorReaction = actorReaction.split('?')[0]
+
+        # if this is an announce then send the emoji reaction
+        # to the original post
+        origActor, origPostUrl, origFilename = \
+            getOriginalPostFromAnnounceUrl(reactionUrl, baseDir,
+                                           self.postToNickname, domain)
+        reactionUrl2 = reactionUrl
+        reactionPostFilename = origFilename
+        if origActor and origPostUrl:
+            actorReaction = origActor
+            reactionUrl2 = origPostUrl
+            reactionPostFilename = None
+
+        undoReactionJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Undo',
+            'actor': undoActor,
+            'to': [actorReaction],
+            'object': {
+                'type': 'EmojiReaction',
+                'actor': undoActor,
+                'to': [actorReaction],
+                'object': reactionUrl2
+            }
+        }
+
+        # send out the undo emoji reaction to followers
+        self._postToOutbox(undoReactionJson, self.server.projectVersion, None)
+
+        # directly undo the emoji reaction within the post file
+        if not reactionPostFilename:
+            reactionPostFilename = \
+                locatePost(baseDir, self.postToNickname, domain, reactionUrl)
+        if reactionPostFilename:
+            recentPostsCache = self.server.recentPostsCache
+            reactionPostJson = loadJson(reactionPostFilename, 0, 1)
+            if origFilename and origPostUrl:
+                undoReactionCollectionEntry(recentPostsCache,
+                                            baseDir, reactionPostFilename,
+                                            reactionUrl,
+                                            undoActor, domain, debug,
+                                            reactionPostJson,
+                                            emojiContent)
+                reactionUrl = origPostUrl
+                reactionPostFilename = origFilename
+            if debug:
+                print('Removing emoji reaction for ' + reactionPostFilename)
+            undoReactionCollectionEntry(recentPostsCache,
+                                        baseDir,
+                                        reactionPostFilename, reactionUrl,
+                                        undoActor, domain, debug, None,
+                                        emojiContent)
+            if debug:
+                print('Regenerating html post for changed ' +
+                      'emoji reaction collection')
+            if reactionPostJson:
+                showIndividualPostIcons = True
+                manuallyApproveFollowers = \
+                    followerApprovalActive(baseDir,
+                                           self.postToNickname, domain)
+                showRepeats = not isDM(reactionPostJson)
+                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                                     self.server.recentPostsCache,
+                                     self.server.maxRecentPosts,
+                                     self.server.translate,
+                                     pageNumber, baseDir,
+                                     self.server.session,
+                                     self.server.cachedWebfingers,
+                                     self.server.personCache,
+                                     self.postToNickname, domain,
+                                     self.server.port, reactionPostJson,
+                                     None, True,
+                                     self.server.allowDeletion,
+                                     httpPrefix,
+                                     self.server.projectVersion, timelineStr,
+                                     self.server.YTReplacementDomain,
+                                     self.server.twitterReplacementDomain,
+                                     self.server.showPublishedDateOnly,
+                                     self.server.peertubeInstances,
+                                     self.server.allowLocalNetworkAccess,
+                                     self.server.themeName,
+                                     self.server.systemLanguage,
+                                     self.server.maxLikeCount,
+                                     showRepeats,
+                                     showIndividualPostIcons,
+                                     manuallyApproveFollowers,
+                                     False, True, False,
+                                     self.server.CWlists,
+                                     self.server.listsEnabled)
+            else:
+                print('WARN: Unreaction post not found: ' +
+                      reactionPostFilename)
+        self.server.GETbusy = False
+        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorPathStr = \
+            actorAbsolute + '/' + timelineStr + \
+            '?page=' + str(pageNumber) + timelineBookmark
+        self._redirect_headers(actorPathStr, cookie, callingDomain)
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_undoReactionButton',
+                           self.server.debug)
+
     def _bookmarkButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
                         domain: str, domainFull: str, port: int,
@@ -14411,7 +14782,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', 'like shown done',
+                           '_GET', 'like button done',
                            self.server.debug)
 
         # undo a like from the web interface icon
@@ -14429,7 +14800,44 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', 'unlike shown done',
+                           '_GET', 'unlike button done',
+                           self.server.debug)
+
+        # emoji reaction from the web interface icon
+        if authorized and htmlGET and '?react=' in self.path:
+            self._reactionButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime,
+                                 self.server.proxyType,
+                                 cookie,
+                                 self.server.debug)
+            return
+
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', 'emoji reaction button done',
+                           self.server.debug)
+
+        # undo an emoji reaction from the web interface icon
+        if authorized and htmlGET and '?unreact=' in self.path:
+            self._undoReactionButton(callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     GETstartTime,
+                                     self.server.proxyType,
+                                     cookie, self.server.debug)
+            return
+
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', 'unreaction button done',
                            self.server.debug)
 
         # bookmark from the web interface icon
