@@ -81,6 +81,8 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from reaction import sendReactionViaServer
+from reaction import sendUndoReactionViaServer
 from skills import sendSkillViaServer
 from availability import setAvailability
 from availability import sendAvailabilityViaServer
@@ -510,6 +512,13 @@ parser.add_argument('--favorite', '--like', dest='like', type=str,
                     default=None, help='Like a url')
 parser.add_argument('--undolike', '--unlike', dest='undolike', type=str,
                     default=None, help='Undo a like of a url')
+parser.add_argument('--react', '--reaction', dest='react', type=str,
+                    default=None, help='Reaction url')
+parser.add_argument('--emoji', type=str,
+                    default=None, help='Reaction emoji')
+parser.add_argument('--undoreact', '--undoreaction', dest='undoreact',
+                    type=str,
+                    default=None, help='Reaction url')
 parser.add_argument('--bookmark', '--bm', dest='bookmark', type=str,
                     default=None,
                     help='Bookmark the url of a post')
@@ -1612,6 +1621,42 @@ if args.like:
         time.sleep(1)
     sys.exit()
 
+if args.react:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+    if not args.emoji:
+        print('Specify a reaction emoji with the --emoji option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    print('Sending emoji reaction ' + args.emoji + ' to ' + args.react)
+
+    sendReactionViaServer(baseDir, session,
+                          args.nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.react, args.emoji,
+                          cachedWebfingers, personCache,
+                          True, __version__, signingPrivateKeyPem)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
 if args.undolike:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
@@ -1641,6 +1686,43 @@ if args.undolike:
                           cachedWebfingers, personCache,
                           True, __version__,
                           signingPrivateKeyPem)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.undoreact:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+    if not args.emoji:
+        print('Specify a reaction emoji with the --emoji option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    if not domain:
+        domain = getConfigParam(baseDir, 'domain')
+    signingPrivateKeyPem = None
+    if args.secureMode:
+        signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    print('Sending undo emoji reaction ' + args.emoji + ' to ' + args.react)
+
+    sendUndoReactionViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.undoreact, args.emoji,
+                              cachedWebfingers, personCache,
+                              True, __version__,
+                              signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)

@@ -35,6 +35,22 @@ from auth import createBasicAuthHeader
 from posts import getPersonBox
 
 
+def noOfLikes(postJsonObject: {}) -> int:
+    """Returns the number of likes ona  given post
+    """
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
+    if not obj.get('likes'):
+        return 0
+    if not isinstance(obj['likes'], dict):
+        return 0
+    if not obj['likes'].get('items'):
+        obj['likes']['items'] = []
+        obj['likes']['totalItems'] = 0
+    return len(obj['likes']['items'])
+
+
 def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     """Returns True if the given post is liked by the given person
     """
@@ -50,22 +66,6 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
         if item['actor'].endswith(actorMatch):
             return True
     return False
-
-
-def noOfLikes(postJsonObject: {}) -> int:
-    """Returns the number of likes ona  given post
-    """
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
-    if not obj.get('likes'):
-        return 0
-    if not isinstance(obj['likes'], dict):
-        return 0
-    if not obj['likes'].get('items'):
-        obj['likes']['items'] = []
-        obj['likes']['totalItems'] = 0
-    return len(obj['likes']['items'])
 
 
 def _like(recentPostsCache: {},

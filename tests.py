@@ -107,6 +107,8 @@ from auth import authorizeBasic
 from auth import storeBasicCredentials
 from like import likePost
 from like import sendLikeViaServer
+from reaction import reactionPost
+from reaction import sendReactionViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
 from city import parseNogoString
@@ -1369,6 +1371,28 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
         pprint(alicePostJson)
 
     assert 'likes' in open(outboxPostFilename).read()
+
+    print('\n\n*******************************************************')
+    print("Bob reacts to Alice's post")
+
+    assert reactionPost({}, sessionBob, bobDir, federationList,
+                        'bob', bobDomain, bobPort, httpPrefix,
+                        'alice', aliceDomain, alicePort, [],
+                        statusNumber, '😀',
+                        False, bobSendThreads, bobPostLog,
+                        bobPersonCache, bobCachedWebfingers,
+                        True, __version__, signingPrivateKeyPem)
+
+    for i in range(20):
+        if 'reactions' in open(outboxPostFilename).read():
+            break
+        time.sleep(1)
+
+    alicePostJson = loadJson(outboxPostFilename, 0)
+    if alicePostJson:
+        pprint(alicePostJson)
+
+    assert 'reactions' in open(outboxPostFilename).read()
 
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
@@ -3071,22 +3095,62 @@ def testClientToServer(baseDir: str):
         time.sleep(1)
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(bobOutboxPath)
-                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 2
-    assert len([name for name in os.listdir(aliceInboxPath)
-                if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 0
+    bobOutboxPathCtr = \
+        len([name for name in os.listdir(bobOutboxPath)
+             if os.path.isfile(os.path.join(bobOutboxPath, name))])
+    print('bobOutboxPathCtr: ' + str(bobOutboxPathCtr))
+    assert bobOutboxPathCtr == 2
+    aliceInboxPathCtr = \
+        len([name for name in os.listdir(aliceInboxPath)
+             if os.path.isfile(os.path.join(aliceInboxPath, name))])
+    print('aliceInboxPathCtr: ' + str(aliceInboxPathCtr))
+    assert aliceInboxPathCtr == 0
     print('EVENT: Post liked')
+
+    print('\n\nEVENT: Bob reacts to the post')
+    sendReactionViaServer(bobDir, sessionBob,
+                          'bob', 'bobpass',
+                          bobDomain, bobPort,
+                          httpPrefix, outboxPostId, '😃',
+                          cachedWebfingers, personCache,
+                          True, __version__, signingPrivateKeyPem)
+    for i in range(20):
+        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(outboxPath)
+                    if os.path.isfile(os.path.join(outboxPath, name))]) == 3:
+                test = len([name for name in os.listdir(inboxPath)
+                            if os.path.isfile(os.path.join(inboxPath, name))])
+                if test == 1:
+                    break
+        time.sleep(1)
+    showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
+    showTestBoxes('bob', bobInboxPath, bobOutboxPath)
+    bobOutboxPathCtr = \
+        len([name for name in os.listdir(bobOutboxPath)
+             if os.path.isfile(os.path.join(bobOutboxPath, name))])
+    print('bobOutboxPathCtr: ' + str(bobOutboxPathCtr))
+    assert bobOutboxPathCtr == 3
+    aliceInboxPathCtr = \
+        len([name for name in os.listdir(aliceInboxPath)
+             if os.path.isfile(os.path.join(aliceInboxPath, name))])
+    print('aliceInboxPathCtr: ' + str(aliceInboxPathCtr))
+    assert aliceInboxPathCtr == 0
+    print('EVENT: Post reacted to')
 
     print(str(len([name for name in os.listdir(outboxPath)
                    if os.path.isfile(os.path.join(outboxPath, name))])))
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(outboxPath)
-                if os.path.isfile(os.path.join(outboxPath, name))]) == 2
-    print(str(len([name for name in os.listdir(inboxPath)
-                   if os.path.isfile(os.path.join(inboxPath, name))])))
-    assert len([name for name in os.listdir(aliceInboxPath)
-                if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 0
+    outboxPathCtr = \
+        len([name for name in os.listdir(outboxPath)
+             if os.path.isfile(os.path.join(outboxPath, name))])
+    print('outboxPathCtr: ' + str(outboxPathCtr))
+    assert outboxPathCtr == 3
+    inboxPathCtr = \
+        len([name for name in os.listdir(inboxPath)
+             if os.path.isfile(os.path.join(inboxPath, name))])
+    print('inboxPathCtr: ' + str(inboxPathCtr))
+    assert inboxPathCtr == 0
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
     print('\n\nEVENT: Bob repeats the post')
@@ -3100,7 +3164,7 @@ def testClientToServer(baseDir: str):
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
             if len([name for name in os.listdir(outboxPath)
-                    if os.path.isfile(os.path.join(outboxPath, name))]) == 3:
+                    if os.path.isfile(os.path.join(outboxPath, name))]) == 4:
                 if len([name for name in os.listdir(inboxPath)
                         if os.path.isfile(os.path.join(inboxPath,
                                                        name))]) == 2:
@@ -3109,10 +3173,16 @@ def testClientToServer(baseDir: str):
 
     showTestBoxes('alice', aliceInboxPath, aliceOutboxPath)
     showTestBoxes('bob', bobInboxPath, bobOutboxPath)
-    assert len([name for name in os.listdir(bobOutboxPath)
-                if os.path.isfile(os.path.join(bobOutboxPath, name))]) == 4
-    assert len([name for name in os.listdir(aliceInboxPath)
-                if os.path.isfile(os.path.join(aliceInboxPath, name))]) == 1
+    bobOutboxPathCtr = \
+        len([name for name in os.listdir(bobOutboxPath)
+             if os.path.isfile(os.path.join(bobOutboxPath, name))])
+    print('bobOutboxPathCtr: ' + str(bobOutboxPathCtr))
+    assert bobOutboxPathCtr == 5
+    aliceInboxPathCtr = \
+        len([name for name in os.listdir(aliceInboxPath)
+             if os.path.isfile(os.path.join(aliceInboxPath, name))])
+    print('aliceInboxPathCtr: ' + str(aliceInboxPathCtr))
+    assert aliceInboxPathCtr == 1
     print('EVENT: Post repeated')
 
     inboxPath = bobDir + '/accounts/bob@' + bobDomain + '/inbox'
@@ -4581,7 +4651,8 @@ def _testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing'
+        '_nothing',
+        'noOfReactions'
     ]
     excludeImports = [
         'link',

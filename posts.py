@@ -3506,6 +3506,11 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
         postObj['likes'] = {
             'items': []
         }
+    # clear the reactions
+    if postObj.get('reactions'):
+        postObj['reactions'] = {
+            'items': []
+        }
     # remove other collections
     removeCollections = (
         'replies', 'shares', 'bookmarks', 'ignores'

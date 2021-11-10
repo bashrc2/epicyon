@@ -1489,7 +1489,9 @@ class PubServer(BaseHTTPRequestHandler):
         originalMessageJson = messageJson.copy()
 
         # whether to add a 'to' field to the message
-        addToFieldTypes = ('Follow', 'Like', 'Add', 'Remove', 'Ignore')
+        addToFieldTypes = (
+            'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore'
+        )
         for addToType in addToFieldTypes:
             messageJson, toFieldExists = \
                 addToField(addToType, messageJson, self.server.debug)
