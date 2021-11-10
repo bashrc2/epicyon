@@ -521,8 +521,13 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
     if not postJsonObject['object']['reactions'].get('items'):
         return ''
     reactions = {}
+    reactedToByThisActor = []
     for item in postJsonObject['object']['reactions']['items']:
         emojiContent = item['content']
+        emojiActor = item['actor']
+        if emojiActor == actor:
+            if emojiContent not in reactedToByThisActor:
+                reactedToByThisActor.append(emojiContent)
         if not reactions.get(emojiContent):
             if len(reactions.items()) < maxReactionTypes:
                 reactions[emojiContent] = 1
@@ -531,9 +536,13 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
     if len(reactions.items()) == 0:
         return ''
     reactBy = removeIdEnding(postJsonObject['object']['id'])
-    baseUrl = actor + '?react=' + reactBy + '?emojreact='
     htmlStr = '<div class="emojiReactionBar">\n'
     for emojiContent, count in reactions.items():
+        if emojiContent not in reactedToByThisActor:
+            baseUrl = actor + '?react=' + reactBy + '?emojreact='
+        else:
+            baseUrl = actor + '?unreact=' + reactBy + '?emojreact='
+
         htmlStr += '  <div class="emojiReactionButton">\n'
         if count < 100:
             countStr = str(count)
