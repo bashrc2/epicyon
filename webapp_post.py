@@ -1925,6 +1925,7 @@ def htmlIndividualPost(cssCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
+                       reactBy: str, reactEmoji: str,
                        YTReplacementDomain: str,
                        twitterReplacementDomain: str,
                        showPublishedDateOnly: bool,
@@ -1937,17 +1938,27 @@ def htmlIndividualPost(cssCache: {},
     """
     originalPostJson = postJsonObject
     postStr = ''
+    byStr = ''
+    byText = ''
+    byTextExtra = ''
     if likedBy:
-        likedByNickname = getNicknameFromActor(likedBy)
-        likedByDomain, likedByPort = getDomainFromActor(likedBy)
-        likedByDomain = getFullDomain(likedByDomain, likedByPort)
-        likedByHandle = likedByNickname + '@' + likedByDomain
-        likedByStr = 'Liked by'
-        if translate.get(likedByStr):
-            likedByStr = translate[likedByStr]
+        byStr = likedBy
+        byText = 'Liked by'
+    elif reactBy and reactEmoji:
+        byStr = reactBy
+        byText = 'Reaction by'
+        byTextExtra = ' ' + reactEmoji
+
+    if byStr:
+        byStrNickname = getNicknameFromActor(byStr)
+        byStrDomain, byStrPort = getDomainFromActor(byStr)
+        byStrDomain = getFullDomain(byStrDomain, byStrPort)
+        byStrHandle = byStrNickname + '@' + byStrDomain
+        if translate.get(byText):
+            byText = translate[byText]
         postStr += \
-            '<p>' + likedByStr + ' <a href="' + likedBy + '">@' + \
-            likedByHandle + '</a>\n'
+            '<p>' + byText + ' <a href="' + byStr + '">@' + \
+            byStrHandle + '</a>' + byTextExtra + '\n'
 
         domainFull = getFullDomain(domain, port)
         actor = '/users/' + nickname
@@ -1957,8 +1968,8 @@ def htmlIndividualPost(cssCache: {},
             '    <input type="hidden" name="actor" value="' + actor + '">\n'
         followStr += \
             '    <input type="hidden" name="searchtext" value="' + \
-            likedByHandle + '">\n'
-        if not isFollowingActor(baseDir, nickname, domainFull, likedBy):
+            byStrHandle + '">\n'
+        if not isFollowingActor(baseDir, nickname, domainFull, byStr):
             translateFollowStr = 'Follow'
             if translate.get(translateFollowStr):
                 translateFollowStr = translate[translateFollowStr]

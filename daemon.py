@@ -8960,6 +8960,18 @@ class PubServer(BaseHTTPRequestHandler):
                 likedBy = likedBy.split('?')[0]
             path = path.split('?likedBy=')[0]
 
+        reactBy = None
+        reactEmoji = None
+        if '?reactBy=' in path:
+            reactBy = path.split('?reactBy=')[1].strip()
+            if ';' in reactBy:
+                reactBy = reactBy.split(';')[0]
+            if ';emoj=' in path:
+                reactEmoji = path.split(';emoj=')[1].strip()
+                if ';' in reactEmoji:
+                    reactEmoji = reactEmoji.split(';')[0]
+            path = path.split('?reactBy=')[0]
+
         namedStatus = path.split('/@')[1]
         if '/' not in namedStatus:
             # show actor
@@ -8984,6 +8996,7 @@ class PubServer(BaseHTTPRequestHandler):
             includeCreateWrapper = True
 
         result = self._showPostFromFile(postFilename, likedBy,
+                                        reactBy, reactEmoji,
                                         authorized, callingDomain, path,
                                         baseDir, httpPrefix, nickname,
                                         domain, domainFull, port,
@@ -8997,6 +9010,7 @@ class PubServer(BaseHTTPRequestHandler):
         return result
 
     def _showPostFromFile(self, postFilename: str, likedBy: str,
+                          reactBy: str, reactEmoji: str,
                           authorized: bool,
                           callingDomain: str, path: str,
                           baseDir: str, httpPrefix: str, nickname: str,
@@ -9043,7 +9057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    postJsonObject,
                                    httpPrefix,
                                    self.server.projectVersion,
-                                   likedBy,
+                                   likedBy, reactBy, reactEmoji,
                                    self.server.YTReplacementDomain,
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
@@ -9106,6 +9120,19 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in likedBy:
                 likedBy = likedBy.split('?')[0]
             path = path.split('?likedBy=')[0]
+
+        reactBy = None
+        reactEmoji = None
+        if '?reactBy=' in path:
+            reactBy = path.split('?reactBy=')[1].strip()
+            if ';' in reactBy:
+                reactBy = reactBy.split(';')[0]
+            if ';emoj=' in path:
+                reactEmoji = path.split(';emoj=')[1].strip()
+                if ';' in reactEmoji:
+                    reactEmoji = reactEmoji.split(';')[0]
+            path = path.split('?reactBy=')[0]
+
         namedStatus = path.split('/users/')[1]
         if '/' not in namedStatus:
             return False
@@ -9127,6 +9154,7 @@ class PubServer(BaseHTTPRequestHandler):
             includeCreateWrapper = True
 
         result = self._showPostFromFile(postFilename, likedBy,
+                                        reactBy, reactEmoji,
                                         authorized, callingDomain, path,
                                         baseDir, httpPrefix, nickname,
                                         domain, domainFull, port,
@@ -9151,6 +9179,8 @@ class PubServer(BaseHTTPRequestHandler):
         and where you have the notify checkbox set on person options
         """
         likedBy = None
+        reactBy = None
+        reactEmoji = None
         postId = path.split('?notifypost=')[1].strip()
         postId = postId.replace('-', '/')
         path = path.split('?notifypost=')[0]
@@ -9168,6 +9198,7 @@ class PubServer(BaseHTTPRequestHandler):
             includeCreateWrapper = True
 
         result = self._showPostFromFile(postFilename, likedBy,
+                                        reactBy, reactEmoji,
                                         authorized, callingDomain, path,
                                         baseDir, httpPrefix, nickname,
                                         domain, domainFull, port,

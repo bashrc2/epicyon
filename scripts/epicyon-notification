@@ -215,6 +215,21 @@ function notifications {
             fi
         fi
 
+        # send notifications for emoji reactions to XMPP/email users
+        epicyonLikeFile="$epicyonDir/.newReaction"
+        if [ -f "$epicyonReactionFile" ]; then
+            if ! grep -q "##sent##" "$epicyonReactionFile"; then
+                epicyonReactionMessage=$(notification_translate_text 'Reaction by')
+                epicyonReactionFileContent=$(cat "$epicyonReactionFile" | awk -F ' ' '{print $1}')" "$(echo "$epicyonReactionMessage")" "$(cat "$epicyonReactionFile" | awk -F ' ' '{print $2}')
+                if [[ "$epicyonReactionFileContent" == *':'* ]]; then
+                    epicyonReactionMessage="Epicyon: $epicyonReactionFileContent"
+                fi
+		sendNotification "$USERNAME" "Epicyon" "$epicyonReactionMessage"
+                echo "##sent##" > "$epicyonReactionFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonReactionFile"
+            fi
+        fi
+
         # send notifications for posts arriving from a particular person
         epicyonNotifyFile="$epicyonDir/.newNotifiedPost"
         if [ -f "$epicyonNotifyFile" ]; then

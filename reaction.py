@@ -529,7 +529,8 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
             reactions[emojiContent] += 1
     if len(reactions.items()) == 0:
         return ''
-    baseUrl = actor + '?reactUrl=' + postJsonObject['object']['id'] + ';emoj='
+    reactBy = removeIdEnding(postJsonObject['object']['id'])
+    baseUrl = actor + '?reactBy=' + reactBy + ';emoj='
     htmlStr = '<div class="emojiReactionBar">\n'
     for emojiContent, count in reactions.items():
         htmlStr += '  <div class="emojiReactionButton">\n'
