@@ -4652,8 +4652,7 @@ def _testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing',
-        'noOfReactions'
+        '_nothing'
     ]
     excludeImports = [
         'link',

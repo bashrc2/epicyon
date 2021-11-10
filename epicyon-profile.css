@@ -51,6 +51,8 @@
     --font-size-pgp-key2: 18px;
     --font-size-tox: 16px;
     --font-size-tox2: 18px;
+    --font-size-emoji-reaction: 16px;
+    --font-size-emoji-reaction-mobile: 24px;
     --time-color: #aaa;
     --time-vertical-align: 0%;
     --time-vertical-align-mobile: 1.5%;
@@ -1740,6 +1742,26 @@ div.container {
 	stroke-width: 10;
 	stroke: var(--voteresult-border-color)
     }
+    .emojiReactionBar {
+    }
+    .emojiReactionButton {
+	display: -webkit-inline-box;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+	line-height: 2rem;
+	margin-right: 6px;
+	padding: 1px 6px;
+	border: 1px solid var(--border-color);
+	border-radius: 10px;
+	background-color: var(--main-bg-color);
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	vertical-align: middle;
+	font-size: var(--font-size-emoji-reaction);
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -2454,5 +2476,25 @@ div.container {
 	fill: var(--voteresult-color);
 	stroke-width: 10;
 	stroke: var(--voteresult-border-color)
+    }
+    .emojiReactionBar {
+    }
+    .emojiReactionButton {
+	display: -webkit-inline-box;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+	line-height: 2rem;
+	margin-right: 6px;
+	padding: 1px 6px;
+	border: 1px solid var(--border-color);
+	border-radius: 10px;
+	background-color: var(--main-bg-color);
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	vertical-align: middle;
+	font-size: var(--font-size-emoji-reaction-mobile);
     }
 }

@@ -51,28 +51,6 @@ def validEmojiContent(emojiContent: str) -> bool:
     return True
 
 
-def noOfReactions(postJsonObject: {}, emojiContent: str) -> int:
-    """Returns the number of emoji reactions of a given content type on a post
-    """
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
-    if not obj.get('reactions'):
-        return 0
-    if not isinstance(obj['reactions'], dict):
-        return 0
-    if not obj['reactions'].get('items'):
-        obj['reactions']['items'] = []
-        obj['reactions']['totalItems'] = 0
-    ctr = 0
-    for item in obj['reactions']['items']:
-        if not item.get('content'):
-            continue
-        if item['content'] == emojiContent:
-            ctr += 1
-    return ctr
-
-
 def _reaction(recentPostsCache: {},
               session, baseDir: str, federationList: [],
               nickname: str, domain: str, port: int,
@@ -521,3 +499,43 @@ def updateReactionCollection(recentPostsCache: {},
         print('DEBUG: saving post with emoji reaction added')
         pprint(postJsonObject)
     saveJson(postJsonObject, postFilename)
+
+
+def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
+                       actor: str) -> str:
+    """html containing row of emoji reactions
+    """
+    if not hasObjectDict(postJsonObject):
+        return ''
+    if not postJsonObject['object'].get('reactions'):
+        return ''
+    if not postJsonObject['object']['reactions'].get('items'):
+        return ''
+    reactions = {}
+    for item in postJsonObject['object']['reactions']['items']:
+        emojiContent = item['content']
+        if not reactions.get(emojiContent):
+            reactions[emojiContent] = 1
+        else:
+            reactions[emojiContent] += 1
+    if len(reactions.items()) == 0:
+        return ''
+    baseUrl = actor + '?reactUrl=' + postJsonObject['object']['id'] + ';emoj='
+    htmlStr = '<div class="emojiReactionBar">\n'
+    for emojiContent, count in reactions.items():
+        htmlStr += '  <div class="emojiReactionButton">\n'
+        if count < 100:
+            countStr = str(count)
+        else:
+            countStr = '99+'
+        emojiContentStr = emojiContent + countStr
+        if interactive:
+            # urlencode the emoji
+            emojiContentEncoded = emojiContent
+            emojiContentStr = \
+                '    <a href="' + baseUrl + emojiContentEncoded + '">' + \
+                emojiContentStr + '</a>\n'
+        htmlStr += emojiContentStr
+        htmlStr += '  </div>\n'
+    htmlStr += '</div>\n'
+    return htmlStr

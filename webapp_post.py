@@ -79,6 +79,7 @@ from speaker import updateSpeaker
 from languages import autoTranslatePost
 from blocking import isBlocked
 from blocking import addCWfromLists
+from reaction import htmlEmojiReactions
 
 
 def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
@@ -1879,13 +1880,18 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     postHtml = ''
     if boxName != 'tlmedia':
+        reactionStr = ''
+        if showIcons:
+            reactionStr = htmlEmojiReactions(postJsonObject, True, personUrl)
+            if postIsSensitive and reactionStr:
+                reactionStr = '<br>' + reactionStr
         postHtml = '    <div id="' + timelinePostBookmark + \
             '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
         postHtml += '      <div class="post-title">\n' + \
             '        ' + titleStr + \
             replyAvatarImageInPost + '      </div>\n'
-        postHtml += contentStr + citationsStr + footerStr + '\n'
+        postHtml += contentStr + citationsStr + reactionStr + footerStr + '\n'
         postHtml += '    </div>\n'
     else:
         postHtml = galleryStr
