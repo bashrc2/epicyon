@@ -1304,6 +1304,10 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if not postJsonObject:
         return ''
 
+    # maximum number of different emoji reactions which can
+    # be added to a post
+    maxReactionTypes = 5
+
     # benchmark
     postStartTime = time.time()
 
@@ -1882,7 +1886,9 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if boxName != 'tlmedia':
         reactionStr = ''
         if showIcons:
-            reactionStr = htmlEmojiReactions(postJsonObject, True, personUrl)
+            reactionStr = \
+                htmlEmojiReactions(postJsonObject, True, personUrl,
+                                   maxReactionTypes)
             if postIsSensitive and reactionStr:
                 reactionStr = '<br>' + reactionStr
         postHtml = '    <div id="' + timelinePostBookmark + \

@@ -502,7 +502,7 @@ def updateReactionCollection(recentPostsCache: {},
 
 
 def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
-                       actor: str) -> str:
+                       actor: str, maxReactionTypes: int) -> str:
     """html containing row of emoji reactions
     """
     if not hasObjectDict(postJsonObject):
@@ -515,7 +515,8 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
     for item in postJsonObject['object']['reactions']['items']:
         emojiContent = item['content']
         if not reactions.get(emojiContent):
-            reactions[emojiContent] = 1
+            if len(reactions.items()) < maxReactionTypes:
+                reactions[emojiContent] = 1
         else:
             reactions[emojiContent] += 1
     if len(reactions.items()) == 0:
