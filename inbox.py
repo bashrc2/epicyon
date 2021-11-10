@@ -16,6 +16,7 @@ from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
 from like import updateLikesCollection
 from reaction import updateReactionCollection
+from reaction import validEmojiContent
 from utils import removeHtml
 from utils import fileLastModified
 from utils import hasObjectString
@@ -1245,6 +1246,10 @@ def _receiveReaction(recentPostsCache: {},
     if not isinstance(messageJson['content'], str):
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' content is not string')
+        return False
+    if not validEmojiContent(messageJson['content']):
+        print('_receiveReaction: Invalid emoji reaction: "' +
+              messageJson['content'] + '" from ' + messageJson['actor'])
         return False
     if not hasUsersPath(messageJson['actor']):
         if debug:

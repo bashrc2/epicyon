@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+import re
 from pprint import pprint
 from utils import hasObjectString
 from utils import hasObjectStringObject
@@ -33,6 +34,21 @@ from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
+
+
+emojiRegex = re.compile(r'[\u263a-\U0001f645]')
+
+
+def validEmojiContent(emojiContent: str) -> bool:
+    """Is the given emoji content valid?
+    """
+    if not emojiContent:
+        return False
+    if len(emojiContent) > 1:
+        return False
+    if len(emojiRegex.findall(emojiContent)) == 0:
+        return False
+    return True
 
 
 def noOfReactions(postJsonObject: {}, emojiContent: str) -> int:
@@ -75,6 +91,9 @@ def _reaction(recentPostsCache: {},
     """
     if not urlPermitted(objectUrl, federationList):
         return None
+    if not validEmojiContent(emojiContent):
+        print('_reaction: Invalid emoji reaction: "' + emojiContent + '"')
+        return
 
     fullDomain = getFullDomain(domain, port)
 
@@ -179,6 +198,10 @@ def sendReactionViaServer(baseDir: str, session,
     if not session:
         print('WARN: No session for sendReactionViaServer')
         return 6
+    if not validEmojiContent(emojiContent):
+        print('sendReactionViaServer: Invalid emoji reaction: "' +
+              emojiContent + '"')
+        return 7
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
@@ -362,6 +385,10 @@ def outboxReaction(recentPostsCache: {},
     if not messageJson.get('content'):
         return
     if not isinstance(messageJson['content'], str):
+        return
+    if not validEmojiContent(messageJson['content']):
+        print('outboxReaction: Invalid emoji reaction: "' +
+              messageJson['content'] + '"')
         return
     if debug:
         print('DEBUG: c2s reaction request arrived in outbox')

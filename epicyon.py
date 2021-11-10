@@ -83,6 +83,7 @@ from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from reaction import sendReactionViaServer
 from reaction import sendUndoReactionViaServer
+from reaction import validEmojiContent
 from skills import sendSkillViaServer
 from availability import setAvailability
 from availability import sendAvailabilityViaServer
@@ -1628,6 +1629,9 @@ if args.react:
     if not args.emoji:
         print('Specify a reaction emoji with the --emoji option')
         sys.exit()
+    if not validEmojiContent(args.emoji):
+        print('This is not a valid emoji')
+        sys.exit()
 
     if not args.password:
         args.password = getpass.getpass('Password: ')
@@ -1697,6 +1701,9 @@ if args.undoreact:
         sys.exit()
     if not args.emoji:
         print('Specify a reaction emoji with the --emoji option')
+        sys.exit()
+    if not validEmojiContent(args.emoji):
+        print('This is not a valid emoji')
         sys.exit()
 
     if not args.password:

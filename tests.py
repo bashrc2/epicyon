@@ -109,6 +109,7 @@ from like import likePost
 from like import sendLikeViaServer
 from reaction import reactionPost
 from reaction import sendReactionViaServer
+from reaction import validEmojiContent
 from announce import announcePublic
 from announce import sendAnnounceViaServer
 from city import parseNogoString
@@ -5909,6 +5910,15 @@ def _testAddCWfromLists(baseDir: str) -> None:
     assert postJsonObject['object']['summary'] == "Murdoch Press / Existing CW"
 
 
+def _testValidEmojiContent() -> None:
+    print('testValidEmojiContent')
+    assert not validEmojiContent(None)
+    assert not validEmojiContent(' ')
+    assert not validEmojiContent('j')
+    assert validEmojiContent('😀')
+    assert validEmojiContent('😄')
+
+
 def runAllTests():
     baseDir = os.getcwd()
     print('Running tests...')
@@ -5916,6 +5926,7 @@ def runAllTests():
     _translateOntology(baseDir)
     _testGetPriceFromString()
     _testFunctions()
+    _testValidEmojiContent()
     _testAddCWfromLists(baseDir)
     _testWordsSimilarity()
     _testSecondsBetweenPublished()
