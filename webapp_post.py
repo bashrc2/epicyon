@@ -1304,8 +1304,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if not postJsonObject:
         return ''
 
-    # maximum number of different emoji reactions which can
-    # be added to a post
+    # maximum number of different emoji reactions which can be added to a post
     maxReactionTypes = 5
 
     # benchmark

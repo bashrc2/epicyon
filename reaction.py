@@ -35,7 +35,12 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 
+# the maximum number of reactions from individual actors which can be
+# added to a post. Hence an adversary can't bombard you with sockpuppet
+# generated reactions and make the post infeasibly large
+maxActorReactionsPerPost = 64
 
+# regex defining permissable emoji icon range
 emojiRegex = re.compile(r'[\u263a-\U0001f645]')
 
 
@@ -480,6 +485,9 @@ def updateReactionCollection(recentPostsCache: {},
     else:
         if not obj['reactions'].get('items'):
             obj['reactions']['items'] = []
+        # upper limit for the number of reactions on a post
+        if len(obj['reactions']['items']) >= maxActorReactionsPerPost:
+            return
         for reactionItem in obj['reactions']['items']:
             if reactionItem.get('actor') and reactionItem.get('content'):
                 if reactionItem['actor'] == actor and \
