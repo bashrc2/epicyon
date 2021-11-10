@@ -2460,7 +2460,7 @@ def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
     accountDir = baseDir + '/accounts/' + handle
 
     # are reaction notifications enabled?
-    notifyReactionEnabledFilename = accountDir + '/.notifyReaction'
+    notifyReactionEnabledFilename = accountDir + '/.notifyReactions'
     if not os.path.isfile(notifyReactionEnabledFilename):
         return
 
@@ -2479,8 +2479,8 @@ def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
         reactionHandle = actor
     if reactionHandle != handle:
         reactionStr = \
-            reactionHandle + ' ' + url + '?reactionBy=' + actor + \
-            ';emoji=' + emojiContent
+            reactionHandle + ' ' + url + '?reactBy=' + actor + \
+            ';emoj=' + emojiContent
         prevReactionFile = accountDir + '/.prevReaction'
         # was there a previous reaction notification?
         if os.path.isfile(prevReactionFile):

@@ -5708,6 +5708,32 @@ class PubServer(BaseHTTPRequestHandler):
                                           notifyLikesFilename)
                                     pass
 
+                    notifyReactionsFilename = \
+                        acctDir(baseDir, nickname, domain) + \
+                        '/.notifyReactions'
+                    if onFinalWelcomeScreen:
+                        # default setting from welcome screen
+                        with open(notifyReactionsFilename, 'w+') as rFile:
+                            rFile.write('\n')
+                        actorChanged = True
+                    else:
+                        notifyReactionsActive = False
+                        if fields.get('notifyReactions'):
+                            if fields['notifyReactions'] == 'on':
+                                notifyReactionsActive = True
+                                with open(notifyReactionsFilename,
+                                          'w+') as rFile:
+                                    rFile.write('\n')
+                        if not notifyReactionsActive:
+                            if os.path.isfile(notifyReactionsFilename):
+                                try:
+                                    os.remove(notifyReactionsFilename)
+                                except BaseException:
+                                    print('EX: _profileUpdate ' +
+                                          'unable to delete ' +
+                                          notifyReactionsFilename)
+                                    pass
+
                     # this account is a bot
                     if fields.get('isBot'):
                         if fields['isBot'] == 'on':
