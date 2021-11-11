@@ -2195,7 +2195,8 @@ def htmlEmojiReactionPicker(cssCache: {},
                             allowLocalNetworkAccess: bool,
                             themeName: str, systemLanguage: str,
                             maxLikeCount: int, signingPrivateKeyPem: str,
-                            CWlists: {}, listsEnabled: str) -> str:
+                            CWlists: {}, listsEnabled: str,
+                            defaultTimeline: str) -> str:
     """Returns the emoji picker screen
     """
     reactedToPostStr = \
@@ -2255,7 +2256,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     # banner
     headerStr += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '/inbox" title="' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     headerStr += '<img loading="lazy" class="timeline-banner" ' + \

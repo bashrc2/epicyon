@@ -8352,7 +8352,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxLikeCount,
                                     self.server.signingPrivateKeyPem,
                                     self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.listsEnabled,
+                                    self.server.defaultTimeline)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
