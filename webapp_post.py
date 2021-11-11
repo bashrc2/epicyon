@@ -699,6 +699,42 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     return bookmarkStr
 
 
+def _getReactionIconHtml(nickname: str, domainFull: str,
+                         postJsonObject: {},
+                         isModerationPost: bool,
+                         translate: {},
+                         enableTimingLog: bool,
+                         postStartTime, boxName: str,
+                         pageNumberParam: str,
+                         timelinePostBookmark: str) -> str:
+    """Returns html for reaction icon/button
+    """
+    reactionStr = ''
+
+    if isModerationPost:
+        return reactionStr
+
+    reactionIcon = 'reaction.png'
+    reactionLink = 'reactpick'
+    reactionTitle = 'Select reaction'
+    if translate.get(reactionTitle):
+        reactionTitle = translate[reactionTitle]
+    _logPostTiming(enableTimingLog, postStartTime, '12.65')
+    reactionPostId = removeIdEnding(postJsonObject['object']['id'])
+    reactionStr = \
+        '        <a class="imageAnchor" href="/users/' + nickname + \
+        '?selreact=' + reactionPostId + pageNumberParam + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostReaction + \
+        '?tl=' + boxName + '" title="' + reactionTitle + '">\n'
+    reactionStr += \
+        '        ' + \
+        '<img loading="lazy" title="' + reactionTitle + '" alt="' + \
+        reactionEmoji + reactionTitle + ' |" src="/icons' + \
+        '/' + reactionIcon + '"/></a>\n'
+    return reactionStr
+
+
 def _getMuteIconHtml(isMuted: bool,
                      postActor: str,
                      messageId: str,
@@ -1247,7 +1283,8 @@ def _getPostTitleHtml(baseDir: str,
 def _getFooterWithIcons(showIcons: bool,
                         containerClassIcons: str,
                         replyStr: str, announceStr: str,
-                        likeStr: str, bookmarkStr: str,
+                        likeStr: str, reactionStr: str,
+                        bookmarkStr: str,
                         deleteStr: str, muteStr: str, editStr: str,
                         postJsonObject: {}, publishedLink: str,
                         timeClass: str, publishedStr: str) -> str:
@@ -1258,7 +1295,7 @@ def _getFooterWithIcons(showIcons: bool,
 
     footerStr = '\n      <nav>\n'
     footerStr += '      <div class="' + containerClassIcons + '">\n'
-    footerStr += replyStr + announceStr + likeStr + bookmarkStr
+    footerStr += replyStr + announceStr + likeStr + bookmarkStr + reactionStr
     footerStr += deleteStr + muteStr + editStr
     if not isNewsPost(postJsonObject):
         footerStr += '        <a href="' + publishedLink + '" class="' + \
@@ -1649,6 +1686,18 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '12.9')
 
+    reactionStr = \
+        _getReactionIconHtml(nickname, domainFull,
+                             postJsonObject,
+                             isModerationPost,
+                             translate,
+                             enableTimingLog,
+                             postStartTime, boxName,
+                             pageNumberParam,
+                             timelinePostBookmark)
+
+    _logPostTiming(enableTimingLog, postStartTime, '12.10')
+
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
 
     _logPostTiming(enableTimingLog, postStartTime, '13')
@@ -1740,7 +1789,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     newFooterStr = _getFooterWithIcons(showIcons,
                                        containerClassIcons,
                                        replyStr, announceStr,
-                                       likeStr, bookmarkStr,
+                                       likeStr, reactionStr, bookmarkStr,
                                        deleteStr, muteStr, editStr,
                                        postJsonObject, publishedLink,
                                        timeClass, publishedStr)
