@@ -1762,6 +1762,9 @@ div.container {
 	vertical-align: middle;
 	font-size: var(--font-size-emoji-reaction);
     }
+    .rlab {
+	margin: 5px 5px;
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -2496,5 +2499,8 @@ div.container {
 	user-select: none;
 	vertical-align: middle;
 	font-size: var(--font-size-emoji-reaction-mobile);
+    }
+    .rlab {
+	margin: 5px 5px;
     }
 }
