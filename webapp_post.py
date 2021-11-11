@@ -2221,10 +2221,11 @@ def htmlEmojiReactionPicker(cssCache: {},
     if not os.path.isfile(reactionsFilename):
         reactionsFilename = baseDir + '/emoji/default_reactions.json'
     reactionsJson = loadJson(reactionsFilename)
-    emojiPicksStr = '<br><div class="container">\n'
+    emojiPicksStr = ''
     baseUrl = '/users/' + nickname
     postId = removeIdEnding(postJsonObject['id'])
     for category, item in reactionsJson.items():
+        emojiPicksStr = '<br><div class="container">\n'
         for emojiContent in item:
             emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
             emojiUrl = \
@@ -2233,7 +2234,7 @@ def htmlEmojiReactionPicker(cssCache: {},
             emojiLabel = '<label class="rlab">' + emojiContent + '</label>'
             emojiPicksStr += \
                 '  <a href="' + emojiUrl + '">' + emojiLabel + '</a>\n'
-    emojiPicksStr += '</div>\n'
+        emojiPicksStr += '</div>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
