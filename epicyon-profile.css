@@ -51,6 +51,10 @@
     --font-size-pgp-key2: 18px;
     --font-size-tox: 16px;
     --font-size-tox2: 18px;
+    --font-size-emoji-reaction: 16px;
+    --font-size-emoji-reaction-mobile: 24px;
+    --follow-text-size1: 24px;
+    --follow-text-size2: 40px;
     --time-color: #aaa;
     --time-vertical-align: 0%;
     --time-vertical-align-mobile: 1.5%;
@@ -1037,6 +1041,10 @@ div.container {
         font-size: var(--font-size);
         color: var(--title-color);
     }
+    .followText {
+        font-size: var(--follow-text-size1);
+        font-family: Arial, Helvetica, sans-serif;
+    }
     .accountsTable {
         width: 100%;
         border: 0;
@@ -1731,14 +1739,39 @@ div.container {
     .pageslist {
     }
     .voteresult {
-	width: var(--voteresult-width);
-	height: var(--voteresult-height);
+        width: var(--voteresult-width);
+        height: var(--voteresult-height);
     }
     .voteresultbar {
-	height: var(--voteresult-height);
-	fill: var(--voteresult-color);
-	stroke-width: 10;
-	stroke: var(--voteresult-border-color)
+        height: var(--voteresult-height);
+        fill: var(--voteresult-color);
+        stroke-width: 10;
+        stroke: var(--voteresult-border-color)
+    }
+    .emojiReactionBar {
+    }
+    .emojiReactionButton {
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        line-height: 2rem;
+        margin-right: 6px;
+        padding: 1px 6px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: var(--main-bg-color);
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        vertical-align: middle;
+        font-size: var(--font-size-emoji-reaction);
+    }
+    .rlab {
+        font-size: var(--font-size);
+        margin: 15px 15px;
+	line-height: 200%;
     }
 }
 
@@ -2446,13 +2479,42 @@ div.container {
     .pageslist {
     }
     .voteresult {
-	width: var(--voteresult-width-mobile);
-	height: var(--voteresult-height-mobile);
+        width: var(--voteresult-width-mobile);
+        height: var(--voteresult-height-mobile);
     }
     .voteresultbar {
-	height: var(--voteresult-height-mobile);
-	fill: var(--voteresult-color);
-	stroke-width: 10;
-	stroke: var(--voteresult-border-color)
+        height: var(--voteresult-height-mobile);
+        fill: var(--voteresult-color);
+        stroke-width: 10;
+        stroke: var(--voteresult-border-color)
+    }
+    .emojiReactionBar {
+    }
+    .emojiReactionButton {
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        line-height: 2rem;
+        margin-right: 6px;
+        padding: 1px 6px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: var(--main-bg-color);
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        vertical-align: middle;
+        font-size: var(--font-size-emoji-reaction-mobile);
+    }
+    .followText {
+        font-size: var(--follow-text-size2);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .rlab {
+        font-size: var(--font-size-mobile);
+        margin: 25px 25px;
+	line-height: 300%;
     }
 }

@@ -1867,7 +1867,8 @@ def _htmlEditProfileOptions(isAdmin: bool,
                             manuallyApprovesFollowers: str,
                             isBot: str, isGroup: str,
                             followDMs: str, removeTwitter: str,
-                            notifyLikes: str, hideLikeButton: str,
+                            notifyLikes: str, notifyReactions: str,
+                            hideLikeButton: str,
                             translate: {}) -> str:
     """option checkboxes section of edit profile screen
     """
@@ -1891,6 +1892,9 @@ def _htmlEditProfileOptions(isAdmin: bool,
     editProfileForm += \
         editCheckBox(translate['Notify when posts are liked'],
                      'notifyLikes', notifyLikes)
+    editProfileForm += \
+        editCheckBox(translate['Notify on emoji reactions'],
+                     'notifyReactions', notifyReactions)
     editProfileForm += \
         editCheckBox(translate["Don't show the Like button"],
                      'hideLikeButton', hideLikeButton)
@@ -2048,7 +2052,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
-    notifyLikes = hideLikeButton = mediaInstanceStr = ''
+    notifyLikes = notifyReactions = hideLikeButton = mediaInstanceStr = ''
     blogsInstanceStr = newsInstanceStr = movedTo = twitterStr = ''
     bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
@@ -2099,6 +2103,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         removeTwitter = 'checked'
     if os.path.isfile(accountDir + '/.notifyLikes'):
         notifyLikes = 'checked'
+    if os.path.isfile(accountDir + '/.notifyReactions'):
+        notifyReactions = 'checked'
     if os.path.isfile(accountDir + '/.hideLikeButton'):
         hideLikeButton = 'checked'
 
@@ -2196,7 +2202,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         _htmlEditProfileOptions(isAdmin, manuallyApprovesFollowers,
                                 isBot, isGroup, followDMs, removeTwitter,
-                                notifyLikes, hideLikeButton, translate)
+                                notifyLikes, notifyReactions,
+                                hideLikeButton, translate)
 
     # Contact information
     editProfileForm += \

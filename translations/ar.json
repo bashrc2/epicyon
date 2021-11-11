@@ -492,5 +492,8 @@
     "Add content warnings for the following sites": "أضف تحذيرات المحتوى للمواقع التالية",
     "Known Web Crawlers": "برامج زحف الويب المعروفة",
     "Add to the calendar": "أضف إلى التقويم",
-    "Content License": "ترخيص المحتوى"
+    "Content License": "ترخيص المحتوى",
+    "Reaction by": "رد فعل",
+    "Notify on emoji reactions": "يخطر على ردود الفعل الرموز التعبيرية",
+    "Select reaction": "حدد رد الفعل"
 }

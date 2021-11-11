@@ -1562,7 +1562,7 @@ def _postIsAddressedToFollowers(baseDir: str,
 
 
 def pinPost(baseDir: str, nickname: str, domain: str,
-            pinnedContent: str) -> None:
+            pinnedContent: str, followersOnly: bool) -> None:
     """Pins the given post Id to the profile of then given account
     """
     accountDir = acctDir(baseDir, nickname, domain)
@@ -1581,7 +1581,6 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
             os.remove(pinnedFilename)
         except BaseException:
             print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
-            pass
 
 
 def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
@@ -3505,6 +3504,11 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
     # clear the likes
     if postObj.get('likes'):
         postObj['likes'] = {
+            'items': []
+        }
+    # clear the reactions
+    if postObj.get('reactions'):
+        postObj['reactions'] = {
             'items': []
         }
     # remove other collections

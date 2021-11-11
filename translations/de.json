@@ -492,5 +492,8 @@
     "Add content warnings for the following sites": "Inhaltswarnungen für die folgenden Websites hinzufügen",
     "Known Web Crawlers": "Bekannte Web-Crawler",
     "Add to the calendar": "Zum Kalender hinzufügen",
-    "Content License": "Inhaltslizenz"
+    "Content License": "Inhaltslizenz",
+    "Reaction by": "Reaktion von",
+    "Notify on emoji reactions": "Bei Emoji-Reaktionen benachrichtigen",
+    "Select reaction": "Reaktion auswählen"
 }

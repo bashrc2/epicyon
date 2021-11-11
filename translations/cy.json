@@ -492,5 +492,8 @@
     "Add content warnings for the following sites": "Ychwanegwch rybuddion cynnwys ar gyfer y gwefannau canlynol",
     "Known Web Crawlers": "Crawlers Gwe Hysbys",
     "Add to the calendar": "Ychwanegwch at y calendr",
-    "Content License": "Trwydded Cynnwys"
+    "Content License": "Trwydded Cynnwys",
+    "Reaction by": "Ymateb gan",
+    "Notify on emoji reactions": "Hysbysu ar ymatebion emoji",
+    "Select reaction": "Dewiswch adwaith"
 }

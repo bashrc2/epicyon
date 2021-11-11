@@ -15,6 +15,9 @@ import random
 from linked_data_sig import verifyJsonSignature
 from languages import understoodPostLanguage
 from like import updateLikesCollection
+from reaction import updateReactionCollection
+from reaction import validEmojiContent
+from utils import removeHtml
 from utils import fileLastModified
 from utils import hasObjectString
 from utils import hasObjectStringObject
@@ -50,6 +53,7 @@ from utils import removeModerationPostFromIndex
 from utils import loadJson
 from utils import saveJson
 from utils import undoLikesCollectionEntry
+from utils import undoReactionCollectionEntry
 from utils import hasGroupType
 from utils import localActorUrl
 from utils import hasObjectStringType
@@ -393,7 +397,8 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             return False
 
     if not messageJson.get('to'):
-        allowedWithoutToParam = ['Like', 'Follow', 'Join', 'Request',
+        allowedWithoutToParam = ['Like', 'EmojiReact',
+                                 'Follow', 'Join', 'Request',
                                  'Accept', 'Capability', 'Undo']
         if messageJson['type'] not in allowedWithoutToParam:
             return False
@@ -415,7 +420,9 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     if not urlPermitted(actor, federationList):
         return False
 
-    alwaysAllowedTypes = ('Follow', 'Join', 'Like', 'Delete', 'Announce')
+    alwaysAllowedTypes = (
+        'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce'
+    )
     if messageJson['type'] not in alwaysAllowedTypes:
         if not hasObjectDict(messageJson):
             return True
@@ -1186,6 +1193,275 @@ def _receiveUndoLike(recentPostsCache: {},
                                  translate, pageNumber, baseDir,
                                  session, cachedWebfingers, personCache,
                                  handleName, domain, port, likedPostJson,
+                                 None, True, allowDeletion,
+                                 httpPrefix, __version__,
+                                 'inbox',
+                                 YTReplacementDomain,
+                                 twitterReplacementDomain,
+                                 showPublishedDateOnly,
+                                 peertubeInstances,
+                                 allowLocalNetworkAccess,
+                                 themeName, systemLanguage,
+                                 maxLikeCount, notDM,
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False, CWlists,
+                                 listsEnabled)
+    return True
+
+
+def _receiveReaction(recentPostsCache: {},
+                     session, handle: str, isGroup: bool, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     onionDomain: str,
+                     sendThreads: [], postLog: [], cachedWebfingers: {},
+                     personCache: {}, messageJson: {}, federationList: [],
+                     debug: bool,
+                     signingPrivateKeyPem: str,
+                     maxRecentPosts: int, translate: {},
+                     allowDeletion: bool,
+                     YTReplacementDomain: str,
+                     twitterReplacementDomain: str,
+                     peertubeInstances: [],
+                     allowLocalNetworkAccess: bool,
+                     themeName: str, systemLanguage: str,
+                     maxLikeCount: int, CWlists: {},
+                     listsEnabled: str) -> bool:
+    """Receives an emoji reaction within the POST section of HTTPServer
+    """
+    if messageJson['type'] != 'EmojiReact':
+        return False
+    if not hasActor(messageJson, debug):
+        return False
+    if not hasObjectString(messageJson, debug):
+        return False
+    if not messageJson.get('to'):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+        return False
+    if not messageJson.get('content'):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] + ' has no "content"')
+        return False
+    if not isinstance(messageJson['content'], str):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] + ' content is not string')
+        return False
+    if not validEmojiContent(messageJson['content']):
+        print('_receiveReaction: Invalid emoji reaction: "' +
+              messageJson['content'] + '" from ' + messageJson['actor'])
+        return False
+    if not hasUsersPath(messageJson['actor']):
+        if debug:
+            print('DEBUG: "users" or "profile" missing from actor in ' +
+                  messageJson['type'])
+        return False
+    if '/statuses/' not in messageJson['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from object in ' +
+                  messageJson['type'])
+        return False
+    if not os.path.isdir(baseDir + '/accounts/' + handle):
+        print('DEBUG: unknown recipient of emoji reaction - ' + handle)
+    # if this post in the outbox of the person?
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
+    postReactionId = messageJson['object']
+    emojiContent = removeHtml(messageJson['content'])
+    if not emojiContent:
+        if debug:
+            print('DEBUG: emoji reaction has no content')
+        return True
+    postFilename = locatePost(baseDir, handleName, handleDom, postReactionId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: emoji reaction post not found in inbox or outbox')
+            print(postReactionId)
+        return True
+    if debug:
+        print('DEBUG: emoji reaction post found in inbox')
+
+    reactionActor = messageJson['actor']
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
+    if not _alreadyReacted(baseDir,
+                           handleName, handleDom,
+                           postReactionId,
+                           reactionActor,
+                           emojiContent):
+        _reactionNotify(baseDir, domain, onionDomain, handle,
+                        reactionActor, postReactionId, emojiContent)
+    updateReactionCollection(recentPostsCache, baseDir, postFilename,
+                             postReactionId, reactionActor,
+                             handleName, domain, debug, None, emojiContent)
+    # regenerate the html
+    reactionPostJson = loadJson(postFilename, 0, 1)
+    if reactionPostJson:
+        if reactionPostJson.get('type'):
+            if reactionPostJson['type'] == 'Announce' and \
+               reactionPostJson.get('object'):
+                if isinstance(reactionPostJson['object'], str):
+                    announceReactionUrl = reactionPostJson['object']
+                    announceReactionFilename = \
+                        locatePost(baseDir, handleName,
+                                   domain, announceReactionUrl)
+                    if announceReactionFilename:
+                        postReactionId = announceReactionUrl
+                        postFilename = announceReactionFilename
+                        updateReactionCollection(recentPostsCache,
+                                                 baseDir,
+                                                 postFilename,
+                                                 postReactionId,
+                                                 reactionActor,
+                                                 handleName,
+                                                 domain, debug, None,
+                                                 emojiContent)
+        if reactionPostJson:
+            if debug:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, handleName, domain,
+                                          reactionPostJson)
+                print('Reaction post json: ' + str(reactionPostJson))
+                print('Reaction post nickname: ' + handleName + ' ' + domain)
+                print('Reaction post cache: ' + str(cachedPostFilename))
+            pageNumber = 1
+            showPublishedDateOnly = False
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, handleName, domain)
+            notDM = not isDM(reactionPostJson)
+            individualPostAsHtml(signingPrivateKeyPem, False,
+                                 recentPostsCache, maxRecentPosts,
+                                 translate, pageNumber, baseDir,
+                                 session, cachedWebfingers, personCache,
+                                 handleName, domain, port, reactionPostJson,
+                                 None, True, allowDeletion,
+                                 httpPrefix, __version__,
+                                 'inbox',
+                                 YTReplacementDomain,
+                                 twitterReplacementDomain,
+                                 showPublishedDateOnly,
+                                 peertubeInstances,
+                                 allowLocalNetworkAccess,
+                                 themeName, systemLanguage,
+                                 maxLikeCount, notDM,
+                                 showIndividualPostIcons,
+                                 manuallyApproveFollowers,
+                                 False, True, False, CWlists,
+                                 listsEnabled)
+    return True
+
+
+def _receiveUndoReaction(recentPostsCache: {},
+                         session, handle: str, isGroup: bool, baseDir: str,
+                         httpPrefix: str, domain: str, port: int,
+                         sendThreads: [], postLog: [], cachedWebfingers: {},
+                         personCache: {}, messageJson: {}, federationList: [],
+                         debug: bool,
+                         signingPrivateKeyPem: str,
+                         maxRecentPosts: int, translate: {},
+                         allowDeletion: bool,
+                         YTReplacementDomain: str,
+                         twitterReplacementDomain: str,
+                         peertubeInstances: [],
+                         allowLocalNetworkAccess: bool,
+                         themeName: str, systemLanguage: str,
+                         maxLikeCount: int, CWlists: {},
+                         listsEnabled: str) -> bool:
+    """Receives an undo emoji reaction within the POST section of HTTPServer
+    """
+    if messageJson['type'] != 'Undo':
+        return False
+    if not hasActor(messageJson, debug):
+        return False
+    if not hasObjectStringType(messageJson, debug):
+        return False
+    if messageJson['object']['type'] != 'EmojiReact':
+        return False
+    if not hasObjectStringObject(messageJson, debug):
+        return False
+    if not messageJson['object'].get('content'):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] + ' has no "content"')
+        return False
+    if not isinstance(messageJson['object']['content'], str):
+        if debug:
+            print('DEBUG: ' + messageJson['type'] + ' content is not string')
+        return False
+    if not hasUsersPath(messageJson['actor']):
+        if debug:
+            print('DEBUG: "users" or "profile" missing from actor in ' +
+                  messageJson['type'] + ' reaction')
+        return False
+    if '/statuses/' not in messageJson['object']['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from reaction object in ' +
+                  messageJson['type'])
+        return False
+    if not os.path.isdir(baseDir + '/accounts/' + handle):
+        print('DEBUG: unknown recipient of undo reaction - ' + handle)
+    # if this post in the outbox of the person?
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
+    postFilename = \
+        locatePost(baseDir, handleName, handleDom,
+                   messageJson['object']['object'])
+    if not postFilename:
+        if debug:
+            print('DEBUG: unreaction post not found in inbox or outbox')
+            print(messageJson['object']['object'])
+        return True
+    if debug:
+        print('DEBUG: reaction post found in inbox. Now undoing.')
+    reactionActor = messageJson['actor']
+    postReactionId = messageJson['object']
+    emojiContent = removeHtml(messageJson['object']['content'])
+    if not emojiContent:
+        if debug:
+            print('DEBUG: unreaction has no content')
+        return True
+    undoReactionCollectionEntry(recentPostsCache, baseDir, postFilename,
+                                postReactionId, reactionActor, domain,
+                                debug, None, emojiContent)
+    # regenerate the html
+    reactionPostJson = loadJson(postFilename, 0, 1)
+    if reactionPostJson:
+        if reactionPostJson.get('type'):
+            if reactionPostJson['type'] == 'Announce' and \
+               reactionPostJson.get('object'):
+                if isinstance(reactionPostJson['object'], str):
+                    announceReactionUrl = reactionPostJson['object']
+                    announceReactionFilename = \
+                        locatePost(baseDir, handleName,
+                                   domain, announceReactionUrl)
+                    if announceReactionFilename:
+                        postReactionId = announceReactionUrl
+                        postFilename = announceReactionFilename
+                        undoReactionCollectionEntry(recentPostsCache, baseDir,
+                                                    postFilename,
+                                                    postReactionId,
+                                                    reactionActor, domain,
+                                                    debug, None,
+                                                    emojiContent)
+        if reactionPostJson:
+            if debug:
+                cachedPostFilename = \
+                    getCachedPostFilename(baseDir, handleName, domain,
+                                          reactionPostJson)
+                print('Unreaction post json: ' + str(reactionPostJson))
+                print('Unreaction post nickname: ' + handleName + ' ' + domain)
+                print('Unreaction post cache: ' + str(cachedPostFilename))
+            pageNumber = 1
+            showPublishedDateOnly = False
+            showIndividualPostIcons = True
+            manuallyApproveFollowers = \
+                followerApprovalActive(baseDir, handleName, domain)
+            notDM = not isDM(reactionPostJson)
+            individualPostAsHtml(signingPrivateKeyPem, False,
+                                 recentPostsCache, maxRecentPosts,
+                                 translate, pageNumber, baseDir,
+                                 session, cachedWebfingers, personCache,
+                                 handleName, domain, port, reactionPostJson,
                                  None, True, allowDeletion,
                                  httpPrefix, __version__,
                                  'inbox',
@@ -2068,6 +2344,40 @@ def _alreadyLiked(baseDir: str, nickname: str, domain: str,
     return False
 
 
+def _alreadyReacted(baseDir: str, nickname: str, domain: str,
+                    postUrl: str, reactionActor: str,
+                    emojiContent: str) -> bool:
+    """Is the given post already emoji reacted by the given handle?
+    """
+    postFilename = \
+        locatePost(baseDir, nickname, domain, postUrl)
+    if not postFilename:
+        return False
+    postJsonObject = loadJson(postFilename, 1)
+    if not postJsonObject:
+        return False
+    if not hasObjectDict(postJsonObject):
+        return False
+    if not postJsonObject['object'].get('reactions'):
+        return False
+    if not postJsonObject['object']['reactions'].get('items'):
+        return False
+    for react in postJsonObject['object']['reactions']['items']:
+        if not react.get('type'):
+            continue
+        if not react.get('content'):
+            continue
+        if not react.get('actor'):
+            continue
+        if react['type'] != 'EmojiReact':
+            continue
+        if react['content'] != emojiContent:
+            continue
+        if react['actor'] == reactionActor:
+            return True
+    return False
+
+
 def _likeNotify(baseDir: str, domain: str, onionDomain: str,
                 handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
@@ -2127,6 +2437,71 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
         except BaseException:
             print('EX: ERROR: unable to write like notification file ' +
                   likeFile)
+            pass
+
+
+def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
+                    handle: str, actor: str,
+                    url: str, emojiContent: str) -> None:
+    """Creates a notification that an emoji reaction has arrived
+    """
+    # This is not you reacting to your own post
+    if actor in url:
+        return
+
+    # check that the reaction post was by this handle
+    nickname = handle.split('@')[0]
+    if '/' + domain + '/users/' + nickname not in url:
+        if not onionDomain:
+            return
+        if '/' + onionDomain + '/users/' + nickname not in url:
+            return
+
+    accountDir = baseDir + '/accounts/' + handle
+
+    # are reaction notifications enabled?
+    notifyReactionEnabledFilename = accountDir + '/.notifyReactions'
+    if not os.path.isfile(notifyReactionEnabledFilename):
+        return
+
+    reactionFile = accountDir + '/.newReaction'
+    if os.path.isfile(reactionFile):
+        if '##sent##' not in open(reactionFile).read():
+            return
+
+    reactionNickname = getNicknameFromActor(actor)
+    reactionDomain, reactionPort = getDomainFromActor(actor)
+    if reactionNickname and reactionDomain:
+        reactionHandle = reactionNickname + '@' + reactionDomain
+    else:
+        print('_reactionNotify reactionHandle: ' +
+              str(reactionNickname) + '@' + str(reactionDomain))
+        reactionHandle = actor
+    if reactionHandle != handle:
+        reactionStr = \
+            reactionHandle + ' ' + url + '?reactBy=' + actor + \
+            ';emoj=' + emojiContent
+        prevReactionFile = accountDir + '/.prevReaction'
+        # was there a previous reaction notification?
+        if os.path.isfile(prevReactionFile):
+            # is it the same as the current notification ?
+            with open(prevReactionFile, 'r') as fp:
+                prevReactionStr = fp.read()
+                if prevReactionStr == reactionStr:
+                    return
+        try:
+            with open(prevReactionFile, 'w+') as fp:
+                fp.write(reactionStr)
+        except BaseException:
+            print('EX: ERROR: unable to save previous reaction notification ' +
+                  prevReactionFile)
+            pass
+        try:
+            with open(reactionFile, 'w+') as fp:
+                fp.write(reactionStr)
+        except BaseException:
+            print('EX: ERROR: unable to write reaction notification file ' +
+                  reactionFile)
             pass
 
 
@@ -2832,6 +3207,51 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         maxLikeCount, CWlists, listsEnabled):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
+        return False
+
+    if _receiveReaction(recentPostsCache,
+                        session, handle, isGroup,
+                        baseDir, httpPrefix,
+                        domain, port,
+                        onionDomain,
+                        sendThreads, postLog,
+                        cachedWebfingers,
+                        personCache,
+                        messageJson,
+                        federationList,
+                        debug, signingPrivateKeyPem,
+                        maxRecentPosts, translate,
+                        allowDeletion,
+                        YTReplacementDomain,
+                        twitterReplacementDomain,
+                        peertubeInstances,
+                        allowLocalNetworkAccess,
+                        themeName, systemLanguage,
+                        maxLikeCount, CWlists, listsEnabled):
+        if debug:
+            print('DEBUG: Reaction accepted from ' + actor)
+        return False
+
+    if _receiveUndoReaction(recentPostsCache,
+                            session, handle, isGroup,
+                            baseDir, httpPrefix,
+                            domain, port,
+                            sendThreads, postLog,
+                            cachedWebfingers,
+                            personCache,
+                            messageJson,
+                            federationList,
+                            debug, signingPrivateKeyPem,
+                            maxRecentPosts, translate,
+                            allowDeletion,
+                            YTReplacementDomain,
+                            twitterReplacementDomain,
+                            peertubeInstances,
+                            allowLocalNetworkAccess,
+                            themeName, systemLanguage,
+                            maxLikeCount, CWlists, listsEnabled):
+        if debug:
+            print('DEBUG: Undo reaction accepted from ' + actor)
         return False
 
     if _receiveBookmark(recentPostsCache,

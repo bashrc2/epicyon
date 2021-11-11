@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 import time
+import urllib.parse
 from dateutil.parser import parse
 from auth import createPassword
 from git import isGitPatch
@@ -61,6 +62,7 @@ from content import switchWords
 from person import isPersonSnoozed
 from person import getPersonAvatarUrl
 from announce import announcedByPerson
+from webapp_utils import getBannerFile
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import updateAvatarImageCache
 from webapp_utils import loadIndividualPostAsHtmlFromCache
@@ -79,6 +81,7 @@ from speaker import updateSpeaker
 from languages import autoTranslatePost
 from blocking import isBlocked
 from blocking import addCWfromLists
+from reaction import htmlEmojiReactions
 
 
 def _htmlPostMetadataOpenGraph(domain: str, postJsonObject: {}) -> str:
@@ -698,6 +701,41 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     return bookmarkStr
 
 
+def _getReactionIconHtml(nickname: str, domainFull: str,
+                         postJsonObject: {},
+                         isModerationPost: bool,
+                         translate: {},
+                         enableTimingLog: bool,
+                         postStartTime, boxName: str,
+                         pageNumberParam: str,
+                         timelinePostReaction: str) -> str:
+    """Returns html for reaction icon/button
+    """
+    reactionStr = ''
+
+    if isModerationPost:
+        return reactionStr
+
+    reactionIcon = 'reaction.png'
+    reactionTitle = 'Select reaction'
+    if translate.get(reactionTitle):
+        reactionTitle = translate[reactionTitle]
+    _logPostTiming(enableTimingLog, postStartTime, '12.65')
+    reactionPostId = removeIdEnding(postJsonObject['object']['id'])
+    reactionStr = \
+        '        <a class="imageAnchor" href="/users/' + nickname + \
+        '?selreact=' + reactionPostId + pageNumberParam + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostReaction + \
+        '?tl=' + boxName + '" title="' + reactionTitle + '">\n'
+    reactionStr += \
+        '        ' + \
+        '<img loading="lazy" title="' + reactionTitle + '" alt="' + \
+        reactionTitle + ' |" src="/icons' + \
+        '/' + reactionIcon + '"/></a>\n'
+    return reactionStr
+
+
 def _getMuteIconHtml(isMuted: bool,
                      postActor: str,
                      messageId: str,
@@ -1246,7 +1284,8 @@ def _getPostTitleHtml(baseDir: str,
 def _getFooterWithIcons(showIcons: bool,
                         containerClassIcons: str,
                         replyStr: str, announceStr: str,
-                        likeStr: str, bookmarkStr: str,
+                        likeStr: str, reactionStr: str,
+                        bookmarkStr: str,
                         deleteStr: str, muteStr: str, editStr: str,
                         postJsonObject: {}, publishedLink: str,
                         timeClass: str, publishedStr: str) -> str:
@@ -1257,7 +1296,7 @@ def _getFooterWithIcons(showIcons: bool,
 
     footerStr = '\n      <nav>\n'
     footerStr += '      <div class="' + containerClassIcons + '">\n'
-    footerStr += replyStr + announceStr + likeStr + bookmarkStr
+    footerStr += replyStr + announceStr + likeStr + bookmarkStr + reactionStr
     footerStr += deleteStr + muteStr + editStr
     if not isNewsPost(postJsonObject):
         footerStr += '        <a href="' + publishedLink + '" class="' + \
@@ -1302,6 +1341,9 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     """
     if not postJsonObject:
         return ''
+
+    # maximum number of different emoji reactions which can be added to a post
+    maxReactionTypes = 5
 
     # benchmark
     postStartTime = time.time()
@@ -1645,6 +1687,18 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '12.9')
 
+    reactionStr = \
+        _getReactionIconHtml(nickname, domainFull,
+                             postJsonObject,
+                             isModerationPost,
+                             translate,
+                             enableTimingLog,
+                             postStartTime, boxName,
+                             pageNumberParam,
+                             timelinePostBookmark)
+
+    _logPostTiming(enableTimingLog, postStartTime, '12.10')
+
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
 
     _logPostTiming(enableTimingLog, postStartTime, '13')
@@ -1736,7 +1790,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     newFooterStr = _getFooterWithIcons(showIcons,
                                        containerClassIcons,
                                        replyStr, announceStr,
-                                       likeStr, bookmarkStr,
+                                       likeStr, reactionStr, bookmarkStr,
                                        deleteStr, muteStr, editStr,
                                        postJsonObject, publishedLink,
                                        timeClass, publishedStr)
@@ -1879,13 +1933,20 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     postHtml = ''
     if boxName != 'tlmedia':
+        reactionStr = ''
+        if showIcons:
+            reactionStr = \
+                htmlEmojiReactions(postJsonObject, True, personUrl,
+                                   maxReactionTypes)
+            if postIsSensitive and reactionStr:
+                reactionStr = '<br>' + reactionStr
         postHtml = '    <div id="' + timelinePostBookmark + \
             '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
         postHtml += '      <div class="post-title">\n' + \
             '        ' + titleStr + \
             replyAvatarImageInPost + '      </div>\n'
-        postHtml += contentStr + citationsStr + footerStr + '\n'
+        postHtml += contentStr + citationsStr + reactionStr + footerStr + '\n'
         postHtml += '    </div>\n'
     else:
         postHtml = galleryStr
@@ -1914,6 +1975,7 @@ def htmlIndividualPost(cssCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
+                       reactBy: str, reactEmoji: str,
                        YTReplacementDomain: str,
                        twitterReplacementDomain: str,
                        showPublishedDateOnly: bool,
@@ -1926,17 +1988,27 @@ def htmlIndividualPost(cssCache: {},
     """
     originalPostJson = postJsonObject
     postStr = ''
+    byStr = ''
+    byText = ''
+    byTextExtra = ''
     if likedBy:
-        likedByNickname = getNicknameFromActor(likedBy)
-        likedByDomain, likedByPort = getDomainFromActor(likedBy)
-        likedByDomain = getFullDomain(likedByDomain, likedByPort)
-        likedByHandle = likedByNickname + '@' + likedByDomain
-        likedByStr = 'Liked by'
-        if translate.get(likedByStr):
-            likedByStr = translate[likedByStr]
+        byStr = likedBy
+        byText = 'Liked by'
+    elif reactBy and reactEmoji:
+        byStr = reactBy
+        byText = 'Reaction by'
+        byTextExtra = ' ' + reactEmoji
+
+    if byStr:
+        byStrNickname = getNicknameFromActor(byStr)
+        byStrDomain, byStrPort = getDomainFromActor(byStr)
+        byStrDomain = getFullDomain(byStrDomain, byStrPort)
+        byStrHandle = byStrNickname + '@' + byStrDomain
+        if translate.get(byText):
+            byText = translate[byText]
         postStr += \
-            '<p>' + likedByStr + ' <a href="' + likedBy + '">@' + \
-            likedByHandle + '</a>\n'
+            '<p>' + byText + ' <a href="' + byStr + '">@' + \
+            byStrHandle + '</a>' + byTextExtra + '\n'
 
         domainFull = getFullDomain(domain, port)
         actor = '/users/' + nickname
@@ -1946,8 +2018,8 @@ def htmlIndividualPost(cssCache: {},
             '    <input type="hidden" name="actor" value="' + actor + '">\n'
         followStr += \
             '    <input type="hidden" name="searchtext" value="' + \
-            likedByHandle + '">\n'
-        if not isFollowingActor(baseDir, nickname, domainFull, likedBy):
+            byStrHandle + '">\n'
+        if not isFollowingActor(baseDir, nickname, domainFull, byStr):
             translateFollowStr = 'Follow'
             if translate.get(translateFollowStr):
                 translateFollowStr = translate[translateFollowStr]
@@ -2101,10 +2173,95 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    # TODO
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
     return headerStr + repliesStr + htmlFooter()
+
+
+def htmlEmojiReactionPicker(cssCache: {},
+                            recentPostsCache: {}, maxRecentPosts: int,
+                            translate: {},
+                            baseDir: str, session, cachedWebfingers: {},
+                            personCache: {},
+                            nickname: str, domain: str, port: int,
+                            postJsonObject: {}, httpPrefix: str,
+                            projectVersion: str,
+                            YTReplacementDomain: str,
+                            twitterReplacementDomain: str,
+                            showPublishedDateOnly: bool,
+                            peertubeInstances: [],
+                            allowLocalNetworkAccess: bool,
+                            themeName: str, systemLanguage: str,
+                            maxLikeCount: int, signingPrivateKeyPem: str,
+                            CWlists: {}, listsEnabled: str,
+                            defaultTimeline: str) -> str:
+    """Returns the emoji picker screen
+    """
+    reactedToPostStr = \
+        '<br><center><label class="followText">' + \
+        translate['Select reaction'].title() + '</label></center>\n' + \
+        individualPostAsHtml(signingPrivateKeyPem,
+                             True, recentPostsCache,
+                             maxRecentPosts,
+                             translate, None,
+                             baseDir, session, cachedWebfingers,
+                             personCache,
+                             nickname, domain, port, postJsonObject,
+                             None, True, False,
+                             httpPrefix, projectVersion, 'inbox',
+                             YTReplacementDomain,
+                             twitterReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount,
+                             False, False, False, False, False, False,
+                             CWlists, listsEnabled)
+
+    reactionsFilename = baseDir + '/emoji/reactions.json'
+    if not os.path.isfile(reactionsFilename):
+        reactionsFilename = baseDir + '/emoji/default_reactions.json'
+    reactionsJson = loadJson(reactionsFilename)
+    emojiPicksStr = ''
+    baseUrl = '/users/' + nickname
+    postId = removeIdEnding(postJsonObject['id'])
+    for category, item in reactionsJson.items():
+        emojiPicksStr += '<div class="container">\n'
+        for emojiContent in item:
+            emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
+            emojiUrl = \
+                baseUrl + '?react=' + postId + \
+                '?emojreact=' + emojiContentEncoded
+            emojiLabel = '<label class="rlab">' + emojiContent + '</label>'
+            emojiPicksStr += \
+                '  <a href="' + emojiUrl + '">' + emojiLabel + '</a>\n'
+        emojiPicksStr += '</div>\n'
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    # filename of the banner shown at the top
+    bannerFile, _ = \
+        getBannerFile(baseDir, nickname, domain, themeName)
+
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    metadata = ''
+    headerStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
+
+    # banner
+    headerStr += \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    headerStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="" ' + \
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>\n'
+
+    return headerStr + reactedToPostStr + emojiPicksStr + htmlFooter()

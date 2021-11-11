@@ -492,5 +492,8 @@
     "Add content warnings for the following sites": "Ajouter des avertissements de contenu pour les sites suivants",
     "Known Web Crawlers": "Crawlers Web connus",
     "Add to the calendar": "Ajouter au calendrier",
-    "Content License": "Licence de contenu"
+    "Content License": "Licence de contenu",
+    "Reaction by": "Réaction par",
+    "Notify on emoji reactions": "Avertir sur les réactions emoji",
+    "Select reaction": "Sélectionnez la réaction"
 }

@@ -48,6 +48,8 @@ from skills import outboxSkills
 from availability import outboxAvailability
 from like import outboxLike
 from like import outboxUndoLike
+from reaction import outboxReaction
+from reaction import outboxUndoReaction
 from bookmarks import outboxBookmark
 from bookmarks import outboxUndoBookmark
 from delete import outboxDelete
@@ -338,9 +340,10 @@ def postMessageToOutbox(session, translate: {},
                                               '/system/' +
                                               'media_attachments/files/')
 
-    permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
-                            'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Skill', 'Ignore')
+    permittedOutboxTypes = (
+        'Create', 'Announce', 'Like', 'EmojiReact', 'Follow', 'Undo',
+        'Update', 'Add', 'Remove', 'Block', 'Delete', 'Skill', 'Ignore'
+    )
     if messageJson['type'] not in permittedOutboxTypes:
         if debug:
             print('DEBUG: POST to outbox - ' + messageJson['type'] +
@@ -547,6 +550,20 @@ def postMessageToOutbox(session, translate: {},
                    baseDir, httpPrefix,
                    postToNickname, domain, port,
                    messageJson, debug)
+
+    if debug:
+        print('DEBUG: handle any emoji reaction requests')
+    outboxReaction(recentPostsCache,
+                   baseDir, httpPrefix,
+                   postToNickname, domain, port,
+                   messageJson, debug)
+    if debug:
+        print('DEBUG: handle any undo emoji reaction requests')
+    outboxUndoReaction(recentPostsCache,
+                       baseDir, httpPrefix,
+                       postToNickname, domain, port,
+                       messageJson, debug)
+
     if debug:
         print('DEBUG: handle any undo announce requests')
     outboxUndoAnnounce(recentPostsCache,

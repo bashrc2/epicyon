@@ -635,6 +635,13 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         with open(notifyLikesFilename, 'w+') as nFile:
             nFile.write('\n')
 
+    # notify when posts have emoji reactions
+    if nickname != 'news':
+        notifyReactionsFilename = \
+            acctDir(baseDir, nickname, domain) + '/.notifyReactions'
+        with open(notifyReactionsFilename, 'w+') as nFile:
+            nFile.write('\n')
+
     theme = getConfigParam(baseDir, 'theme')
     if not theme:
         theme = 'default'

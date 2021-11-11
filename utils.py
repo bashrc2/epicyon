@@ -2258,6 +2258,72 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     saveJson(postJsonObject, postFilename)
 
 
+def undoReactionCollectionEntry(recentPostsCache: {},
+                                baseDir: str, postFilename: str,
+                                objectUrl: str,
+                                actor: str, domain: str, debug: bool,
+                                postJsonObject: {}, emojiContent: str) -> None:
+    """Undoes an emoji reaction for a particular actor
+    """
+    if not postJsonObject:
+        postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return
+    # remove any cached version of this post so that the
+    # like icon is changed
+    nickname = getNicknameFromActor(actor)
+    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+                                               domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            try:
+                os.remove(cachedPostFilename)
+            except BaseException:
+                print('EX: undoReactionCollectionEntry ' +
+                      'unable to delete cached post ' +
+                      str(cachedPostFilename))
+                pass
+    removePostFromCache(postJsonObject, recentPostsCache)
+
+    if not postJsonObject.get('type'):
+        return
+    if postJsonObject['type'] != 'Create':
+        return
+    obj = postJsonObject
+    if hasObjectDict(postJsonObject):
+        obj = postJsonObject['object']
+    if not obj.get('reactions'):
+        return
+    if not isinstance(obj['reactions'], dict):
+        return
+    if not obj['reactions'].get('items'):
+        return
+    totalItems = 0
+    if obj['reactions'].get('totalItems'):
+        totalItems = obj['reactions']['totalItems']
+    itemFound = False
+    for likeItem in obj['reactions']['items']:
+        if likeItem.get('actor'):
+            if likeItem['actor'] == actor and \
+               likeItem['content'] == emojiContent:
+                if debug:
+                    print('DEBUG: emoji reaction was removed for ' + actor)
+                obj['reactions']['items'].remove(likeItem)
+                itemFound = True
+                break
+    if not itemFound:
+        return
+    if totalItems == 1:
+        if debug:
+            print('DEBUG: emoji reaction was removed from post')
+        del obj['reactions']
+    else:
+        itlen = len(obj['reactions']['items'])
+        obj['reactions']['totalItems'] = itlen
+
+    saveJson(postJsonObject, postFilename)
+
+
 def undoAnnounceCollectionEntry(recentPostsCache: {},
                                 baseDir: str, postFilename: str,
                                 actor: str, domain: str, debug: bool) -> None:
