@@ -2200,7 +2200,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     """Returns the emoji picker screen
     """
     reactedToPostStr = \
-        '<center><label class="labels">' + \
+        '<br><center><label class="labels">' + \
         translate['Select reaction'].title() + '</label></center>\n' + \
         individualPostAsHtml(signingPrivateKeyPem,
                              True, recentPostsCache,
