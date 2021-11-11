@@ -1764,7 +1764,8 @@ div.container {
     }
     .rlab {
         font-size: var(--font-size);
-        margin: 5px 5px;
+        margin: 15px 15px;
+	line-height: 200%;
     }
 }
 
@@ -2503,6 +2504,7 @@ div.container {
     }
     .rlab {
         font-size: var(--font-size-mobile);
-        margin: 5px 5px;
+        margin: 25px 25px;
+	line-height: 300%;
     }
 }
