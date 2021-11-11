@@ -62,6 +62,7 @@ from content import switchWords
 from person import isPersonSnoozed
 from person import getPersonAvatarUrl
 from announce import announcedByPerson
+from webapp_utils import getBannerFile
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import updateAvatarImageCache
 from webapp_utils import loadIndividualPostAsHtmlFromCache
@@ -2242,8 +2243,24 @@ def htmlEmojiReactionPicker(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
+    # filename of the banner shown at the top
+    bannerFile, _ = \
+        getBannerFile(baseDir, nickname, domain, themeName)
+
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
+
+    # banner
+    headerStr += \
+        '<header>\n' + \
+        '<a href="/users/' + nickname + '/inbox" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    headerStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="" ' + \
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>\n'
+
     return headerStr + reactedToPostStr + emojiPicksStr + htmlFooter()
