@@ -1733,37 +1733,38 @@ div.container {
     .pageslist {
     }
     .voteresult {
-	width: var(--voteresult-width);
-	height: var(--voteresult-height);
+        width: var(--voteresult-width);
+        height: var(--voteresult-height);
     }
     .voteresultbar {
-	height: var(--voteresult-height);
-	fill: var(--voteresult-color);
-	stroke-width: 10;
-	stroke: var(--voteresult-border-color)
+        height: var(--voteresult-height);
+        fill: var(--voteresult-color);
+        stroke-width: 10;
+        stroke: var(--voteresult-border-color)
     }
     .emojiReactionBar {
     }
     .emojiReactionButton {
-	display: -webkit-inline-box;
-	display: -ms-inline-flexbox;
-	display: inline-flex;
-	line-height: 2rem;
-	margin-right: 6px;
-	padding: 1px 6px;
-	border: 1px solid var(--border-color);
-	border-radius: 10px;
-	background-color: var(--main-bg-color);
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	vertical-align: middle;
-	font-size: var(--font-size-emoji-reaction);
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        line-height: 2rem;
+        margin-right: 6px;
+        padding: 1px 6px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: var(--main-bg-color);
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        vertical-align: middle;
+        font-size: var(--font-size-emoji-reaction);
     }
     .rlab {
-	margin: 5px 5px;
+        font-size: var(--font-size);
+        margin: 5px 5px;
     }
 }
 
@@ -2471,36 +2472,37 @@ div.container {
     .pageslist {
     }
     .voteresult {
-	width: var(--voteresult-width-mobile);
-	height: var(--voteresult-height-mobile);
+        width: var(--voteresult-width-mobile);
+        height: var(--voteresult-height-mobile);
     }
     .voteresultbar {
-	height: var(--voteresult-height-mobile);
-	fill: var(--voteresult-color);
-	stroke-width: 10;
-	stroke: var(--voteresult-border-color)
+        height: var(--voteresult-height-mobile);
+        fill: var(--voteresult-color);
+        stroke-width: 10;
+        stroke: var(--voteresult-border-color)
     }
     .emojiReactionBar {
     }
     .emojiReactionButton {
-	display: -webkit-inline-box;
-	display: -ms-inline-flexbox;
-	display: inline-flex;
-	line-height: 2rem;
-	margin-right: 6px;
-	padding: 1px 6px;
-	border: 1px solid var(--border-color);
-	border-radius: 10px;
-	background-color: var(--main-bg-color);
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	vertical-align: middle;
-	font-size: var(--font-size-emoji-reaction-mobile);
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        line-height: 2rem;
+        margin-right: 6px;
+        padding: 1px 6px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: var(--main-bg-color);
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        vertical-align: middle;
+        font-size: var(--font-size-emoji-reaction-mobile);
     }
     .rlab {
-	margin: 5px 5px;
+        font-size: var(--font-size-mobile);
+        margin: 5px 5px;
     }
 }
