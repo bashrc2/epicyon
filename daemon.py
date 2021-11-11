@@ -14958,7 +14958,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # emoji recation from the web interface bottom icon
-        if authorized and htmlGET and '?reactsel=' in self.path:
+        if authorized and htmlGET and '?selreact=' in self.path:
             self._reactionPicker(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
