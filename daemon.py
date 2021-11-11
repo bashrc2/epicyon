@@ -8279,7 +8279,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Press the emoji reaction picker icon at the bottom of the post
         """
         pageNumber = 1
-        reactionUrl = path.split('?reactsel=')[1]
+        reactionUrl = path.split('?selreact=')[1]
         if '?' in reactionUrl:
             reactionUrl = reactionUrl.split('?')[0]
         timelineBookmark = ''
@@ -8288,7 +8288,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineBookmark:
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
-        actor = path.split('?reactsel=')[0]
+        actor = path.split('?selreact=')[0]
         if '?page=' in path:
             pageNumberStr = path.split('?page=')[1]
             if '?' in pageNumberStr:
