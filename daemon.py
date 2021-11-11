@@ -8339,7 +8339,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     domain, port, postJsonObject,
                                     self.server.httpPrefix,
                                     self.server.projectVersion,
-                                    self.server.likedBy,
                                     self.server.YTReplacementDomain,
                                     self.server.twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
