@@ -2221,7 +2221,9 @@ def htmlEmojiReactionPicker(cssCache: {},
     if not os.path.isfile(reactionsFilename):
         reactionsFilename = baseDir + '/emoji/default_reactions.json'
     reactionsJson = loadJson(reactionsFilename)
-    emojiPicksStr = ''
+    emojiPicksStr = \
+        '<center><label class="labels">' + \
+        translate['Select reaction'].title() + '</label></center>\n'
     baseUrl = '/users/' + nickname
     postId = removeIdEnding(postJsonObject['id'])
     for category, item in reactionsJson.items():
