@@ -8313,10 +8313,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie, callingDomain)
             return
 
-        postJsonObject = \
+        postJsonObject = None
+        reactionPostFilename = \
             locatePost(self.server.baseDir,
                        self.postToNickname, domain, reactionUrl)
-        if not postJsonObject:
+        if reactionPostFilename:
+            postJsonObject = loadJson(reactionPostFilename)
+        if not reactionPostFilename or not postJsonObject:
             print('WARN: unable to locate reaction post ' + reactionUrl)
             self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
