@@ -2225,7 +2225,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     baseUrl = '/users/' + nickname
     postId = removeIdEnding(postJsonObject['id'])
     for category, item in reactionsJson.items():
-        emojiPicksStr += '<br><div class="container">\n'
+        emojiPicksStr += '<div class="container">\n'
         for emojiContent in item:
             emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
             emojiUrl = \
