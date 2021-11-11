@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 import time
+import urllib.parse
 from dateutil.parser import parse
 from auth import createPassword
 from git import isGitPatch
@@ -2171,10 +2172,75 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
-    # TODO
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
     return headerStr + repliesStr + htmlFooter()
+
+
+def htmlEmojiReactionPicker(cssCache: {},
+                            recentPostsCache: {}, maxRecentPosts: int,
+                            translate: {},
+                            baseDir: str, session, cachedWebfingers: {},
+                            personCache: {},
+                            nickname: str, domain: str, port: int,
+                            postJsonObject: {}, httpPrefix: str,
+                            projectVersion: str, likedBy: str,
+                            YTReplacementDomain: str,
+                            twitterReplacementDomain: str,
+                            showPublishedDateOnly: bool,
+                            peertubeInstances: [],
+                            allowLocalNetworkAccess: bool,
+                            themeName: str, systemLanguage: str,
+                            maxLikeCount: int, signingPrivateKeyPem: str,
+                            CWlists: {}, listsEnabled: str) -> str:
+    """Returns the emoji picker screen
+    """
+    reactedToPostStr = \
+        individualPostAsHtml(signingPrivateKeyPem,
+                             True, recentPostsCache,
+                             maxRecentPosts,
+                             translate, None,
+                             baseDir, session, cachedWebfingers,
+                             personCache,
+                             nickname, domain, port, postJsonObject,
+                             None, True, False,
+                             httpPrefix, projectVersion, 'inbox',
+                             YTReplacementDomain,
+                             twitterReplacementDomain,
+                             showPublishedDateOnly,
+                             peertubeInstances,
+                             allowLocalNetworkAccess,
+                             themeName, systemLanguage,
+                             maxLikeCount,
+                             False, False, False, False, False, False,
+                             CWlists, listsEnabled)
+
+    reactionsFilename = baseDir + '/emoji/reactions.json'
+    if not os.path.isfile(reactionsFilename):
+        reactionsFilename = baseDir + '/emoji/default_reactions.json'
+    reactionsJson = loadJson(reactionsFilename)
+    emojiPicksStr = '<br><div class="container">\n'
+    baseUrl = '/users/' + nickname
+    postId = removeIdEnding(postJsonObject['id'])
+    for category, item in reactionsJson.items():
+        for emojiContent in item:
+            emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
+            emojiUrl = \
+                baseUrl + '?react=' + postId + \
+                '?emojreact=' + emojiContentEncoded
+            emojiLabel = '<label class="rlab">' + emojiContent + '</label>'
+            emojiPicksStr += \
+                '  <a href="' + emojiUrl + '">' + emojiLabel + '</a>\n'
+    emojiPicksStr += '</div>\n'
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    metadata = ''
+    headerStr = \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
+    return headerStr + reactedToPostStr + emojiPicksStr + htmlFooter()

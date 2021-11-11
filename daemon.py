@@ -192,6 +192,7 @@ from webapp_suspended import htmlSuspended
 from webapp_tos import htmlTermsOfService
 from webapp_confirm import htmlConfirmFollow
 from webapp_confirm import htmlConfirmUnfollow
+from webapp_post import htmlEmojiReactionPicker
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
 from webapp_post import individualPostAsHtml
@@ -7905,6 +7906,8 @@ class PubServer(BaseHTTPRequestHandler):
                         proxyType: str, cookie: str,
                         debug: str):
         """Press an emoji reaction button
+        Note that this is not the emoji reaction selection icon at the
+        bottom of the post
         """
         pageNumber = 1
         reactionUrl = path.split('?react=')[1]
@@ -8265,6 +8268,101 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoReactionButton',
                            self.server.debug)
+
+    def _reactionPicker(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime,
+                        proxyType: str, cookie: str,
+                        debug: str) -> None:
+        """Press the emoji reaction picker icon at the bottom of the post
+        """
+        pageNumber = 1
+        reactionUrl = path.split('?reactsel=')[1]
+        if '?' in reactionUrl:
+            reactionUrl = reactionUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        actor = path.split('?reactsel=')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorPathStr = \
+                actorAbsolute + '/' + timelineStr + \
+                '?page=' + str(pageNumber) + timelineBookmark
+            self._redirect_headers(actorPathStr, cookie, callingDomain)
+            return
+
+        postJsonObject = \
+            locatePost(self.server.baseDir,
+                       self.postToNickname, domain, reactionUrl)
+        if not postJsonObject:
+            print('WARN: unable to locate reaction post ' + reactionUrl)
+            self.server.GETbusy = False
+            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorPathStr = \
+                actorAbsolute + '/' + timelineStr + \
+                '?page=' + str(pageNumber) + timelineBookmark
+            self._redirect_headers(actorPathStr, cookie, callingDomain)
+            return
+
+        msg = \
+            htmlEmojiReactionPicker(self.server.cssCache,
+                                    self.server.recentPostsCache,
+                                    self.server.maxRecentPosts,
+                                    self.server.translate,
+                                    self.server.baseDir,
+                                    self.server.session,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    self.postToNickname,
+                                    domain,
+                                    self.server.port,
+                                    postJsonObject,
+                                    self.server.httpPrefix,
+                                    self.server.projectVersion,
+                                    self.server.likedBy,
+                                    self.server.YTReplacementDomain,
+                                    self.server.twitterReplacementDomain,
+                                    self.server.showPublishedDateOnly,
+                                    self.server.peertubeInstances,
+                                    self.server.allowLocalNetworkAccess,
+                                    self.server.themeName,
+                                    self.server.systemLanguage,
+                                    self.server.maxLikeCount,
+                                    self.server.signingPrivateKeyPem,
+                                    self.server.CWlists,
+                                    self.server.listsEnabled)
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('text/html', msglen,
+                          cookie, callingDomain, False)
+        self._write(msg)
+        fitnessPerformance(GETstartTime,
+                           self.server.fitness,
+                           '_GET', '_reactionPicker',
+                           self.server.debug)
+        self.server.GETbusy = False
 
     def _bookmarkButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -14843,6 +14941,25 @@ class PubServer(BaseHTTPRequestHandler):
         # bookmark from the web interface icon
         if authorized and htmlGET and '?bookmark=' in self.path:
             self._bookmarkButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime,
+                                 self.server.proxyType,
+                                 cookie, self.server.debug)
+            return
+
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', 'bookmark shown done',
+                           self.server.debug)
+
+        # emoji recation from the web interface bottom icon
+        if authorized and htmlGET and '?reactsel=' in self.path:
+            self._reactionPicker(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
                                  self.server.domain,
