@@ -706,7 +706,7 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
                          enableTimingLog: bool,
                          postStartTime, boxName: str,
                          pageNumberParam: str,
-                         timelinePostBookmark: str) -> str:
+                         timelinePostReaction: str) -> str:
     """Returns html for reaction icon/button
     """
     reactionStr = ''
@@ -715,7 +715,6 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
         return reactionStr
 
     reactionIcon = 'reaction.png'
-    reactionLink = 'reactpick'
     reactionTitle = 'Select reaction'
     if translate.get(reactionTitle):
         reactionTitle = translate[reactionTitle]
@@ -730,7 +729,7 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
     reactionStr += \
         '        ' + \
         '<img loading="lazy" title="' + reactionTitle + '" alt="' + \
-        reactionEmoji + reactionTitle + ' |" src="/icons' + \
+        reactionTitle + ' |" src="/icons' + \
         '/' + reactionIcon + '"/></a>\n'
     return reactionStr
 
