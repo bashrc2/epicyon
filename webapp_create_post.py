@@ -23,6 +23,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import editTextField
 from webapp_utils import editNumberField
 from webapp_utils import editCurrencyField
+from webapp_post import individualPostAsHtml
 
 
 def _htmlFollowingDataList(baseDir: str, nickname: str,
@@ -195,7 +196,21 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 defaultTimeline: str, newswire: {},
                 theme: str, noDropDown: bool,
                 accessKeys: {}, customSubmitText: str,
-                conversationId: str) -> str:
+                conversationId: str,
+                recentPostsCache: {}, maxRecentPosts: int,
+                session, cachedWebfingers: {},
+                personCache: {}, port: int,
+                postJsonObject: {},
+                projectVersion: str,
+                YTReplacementDomain: str,
+                twitterReplacementDomain: str,
+                showPublishedDateOnly: bool,
+                peertubeInstances: [],
+                allowLocalNetworkAccess: bool,
+                systemLanguage: str,
+                maxLikeCount: int, signingPrivateKeyPem: str,
+                CWlists: {}, listsEnabled: str,
+                boxName: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -242,6 +257,31 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                         '" rel="nofollow noopener noreferrer" ' + \
                         'target="_blank">' + \
                         translate['this post'] + '</a></p>\n'
+                    if postJsonObject:
+                        newPostText += \
+                            individualPostAsHtml(signingPrivateKeyPem,
+                                                 True, recentPostsCache,
+                                                 maxRecentPosts,
+                                                 translate, None,
+                                                 baseDir, session,
+                                                 cachedWebfingers,
+                                                 personCache,
+                                                 nickname, domain, port,
+                                                 postJsonObject,
+                                                 None, True, False,
+                                                 httpPrefix, projectVersion,
+                                                 boxName,
+                                                 YTReplacementDomain,
+                                                 twitterReplacementDomain,
+                                                 showPublishedDateOnly,
+                                                 peertubeInstances,
+                                                 allowLocalNetworkAccess,
+                                                 theme, systemLanguage,
+                                                 maxLikeCount,
+                                                 False, False, False,
+                                                 False, False, False,
+                                                 CWlists, listsEnabled)
+
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'
 

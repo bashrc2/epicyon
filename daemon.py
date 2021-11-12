@@ -2550,7 +2550,26 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.themeName,
                               True, accessKeys,
                               customSubmitText,
-                              conversationId).encode('utf-8')
+                              conversationId,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              self.server.port,
+                              None,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain,
+                              self.server.twitterReplacementDomain,
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances,
+                              self.server.allowLocalNetworkAccess,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem,
+                              self.server.CWlists,
+                              self.server.listsEnabled,
+                              self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -2665,7 +2684,26 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.themeName,
                               True, accessKeys,
                               customSubmitText,
-                              conversationId).encode('utf-8')
+                              conversationId,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              self.server.port,
+                              None,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain,
+                              self.server.twitterReplacementDomain,
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances,
+                              self.server.allowLocalNetworkAccess,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem,
+                              self.server.CWlists,
+                              self.server.listsEnabled,
+                              self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -12519,6 +12557,13 @@ class PubServer(BaseHTTPRequestHandler):
 
             customSubmitText = getConfigParam(baseDir, 'customSubmitText')
 
+            postJsonObject = None
+            if inReplyToUrl:
+                replyPostFilename = \
+                    locatePost(baseDir, nickname, domain, inReplyToUrl)
+                if replyPostFilename:
+                    postJsonObject = loadJson(replyPostFilename)
+
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
                               translate,
@@ -12536,7 +12581,26 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.themeName,
                               noDropDown, accessKeys,
                               customSubmitText,
-                              conversationId).encode('utf-8')
+                              conversationId,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              self.server.port,
+                              postJsonObject,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain,
+                              self.server.twitterReplacementDomain,
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances,
+                              self.server.allowLocalNetworkAccess,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem,
+                              self.server.CWlists,
+                              self.server.listsEnabled,
+                              self.server.defaultTimeline).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
