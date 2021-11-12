@@ -345,6 +345,10 @@ a:visited:hover {
     filter: brightness(var(--icon-brightness-change));
 }
 
+.rlab:hover {
+    text-decoration: underline;
+}
+
 a:focus {
     border: 2px solid var(--focus-color);
 }
