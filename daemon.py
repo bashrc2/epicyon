@@ -8186,7 +8186,7 @@ class PubServer(BaseHTTPRequestHandler):
             'actor': undoActor,
             'to': [actorReaction],
             'object': {
-                'type': 'EmojiReaction',
+                'type': 'EmojiReact',
                 'actor': undoActor,
                 'to': [actorReaction],
                 'object': reactionUrl2
@@ -8217,8 +8217,8 @@ class PubServer(BaseHTTPRequestHandler):
             undoReactionCollectionEntry(recentPostsCache,
                                         baseDir,
                                         reactionPostFilename, reactionUrl,
-                                        undoActor, domain, debug, None,
-                                        emojiContent)
+                                        undoActor, domain, debug,
+                                        reactionPostJson, emojiContent)
             if debug:
                 print('Regenerating html post for changed ' +
                       'emoji reaction collection')
@@ -8259,6 +8259,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Unreaction post not found: ' +
                       reactionPostFilename)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
