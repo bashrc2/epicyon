@@ -51,7 +51,7 @@ def validEmojiContent(emojiContent: str) -> bool:
     """
     if not emojiContent:
         return False
-    if len(emojiContent) > 1:
+    if len(emojiContent) > 2:
         return False
     if len(emojiRegex.findall(emojiContent)) == 0:
         return False
