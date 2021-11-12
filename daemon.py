@@ -14903,7 +14903,9 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # emoji reaction from the web interface icon
-        if authorized and htmlGET and '?react=' in self.path:
+        if authorized and htmlGET and \
+           '?react=' in self.path and \
+           '?actor=' in self.path:
             self._reactionButton(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
@@ -14922,7 +14924,9 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # undo an emoji reaction from the web interface icon
-        if authorized and htmlGET and '?unreact=' in self.path:
+        if authorized and htmlGET and \
+           '?unreact=' in self.path and \
+           '?actor=' in self.path:
             self._undoReactionButton(callingDomain, self.path,
                                      self.server.baseDir,
                                      self.server.httpPrefix,
