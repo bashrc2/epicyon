@@ -8353,7 +8353,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.signingPrivateKeyPem,
                                     self.server.CWlists,
                                     self.server.listsEnabled,
-                                    self.server.defaultTimeline)
+                                    timelineStr, pageNumber)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
