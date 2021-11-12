@@ -1937,7 +1937,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if showIcons:
             reactionStr = \
                 htmlEmojiReactions(postJsonObject, True, personUrl,
-                                   maxReactionTypes)
+                                   maxReactionTypes,
+                                   boxName, pageNumber)
             if postIsSensitive and reactionStr:
                 reactionStr = '<br>' + reactionStr
         postHtml = '    <div id="' + timelinePostBookmark + \

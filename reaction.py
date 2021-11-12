@@ -514,10 +514,13 @@ def updateReactionCollection(recentPostsCache: {},
 
 
 def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
-                       actor: str, maxReactionTypes: int) -> str:
+                       actor: str, maxReactionTypes: int,
+                       boxName: str, pageNumber: int) -> str:
     """html containing row of emoji reactions
     """
     if not hasObjectDict(postJsonObject):
+        return ''
+    if not postJsonObject.get('actor'):
         return ''
     if not postJsonObject['object'].get('reactions'):
         return ''
@@ -542,9 +545,13 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
     htmlStr = '<div class="emojiReactionBar">\n'
     for emojiContent, count in reactions.items():
         if emojiContent not in reactedToByThisActor:
-            baseUrl = actor + '?react=' + reactBy + '?emojreact='
+            baseUrl = actor + '?react=' + reactBy
         else:
-            baseUrl = actor + '?unreact=' + reactBy + '?emojreact='
+            baseUrl = actor + '?unreact=' + reactBy
+        baseUrl += '?actor=' + postJsonObject['actor']
+        baseUrl += '?tl=' + boxName
+        baseUrl += '?page=' + str(pageNumber)
+        baseUrl += '?emojreact='
 
         htmlStr += '  <div class="emojiReactionButton">\n'
         if count < 100:
