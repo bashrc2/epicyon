@@ -5914,7 +5914,7 @@ def _testValidEmojiContent() -> None:
     assert not validEmojiContent(None)
     assert not validEmojiContent(' ')
     assert not validEmojiContent('j')
-    assert not validEmojiContent('😀😀')
+    assert not validEmojiContent('😀😀😀')
     assert validEmojiContent('😀')
     assert validEmojiContent('😄')
 

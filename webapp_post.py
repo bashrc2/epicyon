@@ -1937,7 +1937,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if showIcons:
             reactionStr = \
                 htmlEmojiReactions(postJsonObject, True, personUrl,
-                                   maxReactionTypes)
+                                   maxReactionTypes,
+                                   boxName, pageNumber)
             if postIsSensitive and reactionStr:
                 reactionStr = '<br>' + reactionStr
         postHtml = '    <div id="' + timelinePostBookmark + \
@@ -2196,7 +2197,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             themeName: str, systemLanguage: str,
                             maxLikeCount: int, signingPrivateKeyPem: str,
                             CWlists: {}, listsEnabled: str,
-                            defaultTimeline: str) -> str:
+                            boxName: str, pageNumber: int) -> str:
     """Returns the emoji picker screen
     """
     reactedToPostStr = \
@@ -2234,6 +2235,9 @@ def htmlEmojiReactionPicker(cssCache: {},
             emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
             emojiUrl = \
                 baseUrl + '?react=' + postId + \
+                '?actor=' + postJsonObject['actor'] + \
+                '?tl=' + boxName + \
+                '?page=' + str(pageNumber) + \
                 '?emojreact=' + emojiContentEncoded
             emojiLabel = '<label class="rlab">' + emojiContent + '</label>'
             emojiPicksStr += \
@@ -2256,7 +2260,8 @@ def htmlEmojiReactionPicker(cssCache: {},
     # banner
     headerStr += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + boxName + \
+        '?page=' + str(pageNumber) + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     headerStr += '<img loading="lazy" class="timeline-banner" ' + \

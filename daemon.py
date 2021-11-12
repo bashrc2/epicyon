@@ -2550,7 +2550,26 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.themeName,
                               True, accessKeys,
                               customSubmitText,
-                              conversationId).encode('utf-8')
+                              conversationId,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              self.server.port,
+                              None,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain,
+                              self.server.twitterReplacementDomain,
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances,
+                              self.server.allowLocalNetworkAccess,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem,
+                              self.server.CWlists,
+                              self.server.listsEnabled,
+                              self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -2665,7 +2684,26 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.themeName,
                               True, accessKeys,
                               customSubmitText,
-                              conversationId).encode('utf-8')
+                              conversationId,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              self.server.port,
+                              None,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain,
+                              self.server.twitterReplacementDomain,
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances,
+                              self.server.allowLocalNetworkAccess,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem,
+                              self.server.CWlists,
+                              self.server.listsEnabled,
+                              self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -8186,7 +8224,7 @@ class PubServer(BaseHTTPRequestHandler):
             'actor': undoActor,
             'to': [actorReaction],
             'object': {
-                'type': 'EmojiReaction',
+                'type': 'EmojiReact',
                 'actor': undoActor,
                 'to': [actorReaction],
                 'object': reactionUrl2
@@ -8217,8 +8255,8 @@ class PubServer(BaseHTTPRequestHandler):
             undoReactionCollectionEntry(recentPostsCache,
                                         baseDir,
                                         reactionPostFilename, reactionUrl,
-                                        undoActor, domain, debug, None,
-                                        emojiContent)
+                                        undoActor, domain, debug,
+                                        reactionPostJson, emojiContent)
             if debug:
                 print('Regenerating html post for changed ' +
                       'emoji reaction collection')
@@ -8259,6 +8297,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Unreaction post not found: ' +
                       reactionPostFilename)
+
         self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
@@ -8353,7 +8392,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.signingPrivateKeyPem,
                                     self.server.CWlists,
                                     self.server.listsEnabled,
-                                    self.server.defaultTimeline)
+                                    timelineStr, pageNumber)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
@@ -12518,6 +12557,13 @@ class PubServer(BaseHTTPRequestHandler):
 
             customSubmitText = getConfigParam(baseDir, 'customSubmitText')
 
+            postJsonObject = None
+            if inReplyToUrl:
+                replyPostFilename = \
+                    locatePost(baseDir, nickname, domain, inReplyToUrl)
+                if replyPostFilename:
+                    postJsonObject = loadJson(replyPostFilename)
+
             msg = htmlNewPost(self.server.cssCache,
                               mediaInstance,
                               translate,
@@ -12535,7 +12581,26 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.themeName,
                               noDropDown, accessKeys,
                               customSubmitText,
-                              conversationId).encode('utf-8')
+                              conversationId,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              self.server.port,
+                              postJsonObject,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain,
+                              self.server.twitterReplacementDomain,
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances,
+                              self.server.allowLocalNetworkAccess,
+                              self.server.systemLanguage,
+                              self.server.maxLikeCount,
+                              self.server.signingPrivateKeyPem,
+                              self.server.CWlists,
+                              self.server.listsEnabled,
+                              self.server.defaultTimeline).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -14903,7 +14968,9 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # emoji reaction from the web interface icon
-        if authorized and htmlGET and '?react=' in self.path:
+        if authorized and htmlGET and \
+           '?react=' in self.path and \
+           '?actor=' in self.path:
             self._reactionButton(callingDomain, self.path,
                                  self.server.baseDir,
                                  self.server.httpPrefix,
@@ -14922,7 +14989,9 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # undo an emoji reaction from the web interface icon
-        if authorized and htmlGET and '?unreact=' in self.path:
+        if authorized and htmlGET and \
+           '?unreact=' in self.path and \
+           '?actor=' in self.path:
             self._undoReactionButton(callingDomain, self.path,
                                      self.server.baseDir,
                                      self.server.httpPrefix,
