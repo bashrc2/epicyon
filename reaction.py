@@ -517,6 +517,7 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
                        actor: str, maxReactionTypes: int,
                        boxName: str, pageNumber: int) -> str:
     """html containing row of emoji reactions
+    displayed at the bottom of posts, above the icons
     """
     if not hasObjectDict(postJsonObject):
         return ''
@@ -531,19 +532,37 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
     for item in postJsonObject['object']['reactions']['items']:
         emojiContent = item['content']
         emojiActor = item['actor']
+        emojiNickname = getNicknameFromActor(emojiActor)
+        emojiDomain, _ = getDomainFromActor(emojiActor)
+        emojiHandle = emojiNickname + '@' + emojiDomain
         if emojiActor == actor:
             if emojiContent not in reactedToByThisActor:
                 reactedToByThisActor.append(emojiContent)
         if not reactions.get(emojiContent):
             if len(reactions.items()) < maxReactionTypes:
-                reactions[emojiContent] = 1
+                reactions[emojiContent] = {
+                    "handles": [emojiHandle],
+                    "count": 1
+                }
         else:
-            reactions[emojiContent] += 1
+            reactions[emojiContent]['count'] += 1
+            if len(reactions[emojiContent]['handles']) < 32:
+                reactions[emojiContent]['handles'].append(emojiHandle)
     if len(reactions.items()) == 0:
         return ''
     reactBy = removeIdEnding(postJsonObject['object']['id'])
     htmlStr = '<div class="emojiReactionBar">\n'
-    for emojiContent, count in reactions.items():
+    for emojiContent, item in reactions.items():
+        count = item['count']
+
+        # get the handles of actors who reacted
+        handlesStr = ''
+        item['handles'].sort()
+        for handle in item['handles']:
+            if handlesStr:
+                handlesStr += '&#10;'
+            handlesStr += handle
+
         if emojiContent not in reactedToByThisActor:
             baseUrl = actor + '?react=' + reactBy
         else:
@@ -563,7 +582,8 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
             # urlencode the emoji
             emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
             emojiContentStr = \
-                '    <a href="' + baseUrl + emojiContentEncoded + '">' + \
+                '    <a href="' + baseUrl + emojiContentEncoded + \
+                '" title="' + handlesStr + '">' + \
                 emojiContentStr + '</a>\n'
         htmlStr += emojiContentStr
         htmlStr += '  </div>\n'
