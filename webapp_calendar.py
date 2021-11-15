@@ -188,7 +188,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
             if postId:
                 deleteButtonStr = \
                     '<td class="calendar__day__icons"><a href="' + calActor + \
-                    '/eventdelete?id=' + postId + '?year=' + str(year) + \
+                    '/eventdelete?eventid=' + postId + '?year=' + str(year) + \
                     '?month=' + str(monthNumber) + '?day=' + str(dayNumber) + \
                     '?time=' + eventTime + \
                     '">\n<img class="calendardayicon" loading="lazy" alt="' + \

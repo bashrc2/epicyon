@@ -1277,9 +1277,9 @@ def containsInvalidLocalLinks(content: str) -> bool:
     invalidStrings = (
         'mute', 'unmute', 'editeventpost', 'notifypost',
         'delete', 'options', 'page', 'repeat',
-        'bm', 'tl', 'actor', 'unrepeat',
+        'bm', 'tl', 'actor', 'unrepeat', 'eventid',
         'unannounce', 'like', 'unlike', 'bookmark',
-        'unbookmark', 'likedBy', 'id', 'time',
+        'unbookmark', 'likedBy', 'time',
         'year', 'month', 'day', 'editnewpost',
         'graph', 'showshare', 'category', 'showwanted',
         'rmshare', 'rmwanted', 'repeatprivate',
