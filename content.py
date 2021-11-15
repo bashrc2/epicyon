@@ -1279,7 +1279,7 @@ def containsInvalidLocalLinks(content: str) -> bool:
         'delete', 'options', 'page', 'repeat',
         'bm', 'tl', 'actor', 'unrepeat',
         'unannounce', 'like', 'unlike', 'bookmark',
-        'unbookmark', 'likedBy', 'id', 'time',
+        'unbookmark', 'likedBy', 'time',
         'year', 'month', 'day', 'editnewpost',
         'graph', 'showshare', 'category', 'showwanted',
         'rmshare', 'rmwanted', 'repeatprivate',
