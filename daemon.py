@@ -12464,7 +12464,7 @@ class PubServer(BaseHTTPRequestHandler):
                             GETstartTime) -> bool:
         """Confirm whether to delete a calendar event
         """
-        postId = path.split('?id=')[1]
+        postId = path.split('?eventid=')[1]
         if '?' in postId:
             postId = postId.split('?')[0]
         postTime = path.split('?time=')[1]
@@ -14766,7 +14766,7 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and usersInPath:
             if '/eventdelete' in self.path and \
                '?time=' in self.path and \
-               '?id=' in self.path:
+               '?eventid=' in self.path:
                 if self._confirmDeleteEvent(callingDomain, self.path,
                                             self.server.baseDir,
                                             self.server.httpPrefix,
