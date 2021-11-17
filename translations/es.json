@@ -495,5 +495,6 @@
     "Content License": "Licencia de contenido",
     "Reaction by": "Reacción de",
     "Notify on emoji reactions": "Notificar sobre reacciones emoji",
-    "Select reaction": "Seleccionar reacción"
+    "Select reaction": "Seleccionar reacción",
+    "Don't show the Reaction button": "No mostrar el botón de reacción"
 }
