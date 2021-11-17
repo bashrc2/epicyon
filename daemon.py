@@ -5725,6 +5725,38 @@ class PubServer(BaseHTTPRequestHandler):
                                       hideLikeButtonFile)
                                 pass
 
+                    # hide Reaction button
+                    hideReactionButtonFile = \
+                        acctDir(baseDir, nickname, domain) + \
+                        '/.hideReactionButton'
+                    notifyReactionsFilename = \
+                        acctDir(baseDir, nickname, domain) + \
+                        '/.notifyReactions'
+                    hideReactionButtonActive = False
+                    if fields.get('hideReactionButton'):
+                        if fields['hideReactionButton'] == 'on':
+                            hideReactionButtonActive = True
+                            with open(hideReactionButtonFile, 'w+') as rFile:
+                                rFile.write('\n')
+                            # remove notify Reaction selection
+                            if os.path.isfile(notifyReactionsFilename):
+                                try:
+                                    os.remove(notifyReactionsFilename)
+                                except BaseException:
+                                    print('EX: _profileUpdate ' +
+                                          'unable to delete ' +
+                                          notifyReactionsFilename)
+                                    pass
+                    if not hideReactionButtonActive:
+                        if os.path.isfile(hideReactionButtonFile):
+                            try:
+                                os.remove(hideReactionButtonFile)
+                            except BaseException:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete ' +
+                                      hideReactionButtonFile)
+                                pass
+
                     # notify about new Likes
                     if onFinalWelcomeScreen:
                         # default setting from welcome screen
@@ -5760,7 +5792,8 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         notifyReactionsActive = False
                         if fields.get('notifyReactions'):
-                            if fields['notifyReactions'] == 'on':
+                            if fields['notifyReactions'] == 'on' and \
+                               not hideReactionButtonActive:
                                 notifyReactionsActive = True
                                 with open(notifyReactionsFilename,
                                           'w+') as rFile:

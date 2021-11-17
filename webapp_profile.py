@@ -1869,6 +1869,7 @@ def _htmlEditProfileOptions(isAdmin: bool,
                             followDMs: str, removeTwitter: str,
                             notifyLikes: str, notifyReactions: str,
                             hideLikeButton: str,
+                            hideReactionButton: str,
                             translate: {}) -> str:
     """option checkboxes section of edit profile screen
     """
@@ -1898,6 +1899,9 @@ def _htmlEditProfileOptions(isAdmin: bool,
     editProfileForm += \
         editCheckBox(translate["Don't show the Like button"],
                      'hideLikeButton', hideLikeButton)
+    editProfileForm += \
+        editCheckBox(translate["Don't show the Reaction button"],
+                     'hideReactionButton', hideReactionButton)
     editProfileForm += '    </div>\n'
     return editProfileForm
 
@@ -2052,7 +2056,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
-    notifyLikes = notifyReactions = hideLikeButton = mediaInstanceStr = ''
+    notifyLikes = notifyReactions = ''
+    hideLikeButton = hideReactionButton = mediaInstanceStr = ''
     blogsInstanceStr = newsInstanceStr = movedTo = twitterStr = ''
     bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
@@ -2107,6 +2112,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         notifyReactions = 'checked'
     if os.path.isfile(accountDir + '/.hideLikeButton'):
         hideLikeButton = 'checked'
+    if os.path.isfile(accountDir + '/.hideReactionButton'):
+        hideReactionButton = 'checked'
 
     mediaInstance = getConfigParam(baseDir, "mediaInstance")
     if mediaInstance:
@@ -2203,7 +2210,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         _htmlEditProfileOptions(isAdmin, manuallyApprovesFollowers,
                                 isBot, isGroup, followDMs, removeTwitter,
                                 notifyLikes, notifyReactions,
-                                hideLikeButton, translate)
+                                hideLikeButton, hideReactionButton,
+                                translate)
 
     # Contact information
     editProfileForm += \

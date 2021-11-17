@@ -495,5 +495,6 @@
     "Content License": "コンテンツライセンス",
     "Reaction by": "による反応",
     "Notify on emoji reactions": "絵文字の反応を通知する",
-    "Select reaction": "反応を選択"
+    "Select reaction": "反応を選択",
+    "Don't show the Reaction button": "反応ボタンを表示しない"
 }

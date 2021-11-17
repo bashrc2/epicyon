@@ -1263,9 +1263,15 @@ def _receiveReaction(recentPostsCache: {},
         return False
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of emoji reaction - ' + handle)
+    if os.path.isfile(baseDir + '/accounts/' + handle +
+                      '/.hideReactionButton'):
+        print('Emoji reaction rejected by ' + handle +
+              ' due to their settings')
+        return True
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
+
     postReactionId = messageJson['object']
     emojiContent = removeHtml(messageJson['content'])
     if not emojiContent:

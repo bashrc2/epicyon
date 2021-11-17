@@ -704,6 +704,7 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
 def _getReactionIconHtml(nickname: str, domainFull: str,
                          postJsonObject: {},
                          isModerationPost: bool,
+                         showReactionButton: bool,
                          translate: {},
                          enableTimingLog: bool,
                          postStartTime, boxName: str,
@@ -713,7 +714,7 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
     """
     reactionStr = ''
 
-    if isModerationPost:
+    if not showReactionButton or isModerationPost:
         return reactionStr
 
     reactionIcon = 'reaction.png'
@@ -1660,6 +1661,13 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False
 
+    # whether to show a reaction button
+    hideReactionButtonFile = \
+        acctDir(baseDir, nickname, domain) + '/.hideReactionButton'
+    showReactionButton = True
+    if os.path.isfile(hideReactionButtonFile):
+        showReactionButton = False
+
     likeJsonObject = postJsonObject
     if announceJsonObject:
         likeJsonObject = announceJsonObject
@@ -1691,6 +1699,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         _getReactionIconHtml(nickname, domainFull,
                              postJsonObject,
                              isModerationPost,
+                             showReactionButton,
                              translate,
                              enableTimingLog,
                              postStartTime, boxName,
