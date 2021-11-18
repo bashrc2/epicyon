@@ -173,7 +173,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
                                 hazutils.Prehashed(hashes.SHA512()))
         signature = base64.b64encode(rawSignature).decode('ascii')
     else:
-        # default sha256
+        # default rsa-sha256
         headerDigest = getSHA256(signedHeaderText.encode('ascii'))
         rawSignature = key.sign(headerDigest,
                                 padding.PKCS1v15(),
