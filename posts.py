@@ -446,6 +446,7 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
         return False
     if item['type'] != 'Create' and \
        item['type'] != 'Announce' and \
+       item['type'] != 'Page' and \
        item['type'] != 'Note':
         if debug:
             print('Not a Create/Note/Announce type')
@@ -465,7 +466,7 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
             if debug:
                 print('object is not a dict or string')
             return False
-    elif item['type'] == 'Note':
+    elif item['type'] == 'Note' or item['type'] == 'Page':
         if not item.get('published'):
             if debug:
                 print('No published attribute')
@@ -476,6 +477,10 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
             thisItem = item['object']
         # check that this is a public post
         # #Public should appear in the "to" list
+        itemIsNote = False
+        if item['type'] == 'Note' or item['type'] == 'Page':
+            itemIsNote = True
+
         if isinstance(thisItem, dict):
             if thisItem.get('to'):
                 isPublic = False
@@ -485,7 +490,7 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
                         break
                 if not isPublic:
                     return False
-        elif isinstance(thisItem, str) or item['type'] == 'Note':
+        elif isinstance(thisItem, str) or itemIsNote:
             if item.get('to'):
                 isPublic = False
                 for recipient in item['to']:
@@ -581,7 +586,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             continue
 
         thisItem = item
-        if item['type'] != 'Note':
+        if item['type'] != 'Note' and item['type'] != 'Page':
             thisItem = item['object']
 
         content = getBaseContentFromPost(item, systemLanguage)
@@ -3409,6 +3414,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
     if postJsonObject['object'].get('moderationStatus'):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'Page' and \
        postJsonObject['object']['type'] != 'Event' and \
        postJsonObject['object']['type'] != 'Article':
         return False
@@ -4555,6 +4561,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             recentPostsCache)
             return None
         if announcedJson['type'] != 'Note' and \
+           announcedJson['type'] != 'Page' and \
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
             _rejectAnnounce(announceFilename,

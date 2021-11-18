@@ -291,7 +291,7 @@ def htmlProfileAfterSearch(cssCache: {},
                 if not hasObjectDict(item):
                     continue
             if item['type'] != 'Create' and item['type'] != 'Announce':
-                if item['type'] != 'Note':
+                if item['type'] != 'Note' and item['type'] != 'Page':
                     continue
                 if not item.get('to'):
                     continue
