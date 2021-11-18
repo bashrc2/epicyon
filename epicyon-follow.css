@@ -294,3 +294,50 @@ input[type=text] {
         margin: 30px 40px;
     }
 }
+
+@media screen and (max-width: 480px) {
+    .hashtagswarm {
+        font-size: var(--font-size2);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing3);
+    }
+    .followText {
+        font-size: var(--font-size2);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    input[type=text] {
+        width: var(--follow-text-entry-width);
+        clear: both;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        color: var(--text-entry-foreground);
+        background-color: var(--text-entry-background);
+    }
+    .button {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
+    input[type=checkbox]
+    {
+        -ms-transform: scale(4);
+        -moz-transform: scale(4);
+        -webkit-transform: scale(4);
+        -o-transform: scale(4);
+        transform: scale(4);
+        padding: 20px;
+        margin: 30px 40px;
+    }
+}
