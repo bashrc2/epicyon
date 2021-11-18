@@ -344,6 +344,9 @@ input[type=text] {
 }
 
 @media screen and (max-width: 480px) {
+    body, html {
+        min-width: 400px;
+    }
     details {
         font-size: var(--hashtag-size3);
     }
