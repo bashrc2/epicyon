@@ -20,8 +20,10 @@
     --border-width: 2px;
     --font-size-header: 18px;
     --font-size-header-mobile: 32px;
+    --font-size-header-tiny: 16px;
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
+    --font-size-button-tiny: 17px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -29,6 +31,7 @@
     --font-size5: 20px;
     --font-size-likes: 20px;
     --font-size-likes-mobile: 32px;
+    --font-size-likes-tiny: 16px;
     --font-size-pgp-key: 16px;
     --font-size-pgp-key2: 8px;
     --font-size-tox: 16px;
@@ -46,6 +49,7 @@
     --button-deny: darkred;
     --button-height: 10px;
     --button-height-padding-mobile: 20px;
+    --button-height-padding-tiny: 10px;
     --button-height-padding: 10px;
     --image-corners: 10%,
     --gallery-border: #ccc;
@@ -53,6 +57,7 @@
     --gallery-text-color: #ccc;
     --gallery-font-size: 22px;
     --gallery-font-size-mobile: 35px;
+    --gallery-font-size-tiny: 17.5px;
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
     --icons-side: right;
@@ -67,6 +72,7 @@
     --column-right-width: 10vw;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
+    --banner-height-tiny: 10vh;
     --header-font: 'Arial, Helvetica, sans-serif';
     --rendering: normal;
 }
@@ -250,7 +256,7 @@ h1 {
  .containerSubmitNewPost {
      margin: 20px;
  }
- 
+
 .container img.timelineicon:hover {
     filter: brightness(150%);
 }
@@ -1736,6 +1742,469 @@ aside .toggle-inside li {
         font-size: var(--font-size-button-mobile);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        float: right;
+    }
+    .license {
+        float: right;
+        margin: 0% 1%;
+        width: 20%;
+    }
+    .donateButton {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        float: none;
+        margin: 0px 10px;
+        padding: 12px 40px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        opacity: 0.7;
+    }
+    #msgscope label  img {
+        width: 64px;
+        height: 64px;
+        padding: 0px 0px;
+    }
+    .toggle-msgScope img {
+        width: 64px;
+        height: 64px;
+        margin: -15px 0px;
+        padding: 0px 20px;
+    }
+    .dropdown-menutoggle {
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+        -webkit-padding-start: 40px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        position: absolute;
+        top: 100%;
+        left: 21px;
+        width: 460%;
+        min-width: 100%;
+        z-index: 1000;
+        display: block;
+        float: left;
+        padding: 0 17px !important;
+        margin: 2px 0 0 !important;
+        font-size: var(--font-size3);
+        text-align: left;
+        list-style: none;
+        color: var(--dropdown-fg-color);
+        background-color: var(--dropdown-bg-color);
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+    }
+    input[type=checkbox]
+    {
+        -ms-transform: scale(4);
+        -moz-transform: scale(4);
+        -webkit-transform: scale(4);
+        -o-transform: scale(4);
+        transform: scale(4);
+        padding: 20px;
+        margin: 30px 40px;
+    }
+    input[type=radio]
+    {
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 20px;
+        margin: 30px 40px;
+    }
+    input[type=number]
+    {
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 10px;
+        margin: 40px 80px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body, html {
+        background-color: var(--main-bg-color);
+        color: var(--main-fg-color);
+
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        min-width: 950px;
+        margin-left: 0;
+        font-size: var(--font-size);
+        line-height: var(--line-spacing);
+    }
+    .timeline {
+        border: 0;
+        width: 100vw;
+    }
+    .timeline-banner {
+        object-fit: cover;
+        width: 98vw;
+        height: var(--banner-height-tiny);
+    }
+    .column-left {
+        width: 0%;
+    }
+    .col-left {
+        float: left;
+        width: 0%;
+        display: none;
+    }
+    .col-center {
+        width: 100vw;
+    }
+    .col-right {
+        float: right;
+        width: 0%;
+        display: none;
+    }
+    .column-right {
+        width: 0%;
+    }
+    .column-center {
+        display: inline-block;
+        width: 100%;
+    }
+    .likesCount {
+        font-size: var(--font-size-likes-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        float: right;
+        padding: 32px 0;
+        transform: translateX(-20px);
+        font-weight: bold;
+    }
+    .container p.administeredby {
+        font-size: var(--font-size-tox2);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .toxaddr {
+        font-size: var(--font-size-tox2);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .ssbaddr {
+        font-size: var(--font-size-pgp-key2);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .pgp {
+        font-size: var(--font-size-pgp-key2);
+        color: var(--main-link-color);
+        background: var(--link-bg-color);
+        font-family: 'monospace';
+    }
+    body, html {
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    div.gallerytext {
+        color: var(--gallery-text-color);
+        font-size: var(--gallery-font-size-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .galleryContainer {
+        display: grid;
+        grid-template-columns: auto;
+        background-color: var(--main-bg-color);
+    }
+    div.gallery {
+        margin: 5px;
+        border: 1px solid var(--gallery-border);
+        float: left;
+        width: 100%;
+    }
+    div.imagedesc {
+        padding: 35px;
+        text-align: center;
+    }
+    .container img {
+        float: left;
+        max-width: 400px;
+        width: 15%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: var(--image-corners);
+    }
+    .container img.emojisearch {
+        width: 25%;
+        float: right;
+    }
+    .container img.emojicalendar {
+        float: left;
+        max-width: 400px;
+        width: 12%;
+        -ms-transform: translateY(-25%);
+        transform: translateY(-25%);
+    }
+    .container img.timelineicon {
+        float: var(--icons-side);
+        margin-left: 0px;
+        margin-right:0;
+        padding: 0 0;
+        margin: 0 0;
+        width: 100px;
+    }
+    .container img.emojiheader {
+        float: none;
+        width: 45px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: middle;
+    }
+    div.mediaavatar img {
+        float: left;
+        max-width: 200px;
+        width: 8%;
+        margin: 0px 1%;
+        border-radius: 0%;
+    }
+    div.mediaicons img {
+        float: right;
+        max-width: 200px;
+        width: 10%;
+        margin: 0px 1%;
+        border-radius: 0%;
+    }
+    .containericons img {
+        float: var(--icons-side);
+        max-width: 200px;
+        width: 7%;
+        margin: 1% 3%;
+        border-radius: 0%;
+    }
+    .timeline-avatar img {
+        opacity: 1.0;
+        width: 15%;
+        height: 15%;
+        padding: 0px 0px;
+        -ms-transform: translateY(-10%);
+        transform: translateY(-10%);
+        border-radius: var(--avatar-rounding);
+    }
+    .buttonevent {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-highlighted);
+        border: none;
+        color: var(--button-fg-highlighted);
+        text-align: center;
+        font-size: var(--font-size-button-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .button {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        width: 20%;
+        max-width: 400px;
+        min-width: 10ch;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .buttonhighlighted {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-highlighted);
+        border: none;
+        color: var(--button-fg-highlighted);
+        text-align: center;
+        font-size: var(--font-size-button-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        width: 20%;
+        max-width: 400px;
+        min-width: 10ch;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .buttonselected {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-selected);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        width: 20%;
+        max-width: 400px;
+        min-width: 10ch;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .buttonselectedhighlighted {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-selected-highlighted);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        width: 20%;
+        max-width: 400px;
+        min-width: 10ch;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .followApprove {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-approve);
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        width: 20%;
+        max-width: 400px;
+        min-width: 80px;
+        cursor: pointer;
+        margin: 0 15px;
+        float: right;
+    }
+    .followDeny {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-deny);
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
+        width: 20%;
+        max-width: 400px;
+        min-width: 80px;
+        cursor: pointer;
+        margin: 0 15px;
+        float: right;
+    }
+    .pageicon {
+        width: 14%;
+    }
+    .time-right {
+        float: var(--icons-side);
+        color: var(--time-color);
+        margin: 25px 20px;
+    }
+    input[type=text], select, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: var(--button-corner-radius);
+        box-sizing: border-box;
+        margin-top: 6px;
+        margin-bottom: 16px;
+        resize: vertical;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: var(--main-bg-color-reply);
+        color: var(--main-fg-color);
+    }
+    input[type=button], input[type=submit] {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        display: inline-block;
+        padding: var(--button-height-padding-tiny);
+        margin: 15px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        width: 20%;
+    }
+    .question {
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .questionresult {
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    input[type=radio] {
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        height: 90px;
+        vertical-align: middle;
+        margin-right: 20px;
+    }
+    input.vote[type=submit] {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        float: left;
+        padding: var(--button-height-padding-tiny);
+        margin: 15px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        width: 20%;
+    }
+    input[type=file] {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        padding: 20px;
+        margin: 0px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        width: 95.4%;
+    }
+    .cancelbtn {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        display: inline-block;
+        padding: var(--button-height-padding-tiny);
+        margin: 15px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        width: 20%;
+    }
+    .scope-desc {
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .buttonunfollow {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 200px;
         min-width: 100px;
