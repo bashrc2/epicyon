@@ -1842,7 +1842,7 @@ aside .toggle-inside li {
 
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
-        min-width: 950px;
+        min-width: 400px;
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
