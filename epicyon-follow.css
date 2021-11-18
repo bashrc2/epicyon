@@ -296,6 +296,9 @@ input[type=text] {
 }
 
 @media screen and (max-width: 480px) {
+    body, html {
+	min-width: 400px;
+    }
     .hashtagswarm {
         font-size: var(--font-size2);
         font-family: Arial, Helvetica, sans-serif;
