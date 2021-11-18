@@ -291,7 +291,7 @@ def htmlProfileAfterSearch(cssCache: {},
                 if not hasObjectDict(item):
                     continue
             if item['type'] != 'Create' and item['type'] != 'Announce':
-                if item['type'] != 'Note':
+                if item['type'] != 'Note' and item['type'] != 'Page':
                     continue
                 if not item.get('to'):
                     continue
@@ -312,8 +312,9 @@ def htmlProfileAfterSearch(cssCache: {},
                 item = newItem
             if not item.get('actor'):
                 continue
-            if not isAnnouncedFeedItem and item['actor'] != personUrl:
-                continue
+            if not isAnnouncedFeedItem:
+                if item['actor'] != personUrl and item['type'] != 'Page':
+                    continue
 
             profileStr += \
                 individualPostAsHtml(signingPrivateKeyPem,

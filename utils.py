@@ -2583,6 +2583,7 @@ def isDM(postJsonObject: {}) -> bool:
     if not hasObjectDict(postJsonObject):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'Page' and \
        postJsonObject['object']['type'] != 'Patch' and \
        postJsonObject['object']['type'] != 'EncryptedMessage' and \
        postJsonObject['object']['type'] != 'Article':
@@ -2611,6 +2612,7 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
     if postJsonObject['object'].get('moderationStatus'):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'Page' and \
        postJsonObject['object']['type'] != 'EncryptedMessage' and \
        postJsonObject['object']['type'] != 'Article':
         return False

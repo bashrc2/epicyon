@@ -12,6 +12,7 @@
     --font-color-header: #ccc;
     --welcome-font-size: 22px;
     --welcome-font-size-mobile: 40px;
+    --welcome-font-size-tiny: 20px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -238,6 +239,46 @@ span.psw {
         cursor: pointer;
         width: var(--welcome-button-width);
         font-size: var(--welcome-font-size-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body, html {
+        background-color: var(--welcome-bg-color);
+        color: var(--welcome-fg-color);
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        max-width: 95%;
+        min-width: 400px;
+        margin: 0 auto;
+        font-size: var(--welcome-font-size-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+        position: relative;
+    }
+    .welcome-text {
+        font-size: var(--welcome-font-size-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    input[type=text], input[type=password], textarea {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: var(--welcome-font-size-tiny);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    button {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: var(--welcome-button-width);
+        font-size: var(--welcome-font-size-tiny);
         font-family: Arial, Helvetica, sans-serif;
     }
 }

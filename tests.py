@@ -2246,8 +2246,8 @@ def testGroupFollow(baseDir: str) -> None:
         testgroupDir + '/wfendpoints/testgroup@' + \
         testgroupDomain + ':' + str(testgroupPort) + '.json'
     assert os.path.isfile(testgroupWebfingerFilename)
-    assert 'group:testgroup@' in open(testgroupWebfingerFilename).read()
-    print('group: exists within the webfinger endpoint for testgroup')
+    assert 'acct:testgroup@' in open(testgroupWebfingerFilename).read()
+    print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroupHandle = 'testgroup@' + testgroupDomain
     followingStr = ''
@@ -2321,8 +2321,8 @@ def testGroupFollow(baseDir: str) -> None:
         testgroupDir + '/wfendpoints/testgroup@' + \
         testgroupDomain + ':' + str(testgroupPort) + '.json'
     assert os.path.isfile(testgroupWebfingerFilename)
-    assert 'group:testgroup@' in open(testgroupWebfingerFilename).read()
-    print('group: exists within the webfinger endpoint for testgroup')
+    assert 'acct:testgroup@' in open(testgroupWebfingerFilename).read()
+    print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroupHandle = 'testgroup@' + testgroupDomain
     followingStr = ''

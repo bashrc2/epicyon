@@ -1,44 +1,45 @@
 @charset "UTF-8";
 
 :root {
-    --login-bg-color: #282c37;
-    --link-bg-color: #282c37;
-    --login-fg-color: #dddddd;
-    --main-link-color: #999;
-    --main-visited-color: #888;
-    --border-color: #505050;
-    --border-width: 2px;
+    --login-bg-color: #010026;
+    --link-bg-color: #e6ebf0;
+    --login-fg-color: white;
+    --main-link-color: darkblue;
+    --main-visited-color: #232c37;
+    --border-color: #c0cdd9;
+    --border-width: 1px;
     --font-size-header: 18px;
-    --font-color-header: #ccc;
+    --font-color-header: black;
     --login-font-size: 22px;
     --login-font-size-mobile: 40px;
-    --text-entry-foreground: #ccc;
-    --text-entry-background: #111;
+    --login-font-size-tiny: 20px;
+    --text-entry-foreground: #111;
+    --text-entry-background: white;
     --time-color: #aaa;
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
     --form-border-radius: 30px;
-    --focus-color: white;
+    --focus-color: grey;
     --line-spacing: 130%;
     --login-logo-width: 20%;
-    --main-link-color-hover: #bbb;
+    --main-link-color-hover: blue;
     --rendering: normal;
 }
 
 @font-face {
-  font-family: 'Bedstead';
+  font-family: 'NimbusSanL';
   font-style: italic;
   font-weight: normal;
   font-display: block;
-  src: url('./fonts/bedstead.otf') format('opentype');
+  src: url('./fonts/NimbusSanL-italic.otf') format('opentype');
 }
 @font-face {
-  font-family: 'Bedstead';
+  font-family: 'NimbusSanL';
   font-style: normal;
   font-weight: normal;
   font-display: block;
-  src: url('./fonts/bedstead.otf') format('opentype');
+  src: url('./fonts/NimbusSanL.otf') format('opentype');
 }
 
 body, html {
@@ -52,7 +53,7 @@ body, html {
     background-repeat: no-repeat;
     background-position: center;
     height: 100%;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'NimbusSanL';
     max-width: 60%;
     min-width: 600px;
     margin: 0 auto;
@@ -112,7 +113,7 @@ input[type=text], input[type=password] {
     border: 1px solid #ccc;
     box-sizing: border-box;
     font-size: var(--login-font-size);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'NimbusSanL';
 }
 
 button {
@@ -124,12 +125,12 @@ button {
     cursor: pointer;
     width: 100%;
     font-size: var(--login-font-size);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'NimbusSanL';
 }
 
 .login-text {
     font-size: var(--login-font-size);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'NimbusSanL';
 }
 
 button:hover {
@@ -170,17 +171,17 @@ span.psw {
         background-color: var(--login-bg-color);
         color: var(--login-fg-color);
         height: 100%;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
         max-width: 60%;
         min-width: 600px;
         margin: 0 auto;
         font-size: var(--login-font-size);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
         position: relative;
     }
     .login-text {
         font-size: var(--login-font-size);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
     }
     input[type=text], input[type=password] {
         width: 100%;
@@ -190,7 +191,7 @@ span.psw {
         border: 1px solid #ccc;
         box-sizing: border-box;
         font-size: var(--login-font-size);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
     }
     button {
         background-color: var(--button-background);
@@ -201,7 +202,7 @@ span.psw {
         cursor: pointer;
         width: 100%;
         font-size: var(--login-font-size);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
     }
 }
 
@@ -210,17 +211,17 @@ span.psw {
         background-color: var(--login-bg-color);
         color: var(--login-fg-color);
         height: 100%;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
         max-width: 95%;
         min-width: 600px;
         margin: 0 auto;
         font-size: var(--login-font-size-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
         position: relative;
     }
     .login-text {
         font-size: var(--login-font-size-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
     }
     input[type=text], input[type=password] {
         width: 100%;
@@ -230,7 +231,7 @@ span.psw {
         border: 1px solid #ccc;
         box-sizing: border-box;
         font-size: var(--login-font-size-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
     }
     button {
         background-color: var(--button-background);
@@ -241,6 +242,46 @@ span.psw {
         cursor: pointer;
         width: 100%;
         font-size: var(--login-font-size-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'NimbusSanL';
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body, html {
+        background-color: var(--login-bg-color);
+        color: var(--login-fg-color);
+        height: 100%;
+        font-family: 'NimbusSanL';
+        max-width: 95%;
+        min-width: 400px;
+        margin: 0 auto;
+        font-size: var(--login-font-size-tiny);
+        font-family: 'NimbusSanL';
+        position: relative;
+    }
+    .login-text {
+        font-size: var(--login-font-size-tiny);
+        font-family: 'NimbusSanL';
+    }
+    input[type=text], input[type=password] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: var(--login-font-size-tiny);
+        font-family: 'NimbusSanL';
+    }
+    button {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        font-size: var(--login-font-size-mobile);
+        font-family: 'NimbusSanL';
     }
 }

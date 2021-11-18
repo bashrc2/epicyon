@@ -75,8 +75,6 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     nickname, domain, grpAccount = _parseHandle(handle)
     if not nickname:
         return None
-    if grpAccount:
-        groupAccount = True
     wfDomain = removeDomainPort(domain)
 
     wfHandle = nickname + '@' + wfDomain
@@ -89,14 +87,9 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     hdr = {
         'Accept': 'application/jrd+json'
     }
-    if not groupAccount:
-        par = {
-            'resource': 'acct:{}'.format(wfHandle)
-        }
-    else:
-        par = {
-            'resource': 'group:{}'.format(wfHandle)
-        }
+    par = {
+        'resource': 'acct:{}'.format(wfHandle)
+    }
     try:
         result = \
             getJson(signingPrivateKeyPem, session, url, hdr, par,
@@ -147,10 +140,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
 
     personName = nickname
     personId = localActorUrl(httpPrefix, personName, domain)
-    if not groupAccount:
-        subjectStr = "acct:" + personName + "@" + originalDomain
-    else:
-        subjectStr = "group:" + personName + "@" + originalDomain
+    subjectStr = "acct:" + personName + "@" + originalDomain
     profilePageHref = httpPrefix + "://" + domain + "/@" + nickname
     if nickname == 'inbox' or nickname == originalDomain:
         personName = 'actor'
@@ -232,20 +222,17 @@ def webfingerLookup(path: str, baseDir: str,
     if not path.startswith('/.well-known/webfinger?'):
         return None
     handle = None
-    resourceTypes = ('acct', 'group')
-    for resType in resourceTypes:
-        if 'resource=' + resType + ':' in path:
-            handle = path.split('resource=' + resType + ':')[1].strip()
-            handle = urllib.parse.unquote(handle)
-            if debug:
-                print('DEBUG: WEBFINGER handle ' + handle)
-            break
-        elif 'resource=' + resType + '%3A' in path:
-            handle = path.split('resource=' + resType + '%3A')[1]
-            handle = urllib.parse.unquote(handle.strip())
-            if debug:
-                print('DEBUG: WEBFINGER handle ' + handle)
-            break
+    resType = 'acct'
+    if 'resource=' + resType + ':' in path:
+        handle = path.split('resource=' + resType + ':')[1].strip()
+        handle = urllib.parse.unquote(handle)
+        if debug:
+            print('DEBUG: WEBFINGER handle ' + handle)
+    elif 'resource=' + resType + '%3A' in path:
+        handle = path.split('resource=' + resType + '%3A')[1]
+        handle = urllib.parse.unquote(handle.strip())
+        if debug:
+            print('DEBUG: WEBFINGER handle ' + handle)
     if not handle:
         if debug:
             print('DEBUG: WEBFINGER handle missing')

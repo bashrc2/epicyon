@@ -1,7 +1,7 @@
 :root {
-    --main-bg-color: #282c37;
-    --calendar-bg-color: #eee;
-    --lines-color: black;
+    --main-bg-color: #e6ebf0;
+    --calendar-bg-color: #e6ebf0;
+    --lines-color: darkblue;
     --day-number: black;
     --day-number2: #282c37;
     --time-color: black;
@@ -9,47 +9,50 @@
     --event-color: #282c37;
     --event-public-color: #282c37;
     --today-foreground: white;
-    --today-circle: red;
-    --event-background: orange;
-    --event-background-private: #ddd;
-    --event-foreground:white;
-    --title-text: #282c37;
-    --title-background: #ccc;
-    --focus-color: white;
+    --today-circle: #03a494;
+    --event-background: lightgrey;
+    --event-background-private: grey;
+    --event-foreground: white;
+    --title-text: white;
+    --title-background: #2b5c6d;
+    --focus-color: grey;
     --calendar-horizontal-padding: 0;
     --calendar-cell-size: 1.5vw;
     --calendar-cell-size-mobile: 1.5vw;
+    --calendar-cell-size-tiny: 1.5vw;
     --font-size-calendar: 20px;
     --font-size-calendar-mobile: 30px;
+    --font-size-calendar-tiny: 15px;
     --font-size-calendar-header: 3rem;
     --font-size-calendar-day: 1rem;
     --font-size-calendar-cell: 2rem;
     --font-size-calendar-cell-mobile: 4rem;
+    --font-size-calendar-cell-tiny: 2rem;
     --calendar-header-font: 'Montserrat';
     --calendar-header-font-style: italic;
-    --main-link-color-hover: #bbb;
+    --main-link-color-hover: blue;
     --rendering: normal;
 }
 
 @font-face {
-  font-family: 'Bedstead';
+  font-family: 'NimbusSanL';
   font-style: italic;
   font-weight: normal;
   font-display: block;
-  src: url('./fonts/bedstead.otf') format('opentype');
+  src: url('./fonts/NimbusSanL-italic.otf') format('opentype');
 }
 @font-face {
-  font-family: 'Bedstead';
+  font-family: 'NimbusSanL';
   font-style: normal;
   font-weight: normal;
   font-display: block;
-  src: url('./fonts/bedstead.otf') format('opentype');
+  src: url('./fonts/NimbusSanL.otf') format('opentype');
 }
 
 body {
     background-color: var(--main-bg-color);
     color: var(--day-number2);
-    font-family: 'Montserrat';
+    font-family: 'NimbusSanL';
     font-weight: 700;
     image-rendering: var(--rendering);
 }
@@ -122,7 +125,7 @@ a:focus {
     background-color: var(--title-background);
     color: var(--title-text);
     display: inline-block;
-    font-family: var(--calendar-header-font);
+    font-family:  var(--calendar-header-font);
     font-size: var(--font-size-calendar-header);
     font-weight: 400;
     letter-spacing: 0.1em;
@@ -251,7 +254,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
         padding: var(--calendar-cell-size) 0 var(--calendar-cell-size);
     }
     body {
-	font-size: var(--font-size-calendar);
+        font-size: var(--font-size-calendar);
     }
 }
 
@@ -271,6 +274,26 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
         padding: var(--calendar-cell-size-mobile) 0 var(--calendar-cell-size-mobile);
     }
     body {
-	font-size: var(--font-size-calendar-mobile);
+        font-size: var(--font-size-calendar-mobile);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .calendar {
+        table-display: fixed;
+        margin: 0 0;
+        width: 100%;
+        padding: 0 var(--calendar-horizontal-padding);
+    }
+    .calendar__day__cell {
+        font-size: var(--font-size-calendar-cell-tiny);
+        position: relative;
+    }
+    .calendar__day__header,
+    .calendar__day__cell {
+        padding: var(--calendar-cell-size-tiny) 0 var(--calendar-cell-size-tiny);
+    }
+    body {
+        font-size: var(--font-size-calendar-tiny);
     }
 }

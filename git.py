@@ -50,6 +50,7 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     """Is the given post content a git patch?
     """
     if messageType != 'Note' and \
+       messageType != 'Page' and \
        messageType != 'Patch':
         return False
     # must have a subject line
