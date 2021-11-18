@@ -43,6 +43,7 @@
     --font-size-newswire-mobile: 32px;
     --font-size-newswire-tiny: 16px;
     --font-size-dropdown-header: 40px;
+    --font-size-dropdown-header-tiny: 20px;
     --font-size-mobile: 50px;
     --font-size-tiny: 25px;
     --font-size: 26px;
@@ -112,7 +113,7 @@
     --column-center-width: 80vw;
     --column-right-width: 10vw;
     --column-left-mobile-margin: 2%;
-    --column-left-mobile-tiny: 1%;
+    --column-left-tiny-margin: 1%;
     --column-left-top-margin: 0;
     --column-right-top-margin: 0;
     --column-left-header-style: uppercase;
@@ -332,7 +333,7 @@ blockquote p {
 }
 
 .imageAnchor {
-    font-family:  var(--header-font);
+    font-family:   var(--header-font);
 }
 
 .imageAnchor:focus img{
@@ -521,7 +522,7 @@ a:focus {
 }
 
 .button span {
-    font-family:  var(--header-font);
+    font-family:   var(--header-font);
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -539,7 +540,7 @@ a:focus {
 }
 
 .buttonselected span {
-    font-family:  var(--header-font);
+    font-family:   var(--header-font);
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -648,7 +649,7 @@ a:focus {
 }
 
 .announceOrReply {
-    font-family:  var(--header-font);
+    font-family:   var(--header-font);
 }
 
 .container img.announceOrReply {
@@ -895,7 +896,7 @@ input[type=submit]:hover {
     padding: 6px 0px;
     color: var(--dropdown-fg-color);
     font-size: var(--font-size-dropdown-header);
-    font-family:  var(--header-font);
+    font-family:   var(--header-font);
     line-height: 1.5em;
     text-decoration: none;
     border: 0;
@@ -1065,7 +1066,7 @@ div.container {
         line-height: var(--line-spacing);
     }
     h1 {
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         font-size: var(--font-size);
         color: var(--title-color);
     }
@@ -1123,7 +1124,7 @@ div.container {
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         font-size: var(--column-left-header-size);
         text-transform: var(--column-left-header-style);
         border: none;
@@ -1446,7 +1447,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         margin: var(--button-margin);
@@ -1466,7 +1467,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding);
         width: 20%;
         margin: var(--button-margin);
@@ -1486,7 +1487,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         margin: 5px;
@@ -1540,7 +1541,7 @@ div.container {
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         margin: var(--button-margin);
@@ -1561,7 +1562,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -1825,7 +1826,7 @@ div.container {
         line-height: var(--line-spacing);
     }
     h1 {
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         font-size: var(--font-size-mobile);
         color: var(--title-color);
     }
@@ -1882,7 +1883,7 @@ div.container {
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         font-size: var(--column-left-header-size-mobile);
         text-transform: var(--column-left-header-style);
         border: none;
@@ -2166,7 +2167,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -2185,7 +2186,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 30%;
         min-width: var(--button-width-chars);
@@ -2279,7 +2280,7 @@ div.container {
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -2299,7 +2300,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -2560,7 +2561,7 @@ div.container {
         line-height: var(--line-spacing);
     }
     h1 {
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         font-size: var(--font-size-tiny);
         color: var(--title-color);
     }
@@ -2617,7 +2618,7 @@ div.container {
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         font-size: var(--column-left-header-size-tiny);
         text-transform: var(--column-left-header-style);
         border: none;
@@ -2901,7 +2902,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-tiny);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -2920,7 +2921,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-tiny);
         width: 30%;
         min-width: var(--button-width-chars);
@@ -3014,7 +3015,7 @@ div.container {
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-tiny);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -3034,7 +3035,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-tiny);
-        font-family:  var(--header-font);
+        font-family:   var(--header-font);
         padding: var(--button-height-padding-tiny);
         width: 20%;
         max-width: 400px;
@@ -3107,7 +3108,7 @@ div.container {
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
-        font-size: var(--font-size3);
+        font-size: var(--font-size4);
         font-family: 'NimbusSanL';
         width: 10ch;
         float: right;
@@ -3213,6 +3214,7 @@ div.container {
         transform: scale(4);
         padding: 20px;
         margin: 30px 40px;
+        width: 10px;
     }
     input[type=radio]
     {
@@ -3279,5 +3281,29 @@ div.container {
         font-size: var(--font-size-tiny);
         margin: 25px 25px;
         line-height: 300%;
+    }
+    .vertical-center {
+        max-width: 90%;
+        min-width: 400px;
+        margin: 0 auto;
+    }
+    .newPostDropdown > label,
+    .newPostDropdown > a[role="button"] {
+        display: inline-block;
+        padding: 6px 0px;
+        color: var(--dropdown-fg-color);
+        font-size: var(--font-size-dropdown-header-tiny);
+        font-family:   var(--header-font);
+        line-height: 1.5em;
+        text-decoration: none;
+        border: 0;
+        cursor: pointer;
+    }
+    .labels {
+        font-size: var(--font-size2);
+        font-family: 'NimbusSanL';
+    }
+    .newPostDropdown img {
+        width: var(--font-size-dropdown-header-tiny);
     }
 }
