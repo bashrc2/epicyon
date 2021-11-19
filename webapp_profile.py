@@ -281,18 +281,15 @@ def htmlProfileAfterSearch(cssCache: {},
     if userFeed:
         i = 0
         for item in userFeed:
-            print('htmlProfileAfterSearch 1 ' + str(item))
             isAnnouncedFeedItem = False
             if isCreateInsideAnnounce(item):
                 isAnnouncedFeedItem = True
                 item = item['object']
-            print('htmlProfileAfterSearch 2')
             if not item.get('type'):
                 continue
             if item['type'] == 'Create':
                 if not hasObjectDict(item):
                     continue
-            print('htmlProfileAfterSearch 3')
             if item['type'] != 'Create' and item['type'] != 'Announce':
                 if item['type'] != 'Note' and item['type'] != 'Page':
                     continue
@@ -315,12 +312,10 @@ def htmlProfileAfterSearch(cssCache: {},
                 item = newItem
             if not item.get('actor'):
                 continue
-            print('htmlProfileAfterSearch 4')
             if not isAnnouncedFeedItem:
                 if item['actor'] != personUrl and \
                    item['object']['type'] != 'Page':
                     continue
-            print('htmlProfileAfterSearch 5')
 
             profileStr += \
                 individualPostAsHtml(signingPrivateKeyPem,
@@ -338,7 +333,6 @@ def htmlProfileAfterSearch(cssCache: {},
                                      themeName, systemLanguage, maxLikeCount,
                                      False, False, False, False, False, False,
                                      CWlists, listsEnabled)
-            print('htmlProfileAfterSearch 6 ' + str(profileStr))
             i += 1
             if i >= 8:
                 break
