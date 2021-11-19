@@ -317,7 +317,8 @@ def htmlProfileAfterSearch(cssCache: {},
                 continue
             print('htmlProfileAfterSearch 4')
             if not isAnnouncedFeedItem:
-                if item['actor'] != personUrl and item['type'] != 'Page':
+                if item['actor'] != personUrl and \
+                   item['object']['type'] != 'Page':
                     continue
             print('htmlProfileAfterSearch 5')
 
