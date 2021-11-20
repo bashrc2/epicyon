@@ -566,7 +566,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         agentStrLower = agentStr.lower()
         defaultAgentBlocks = [
-            'fedilist.com'
+            'fedilist'
         ]
         for uaBlock in defaultAgentBlocks:
             if uaBlock in agentStrLower:

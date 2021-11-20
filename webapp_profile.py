@@ -75,6 +75,51 @@ from webapp_timeline import htmlIndividualShare
 from blocking import getCWlistVariable
 
 
+def _validProfilePreviewPost(postJsonObject: {},
+                             personUrl: str) -> (bool, {}):
+    """Returns true if the given post should appear on a person/group profile
+    after searching for a handle
+    """
+    isAnnouncedFeedItem = False
+    if isCreateInsideAnnounce(postJsonObject):
+        isAnnouncedFeedItem = True
+        postJsonObject = postJsonObject['object']
+    if not postJsonObject.get('type'):
+        return False, None
+    if postJsonObject['type'] == 'Create':
+        if not hasObjectDict(postJsonObject):
+            return False, None
+    if postJsonObject['type'] != 'Create' and \
+       postJsonObject['type'] != 'Announce':
+        if postJsonObject['type'] != 'Note' and \
+           postJsonObject['type'] != 'Page':
+            return False, None
+        if not postJsonObject.get('to'):
+            return False, None
+        if not postJsonObject.get('id'):
+            return False, None
+        # wrap in create
+        cc = []
+        if postJsonObject.get('cc'):
+            cc = postJsonObject['cc']
+        newPostJsonObject = {
+            'object': postJsonObject,
+            'to': postJsonObject['to'],
+            'cc': cc,
+            'id': postJsonObject['id'],
+            'actor': personUrl,
+            'type': 'Create'
+        }
+        postJsonObject = newPostJsonObject
+    if not postJsonObject.get('actor'):
+        return False, None
+    if not isAnnouncedFeedItem:
+        if postJsonObject['actor'] != personUrl and \
+           postJsonObject['object']['type'] != 'Page':
+            return False, None
+    return True, postJsonObject
+
+
 def htmlProfileAfterSearch(cssCache: {},
                            recentPostsCache: {}, maxRecentPosts: int,
                            translate: {},
@@ -281,40 +326,10 @@ def htmlProfileAfterSearch(cssCache: {},
     if userFeed:
         i = 0
         for item in userFeed:
-            isAnnouncedFeedItem = False
-            if isCreateInsideAnnounce(item):
-                isAnnouncedFeedItem = True
-                item = item['object']
-            if not item.get('type'):
+            showItem, postJsonObject = \
+                _validProfilePreviewPost(item, personUrl)
+            if not showItem:
                 continue
-            if item['type'] == 'Create':
-                if not hasObjectDict(item):
-                    continue
-            if item['type'] != 'Create' and item['type'] != 'Announce':
-                if item['type'] != 'Note' and item['type'] != 'Page':
-                    continue
-                if not item.get('to'):
-                    continue
-                if not item.get('id'):
-                    continue
-                # wrap in create
-                cc = []
-                if item.get('cc'):
-                    cc = item['cc']
-                newItem = {
-                    'object': item,
-                    'to': item['to'],
-                    'cc': cc,
-                    'id': item['id'],
-                    'actor': personUrl,
-                    'type': 'Create'
-                }
-                item = newItem
-            if not item.get('actor'):
-                continue
-            if not isAnnouncedFeedItem:
-                if item['actor'] != personUrl and item['type'] != 'Page':
-                    continue
 
             profileStr += \
                 individualPostAsHtml(signingPrivateKeyPem,
@@ -322,7 +337,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      translate, None, baseDir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
-                                     item, avatarUrl, False, False,
+                                     postJsonObject, avatarUrl, False, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
                                      twitterReplacementDomain,
