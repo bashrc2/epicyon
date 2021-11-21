@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "#0481f5",
+    "dropdown-bg-color": "#0d0d10",
+    "dropdown-bg-color-hover": "#0b0b10",
+    "dropdown-fg-color-hover": "#0481f5",
     "avatar-rounding": "50%",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
