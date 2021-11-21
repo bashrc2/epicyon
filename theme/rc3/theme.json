@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "white",
+    "dropdown-bg-color": "#002a3a",
+    "dropdown-bg-color-hover": "#025d84",
+    "dropdown-fg-color-hover": "white",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "calendar-header-font-style": "normal",
