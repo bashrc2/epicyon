@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "#f98bb0",
+    "dropdown-bg-color": "#2f152d",
+    "dropdown-bg-color-hover": "#3f152d",
+    "dropdown-fg-color-hover": "#f98bb0",
     "column-left-top-margin": "0.4cm",
     "column-right-top-margin": "0.8cm",
     "time-vertical-align": "0%",
