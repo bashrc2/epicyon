@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "#ffc4bc",
+    "dropdown-bg-color": "#1f0d10",
+    "dropdown-bg-color-hover": "#222",
+    "dropdown-fg-color-hover": "#ffc4bc",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "newswire-publish-icon": "True",
