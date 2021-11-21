@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "#d5c7b7",
+    "dropdown-bg-color": "#4c4e41",
+    "dropdown-bg-color-hover": "#3c4e41",
+    "dropdown-fg-color-hover": "#d5c7b7",
     "avatar-rounding": "50%",
     "dropdown-bg-color-hover": "#463b35",
     "cw-color": "#d5c7b7",

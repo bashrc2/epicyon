@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "#2d2c37",
+    "dropdown-bg-color": "#ddd",
+    "dropdown-bg-color-hover": "#ccc",
+    "dropdown-fg-color-hover": "#2d2c37",
     "button-fg-highlighted": "#eeeeee",
     "button-selected-text": "#eeeeee",
     "button-text": "#eeeeee",

@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "white",
+    "dropdown-bg-color": "#483335",
+    "dropdown-bg-color-hover": "#583335",
+    "dropdown-fg-color-hover": "white",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "time-color": "grey",

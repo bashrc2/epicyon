@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "black",
+    "dropdown-bg-color": "#dedede",
+    "dropdown-bg-color-hover": "#ccc",
+    "dropdown-fg-color-hover": "black",
     "timeline-icon-width": "30px",
     "timeline-icon-width-mobile": "60px",
     "button-bottom-margin": "0",

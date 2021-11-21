@@ -12939,8 +12939,6 @@ class PubServer(BaseHTTPRequestHandler):
         this should only allow through basic information, such as nodeinfo
         """
         if path == '/' or path == '/about' or path == '/login' or \
-           path.startswith('/api/') or \
-           path.startswith('/nodeinfo/') or \
            path.startswith('/blog/'):
             return True
         return False
