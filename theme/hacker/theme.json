@@ -1,4 +1,8 @@
 {
+    "dropdown-fg-color": "#9ad791",
+    "dropdown-bg-color": "#222",
+    "dropdown-bg-color-hover": "#444",
+    "dropdown-fg-color-hover": "#9ad791",
     "column-left-header-background": "#035103",
     "font-size-header": "12px",
     "font-size-header-mobile": "20px",
