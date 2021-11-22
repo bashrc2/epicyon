@@ -242,7 +242,6 @@ from like import updateLikesCollection
 from reaction import updateReactionCollection
 from utils import undoReactionCollectionEntry
 from utils import getNewPostEndpoints
-from utils import malformedCiphertext
 from utils import hasActor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
@@ -1502,11 +1501,6 @@ class PubServer(BaseHTTPRequestHandler):
         beginSaveTime = time.time()
         # save the json for later queue processing
         messageBytesDecoded = messageBytes.decode('utf-8')
-
-        if malformedCiphertext(messageBytesDecoded):
-            print('WARN: post contains malformed ciphertext ' +
-                  str(originalMessageJson))
-            return 4
 
         if containsInvalidLocalLinks(messageBytesDecoded):
             print('WARN: post contains invalid local links ' +
