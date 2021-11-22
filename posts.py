@@ -4604,6 +4604,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             return None
 
         if invalidCiphertext(contentStr):
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             print('WARN: Invalid ciphertext within announce ' +
                   str(announcedJson))
             return None
