@@ -623,9 +623,10 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
 
     headers['signature'] = signatureHeader
     GETmethod = not withDigest
+    debug = True
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
                              boxpath, GETmethod, None,
-                             messageBodyJsonStr, False)
+                             messageBodyJsonStr, debug)
     if withDigest:
         # everything correct except for content-length
         headers['content-length'] = str(contentLength + 2)

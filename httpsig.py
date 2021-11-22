@@ -312,7 +312,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             if v.startswith('('):
                 requestTargetKey = k
                 requestTargetStr = v[1:-1]
-                break
+            elif v.startswith('"'):
+                signatureDict[k] = v[1:-1]
         if not requestTargetKey:
             return False
         signatureDict[requestTargetKey] = requestTargetStr
@@ -354,6 +355,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         elif signedHeader == 'algorithm':
             if headers.get(signedHeader):
                 algorithm = headers[signedHeader]
+                if debug:
+                    print('http signature algorithm: ' + algorithm)
         elif signedHeader == 'digest':
             if messageBodyDigest:
                 bodyDigest = messageBodyDigest
@@ -447,20 +450,30 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             print('signature: ' + algorithm + ' ' +
                   signatureDict['signature'])
 
+    # log unusual signing algorithms
+    if signatureDict.get('alg'):
+        print('http signature algorithm: ' + signatureDict['alg'])
+
     # If extra signing algorithms need to be added then do it here
-    if algorithm == 'rsa-sha256':
-        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
-        paddingStr = padding.PKCS1v15()
+    if not signatureDict.get('alg'):
         alg = hazutils.Prehashed(hashes.SHA256())
-    elif algorithm == 'rsa-sha512':
-        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
-        paddingStr = padding.PKCS1v15()
+    elif signatureDict['alg'] == 'rsa-sha256':
+        alg = hazutils.Prehashed(hashes.SHA256())
+    elif signatureDict['alg'] == 'hs2019':
+        alg = hazutils.Prehashed(hashes.SHA256())
+    elif signatureDict['alg'] == 'rsa-sha512':
         alg = hazutils.Prehashed(hashes.SHA512())
     else:
-        print('Unknown http signature algorithm: ' + algorithm)
-        paddingStr = padding.PKCS1v15()
         alg = hazutils.Prehashed(hashes.SHA256())
+
+    if algorithm == 'rsa-sha256' or algorithm == 'hs2019':
+        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+    elif algorithm == 'rsa-sha512':
+        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+    else:
+        print('Unknown http signature algorithm: ' + algorithm)
         headerDigest = ''
+    paddingStr = padding.PKCS1v15()
 
     try:
         pubkey.verify(signature, headerDigest, paddingStr, alg)
