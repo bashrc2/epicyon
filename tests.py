@@ -392,8 +392,20 @@ def _testSignAndVerify() -> None:
 
 def _testHttpSigNew():
     print('testHttpSigNew')
+    httpPrefix = 'https'
+    port = 443
+    debug = True
     messageBodyJson = {"hello": "world"}
     messageBodyJsonStr = json.dumps(messageBodyJson)
+    nickname = 'foo'
+    pathStr = "/" + nickname + "?param=value&pet=dog HTTP/1.1"
+    domain = 'example.com'
+    dateStr = 'Tue, 20 Apr 2021 02:07:55 GMT'
+    digestStr = 'SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE='
+    bodyDigest = messageContentDigest(messageBodyJsonStr)
+    assert bodyDigest in digestStr
+    contentLength = 18
+    contentType = 'application/activity+json'
     publicKeyPem = \
         '-----BEGIN RSA PUBLIC KEY-----\n' + \
         'MIIBCgKCAQEAhAKYdtoeoy8zcAcR874L8' + \
@@ -462,101 +474,49 @@ def _testHttpSigNew():
         'EQeNC8fHGg4UXU8mhHnSBt3EA10qQJfRD' + \
         's15M38eG2cYwB1PZpDHScDnDA0=\n' + \
         '-----END RSA PRIVATE KEY-----'
-    sigInput = \
-        'sig1=(date); alg=rsa-sha256; keyId="test-key-b"'
-    sig = \
-        'sig1=:HtXycCl97RBVkZi66ADKnC9c5eSSlb57GnQ4KFqNZplOpNfxqk62' + \
-        'JzZ484jXgLvoOTRaKfR4hwyxlcyb+BWkVasApQovBSdit9Ml/YmN2IvJDPncrlhPD' + \
-        'VDv36Z9/DiSO+RNHD7iLXugdXo1+MGRimW1RmYdenl/ITeb7rjfLZ4b9VNnLFtVWw' + \
-        'rjhAiwIqeLjodVImzVc5srrk19HMZNuUejK6I3/MyN3+3U8tIRW4LWzx6ZgGZUaEE' + \
-        'P0aBlBkt7Fj0Tt5/P5HNW/Sa/m8smxbOHnwzAJDa10PyjzdIbywlnWIIWtZKPPsoV' + \
-        'oKVopUWEU3TNhpWmaVhFrUL/O6SN3w==:'
-    # "hs2019", using RSASSA-PSS [RFC8017] and SHA-512 [RFC6234]
-    # sigInput = \
-    #     'sig1=(*request-target, *created, host, date, ' + \
-    #     'cache-control, x-empty-header, x-example); keyId="test-key-a"; ' + \
-    #     'alg=hs2019; created=1402170695; expires=1402170995'
-    # sig = \
-    #  'sig1=:K2qGT5srn2OGbOIDzQ6kYT+ruaycnDAAUpKv+ePFfD0RAxn/1BUe' + \
-    #  'Zx/Kdrq32DrfakQ6bPsvB9aqZqognNT6be4olHROIkeV879RrsrObury8L9SCEibe' + \
-    #  'oHyqU/yCjphSmEdd7WD+zrchK57quskKwRefy2iEC5S2uAH0EPyOZKWlvbKmKu5q4' + \
-    #  'CaB8X/I5/+HLZLGvDiezqi6/7p2Gngf5hwZ0lSdy39vyNMaaAT0tKo6nuVw0S1MVg' + \
-    #  '1Q7MpWYZs0soHjttq0uLIA3DIbQfLiIvK6/l0BdWTU7+2uQj7lBkQAsFZHoA96ZZg' + \
-    #  'FquQrXRlmYOh+Hx5D9fJkXcXe5tmAg==:'
-    nickname = 'foo'
-    boxpath = '/' + nickname
-    # headers = {
-    #     "*request-target": "get " + boxpath,
-    #     "*created": "1402170695",
-    #     "host": "example.org",
-    #     "date": "Tue, 07 Jun 2014 20:51:35 GMT",
-    #     "cache-control": "max-age=60, must-revalidate",
-    #     "x-emptyheader": "",
-    #     "x-example": "Example header with some whitespace.",
-    #     "x-dictionary": "b=2",
-    #     "x-dictionary": "a=1",
-    #     "x-list": "(a, b, c)",
-    #     "Signature-Input": sigInput,
-    #     "Signature": sig
-    # }
-    dateStr = "Tue, 07 Jun 2014 20:51:35 GMT"
-    secondsSinceEpoch = 1402174295
-    domain = "example.com"
-    port = 443
-    headers = {
-        "*created": str(secondsSinceEpoch),
-        "*request-target": "post /foo?param=value&pet=dog",
-        "host": domain,
-        "date": dateStr,
-        "content-type": "application/json",
-        "digest": "SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=",
-        "content-length": "18",
-        "Signature-Input": sigInput,
-        "Signature": sig
-    }
-    httpPrefix = 'https'
-    debug = False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                             boxpath, False, None,
-                             messageBodyJsonStr, debug, True)
-    # make a deliberate mistake
-    headers['Signature'] = headers['Signature'].replace('V', 'B')
-    assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
-                                 boxpath, False, None,
-                                 messageBodyJsonStr, debug, True)
-    # test signing
-    bodyDigest = messageContentDigest(messageBodyJsonStr)
-    contentLength = len(messageBodyJsonStr)
     headers = {
         "host": domain,
         "date": dateStr,
         "digest": f'SHA-256={bodyDigest}',
-        "content-type": "application/json",
+        "content-type": contentType,
         "content-length": str(contentLength)
     }
     signatureIndexHeader, signatureHeader = \
         signPostHeadersNew(dateStr, privateKeyPem, nickname,
                            domain, port,
                            domain, port,
-                           boxpath, httpPrefix, messageBodyJsonStr,
-                           'rsa-sha256')
-    expectedIndexHeader = \
-        'keyId="https://example.com/users/foo#main-key"; ' + \
-        'alg=hs2019; created=' + str(secondsSinceEpoch) + '; ' + \
-        'sig1=(*request-target, *created, host, date, ' + \
-        'digest, content-type, content-length)'
-    if signatureIndexHeader != expectedIndexHeader:
-        print('Unexpected new http header: ' + signatureIndexHeader)
-        print('Should be:                  ' + expectedIndexHeader)
-    assert signatureIndexHeader == expectedIndexHeader
-    assert signatureHeader == \
-        'sig1=:euX3O1KSTYXN9/oR2qFezswWm9FbrjtRymK7xBpXNQvTs' + \
-        'XehtrNdD8nELZKzPXMvMz7PaJd6V+fjzpHoZ9upTdqqQLK2Iwml' + \
-        'p4BlHqW6Aopd7sZFCWFq7/Amm5oaizpp3e0jb5XISS5m3cRKuoi' + \
-        'LM0x+OudmAoYGi0TEEJk8bpnJAXfVCDfmOyL3XNqQeShQHeOANG' + \
-        'okiKktj8ff+KLYLaPTAJkob1k/EhoPIkbw/YzAY8IZjWQNMkf+F' + \
-        'JChApQ5HnDCQPwD5xV9eGzBpAf6D0G19xiTmQye4Hn6tAs3fy3V' + \
-        '/aYa/GhW2pSrctDnAKIi4imj9joppr3CB8gqgXZOPQ==:'
+                           pathStr, httpPrefix, messageBodyJsonStr,
+                           'rsa-sha256', debug)
+    print('signatureIndexHeader1: ' + str(signatureIndexHeader))
+    print('signatureHeader1: ' + str(signatureHeader))
+    sigInput = "keyId=\"https://example.com/users/foo#main-key\"; " + \
+        "alg=hs2019; created=1618884475; " + \
+        "sig1=(@request-target, @created, host, date, digest, " + \
+        "content-type, content-length)"
+    assert signatureIndexHeader == sigInput
+    sig = "sig1=:NXAQ7AtDMR2iwhmH1qCwiZw5PVTjOw5+5kSu0Tsx/3gqz0D" + \
+        "py7OQbWqFHrNB7MmS4TukX/vDyQOFdElY5yxnEhbgRwKACq0AP4QH9H" + \
+        "CiRyCE8UXDdAkY4VUd6jrWjRHKRoqQN7I+Q5tb2Fu5cDfifw/PQc86Z" + \
+        "NmMhPrg3OjUJ9Q2Gj29NhgJ+4el1ECg0cAy4yG1M9AQ3KvQooQFvlg1" + \
+        "vp0H2xfbJQjv8FsR/lKiRdaVHqGR2CKrvxvPRPaOsFANp2wzEtiMk3O" + \
+        "TrBTYU+Zb53mIspfEeLxsNtcGmBDmQKZ9Pud8f99XGJrP+uDd3zKtnr" + \
+        "f3fUnRRqy37yhB7WVwkg==:"
+    assert signatureHeader == sig
+
+    debug = True
+    headers['path'] = pathStr
+    headers['signature'] = sig
+    headers['signature-input'] = sigInput
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             pathStr, False, None,
+                             messageBodyJsonStr, debug, True)
+
+    # make a deliberate mistake
+    debug = False
+    headers['signature'] = headers['signature'].replace('V', 'B')
+    assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                                 pathStr, False, None,
+                                 messageBodyJsonStr, debug, True)
 
 
 def _testHttpsigBase(withDigest: bool, baseDir: str):
@@ -623,9 +583,10 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
 
     headers['signature'] = signatureHeader
     GETmethod = not withDigest
+    debug = True
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
                              boxpath, GETmethod, None,
-                             messageBodyJsonStr, False)
+                             messageBodyJsonStr, debug)
     if withDigest:
         # everything correct except for content-length
         headers['content-length'] = str(contentLength + 2)
@@ -5919,6 +5880,124 @@ def _testValidEmojiContent() -> None:
     assert validEmojiContent('😄')
 
 
+def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
+    print('testHttpsigNew(' + str(withDigest) + ')')
+
+    debug = True
+    path = baseDir + '/.testHttpsigBaseNew'
+    if os.path.isdir(path):
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
+    os.mkdir(path)
+    os.chdir(path)
+
+    contentType = 'application/activity+json'
+    nickname = 'socrates'
+    hostDomain = 'someother.instance'
+    domain = 'argumentative.social'
+    httpPrefix = 'https'
+    port = 5576
+    password = 'SuperSecretPassword'
+    privateKeyPem, publicKeyPem, person, wfEndpoint = \
+        createPerson(path, nickname, domain, port, httpPrefix,
+                     False, False, password)
+    assert privateKeyPem
+    if withDigest:
+        messageBodyJson = {
+            "a key": "a value",
+            "another key": "A string",
+            "yet another key": "Another string"
+        }
+        messageBodyJsonStr = json.dumps(messageBodyJson)
+    else:
+        messageBodyJsonStr = ''
+
+    headersDomain = getFullDomain(hostDomain, port)
+
+    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    boxpath = '/inbox'
+    if not withDigest:
+        headers = {
+            'host': headersDomain,
+            'date': dateStr,
+            'accept': contentType
+        }
+        signatureIndexHeader, signatureHeader = \
+            signPostHeadersNew(dateStr, privateKeyPem, nickname,
+                               domain, port,
+                               hostDomain, port,
+                               boxpath, httpPrefix, messageBodyJsonStr,
+                               'rsa-sha256', debug)
+    else:
+        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        contentLength = len(messageBodyJsonStr)
+        headers = {
+            'host': headersDomain,
+            'date': dateStr,
+            'digest': f'SHA-256={bodyDigest}',
+            'content-type': contentType,
+            'content-length': str(contentLength)
+        }
+        signatureIndexHeader, signatureHeader = \
+            signPostHeadersNew(dateStr, privateKeyPem, nickname,
+                               domain, port,
+                               hostDomain, port,
+                               boxpath, httpPrefix, messageBodyJsonStr,
+                               'rsa-sha256', debug)
+
+    headers['signature'] = signatureHeader
+    headers['signature-input'] = signatureIndexHeader
+    print('headers: ' + str(headers))
+
+    GETmethod = not withDigest
+    debug = True
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             boxpath, GETmethod, None,
+                             messageBodyJsonStr, debug)
+    debug = False
+    if withDigest:
+        # everything correct except for content-length
+        headers['content-length'] = str(contentLength + 2)
+        assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                                 boxpath, GETmethod, None,
+                                 messageBodyJsonStr, debug) is False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             '/parambulator' + boxpath, GETmethod, None,
+                             messageBodyJsonStr, debug) is False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             boxpath, not GETmethod, None,
+                             messageBodyJsonStr, debug) is False
+    if not withDigest:
+        # fake domain
+        headers = {
+            'host': 'bogon.domain',
+            'date': dateStr,
+            'content-type': contentType
+        }
+    else:
+        # correct domain but fake message
+        messageBodyJsonStr = \
+            '{"a key": "a value", "another key": "Fake GNUs", ' + \
+            '"yet another key": "More Fake GNUs"}'
+        contentLength = len(messageBodyJsonStr)
+        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        headers = {
+            'host': domain,
+            'date': dateStr,
+            'digest': f'SHA-256={bodyDigest}',
+            'content-type': contentType,
+            'content-length': str(contentLength)
+        }
+    headers['signature'] = signatureHeader
+    headers['signature-input'] = signatureIndexHeader
+    pprint(headers)
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             boxpath, not GETmethod, None,
+                             messageBodyJsonStr, False) is False
+
+    os.chdir(baseDir)
+    shutil.rmtree(path, ignore_errors=False, onerror=None)
+
+
 def runAllTests():
     baseDir = os.getcwd()
     print('Running tests...')
@@ -5990,6 +6069,8 @@ def runAllTests():
     _testHttpsig(baseDir)
     _testHttpSignedGET(baseDir)
     _testHttpSigNew()
+    _testHttpsigBaseNew(True, baseDir)
+    _testHttpsigBaseNew(False, baseDir)
     _testCache()
     _testThreads()
     _testCreatePerson(baseDir)

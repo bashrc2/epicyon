@@ -2653,8 +2653,8 @@ def isPGPEncrypted(content: str) -> bool:
     return False
 
 
-def malformedCiphertext(content: str) -> bool:
-    """Returns true if the given content contains a malformed key
+def invalidCiphertext(content: str) -> bool:
+    """Returns true if the given content contains an invalid key
     """
     if '----BEGIN ' in content or '----END ' in content:
         if not containsPGPPublicKey(content) and \

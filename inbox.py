@@ -17,6 +17,7 @@ from languages import understoodPostLanguage
 from like import updateLikesCollection
 from reaction import updateReactionCollection
 from reaction import validEmojiContent
+from utils import invalidCiphertext
 from utils import removeHtml
 from utils import fileLastModified
 from utils import hasObjectString
@@ -2258,6 +2259,9 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + originalPostId)
                     return False
+    if invalidCiphertext(messageJson['object']['content']):
+        print('REJECT: malformed ciphertext in content')
+        return False
     if debug:
         print('ACCEPT: post content is valid')
     return True

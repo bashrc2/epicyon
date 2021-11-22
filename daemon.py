@@ -242,7 +242,6 @@ from like import updateLikesCollection
 from reaction import updateReactionCollection
 from utils import undoReactionCollectionEntry
 from utils import getNewPostEndpoints
-from utils import malformedCiphertext
 from utils import hasActor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
@@ -451,6 +450,8 @@ class PubServer(BaseHTTPRequestHandler):
             # https://tools.ietf.org/html/
             # draft-ietf-httpbis-message-signatures-01
             return self.headers['Signature-Input']
+        elif self.headers.get('signature-input'):
+            return self.headers['signature-input']
         elif self.headers.get('signature'):
             # Ye olde Masto http sig
             return self.headers['signature']
@@ -728,7 +729,9 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # verify the GET request without any digest
-        if verifyPostHeaders(self.server.httpPrefix, pubKey, self.headers,
+        if verifyPostHeaders(self.server.httpPrefix,
+                             self.server.domainFull,
+                             pubKey, self.headers,
                              self.path, True, None, '', self.server.debug):
             return True
 
@@ -1502,11 +1505,6 @@ class PubServer(BaseHTTPRequestHandler):
         beginSaveTime = time.time()
         # save the json for later queue processing
         messageBytesDecoded = messageBytes.decode('utf-8')
-
-        if malformedCiphertext(messageBytesDecoded):
-            print('WARN: post contains malformed ciphertext ' +
-                  str(originalMessageJson))
-            return 4
 
         if containsInvalidLocalLinks(messageBytesDecoded):
             print('WARN: post contains invalid local links ' +

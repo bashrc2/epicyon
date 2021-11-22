@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import invalidCiphertext
 from utils import hasObjectStringType
 from utils import removeIdEnding
 from utils import replaceUsersWithAt
@@ -4600,6 +4601,14 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             _rejectAnnounce(announceFilename,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
+            return None
+
+        if invalidCiphertext(contentStr):
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
+            print('WARN: Invalid ciphertext within announce ' +
+                  str(announcedJson))
             return None
 
         # remove any long words

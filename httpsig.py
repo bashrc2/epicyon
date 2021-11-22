@@ -11,7 +11,7 @@ __module_group__ = "Security"
 # see https://tools.ietf.org/html/draft-cavage-http-signatures-06
 #
 # This might change in future
-# see https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures-01
+# see https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
@@ -116,11 +116,11 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
                        path: str,
                        httpPrefix: str,
                        messageBodyJsonStr: str,
-                       algorithm: str) -> (str, str):
+                       algorithm: str, debug: bool) -> (str, str):
     """Returns a raw signature strings that can be plugged into a header
     as "Signature-Input" and "Signature"
     used to verify the authenticity of an HTTP transmission.
-    See https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures-01
+    See https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures
     """
     domain = getFullDomain(domain, port)
 
@@ -137,18 +137,17 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
     if not messageBodyJsonStr:
         headers = {
-            '*request-target': f'post {path}',
-            '*created': str(secondsSinceEpoch),
+            '@request-target': f'get {path}',
+            '@created': str(secondsSinceEpoch),
             'host': toDomain,
-            'date': dateStr,
-            'content-type': 'application/json'
+            'date': dateStr
         }
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
         contentLength = len(messageBodyJsonStr)
         headers = {
-            '*request-target': f'post {path}',
-            '*created': str(secondsSinceEpoch),
+            '@request-target': f'post {path}',
+            '@created': str(secondsSinceEpoch),
             'host': toDomain,
             'date': dateStr,
             'digest': f'SHA-256={bodyDigest}',
@@ -163,6 +162,10 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
     signedHeaderText = signedHeaderText.strip()
+
+    if debug:
+        print('\nsignPostHeadersNew signedHeaderText:\n' +
+              signedHeaderText + '\nEND\n')
 
     # Sign the digest. Potentially other signing algorithms can be added here.
     signature = ''
@@ -269,7 +272,8 @@ def _verifyRecentSignature(signedDateStr: str) -> bool:
     return True
 
 
-def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
+def verifyPostHeaders(httpPrefix: str,
+                      publicKeyPem: str, headers: dict,
                       path: str, GETmethod: bool,
                       messageBodyDigest: str,
                       messageBodyJsonStr: str, debug: bool,
@@ -298,8 +302,11 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
                                  backend=default_backend())
     # Build a dictionary of the signature values
-    if headers.get('Signature-Input'):
-        signatureHeader = headers['Signature-Input']
+    if headers.get('Signature-Input') or headers.get('signature-input'):
+        if headers.get('Signature-Input'):
+            signatureHeader = headers['Signature-Input']
+        else:
+            signatureHeader = headers['signature-input']
         fieldSep2 = ','
         # split the signature input into separate fields
         signatureDict = {
@@ -312,7 +319,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             if v.startswith('('):
                 requestTargetKey = k
                 requestTargetStr = v[1:-1]
-                break
+            elif v.startswith('"'):
+                signatureDict[k] = v[1:-1]
         if not requestTargetKey:
             return False
         signatureDict[requestTargetKey] = requestTargetStr
@@ -341,19 +349,40 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             # original Mastodon http signature
             appendStr = f'(request-target): {method.lower()} {path}'
             signedHeaderList.append(appendStr)
-        elif '*request-target' in signedHeader:
+        elif '@request-target' in signedHeader:
             # https://tools.ietf.org/html/
-            # draft-ietf-httpbis-message-signatures-01
-            appendStr = f'*request-target: {method.lower()} {path}'
-            # remove ()
-            # if appendStr.startswith('('):
-            #     appendStr = appendStr.split('(')[1]
-            #     if ')' in appendStr:
-            #         appendStr = appendStr.split(')')[0]
+            # draft-ietf-httpbis-message-signatures
+            appendStr = f'@request-target: {method.lower()} {path}'
             signedHeaderList.append(appendStr)
+        elif '@created' in signedHeader:
+            if signatureDict.get('created'):
+                createdStr = str(signatureDict['created'])
+                appendStr = f'@created: {createdStr}'
+                signedHeaderList.append(appendStr)
+        elif '@expires' in signedHeader:
+            if signatureDict.get('expires'):
+                expiresStr = str(signatureDict['expires'])
+                appendStr = f'@expires: {expiresStr}'
+                signedHeaderList.append(appendStr)
+        elif '@method' in signedHeader:
+            appendStr = f'@expires: {method}'
+            signedHeaderList.append(appendStr)
+        elif '@scheme' in signedHeader:
+            signedHeaderList.append('@scheme: http')
+        elif '@authority' in signedHeader:
+            authorityStr = None
+            if signatureDict.get('authority'):
+                authorityStr = str(signatureDict['authority'])
+            elif signatureDict.get('Authority'):
+                authorityStr = str(signatureDict['Authority'])
+            if authorityStr:
+                appendStr = f'@authority: {authorityStr}'
+                signedHeaderList.append(appendStr)
         elif signedHeader == 'algorithm':
             if headers.get(signedHeader):
                 algorithm = headers[signedHeader]
+                if debug:
+                    print('http signature algorithm: ' + algorithm)
         elif signedHeader == 'digest':
             if messageBodyDigest:
                 bodyDigest = messageBodyDigest
@@ -427,14 +456,18 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
     if debug:
-        print('signedHeaderText:\n' + signedHeaderText + 'END')
+        print('\nverifyPostHeaders signedHeaderText:\n' +
+              signedHeaderText + '\nEND\n')
 
     # Get the signature, verify with public key, return result
-    signature = None
-    if headers.get('Signature-Input') and headers.get('Signature'):
+    if (headers.get('Signature-Input') and headers.get('Signature')) or \
+       (headers.get('signature-input') and headers.get('signature')):
         # https://tools.ietf.org/html/
-        # draft-ietf-httpbis-message-signatures-01
-        headersSig = headers['Signature']
+        # draft-ietf-httpbis-message-signatures
+        if headers.get('Signature'):
+            headersSig = headers['Signature']
+        else:
+            headersSig = headers['signature']
         # remove sig1=:
         if requestTargetKey + '=:' in headersSig:
             headersSig = headersSig.split(requestTargetKey + '=:')[1]
@@ -442,25 +475,36 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         signature = base64.b64decode(headersSig)
     else:
         # Original Mastodon signature
-        signature = base64.b64decode(signatureDict['signature'])
-        if debug:
-            print('signature: ' + algorithm + ' ' +
-                  signatureDict['signature'])
+        headersSig = signatureDict['signature']
+        signature = base64.b64decode(headersSig)
+    if debug:
+        print('signature: ' + algorithm + ' ' + headersSig)
+
+    # log unusual signing algorithms
+    if signatureDict.get('alg'):
+        print('http signature algorithm: ' + signatureDict['alg'])
 
     # If extra signing algorithms need to be added then do it here
-    if algorithm == 'rsa-sha256':
-        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
-        paddingStr = padding.PKCS1v15()
+    if not signatureDict.get('alg'):
         alg = hazutils.Prehashed(hashes.SHA256())
-    elif algorithm == 'rsa-sha512':
-        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
-        paddingStr = padding.PKCS1v15()
+    elif (signatureDict['alg'] == 'rsa-sha256' or
+          signatureDict['alg'] == 'rsa-v1_5-sha256' or
+          signatureDict['alg'] == 'hs2019'):
+        alg = hazutils.Prehashed(hashes.SHA256())
+    elif (signatureDict['alg'] == 'rsa-sha512' or
+          signatureDict['alg'] == 'rsa-pss-sha512'):
         alg = hazutils.Prehashed(hashes.SHA512())
     else:
-        print('Unknown http signature algorithm: ' + algorithm)
-        paddingStr = padding.PKCS1v15()
         alg = hazutils.Prehashed(hashes.SHA256())
+
+    if algorithm == 'rsa-sha256' or algorithm == 'hs2019':
+        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+    elif algorithm == 'rsa-sha512':
+        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+    else:
+        print('Unknown http signature algorithm: ' + algorithm)
         headerDigest = ''
+    paddingStr = padding.PKCS1v15()
 
     try:
         pubkey.verify(signature, headerDigest, paddingStr, alg)
