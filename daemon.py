@@ -729,7 +729,9 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # verify the GET request without any digest
-        if verifyPostHeaders(self.server.httpPrefix, pubKey, self.headers,
+        if verifyPostHeaders(self.server.httpPrefix,
+                             self.server.domainFull,
+                             pubKey, self.headers,
                              self.path, True, None, '', self.server.debug):
             return True
 

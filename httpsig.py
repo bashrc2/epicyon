@@ -272,7 +272,8 @@ def _verifyRecentSignature(signedDateStr: str) -> bool:
     return True
 
 
-def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
+def verifyPostHeaders(httpPrefix: str,
+                      publicKeyPem: str, headers: dict,
                       path: str, GETmethod: bool,
                       messageBodyDigest: str,
                       messageBodyJsonStr: str, debug: bool,
@@ -366,6 +367,17 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         elif '@method' in signedHeader:
             appendStr = f'@expires: {method}'
             signedHeaderList.append(appendStr)
+        elif '@scheme' in signedHeader:
+            signedHeaderList.append('@scheme: http')
+        elif '@authority' in signedHeader:
+            authorityStr = None
+            if signatureDict.get('authority'):
+                authorityStr = str(signatureDict['authority'])
+            elif signatureDict.get('Authority'):
+                authorityStr = str(signatureDict['Authority'])
+            if authorityStr:
+                appendStr = f'@authority: {authorityStr}'
+                signedHeaderList.append(appendStr)
         elif signedHeader == 'algorithm':
             if headers.get(signedHeader):
                 algorithm = headers[signedHeader]
