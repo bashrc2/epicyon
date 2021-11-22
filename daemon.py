@@ -450,6 +450,8 @@ class PubServer(BaseHTTPRequestHandler):
             # https://tools.ietf.org/html/
             # draft-ietf-httpbis-message-signatures-01
             return self.headers['Signature-Input']
+        elif self.headers.get('signature-input'):
+            return self.headers['signature-input']
         elif self.headers.get('signature'):
             # Ye olde Masto http sig
             return self.headers['signature']
