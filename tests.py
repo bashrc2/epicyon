@@ -5880,7 +5880,8 @@ def _testValidEmojiContent() -> None:
     assert validEmojiContent('😄')
 
 
-def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
+def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
+                        algorithm: str) -> None:
     print('testHttpsigNew(' + str(withDigest) + ')')
 
     debug = True
@@ -5926,7 +5927,7 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
                                domain, port,
                                hostDomain, port,
                                boxpath, httpPrefix, messageBodyJsonStr,
-                               'rsa-sha256', debug)
+                               algorithm, debug)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
         contentLength = len(messageBodyJsonStr)
@@ -5942,7 +5943,7 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
                                domain, port,
                                hostDomain, port,
                                boxpath, httpPrefix, messageBodyJsonStr,
-                               'rsa-sha256', debug)
+                               algorithm, debug)
 
     headers['signature'] = signatureHeader
     headers['signature-input'] = signatureIndexHeader
@@ -6069,8 +6070,8 @@ def runAllTests():
     _testHttpsig(baseDir)
     _testHttpSignedGET(baseDir)
     _testHttpSigNew()
-    _testHttpsigBaseNew(True, baseDir)
-    _testHttpsigBaseNew(False, baseDir)
+    _testHttpsigBaseNew(True, baseDir, 'rsa-sha256')
+    _testHttpsigBaseNew(False, baseDir, 'rsa-sha256')
     _testCache()
     _testThreads()
     _testCreatePerson(baseDir)
