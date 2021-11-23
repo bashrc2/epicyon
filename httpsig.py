@@ -538,12 +538,12 @@ def verifyPostHeaders(httpPrefix: str,
     else:
         alg = hazutils.Prehashed(hashes.SHA256())
 
-    if algorithm == 'rsa-sha256' or algorithm == 'hs2019':
+    if digestAlgorithm == 'rsa-sha256':
         headerDigest = getSHA256(signedHeaderText.encode('ascii'))
-    elif algorithm == 'rsa-sha512':
+    elif digestAlgorithm == 'rsa-sha512':
         headerDigest = getSHA512(signedHeaderText.encode('ascii'))
     else:
-        print('Unknown http signature algorithm: ' + algorithm)
+        print('Unknown http digest algorithm: ' + digestAlgorithm)
         headerDigest = ''
     paddingStr = padding.PKCS1v15()
 
