@@ -60,6 +60,7 @@ from utils import localActorUrl
 from utils import hasObjectStringType
 from categories import getHashtagCategories
 from categories import setHashtagCategory
+from httpsig import getDigestAlgorithmFromHeaders
 from httpsig import verifyPostHeaders
 from session import createSession
 from follow import followerApprovalActive
@@ -549,7 +550,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
         sharedInboxItem = True
 
     digestStartTime = time.time()
-    digest = messageContentDigest(messageBytes)
+    digestAlgorithm = getDigestAlgorithmFromHeaders(httpHeaders)
+    digest = messageContentDigest(messageBytes, digestAlgorithm)
     timeDiffStr = str(int((time.time() - digestStartTime) * 1000))
     if debug:
         while len(timeDiffStr) < 6:
