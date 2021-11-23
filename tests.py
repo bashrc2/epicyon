@@ -392,7 +392,7 @@ def _testSignAndVerify() -> None:
     pubkey.verify(signature2, headerDigest, paddingStr, alg)
 
 
-def _testHttpSigNew():
+def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
     print('testHttpSigNew')
     httpPrefix = 'https'
     port = 443
@@ -403,8 +403,6 @@ def _testHttpSigNew():
     pathStr = "/" + nickname + "?param=value&pet=dog HTTP/1.1"
     domain = 'example.com'
     dateStr = 'Tue, 20 Apr 2021 02:07:55 GMT'
-    algorithm = 'rsa-sha256'
-    digestAlgorithm = 'rsa-sha256'
     digestPrefix = getDigestPrefix(digestAlgorithm)
     digestStr = digestPrefix + '=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE='
     bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
@@ -491,7 +489,7 @@ def _testHttpSigNew():
                            domain, port,
                            domain, port,
                            pathStr, httpPrefix, messageBodyJsonStr,
-                           algorithm, debug)
+                           algorithm, digestAlgorithm, debug)
     print('signatureIndexHeader1: ' + str(signatureIndexHeader))
     print('signatureHeader1: ' + str(signatureHeader))
     sigInput = "keyId=\"https://example.com/users/foo#main-key\"; " + \
@@ -571,7 +569,7 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
                             domain, port,
                             hostDomain, port,
                             boxpath, httpPrefix, None, contentType,
-                            algorithm)
+                            algorithm, None)
     else:
         digestPrefix = getDigestPrefix(digestAlgorithm)
         bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
@@ -589,7 +587,7 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
                             domain, port,
                             hostDomain, port,
                             boxpath, httpPrefix, messageBodyJsonStr,
-                            contentType, algorithm)
+                            contentType, algorithm, digestAlgorithm)
 
     headers['signature'] = signatureHeader
     GETmethod = not withDigest
@@ -5893,7 +5891,7 @@ def _testValidEmojiContent() -> None:
 
 
 def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
-                        algorithm: str) -> None:
+                        algorithm: str, digestAlgorithm: str) -> None:
     print('testHttpsigNew(' + str(withDigest) + ')')
 
     debug = True
@@ -5903,7 +5901,6 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
     os.mkdir(path)
     os.chdir(path)
 
-    digestAlgorithm = algorithm
     contentType = 'application/activity+json'
     nickname = 'socrates'
     hostDomain = 'someother.instance'
@@ -5940,7 +5937,7 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
                                domain, port,
                                hostDomain, port,
                                boxpath, httpPrefix, messageBodyJsonStr,
-                               algorithm, debug)
+                               algorithm, digestAlgorithm, debug)
     else:
         digestPrefix = getDigestPrefix(digestAlgorithm)
         bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
@@ -5958,7 +5955,7 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
                                domain, port,
                                hostDomain, port,
                                boxpath, httpPrefix, messageBodyJsonStr,
-                               algorithm, debug)
+                               algorithm, digestAlgorithm, debug)
 
     headers['signature'] = signatureHeader
     headers['signature-input'] = signatureIndexHeader
@@ -6086,9 +6083,9 @@ def runAllTests():
     _testActorParsing()
     _testHttpsig(baseDir)
     _testHttpSignedGET(baseDir)
-    _testHttpSigNew()
-    _testHttpsigBaseNew(True, baseDir, 'rsa-sha256')
-    _testHttpsigBaseNew(False, baseDir, 'rsa-sha256')
+    _testHttpSigNew('rsa-sha256', 'rsa-sha256')
+    _testHttpsigBaseNew(True, baseDir, 'rsa-sha256', 'rsa-sha256')
+    _testHttpsigBaseNew(False, baseDir, 'rsa-sha256', 'rsa-sha256')
     _testCache()
     _testThreads()
     _testCreatePerson(baseDir)

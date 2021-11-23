@@ -71,14 +71,11 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
                     httpPrefix: str,
                     messageBodyJsonStr: str,
                     contentType: str,
-                    algorithm: str) -> str:
+                    algorithm: str,
+                    digestAlgorithm: str) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
-    # it is assumed that the hash used for the digest will be the same
-    # as for the signature
-    digestAlgorithm = algorithm
-
     domain = getFullDomain(domain, port)
 
     toDomain = getFullDomain(toDomain, toPort)
@@ -152,16 +149,13 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
                        path: str,
                        httpPrefix: str,
                        messageBodyJsonStr: str,
-                       algorithm: str, debug: bool) -> (str, str):
+                       algorithm: str, digestAlgorithm: str,
+                       debug: bool) -> (str, str):
     """Returns a raw signature strings that can be plugged into a header
     as "Signature-Input" and "Signature"
     used to verify the authenticity of an HTTP transmission.
     See https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures
     """
-    # it is assumed that the hash used for the digest will be the same
-    # as for the signature
-    digestAlgorithm = algorithm
-
     domain = getFullDomain(domain, port)
 
     toDomain = getFullDomain(toDomain, toPort)
@@ -274,7 +268,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port, toDomain, toPort,
                             path, httpPrefix, None, contentType,
-                            algorithm)
+                            algorithm, None)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
         digestPrefix = getDigestPrefix(digestAlgorithm)
@@ -292,7 +286,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                             domain, port,
                             toDomain, toPort,
                             path, httpPrefix, messageBodyJsonStr,
-                            contentType, algorithm)
+                            contentType, algorithm, digestAlgorithm)
     headers['signature'] = signatureHeader
     return headers
 
