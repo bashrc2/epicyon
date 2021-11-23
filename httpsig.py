@@ -28,10 +28,39 @@ from utils import getSHA512
 from utils import localActorUrl
 
 
-def messageContentDigest(messageBodyJsonStr: str) -> str:
+def messageContentDigest(messageBodyJsonStr: str, digestAlgorithm: str) -> str:
+    """Returns the digest for the message body
+    """
     msg = messageBodyJsonStr.encode('utf-8')
-    hashResult = getSHA256(msg)
+    if digestAlgorithm == 'rsa-sha512' or \
+       digestAlgorithm == 'rsa-pss-sha512':
+        hashResult = getSHA512(msg)
+    else:
+        hashResult = getSHA256(msg)
     return base64.b64encode(hashResult).decode('utf-8')
+
+
+def getDigestPrefix(digestAlgorithm: str) -> str:
+    """Returns the prefix for the message body digest
+    """
+    if digestAlgorithm == 'rsa-sha512' or \
+       digestAlgorithm == 'rsa-pss-sha512':
+        return 'SHA-512'
+    return 'SHA-256'
+
+
+def getDigestAlgorithmFromHeaders(httpHeaders: {}) -> str:
+    """Returns the digest algorithm from http headers
+    """
+    digestStr = None
+    if httpHeaders.get('digest'):
+        digestStr = httpHeaders['digest']
+    elif httpHeaders.get('Digest'):
+        digestStr = httpHeaders['Digest']
+    if digestStr:
+        if digestStr.startswith('SHA-512'):
+            return 'rsa-sha512'
+    return 'rsa-sha256'
 
 
 def signPostHeaders(dateStr: str, privateKeyPem: str,
@@ -41,7 +70,9 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
                     path: str,
                     httpPrefix: str,
                     messageBodyJsonStr: str,
-                    contentType: str) -> str:
+                    contentType: str,
+                    algorithm: str,
+                    digestAlgorithm: str) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
@@ -65,13 +96,15 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
             'accept': contentType
         }
     else:
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        bodyDigest = \
+            messageContentDigest(messageBodyJsonStr, digestAlgorithm)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
         contentLength = len(messageBodyJsonStr)
         headers = {
             '(request-target)': f'post {path}',
             'host': toDomain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-type': 'application/activity+json',
             'content-length': str(contentLength)
         }
@@ -100,7 +133,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     # Put it into a valid HTTP signature format
     signatureDict = {
         'keyId': keyID,
-        'algorithm': 'rsa-sha256',
+        'algorithm': algorithm,
         'headers': ' '.join(signedHeaderKeys),
         'signature': signature
     }
@@ -116,7 +149,8 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
                        path: str,
                        httpPrefix: str,
                        messageBodyJsonStr: str,
-                       algorithm: str, debug: bool) -> (str, str):
+                       algorithm: str, digestAlgorithm: str,
+                       debug: bool) -> (str, str):
     """Returns a raw signature strings that can be plugged into a header
     as "Signature-Input" and "Signature"
     used to verify the authenticity of an HTTP transmission.
@@ -143,14 +177,15 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
             'date': dateStr
         }
     else:
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
         contentLength = len(messageBodyJsonStr)
         headers = {
             '@request-target': f'post {path}',
             '@created': str(secondsSinceEpoch),
             'host': toDomain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-type': 'application/activity+json',
             'content-length': str(contentLength)
         }
@@ -210,6 +245,8 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                        contentType: str) -> {}:
     """Note that the domain is the destination, not the sender
     """
+    algorithm = 'rsa-sha256'
+    digestAlgorithm = 'rsa-sha256'
     headerDomain = getFullDomain(toDomain, toPort)
 
     # if no date is given then create one
@@ -230,15 +267,17 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port, toDomain, toPort,
-                            path, httpPrefix, None, contentType)
+                            path, httpPrefix, None, contentType,
+                            algorithm, None)
     else:
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
         contentLength = len(messageBodyJsonStr)
         headers = {
             '(request-target)': f'post {path}',
             'host': headerDomain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-length': str(contentLength),
             'content-type': contentType
         }
@@ -247,7 +286,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                             domain, port,
                             toDomain, toPort,
                             path, httpPrefix, messageBodyJsonStr,
-                            contentType)
+                            contentType, algorithm, digestAlgorithm)
     headers['signature'] = signatureHeader
     return headers
 
@@ -341,6 +380,7 @@ def verifyPostHeaders(httpPrefix: str,
     # body (if a digest was included)
     signedHeaderList = []
     algorithm = 'rsa-sha256'
+    digestAlgorithm = 'rsa-sha256'
     for signedHeader in signatureDict[requestTargetKey].split(fieldSep2):
         signedHeader = signedHeader.strip()
         if debug:
@@ -387,7 +427,8 @@ def verifyPostHeaders(httpPrefix: str,
             if messageBodyDigest:
                 bodyDigest = messageBodyDigest
             else:
-                bodyDigest = messageContentDigest(messageBodyJsonStr)
+                bodyDigest = \
+                    messageContentDigest(messageBodyJsonStr, digestAlgorithm)
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
         elif signedHeader == 'content-length':
             if headers.get(signedHeader):
@@ -497,12 +538,12 @@ def verifyPostHeaders(httpPrefix: str,
     else:
         alg = hazutils.Prehashed(hashes.SHA256())
 
-    if algorithm == 'rsa-sha256' or algorithm == 'hs2019':
+    if digestAlgorithm == 'rsa-sha256':
         headerDigest = getSHA256(signedHeaderText.encode('ascii'))
-    elif algorithm == 'rsa-sha512':
+    elif digestAlgorithm == 'rsa-sha512':
         headerDigest = getSHA512(signedHeaderText.encode('ascii'))
     else:
-        print('Unknown http signature algorithm: ' + algorithm)
+        print('Unknown http digest algorithm: ' + digestAlgorithm)
         headerDigest = ''
     paddingStr = padding.PKCS1v15()
 

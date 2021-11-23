@@ -23,6 +23,8 @@ from shutil import copyfile
 from random import randint
 from time import gmtime, strftime
 from pprint import pprint
+from httpsig import getDigestAlgorithmFromHeaders
+from httpsig import getDigestPrefix
 from httpsig import createSignedHeader
 from httpsig import signPostHeaders
 from httpsig import signPostHeadersNew
@@ -390,7 +392,7 @@ def _testSignAndVerify() -> None:
     pubkey.verify(signature2, headerDigest, paddingStr, alg)
 
 
-def _testHttpSigNew():
+def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
     print('testHttpSigNew')
     httpPrefix = 'https'
     port = 443
@@ -401,8 +403,9 @@ def _testHttpSigNew():
     pathStr = "/" + nickname + "?param=value&pet=dog HTTP/1.1"
     domain = 'example.com'
     dateStr = 'Tue, 20 Apr 2021 02:07:55 GMT'
-    digestStr = 'SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE='
-    bodyDigest = messageContentDigest(messageBodyJsonStr)
+    digestPrefix = getDigestPrefix(digestAlgorithm)
+    digestStr = digestPrefix + '=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE='
+    bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
     assert bodyDigest in digestStr
     contentLength = 18
     contentType = 'application/activity+json'
@@ -477,7 +480,7 @@ def _testHttpSigNew():
     headers = {
         "host": domain,
         "date": dateStr,
-        "digest": f'SHA-256={bodyDigest}',
+        "digest": f'{digestPrefix}={bodyDigest}',
         "content-type": contentType,
         "content-length": str(contentLength)
     }
@@ -486,7 +489,7 @@ def _testHttpSigNew():
                            domain, port,
                            domain, port,
                            pathStr, httpPrefix, messageBodyJsonStr,
-                           'rsa-sha256', debug)
+                           algorithm, digestAlgorithm, debug)
     print('signatureIndexHeader1: ' + str(signatureIndexHeader))
     print('signatureHeader1: ' + str(signatureHeader))
     sigInput = "keyId=\"https://example.com/users/foo#main-key\"; " + \
@@ -528,6 +531,8 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
     os.mkdir(path)
     os.chdir(path)
 
+    algorithm = 'rsa-sha256'
+    digestAlgorithm = 'rsa-sha256'
     contentType = 'application/activity+json'
     nickname = 'socrates'
     hostDomain = 'someother.instance'
@@ -563,23 +568,26 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             hostDomain, port,
-                            boxpath, httpPrefix, None, contentType)
+                            boxpath, httpPrefix, None, contentType,
+                            algorithm, None)
     else:
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
+        bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
         contentLength = len(messageBodyJsonStr)
         headers = {
             'host': headersDomain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-type': contentType,
             'content-length': str(contentLength)
         }
+        assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             hostDomain, port,
                             boxpath, httpPrefix, messageBodyJsonStr,
-                            contentType)
+                            contentType, algorithm, digestAlgorithm)
 
     headers['signature'] = signatureHeader
     GETmethod = not withDigest
@@ -612,14 +620,16 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
             '{"a key": "a value", "another key": "Fake GNUs", ' + \
             '"yet another key": "More Fake GNUs"}'
         contentLength = len(messageBodyJsonStr)
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
+        bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
         headers = {
             'host': domain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-type': contentType,
             'content-length': str(contentLength)
         }
+        assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
                              boxpath, not GETmethod, None,
@@ -5880,7 +5890,8 @@ def _testValidEmojiContent() -> None:
     assert validEmojiContent('😄')
 
 
-def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
+def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
+                        algorithm: str, digestAlgorithm: str) -> None:
     print('testHttpsigNew(' + str(withDigest) + ')')
 
     debug = True
@@ -5926,23 +5937,25 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
                                domain, port,
                                hostDomain, port,
                                boxpath, httpPrefix, messageBodyJsonStr,
-                               'rsa-sha256', debug)
+                               algorithm, digestAlgorithm, debug)
     else:
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
+        bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
         contentLength = len(messageBodyJsonStr)
         headers = {
             'host': headersDomain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-type': contentType,
             'content-length': str(contentLength)
         }
+        assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
         signatureIndexHeader, signatureHeader = \
             signPostHeadersNew(dateStr, privateKeyPem, nickname,
                                domain, port,
                                hostDomain, port,
                                boxpath, httpPrefix, messageBodyJsonStr,
-                               'rsa-sha256', debug)
+                               algorithm, digestAlgorithm, debug)
 
     headers['signature'] = signatureHeader
     headers['signature-input'] = signatureIndexHeader
@@ -5979,14 +5992,16 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str):
             '{"a key": "a value", "another key": "Fake GNUs", ' + \
             '"yet another key": "More Fake GNUs"}'
         contentLength = len(messageBodyJsonStr)
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        digestPrefix = getDigestPrefix(digestAlgorithm)
+        bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
         headers = {
             'host': domain,
             'date': dateStr,
-            'digest': f'SHA-256={bodyDigest}',
+            'digest': f'{digestPrefix}={bodyDigest}',
             'content-type': contentType,
             'content-length': str(contentLength)
         }
+        assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
     headers['signature'] = signatureHeader
     headers['signature-input'] = signatureIndexHeader
     pprint(headers)
@@ -6068,9 +6083,9 @@ def runAllTests():
     _testActorParsing()
     _testHttpsig(baseDir)
     _testHttpSignedGET(baseDir)
-    _testHttpSigNew()
-    _testHttpsigBaseNew(True, baseDir)
-    _testHttpsigBaseNew(False, baseDir)
+    _testHttpSigNew('rsa-sha256', 'rsa-sha256')
+    _testHttpsigBaseNew(True, baseDir, 'rsa-sha256', 'rsa-sha256')
+    _testHttpsigBaseNew(False, baseDir, 'rsa-sha256', 'rsa-sha256')
     _testCache()
     _testThreads()
     _testCreatePerson(baseDir)
