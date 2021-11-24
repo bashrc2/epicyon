@@ -20,12 +20,6 @@ if [[ "$1" == 'remove' ]]; then
     rm "/etc/nginx/sites-enabled/${username}"
     rm "/etc/nginx/sites-availale/${username}"
     rm -rf ${install_destination}
-    if [ -d /var/www/cache ]; then
-	rm -rf /var/www/cache
-    fi
-    if [ -d /srv/http/cache ]; then
-	rm -rf /srv/http/cache
-    fi
     userdel -r ${username}
     echo 'Epicyon i2p instance removed'
     exit 0
@@ -326,15 +320,9 @@ web_dir=/var/www
 if [ -f /usr/bin/pacman ]; then
     web_dir=/srv/http
 fi
-if [ ! -d ${web_dir}/cache ]; then
-    mkdir ${web_dir}/cache
-fi
 
 echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
-{ echo "proxy_cache_path ${web_dir}/cache levels=1:2 keys_zone=my_cache:10m max_size=10g";
-  echo '                 inactive=60m use_temp_path=off;'
-  echo '';
-  echo 'server {';
+{ echo 'server {';
   echo "    listen 127.0.0.1:${NGINX_PORT} default_server;";
   echo "    server_name ${I2P_DOMAIN};"
   echo '';
