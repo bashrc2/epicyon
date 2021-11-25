@@ -873,7 +873,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # load the etag from file
                 currEtag = ''
                 try:
-                    with open(mediaFilename, 'r') as etagFile:
+                    with open(mediaFilename + '.etag', 'r') as etagFile:
                         currEtag = etagFile.read()
                 except OSError:
                     print('EX: _etag_exists unable to read ' +
