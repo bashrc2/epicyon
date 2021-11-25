@@ -1573,8 +1573,11 @@ def pinPost(baseDir: str, nickname: str, domain: str,
     """
     accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
-    with open(pinnedFilename, 'w+') as pinFile:
-        pinFile.write(pinnedContent)
+    try:
+        with open(pinnedFilename, 'w+') as pinFile:
+            pinFile.write(pinnedContent)
+    except OSError:
+        print('WARN: unable to write ' + pinnedFilename)
 
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:

@@ -57,15 +57,21 @@ def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
                 print('WARN: Failed to write entry to feeds posts index ' +
                       indexFilename + ' ' + str(e))
     else:
-        with open(indexFilename, 'w+') as feedsFile:
-            feedsFile.write(postId + '\n')
+        try:
+            with open(indexFilename, 'w+') as feedsFile:
+                feedsFile.write(postId + '\n')
+        except OSError:
+            print('WARN: unable to write ' + indexFilename)
 
 
 def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
-    with open(postFilename + '.arrived', 'w+') as arrivedFile:
-        arrivedFile.write(arrived)
+    try:
+        with open(postFilename + '.arrived', 'w+') as arrivedFile:
+            arrivedFile.write(arrived)
+    except OSError:
+        print('WARN: unable to write ' + postFilename + '.arrived')
 
 
 def _removeControlCharacters(content: str) -> str:
@@ -483,8 +489,11 @@ def _createNewsMirror(baseDir: str, domain: str,
                 for removePostId in removals:
                     indexContent = \
                         indexContent.replace(removePostId + '\n', '')
-            with open(mirrorIndexFilename, 'w+') as indexFile:
-                indexFile.write(indexContent)
+            try:
+                with open(mirrorIndexFilename, 'w+') as indexFile:
+                    indexFile.write(indexContent)
+            except OSError:
+                print('WARN: unable to write ' + mirrorIndexFilename)
 
     mirrorArticleDir = mirrorDir + '/' + postIdNumber
     if os.path.isdir(mirrorArticleDir):
@@ -509,11 +518,17 @@ def _createNewsMirror(baseDir: str, domain: str,
 
     # append the post Id number to the index file
     if os.path.isfile(mirrorIndexFilename):
-        with open(mirrorIndexFilename, 'a+') as indexFile:
-            indexFile.write(postIdNumber + '\n')
+        try:
+            with open(mirrorIndexFilename, 'a+') as indexFile:
+                indexFile.write(postIdNumber + '\n')
+        except OSError:
+            print('WARN: unable to append ' + mirrorIndexFilename)
     else:
-        with open(mirrorIndexFilename, 'w+') as indexFile:
-            indexFile.write(postIdNumber + '\n')
+        try:
+            with open(mirrorIndexFilename, 'w+') as indexFile:
+                indexFile.write(postIdNumber + '\n')
+        except OSError:
+            print('WARN: unable to write ' + mirrorIndexFilename)
 
     return True
 

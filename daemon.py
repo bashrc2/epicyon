@@ -2362,8 +2362,9 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(nwFilename, 'w+') as noNewswireFile:
                                 noNewswireFile.write('\n')
                                 refreshNewswire(self.server.baseDir)
-                        except OSError:
-                            print('WARN: unable to write ' + nwFilename)
+                        except OSError as e:
+                            print('WARN: unable to write ' + nwFilename +
+                                  ' ' + str(e))
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -2404,8 +2405,9 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(featFilename, 'w+') as noFeaturesFile:
                                 noFeaturesFile.write('\n')
                                 refreshNewswire(self.server.baseDir)
-                        except OSError:
-                            print('WARN: unable to write ' + featFilename)
+                        except OSError as e:
+                            print('WARN: unable to write ' + featFilename +
+                                  ' ' + str(e))
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)

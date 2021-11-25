@@ -153,9 +153,9 @@ def removeGlobalBlock(baseDir: str,
                                     line.replace('\n', '').replace('\r', '')
                                 if unblockHandle not in line:
                                     fpnew.write(handle + '\n')
-                    except OSError:
+                    except OSError as e:
                         print('WARN: failed to remove global block ' +
-                              unblockingFilename)
+                              unblockingFilename + ' ' + str(e))
                         return False
                 if os.path.isfile(unblockingFilename + '.new'):
                     os.rename(unblockingFilename + '.new', unblockingFilename)
@@ -172,9 +172,9 @@ def removeGlobalBlock(baseDir: str,
                                     line.replace('\n', '').replace('\r', '')
                                 if unblockHashtag not in line:
                                     fpnew.write(blockLine + '\n')
-                    except OSError:
+                    except OSError as e:
                         print('WARN: failed to remove global hashtag block ' +
-                              unblockingFilename)
+                              unblockingFilename + ' ' + str(e))
                         return False
                 if os.path.isfile(unblockingFilename + '.new'):
                     os.rename(unblockingFilename + '.new', unblockingFilename)
@@ -198,8 +198,9 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
                             handle = line.replace('\n', '').replace('\r', '')
                             if unblockHandle not in line:
                                 fpnew.write(handle + '\n')
-                except OSError:
-                    print('WARN: failed to remove block ' + unblockingFilename)
+                except OSError as e:
+                    print('WARN: failed to remove block ' +
+                          unblockingFilename + ' ' + str(e))
                     return False
             if os.path.isfile(unblockingFilename + '.new'):
                 os.rename(unblockingFilename + '.new', unblockingFilename)
@@ -907,8 +908,8 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
                 for d in allowedDomains:
                     allowFile.write(d + '\n')
                 print('Broch mode enabled')
-        except OSError:
-            print('WARN: Broch mode not enabled due to file write')
+        except OSError as e:
+            print('WARN: Broch mode not enabled due to file write ' + str(e))
             return
 
     setConfigParam(baseDir, "brochMode", enabled)

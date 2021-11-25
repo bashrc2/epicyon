@@ -141,9 +141,8 @@ def _storeLastPostId(baseDir: str, nickname: str, domain: str,
     try:
         with open(actorFilename, 'w+') as fp:
             fp.write(postId)
-    except BaseException:
+    except OSError:
         print('EX: Unable to write last post id to ' + actorFilename)
-        pass
 
 
 def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
@@ -185,10 +184,9 @@ def _updateCachedHashtagSwarm(baseDir: str, nickname: str, domain: str,
                 with open(cachedHashtagSwarmFilename, 'w+') as fp:
                     fp.write(newSwarmStr)
                     return True
-            except BaseException:
+            except OSError:
                 print('EX: unable to write cached hashtag swarm ' +
                       cachedHashtagSwarmFilename)
-                pass
     return False
 
 
@@ -238,8 +236,11 @@ def storeHashTags(baseDir: str, nickname: str, domain: str,
         tagline = str(daysSinceEpoch) + '  ' + nickname + '  ' + postUrl + '\n'
         hashtagsCtr += 1
         if not os.path.isfile(tagsFilename):
-            with open(tagsFilename, 'w+') as tagsFile:
-                tagsFile.write(tagline)
+            try:
+                with open(tagsFilename, 'w+') as tagsFile:
+                    tagsFile.write(tagline)
+            except OSError:
+                print('WARN: unable to write ' + tagsFilename)
         else:
             if postUrl not in open(tagsFilename).read():
                 try:
@@ -248,7 +249,7 @@ def storeHashTags(baseDir: str, nickname: str, domain: str,
                         if tagline not in content:
                             tagsFile.seek(0, 0)
                             tagsFile.write(tagline + content)
-                except Exception as e:
+                except OSError as e:
                     print('WARN: Failed to write entry to tags file ' +
                           tagsFilename + ' ' + str(e))
                 removeOldHashtags(baseDir, 3)
@@ -1980,8 +1981,12 @@ def _receiveAnnounce(recentPostsCache: {},
                                       postJsonObject, personCache,
                                       translate, lookupActor,
                                       themeName)
-                        with open(postFilename + '.tts', 'w+') as ttsFile:
-                            ttsFile.write('\n')
+                        try:
+                            with open(postFilename + '.tts', 'w+') as ttsFile:
+                                ttsFile.write('\n')
+                        except OSError:
+                            print('WARN: unable to write recent post ' +
+                                  postFilename)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -2145,11 +2150,17 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if numLines > maxReplies:
             return False
         if messageId not in open(postRepliesFilename).read():
-            with open(postRepliesFilename, 'a+') as repliesFile:
-                repliesFile.write(messageId + '\n')
+            try:
+                with open(postRepliesFilename, 'a+') as repliesFile:
+                    repliesFile.write(messageId + '\n')
+            except OSError:
+                print('WARN: unable to append ' + postRepliesFilename)
     else:
-        with open(postRepliesFilename, 'w+') as repliesFile:
-            repliesFile.write(messageId + '\n')
+        try:
+            with open(postRepliesFilename, 'w+') as repliesFile:
+                repliesFile.write(messageId + '\n')
+        except OSError:
+            print('WARN: unable to write ' + postRepliesFilename)
     return True
 
 
@@ -2322,8 +2333,11 @@ def _dmNotify(baseDir: str, handle: str, url: str) -> None:
         return
     dmFile = accountDir + '/.newDM'
     if not os.path.isfile(dmFile):
-        with open(dmFile, 'w+') as fp:
-            fp.write(url)
+        try:
+            with open(dmFile, 'w+') as fp:
+                fp.write(url)
+        except OSError:
+            print('WARN: unable to write ' + dmFile)
 
 
 def _alreadyLiked(baseDir: str, nickname: str, domain: str,
@@ -2438,17 +2452,16 @@ def _likeNotify(baseDir: str, domain: str, onionDomain: str,
         try:
             with open(prevLikeFile, 'w+') as fp:
                 fp.write(likeStr)
-        except BaseException:
+        except OSError:
             print('EX: ERROR: unable to save previous like notification ' +
                   prevLikeFile)
-            pass
+
         try:
             with open(likeFile, 'w+') as fp:
                 fp.write(likeStr)
-        except BaseException:
+        except OSError:
             print('EX: ERROR: unable to write like notification file ' +
                   likeFile)
-            pass
 
 
 def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
@@ -2503,17 +2516,16 @@ def _reactionNotify(baseDir: str, domain: str, onionDomain: str,
         try:
             with open(prevReactionFile, 'w+') as fp:
                 fp.write(reactionStr)
-        except BaseException:
+        except OSError:
             print('EX: ERROR: unable to save previous reaction notification ' +
                   prevReactionFile)
-            pass
+
         try:
             with open(reactionFile, 'w+') as fp:
                 fp.write(reactionStr)
-        except BaseException:
+        except OSError:
             print('EX: ERROR: unable to write reaction notification file ' +
                   reactionFile)
-            pass
 
 
 def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
@@ -2531,8 +2543,11 @@ def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
             existingNotificationMessage = fp.read()
             if url in existingNotificationMessage:
                 return
-    with open(notifyFile, 'w+') as fp:
-        fp.write(url)
+    try:
+        with open(notifyFile, 'w+') as fp:
+            fp.write(url)
+    except OSError:
+        print('WARN: unable to write ' + notifyFile)
 
 
 def _replyNotify(baseDir: str, handle: str, url: str) -> None:
@@ -2543,8 +2558,11 @@ def _replyNotify(baseDir: str, handle: str, url: str) -> None:
         return
     replyFile = accountDir + '/.newReply'
     if not os.path.isfile(replyFile):
-        with open(replyFile, 'w+') as fp:
-            fp.write(url)
+        try:
+            with open(replyFile, 'w+') as fp:
+                fp.write(url)
+        except OSError:
+            print('WARN: unable to write ' + replyFile)
 
 
 def _gitPatchNotify(baseDir: str, handle: str,
@@ -2558,8 +2576,11 @@ def _gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     subject = subject.replace('[PATCH]', '').strip()
     handle = '@' + fromNickname + '@' + fromDomain
-    with open(patchFile, 'w+') as fp:
-        fp.write('git ' + handle + ' ' + subject)
+    try:
+        with open(patchFile, 'w+') as fp:
+            fp.write('git ' + handle + ' ' + subject)
+    except OSError:
+        print('WARN: unable to write ' + patchFile)
 
 
 def _groupHandle(baseDir: str, handle: str) -> bool:
@@ -2709,14 +2730,14 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
                     indexFile.write(destinationFilename + '\n' + content)
                 written = True
                 return True
-        except Exception as e:
+        except OSError as e:
             print('WARN: Failed to write entry to index ' + str(e))
     else:
         try:
             with open(indexFilename, 'w+') as indexFile:
                 indexFile.write(destinationFilename + '\n')
                 written = True
-        except Exception as e:
+        except OSError as e:
             print('WARN: Failed to write initial entry to index ' + str(e))
 
     return written
@@ -2749,8 +2770,11 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
             if int(daysSinceEpochFile) == daysSinceEpoch:
                 # value hasn't changed, so we can save writing anything to file
                 return
-    with open(lastSeenFilename, 'w+') as lastSeenFile:
-        lastSeenFile.write(str(daysSinceEpoch))
+    try:
+        with open(lastSeenFilename, 'w+') as lastSeenFile:
+            lastSeenFile.write(str(daysSinceEpoch))
+    except OSError:
+        print('WARN: unable to write ' + lastSeenFilename)
 
 
 def _bounceDM(senderPostId: str, session, httpPrefix: str,
@@ -3485,8 +3509,12 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             # This enables you to ignore a threat that's getting boring
             if isReplyToMutedPost:
                 print('MUTE REPLY: ' + destinationFilename)
-                with open(destinationFilename + '.muted', 'w+') as muteFile:
-                    muteFile.write('\n')
+                destinationFilenameMuted = destinationFilename + '.muted'
+                try:
+                    with open(destinationFilenameMuted, 'w+') as muteFile:
+                        muteFile.write('\n')
+                except OSError:
+                    print('WARN: unable to write ' + destinationFilenameMuted)
 
             # update the indexes for different timelines
             for boxname in updateIndexList:
@@ -3773,8 +3801,11 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                     alreadyUnknown = True
 
             if not alreadyUnknown:
-                with open(unknownContextsFile, 'a+') as unknownFile:
-                    unknownFile.write(unknownContext + '\n')
+                try:
+                    with open(unknownContextsFile, 'a+') as unknownFile:
+                        unknownFile.write(unknownContext + '\n')
+                except OSError:
+                    print('WARN: unable to append ' + unknownContextsFile)
     else:
         print('Unrecognized jsonld signature type: ' + jwebsigType)
 
@@ -3788,8 +3819,11 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                 alreadyUnknown = True
 
         if not alreadyUnknown:
-            with open(unknownSignaturesFile, 'a+') as unknownFile:
-                unknownFile.write(jwebsigType + '\n')
+            try:
+                with open(unknownSignaturesFile, 'a+') as unknownFile:
+                    unknownFile.write(jwebsigType + '\n')
+            except OSError:
+                print('WARN: unable to append ' + unknownSignaturesFile)
     return hasJsonSignature, jwebsigType
 
 

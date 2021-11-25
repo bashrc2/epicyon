@@ -98,9 +98,9 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                         replyPostId.replace('\n', '').replace('\r', '')
                     if replyPostId not in removals:
                         f.write(replyPostId + '\n')
-        except OSError:
-            print('WARN: unable to remove replies from post ' + postFilename)
-            pass
+        except OSError as e:
+            print('WARN: unable to remove replies from post ' +
+                  postFilename + ' ' + str(e))
 
     return replies
 

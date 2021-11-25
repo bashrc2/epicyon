@@ -296,12 +296,15 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
         return
     with open(filename, 'r') as f:
         lines = f.readlines()
-        with open(filename, 'w+') as f:
-            for line in lines:
-                checkHandle = line.strip("\n").strip("\r").lower()
-                if checkHandle != handleToUnfollowLower and \
-                   checkHandle != '!' + handleToUnfollowLower:
-                    f.write(line)
+        try:
+            with open(filename, 'w+') as f:
+                for line in lines:
+                    checkHandle = line.strip("\n").strip("\r").lower()
+                    if checkHandle != handleToUnfollowLower and \
+                       checkHandle != '!' + handleToUnfollowLower:
+                        f.write(line)
+        except OSError as e:
+            print('WARN: unable to write ' + filename + ' ' + str(e))
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
@@ -312,8 +315,11 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
             with open(unfollowedFilename, 'a+') as f:
                 f.write(handleToUnfollow + '\n')
     else:
-        with open(unfollowedFilename, 'w+') as f:
-            f.write(handleToUnfollow + '\n')
+        try:
+            with open(unfollowedFilename, 'w+') as f:
+                f.write(handleToUnfollow + '\n')
+        except OSError:
+            print('WARN: unable to write ' + unfollowedFilename)
 
     return True
 
@@ -650,8 +656,11 @@ def _storeFollowRequest(baseDir: str,
                 print('DEBUG: ' + approveHandleStored +
                       ' is already awaiting approval')
     else:
-        with open(approveFollowsFilename, 'w+') as fp:
-            fp.write(approveHandleStored + '\n')
+        try:
+            with open(approveFollowsFilename, 'w+') as fp:
+                fp.write(approveHandleStored + '\n')
+        except OSError:
+            print('WARN: unable to write ' + approveFollowsFilename)
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -851,8 +860,11 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                               'Failed to write entry to followers file ' +
                               str(e))
             else:
-                with open(followersFilename, 'w+') as followersFile:
-                    followersFile.write(approveHandle + '\n')
+                try:
+                    with open(followersFilename, 'w+') as followersFile:
+                        followersFile.write(approveHandle + '\n')
+                except OSError:
+                    print('WARN: unable to write ' + followersFilename)
 
     print('Beginning follow accept')
     return followedAccountAccepts(session, baseDir, httpPrefix,
@@ -1046,8 +1058,11 @@ def sendFollowRequest(session, baseDir: str,
                 unfollowedFile = \
                     unfollowedFile.replace(followHandle + '\n', '')
             if unfollowedFile:
-                with open(unfollowedFilename, 'w+') as fp:
-                    fp.write(unfollowedFile)
+                try:
+                    with open(unfollowedFilename, 'w+') as fp:
+                        fp.write(unfollowedFile)
+                except OSError:
+                    print('WARN: unable to write ' + unfollowedFilename)
 
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',

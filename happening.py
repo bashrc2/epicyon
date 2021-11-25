@@ -41,9 +41,8 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
         try:
             with open(tlEventsFilename, 'w+') as fp2:
                 fp2.write(eventsTimeline)
-        except BaseException:
+        except OSError:
             print('EX: ERROR: unable to save events timeline')
-            pass
 
 
 def saveEventPost(baseDir: str, handle: str, postId: str,
@@ -105,13 +104,16 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
                     if eventId + '\n' not in content:
                         tlEventsFile.seek(0, 0)
                         tlEventsFile.write(eventId + '\n' + content)
-            except Exception as e:
+            except OSError as e:
                 print('WARN: Failed to write entry to events file ' +
                       tlEventsFilename + ' ' + str(e))
                 return False
         else:
-            with open(tlEventsFilename, 'w+') as tlEventsFile:
-                tlEventsFile.write(eventId + '\n')
+            try:
+                with open(tlEventsFilename, 'w+') as tlEventsFile:
+                    tlEventsFile.write(eventId + '\n')
+            except OSError:
+                print('WARN: unable to write ' + tlEventsFilename)
 
     # create a directory for the calendar year
     if not os.path.isdir(calendarPath + '/' + str(eventYear)):
@@ -128,18 +130,24 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
             return False
 
     # append the post Id to the file for the calendar month
-    with open(calendarFilename, 'a+') as calendarFile:
-        calendarFile.write(postId + '\n')
+    try:
+        with open(calendarFilename, 'a+') as calendarFile:
+            calendarFile.write(postId + '\n')
+    except OSError:
+        print('WARN: unable to append ' + calendarFilename)
 
     # create a file which will trigger a notification that
     # a new event has been added
-    calendarNotificationFilename = \
-        baseDir + '/accounts/' + handle + '/.newCalendar'
-    with open(calendarNotificationFilename, 'w+') as calendarNotificationFile:
-        notifyStr = \
-            '/calendar?year=' + str(eventYear) + '?month=' + \
-            str(eventMonthNumber) + '?day=' + str(eventDayOfMonth)
-        calendarNotificationFile.write(notifyStr)
+    calNotifyFilename = baseDir + '/accounts/' + handle + '/.newCalendar'
+    notifyStr = \
+        '/calendar?year=' + str(eventYear) + '?month=' + \
+        str(eventMonthNumber) + '?day=' + str(eventDayOfMonth)
+    try:
+        with open(calNotifyFilename, 'w+') as calendarNotificationFile:
+            calendarNotificationFile.write(notifyStr)
+    except OSError:
+        print('WARN: unable to write ' + calNotifyFilename)
+        return False
     return True
 
 
@@ -244,9 +252,12 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        with open(calendarFilename, 'w+') as calendarFile:
-            for postId in calendarPostIds:
-                calendarFile.write(postId + '\n')
+        try:
+            with open(calendarFilename, 'w+') as calendarFile:
+                for postId in calendarPostIds:
+                    calendarFile.write(postId + '\n')
+        except OSError:
+            print('WARN: unable to write ' + calendarFilename)
 
     return events
 
@@ -360,9 +371,12 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        with open(calendarFilename, 'w+') as calendarFile:
-            for postId in calendarPostIds:
-                calendarFile.write(postId + '\n')
+        try:
+            with open(calendarFilename, 'w+') as calendarFile:
+                for postId in calendarPostIds:
+                    calendarFile.write(postId + '\n')
+        except OSError:
+            print('WARN: unable to write ' + calendarFilename)
 
     return events
 
@@ -424,9 +438,12 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        with open(calendarFilename, 'w+') as calendarFile:
-            for postId in calendarPostIds:
-                calendarFile.write(postId + '\n')
+        try:
+            with open(calendarFilename, 'w+') as calendarFile:
+                for postId in calendarPostIds:
+                    calendarFile.write(postId + '\n')
+        except OSError:
+            print('WARN: unable to write ' + calendarFilename)
 
     return events
 
@@ -449,7 +466,10 @@ def removeCalendarEvent(baseDir: str, nickname: str, domain: str,
         lines = f.readlines()
     if not lines:
         return
-    with open(calendarFilename, 'w+') as f:
-        for line in lines:
-            if messageId not in line:
-                f.write(line)
+    try:
+        with open(calendarFilename, 'w+') as f:
+            for line in lines:
+                if messageId not in line:
+                    f.write(line)
+    except OSError:
+        print('WARN: unable to write ' + calendarFilename)

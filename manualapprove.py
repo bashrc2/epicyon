@@ -46,8 +46,11 @@ def manualDenyFollowRequest(session, baseDir: str,
     removeFromFollowRequests(baseDir, nickname, domain, denyHandle, debug)
 
     # Store rejected follows
-    with open(rejectedFollowsFilename, 'a+') as rejectsFile:
-        rejectsFile.write(denyHandle + '\n')
+    try:
+        with open(rejectedFollowsFilename, 'a+') as rejectsFile:
+            rejectsFile.write(denyHandle + '\n')
+    except OSError:
+        print('WARN: unable to append ' + rejectedFollowsFilename)
 
     denyNickname = denyHandle.split('@')[0]
     denyDomain = \
@@ -104,11 +107,17 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
     approvedFilename = accountDir + '/approved.txt'
     if os.path.isfile(approvedFilename):
         if approveHandle not in open(approvedFilename).read():
-            with open(approvedFilename, 'a+') as approvedFile:
-                approvedFile.write(approveHandle + '\n')
+            try:
+                with open(approvedFilename, 'a+') as approvedFile:
+                    approvedFile.write(approveHandle + '\n')
+            except OSError:
+                print('WARN: unable to append ' + approvedFilename)
     else:
-        with open(approvedFilename, 'w+') as approvedFile:
-            approvedFile.write(approveHandle + '\n')
+        try:
+            with open(approvedFilename, 'w+') as approvedFile:
+                approvedFile.write(approveHandle + '\n')
+        except OSError:
+            print('WARN: unable to write ' + approvedFilename)
 
 
 def manualApproveFollowRequest(session, baseDir: str,
@@ -239,8 +248,11 @@ def manualApproveFollowRequest(session, baseDir: str,
         else:
             print('Manual follow accept: first follower accepted for ' +
                   handle + ' is ' + approveHandleFull)
-            with open(followersFilename, 'w+') as followersFile:
-                followersFile.write(approveHandleFull + '\n')
+            try:
+                with open(followersFilename, 'w+') as followersFile:
+                    followersFile.write(approveHandleFull + '\n')
+            except OSError:
+                print('WARN: unable to write ' + followersFilename)
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt

@@ -126,9 +126,8 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         try:
             with open(decoySeedFilename, 'w+') as fp:
                 fp.write(str(decoySeed))
-        except BaseException:
+        except OSError:
             print('EX: unable to write ' + decoySeedFilename)
-            pass
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
@@ -290,10 +289,9 @@ def _updateEtag(mediaFilename: str) -> None:
     try:
         with open(mediaFilename + '.etag', 'w+') as etagFile:
             etagFile.write(etag)
-    except BaseException:
+    except OSError:
         print('EX: _updateEtag unable to write ' +
               str(mediaFilename) + '.etag')
-        pass
 
 
 def attachMedia(baseDir: str, httpPrefix: str,
