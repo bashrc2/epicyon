@@ -50,7 +50,7 @@ def manualDenyFollowRequest(session, baseDir: str,
         with open(rejectedFollowsFilename, 'a+') as rejectsFile:
             rejectsFile.write(denyHandle + '\n')
     except OSError:
-        print('WARN: unable to append ' + rejectedFollowsFilename)
+        print('EX: unable to append ' + rejectedFollowsFilename)
 
     denyNickname = denyHandle.split('@')[0]
     denyDomain = \
@@ -111,13 +111,13 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
                 with open(approvedFilename, 'a+') as approvedFile:
                     approvedFile.write(approveHandle + '\n')
             except OSError:
-                print('WARN: unable to append ' + approvedFilename)
+                print('EX: unable to append ' + approvedFilename)
     else:
         try:
             with open(approvedFilename, 'w+') as approvedFile:
                 approvedFile.write(approveHandle + '\n')
         except OSError:
-            print('WARN: unable to write ' + approvedFilename)
+            print('EX: unable to write ' + approvedFilename)
 
 
 def manualApproveFollowRequest(session, baseDir: str,
@@ -252,7 +252,7 @@ def manualApproveFollowRequest(session, baseDir: str,
                 with open(followersFilename, 'w+') as followersFile:
                     followersFile.write(approveHandleFull + '\n')
             except OSError:
-                print('WARN: unable to write ' + followersFilename)
+                print('EX: unable to write ' + followersFilename)
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt

@@ -433,20 +433,18 @@ def htmlSearch(cssCache: {}, translate: {},
         try:
             with open(cachedHashtagSwarmFilename, 'r') as fp:
                 swarmStr = fp.read()
-        except BaseException:
+        except OSError:
             print('EX: htmlSearch unable to read cached hashtag swarm ' +
                   cachedHashtagSwarmFilename)
-            pass
     if not swarmStr:
         swarmStr = htmlHashTagSwarm(baseDir, actor, translate)
         if swarmStr:
             try:
                 with open(cachedHashtagSwarmFilename, 'w+') as fp:
                     fp.write(swarmStr)
-            except BaseException:
+            except OSError:
                 print('EX: htmlSearch unable to save cached hashtag swarm ' +
                       cachedHashtagSwarmFilename)
-                pass
 
     followStr += '  <p class="hashtagswarm">' + swarmStr + '</p>\n'
     followStr += '  </center>\n'

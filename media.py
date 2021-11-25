@@ -277,9 +277,8 @@ def _updateEtag(mediaFilename: str) -> None:
     try:
         with open(mediaFilename, 'rb') as mediaFile:
             data = mediaFile.read()
-    except BaseException:
+    except OSError:
         print('EX: _updateEtag unable to read ' + str(mediaFilename))
-        pass
 
     if not data:
         return

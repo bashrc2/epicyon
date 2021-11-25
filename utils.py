@@ -639,7 +639,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
             with open(filename, 'w+') as fp:
                 fp.write(json.dumps(jsonObject))
                 return True
-        except BaseException:
+        except OSError:
             print('EX: saveJson ' + str(tries))
             time.sleep(1)
             tries += 1

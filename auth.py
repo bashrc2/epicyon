@@ -172,14 +172,14 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
                             else:
                                 fout.write(storeStr + '\n')
             except OSError as e:
-                print('WARN: unable to save password ' + passwordFile +
+                print('EX: unable to save password ' + passwordFile +
                       ' ' + str(e))
                 return False
 
             try:
                 os.rename(passwordFile + '.new', passwordFile)
             except OSError:
-                print('WARN: unable to save password 2')
+                print('EX: unable to save password 2')
                 return False
         else:
             # append to password file
@@ -187,14 +187,14 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
                 with open(passwordFile, 'a+') as passfile:
                     passfile.write(storeStr + '\n')
             except OSError:
-                print('WARN: unable to append password')
+                print('EX: unable to append password')
                 return False
     else:
         try:
             with open(passwordFile, 'w+') as passfile:
                 passfile.write(storeStr + '\n')
         except OSError:
-            print('WARN: unable to create password file')
+            print('EX: unable to create password file')
             return False
     return True
 
@@ -212,13 +212,13 @@ def removePassword(baseDir: str, nickname: str) -> None:
                         if not line.startswith(nickname + ':'):
                             fout.write(line)
         except OSError as e:
-            print('WARN: unable to remove password from file ' + str(e))
+            print('EX: unable to remove password from file ' + str(e))
             return
 
         try:
             os.rename(passwordFile + '.new', passwordFile)
         except OSError:
-            print('WARN: unable to remove password from file 2')
+            print('EX: unable to remove password from file 2')
             return
 
 

@@ -105,7 +105,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
                         tlEventsFile.seek(0, 0)
                         tlEventsFile.write(eventId + '\n' + content)
             except OSError as e:
-                print('WARN: Failed to write entry to events file ' +
+                print('EX: Failed to write entry to events file ' +
                       tlEventsFilename + ' ' + str(e))
                 return False
         else:
@@ -113,7 +113,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
                 with open(tlEventsFilename, 'w+') as tlEventsFile:
                     tlEventsFile.write(eventId + '\n')
             except OSError:
-                print('WARN: unable to write ' + tlEventsFilename)
+                print('EX: unable to write ' + tlEventsFilename)
 
     # create a directory for the calendar year
     if not os.path.isdir(calendarPath + '/' + str(eventYear)):
@@ -134,7 +134,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
         with open(calendarFilename, 'a+') as calendarFile:
             calendarFile.write(postId + '\n')
     except OSError:
-        print('WARN: unable to append ' + calendarFilename)
+        print('EX: unable to append ' + calendarFilename)
 
     # create a file which will trigger a notification that
     # a new event has been added
@@ -146,7 +146,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
         with open(calNotifyFilename, 'w+') as calendarNotificationFile:
             calendarNotificationFile.write(notifyStr)
     except OSError:
-        print('WARN: unable to write ' + calNotifyFilename)
+        print('EX: unable to write ' + calNotifyFilename)
         return False
     return True
 
@@ -257,7 +257,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
                 for postId in calendarPostIds:
                     calendarFile.write(postId + '\n')
         except OSError:
-            print('WARN: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendarFilename)
 
     return events
 
@@ -376,7 +376,7 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
                 for postId in calendarPostIds:
                     calendarFile.write(postId + '\n')
         except OSError:
-            print('WARN: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendarFilename)
 
     return events
 
@@ -443,7 +443,7 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
                 for postId in calendarPostIds:
                     calendarFile.write(postId + '\n')
         except OSError:
-            print('WARN: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendarFilename)
 
     return events
 
@@ -472,4 +472,4 @@ def removeCalendarEvent(baseDir: str, nickname: str, domain: str,
                 if messageId not in line:
                     f.write(line)
     except OSError:
-        print('WARN: unable to write ' + calendarFilename)
+        print('EX: unable to write ' + calendarFilename)

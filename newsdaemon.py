@@ -61,7 +61,7 @@ def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
             with open(indexFilename, 'w+') as feedsFile:
                 feedsFile.write(postId + '\n')
         except OSError:
-            print('WARN: unable to write ' + indexFilename)
+            print('EX: unable to write ' + indexFilename)
 
 
 def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
@@ -71,7 +71,7 @@ def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
         with open(postFilename + '.arrived', 'w+') as arrivedFile:
             arrivedFile.write(arrived)
     except OSError:
-        print('WARN: unable to write ' + postFilename + '.arrived')
+        print('EX: unable to write ' + postFilename + '.arrived')
 
 
 def _removeControlCharacters(content: str) -> str:
@@ -493,7 +493,7 @@ def _createNewsMirror(baseDir: str, domain: str,
                 with open(mirrorIndexFilename, 'w+') as indexFile:
                     indexFile.write(indexContent)
             except OSError:
-                print('WARN: unable to write ' + mirrorIndexFilename)
+                print('EX: unable to write ' + mirrorIndexFilename)
 
     mirrorArticleDir = mirrorDir + '/' + postIdNumber
     if os.path.isdir(mirrorArticleDir):
@@ -522,13 +522,13 @@ def _createNewsMirror(baseDir: str, domain: str,
             with open(mirrorIndexFilename, 'a+') as indexFile:
                 indexFile.write(postIdNumber + '\n')
         except OSError:
-            print('WARN: unable to append ' + mirrorIndexFilename)
+            print('EX: unable to append ' + mirrorIndexFilename)
     else:
         try:
             with open(mirrorIndexFilename, 'w+') as indexFile:
                 indexFile.write(postIdNumber + '\n')
         except OSError:
-            print('WARN: unable to write ' + mirrorIndexFilename)
+            print('EX: unable to write ' + mirrorIndexFilename)
 
     return True
 

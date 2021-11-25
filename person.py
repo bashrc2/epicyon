@@ -511,7 +511,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             with open(filename, 'w+') as text_file:
                 print(privateKeyPem, file=text_file)
         except OSError:
-            print('WARN: unable to save ' + filename)
+            print('EX: unable to save ' + filename)
 
         # save the public key
         publicKeysSubdir = '/keys/public'
@@ -522,7 +522,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             with open(filename, 'w+') as text_file:
                 print(publicKeyPem, file=text_file)
         except OSError:
-            print('WARN: unable to save 2 ' + filename)
+            print('EX: unable to save 2 ' + filename)
 
         if password:
             password = removeLineEndings(password)
@@ -635,7 +635,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
             with open(followDMsFilename, 'w+') as fFile:
                 fFile.write('\n')
         except OSError:
-            print('WARN: unable to write ' + followDMsFilename)
+            print('EX: unable to write ' + followDMsFilename)
 
     # notify when posts are liked
     if nickname != 'news':
@@ -645,7 +645,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
             with open(notifyLikesFilename, 'w+') as nFile:
                 nFile.write('\n')
         except OSError:
-            print('WARN: unable to write ' + notifyLikesFilename)
+            print('EX: unable to write ' + notifyLikesFilename)
 
     # notify when posts have emoji reactions
     if nickname != 'news':
@@ -655,7 +655,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
             with open(notifyReactionsFilename, 'w+') as nFile:
                 nFile.write('\n')
         except OSError:
-            print('WARN: unable to write ' + notifyReactionsFilename)
+            print('EX: unable to write ' + notifyReactionsFilename)
 
     theme = getConfigParam(baseDir, 'theme')
     if not theme:
@@ -1037,7 +1037,7 @@ def reenableAccount(baseDir: str, nickname: str) -> None:
                     if suspended.strip('\n').strip('\r') != nickname:
                         suspendedFile.write(suspended)
         except OSError as e:
-            print('WARN: unable to save ' + suspendedFilename +
+            print('EX: unable to save ' + suspendedFilename +
                   ' ' + str(e))
 
 
@@ -1084,13 +1084,13 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
             with open(suspendedFilename, 'a+') as suspendedFile:
                 suspendedFile.write(nickname + '\n')
         except OSError:
-            print('WARN: unable to append ' + suspendedFilename)
+            print('EX: unable to append ' + suspendedFilename)
     else:
         try:
             with open(suspendedFilename, 'w+') as suspendedFile:
                 suspendedFile.write(nickname + '\n')
         except OSError:
-            print('WARN: unable to write ' + suspendedFilename)
+            print('EX: unable to write ' + suspendedFilename)
 
 
 def canRemovePost(baseDir: str, nickname: str,
@@ -1153,7 +1153,7 @@ def _removeTagsForNickname(baseDir: str, nickname: str,
                     if matchStr not in tagline:
                         tagFile.write(tagline)
         except OSError:
-            print('WARN: unable to write ' + tagFilename)
+            print('EX: unable to write ' + tagFilename)
 
 
 def removeAccount(baseDir: str, nickname: str,
@@ -1322,7 +1322,7 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
                 with open(snoozedFilename, 'w+') as writeSnoozedFile:
                     writeSnoozedFile.write(content)
             except OSError:
-                print('WARN: unable to write ' + snoozedFilename)
+                print('EX: unable to write ' + snoozedFilename)
 
     if snoozeActor + ' ' in open(snoozedFilename).read():
         return True
@@ -1346,7 +1346,7 @@ def personSnooze(baseDir: str, nickname: str, domain: str,
             snoozedFile.write(snoozeActor + ' ' +
                               str(int(time.time())) + '\n')
     except OSError:
-        print('WARN: unable to append ' + snoozedFilename)
+        print('EX: unable to append ' + snoozedFilename)
 
 
 def personUnsnooze(baseDir: str, nickname: str, domain: str,
@@ -1377,7 +1377,7 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
                 with open(snoozedFilename, 'w+') as writeSnoozedFile:
                     writeSnoozedFile.write(content)
             except OSError:
-                print('WARN: unable to write ' + snoozedFilename)
+                print('EX: unable to write ' + snoozedFilename)
 
 
 def setPersonNotes(baseDir: str, nickname: str, domain: str,
@@ -1396,7 +1396,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
         with open(notesFilename, 'w+') as notesFile:
             notesFile.write(notes)
     except OSError:
-        print('WARN: unable to write ' + notesFilename)
+        print('EX: unable to write ' + notesFilename)
         return False
     return True
 

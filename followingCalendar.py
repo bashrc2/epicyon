@@ -50,7 +50,7 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
                 with open(calendarFilename, 'w+') as fp:
                     fp.write(followingHandles)
             except OSError:
-                print('WARN: unable to write ' + calendarFilename)
+                print('EX: unable to write ' + calendarFilename)
     return handle + '\n' in open(calendarFilename).read()
 
 
@@ -96,7 +96,7 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
                 with open(calendarFilename, 'w+') as fp:
                     fp.write(followingHandles + handle + '\n')
             except OSError:
-                print('WARN: unable to write ' + calendarFilename)
+                print('EX: unable to write ' + calendarFilename)
 
     # already in the calendar file?
     if handle + '\n' in followingHandles:
@@ -110,7 +110,7 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
             with open(calendarFilename, 'w+') as fp:
                 fp.write(followingHandles)
         except OSError:
-            print('WARN: unable to write ' + calendarFilename)
+            print('EX: unable to write ' + calendarFilename)
     else:
         print(handle + ' not in followingCalendar.txt')
         # not already in the calendar file
@@ -121,7 +121,7 @@ def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
                 with open(calendarFilename, 'w+') as fp:
                     fp.write(followingHandles)
             except OSError:
-                print('WARN: unable to write ' + calendarFilename)
+                print('EX: unable to write ' + calendarFilename)
 
 
 def addPersonToCalendar(baseDir: str, nickname: str, domain: str,

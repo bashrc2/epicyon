@@ -43,4 +43,4 @@ def setMinimal(baseDir: str, domain: str, nickname: str,
             with open(minimalFilename, 'w+') as fp:
                 fp.write('\n')
         except OSError:
-            print('WARN: unable to write minimal ' + minimalFilename)
+            print('EX: unable to write minimal ' + minimalFilename)

@@ -1577,7 +1577,7 @@ def pinPost(baseDir: str, nickname: str, domain: str,
         with open(pinnedFilename, 'w+') as pinFile:
             pinFile.write(pinnedContent)
     except OSError:
-        print('WARN: unable to write ' + pinnedFilename)
+        print('EX: unable to write ' + pinnedFilename)
 
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
@@ -2125,9 +2125,8 @@ def createReportPost(baseDir: str,
         try:
             with open(newReportFile, 'w+') as fp:
                 fp.write(toUrl + '/moderation')
-        except BaseException:
+        except OSError:
             print('EX: createReportPost unable to write ' + newReportFile)
-            pass
 
     return postJsonObject
 
@@ -5137,7 +5136,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     try:
         with open(actorFilename, 'r') as fp:
             lastpostId = fp.read()
-    except BaseException:
+    except OSError:
         print('EX: editedPostFilename unable to read ' + actorFilename)
         return ''
     if not lastpostId:

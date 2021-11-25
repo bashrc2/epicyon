@@ -304,7 +304,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
                        checkHandle != '!' + handleToUnfollowLower:
                         f.write(line)
         except OSError as e:
-            print('WARN: unable to write ' + filename + ' ' + str(e))
+            print('EX: unable to write ' + filename + ' ' + str(e))
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
@@ -319,7 +319,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
             with open(unfollowedFilename, 'w+') as f:
                 f.write(handleToUnfollow + '\n')
         except OSError:
-            print('WARN: unable to write ' + unfollowedFilename)
+            print('EX: unable to write ' + unfollowedFilename)
 
     return True
 
@@ -660,7 +660,7 @@ def _storeFollowRequest(baseDir: str,
             with open(approveFollowsFilename, 'w+') as fp:
                 fp.write(approveHandleStored + '\n')
         except OSError:
-            print('WARN: unable to write ' + approveFollowsFilename)
+            print('EX: unable to write ' + approveFollowsFilename)
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -864,7 +864,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                     with open(followersFilename, 'w+') as followersFile:
                         followersFile.write(approveHandle + '\n')
                 except OSError:
-                    print('WARN: unable to write ' + followersFilename)
+                    print('EX: unable to write ' + followersFilename)
 
     print('Beginning follow accept')
     return followedAccountAccepts(session, baseDir, httpPrefix,
@@ -1062,7 +1062,7 @@ def sendFollowRequest(session, baseDir: str,
                     with open(unfollowedFilename, 'w+') as fp:
                         fp.write(unfollowedFile)
                 except OSError:
-                    print('WARN: unable to write ' + unfollowedFilename)
+                    print('EX: unable to write ' + unfollowedFilename)
 
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',

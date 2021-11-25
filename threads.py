@@ -149,7 +149,6 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
                 logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ") +
                               ',' + str(noOfActiveThreads) +
                               ',' + str(len(threadsList)) + '\n')
-        except BaseException:
+        except OSError:
             print('EX: removeDormantThreads unable to write ' +
                   sendLogFilename)
-            pass

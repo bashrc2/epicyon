@@ -240,7 +240,7 @@ def storeHashTags(baseDir: str, nickname: str, domain: str,
                 with open(tagsFilename, 'w+') as tagsFile:
                     tagsFile.write(tagline)
             except OSError:
-                print('WARN: unable to write ' + tagsFilename)
+                print('EX: unable to write ' + tagsFilename)
         else:
             if postUrl not in open(tagsFilename).read():
                 try:
@@ -250,7 +250,7 @@ def storeHashTags(baseDir: str, nickname: str, domain: str,
                             tagsFile.seek(0, 0)
                             tagsFile.write(tagline + content)
                 except OSError as e:
-                    print('WARN: Failed to write entry to tags file ' +
+                    print('EX: Failed to write entry to tags file ' +
                           tagsFilename + ' ' + str(e))
                 removeOldHashtags(baseDir, 3)
 
@@ -1948,7 +1948,6 @@ def _receiveAnnounce(recentPostsCache: {},
                 except OSError:
                     print('EX: _receiveAnnounce unable to delete ' +
                           str(postFilename))
-                    pass
     else:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
@@ -1985,7 +1984,7 @@ def _receiveAnnounce(recentPostsCache: {},
                             with open(postFilename + '.tts', 'w+') as ttsFile:
                                 ttsFile.write('\n')
                         except OSError:
-                            print('WARN: unable to write recent post ' +
+                            print('EX: unable to write recent post ' +
                                   postFilename)
 
                 if debug:
@@ -2154,13 +2153,13 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
                 with open(postRepliesFilename, 'a+') as repliesFile:
                     repliesFile.write(messageId + '\n')
             except OSError:
-                print('WARN: unable to append ' + postRepliesFilename)
+                print('EX: unable to append ' + postRepliesFilename)
     else:
         try:
             with open(postRepliesFilename, 'w+') as repliesFile:
                 repliesFile.write(messageId + '\n')
         except OSError:
-            print('WARN: unable to write ' + postRepliesFilename)
+            print('EX: unable to write ' + postRepliesFilename)
     return True
 
 
@@ -2337,7 +2336,7 @@ def _dmNotify(baseDir: str, handle: str, url: str) -> None:
             with open(dmFile, 'w+') as fp:
                 fp.write(url)
         except OSError:
-            print('WARN: unable to write ' + dmFile)
+            print('EX: unable to write ' + dmFile)
 
 
 def _alreadyLiked(baseDir: str, nickname: str, domain: str,
@@ -2547,7 +2546,7 @@ def _notifyPostArrival(baseDir: str, handle: str, url: str) -> None:
         with open(notifyFile, 'w+') as fp:
             fp.write(url)
     except OSError:
-        print('WARN: unable to write ' + notifyFile)
+        print('EX: unable to write ' + notifyFile)
 
 
 def _replyNotify(baseDir: str, handle: str, url: str) -> None:
@@ -2562,7 +2561,7 @@ def _replyNotify(baseDir: str, handle: str, url: str) -> None:
             with open(replyFile, 'w+') as fp:
                 fp.write(url)
         except OSError:
-            print('WARN: unable to write ' + replyFile)
+            print('EX: unable to write ' + replyFile)
 
 
 def _gitPatchNotify(baseDir: str, handle: str,
@@ -2580,7 +2579,7 @@ def _gitPatchNotify(baseDir: str, handle: str,
         with open(patchFile, 'w+') as fp:
             fp.write('git ' + handle + ' ' + subject)
     except OSError:
-        print('WARN: unable to write ' + patchFile)
+        print('EX: unable to write ' + patchFile)
 
 
 def _groupHandle(baseDir: str, handle: str) -> bool:
@@ -2731,14 +2730,14 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
                 written = True
                 return True
         except OSError as e:
-            print('WARN: Failed to write entry to index ' + str(e))
+            print('EX: Failed to write entry to index ' + str(e))
     else:
         try:
             with open(indexFilename, 'w+') as indexFile:
                 indexFile.write(destinationFilename + '\n')
                 written = True
         except OSError as e:
-            print('WARN: Failed to write initial entry to index ' + str(e))
+            print('EX: Failed to write initial entry to index ' + str(e))
 
     return written
 
@@ -2774,7 +2773,7 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
         with open(lastSeenFilename, 'w+') as lastSeenFile:
             lastSeenFile.write(str(daysSinceEpoch))
     except OSError:
-        print('WARN: unable to write ' + lastSeenFilename)
+        print('EX: unable to write ' + lastSeenFilename)
 
 
 def _bounceDM(senderPostId: str, session, httpPrefix: str,
@@ -3514,7 +3513,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     with open(destinationFilenameMuted, 'w+') as muteFile:
                         muteFile.write('\n')
                 except OSError:
-                    print('WARN: unable to write ' + destinationFilenameMuted)
+                    print('EX: unable to write ' + destinationFilenameMuted)
 
             # update the indexes for different timelines
             for boxname in updateIndexList:
@@ -3805,7 +3804,7 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                     with open(unknownContextsFile, 'a+') as unknownFile:
                         unknownFile.write(unknownContext + '\n')
                 except OSError:
-                    print('WARN: unable to append ' + unknownContextsFile)
+                    print('EX: unable to append ' + unknownContextsFile)
     else:
         print('Unrecognized jsonld signature type: ' + jwebsigType)
 
@@ -3823,7 +3822,7 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
                 with open(unknownSignaturesFile, 'a+') as unknownFile:
                     unknownFile.write(jwebsigType + '\n')
             except OSError:
-                print('WARN: unable to append ' + unknownSignaturesFile)
+                print('EX: unable to append ' + unknownSignaturesFile)
     return hasJsonSignature, jwebsigType
 
 

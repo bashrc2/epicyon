@@ -536,7 +536,7 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(votesFilename, 'a+') as votesFile:
                                 votesFile.write(messageId + '\n')
                         except OSError:
-                            print('WARN: unable to write vote ' +
+                            print('EX: unable to write vote ' +
                                   votesFilename)
 
                         # ensure that the cached post is removed if it exists,
@@ -841,10 +841,9 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 with open(mediaFilename + '.etag', 'r') as etagFile:
                     etag = etagFile.read()
-            except BaseException:
+            except OSError:
                 print('EX: _set_headers_etag ' +
                       'unable to read ' + mediaFilename + '.etag')
-                pass
         if not etag:
             etag = md5(data).hexdigest()  # nosec
             try:
@@ -853,7 +852,6 @@ class PubServer(BaseHTTPRequestHandler):
             except OSError:
                 print('EX: _set_headers_etag ' +
                       'unable to write ' + mediaFilename + '.etag')
-                pass
         # if etag:
         #     self.send_header('ETag', '"' + etag + '"')
         if lastModified:
@@ -877,10 +875,9 @@ class PubServer(BaseHTTPRequestHandler):
                 try:
                     with open(mediaFilename, 'r') as etagFile:
                         currEtag = etagFile.read()
-                except BaseException:
+                except OSError:
                     print('EX: _etag_exists unable to read ' +
                           str(mediaFilename))
-                    pass
                 if currEtag and oldEtag == currEtag:
                     # The file has not changed
                     return True
@@ -1762,14 +1759,14 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(saltFilename, 'r') as fp:
                             salt = fp.read()
                     except OSError as e:
-                        print('WARN: Unable to read salt for ' +
+                        print('EX: Unable to read salt for ' +
                               loginNickname + ' ' + str(e))
                 else:
                     try:
                         with open(saltFilename, 'w+') as fp:
                             fp.write(salt)
                     except OSError as e:
-                        print('WARN: Unable to save salt for ' +
+                        print('EX: Unable to save salt for ' +
                               loginNickname + ' ' + str(e))
 
                 tokenText = loginNickname + loginPassword + salt
@@ -1783,7 +1780,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(tokenFilename, 'w+') as fp:
                         fp.write(token)
                 except OSError as e:
-                    print('WARN: Unable to save token for ' +
+                    print('EX: Unable to save token for ' +
                           loginNickname + ' ' + str(e))
 
                 personUpgradeActor(baseDir, None, loginHandle,
@@ -2363,7 +2360,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 noNewswireFile.write('\n')
                                 refreshNewswire(self.server.baseDir)
                         except OSError as e:
-                            print('WARN: unable to write ' + nwFilename +
+                            print('EX: unable to write ' + nwFilename +
                                   ' ' + str(e))
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
@@ -2406,7 +2403,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 noFeaturesFile.write('\n')
                                 refreshNewswire(self.server.baseDir)
                         except OSError as e:
-                            print('WARN: unable to write ' + featFilename +
+                            print('EX: unable to write ' + featFilename +
                                   ' ' + str(e))
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
@@ -2447,7 +2444,7 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(nwFilename, 'w+') as modNewswireFile:
                                 modNewswireFile.write('\n')
                         except OSError:
-                            print('WARN: unable to write ' + nwFilename)
+                            print('EX: unable to write ' + nwFilename)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -3597,7 +3594,7 @@ class PubServer(BaseHTTPRequestHandler):
             with open(mediaFilename, 'wb') as avFile:
                 avFile.write(mediaBytes)
         except OSError:
-            print('WARN: unable to write ' + mediaFilename)
+            print('EX: unable to write ' + mediaFilename)
         if debug:
             print('DEBUG: image saved to ' + mediaFilename)
         self.send_response(201)
@@ -4128,7 +4125,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(newswireFilename, 'w+') as newswireFile:
                         newswireFile.write(newswireStr)
                 except OSError:
-                    print('WARN: unable to write ' + newswireFilename)
+                    print('EX: unable to write ' + newswireFilename)
             else:
                 if os.path.isfile(newswireFilename):
                     try:
@@ -4146,7 +4143,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(filterNewswireFilename, 'w+') as filterfile:
                         filterfile.write(fields['filteredWordsNewswire'])
                 except OSError:
-                    print('WARN: unable to write ' + filterNewswireFilename)
+                    print('EX: unable to write ' + filterNewswireFilename)
             else:
                 if os.path.isfile(filterNewswireFilename):
                     try:
@@ -4163,7 +4160,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(hashtagRulesFilename, 'w+') as rulesfile:
                         rulesfile.write(fields['hashtagRulesList'])
                 except OSError:
-                    print('WARN: unable to write ' + hashtagRulesFilename)
+                    print('EX: unable to write ' + hashtagRulesFilename)
             else:
                 if os.path.isfile(hashtagRulesFilename):
                     try:
@@ -4181,7 +4178,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(newswireTrustedFilename, 'w+') as trustFile:
                         trustFile.write(newswireTrusted)
                 except OSError:
-                    print('WARN: unable to write ' + newswireTrustedFilename)
+                    print('EX: unable to write ' + newswireTrustedFilename)
             else:
                 if os.path.isfile(newswireTrustedFilename):
                     try:
@@ -4278,7 +4275,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(citationsFilename, 'w+') as citationsFile:
                         citationsFile.write(citationsStr)
                 except OSError:
-                    print('WARN: unable to write ' + citationsFilename)
+                    print('EX: unable to write ' + citationsFilename)
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/newblog',
@@ -4734,7 +4731,7 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(cityFilename, 'w+') as fp:
                                 fp.write(fields['cityDropdown'])
                         except OSError:
-                            print('WARN: unable to write ' + cityFilename)
+                            print('EX: unable to write ' + cityFilename)
 
                     # change displayed name
                     if fields.get('displayNickname'):
@@ -5940,7 +5937,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(blockedFilename):
                             try:
                                 os.remove(blockedFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       blockedFilename)
@@ -15948,10 +15945,9 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             with open(mediaTagFilename, 'r') as etagFile:
                                 etag = etagFile.read()
-                        except BaseException:
+                        except OSError:
                             print('EX: do_HEAD unable to read ' +
                                   mediaTagFilename)
-                            pass
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
@@ -15959,10 +15955,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
-                            except BaseException:
+                            except OSError:
                                 print('EX: do_HEAD unable to write ' +
                                       mediaTagFilename)
-                                pass
 
         mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
@@ -16129,10 +16124,9 @@ class PubServer(BaseHTTPRequestHandler):
                 try:
                     with open(lastUsedFilename, 'w+') as lastUsedFile:
                         lastUsedFile.write(str(int(time.time())))
-                except BaseException:
+                except OSError:
                     print('EX: _receiveNewPostProcess unable to write ' +
                           lastUsedFilename)
-                    pass
 
             mentionsStr = ''
             if fields.get('mentions'):

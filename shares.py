@@ -293,10 +293,9 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
                         fp.write(localActor + '/tlshares')
                     else:
                         fp.write(localActor + '/tlwanted')
-            except BaseException:
+            except OSError:
                 print('EX: _indicateNewShareAvailable unable to write ' +
                       str(newShareFile))
-                pass
         break
 
 

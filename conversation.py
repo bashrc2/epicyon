@@ -48,7 +48,6 @@ def updateConversation(baseDir: str, nickname: str, domain: str,
         except OSError:
             print('EX: updateConversation ' +
                   'unable to write to ' + conversationFilename)
-            pass
     elif postId + '\n' not in open(conversationFilename).read():
         try:
             with open(conversationFilename, 'a+') as fp:
@@ -57,7 +56,6 @@ def updateConversation(baseDir: str, nickname: str, domain: str,
         except OSError:
             print('EX: updateConversation 2 ' +
                   'unable to write to ' + conversationFilename)
-            pass
     return False
 
 
@@ -76,8 +74,7 @@ def muteConversation(baseDir: str, nickname: str, domain: str,
         with open(conversationFilename + '.muted', 'w+') as fp:
             fp.write('\n')
     except OSError:
-        print('WARN: unable to write mute ' + conversationFilename)
-        pass
+        print('EX: unable to write mute ' + conversationFilename)
 
 
 def unmuteConversation(baseDir: str, nickname: str, domain: str,

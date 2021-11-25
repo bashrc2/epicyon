@@ -77,9 +77,8 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
             with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
                 bookmarksIndexFile.write(indexStr)
         except OSError:
-            print('WARN: unable to write bookmarks index ' +
+            print('EX: unable to write bookmarks index ' +
                   bookmarksIndexFilename)
-            pass
     if not postJsonObject.get('type'):
         return
     if postJsonObject['type'] != 'Create':
@@ -239,9 +238,8 @@ def updateBookmarksCollection(recentPostsCache: {},
                 with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
                     bookmarksIndexFile.write(bookmarkIndex + '\n')
             except OSError:
-                print('WARN: unable to write bookmarks index ' +
+                print('EX: unable to write bookmarks index ' +
                       bookmarksIndexFilename)
-                pass
 
 
 def bookmark(recentPostsCache: {},

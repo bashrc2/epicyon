@@ -593,20 +593,18 @@ def _setTextModeTheme(baseDir: str, name: str) -> None:
         try:
             copyfile(textModeLogoFilename,
                      baseDir + '/accounts/logo.txt')
-        except BaseException:
+        except OSError:
             print('EX: _setTextModeTheme unable to copy ' +
                   textModeLogoFilename + ' ' +
                   baseDir + '/accounts/logo.txt')
-            pass
     else:
         try:
             copyfile(baseDir + '/img/logo.txt',
                      baseDir + '/accounts/logo.txt')
-        except BaseException:
+        except OSError:
             print('EX: _setTextModeTheme unable to copy ' +
                   baseDir + '/img/logo.txt ' +
                   baseDir + '/accounts/logo.txt')
-            pass
 
     # set the text mode banner which appears in browsers such as Lynx
     textModeBannerFilename = \
@@ -701,10 +699,9 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                 try:
                     copyfile(bannerFilename,
                              accountDir + '/banner.png')
-                except BaseException:
+                except OSError:
                     print('EX: _setThemeImages unable to copy ' +
                           bannerFilename)
-                    pass
 
                 try:
                     if os.path.isfile(searchBannerFilename):
@@ -725,10 +722,9 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                         except OSError:
                             print('EX: _setThemeImages unable to delete ' +
                                   accountDir + '/left_col_image.png')
-                except BaseException:
+                except OSError:
                     print('EX: _setThemeImages unable to copy ' +
                           leftColImageFilename)
-                    pass
 
                 try:
                     if os.path.isfile(rightColImageFilename):
@@ -742,7 +738,7 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                             except OSError:
                                 print('EX: _setThemeImages unable to delete ' +
                                       accountDir + '/right_col_image.png')
-                except BaseException:
+                except OSError:
                     print('EX: _setThemeImages unable to copy ' +
                           rightColImageFilename)
         break
@@ -767,9 +763,8 @@ def setNewsAvatar(baseDir: str, name: str,
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except BaseException:
+        except OSError:
             print('EX: setNewsAvatar unable to delete ' + filename)
-            pass
     if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
     accountDir = acctDir(baseDir, nickname, domain)

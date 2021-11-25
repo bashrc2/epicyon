@@ -1112,7 +1112,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         with open(filename, 'wb') as fp:
             fp.write(mediaBytes[startPos:])
     except OSError:
-        print('WARN: unable to write media')
+        print('EX: unable to write media')
 
     if not os.path.isfile(filename):
         print('WARN: Media file could not be written to file: ' + filename)

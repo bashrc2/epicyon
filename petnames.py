@@ -45,7 +45,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
                     with open(petnamesFilename, 'w+') as petnamesFile:
                         petnamesFile.write(newPetnamesStr)
                 except OSError:
-                    print('WARN: unable to save ' + petnamesFilename)
+                    print('EX: unable to save ' + petnamesFilename)
                     return False
                 return True
             # entry does not exist in the petnames file
@@ -53,7 +53,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
                 with open(petnamesFilename, 'a+') as petnamesFile:
                     petnamesFile.write(entry)
             except OSError:
-                print('WARN: unable to append ' + petnamesFilename)
+                print('EX: unable to append ' + petnamesFilename)
                 return False
             return True
 
@@ -62,7 +62,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
         with open(petnamesFilename, 'w+') as petnamesFile:
             petnamesFile.write(entry)
     except OSError:
-        print('WARN: unable to write ' + petnamesFilename)
+        print('EX: unable to write ' + petnamesFilename)
         return False
     return True
 

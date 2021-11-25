@@ -115,7 +115,7 @@ def updateHashtagCategories(baseDir: str) -> None:
         with open(categoryListFilename, 'w+') as fp:
             fp.write(categoryListStr)
     except OSError:
-        print('WARN: unable to write category ' + categoryListFilename)
+        print('EX: unable to write category ' + categoryListFilename)
 
 
 def _validHashtagCategory(category: str) -> bool:
@@ -168,9 +168,8 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
                 updateHashtagCategories(baseDir)
             return True
     except OSError as e:
-        print('WARN: unable to write category ' + categoryFilename +
+        print('EX: unable to write category ' + categoryFilename +
               ' ' + str(e))
-        pass
     return False
 
 
