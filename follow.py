@@ -341,9 +341,8 @@ def clearFollows(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except BaseException:
+        except OSError:
             print('EX: clearFollows unable to delete ' + filename)
-            pass
 
 
 def clearFollowers(baseDir: str, nickname: str, domain: str) -> None:
@@ -908,10 +907,9 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
         if os.path.isfile(followActivityfilename):
             try:
                 os.remove(followActivityfilename)
-            except BaseException:
+            except OSError:
                 print('EX: followedAccountAccepts unable to delete ' +
                       followActivityfilename)
-                pass
 
     groupAccount = False
     if followJson:
@@ -983,10 +981,9 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
     # remove the follow request json
     try:
         os.remove(followActivityfilename)
-    except BaseException:
+    except OSError:
         print('EX: followedAccountRejects unable to delete ' +
               followActivityfilename)
-        pass
     # send the reject activity
     return sendSignedJson(rejectJson, session, baseDir,
                           nicknameToFollow, domainToFollow, port,

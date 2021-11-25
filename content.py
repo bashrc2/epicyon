@@ -1015,21 +1015,19 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 if os.path.isfile(possibleOtherFormat):
                     try:
                         os.remove(possibleOtherFormat)
-                    except BaseException:
+                    except OSError:
                         if debug:
                             print('EX: saveMediaInFormPOST ' +
                                   'unable to delete other ' +
                                   str(possibleOtherFormat))
-                        pass
             if os.path.isfile(filenameBase):
                 try:
                     os.remove(filenameBase)
-                except BaseException:
+                except OSError:
                     if debug:
                         print('EX: saveMediaInFormPOST ' +
                               'unable to delete ' +
                               str(filenameBase))
-                    pass
 
         if debug:
             print('DEBUG: No media found within POST')
@@ -1097,12 +1095,11 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
             if os.path.isfile(possibleOtherFormat):
                 try:
                     os.remove(possibleOtherFormat)
-                except BaseException:
+                except OSError:
                     if debug:
                         print('EX: saveMediaInFormPOST ' +
                               'unable to delete other 2 ' +
                               str(possibleOtherFormat))
-                    pass
 
     # don't allow scripts within svg files
     if detectedExtension == 'svg':
@@ -1111,8 +1108,11 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         if dangerousSVG(svgStr, False):
             return None, None
 
-    with open(filename, 'wb') as fp:
-        fp.write(mediaBytes[startPos:])
+    try:
+        with open(filename, 'wb') as fp:
+            fp.write(mediaBytes[startPos:])
+    except OSError:
+        print('WARN: unable to write media')
 
     if not os.path.isfile(filename):
         print('WARN: Media file could not be written to file: ' + filename)

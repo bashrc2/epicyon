@@ -476,9 +476,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'dm':
             try:
                 os.remove(dmFile)
-            except BaseException:
+            except OSError:
                 print('EX: htmlTimeline unable to delete ' + dmFile)
-                pass
 
     # should the Replies button be highlighted?
     newReply = False
@@ -488,9 +487,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlreplies':
             try:
                 os.remove(replyFile)
-            except BaseException:
+            except OSError:
                 print('EX: htmlTimeline unable to delete ' + replyFile)
-                pass
 
     # should the Shares button be highlighted?
     newShare = False
@@ -500,9 +498,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlshares':
             try:
                 os.remove(newShareFile)
-            except BaseException:
+            except OSError:
                 print('EX: htmlTimeline unable to delete ' + newShareFile)
-                pass
 
     # should the Wanted button be highlighted?
     newWanted = False
@@ -512,9 +509,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlwanted':
             try:
                 os.remove(newWantedFile)
-            except BaseException:
+            except OSError:
                 print('EX: htmlTimeline unable to delete ' + newWantedFile)
-                pass
 
     # should the Moderation/reports button be highlighted?
     newReport = False
@@ -524,9 +520,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'moderation':
             try:
                 os.remove(newReportFile)
-            except BaseException:
+            except OSError:
                 print('EX: htmlTimeline unable to delete ' + newReportFile)
-                pass
 
     separatorStr = ''
     if boxName != 'tlmedia':

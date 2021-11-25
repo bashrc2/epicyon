@@ -148,10 +148,9 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
                     if os.path.isfile(itemIDfile + '.' + ext):
                         try:
                             os.remove(itemIDfile + '.' + ext)
-                        except BaseException:
+                        except OSError:
                             print('EX: removeSharedItem unable to delete ' +
                                   itemIDfile + '.' + ext)
-                            pass
         # remove the item itself
         del sharesJson[itemID]
         saveJson(sharesJson, sharesFilename)
@@ -368,10 +367,9 @@ def addShare(baseDir: str,
                 if moveImage:
                     try:
                         os.remove(imageFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: addShare unable to delete ' +
                               str(imageFilename))
-                        pass
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
                     '/sharefiles/' + nickname + '/' + itemID + '.' + ext
@@ -442,10 +440,9 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
             if os.path.isfile(itemIDfile + '.' + ext):
                 try:
                     os.remove(itemIDfile + '.' + ext)
-                except BaseException:
+                except OSError:
                     print('EX: _expireSharesForAccount unable to delete ' +
                           itemIDfile + '.' + ext)
-                    pass
     saveJson(sharesJson, sharesFilename)
 
 

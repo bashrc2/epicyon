@@ -727,10 +727,9 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     if os.path.isfile(filename + '.arrived'):
                         try:
                             os.remove(filename + '.arrived')
-                        except BaseException:
+                        except OSError:
                             print('EX: _convertRSStoActivityPub ' +
                                   'unable to delete ' + filename + '.arrived')
-                            pass
 
                 # setting the url here links to the activitypub object
                 # stored locally
@@ -843,10 +842,9 @@ def runNewswireDaemon(baseDir: str, httpd,
             if os.path.isfile(refreshFilename):
                 try:
                     os.remove(refreshFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runNewswireDaemon unable to delete ' +
                           str(refreshFilename))
-                    pass
                 break
 
 

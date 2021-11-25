@@ -95,11 +95,10 @@ def updateHashtagCategories(baseDir: str) -> None:
         if os.path.isfile(categoryListFilename):
             try:
                 os.remove(categoryListFilename)
-            except BaseException:
+            except OSError:
                 print('EX: updateHashtagCategories ' +
                       'unable to delete cached category list ' +
                       categoryListFilename)
-                pass
         return
 
     categoryList = []
@@ -112,8 +111,11 @@ def updateHashtagCategories(baseDir: str) -> None:
         categoryListStr += categoryStr + '\n'
 
     # save a list of available categories for quick lookup
-    with open(categoryListFilename, 'w+') as fp:
-        fp.write(categoryListStr)
+    try:
+        with open(categoryListFilename, 'w+') as fp:
+            fp.write(categoryListStr)
+    except OSError:
+        print('WARN: unable to write category ' + categoryListFilename)
 
 
 def _validHashtagCategory(category: str) -> bool:
@@ -159,12 +161,15 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
         # don't overwrite any existing categories
         if os.path.isfile(categoryFilename):
             return False
-    with open(categoryFilename, 'w+') as fp:
-        fp.write(category)
-        if update:
-            updateHashtagCategories(baseDir)
-        return True
-
+    try:
+        with open(categoryFilename, 'w+') as fp:
+            fp.write(category)
+            if update:
+                updateHashtagCategories(baseDir)
+            return True
+    except OSError:
+        print('WARN: unable to write category ' + categoryFilename)
+        pass
     return False
 
 

@@ -1585,7 +1585,7 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
     if os.path.isfile(pinnedFilename):
         try:
             os.remove(pinnedFilename)
-        except BaseException:
+        except OSError:
             print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
 
 
@@ -3966,10 +3966,9 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
         if os.path.isfile(postCacheFilename):
             try:
                 os.remove(postCacheFilename)
-            except BaseException:
+            except OSError:
                 print('EX: archivePostsForPerson unable to delete ' +
                       postCacheFilename)
-                pass
 
         noOfPosts -= 1
         removeCtr += 1

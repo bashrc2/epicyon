@@ -146,11 +146,17 @@ def removeGlobalBlock(baseDir: str,
         if os.path.isfile(unblockingFilename):
             if unblockHandle in open(unblockingFilename).read():
                 with open(unblockingFilename, 'r') as fp:
-                    with open(unblockingFilename + '.new', 'w+') as fpnew:
-                        for line in fp:
-                            handle = line.replace('\n', '').replace('\r', '')
-                            if unblockHandle not in line:
-                                fpnew.write(handle + '\n')
+                    try:
+                        with open(unblockingFilename + '.new', 'w+') as fpnew:
+                            for line in fp:
+                                handle = \
+                                    line.replace('\n', '').replace('\r', '')
+                                if unblockHandle not in line:
+                                    fpnew.write(handle + '\n')
+                    except OSError:
+                        print('WARN: failed to remove global block ' +
+                              unblockingFilename)
+                        return False
                 if os.path.isfile(unblockingFilename + '.new'):
                     os.rename(unblockingFilename + '.new', unblockingFilename)
                     return True
@@ -159,12 +165,17 @@ def removeGlobalBlock(baseDir: str,
         if os.path.isfile(unblockingFilename):
             if unblockHashtag + '\n' in open(unblockingFilename).read():
                 with open(unblockingFilename, 'r') as fp:
-                    with open(unblockingFilename + '.new', 'w+') as fpnew:
-                        for line in fp:
-                            blockLine = \
-                                line.replace('\n', '').replace('\r', '')
-                            if unblockHashtag not in line:
-                                fpnew.write(blockLine + '\n')
+                    try:
+                        with open(unblockingFilename + '.new', 'w+') as fpnew:
+                            for line in fp:
+                                blockLine = \
+                                    line.replace('\n', '').replace('\r', '')
+                                if unblockHashtag not in line:
+                                    fpnew.write(blockLine + '\n')
+                    except OSError:
+                        print('WARN: failed to remove global hashtag block ' +
+                              unblockingFilename)
+                        return False
                 if os.path.isfile(unblockingFilename + '.new'):
                     os.rename(unblockingFilename + '.new', unblockingFilename)
                     return True
@@ -181,11 +192,15 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
             with open(unblockingFilename, 'r') as fp:
-                with open(unblockingFilename + '.new', 'w+') as fpnew:
-                    for line in fp:
-                        handle = line.replace('\n', '').replace('\r', '')
-                        if unblockHandle not in line:
-                            fpnew.write(handle + '\n')
+                try:
+                    with open(unblockingFilename + '.new', 'w+') as fpnew:
+                        for line in fp:
+                            handle = line.replace('\n', '').replace('\r', '')
+                            if unblockHandle not in line:
+                                fpnew.write(handle + '\n')
+                except OSError:
+                    print('WARN: failed to remove block ' + unblockingFilename)
+                    return False
             if os.path.isfile(unblockingFilename + '.new'):
                 os.rename(unblockingFilename + '.new', unblockingFilename)
                 return True
@@ -553,9 +568,13 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
         else:
             print('MUTE: cached post not found ' + cachedPostFilename)
 
-    with open(postFilename + '.muted', 'w+') as muteFile:
-        muteFile.write('\n')
-        print('MUTE: ' + postFilename + '.muted file added')
+    try:
+        with open(postFilename + '.muted', 'w+') as muteFile:
+            muteFile.write('\n')
+            print('MUTE: ' + postFilename + '.muted file added')
+    except OSError:
+        print('WARN: Failed to save mute file ' + postFilename + '.muted')
+        return
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
@@ -882,11 +901,15 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
             break
 
         # write the allow file
-        with open(allowFilename, 'w+') as allowFile:
-            allowFile.write(domainFull + '\n')
-            for d in allowedDomains:
-                allowFile.write(d + '\n')
-            print('Broch mode enabled')
+        try:
+            with open(allowFilename, 'w+') as allowFile:
+                allowFile.write(domainFull + '\n')
+                for d in allowedDomains:
+                    allowFile.write(d + '\n')
+                print('Broch mode enabled')
+        except OSError:
+            print('WARN: Broch mode not enabled due to file write')
+            return
 
     setConfigParam(baseDir, "brochMode", enabled)
 

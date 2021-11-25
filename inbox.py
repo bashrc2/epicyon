@@ -920,7 +920,7 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 print('EX: _receiveUpdateToQuestion unable to delete ' +
                       cachedPostFilename)
     # remove from memory cache
@@ -1944,7 +1944,7 @@ def _receiveAnnounce(recentPostsCache: {},
                 # if the announce can't be downloaded then remove it
                 try:
                     os.remove(postFilename)
-                except BaseException:
+                except OSError:
                     print('EX: _receiveAnnounce unable to delete ' +
                           str(postFilename))
                     pass
@@ -2059,10 +2059,9 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     if os.path.isfile(postFilename):
         try:
             os.remove(postFilename)
-        except BaseException:
+        except OSError:
             print('EX: _receiveUndoAnnounce unable to delete ' +
                   str(postFilename))
-            pass
     return True
 
 
@@ -2973,7 +2972,7 @@ def _receiveQuestionVote(baseDir: str, nickname: str, domain: str,
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 print('EX: replytoQuestion unable to delete ' +
                       cachedPostFilename)
 
@@ -3592,9 +3591,8 @@ def clearQueueItems(baseDir: str, queue: []) -> None:
                     try:
                         os.remove(os.path.join(queueDir, qfile))
                         ctr += 1
-                    except BaseException:
+                    except OSError:
                         print('EX: clearQueueItems unable to delete ' + qfile)
-                        pass
                 break
         break
     if ctr > 0:
@@ -3659,10 +3657,9 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
                 if len(queue) > 0:
                     try:
                         os.remove(queueFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _inboxQuotaExceeded unable to delete ' +
                               str(queueFilename))
-                        pass
                     queue.pop(0)
                 return True
             quotasDaily['domains'][postDomain] += 1
@@ -3682,10 +3679,9 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
                 if len(queue) > 0:
                     try:
                         os.remove(queueFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _inboxQuotaExceeded unable to delete ' +
                               str(queueFilename))
-                        pass
                     queue.pop(0)
                 return True
             quotasPerMin['domains'][postDomain] += 1
@@ -3704,10 +3700,9 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
                 if len(queue) > 0:
                     try:
                         os.remove(queueFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _inboxQuotaExceeded unable to delete ' +
                               str(queueFilename))
-                        pass
                     queue.pop(0)
                 return True
             quotasDaily['accounts'][postHandle] += 1
@@ -3728,10 +3723,9 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
                 if len(queue) > 0:
                     try:
                         os.remove(queueFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _inboxQuotaExceeded unable to delete ' +
                               str(queueFilename))
-                        pass
                     queue.pop(0)
                 return True
             quotasPerMin['accounts'][postHandle] += 1
@@ -3913,10 +3907,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 1 unable to delete ' +
                           str(queueFilename))
-                    pass
             continue
 
         # clear the daily quotas for maximum numbers of received posts
@@ -3988,10 +3981,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 2 unable to delete ' +
                           str(queueFilename))
-                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4041,10 +4033,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if os.path.isfile(queueFilename):
                     try:
                         os.remove(queueFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: runInboxQueue 3 unable to delete ' +
                               str(queueFilename))
-                        pass
                 if len(queue) > 0:
                     queue.pop(0)
                 continue
@@ -4063,10 +4054,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                     if os.path.isfile(queueFilename):
                         try:
                             os.remove(queueFilename)
-                        except BaseException:
+                        except OSError:
                             print('EX: runInboxQueue 4 unable to delete ' +
                                   str(queueFilename))
-                            pass
                     if len(queue) > 0:
                         queue.pop(0)
                     continue
@@ -4094,10 +4084,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 5 unable to delete ' +
                           str(queueFilename))
-                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4117,10 +4106,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 6 unable to delete ' +
                           str(queueFilename))
-                    pass
             if len(queue) > 0:
                 queue.pop(0)
             print('Queue: Follow activity for ' + keyId +
@@ -4140,10 +4128,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 7 unable to delete ' +
                           str(queueFilename))
-                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4163,10 +4150,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 8 unable to delete ' +
                           str(queueFilename))
-                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4183,10 +4169,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
-                except BaseException:
+                except OSError:
                     print('EX: runInboxQueue 9 unable to delete ' +
                           str(queueFilename))
-                    pass
             if len(queue) > 0:
                 queue.pop(0)
             continue
@@ -4265,9 +4250,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if os.path.isfile(queueFilename):
             try:
                 os.remove(queueFilename)
-            except BaseException:
+            except OSError:
                 print('EX: runInboxQueue 10 unable to delete ' +
                       str(queueFilename))
-                pass
         if len(queue) > 0:
             queue.pop(0)

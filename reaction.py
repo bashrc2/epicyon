@@ -460,10 +460,9 @@ def updateReactionCollection(recentPostsCache: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 print('EX: updateReactionCollection unable to delete ' +
                       cachedPostFilename)
-                pass
 
     obj = postJsonObject
     if hasObjectDict(postJsonObject):

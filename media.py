@@ -168,10 +168,9 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
     if os.path.isfile(lowBandwidthFilename):
         try:
             os.remove(lowBandwidthFilename)
-        except BaseException:
+        except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
                   lowBandwidthFilename)
-            pass
 
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
@@ -191,10 +190,9 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
     if os.path.isfile(lowBandwidthFilename):
         try:
             os.remove(imageFilename)
-        except BaseException:
+        except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
                   imageFilename)
-            pass
         os.rename(lowBandwidthFilename, imageFilename)
         if os.path.isfile(imageFilename):
             print('Image converted to low bandwidth ' + imageFilename)

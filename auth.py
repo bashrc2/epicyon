@@ -163,21 +163,38 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     storeStr = nickname + ':' + _hashPassword(password)
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
-            with open(passwordFile, 'r') as fin:
-                with open(passwordFile + '.new', 'w+') as fout:
-                    for line in fin:
-                        if not line.startswith(nickname + ':'):
-                            fout.write(line)
-                        else:
-                            fout.write(storeStr + '\n')
-            os.rename(passwordFile + '.new', passwordFile)
+            try:
+                with open(passwordFile, 'r') as fin:
+                    with open(passwordFile + '.new', 'w+') as fout:
+                        for line in fin:
+                            if not line.startswith(nickname + ':'):
+                                fout.write(line)
+                            else:
+                                fout.write(storeStr + '\n')
+            except OSError:
+                print('WARN: unable to save password ' + passwordFile)
+                return False
+
+            try:
+                os.rename(passwordFile + '.new', passwordFile)
+            except OSError:
+                print('WARN: unable to save password 2')
+                return False
         else:
             # append to password file
-            with open(passwordFile, 'a+') as passfile:
-                passfile.write(storeStr + '\n')
+            try:
+                with open(passwordFile, 'a+') as passfile:
+                    passfile.write(storeStr + '\n')
+            except OSError:
+                print('WARN: unable to append password')
+                return False
     else:
-        with open(passwordFile, 'w+') as passfile:
-            passfile.write(storeStr + '\n')
+        try:
+            with open(passwordFile, 'w+') as passfile:
+                passfile.write(storeStr + '\n')
+        except OSError:
+            print('WARN: unable to create password file')
+            return False
     return True
 
 
@@ -187,12 +204,21 @@ def removePassword(baseDir: str, nickname: str) -> None:
     """
     passwordFile = baseDir + '/accounts/passwords'
     if os.path.isfile(passwordFile):
-        with open(passwordFile, 'r') as fin:
-            with open(passwordFile + '.new', 'w+') as fout:
-                for line in fin:
-                    if not line.startswith(nickname + ':'):
-                        fout.write(line)
-        os.rename(passwordFile + '.new', passwordFile)
+        try:
+            with open(passwordFile, 'r') as fin:
+                with open(passwordFile + '.new', 'w+') as fout:
+                    for line in fin:
+                        if not line.startswith(nickname + ':'):
+                            fout.write(line)
+        except OSError:
+            print('WARN: unable to remove password from file')
+            return
+
+        try:
+            os.rename(passwordFile + '.new', passwordFile)
+        except OSError:
+            print('WARN: unable to remove password from file 2')
+            return
 
 
 def authorize(baseDir: str, path: str, authHeader: str, debug: bool) -> bool:
@@ -254,6 +280,6 @@ def recordLoginFailure(baseDir: str, ipAddress: str,
                      'Disconnecting invalid user epicyon ' +
                      ipAddress + ' port 443: ' +
                      'Too many authentication failures [preauth]\n')
-    except BaseException:
+    except OSError:
         print('EX: recordLoginFailure failed ' + str(failureLog))
         pass
