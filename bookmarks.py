@@ -51,12 +51,11 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 if debug:
                     print('EX: undoBookmarksCollectionEntry ' +
                           'unable to delete cached post file ' +
                           str(cachedPostFilename))
-                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     # remove from the index
@@ -74,9 +73,12 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     indexStr = ''
     with open(bookmarksIndexFilename, 'r') as indexFile:
         indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
-        with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
-            bookmarksIndexFile.write(indexStr)
-
+        try:
+            with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
+                bookmarksIndexFile.write(indexStr)
+        except OSError:
+            print('EX: unable to write bookmarks index ' +
+                  bookmarksIndexFilename)
     if not postJsonObject.get('type'):
         return
     if postJsonObject['type'] != 'Create':
@@ -163,12 +165,11 @@ def updateBookmarksCollection(recentPostsCache: {},
             if os.path.isfile(cachedPostFilename):
                 try:
                     os.remove(cachedPostFilename)
-                except BaseException:
+                except OSError:
                     if debug:
                         print('EX: updateBookmarksCollection ' +
                               'unable to delete cached post ' +
                               str(cachedPostFilename))
-                    pass
         removePostFromCache(postJsonObject, recentPostsCache)
 
         if not postJsonObject.get('object'):
@@ -233,8 +234,12 @@ def updateBookmarksCollection(recentPostsCache: {},
                     print('WARN: Failed to write entry to bookmarks index ' +
                           bookmarksIndexFilename + ' ' + str(e))
         else:
-            with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
-                bookmarksIndexFile.write(bookmarkIndex + '\n')
+            try:
+                with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
+                    bookmarksIndexFile.write(bookmarkIndex + '\n')
+            except OSError:
+                print('EX: unable to write bookmarks index ' +
+                      bookmarksIndexFilename)
 
 
 def bookmark(recentPostsCache: {},

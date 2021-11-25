@@ -439,10 +439,9 @@ def downloadImage(session, baseDir: str, url: str,
                 if os.path.isfile(imageFilename):
                     try:
                         os.remove(imageFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: downloadImage unable to delete ' +
                               imageFilename)
-                        pass
             else:
                 with open(imageFilename, 'wb') as f:
                     f.write(result.content)

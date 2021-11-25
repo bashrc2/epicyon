@@ -48,10 +48,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                 if os.path.isfile(postFilename):
                     try:
                         os.remove(postFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _updatePostSchedule unable to delete ' +
                               str(postFilename))
-                        pass
                 continue
             # create the new index file
             indexLines.append(line)
@@ -133,10 +132,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
                 indexLines.remove(line)
                 try:
                     os.remove(postFilename)
-                except BaseException:
+                except OSError:
                     print('EX: _updatePostSchedule unable to delete ' +
                           str(postFilename))
-                    pass
                 continue
 
             # move to the outbox
@@ -206,10 +204,9 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
     if os.path.isfile(scheduleIndexFilename):
         try:
             os.remove(scheduleIndexFilename)
-        except BaseException:
+        except OSError:
             print('EX: removeScheduledPosts unable to delete ' +
                   scheduleIndexFilename)
-            pass
     # remove the scheduled posts
     scheduledDir = acctDir(baseDir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduledDir):
@@ -219,7 +216,6 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
         if os.path.isfile(filePath):
             try:
                 os.remove(filePath)
-            except BaseException:
+            except OSError:
                 print('EX: removeScheduledPosts unable to delete ' +
                       filePath)
-                pass

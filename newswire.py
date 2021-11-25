@@ -1045,10 +1045,9 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
         if os.path.isfile(newswireModerationFilename):
             try:
                 os.remove(newswireModerationFilename)
-            except BaseException:
+            except OSError:
                 print('EX: _addBlogsToNewswire unable to delete ' +
                       str(newswireModerationFilename))
-                pass
 
 
 def getDictFromNewswire(session, baseDir: str, domain: str,

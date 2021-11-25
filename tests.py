@@ -3478,7 +3478,7 @@ def _testJsonString() -> None:
     assert messageStr in encodedStr
     try:
         os.remove(filename)
-    except BaseException:
+    except OSError:
         pass
 
 
@@ -3492,7 +3492,7 @@ def _testSaveLoadJson():
     if os.path.isfile(testFilename):
         try:
             os.remove(testFilename)
-        except BaseException:
+        except OSError:
             pass
     assert saveJson(testJson, testFilename)
     assert os.path.isfile(testFilename)
@@ -3504,7 +3504,7 @@ def _testSaveLoadJson():
     assert testLoadJson['param2'] == '"Crème brûlée यह एक परीक्षण ह"'
     try:
         os.remove(testFilename)
-    except BaseException:
+    except OSError:
         pass
 
 

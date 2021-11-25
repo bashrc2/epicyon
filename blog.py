@@ -91,11 +91,16 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     if lines and removals:
         print('Rewriting ' + postFilename + ' to remove ' +
               str(len(removals)) + ' entries')
-        with open(postFilename, 'w+') as f:
-            for replyPostId in lines:
-                replyPostId = replyPostId.replace('\n', '').replace('\r', '')
-                if replyPostId not in removals:
-                    f.write(replyPostId + '\n')
+        try:
+            with open(postFilename, 'w+') as f:
+                for replyPostId in lines:
+                    replyPostId = \
+                        replyPostId.replace('\n', '').replace('\r', '')
+                    if replyPostId not in removals:
+                        f.write(replyPostId + '\n')
+        except OSError as e:
+            print('EX: unable to remove replies from post ' +
+                  postFilename + ' ' + str(e))
 
     return replies
 

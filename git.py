@@ -208,11 +208,14 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
         return False
     patchStr = \
         _gitAddFromHandle(patchStr, '@' + fromNickname + '@' + fromDomain)
-    with open(patchFilename, 'w+') as patchFile:
-        patchFile.write(patchStr)
-        patchNotifyFilename = \
-            acctDir(baseDir, nickname, domain) + '/.newPatchContent'
-        with open(patchNotifyFilename, 'w+') as patchFile:
+    try:
+        with open(patchFilename, 'w+') as patchFile:
             patchFile.write(patchStr)
-            return True
+            patchNotifyFilename = \
+                acctDir(baseDir, nickname, domain) + '/.newPatchContent'
+            with open(patchNotifyFilename, 'w+') as patchFile:
+                patchFile.write(patchStr)
+                return True
+    except OSError as e:
+        print('EX: unable to write patch ' + patchFilename + ' ' + str(e))
     return False

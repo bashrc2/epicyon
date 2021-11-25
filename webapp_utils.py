@@ -283,10 +283,9 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                 if os.path.isfile(avatarImageFilename):
                     try:
                         os.remove(avatarImageFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: updateAvatarImageCache unable to delete ' +
                               avatarImageFilename)
-                        pass
             else:
                 with open(avatarImageFilename, 'wb') as f:
                     f.write(result.content)

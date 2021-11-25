@@ -41,17 +41,29 @@ def setPetName(baseDir: str, nickname: str, domain: str,
                     else:
                         newPetnamesStr += entry
                 # save the updated petnames file
-                with open(petnamesFilename, 'w+') as petnamesFile:
-                    petnamesFile.write(newPetnamesStr)
+                try:
+                    with open(petnamesFilename, 'w+') as petnamesFile:
+                        petnamesFile.write(newPetnamesStr)
+                except OSError:
+                    print('EX: unable to save ' + petnamesFilename)
+                    return False
                 return True
             # entry does not exist in the petnames file
-            with open(petnamesFilename, 'a+') as petnamesFile:
-                petnamesFile.write(entry)
+            try:
+                with open(petnamesFilename, 'a+') as petnamesFile:
+                    petnamesFile.write(entry)
+            except OSError:
+                print('EX: unable to append ' + petnamesFilename)
+                return False
             return True
 
     # first entry
-    with open(petnamesFilename, 'w+') as petnamesFile:
-        petnamesFile.write(entry)
+    try:
+        with open(petnamesFilename, 'w+') as petnamesFile:
+            petnamesFile.write(entry)
+    except OSError:
+        print('EX: unable to write ' + petnamesFilename)
+        return False
     return True
 
 

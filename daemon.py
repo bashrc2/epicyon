@@ -532,8 +532,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.maxReplies,
                                         self.server.debug)
                         # record the vote
-                        with open(votesFilename, 'a+') as votesFile:
-                            votesFile.write(messageId + '\n')
+                        try:
+                            with open(votesFilename, 'a+') as votesFile:
+                                votesFile.write(messageId + '\n')
+                        except OSError:
+                            print('EX: unable to write vote ' +
+                                  votesFilename)
 
                         # ensure that the cached post is removed if it exists,
                         # so that it then will be recreated
@@ -546,11 +550,10 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(cachedPostFilename):
                                 try:
                                     os.remove(cachedPostFilename)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _sendReplyToQuestion ' +
                                           'unable to delete ' +
                                           cachedPostFilename)
-                                    pass
                         # remove from memory cache
                         removePostFromCache(postJsonObject,
                                             self.server.recentPostsCache)
@@ -838,19 +841,17 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 with open(mediaFilename + '.etag', 'r') as etagFile:
                     etag = etagFile.read()
-            except BaseException:
+            except OSError:
                 print('EX: _set_headers_etag ' +
                       'unable to read ' + mediaFilename + '.etag')
-                pass
         if not etag:
             etag = md5(data).hexdigest()  # nosec
             try:
                 with open(mediaFilename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
-            except BaseException:
+            except OSError:
                 print('EX: _set_headers_etag ' +
                       'unable to write ' + mediaFilename + '.etag')
-                pass
         # if etag:
         #     self.send_header('ETag', '"' + etag + '"')
         if lastModified:
@@ -872,12 +873,11 @@ class PubServer(BaseHTTPRequestHandler):
                 # load the etag from file
                 currEtag = ''
                 try:
-                    with open(mediaFilename, 'r') as etagFile:
+                    with open(mediaFilename + '.etag', 'r') as etagFile:
                         currEtag = etagFile.read()
-                except BaseException:
+                except OSError:
                     print('EX: _etag_exists unable to read ' +
                           str(mediaFilename))
-                    pass
                 if currEtag and oldEtag == currEtag:
                     # The file has not changed
                     return True
@@ -1758,15 +1758,15 @@ class PubServer(BaseHTTPRequestHandler):
                     try:
                         with open(saltFilename, 'r') as fp:
                             salt = fp.read()
-                    except Exception as e:
-                        print('WARN: Unable to read salt for ' +
+                    except OSError as e:
+                        print('EX: Unable to read salt for ' +
                               loginNickname + ' ' + str(e))
                 else:
                     try:
                         with open(saltFilename, 'w+') as fp:
                             fp.write(salt)
-                    except Exception as e:
-                        print('WARN: Unable to save salt for ' +
+                    except OSError as e:
+                        print('EX: Unable to save salt for ' +
                               loginNickname + ' ' + str(e))
 
                 tokenText = loginNickname + loginPassword + salt
@@ -1779,8 +1779,8 @@ class PubServer(BaseHTTPRequestHandler):
                 try:
                     with open(tokenFilename, 'w+') as fp:
                         fp.write(token)
-                except Exception as e:
-                    print('WARN: Unable to save token for ' +
+                except OSError as e:
+                    print('EX: Unable to save token for ' +
                           loginNickname + ' ' + str(e))
 
                 personUpgradeActor(baseDir, None, loginHandle,
@@ -2348,17 +2348,20 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(newswireBlockedFilename):
                         try:
                             os.remove(newswireBlockedFilename)
-                        except BaseException:
+                        except OSError:
                             print('EX: _personOptions unable to delete ' +
                                   newswireBlockedFilename)
-                            pass
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
                         nwFilename = newswireBlockedFilename
-                        with open(nwFilename, 'w+') as noNewswireFile:
-                            noNewswireFile.write('\n')
-                            refreshNewswire(self.server.baseDir)
+                        try:
+                            with open(nwFilename, 'w+') as noNewswireFile:
+                                noNewswireFile.write('\n')
+                                refreshNewswire(self.server.baseDir)
+                        except OSError as e:
+                            print('EX: unable to write ' + nwFilename +
+                                  ' ' + str(e))
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -2388,17 +2391,20 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(featuresBlockedFilename):
                         try:
                             os.remove(featuresBlockedFilename)
-                        except BaseException:
+                        except OSError:
                             print('EX: _personOptions unable to delete ' +
                                   featuresBlockedFilename)
-                            pass
                         refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
                         featFilename = featuresBlockedFilename
-                        with open(featFilename, 'w+') as noFeaturesFile:
-                            noFeaturesFile.write('\n')
-                            refreshNewswire(self.server.baseDir)
+                        try:
+                            with open(featFilename, 'w+') as noFeaturesFile:
+                                noFeaturesFile.write('\n')
+                                refreshNewswire(self.server.baseDir)
+                        except OSError as e:
+                            print('EX: unable to write ' + featFilename +
+                                  ' ' + str(e))
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -2428,15 +2434,17 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(newswireModFilename):
                         try:
                             os.remove(newswireModFilename)
-                        except BaseException:
+                        except OSError:
                             print('EX: _personOptions unable to delete ' +
                                   newswireModFilename)
-                            pass
                 else:
                     if os.path.isdir(accountDir):
                         nwFilename = newswireModFilename
-                        with open(nwFilename, 'w+') as modNewswireFile:
-                            modNewswireFile.write('\n')
+                        try:
+                            with open(nwFilename, 'w+') as modNewswireFile:
+                                modNewswireFile.write('\n')
+                        except OSError:
+                            print('EX: unable to write ' + nwFilename)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -3582,8 +3590,11 @@ class PubServer(BaseHTTPRequestHandler):
         mediaFilename = \
             mediaFilenameBase + '.' + \
             getImageExtensionFromMimeType(self.headers['Content-type'])
-        with open(mediaFilename, 'wb') as avFile:
-            avFile.write(mediaBytes)
+        try:
+            with open(mediaFilename, 'wb') as avFile:
+                avFile.write(mediaBytes)
+        except OSError:
+            print('EX: unable to write ' + mediaFilename)
         if debug:
             print('DEBUG: image saved to ' + mediaFilename)
         self.send_response(201)
@@ -3901,10 +3912,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(linksFilename):
                     try:
                         os.remove(linksFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _linksUpdate unable to delete ' +
                               linksFilename)
-                        pass
 
             adminNickname = \
                 getConfigParam(baseDir, 'admin')
@@ -3919,10 +3929,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(aboutFilename):
                         try:
                             os.remove(aboutFilename)
-                        except BaseException:
+                        except OSError:
                             print('EX: _linksUpdate unable to delete ' +
                                   aboutFilename)
-                            pass
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
@@ -3934,10 +3943,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(TOSFilename):
                         try:
                             os.remove(TOSFilename)
-                        except BaseException:
+                        except OSError:
                             print('EX: _linksUpdate unable to delete ' +
                                   TOSFilename)
-                            pass
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/' + defaultTimeline,
@@ -4037,10 +4045,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(categoryFilename):
                     try:
                         os.remove(categoryFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _setHashtagCategory unable to delete ' +
                               categoryFilename)
-                        pass
 
         # redirect back to the default timeline
         self._redirect_headers(tagScreenStr,
@@ -4114,63 +4121,71 @@ class PubServer(BaseHTTPRequestHandler):
                 extractTextFieldsInPOST(postBytes, boundary, debug)
             if fields.get('editedNewswire'):
                 newswireStr = fields['editedNewswire']
-                with open(newswireFilename, 'w+') as newswireFile:
-                    newswireFile.write(newswireStr)
+                try:
+                    with open(newswireFilename, 'w+') as newswireFile:
+                        newswireFile.write(newswireStr)
+                except OSError:
+                    print('EX: unable to write ' + newswireFilename)
             else:
                 if os.path.isfile(newswireFilename):
                     try:
                         os.remove(newswireFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _newswireUpdate unable to delete ' +
                               newswireFilename)
-                        pass
 
             # save filtered words list for the newswire
             filterNewswireFilename = \
                 baseDir + '/accounts/' + \
                 'news@' + domain + '/filters.txt'
             if fields.get('filteredWordsNewswire'):
-                with open(filterNewswireFilename, 'w+') as filterfile:
-                    filterfile.write(fields['filteredWordsNewswire'])
+                try:
+                    with open(filterNewswireFilename, 'w+') as filterfile:
+                        filterfile.write(fields['filteredWordsNewswire'])
+                except OSError:
+                    print('EX: unable to write ' + filterNewswireFilename)
             else:
                 if os.path.isfile(filterNewswireFilename):
                     try:
                         os.remove(filterNewswireFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _newswireUpdate unable to delete ' +
                               filterNewswireFilename)
-                        pass
 
             # save news tagging rules
             hashtagRulesFilename = \
                 baseDir + '/accounts/hashtagrules.txt'
             if fields.get('hashtagRulesList'):
-                with open(hashtagRulesFilename, 'w+') as rulesfile:
-                    rulesfile.write(fields['hashtagRulesList'])
+                try:
+                    with open(hashtagRulesFilename, 'w+') as rulesfile:
+                        rulesfile.write(fields['hashtagRulesList'])
+                except OSError:
+                    print('EX: unable to write ' + hashtagRulesFilename)
             else:
                 if os.path.isfile(hashtagRulesFilename):
                     try:
                         os.remove(hashtagRulesFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _newswireUpdate unable to delete ' +
                               hashtagRulesFilename)
-                        pass
 
             newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
             if fields.get('trustedNewswire'):
                 newswireTrusted = fields['trustedNewswire']
                 if not newswireTrusted.endswith('\n'):
                     newswireTrusted += '\n'
-                with open(newswireTrustedFilename, 'w+') as trustFile:
-                    trustFile.write(newswireTrusted)
+                try:
+                    with open(newswireTrustedFilename, 'w+') as trustFile:
+                        trustFile.write(newswireTrusted)
+                except OSError:
+                    print('EX: unable to write ' + newswireTrustedFilename)
             else:
                 if os.path.isfile(newswireTrustedFilename):
                     try:
                         os.remove(newswireTrustedFilename)
-                    except BaseException:
+                    except OSError:
                         print('EX: _newswireUpdate unable to delete ' +
                               newswireTrustedFilename)
-                        pass
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/' + defaultTimeline,
@@ -4197,10 +4212,9 @@ class PubServer(BaseHTTPRequestHandler):
         if os.path.isfile(citationsFilename):
             try:
                 os.remove(citationsFilename)
-            except BaseException:
+            except OSError:
                 print('EX: _citationsUpdate unable to delete ' +
                       citationsFilename)
-                pass
 
         if newswire and \
            ' boundary=' in self.headers['Content-type']:
@@ -4257,8 +4271,11 @@ class PubServer(BaseHTTPRequestHandler):
                     citationsStr += citationDate + '\n'
                 # save citations dates, so that they can be added when
                 # reloading the newblog screen
-                with open(citationsFilename, 'w+') as citationsFile:
-                    citationsFile.write(citationsStr)
+                try:
+                    with open(citationsFilename, 'w+') as citationsFile:
+                        citationsFile.write(citationsStr)
+                except OSError:
+                    print('EX: unable to write ' + citationsFilename)
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/newblog',
@@ -4504,10 +4521,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(filenameBase):
                         try:
                             os.remove(filenameBase)
-                        except BaseException:
+                        except OSError:
                             print('EX: _profileUpdate unable to delete ' +
                                   filenameBase)
-                            pass
                 else:
                     filenameBase = \
                         acctDir(baseDir, nickname, domain) + \
@@ -4541,10 +4557,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(postImageFilename + '.etag'):
                     try:
                         os.remove(postImageFilename + '.etag')
-                    except BaseException:
+                    except OSError:
                         print('EX: _profileUpdate unable to delete ' +
                               postImageFilename + '.etag')
-                        pass
 
                 city = getSpoofedCity(self.server.city,
                                       baseDir, nickname, domain)
@@ -4712,8 +4727,11 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('cityDropdown'):
                         cityFilename = \
                             acctDir(baseDir, nickname, domain) + '/city.txt'
-                        with open(cityFilename, 'w+') as fp:
-                            fp.write(fields['cityDropdown'])
+                        try:
+                            with open(cityFilename, 'w+') as fp:
+                                fp.write(fields['cityDropdown'])
+                        except OSError:
+                            print('EX: unable to write ' + cityFilename)
 
                     # change displayed name
                     if fields.get('displayNickname'):
@@ -5597,11 +5615,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     try:
                                         os.remove(baseDir +
                                                   '/fonts/custom.' + ext)
-                                    except BaseException:
+                                    except OSError:
                                         print('EX: _profileUpdate ' +
                                               'unable to delete ' +
                                               baseDir + '/fonts/custom.' + ext)
-                                        pass
                                 if os.path.isfile(baseDir +
                                                   '/fonts/custom.' + ext +
                                                   '.etag'):
@@ -5609,12 +5626,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         os.remove(baseDir +
                                                   '/fonts/custom.' + ext +
                                                   '.etag')
-                                    except BaseException:
+                                    except OSError:
                                         print('EX: _profileUpdate ' +
                                               'unable to delete ' +
                                               baseDir + '/fonts/custom.' +
                                               ext + '.etag')
-                                        pass
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 self.server.themeName = currTheme
@@ -5664,11 +5680,10 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(followDMsFilename):
                                 try:
                                     os.remove(followDMsFilename)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
                                           followDMsFilename)
-                                    pass
 
                     # remove Twitter retweets
                     removeTwitterFilename = \
@@ -5685,11 +5700,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(removeTwitterFilename):
                             try:
                                 os.remove(removeTwitterFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       removeTwitterFilename)
-                                pass
 
                     # hide Like button
                     hideLikeButtonFile = \
@@ -5708,20 +5722,18 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(notifyLikesFilename):
                                 try:
                                     os.remove(notifyLikesFilename)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
                                           notifyLikesFilename)
-                                    pass
                     if not hideLikeButtonActive:
                         if os.path.isfile(hideLikeButtonFile):
                             try:
                                 os.remove(hideLikeButtonFile)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       hideLikeButtonFile)
-                                pass
 
                     # hide Reaction button
                     hideReactionButtonFile = \
@@ -5740,20 +5752,18 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(notifyReactionsFilename):
                                 try:
                                     os.remove(notifyReactionsFilename)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
                                           notifyReactionsFilename)
-                                    pass
                     if not hideReactionButtonActive:
                         if os.path.isfile(hideReactionButtonFile):
                             try:
                                 os.remove(hideReactionButtonFile)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       hideReactionButtonFile)
-                                pass
 
                     # notify about new Likes
                     if onFinalWelcomeScreen:
@@ -5773,11 +5783,10 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(notifyLikesFilename):
                                 try:
                                     os.remove(notifyLikesFilename)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
                                           notifyLikesFilename)
-                                    pass
 
                     notifyReactionsFilename = \
                         acctDir(baseDir, nickname, domain) + \
@@ -5800,11 +5809,10 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(notifyReactionsFilename):
                                 try:
                                     os.remove(notifyReactionsFilename)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
                                           notifyReactionsFilename)
-                                    pass
 
                     # this account is a bot
                     if fields.get('isBot'):
@@ -5865,11 +5873,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(filterFilename):
                             try:
                                 os.remove(filterFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       filterFilename)
-                                pass
 
                     # word replacements
                     switchFilename = \
@@ -5882,11 +5889,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(switchFilename):
                             try:
                                 os.remove(switchFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       switchFilename)
-                                pass
 
                     # autogenerated tags
                     autoTagsFilename = \
@@ -5899,11 +5905,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(autoTagsFilename):
                             try:
                                 os.remove(autoTagsFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       autoTagsFilename)
-                                pass
 
                     # autogenerated content warnings
                     autoCWFilename = \
@@ -5916,11 +5921,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(autoCWFilename):
                             try:
                                 os.remove(autoCWFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       autoCWFilename)
-                                pass
 
                     # save blocked accounts list
                     blockedFilename = \
@@ -5933,11 +5937,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(blockedFilename):
                             try:
                                 os.remove(blockedFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       blockedFilename)
-                                pass
 
                     # Save DM allowed instances list.
                     # The allow list for incoming DMs,
@@ -5952,11 +5955,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(dmAllowedInstancesFilename):
                             try:
                                 os.remove(dmAllowedInstancesFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       dmAllowedInstancesFilename)
-                                pass
 
                     # save allowed instances list
                     # This is the account level allow list
@@ -5970,11 +5972,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(allowedInstancesFilename):
                             try:
                                 os.remove(allowedInstancesFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       allowedInstancesFilename)
-                                pass
 
                     if isModerator(self.server.baseDir, nickname):
                         # set selected content warning lists
@@ -6036,11 +6037,10 @@ class PubServer(BaseHTTPRequestHandler):
                             if os.path.isfile(peertubeInstancesFile):
                                 try:
                                     os.remove(peertubeInstancesFile)
-                                except BaseException:
+                                except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
                                           peertubeInstancesFile)
-                                    pass
                             self.server.peertubeInstances.clear()
 
                     # save git project names list
@@ -6054,11 +6054,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(gitProjectsFilename):
                             try:
                                 os.remove(gitProjectsFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _profileUpdate ' +
                                       'unable to delete ' +
                                       gitProjectsFilename)
-                                pass
 
                     # save actor json file within accounts
                     if actorChanged:
@@ -15946,10 +15945,9 @@ class PubServer(BaseHTTPRequestHandler):
                         try:
                             with open(mediaTagFilename, 'r') as etagFile:
                                 etag = etagFile.read()
-                        except BaseException:
+                        except OSError:
                             print('EX: do_HEAD unable to read ' +
                                   mediaTagFilename)
-                            pass
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
@@ -15957,10 +15955,9 @@ class PubServer(BaseHTTPRequestHandler):
                             try:
                                 with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
-                            except BaseException:
+                            except OSError:
                                 print('EX: do_HEAD unable to write ' +
                                       mediaTagFilename)
-                                pass
 
         mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
@@ -16127,10 +16124,9 @@ class PubServer(BaseHTTPRequestHandler):
                 try:
                     with open(lastUsedFilename, 'w+') as lastUsedFile:
                         lastUsedFile.write(str(int(time.time())))
-                except BaseException:
+                except OSError:
                     print('EX: _receiveNewPostProcess unable to write ' +
                           lastUsedFilename)
-                    pass
 
             mentionsStr = ''
             if fields.get('mentions'):
@@ -16296,10 +16292,9 @@ class PubServer(BaseHTTPRequestHandler):
                             print('Edited blog post, removing cached html')
                             try:
                                 os.remove(cachedFilename)
-                            except BaseException:
+                            except OSError:
                                 print('EX: _receiveNewPostProcess ' +
                                       'unable to delete ' + cachedFilename)
-                                pass
                         # remove from memory cache
                         removePostFromCache(postJsonObject,
                                             self.server.recentPostsCache)
@@ -16732,10 +16727,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(filename):
                         try:
                             os.remove(filename)
-                        except BaseException:
+                        except OSError:
                             print('EX: _receiveNewPostProcess ' +
                                   'unable to delete ' + filename)
-                            pass
                 self.postToNickname = nickname
                 return 1
         return -1

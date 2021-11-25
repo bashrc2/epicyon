@@ -625,10 +625,9 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
         if os.path.isfile(avatarFilename):
             try:
                 os.remove(avatarFilename)
-            except BaseException:
+            except OSError:
                 print('EX: removeAvatarFromCache ' +
                       'unable to delete cached avatar ' + str(avatarFilename))
-                pass
 
 
 def saveJson(jsonObject: {}, filename: str) -> bool:
@@ -640,7 +639,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
             with open(filename, 'w+') as fp:
                 fp.write(json.dumps(jsonObject))
                 return True
-        except BaseException:
+        except OSError:
             print('EX: saveJson ' + str(tries))
             time.sleep(1)
             tries += 1
@@ -1287,10 +1286,9 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
             if os.path.isfile(postFilename):
                 try:
                     os.remove(postFilename)
-                except BaseException:
+                except OSError:
                     print('EX: clearFromPostCaches file not removed ' +
                           str(postFilename))
-                    pass
             # if the post is in the recent posts cache then remove it
             if recentPostsCache.get('index'):
                 if postId in recentPostsCache['index']:
@@ -1450,18 +1448,16 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
     if os.path.isfile(mediaFilename):
         try:
             os.remove(mediaFilename)
-        except BaseException:
+        except OSError:
             print('EX: _removeAttachment unable to delete media file ' +
                   str(mediaFilename))
-            pass
     etagFilename = mediaFilename + '.etag'
     if os.path.isfile(etagFilename):
         try:
             os.remove(etagFilename)
-        except BaseException:
+        except OSError:
             print('EX: _removeAttachment unable to delete etag file ' +
                   str(etagFilename))
-            pass
     postJson['attachment'] = []
 
 
@@ -1528,10 +1524,9 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
     # remove the replies file
     try:
         os.remove(repliesFilename)
-    except BaseException:
+    except OSError:
         print('EX: _deletePostRemoveReplies unable to delete replies file ' +
               str(repliesFilename))
-        pass
 
 
 def _isBookmarked(baseDir: str, nickname: str, domain: str,
@@ -1589,11 +1584,10 @@ def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 print('EX: _deleteCachedHtml ' +
                       'unable to delete cached post file ' +
                       str(cachedPostFilename))
-                pass
 
 
 def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
@@ -1641,10 +1635,9 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
             # if there are no lines then remove the hashtag file
             try:
                 os.remove(tagIndexFilename)
-            except BaseException:
+            except OSError:
                 print('EX: _deleteHashtagsOnPost unable to delete tag index ' +
                       str(tagIndexFilename))
-                pass
         else:
             # write the new hashtag index without the given post in it
             with open(tagIndexFilename, 'w+') as f:
@@ -1681,18 +1674,16 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
         if os.path.isfile(conversationFilename + '.muted'):
             try:
                 os.remove(conversationFilename + '.muted')
-            except BaseException:
+            except OSError:
                 print('EX: _deleteConversationPost ' +
                       'unable to remove conversation ' +
                       str(conversationFilename) + '.muted')
-                pass
         try:
             os.remove(conversationFilename)
-        except BaseException:
+        except OSError:
             print('EX: _deleteConversationPost ' +
                   'unable to remove conversation ' +
                   str(conversationFilename))
-            pass
 
 
 def deletePost(baseDir: str, httpPrefix: str,
@@ -1709,11 +1700,10 @@ def deletePost(baseDir: str, httpPrefix: str,
         # finally, remove the post itself
         try:
             os.remove(postFilename)
-        except BaseException:
+        except OSError:
             if debug:
                 print('EX: deletePost unable to delete post ' +
                       str(postFilename))
-            pass
         return
 
     # don't allow deletion of bookmarked posts
@@ -1740,10 +1730,9 @@ def deletePost(baseDir: str, httpPrefix: str,
         if os.path.isfile(extFilename):
             try:
                 os.remove(extFilename)
-            except BaseException:
+            except OSError:
                 print('EX: deletePost unable to remove ext ' +
                       str(extFilename))
-                pass
 
     # remove cached html version of the post
     _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
@@ -1771,10 +1760,9 @@ def deletePost(baseDir: str, httpPrefix: str,
     # finally, remove the post itself
     try:
         os.remove(postFilename)
-    except BaseException:
+    except OSError:
         if debug:
             print('EX: deletePost unable to delete post ' + str(postFilename))
-        pass
 
 
 def isValidLanguage(text: str) -> bool:
@@ -2213,11 +2201,10 @@ def undoLikesCollectionEntry(recentPostsCache: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 print('EX: undoLikesCollectionEntry ' +
                       'unable to delete cached post ' +
                       str(cachedPostFilename))
-                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
@@ -2278,11 +2265,10 @@ def undoReactionCollectionEntry(recentPostsCache: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 print('EX: undoReactionCollectionEntry ' +
                       'unable to delete cached post ' +
                       str(cachedPostFilename))
-                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
@@ -2344,12 +2330,11 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 if debug:
                     print('EX: undoAnnounceCollectionEntry ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
-                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not postJsonObject.get('type'):
@@ -2412,12 +2397,11 @@ def updateAnnounceCollection(recentPostsCache: {},
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
-            except BaseException:
+            except OSError:
                 if debug:
                     print('EX: updateAnnounceCollection ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
-                pass
     removePostFromCache(postJsonObject, recentPostsCache)
 
     if not hasObjectDict(postJsonObject):

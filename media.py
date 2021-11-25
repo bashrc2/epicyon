@@ -126,9 +126,8 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         try:
             with open(decoySeedFilename, 'w+') as fp:
                 fp.write(str(decoySeed))
-        except BaseException:
+        except OSError:
             print('EX: unable to write ' + decoySeedFilename)
-            pass
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
@@ -168,10 +167,9 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
     if os.path.isfile(lowBandwidthFilename):
         try:
             os.remove(lowBandwidthFilename)
-        except BaseException:
+        except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
                   lowBandwidthFilename)
-            pass
 
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
@@ -191,10 +189,9 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
     if os.path.isfile(lowBandwidthFilename):
         try:
             os.remove(imageFilename)
-        except BaseException:
+        except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
                   imageFilename)
-            pass
         os.rename(lowBandwidthFilename, imageFilename)
         if os.path.isfile(imageFilename):
             print('Image converted to low bandwidth ' + imageFilename)
@@ -280,9 +277,8 @@ def _updateEtag(mediaFilename: str) -> None:
     try:
         with open(mediaFilename, 'rb') as mediaFile:
             data = mediaFile.read()
-    except BaseException:
+    except OSError:
         print('EX: _updateEtag unable to read ' + str(mediaFilename))
-        pass
 
     if not data:
         return
@@ -292,10 +288,9 @@ def _updateEtag(mediaFilename: str) -> None:
     try:
         with open(mediaFilename + '.etag', 'w+') as etagFile:
             etagFile.write(etag)
-    except BaseException:
+    except OSError:
         print('EX: _updateEtag unable to write ' +
               str(mediaFilename) + '.etag')
-        pass
 
 
 def attachMedia(baseDir: str, httpPrefix: str,

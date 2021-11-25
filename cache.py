@@ -26,9 +26,8 @@ def _removePersonFromCache(baseDir: str, personUrl: str,
     if os.path.isfile(cacheFilename):
         try:
             os.remove(cacheFilename)
-        except BaseException:
+        except OSError:
             print('EX: unable to delete cached actor ' + str(cacheFilename))
-            pass
     if personCache.get(personUrl):
         del personCache[personUrl]
 

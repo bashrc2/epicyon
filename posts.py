@@ -1573,8 +1573,11 @@ def pinPost(baseDir: str, nickname: str, domain: str,
     """
     accountDir = acctDir(baseDir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
-    with open(pinnedFilename, 'w+') as pinFile:
-        pinFile.write(pinnedContent)
+    try:
+        with open(pinnedFilename, 'w+') as pinFile:
+            pinFile.write(pinnedContent)
+    except OSError:
+        print('EX: unable to write ' + pinnedFilename)
 
 
 def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
@@ -1585,7 +1588,7 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
     if os.path.isfile(pinnedFilename):
         try:
             os.remove(pinnedFilename)
-        except BaseException:
+        except OSError:
             print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
 
 
@@ -2122,9 +2125,8 @@ def createReportPost(baseDir: str,
         try:
             with open(newReportFile, 'w+') as fp:
                 fp.write(toUrl + '/moderation')
-        except BaseException:
+        except OSError:
             print('EX: createReportPost unable to write ' + newReportFile)
-            pass
 
     return postJsonObject
 
@@ -3966,10 +3968,9 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
         if os.path.isfile(postCacheFilename):
             try:
                 os.remove(postCacheFilename)
-            except BaseException:
+            except OSError:
                 print('EX: archivePostsForPerson unable to delete ' +
                       postCacheFilename)
-                pass
 
         noOfPosts -= 1
         removeCtr += 1
@@ -5135,7 +5136,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     try:
         with open(actorFilename, 'r') as fp:
             lastpostId = fp.read()
-    except BaseException:
+    except OSError:
         print('EX: editedPostFilename unable to read ' + actorFilename)
         return ''
     if not lastpostId:

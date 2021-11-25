@@ -895,9 +895,8 @@ if args.socnet:
         with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
             print('Saved to socnet.dot')
-    except BaseException:
+    except OSError:
         print('EX: commandline unable to write socnet.dot')
-        pass
     sys.exit()
 
 if args.postsraw:

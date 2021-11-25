@@ -507,16 +507,22 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         if not os.path.isdir(baseDir + privateKeysSubdir):
             os.mkdir(baseDir + privateKeysSubdir)
         filename = baseDir + privateKeysSubdir + '/' + handle + '.key'
-        with open(filename, 'w+') as text_file:
-            print(privateKeyPem, file=text_file)
+        try:
+            with open(filename, 'w+') as text_file:
+                print(privateKeyPem, file=text_file)
+        except OSError:
+            print('EX: unable to save ' + filename)
 
         # save the public key
         publicKeysSubdir = '/keys/public'
         if not os.path.isdir(baseDir + publicKeysSubdir):
             os.mkdir(baseDir + publicKeysSubdir)
         filename = baseDir + publicKeysSubdir + '/' + handle + '.pem'
-        with open(filename, 'w+') as text_file:
-            print(publicKeyPem, file=text_file)
+        try:
+            with open(filename, 'w+') as text_file:
+                print(publicKeyPem, file=text_file)
+        except OSError:
+            print('EX: unable to save 2 ' + filename)
 
         if password:
             password = removeLineEndings(password)
@@ -625,22 +631,31 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
 
     if manualFollowerApproval:
         followDMsFilename = acctDir(baseDir, nickname, domain) + '/.followDMs'
-        with open(followDMsFilename, 'w+') as fFile:
-            fFile.write('\n')
+        try:
+            with open(followDMsFilename, 'w+') as fFile:
+                fFile.write('\n')
+        except OSError:
+            print('EX: unable to write ' + followDMsFilename)
 
     # notify when posts are liked
     if nickname != 'news':
         notifyLikesFilename = \
             acctDir(baseDir, nickname, domain) + '/.notifyLikes'
-        with open(notifyLikesFilename, 'w+') as nFile:
-            nFile.write('\n')
+        try:
+            with open(notifyLikesFilename, 'w+') as nFile:
+                nFile.write('\n')
+        except OSError:
+            print('EX: unable to write ' + notifyLikesFilename)
 
     # notify when posts have emoji reactions
     if nickname != 'news':
         notifyReactionsFilename = \
             acctDir(baseDir, nickname, domain) + '/.notifyReactions'
-        with open(notifyReactionsFilename, 'w+') as nFile:
-            nFile.write('\n')
+        try:
+            with open(notifyReactionsFilename, 'w+') as nFile:
+                nFile.write('\n')
+        except OSError:
+            print('EX: unable to write ' + notifyReactionsFilename)
 
     theme = getConfigParam(baseDir, 'theme')
     if not theme:
@@ -1016,10 +1031,14 @@ def reenableAccount(baseDir: str, nickname: str) -> None:
         lines = []
         with open(suspendedFilename, 'r') as f:
             lines = f.readlines()
-        with open(suspendedFilename, 'w+') as suspendedFile:
-            for suspended in lines:
-                if suspended.strip('\n').strip('\r') != nickname:
-                    suspendedFile.write(suspended)
+        try:
+            with open(suspendedFilename, 'w+') as suspendedFile:
+                for suspended in lines:
+                    if suspended.strip('\n').strip('\r') != nickname:
+                        suspendedFile.write(suspended)
+        except OSError as e:
+            print('EX: unable to save ' + suspendedFilename +
+                  ' ' + str(e))
 
 
 def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
@@ -1045,16 +1064,14 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
     if os.path.isfile(saltFilename):
         try:
             os.remove(saltFilename)
-        except BaseException:
+        except OSError:
             print('EX: suspendAccount unable to delete ' + saltFilename)
-            pass
     tokenFilename = acctDir(baseDir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
         try:
             os.remove(tokenFilename)
-        except BaseException:
+        except OSError:
             print('EX: suspendAccount unable to delete ' + tokenFilename)
-            pass
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
@@ -1063,11 +1080,17 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
-        with open(suspendedFilename, 'a+') as suspendedFile:
-            suspendedFile.write(nickname + '\n')
+        try:
+            with open(suspendedFilename, 'a+') as suspendedFile:
+                suspendedFile.write(nickname + '\n')
+        except OSError:
+            print('EX: unable to append ' + suspendedFilename)
     else:
-        with open(suspendedFilename, 'w+') as suspendedFile:
-            suspendedFile.write(nickname + '\n')
+        try:
+            with open(suspendedFilename, 'w+') as suspendedFile:
+                suspendedFile.write(nickname + '\n')
+        except OSError:
+            print('EX: unable to write ' + suspendedFilename)
 
 
 def canRemovePost(baseDir: str, nickname: str,
@@ -1124,10 +1147,13 @@ def _removeTagsForNickname(baseDir: str, nickname: str,
         lines = []
         with open(tagFilename, 'r') as f:
             lines = f.readlines()
-        with open(tagFilename, 'w+') as tagFile:
-            for tagline in lines:
-                if matchStr not in tagline:
-                    tagFile.write(tagline)
+        try:
+            with open(tagFilename, 'w+') as tagFile:
+                for tagline in lines:
+                    if matchStr not in tagline:
+                        tagFile.write(tagline)
+        except OSError:
+            print('EX: unable to write ' + tagFilename)
 
 
 def removeAccount(baseDir: str, nickname: str,
@@ -1163,41 +1189,36 @@ def removeAccount(baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/accounts/' + handle + '.json'):
         try:
             os.remove(baseDir + '/accounts/' + handle + '.json')
-        except BaseException:
+        except OSError:
             print('EX: removeAccount unable to delete ' +
                   baseDir + '/accounts/' + handle + '.json')
-            pass
     if os.path.isfile(baseDir + '/wfendpoints/' + handle + '.json'):
         try:
             os.remove(baseDir + '/wfendpoints/' + handle + '.json')
-        except BaseException:
+        except OSError:
             print('EX: removeAccount unable to delete ' +
                   baseDir + '/wfendpoints/' + handle + '.json')
-            pass
     if os.path.isfile(baseDir + '/keys/private/' + handle + '.key'):
         try:
             os.remove(baseDir + '/keys/private/' + handle + '.key')
-        except BaseException:
+        except OSError:
             print('EX: removeAccount unable to delete ' +
                   baseDir + '/keys/private/' + handle + '.key')
-            pass
     if os.path.isfile(baseDir + '/keys/public/' + handle + '.pem'):
         try:
             os.remove(baseDir + '/keys/public/' + handle + '.pem')
-        except BaseException:
+        except OSError:
             print('EX: removeAccount unable to delete ' +
                   baseDir + '/keys/public/' + handle + '.pem')
-            pass
     if os.path.isdir(baseDir + '/sharefiles/' + nickname):
         shutil.rmtree(baseDir + '/sharefiles/' + nickname,
                       ignore_errors=False, onerror=None)
     if os.path.isfile(baseDir + '/wfdeactivated/' + handle + '.json'):
         try:
             os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
-        except BaseException:
+        except OSError:
             print('EX: removeAccount unable to delete ' +
                   baseDir + '/wfdeactivated/' + handle + '.json')
-            pass
     if os.path.isdir(baseDir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname,
                       ignore_errors=False, onerror=None)
@@ -1297,8 +1318,11 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            with open(snoozedFilename, 'w+') as writeSnoozedFile:
-                writeSnoozedFile.write(content)
+            try:
+                with open(snoozedFilename, 'w+') as writeSnoozedFile:
+                    writeSnoozedFile.write(content)
+            except OSError:
+                print('EX: unable to write ' + snoozedFilename)
 
     if snoozeActor + ' ' in open(snoozedFilename).read():
         return True
@@ -1317,9 +1341,12 @@ def personSnooze(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(snoozedFilename):
         if snoozeActor + ' ' in open(snoozedFilename).read():
             return
-    with open(snoozedFilename, 'a+') as snoozedFile:
-        snoozedFile.write(snoozeActor + ' ' +
-                          str(int(time.time())) + '\n')
+    try:
+        with open(snoozedFilename, 'a+') as snoozedFile:
+            snoozedFile.write(snoozeActor + ' ' +
+                              str(int(time.time())) + '\n')
+    except OSError:
+        print('EX: unable to append ' + snoozedFilename)
 
 
 def personUnsnooze(baseDir: str, nickname: str, domain: str,
@@ -1346,8 +1373,11 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            with open(snoozedFilename, 'w+') as writeSnoozedFile:
-                writeSnoozedFile.write(content)
+            try:
+                with open(snoozedFilename, 'w+') as writeSnoozedFile:
+                    writeSnoozedFile.write(content)
+            except OSError:
+                print('EX: unable to write ' + snoozedFilename)
 
 
 def setPersonNotes(baseDir: str, nickname: str, domain: str,
@@ -1362,8 +1392,12 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     if not os.path.isdir(notesDir):
         os.mkdir(notesDir)
     notesFilename = notesDir + '/' + handle + '.txt'
-    with open(notesFilename, 'w+') as notesFile:
-        notesFile.write(notes)
+    try:
+        with open(notesFilename, 'w+') as notesFile:
+            notesFile.write(notes)
+    except OSError:
+        print('EX: unable to write ' + notesFilename)
+        return False
     return True
 
 
