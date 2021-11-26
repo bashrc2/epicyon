@@ -71,8 +71,12 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     if bookmarkIndex not in open(bookmarksIndexFilename).read():
         return
     indexStr = ''
-    with open(bookmarksIndexFilename, 'r') as indexFile:
-        indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
+    try:
+        with open(bookmarksIndexFilename, 'r') as indexFile:
+            indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
+    except OSError:
+        print('EX: unable to read ' + bookmarksIndexFilename)
+    if indexStr:
         try:
             with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
                 bookmarksIndexFile.write(indexStr)

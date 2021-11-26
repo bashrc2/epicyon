@@ -132,17 +132,21 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
             print('DEBUG: passwords file missing')
         return False
     providedPassword = plain.split(':')[1]
-    with open(passwordFile, 'r') as passfile:
-        for line in passfile:
-            if not line.startswith(nickname + ':'):
-                continue
-            storedPassword = \
-                line.split(':')[1].replace('\n', '').replace('\r', '')
-            success = _verifyPassword(storedPassword, providedPassword)
-            if not success:
-                if debug:
-                    print('DEBUG: Password check failed for ' + nickname)
-            return success
+    try:
+        with open(passwordFile, 'r') as passfile:
+            for line in passfile:
+                if not line.startswith(nickname + ':'):
+                    continue
+                storedPassword = \
+                    line.split(':')[1].replace('\n', '').replace('\r', '')
+                success = _verifyPassword(storedPassword, providedPassword)
+                if not success:
+                    if debug:
+                        print('DEBUG: Password check failed for ' + nickname)
+                return success
+    except OSError:
+        print('EX: failed to open password file')
+        return False
     print('DEBUG: Did not find credentials for ' + nickname +
           ' in ' + passwordFile)
     return False
@@ -272,15 +276,15 @@ def recordLoginFailure(baseDir: str, ipAddress: str,
     if not os.path.isfile(failureLog):
         writeType = 'w+'
     currTime = datetime.datetime.utcnow()
+    currTimeStr = currTime.strftime("%Y-%m-%d %H:%M:%SZ")
     try:
         with open(failureLog, writeType) as fp:
             # here we use a similar format to an ssh log, so that
             # systems such as fail2ban can parse it
-            fp.write(currTime.strftime("%Y-%m-%d %H:%M:%SZ") + ' ' +
+            fp.write(currTimeStr + ' ' +
                      'ip-127-0-0-1 sshd[20710]: ' +
                      'Disconnecting invalid user epicyon ' +
                      ipAddress + ' port 443: ' +
                      'Too many authentication failures [preauth]\n')
     except OSError:
         print('EX: recordLoginFailure failed ' + str(failureLog))
-        pass

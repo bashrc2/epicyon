@@ -178,9 +178,14 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
     if not os.path.isfile(filename):
         return False
 
-    with open(filename, 'r') as fp:
-        content = fp.read().lower()
+    content = None
+    try:
+        with open(filename, 'r') as fp:
+            content = fp.read().lower()
+    except OSError:
+        print('EX: unable to read css file ' + filename)
 
+    if content:
         cssMatches = ('behavior:', ':expression', '?php', '.php',
                       'google', 'regexp', 'localhost',
                       '127.0.', '192.168', '10.0.', '@import')
@@ -221,8 +226,11 @@ def switchWords(baseDir: str, nickname: str, domain: str, content: str,
             acctDir(baseDir, nickname, domain) + '/replacewords.txt'
         if not os.path.isfile(switchWordsFilename):
             return content
-        with open(switchWordsFilename, 'r') as fp:
-            rules = fp.readlines()
+        try:
+            with open(switchWordsFilename, 'r') as fp:
+                rules = fp.readlines()
+        except OSError:
+            print('EX: unable to read switches ' + switchWordsFilename)
 
     for line in rules:
         replaceStr = line.replace('\n', '').replace('\r', '')
@@ -779,8 +787,11 @@ def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
     filename = acctDir(baseDir, nickname, domain) + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
-    with open(filename, 'r') as f:
-        return f.readlines()
+    try:
+        with open(filename, 'r') as f:
+            return f.readlines()
+    except OSError:
+        print('EX: unable to read auto tags ' + filename)
     return []
 
 
@@ -853,12 +864,16 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     petnames = None
     if '@' in words:
         if os.path.isfile(followingFilename):
-            with open(followingFilename, 'r') as f:
-                following = f.readlines()
-                for handle in following:
-                    pet = getPetName(baseDir, nickname, domain, handle)
-                    if pet:
-                        petnames.append(pet + '\n')
+            following = []
+            try:
+                with open(followingFilename, 'r') as f:
+                    following = f.readlines()
+            except OSError:
+                print('EX: unable to read ' + followingFilename)
+            for handle in following:
+                pet = getPetName(baseDir, nickname, domain, handle)
+                if pet:
+                    petnames.append(pet + '\n')
 
     # extract mentions and tags from words
     longWordsList = []

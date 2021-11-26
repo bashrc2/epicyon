@@ -196,21 +196,28 @@ def spoofGeolocation(baseDir: str,
                     default_latdirection, default_longdirection,
                     "", "", 0)
         cities = []
-        with open(locationsFilename, 'r') as f:
-            cities = f.readlines()
+        try:
+            with open(locationsFilename, 'r') as f:
+                cities = f.readlines()
+        except OSError:
+            print('EX: unable to read locations ' + locationsFilename)
 
     nogo = []
     if nogoList:
         nogo = nogoList
     else:
         if os.path.isfile(nogoFilename):
-            with open(nogoFilename, 'r') as f:
-                nogoList = f.readlines()
-                for line in nogoList:
-                    if line.startswith(city + ':'):
-                        polygon = parseNogoString(line)
-                        if polygon:
-                            nogo.append(polygon)
+            nogoList = []
+            try:
+                with open(nogoFilename, 'r') as f:
+                    nogoList = f.readlines()
+            except OSError:
+                print('EX: unable to read ' + nogoFilename)
+            for line in nogoList:
+                if line.startswith(city + ':'):
+                    polygon = parseNogoString(line)
+                    if polygon:
+                        nogo.append(polygon)
 
     city = city.lower()
     for cityName in cities:
@@ -295,8 +302,11 @@ def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
     city = ''
     cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
-        with open(cityFilename, 'r') as fp:
-            city = fp.read().replace('\n', '')
+        try:
+            with open(cityFilename, 'r') as fp:
+                city = fp.read().replace('\n', '')
+        except OSError:
+            print('EX: unable to read ' + cityFilename)
     return city
 
 

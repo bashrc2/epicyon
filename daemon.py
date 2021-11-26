@@ -2355,13 +2355,16 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     if os.path.isdir(accountDir):
                         nwFilename = newswireBlockedFilename
+                        nwWritten = False
                         try:
                             with open(nwFilename, 'w+') as noNewswireFile:
                                 noNewswireFile.write('\n')
-                                refreshNewswire(self.server.baseDir)
+                                nwWritten = True
                         except OSError as e:
                             print('EX: unable to write ' + nwFilename +
                                   ' ' + str(e))
+                        if nwWritten:
+                            refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -2398,13 +2401,16 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     if os.path.isdir(accountDir):
                         featFilename = featuresBlockedFilename
+                        featWritten = False
                         try:
                             with open(featFilename, 'w+') as noFeaturesFile:
                                 noFeaturesFile.write('\n')
-                                refreshNewswire(self.server.baseDir)
+                                featWritten = True
                         except OSError as e:
                             print('EX: unable to write ' + featFilename +
                                   ' ' + str(e))
+                        if featWritten:
+                            refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -3906,8 +3912,11 @@ class PubServer(BaseHTTPRequestHandler):
 
             if fields.get('editedLinks'):
                 linksStr = fields['editedLinks']
-                with open(linksFilename, 'w+') as linksFile:
-                    linksFile.write(linksStr)
+                try:
+                    with open(linksFilename, 'w+') as linksFile:
+                        linksFile.write(linksStr)
+                except OSError:
+                    print('EX: _linksUpdate unable to write ' + linksFilename)
             else:
                 if os.path.isfile(linksFilename):
                     try:
@@ -3923,8 +3932,11 @@ class PubServer(BaseHTTPRequestHandler):
                     aboutStr = fields['editedAbout']
                     if not dangerousMarkup(aboutStr,
                                            allowLocalNetworkAccess):
-                        with open(aboutFilename, 'w+') as aboutFile:
-                            aboutFile.write(aboutStr)
+                        try:
+                            with open(aboutFilename, 'w+') as aboutFile:
+                                aboutFile.write(aboutStr)
+                        except OSError:
+                            print('EX: unable to write about ' + aboutFilename)
                 else:
                     if os.path.isfile(aboutFilename):
                         try:
@@ -3937,8 +3949,11 @@ class PubServer(BaseHTTPRequestHandler):
                     TOSStr = fields['editedTOS']
                     if not dangerousMarkup(TOSStr,
                                            allowLocalNetworkAccess):
-                        with open(TOSFilename, 'w+') as TOSFile:
-                            TOSFile.write(TOSStr)
+                        try:
+                            with open(TOSFilename, 'w+') as TOSFile:
+                                TOSFile.write(TOSStr)
+                        except OSError:
+                            print('EX: unable to write TOS ' + TOSFilename)
                 else:
                     if os.path.isfile(TOSFilename):
                         try:
