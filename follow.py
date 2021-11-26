@@ -58,24 +58,32 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
             lastSeenDir = accountDir + '/lastseen'
             if not os.path.isdir(lastSeenDir):
                 os.mkdir(lastSeenDir)
-            with open(followingFilename, 'r') as fp:
-                followingHandles = fp.readlines()
-                for handle in followingHandles:
-                    if '#' in handle:
-                        continue
-                    if '@' not in handle:
-                        continue
-                    handle = handle.replace('\n', '')
-                    nickname = handle.split('@')[0]
-                    domain = handle.split('@')[1]
-                    if nickname.startswith('!'):
-                        nickname = nickname[1:]
-                    actor = localActorUrl(httpPrefix, nickname, domain)
-                    lastSeenFilename = \
-                        lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
-                    if not os.path.isfile(lastSeenFilename):
+            followingHandles = []
+            try:
+                with open(followingFilename, 'r') as fp:
+                    followingHandles = fp.readlines()
+            except OSError:
+                print('EX: createInitialLastSeen ' + followingFilename)
+            for handle in followingHandles:
+                if '#' in handle:
+                    continue
+                if '@' not in handle:
+                    continue
+                handle = handle.replace('\n', '')
+                nickname = handle.split('@')[0]
+                domain = handle.split('@')[1]
+                if nickname.startswith('!'):
+                    nickname = nickname[1:]
+                actor = localActorUrl(httpPrefix, nickname, domain)
+                lastSeenFilename = \
+                    lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
+                if not os.path.isfile(lastSeenFilename):
+                    try:
                         with open(lastSeenFilename, 'w+') as fp:
                             fp.write(str(100))
+                    except OSError:
+                        print('EX: createInitialLastSeen 2 ' +
+                              lastSeenFilename)
         break
 
 
@@ -124,16 +132,20 @@ def _removeFromFollowBase(baseDir: str,
                 break
         if not actorFound:
             return
-    with open(approveFollowsFilename + '.new', 'w+') as approvefilenew:
-        with open(approveFollowsFilename, 'r') as approvefile:
-            if not acceptDenyActor:
-                for approveHandle in approvefile:
-                    if not approveHandle.startswith(acceptOrDenyHandle):
-                        approvefilenew.write(approveHandle)
-            else:
-                for approveHandle in approvefile:
-                    if acceptDenyActor not in approveHandle:
-                        approvefilenew.write(approveHandle)
+    try:
+        with open(approveFollowsFilename + '.new', 'w+') as approvefilenew:
+            with open(approveFollowsFilename, 'r') as approvefile:
+                if not acceptDenyActor:
+                    for approveHandle in approvefile:
+                        if not approveHandle.startswith(acceptOrDenyHandle):
+                            approvefilenew.write(approveHandle)
+                else:
+                    for approveHandle in approvefile:
+                        if acceptDenyActor not in approveHandle:
+                            approvefilenew.write(approveHandle)
+    except OSError as e:
+        print('EX: _removeFromFollowBase ' +
+              approveFollowsFilename + ' ' + str(e))
 
     os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
 
@@ -218,8 +230,11 @@ def getFollowerDomains(baseDir: str, nickname: str, domain: str) -> []:
         return []
 
     lines = []
-    with open(followersFile, 'r') as fpFollowers:
-        lines = fpFollowers.readlines()
+    try:
+        with open(followersFile, 'r') as fpFollowers:
+            lines = fpFollowers.readlines()
+    except OSError:
+        print('EX: getFollowerDomains ' + followersFile)
 
     domainsList = []
     for handle in lines:
@@ -251,8 +266,11 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     alreadyFollowing = False
 
     followersStr = ''
-    with open(followersFile, 'r') as fpFollowers:
-        followersStr = fpFollowers.read()
+    try:
+        with open(followersFile, 'r') as fpFollowers:
+            followersStr = fpFollowers.read()
+    except OSError:
+        print('EX: isFollowerOfPerson ' + followersFile)
 
     if handle in followersStr:
         alreadyFollowing = True
@@ -294,8 +312,13 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
             print('DEBUG: handle to unfollow ' + handleToUnfollow +
                   ' is not in ' + filename)
         return
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    lines = []
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+    except OSError:
+        print('EX: unfollowAccount ' + filename)
+    if lines:
         try:
             with open(filename, 'w+') as f:
                 for line in lines:
@@ -312,8 +335,11 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(unfollowedFilename):
         if handleToUnfollowLower not in \
            open(unfollowedFilename).read().lower():
-            with open(unfollowedFilename, 'a+') as f:
-                f.write(handleToUnfollow + '\n')
+            try:
+                with open(unfollowedFilename, 'a+') as f:
+                    f.write(handleToUnfollow + '\n')
+            except OSError:
+                print('EX: unable to append ' + unfollowedFilename)
     else:
         try:
             with open(unfollowedFilename, 'w+') as f:
@@ -371,8 +397,13 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(filename):
         return 0
     ctr = 0
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    lines = []
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+    except OSError:
+        print('EX: _getNoOfFollows ' + filename)
+    if lines:
         for line in lines:
             if '#' in line:
                 continue
@@ -483,39 +514,43 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     currPage = 1
     pageCtr = 0
     totalCtr = 0
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            if '#' not in line:
-                if '@' in line and not line.startswith('http'):
-                    # nickname@domain
-                    pageCtr += 1
-                    totalCtr += 1
-                    if currPage == pageNumber:
-                        line2 = \
-                            line.lower().replace('\n', '').replace('\r', '')
-                        nick = line2.split('@')[0]
-                        dom = line2.split('@')[1]
-                        if not nick.startswith('!'):
-                            # person actor
-                            url = localActorUrl(httpPrefix, nick, dom)
-                        else:
-                            # group actor
-                            url = httpPrefix + '://' + dom + '/c/' + nick
-                        following['orderedItems'].append(url)
-                elif ((line.startswith('http') or
-                       line.startswith('hyper')) and
-                      hasUsersPath(line)):
-                    # https://domain/users/nickname
-                    pageCtr += 1
-                    totalCtr += 1
-                    if currPage == pageNumber:
-                        appendStr = \
-                            line.lower().replace('\n', '').replace('\r', '')
-                        following['orderedItems'].append(appendStr)
-            if pageCtr >= followsPerPage:
-                pageCtr = 0
-                currPage += 1
+    lines = []
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+    except OSError:
+        print('EX: getFollowingFeed ' + filename)
+    for line in lines:
+        if '#' not in line:
+            if '@' in line and not line.startswith('http'):
+                # nickname@domain
+                pageCtr += 1
+                totalCtr += 1
+                if currPage == pageNumber:
+                    line2 = \
+                        line.lower().replace('\n', '').replace('\r', '')
+                    nick = line2.split('@')[0]
+                    dom = line2.split('@')[1]
+                    if not nick.startswith('!'):
+                        # person actor
+                        url = localActorUrl(httpPrefix, nick, dom)
+                    else:
+                        # group actor
+                        url = httpPrefix + '://' + dom + '/c/' + nick
+                    following['orderedItems'].append(url)
+            elif ((line.startswith('http') or
+                   line.startswith('hyper')) and
+                  hasUsersPath(line)):
+                # https://domain/users/nickname
+                pageCtr += 1
+                totalCtr += 1
+                if currPage == pageNumber:
+                    appendStr = \
+                        line.lower().replace('\n', '').replace('\r', '')
+                    following['orderedItems'].append(appendStr)
+        if pageCtr >= followsPerPage:
+            pageCtr = 0
+            currPage += 1
     following['totalItems'] = totalCtr
     lastPage = int(totalCtr / followsPerPage)
     if lastPage < 1:
@@ -568,8 +603,13 @@ def _noOfFollowRequests(baseDir: str,
     if not os.path.isfile(approveFollowsFilename):
         return 0
     ctr = 0
-    with open(approveFollowsFilename, 'r') as f:
-        lines = f.readlines()
+    lines = []
+    try:
+        with open(approveFollowsFilename, 'r') as f:
+            lines = f.readlines()
+    except OSError:
+        print('EX: _noOfFollowRequests ' + approveFollowsFilename)
+    if lines:
         if followType == "onion":
             for fileLine in lines:
                 if '.onion' in fileLine:
@@ -607,8 +647,11 @@ def _storeFollowRequest(baseDir: str,
         alreadyFollowing = False
 
         followersStr = ''
-        with open(followersFilename, 'r') as fpFollowers:
-            followersStr = fpFollowers.read()
+        try:
+            with open(followersFilename, 'r') as fpFollowers:
+                followersStr = fpFollowers.read()
+        except OSError:
+            print('EX: _storeFollowRequest ' + followersFilename)
 
         if approveHandle in followersStr:
             alreadyFollowing = True
@@ -649,8 +692,11 @@ def _storeFollowRequest(baseDir: str,
 
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
-            with open(approveFollowsFilename, 'a+') as fp:
-                fp.write(approveHandleStored + '\n')
+            try:
+                with open(approveFollowsFilename, 'a+') as fp:
+                    fp.write(approveHandleStored + '\n')
+            except OSError:
+                print('EX: _storeFollowRequest 2 ' + approveFollowsFilename)
         else:
             if debug:
                 print('DEBUG: ' + approveHandleStored +
@@ -660,7 +706,7 @@ def _storeFollowRequest(baseDir: str,
             with open(approveFollowsFilename, 'w+') as fp:
                 fp.write(approveHandleStored + '\n')
         except OSError:
-            print('EX: unable to write ' + approveFollowsFilename)
+            print('EX: _storeFollowRequest 3 ' + approveFollowsFilename)
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -1053,11 +1099,14 @@ def sendFollowRequest(session, baseDir: str,
     if os.path.isfile(unfollowedFilename):
         if followHandle in open(unfollowedFilename).read():
             unfollowedFile = None
-            with open(unfollowedFilename, 'r') as fp:
-                unfollowedFile = fp.read()
+            try:
+                with open(unfollowedFilename, 'r') as fp:
+                    unfollowedFile = fp.read()
+            except OSError:
+                print('EX: sendFollowRequest ' + unfollowedFilename)
+            if unfollowedFile:
                 unfollowedFile = \
                     unfollowedFile.replace(followHandle + '\n', '')
-            if unfollowedFile:
                 try:
                     with open(unfollowedFilename, 'w+') as fp:
                         fp.write(unfollowedFile)

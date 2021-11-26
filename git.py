@@ -217,5 +217,5 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
                 patchFile.write(patchStr)
                 return True
     except OSError as e:
-        print('EX: unable to write patch ' + patchFilename + ' ' + str(e))
+        print('EX: receiveGitPatch ' + patchFilename + ' ' + str(e))
     return False

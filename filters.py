@@ -18,8 +18,11 @@ def addFilter(baseDir: str, nickname: str, domain: str, words: str) -> bool:
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
-    with open(filtersFilename, 'a+') as filtersFile:
-        filtersFile.write(words + '\n')
+    try:
+        with open(filtersFilename, 'a+') as filtersFile:
+            filtersFile.write(words + '\n')
+    except OSError:
+        print('EX: unable to append filters ' + filtersFilename)
     return True
 
 
@@ -35,8 +38,11 @@ def addGlobalFilter(baseDir: str, words: str) -> bool:
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
-    with open(filtersFilename, 'a+') as filtersFile:
-        filtersFile.write(words + '\n')
+    try:
+        with open(filtersFilename, 'a+') as filtersFile:
+            filtersFile.write(words + '\n')
+    except OSError:
+        print('EX: unable to append filters ' + filtersFilename)
     return True
 
 
@@ -50,12 +56,15 @@ def removeFilter(baseDir: str, nickname: str, domain: str,
     if words not in open(filtersFilename).read():
         return False
     newFiltersFilename = filtersFilename + '.new'
-    with open(filtersFilename, 'r') as fp:
-        with open(newFiltersFilename, 'w+') as fpnew:
-            for line in fp:
-                line = line.replace('\n', '')
-                if line != words:
-                    fpnew.write(line + '\n')
+    try:
+        with open(filtersFilename, 'r') as fp:
+            with open(newFiltersFilename, 'w+') as fpnew:
+                for line in fp:
+                    line = line.replace('\n', '')
+                    if line != words:
+                        fpnew.write(line + '\n')
+    except OSError as e:
+        print('EX: unable to remove filter ' + filtersFilename + ' ' + str(e))
     if os.path.isfile(newFiltersFilename):
         os.rename(newFiltersFilename, filtersFilename)
         return True
@@ -71,12 +80,16 @@ def removeGlobalFilter(baseDir: str, words: str) -> bool:
     if words not in open(filtersFilename).read():
         return False
     newFiltersFilename = filtersFilename + '.new'
-    with open(filtersFilename, 'r') as fp:
-        with open(newFiltersFilename, 'w+') as fpnew:
-            for line in fp:
-                line = line.replace('\n', '')
-                if line != words:
-                    fpnew.write(line + '\n')
+    try:
+        with open(filtersFilename, 'r') as fp:
+            with open(newFiltersFilename, 'w+') as fpnew:
+                for line in fp:
+                    line = line.replace('\n', '')
+                    if line != words:
+                        fpnew.write(line + '\n')
+    except OSError as e:
+        print('EX: unable to remove global filter ' +
+              filtersFilename + ' ' + str(e))
     if os.path.isfile(newFiltersFilename):
         os.rename(newFiltersFilename, filtersFilename)
         return True
@@ -100,22 +113,25 @@ def _isFilteredBase(filename: str, content: str) -> bool:
     if not os.path.isfile(filename):
         return False
 
-    with open(filename, 'r') as fp:
-        for line in fp:
-            filterStr = line.replace('\n', '').replace('\r', '')
-            if not filterStr:
-                continue
-            if len(filterStr) < 2:
-                continue
-            if '+' not in filterStr:
-                if filterStr in content:
+    try:
+        with open(filename, 'r') as fp:
+            for line in fp:
+                filterStr = line.replace('\n', '').replace('\r', '')
+                if not filterStr:
+                    continue
+                if len(filterStr) < 2:
+                    continue
+                if '+' not in filterStr:
+                    if filterStr in content:
+                        return True
+                else:
+                    filterWords = filterStr.replace('"', '').split('+')
+                    for word in filterWords:
+                        if word not in content:
+                            return False
                     return True
-            else:
-                filterWords = filterStr.replace('"', '').split('+')
-                for word in filterWords:
-                    if word not in content:
-                        return False
-                return True
+    except OSError as e:
+        print('EX: _isFilteredBase ' + filename + ' ' + str(e))
     return False
 
 
