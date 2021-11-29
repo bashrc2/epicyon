@@ -3173,7 +3173,15 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-            elif searchStr.startswith('*'):
+            elif (searchStr.startswith('*') or
+                  searchStr.endswith(' skill')):
+                possibleEndings = (
+                    ' skill'
+                )
+                for possEnding in possibleEndings:
+                    if searchStr.endswith(possEnding):
+                        searchStr = searchStr.replace(possEnding, '')
+                        break
                 # skill search
                 searchStr = searchStr.replace('*', '').strip()
                 skillStr = \
@@ -3197,19 +3205,24 @@ class PubServer(BaseHTTPRequestHandler):
                   searchStr.endswith(' history') or
                   searchStr.endswith(' in sent') or
                   searchStr.endswith(' in outbox') or
-                  searchStr.endswith(' in my outbox') or
+                  searchStr.endswith(' in outgoing') or
                   searchStr.endswith(' in sent items') or
                   searchStr.endswith(' in sent posts') or
+                  searchStr.endswith(' in outgoing posts') or
+                  searchStr.endswith(' in my history') or
+                  searchStr.endswith(' in my outbox') or
                   searchStr.endswith(' in my posts')):
                 possibleEndings = (
                     ' in my posts',
-                    ' in sent posts',
                     ' in my history',
-                    ' in history',
-                    ' in sent',
-                    ' in outbox',
                     ' in my outbox',
+                    ' in sent posts',
+                    ' in outgoing posts',
                     ' in sent items',
+                    ' in history',
+                    ' in outbox',
+                    ' in outgoing',
+                    ' in sent',
                     ' history'
                 )
                 for possEnding in possibleEndings:
@@ -3255,7 +3268,35 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-            elif searchStr.startswith('-'):
+            elif (searchStr.startswith('-') or
+                  searchStr.endswith(' in my saved items') or
+                  searchStr.endswith(' in my saved posts') or
+                  searchStr.endswith(' in my bookmarks') or
+                  searchStr.endswith(' in my saved') or
+                  searchStr.endswith(' in my saves') or
+                  searchStr.endswith(' in saved posts') or
+                  searchStr.endswith(' in saved items') or
+                  searchStr.endswith(' in bookmarks') or
+                  searchStr.endswith(' in saved') or
+                  searchStr.endswith(' in saves') or
+                  searchStr.endswith(' bookmark')):
+                possibleEndings = (
+                    ' in my bookmarks'
+                    ' in my saved posts'
+                    ' in my saved items'
+                    ' in my saved'
+                    ' in my saves'
+                    ' in saved posts'
+                    ' in saved items'
+                    ' in saved'
+                    ' in saves'
+                    ' in bookmarks'
+                    ' bookmark'
+                )
+                for possEnding in possibleEndings:
+                    if searchStr.endswith(possEnding):
+                        searchStr = searchStr.replace(possEnding, '')
+                        break
                 # bookmark search
                 nickname = getNicknameFromActor(actorStr)
                 searchStr = searchStr.replace('-', '', 1).strip()
