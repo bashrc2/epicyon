@@ -3215,6 +3215,7 @@ class PubServer(BaseHTTPRequestHandler):
                 for possEnding in possibleEndings:
                     if searchStr.endswith(possEnding):
                         searchStr = searchStr.replace(possEnding, '')
+                        break
                 # your post history search
                 nickname = getNicknameFromActor(actorStr)
                 searchStr = searchStr.replace("'", '', 1).strip()
