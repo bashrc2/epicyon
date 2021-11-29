@@ -3193,7 +3193,28 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-            elif searchStr.startswith("'"):
+            elif (searchStr.startswith("'") or
+                  searchStr.endswith(' history') or
+                  searchStr.endswith(' in sent') or
+                  searchStr.endswith(' in outbox') or
+                  searchStr.endswith(' in my outbox') or
+                  searchStr.endswith(' in sent items') or
+                  searchStr.endswith(' in sent posts') or
+                  searchStr.endswith(' in my posts')):
+                possibleEndings = (
+                    ' in my posts',
+                    ' in sent posts',
+                    ' in my history',
+                    ' in history',
+                    ' in sent',
+                    ' in outbox',
+                    ' in my outbox',
+                    ' in sent items',
+                    ' history'
+                )
+                for possEnding in possibleEndings:
+                    if searchStr.endswith(possEnding):
+                        searchStr = searchStr.replace(possEnding, '')
                 # your post history search
                 nickname = getNicknameFromActor(actorStr)
                 searchStr = searchStr.replace("'", '', 1).strip()
