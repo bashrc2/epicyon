@@ -23,10 +23,14 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
             if not os.path.isfile(categoryFilename):
                 return ''
 
-    with open(categoryFilename, 'r') as fp:
-        categoryStr = fp.read()
-        if categoryStr:
-            return categoryStr
+    categoryStr = None
+    try:
+        with open(categoryFilename, 'r') as fp:
+            categoryStr = fp.read()
+    except OSError:
+        print('EX: unable to read category ' + categoryFilename)
+    if categoryStr:
+        return categoryStr
     return ''
 
 
@@ -161,15 +165,21 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
         # don't overwrite any existing categories
         if os.path.isfile(categoryFilename):
             return False
+
+    categoryWritten = False
     try:
         with open(categoryFilename, 'w+') as fp:
             fp.write(category)
-            if update:
-                updateHashtagCategories(baseDir)
-            return True
+            categoryWritten = True
     except OSError as e:
         print('EX: unable to write category ' + categoryFilename +
               ' ' + str(e))
+
+    if categoryWritten:
+        if update:
+            updateHashtagCategories(baseDir)
+        return True
+
     return False
 
 

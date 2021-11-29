@@ -72,20 +72,24 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     removals = []
     replies = 0
     lines = []
-    with open(postFilename, 'r') as f:
-        lines = f.readlines()
-        for replyPostId in lines:
-            replyPostId = replyPostId.replace('\n', '').replace('\r', '')
-            replyPostId = replyPostId.replace('.json', '')
-            if locatePost(baseDir, nickname, domain, replyPostId):
-                replyPostId = replyPostId.replace('.replies', '')
-                replies += \
-                    1 + _noOfBlogReplies(baseDir, httpPrefix, translate,
-                                         nickname, domain, domainFull,
-                                         replyPostId, depth+1)
-            else:
-                # remove post which no longer exists
-                removals.append(replyPostId)
+    try:
+        with open(postFilename, 'r') as f:
+            lines = f.readlines()
+    except OSError:
+        print('EX: failed to read blog ' + postFilename)
+
+    for replyPostId in lines:
+        replyPostId = replyPostId.replace('\n', '').replace('\r', '')
+        replyPostId = replyPostId.replace('.json', '')
+        if locatePost(baseDir, nickname, domain, replyPostId):
+            replyPostId = replyPostId.replace('.replies', '')
+            replies += \
+                1 + _noOfBlogReplies(baseDir, httpPrefix, translate,
+                                     nickname, domain, domainFull,
+                                     replyPostId, depth+1)
+        else:
+            # remove post which no longer exists
+            removals.append(replyPostId)
 
     # remove posts from .replies file if they don't exist
     if lines and removals:
@@ -135,12 +139,21 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                     '/postcache/' + \
                     postId.replace('/', '#') + '.html'
                 if os.path.isfile(postFilename):
-                    with open(postFilename, 'r') as postFile:
-                        return postFile.read() + '\n'
+                    try:
+                        with open(postFilename, 'r') as postFile:
+                            return postFile.read() + '\n'
+                    except OSError:
+                        print('EX: unable to read blog 3 ' + postFilename)
         return ''
 
-    with open(postFilename, 'r') as f:
-        lines = f.readlines()
+    lines = []
+    try:
+        with open(postFilename, 'r') as f:
+            lines = f.readlines()
+    except OSError:
+        print('EX: unable to read blog 4 ' + postFilename)
+
+    if lines:
         repliesStr = ''
         for replyPostId in lines:
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
@@ -151,8 +164,11 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                 replyPostId.replace('/', '#') + '.html'
             if not os.path.isfile(postFilename):
                 continue
-            with open(postFilename, 'r') as postFile:
-                repliesStr += postFile.read() + '\n'
+            try:
+                with open(postFilename, 'r') as postFile:
+                    repliesStr += postFile.read() + '\n'
+            except OSError:
+                print('EX: unable to read blog replies ' + postFilename)
             rply = _getBlogReplies(baseDir, httpPrefix, translate,
                                    nickname, domain, domainFull,
                                    replyPostId, depth+1)
@@ -770,8 +786,11 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
-        with open(baseDir + '/accounts/newpost.txt', 'r') as file:
-            editBlogText = '<p>' + file.read() + '</p>'
+        try:
+            with open(baseDir + '/accounts/newpost.txt', 'r') as file:
+                editBlogText = '<p>' + file.read() + '</p>'
+        except OSError:
+            print('EX: unable to read ' + baseDir + '/accounts/newpost.txt')
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

@@ -94,10 +94,12 @@ def addBlock(baseDir: str, nickname: str, domain: str,
             try:
                 with open(followingFilename, 'r') as followingFile:
                     followingStr = followingFile.read()
-                    followingStr = followingStr.replace(blockHandle + '\n', '')
             except OSError:
                 print('EX: Unable to read following ' + followingFilename)
                 return False
+
+            if followingStr:
+                followingStr = followingStr.replace(blockHandle + '\n', '')
 
             try:
                 with open(followingFilename, 'w+') as followingFile:
@@ -114,10 +116,12 @@ def addBlock(baseDir: str, nickname: str, domain: str,
             try:
                 with open(followersFilename, 'r') as followersFile:
                     followersStr = followersFile.read()
-                    followersStr = followersStr.replace(blockHandle + '\n', '')
             except OSError:
                 print('EX: Unable to read followers ' + followersFilename)
                 return False
+
+            if followersStr:
+                followersStr = followersStr.replace(blockHandle + '\n', '')
 
             try:
                 with open(followersFilename, 'w+') as followersFile:
@@ -145,39 +149,51 @@ def removeGlobalBlock(baseDir: str,
         unblockHandle = unblockNickname + '@' + unblockDomain
         if os.path.isfile(unblockingFilename):
             if unblockHandle in open(unblockingFilename).read():
-                with open(unblockingFilename, 'r') as fp:
-                    try:
+                try:
+                    with open(unblockingFilename, 'r') as fp:
                         with open(unblockingFilename + '.new', 'w+') as fpnew:
                             for line in fp:
                                 handle = \
                                     line.replace('\n', '').replace('\r', '')
                                 if unblockHandle not in line:
                                     fpnew.write(handle + '\n')
-                    except OSError as e:
-                        print('EX: failed to remove global block ' +
-                              unblockingFilename + ' ' + str(e))
-                        return False
+                except OSError as e:
+                    print('EX: failed to remove global block ' +
+                          unblockingFilename + ' ' + str(e))
+                    return False
+
                 if os.path.isfile(unblockingFilename + '.new'):
-                    os.rename(unblockingFilename + '.new', unblockingFilename)
+                    try:
+                        os.rename(unblockingFilename + '.new',
+                                  unblockingFilename)
+                    except OSError:
+                        print('EX: unable to rename ' + unblockingFilename)
+                        return False
                     return True
     else:
         unblockHashtag = unblockNickname
         if os.path.isfile(unblockingFilename):
             if unblockHashtag + '\n' in open(unblockingFilename).read():
-                with open(unblockingFilename, 'r') as fp:
-                    try:
+                try:
+                    with open(unblockingFilename, 'r') as fp:
                         with open(unblockingFilename + '.new', 'w+') as fpnew:
                             for line in fp:
                                 blockLine = \
                                     line.replace('\n', '').replace('\r', '')
                                 if unblockHashtag not in line:
                                     fpnew.write(blockLine + '\n')
-                    except OSError as e:
-                        print('EX: failed to remove global hashtag block ' +
-                              unblockingFilename + ' ' + str(e))
-                        return False
+                except OSError as e:
+                    print('EX: failed to remove global hashtag block ' +
+                          unblockingFilename + ' ' + str(e))
+                    return False
+
                 if os.path.isfile(unblockingFilename + '.new'):
-                    os.rename(unblockingFilename + '.new', unblockingFilename)
+                    try:
+                        os.rename(unblockingFilename + '.new',
+                                  unblockingFilename)
+                    except OSError:
+                        print('EX: unable to rename 2 ' + unblockingFilename)
+                        return False
                     return True
     return False
 
@@ -191,19 +207,24 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
     unblockHandle = unblockNickname + '@' + unblockDomain
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
-            with open(unblockingFilename, 'r') as fp:
-                try:
+            try:
+                with open(unblockingFilename, 'r') as fp:
                     with open(unblockingFilename + '.new', 'w+') as fpnew:
                         for line in fp:
                             handle = line.replace('\n', '').replace('\r', '')
                             if unblockHandle not in line:
                                 fpnew.write(handle + '\n')
-                except OSError as e:
-                    print('EX: failed to remove block ' +
-                          unblockingFilename + ' ' + str(e))
-                    return False
+            except OSError as e:
+                print('EX: failed to remove block ' +
+                      unblockingFilename + ' ' + str(e))
+                return False
+
             if os.path.isfile(unblockingFilename + '.new'):
-                os.rename(unblockingFilename + '.new', unblockingFilename)
+                try:
+                    os.rename(unblockingFilename + '.new', unblockingFilename)
+                except OSError:
+                    print('EX: unable to rename 3 ' + unblockingFilename)
+                    return False
                 return True
     return False
 
@@ -237,8 +258,11 @@ def getDomainBlocklist(baseDir: str) -> str:
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if not os.path.isfile(globalBlockingFilename):
         return blockedStr
-    with open(globalBlockingFilename, 'r') as fpBlocked:
-        blockedStr += fpBlocked.read()
+    try:
+        with open(globalBlockingFilename, 'r') as fpBlocked:
+            blockedStr += fpBlocked.read()
+    except OSError:
+        print('EX: unable to read ' + globalBlockingFilename)
     return blockedStr
 
 
@@ -258,14 +282,17 @@ def updateBlockedCache(baseDir: str,
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if not os.path.isfile(globalBlockingFilename):
         return blockedCacheLastUpdated
-    with open(globalBlockingFilename, 'r') as fpBlocked:
-        blockedLines = fpBlocked.readlines()
-        # remove newlines
-        for index in range(len(blockedLines)):
-            blockedLines[index] = blockedLines[index].replace('\n', '')
-        # update the cache
-        blockedCache.clear()
-        blockedCache += blockedLines
+    try:
+        with open(globalBlockingFilename, 'r') as fpBlocked:
+            blockedLines = fpBlocked.readlines()
+            # remove newlines
+            for index in range(len(blockedLines)):
+                blockedLines[index] = blockedLines[index].replace('\n', '')
+            # update the cache
+            blockedCache.clear()
+            blockedCache += blockedLines
+    except OSError as e:
+        print('EX: unable to read ' + globalBlockingFilename + ' ' + str(e))
     return currTime
 
 
@@ -305,13 +332,17 @@ def isBlockedDomain(baseDir: str, domain: str,
             # instance block list
             globalBlockingFilename = baseDir + '/accounts/blocking.txt'
             if os.path.isfile(globalBlockingFilename):
-                with open(globalBlockingFilename, 'r') as fpBlocked:
-                    blockedStr = fpBlocked.read()
-                    if '*@' + domain in blockedStr:
-                        return True
-                    if shortDomain:
-                        if '*@' + shortDomain in blockedStr:
+                try:
+                    with open(globalBlockingFilename, 'r') as fpBlocked:
+                        blockedStr = fpBlocked.read()
+                        if '*@' + domain in blockedStr:
                             return True
+                        if shortDomain:
+                            if '*@' + shortDomain in blockedStr:
+                                return True
+                except OSError as e:
+                    print('EX: unable to read ' + globalBlockingFilename +
+                          ' ' + str(e))
     else:
         allowFilename = baseDir + '/accounts/allowedinstances.txt'
         # instance allow list
@@ -572,10 +603,10 @@ def mutePost(baseDir: str, nickname: str, domain: str, port: int,
     try:
         with open(postFilename + '.muted', 'w+') as muteFile:
             muteFile.write('\n')
-            print('MUTE: ' + postFilename + '.muted file added')
     except OSError:
         print('EX: Failed to save mute file ' + postFilename + '.muted')
         return
+    print('MUTE: ' + postFilename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
@@ -886,15 +917,19 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
                     followingFilename = accountDir + '/' + followFileType
                     if not os.path.isfile(followingFilename):
                         continue
-                    with open(followingFilename, 'r') as f:
-                        followList = f.readlines()
-                        for handle in followList:
-                            if '@' not in handle:
-                                continue
-                            handle = handle.replace('\n', '')
-                            handleDomain = handle.split('@')[1]
-                            if handleDomain not in allowedDomains:
-                                allowedDomains.append(handleDomain)
+                    try:
+                        with open(followingFilename, 'r') as f:
+                            followList = f.readlines()
+                            for handle in followList:
+                                if '@' not in handle:
+                                    continue
+                                handle = handle.replace('\n', '')
+                                handleDomain = handle.split('@')[1]
+                                if handleDomain not in allowedDomains:
+                                    allowedDomains.append(handleDomain)
+                    except OSError as e:
+                        print('EX: failed to read ' + followingFilename +
+                              ' ' + str(e))
             break
 
         # write the allow file
