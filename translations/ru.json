@@ -497,5 +497,6 @@
     "Notify on emoji reactions": "Уведомлять о реакции на смайлики",
     "Select reaction": "Выберите реакцию",
     "Don't show the Reaction button": "Не показывать кнопку реакции",
-    "New feed URL": "URL нового канала"
+    "New feed URL": "URL нового канала",
+    "New link title and URL": "Новое название ссылки и URL"
 }

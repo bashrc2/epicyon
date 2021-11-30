@@ -20,6 +20,7 @@ from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
+from webapp_utils import editTextField
 from shares import shareCategoryIcon
 
 
@@ -474,6 +475,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '  ' + \
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
+    newColLinkStr = translate['New link title and URL']
+    editLinksForm += editTextField(None, 'newColLink', '', newColLinkStr)
     editLinksForm += \
         '  <textarea id="message" name="editedLinks" ' + \
         'style="height:80vh" spellcheck="false">' + linksStr + '</textarea>'

@@ -497,5 +497,6 @@
     "Notify on emoji reactions": "Avertir sur les réactions emoji",
     "Select reaction": "Sélectionnez la réaction",
     "Don't show the Reaction button": "Ne pas afficher le bouton Réaction",
-    "New feed URL": "Nouvelle URL de flux"
+    "New feed URL": "Nouvelle URL de flux",
+    "New link title and URL": "Nouveau titre et URL du lien"
 }

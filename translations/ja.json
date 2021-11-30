@@ -497,5 +497,6 @@
     "Notify on emoji reactions": "絵文字の反応を通知する",
     "Select reaction": "反応を選択",
     "Don't show the Reaction button": "反応ボタンを表示しない",
-    "New feed URL": "新しいフィードURL"
+    "New feed URL": "新しいフィードURL",
+    "New link title and URL": "新しいリンクのタイトルとURL"
 }
