@@ -28,6 +28,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
+from webapp_utils import editTextField
 
 
 def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
@@ -588,6 +589,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '  ' + \
         translate['Add RSS feed links below.'] + \
         '<br>'
+    newFeedStr = translate['New feed URL']
+    editNewswireForm += editTextField(None, 'newNewswireFeed', '', newFeedStr)
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
         'style="height:80vh" spellcheck="false">' + \
