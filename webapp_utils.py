@@ -1325,10 +1325,13 @@ def editTextField(label: str, name: str, value: str = "",
     requiredStr = ''
     if required:
         requiredStr = ' required'
-    return \
-        '<label class="labels">' + label + '</label><br>\n' + \
+    if label:
+        textFieldStr = \
+            '<label class="labels">' + label + '</label><br>\n'
+    textFieldStr += \
         '      <input type="text" name="' + name + '" value="' + \
         value + '"' + placeholderStr + requiredStr + '>\n'
+    return textFieldStr
 
 
 def editNumberField(label: str, name: str, value: int,

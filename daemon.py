@@ -4199,18 +4199,34 @@ class PubServer(BaseHTTPRequestHandler):
                 extractTextFieldsInPOST(postBytes, boundary, debug)
             if fields.get('editedNewswire'):
                 newswireStr = fields['editedNewswire']
+                # append a new newswire entry
+                if fields.get('newNewswireFeed'):
+                    if newswireStr:
+                        if not newswireStr.endswith('\n'):
+                            newswireStr += '\n'
+                    newswireStr += fields['newNewswireFeed'] + '\n'
                 try:
                     with open(newswireFilename, 'w+') as newswireFile:
                         newswireFile.write(newswireStr)
                 except OSError:
                     print('EX: unable to write ' + newswireFilename)
             else:
-                if os.path.isfile(newswireFilename):
+                if fields.get('newNewswireFeed'):
+                    # the text area is empty but there is a new feed added
+                    newswireStr = fields['newNewswireFeed'] + '\n'
                     try:
-                        os.remove(newswireFilename)
+                        with open(newswireFilename, 'w+') as newswireFile:
+                            newswireFile.write(newswireStr)
                     except OSError:
-                        print('EX: _newswireUpdate unable to delete ' +
-                              newswireFilename)
+                        print('EX: unable to write ' + newswireFilename)
+                else:
+                    # text area has been cleared and there is no new feed
+                    if os.path.isfile(newswireFilename):
+                        try:
+                            os.remove(newswireFilename)
+                        except OSError:
+                            print('EX: _newswireUpdate unable to delete ' +
+                                  newswireFilename)
 
             # save filtered words list for the newswire
             filterNewswireFilename = \
