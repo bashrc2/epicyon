@@ -380,20 +380,18 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
                                  iconsAsButtons) + '</center>'
-    if _linksExist(baseDir):
-        htmlStr += \
-            getLeftColumnContent(baseDir, nickname, domainFull,
-                                 httpPrefix, translate,
-                                 editor,
-                                 False, timelinePath,
-                                 rssIconAtTop, False, False,
-                                 theme, accessKeys,
-                                 sharedItemsFederatedDomains)
-    else:
-        if editor:
-            htmlStr += '<br><br><br>\n<center>\n  '
-            htmlStr += translate['Select the edit icon to add web links']
-            htmlStr += '\n</center>\n'
+    htmlStr += \
+        getLeftColumnContent(baseDir, nickname, domainFull,
+                             httpPrefix, translate,
+                             editor,
+                             False, timelinePath,
+                             rssIconAtTop, False, False,
+                             theme, accessKeys,
+                             sharedItemsFederatedDomains)
+    if editor and not _linksExist(baseDir):
+        htmlStr += '<br><br><br>\n<center>\n  '
+        htmlStr += translate['Select the edit icon to add web links']
+        htmlStr += '\n</center>\n'
 
     # end of col-left-mobile
     htmlStr += '</div>\n'
