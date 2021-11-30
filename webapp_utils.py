@@ -1325,6 +1325,7 @@ def editTextField(label: str, name: str, value: str = "",
     requiredStr = ''
     if required:
         requiredStr = ' required'
+    textFieldStr = ''
     if label:
         textFieldStr = \
             '<label class="labels">' + label + '</label><br>\n'
