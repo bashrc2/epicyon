@@ -334,6 +334,8 @@ def _pointInPolygon(poly: [], x: float, y: float) -> bool:
 
 
 def pointInNogo(nogo: [], latitude: float, longitude: float) -> bool:
+    """Returns true of the given geolocation is within a nogo area
+    """
     for polygon in nogo:
         if _pointInPolygon(polygon, latitude, longitude):
             return True
