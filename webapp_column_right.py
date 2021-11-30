@@ -494,15 +494,15 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
                                  iconsAsButtons) + '</center>'
-     htmlStr += \
-         getRightColumnContent(baseDir, nickname, domainFull,
-                               httpPrefix, translate,
-                               moderator, editor,
-                               newswire, positiveVoting,
-                               False, timelinePath, showPublishButton,
-                               showPublishAsIcon, rssIconAtTop, False,
-                               authorized, False, theme,
-                               defaultTimeline, accessKeys)
+    htmlStr += \
+        getRightColumnContent(baseDir, nickname, domainFull,
+                              httpPrefix, translate,
+                              moderator, editor,
+                              newswire, positiveVoting,
+                              False, timelinePath, showPublishButton,
+                              showPublishAsIcon, rssIconAtTop, False,
+                              authorized, False, theme,
+                              defaultTimeline, accessKeys)
     if editor and not newswire:
         htmlStr += '<br><br><br>\n'
         htmlStr += '<center>\n  '
