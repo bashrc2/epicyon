@@ -2160,8 +2160,8 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         except Exception as e:
             print('ERROR: postJsonString failed ' + str(e))
         if unauthorized:
-            print(postJsonStr)
-            print('threadSendPost: Post is unauthorized')
+            print('threadSendPost: Post is unauthorized ' +
+                  inboxUrl + ' ' + postJsonStr)
             break
         if postResult:
             logStr = 'Success on try ' + str(tries) + ': ' + postJsonStr
