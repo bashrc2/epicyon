@@ -2168,6 +2168,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
             fields = \
                 extractTextFieldsInPOST(themeParams, boundary, debug)
+        print('themeDesigner: ' + str(fields))
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
