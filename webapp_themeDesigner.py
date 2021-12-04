@@ -57,7 +57,8 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     themeForm += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
-        'name="submitThemeDesignerCancel" accesskey="' + timelineKey + '">' + \
+        'name="submitThemeDesignerCancel" ' + \
+        'accesskey="' + timelineKey + '">' + \
         translate['Go Back'] + '</button>\n' + \
         '    <button type="submit" class="button" ' + \
         'name="submitThemeDesigner" accesskey="' + submitKey + '">' + \

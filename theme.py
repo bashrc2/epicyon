@@ -492,14 +492,9 @@ def _setCustomFont(baseDir: str):
                 cssfile.write(css)
 
 
-def _readVariablesFile(baseDir: str, themeName: str,
-                       variablesFile: str,
-                       allowLocalNetworkAccess: bool) -> None:
-    """Reads variables from a file in the theme directory
-    """
-    themeParams = loadJson(variablesFile, 0)
-    if not themeParams:
-        return
+def setThemeFromDesigner(baseDir: str, themeName: str,
+                         themeParams: {},
+                         allowLocalNetworkAccess: bool):
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -508,6 +503,19 @@ def _readVariablesFile(baseDir: str, themeName: str,
     }
     _setThemeFromDict(baseDir, themeName, themeParams, bgParams,
                       allowLocalNetworkAccess)
+
+
+def _readVariablesFile(baseDir: str, themeName: str,
+                       variablesFile: str,
+                       allowLocalNetworkAccess: bool) -> None:
+    """Reads variables from a file in the theme directory
+    """
+    themeParams = loadJson(variablesFile, 0)
+    if not themeParams:
+        return
+    setThemeFromDesigner(baseDir, themeName,
+                         themeParams,
+                         allowLocalNetworkAccess)
 
 
 def _setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):

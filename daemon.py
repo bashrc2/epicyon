@@ -317,6 +317,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
+from theme import setThemeFromDesigner
 from theme import scanThemesForScripts
 from theme import importTheme
 from theme import exportTheme
@@ -2100,6 +2101,77 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.keyShortcuts[nickname] = accessKeys.copy()
 
         # redirect back from key shortcuts screen
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = \
+                'http://' + onionDomain + usersPath + '/' + defaultTimeline
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStr = \
+                'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
+    def _themeDesigner(self, path: str,
+                       callingDomain: str, cookie: str,
+                       baseDir: str, httpPrefix: str, nickname: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str,
+                       debug: bool, accessKeys: {},
+                       defaultTimeline: str, themeName: str,
+                       allowLocalNetworkAccess: bool) -> None:
+        """Receive POST from webapp_themeDesigner
+        """
+        usersPath = '/users/' + nickname
+        originPathStr = \
+            httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
+        length = int(self.headers['Content-length'])
+
+        try:
+            themeParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST accessKeysParams ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST themeParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST themeParams rfile.read failed, ' + str(e))
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        themeParams = \
+            urllib.parse.unquote_plus(themeParams)
+
+        # theme designer screen, back button
+        # See htmlThemeDesigner
+        if 'submitThemeDesignerCancel=' in themeParams or \
+           'submitThemeDesigner=' not in themeParams:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = \
+                    'http://' + onionDomain + usersPath + '/' + defaultTimeline
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                originPathStr = \
+                    'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # get the parameters from the theme designer screen
+        themeDesignerParams = {}
+        for variableName, key in themeParams.items():
+            if variableName.startswith('themeSetting_'):
+                variableName = variableName.replace('themeSetting_', '')
+                themeDesignerParams[variableName] = key
+
+        setThemeFromDesigner(baseDir, themeName, themeDesignerParams,
+                             allowLocalNetworkAccess)
+
+        # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = \
                 'http://' + onionDomain + usersPath + '/' + defaultTimeline
@@ -17755,6 +17827,35 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug,
                                    accessKeys,
                                    self.server.defaultTimeline)
+                return
+
+            # theme designer submit/cancel button
+            if usersInPath and \
+               self.path.endswith('/changeThemeSettings'):
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                if not self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.accessKeys
+                    self.server.keyShortcuts[nickname] = accessKeys.copy()
+                accessKeys = self.server.keyShortcuts[nickname]
+
+                self._themeDesigner(self.path,
+                                    callingDomain, cookie,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    nickname,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    self.server.debug,
+                                    accessKeys,
+                                    self.server.defaultTimeline,
+                                    self.server.themeName,
+                                    self.server.allowLocalNetworkAccess)
                 return
 
         # update the shared item federation token for the calling domain
