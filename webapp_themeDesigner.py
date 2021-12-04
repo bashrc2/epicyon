@@ -52,6 +52,17 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     themeForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeThemeSettings">\n'
 
+    timelineKey = accessKeys['menuTimeline']
+    submitKey = accessKeys['submitButton']
+    themeForm += \
+        '    <center>\n' + \
+        '    <button type="submit" class="button" ' + \
+        'name="submitThemeDesignerCancel" accesskey="' + timelineKey + '">' + \
+        translate['Go Back'] + '</button>\n' + \
+        '    <button type="submit" class="button" ' + \
+        'name="submitThemeDesigner" accesskey="' + submitKey + '">' + \
+        translate['Submit'] + '</button>\n    </center>\n'
+
     themeForm += '    <table class="accesskeys">\n'
     themeForm += '      <colgroup>\n'
     themeForm += '        <col span="1" class="accesskeys-left">\n'
