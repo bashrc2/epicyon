@@ -21,9 +21,7 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                       themeName: str) -> str:
     """Edit theme settings
     """
-    themeFilename = \
-        acctDir(baseDir, nickname, domain) + '/theme/' + \
-        themeName + '/theme.json'
+    themeFilename = baseDir + '/theme/' + themeName + '/theme.json'
     themeJson = {}
     if os.path.isfile(themeFilename):
         themeJson = loadJson(themeFilename)
