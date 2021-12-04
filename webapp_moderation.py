@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
+from utils import isArtist
 from utils import isAccountDir
 from utils import getFullDomain
 from utils import isEditor
@@ -57,6 +58,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
+    artist = isArtist(baseDir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
@@ -66,7 +68,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False, False, positiveVoting,
+                        newswire, False, False, artist, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, moderationActionStr, theme,
