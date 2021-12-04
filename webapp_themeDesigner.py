@@ -10,15 +10,15 @@ __module_group__ = "Web Interface"
 import os
 from utils import loadJson
 from utils import getConfigParam
-from utils import acctDir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import getBannerFile
 
 
 def htmlThemeDesigner(cssCache: {}, baseDir: str,
                       nickname: str, domain: str,
                       translate: {}, defaultTimeline: str,
-                      themeName: str) -> str:
+                      themeName: str, accessKeys: {}) -> str:
     """Edit theme settings
     """
     themeFilename = baseDir + '/theme/' + themeName + '/theme.json'
@@ -35,6 +35,14 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
         getConfigParam(baseDir, 'instanceTitle')
     themeForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, themeName)
+    themeForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+        '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="' + translate['Switch to timeline view'] + '" ' + \
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
     themeForm += '<div class="container">\n'
 
     themeForm += \
