@@ -2130,7 +2130,7 @@ class PubServer(BaseHTTPRequestHandler):
             themeParams = self.rfile.read(length).decode('utf-8')
         except SocketError as e:
             if e.errno == errno.ECONNRESET:
-                print('WARN: POST accessKeysParams ' +
+                print('WARN: POST themeParams ' +
                       'connection reset by peer')
             else:
                 print('WARN: POST themeParams socket error')
@@ -2147,6 +2147,7 @@ class PubServer(BaseHTTPRequestHandler):
         themeParams = \
             urllib.parse.unquote_plus(themeParams)
 
+        print('themeDesigner0')
         # theme designer screen, back button
         # See htmlThemeDesigner
         if 'submitThemeDesignerCancel=' in themeParams or \
@@ -2161,6 +2162,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        print('themeDesigner1: ' + str(themeParams))
         fields = {}
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -2168,7 +2170,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
             fields = \
                 extractTextFieldsInPOST(themeParams, boundary, debug)
-        print('themeDesigner: ' + str(fields))
+        print('themeDesigner2: ' + str(fields))
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
