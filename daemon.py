@@ -2161,9 +2161,17 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        fields = {}
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+            fields = \
+                extractTextFieldsInPOST(themeParams, boundary, debug)
+
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
-        for variableName, key in themeParams.items():
+        for variableName, key in fields.items():
             if variableName.startswith('themeSetting_'):
                 variableName = variableName.replace('themeSetting_', '')
                 themeDesignerParams[variableName] = key
