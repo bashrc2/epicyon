@@ -41,6 +41,7 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
+        'title="' + translate['Switch to timeline view'] + '" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
     themeForm += '<div class="container">\n'
@@ -51,16 +52,25 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     themeForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeThemeSettings">\n'
 
+    themeForm += '    <table class="accesskeys">\n'
+    themeForm += '      <colgroup>\n'
+    themeForm += '        <col span="1" class="accesskeys-left">\n'
+    themeForm += '        <col span="1" class="accesskeys-center">\n'
+    themeForm += '      </colgroup>\n'
+    themeForm += '      <tbody>\n'
+
     for variableName, value in themeJson.items():
         if variableName.endswith('-color') or \
            variableName.endswith('-text'):
             themeForm += \
-                '<p><label class="labels">' + \
-                variableName.replace('-', ' ') + '</label>'
+                '      <tr><td><label class="labels">' + \
+                variableName.replace('-', ' ') + '</label></td>'
             themeForm += \
-                '<input type="color" name="themeSetting_' + \
-                variableName + '" value="' + str(value) + '"></p>'
+                '<td><input type="color" name="themeSetting_' + \
+                variableName + '" value="' + str(value) + \
+                '"></p></td></tr>\n'
 
+    themeForm += '    </table>\n'
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
     themeForm += htmlFooter()
