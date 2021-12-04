@@ -317,7 +317,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
-from theme import setThemeFromDesigner
+# from theme import setThemeFromDesigner
 from theme import scanThemesForScripts
 from theme import importTheme
 from theme import exportTheme
@@ -2174,11 +2174,11 @@ class PubServer(BaseHTTPRequestHandler):
         print('themeDesigner3: ' + str(fields))
 
         # get the parameters from the theme designer screen
-        themeDesignerParams = {}
+        # themeDesignerParams = {}
         for variableName, key in fields.items():
             if variableName.startswith('themeSetting_'):
                 variableName = variableName.replace('themeSetting_', '')
-                themeDesignerParams[variableName] = key
+                # themeDesignerParams[variableName] = key
 
         # setThemeFromDesigner(baseDir, themeName, themeDesignerParams,
         #                      allowLocalNetworkAccess)
