@@ -62,13 +62,14 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     for variableName, value in themeJson.items():
         if variableName.endswith('-color') or \
            variableName.endswith('-text'):
+            variableNameStr = variableName.replace('-', ' ')
             themeForm += \
                 '      <tr><td><label class="labels">' + \
-                variableName.replace('-', ' ') + '</label></td>'
+                variableNameStr + '</label></td>'
             themeForm += \
                 '<td><input type="color" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
-                '"></p></td></tr>\n'
+                '" title="' + variableNameStr + '"></p></td></tr>\n'
 
     themeForm += '    </table>\n'
     themeForm += '  </form>\n'
