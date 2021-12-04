@@ -2180,8 +2180,8 @@ class PubServer(BaseHTTPRequestHandler):
                 variableName = variableName.replace('themeSetting_', '')
                 themeDesignerParams[variableName] = key
 
-        setThemeFromDesigner(baseDir, themeName, themeDesignerParams,
-                             allowLocalNetworkAccess)
+        # setThemeFromDesigner(baseDir, themeName, themeDesignerParams,
+        #                      allowLocalNetworkAccess)
 
         # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
