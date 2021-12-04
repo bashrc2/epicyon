@@ -155,7 +155,8 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
     profileHeaderStr += \
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
-                             False, False, None, rssIconAtTop, True,
+                             False, False,
+                             False, None, rssIconAtTop, True,
                              True, theme, accessKeys,
                              sharedItemsFederatedDomains)
     profileHeaderStr += \

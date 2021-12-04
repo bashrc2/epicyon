@@ -154,6 +154,7 @@ from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
 from blog import getBlogAddress
+from webapp_themeDesigner import htmlThemeDesigner
 from webapp_minimalbutton import setMinimal
 from webapp_minimalbutton import isMinimal
 from webapp_utils import getAvatarImageUrl
@@ -10849,6 +10850,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     moderator = isModerator(baseDir, currNickname)
                     editor = isEditor(baseDir, currNickname)
+                    artist = isArtist(baseDir, currNickname)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = isMinimal(baseDir, domain, nickname)
@@ -10881,7 +10883,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.newswire,
-                                      moderator, editor,
+                                      moderator, editor, artist,
                                       self.server.positiveVoting,
                                       self.server.showPublishAsIcon,
                                       fullWidthTimelineButtonHeader,
@@ -14360,6 +14362,32 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'show accesskeys screen',
+                               self.server.debug)
+            return
+
+        if htmlGET and usersInPath and authorized and \
+           self.path.endswith('/themedesigner'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+
+            if not isArtist(self.server.baseDir, nickname):
+                self._403()
+                return
+
+            msg = \
+                htmlThemeDesigner(self.server.cssCache,
+                                  self.server.baseDir,
+                                  nickname, self.server.domain,
+                                  self.server.translate,
+                                  self.server.defaultTimeline,
+                                  self.server.themeName)
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._login_headers('text/html', msglen, callingDomain)
+            self._write(msg)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', 'show theme designer screen',
                                self.server.debug)
             return
 
@@ -18330,6 +18358,7 @@ def runDaemon(contentLicenseUrl: str,
         'enterNotes': 'n',
         'menuTimeline': 't',
         'menuEdit': 'e',
+        'menuThemeDesigner': 'z',
         'menuProfile': 'p',
         'menuInbox': 'i',
         'menuSearch': '/',
