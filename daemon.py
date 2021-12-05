@@ -2180,6 +2180,17 @@ class PubServer(BaseHTTPRequestHandler):
                 fieldValue = 'False'
             fields[fieldStr.split('=')[0]] = fieldValue
 
+        # Check for boolean values which are False.
+        # These don't come through via themeParams,
+        # so need to be checked separately
+        themeFilename = baseDir + '/theme/' + themeName + '/theme.json'
+        themeJson = loadJson(themeFilename)
+        if themeJson:
+            for variableName, value in themeJson.items():
+                if value.lower() == 'false' or value.lower() == 'true':
+                    if variableName not in fields:
+                        fields[variableName] = 'False'
+
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
         for variableName, key in fields.items():
