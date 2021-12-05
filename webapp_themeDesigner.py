@@ -72,6 +72,9 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     themeForm += '      <tbody>\n'
 
     for variableName, value in themeJson.items():
+        # only use colors defined as hex
+        if not value.startswith('#'):            
+            continue
         if variableName.endswith('-color') or \
            variableName.endswith('-text'):
             variableNameStr = variableName.replace('-', ' ')
