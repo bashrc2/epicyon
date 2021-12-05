@@ -223,39 +223,85 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
         'name="submitThemeDesigner" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
-    themeForm += '    <table class="accesskeys">\n'
-    themeForm += '      <colgroup>\n'
-    themeForm += '        <col span="1" class="accesskeys-left">\n'
-    themeForm += '        <col span="1" class="accesskeys-center">\n'
-    themeForm += '      </colgroup>\n'
-    themeForm += '      <tbody>\n'
+    tableStr = '    <table class="accesskeys">\n'
+    tableStr += '      <colgroup>\n'
+    tableStr += '        <col span="1" class="accesskeys-left">\n'
+    tableStr += '        <col span="1" class="accesskeys-center">\n'
+    tableStr += '      </colgroup>\n'
+    tableStr += '      <tbody>\n'
 
+    fontStr = '    <div class="container">\n' + tableStr
+    colorStr = '    <div class="container">\n' + tableStr
+    dimensionStr = '    <div class="container">\n' + tableStr
+    switchStr = '    <div class="container">\n' + tableStr
     for variableName, value in themeJson.items():
-        # only use colors defined as hex
-        if not value.startswith('#'):
-            if color_to_hex.get(value):
-                value = color_to_hex[value]
-            else:
-                continue
-        if variableName.endswith('-color') or \
-           variableName.endswith('-text'):
+        if 'font-size' in variableName:
             variableNameStr = variableName.replace('-', ' ')
-            if variableNameStr.endswith(' color'):
-                variableNameStr = variableNameStr.replace(' color', '')
-            if variableNameStr.endswith(' bg'):
-                variableNameStr = variableNameStr.replace(' bg', ' background')
-            elif variableNameStr.endswith(' fg'):
-                variableNameStr = variableNameStr.replace(' fg', ' foreground')
             variableNameStr = variableNameStr.title()
-            themeForm += \
+            fontStr += \
                 '      <tr><td><label class="labels">' + \
                 variableNameStr + '</label></td>'
-            themeForm += \
+            fontStr += \
+                '<td><input type="text" name="themeSetting_' + \
+                variableName + '" value="' + str(value) + \
+                '" title="' + variableNameStr + '"></td></tr>\n'
+        elif ('-color' in variableName or
+              '-background' in variableName or
+              variableName.endswith('-text')):
+            # only use colors defined as hex
+            if not value.startswith('#'):
+                if color_to_hex.get(value):
+                    value = color_to_hex[value]
+                else:
+                    continue
+            variableNameStr = variableName.replace('-', ' ')
+            if ' color' in variableNameStr:
+                variableNameStr = variableNameStr.replace(' color', '')
+            if ' bg' in variableNameStr:
+                variableNameStr = variableNameStr.replace(' bg', ' background')
+            elif ' fg' in variableNameStr:
+                variableNameStr = variableNameStr.replace(' fg', ' foreground')
+            if variableNameStr == 'cw':
+                variableNameStr = 'content warning'
+            variableNameStr = variableNameStr.title()
+            colorStr += \
+                '      <tr><td><label class="labels">' + \
+                variableNameStr + '</label></td>'
+            colorStr += \
                 '<td><input type="color" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
-                '" title="' + variableNameStr + '"></p></td></tr>\n'
+                '" title="' + variableNameStr + '"></td></tr>\n'
+        elif (('-width' in variableName or
+               '-height' in variableName) and
+              (value.lower() != 'true' and value.lower() != 'false')):
+            variableNameStr = variableName.replace('-', ' ')
+            variableNameStr = variableNameStr.title()
+            dimensionStr += \
+                '      <tr><td><label class="labels">' + \
+                variableNameStr + '</label></td>'
+            dimensionStr += \
+                '<td><input type="text" name="themeSetting_' + \
+                variableName + '" value="' + str(value) + \
+                '" title="' + variableNameStr + '"></td></tr>\n'
+        elif value.title() == 'True' or value.title() == 'False':
+            variableNameStr = variableName.replace('-', ' ')
+            variableNameStr = variableNameStr.title()
+            switchStr += \
+                '      <tr><td><label class="labels">' + \
+                variableNameStr + '</label></td>'
+            checkedStr = ''
+            if value.title() == 'True':
+                checkedStr = ' checked'
+            switchStr += \
+                '<td><input type="checkbox" class="profilecheckbox" ' + \
+                'name="themeSetting_' + variableName + '"' + \
+                checkedStr + '></td></tr>\n'
 
-    themeForm += '    </table>\n'
+    colorStr += '    </table>\n    </div>\n'
+    fontStr += '    </table>\n    </div>\n'
+    dimensionStr += '    </table>\n    </div>\n'
+    switchStr += '    </table>\n    </div>\n'
+    themeForm += colorStr + fontStr + dimensionStr + switchStr
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
     themeForm += htmlFooter()

@@ -2173,7 +2173,24 @@ class PubServer(BaseHTTPRequestHandler):
         for fieldStr in fieldsList:
             if '=' not in fieldStr:
                 continue
-            fields[fieldStr.split('=')[0]] = fieldStr.split('=')[1].strip()
+            fieldValue = fieldStr.split('=')[1].strip()
+            if not fieldValue:
+                continue
+            if fieldValue == 'on':
+                fieldValue = 'True'
+            fields[fieldStr.split('=')[0]] = fieldValue
+
+        # Check for boolean values which are False.
+        # These don't come through via themeParams,
+        # so need to be checked separately
+        themeFilename = baseDir + '/theme/' + themeName + '/theme.json'
+        themeJson = loadJson(themeFilename)
+        if themeJson:
+            for variableName, value in themeJson.items():
+                variableName = 'themeSetting_' + variableName
+                if value.lower() == 'false' or value.lower() == 'true':
+                    if variableName not in fields:
+                        fields[variableName] = 'False'
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
@@ -2186,6 +2203,33 @@ class PubServer(BaseHTTPRequestHandler):
                              themeDesignerParams,
                              allowLocalNetworkAccess,
                              systemLanguage)
+
+        if 'rss-icon-at-top' in themeDesignerParams:
+            if themeDesignerParams['rss-icon-at-top'].lower() == 'true':
+                self.server.rssIconAtTop = True
+            else:
+                self.server.rssIconAtTop = False
+        if 'publish-button-at-top' in themeDesignerParams:
+            if themeDesignerParams['publish-button-at-top'].lower() == 'true':
+                self.server.publishButtonAtTop = True
+            else:
+                self.server.publishButtonAtTop = False
+        if 'newswire-publish-icon' in themeDesignerParams:
+            if themeDesignerParams['newswire-publish-icon'].lower() == 'true':
+                self.server.showPublishAsIcon = True
+            else:
+                self.server.showPublishAsIcon = False
+        if 'icons-as-buttons' in themeDesignerParams:
+            if themeDesignerParams['icons-as-buttons'].lower() == 'true':
+                self.server.iconsAsButtons = True
+            else:
+                self.server.iconsAsButtons = False
+        if 'full-width-timeline-buttons' in themeDesignerParams:
+            themeValue = themeDesignerParams['full-width-timeline-buttons']
+            if themeValue.lower() == 'true':
+                self.server.fullWidthTimelineButtonHeader = True
+            else:
+                self.server.fullWidthTimelineButtonHeader = False
 
         # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
