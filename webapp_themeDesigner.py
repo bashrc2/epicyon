@@ -203,14 +203,14 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     themeForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeThemeSettings">\n'
 
-    timelineKey = accessKeys['menuTimeline']
+    resetKey = accessKeys['menuLogout']
     submitKey = accessKeys['submitButton']
     themeForm += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
-        'name="submitThemeDesignerCancel" ' + \
-        'accesskey="' + timelineKey + '">' + \
-        translate['Go Back'] + '</button>\n' + \
+        'name="submitThemeDesignerReset" ' + \
+        'accesskey="' + resetKey + '">' + \
+        translate['Reset'] + '</button>\n' + \
         '    <button type="submit" class="button" ' + \
         'name="submitThemeDesigner" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'

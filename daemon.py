@@ -317,6 +317,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
+from theme import resetThemeDesignerSettings
 from theme import setThemeFromDesigner
 from theme import scanThemesForScripts
 from theme import importTheme
@@ -2150,10 +2151,15 @@ class PubServer(BaseHTTPRequestHandler):
             urllib.parse.unquote_plus(themeParams)
 
         print('themeDesigner1')
-        # theme designer screen, back button
+        # theme designer screen, reset button
         # See htmlThemeDesigner
-        if 'submitThemeDesignerCancel=' in themeParams or \
+        if 'submitThemeDesignerReset=' in themeParams or \
            'submitThemeDesigner=' not in themeParams:
+            if 'submitThemeDesignerReset=' in themeParams:
+                resetThemeDesignerSettings(baseDir, themeName, domain,
+                                           allowLocalNetworkAccess,
+                                           systemLanguage)
+
             if callingDomain.endswith('.onion') and onionDomain:
                 originPathStr = \
                     'http://' + onionDomain + usersPath + '/' + defaultTimeline
