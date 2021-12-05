@@ -242,6 +242,10 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
             variableNameStr = variableName.replace('-', ' ')
             if variableNameStr.endswith(' color'):
                 variableNameStr = variableNameStr.replace(' color', '')
+            if variableNameStr.endswith(' bg'):
+                variableNameStr = variableNameStr.replace(' bg', ' background')
+            elif variableNameStr.endswith(' fg'):
+                variableNameStr = variableNameStr.replace(' fg', ' foreground')
             variableNameStr = variableNameStr.title()
             themeForm += \
                 '      <tr><td><label class="labels">' + \
