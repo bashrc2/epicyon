@@ -2174,10 +2174,10 @@ class PubServer(BaseHTTPRequestHandler):
             if '=' not in fieldStr:
                 continue
             fieldValue = fieldStr.split('=')[1].strip()
+            if not fieldValue:
+                continue
             if fieldValue == 'on':
                 fieldValue = 'True'
-            if not fieldValue:
-                fieldValue = 'False'
             fields[fieldStr.split('=')[0]] = fieldValue
 
         # Check for boolean values which are False.
@@ -2187,9 +2187,10 @@ class PubServer(BaseHTTPRequestHandler):
         themeJson = loadJson(themeFilename)
         if themeJson:
             for variableName, value in themeJson.items():
+                variableName = 'themeSetting_' + variableName
                 if value.lower() == 'false' or value.lower() == 'true':
                     if variableName not in fields:
-                        fields['themeSetting_' + variableName] = 'False'
+                        fields[variableName] = 'False'
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
