@@ -223,16 +223,29 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
         'name="submitThemeDesigner" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
-    themeForm += '    <table class="accesskeys">\n'
-    themeForm += '      <colgroup>\n'
-    themeForm += '        <col span="1" class="accesskeys-left">\n'
-    themeForm += '        <col span="1" class="accesskeys-center">\n'
-    themeForm += '      </colgroup>\n'
-    themeForm += '      <tbody>\n'
+    tableStr = '    <table class="accesskeys">\n'
+    tableStr += '      <colgroup>\n'
+    tableStr += '        <col span="1" class="accesskeys-left">\n'
+    tableStr += '        <col span="1" class="accesskeys-center">\n'
+    tableStr += '      </colgroup>\n'
+    tableStr += '      <tbody>\n'
 
+    fontStr = '    <div class="container">\n' + tableStr
+    colorStr = '    <div class="container">\n' + tableStr
     for variableName, value in themeJson.items():
-        if variableName.endswith('-color') or \
-           variableName.endswith('-text'):
+        if 'font-size' in variableName:
+            variableNameStr = variableName.replace('-', ' ')
+            variableNameStr = variableNameStr.replace('font size', '').strip()
+            variableNameStr = variableNameStr.title()
+            fontStr += \
+                '      <tr><td><label class="labels">' + \
+                variableNameStr + '</label></td>'
+            fontStr += \
+                '<td><input type="text" name="themeSetting_' + \
+                variableName + '" value="' + str(value) + \
+                '" title="' + variableNameStr + '"></p></td></tr>\n'
+        elif (variableName.endswith('-color') or
+              variableName.endswith('-text')):
             # only use colors defined as hex
             if not value.startswith('#'):
                 if color_to_hex.get(value):
@@ -249,15 +262,17 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
             if variableNameStr == 'cw':
                 variableNameStr = 'content warning'
             variableNameStr = variableNameStr.title()
-            themeForm += \
+            colorStr += \
                 '      <tr><td><label class="labels">' + \
                 variableNameStr + '</label></td>'
-            themeForm += \
+            colorStr += \
                 '<td><input type="color" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></p></td></tr>\n'
 
-    themeForm += '    </table>\n'
+    colorStr += '    </table>\n    </div>\n'
+    fontStr += '    </table>\n    </div>\n'
+    themeForm += colorStr + fontStr
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
     themeForm += htmlFooter()
