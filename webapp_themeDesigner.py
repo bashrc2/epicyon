@@ -231,14 +231,14 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     themeForm += '      <tbody>\n'
 
     for variableName, value in themeJson.items():
-        # only use colors defined as hex
-        if not value.startswith('#'):
-            if color_to_hex.get(value):
-                value = color_to_hex[value]
-            else:
-                continue
         if variableName.endswith('-color') or \
            variableName.endswith('-text'):
+            # only use colors defined as hex
+            if not value.startswith('#'):
+                if color_to_hex.get(value):
+                    value = color_to_hex[value]
+                else:
+                    continue
             variableNameStr = variableName.replace('-', ' ')
             if variableNameStr.endswith(' color'):
                 variableNameStr = variableNameStr.replace(' color', '')
