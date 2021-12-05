@@ -2127,8 +2127,6 @@ class PubServer(BaseHTTPRequestHandler):
             httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
         length = int(self.headers['Content-length'])
 
-        print('themeDesigner ContentType: ' + str(self.headers['Content-type']))
-        
         print('themeDesigner0')
         try:
             themeParams = self.rfile.read(length).decode('utf-8')
@@ -2168,12 +2166,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('themeDesigner2: ' + str(themeParams))
         fields = {}
-        if ' boundary=' in self.headers['Content-type']:
-            boundary = self.headers['Content-type'].split('boundary=')[1]
-            if ';' in boundary:
-                boundary = boundary.split(';')[0]
-            fields = \
-                extractTextFieldsInPOST(themeParams, boundary, debug)
+        fieldsList = themeParams.split('&')
+        for fieldStr in fieldsList:
+            if '=' not in fieldStr:
+                continue
+            fields[fieldStr.split('=')[0]] = fieldStr.split('=')[1].strip()
         print('themeDesigner3: ' + str(fields))
 
         # get the parameters from the theme designer screen
