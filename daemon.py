@@ -2127,6 +2127,8 @@ class PubServer(BaseHTTPRequestHandler):
             httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
         length = int(self.headers['Content-length'])
 
+        print('themeDesigner ContentType: ' + str(self.headers['Content-type']))
+        
         print('themeDesigner0')
         try:
             themeParams = self.rfile.read(length).decode('utf-8')
