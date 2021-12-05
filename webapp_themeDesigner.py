@@ -243,7 +243,7 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 '<td><input type="text" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></p></td></tr>\n'
-        elif (variableName.endswith('-color') or
+        elif ('-color' in variableName or
               variableName.endswith('-text')):
             # only use colors defined as hex
             if not value.startswith('#'):
@@ -252,11 +252,11 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 else:
                     continue
             variableNameStr = variableName.replace('-', ' ')
-            if variableNameStr.endswith(' color'):
+            if ' color' in variableNameStr:
                 variableNameStr = variableNameStr.replace(' color', '')
-            if variableNameStr.endswith(' bg'):
+            if ' bg' in variableNameStr:
                 variableNameStr = variableNameStr.replace(' bg', ' background')
-            elif variableNameStr.endswith(' fg'):
+            elif ' fg' in variableNameStr:
                 variableNameStr = variableNameStr.replace(' fg', ' foreground')
             if variableNameStr == 'cw':
                 variableNameStr = 'content warning'
