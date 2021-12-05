@@ -244,6 +244,7 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></p></td></tr>\n'
         elif ('-color' in variableName or
+              '-background' in variableName or
               variableName.endswith('-text')):
             # only use colors defined as hex
             if not value.startswith('#'):
