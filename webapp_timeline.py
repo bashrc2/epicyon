@@ -10,6 +10,7 @@ __module_group__ = "Timeline"
 import os
 import time
 from shutil import copyfile
+from utils import isArtist
 from utils import dangerousMarkup
 from utils import getConfigParam
 from utils import getFullDomain
@@ -430,7 +431,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  twitterReplacementDomain: str,
                  showPublishedDateOnly: bool,
                  newswire: {}, moderator: bool,
-                 editor: bool,
+                 editor: bool, artist: bool,
                  positiveVoting: bool,
                  showPublishAsIcon: bool,
                  fullWidthTimelineButtonHeader: bool,
@@ -744,7 +745,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
-                             editor, False, None, rssIconAtTop,
+                             editor, artist, False, None, rssIconAtTop,
                              True, False, theme, accessKeys,
                              sharedItemsFederatedDomains)
     tlStr += '  <td valign="top" class="col-left" ' + \
@@ -1146,6 +1147,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
+    artist = isArtist(baseDir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
@@ -1159,7 +1161,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1200,6 +1202,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
+    artist = isArtist(baseDir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
@@ -1213,7 +1216,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1255,6 +1258,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
+    artist = isArtist(baseDir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
@@ -1268,7 +1272,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1310,6 +1314,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
+    artist = isArtist(baseDir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
@@ -1323,7 +1328,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1363,6 +1368,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  CWlists: {}, listsEnabled: str) -> str:
     """Show the DM timeline as html
     """
+    artist = isArtist(baseDir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
@@ -1373,7 +1379,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False, positiveVoting,
+                        newswire, False, False, artist, positiveVoting,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1413,6 +1419,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      CWlists: {}, listsEnabled: str) -> str:
     """Show the replies timeline as html
     """
+    artist = isArtist(baseDir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
@@ -1424,7 +1431,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1464,6 +1471,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    CWlists: {}, listsEnabled: str) -> str:
     """Show the media timeline as html
     """
+    artist = isArtist(baseDir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
@@ -1475,7 +1483,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1515,6 +1523,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    CWlists: {}, listsEnabled: str) -> str:
     """Show the blogs timeline as html
     """
+    artist = isArtist(baseDir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
@@ -1526,7 +1535,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1578,7 +1587,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False,
+                        newswire, False, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1601,7 +1610,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   YTReplacementDomain: str,
                   twitterReplacementDomain: str,
                   showPublishedDateOnly: bool,
-                  newswire: {}, moderator: bool, editor: bool,
+                  newswire: {}, moderator: bool, editor: bool, artist: bool,
                   positiveVoting: bool, showPublishAsIcon: bool,
                   fullWidthTimelineButtonHeader: bool,
                   iconsAsButtons: bool,
@@ -1629,7 +1638,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, moderator, editor,
+                        newswire, moderator, editor, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
@@ -1671,6 +1680,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
+    artist = isArtist(baseDir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
@@ -1682,7 +1692,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False, False, positiveVoting,
+                        newswire, False, False, artist, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,

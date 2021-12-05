@@ -878,6 +878,10 @@ def htmlProfile(signingPrivateKeyPem: str,
         menuSkills: userPathStr + '/skills#timeline',
         menuLogout: '/logout'
     }
+    if isArtist(baseDir, nickname):
+        menuThemeDesigner = \
+            htmlHideFromScreenReader('🎨') + ' ' + translate['Theme Designer']
+        navLinks[menuThemeDesigner] = userPathStr + '/themedesigner'
     navAccessKeys = {}
     for variableName, key in accessKeys.items():
         if not locals().get(variableName):

@@ -11,6 +11,7 @@ import os
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
+from utils import isArtist
 from utils import removeDomainPort
 from utils import localActorUrl
 from webapp_utils import sharesTimelineJson
@@ -113,7 +114,7 @@ def _getLeftColumnWanted(baseDir: str,
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         editor: bool,
+                         editor: bool, artist: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool, theme: str,
@@ -154,6 +155,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += '\n      <center>\n'
 
     htmlStr += '      <div class="leftColIcons">\n'
+
     if editor:
         # show the edit icon
         htmlStr += \
@@ -162,6 +164,15 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '<img class="' + editImageClass + '" loading="lazy" alt="' + \
             translate['Edit Links'] + ' | " title="' + \
             translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
+
+    if artist:
+        # show the theme designer icon
+        htmlStr += \
+            '      <a href="/users/' + nickname + '/themedesigner" ' + \
+            'accesskey="' + accessKeys['menuThemeDesigner'] + '">' + \
+            '<img class="' + editImageClass + '" loading="lazy" alt="' + \
+            translate['Theme Designer'] + ' | " title="' + \
+            translate['Theme Designer'] + '" src="/icons/theme.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -358,8 +369,10 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     # is the user a site editor?
     if nickname == 'news':
         editor = False
+        artist = False
     else:
         editor = isEditor(baseDir, nickname)
+        artist = isArtist(baseDir, nickname)
 
     domain = removeDomainPort(domainFull)
 
@@ -383,7 +396,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
-                             editor,
+                             editor, artist,
                              False, timelinePath,
                              rssIconAtTop, False, False,
                              theme, accessKeys,

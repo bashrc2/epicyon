@@ -154,6 +154,7 @@ from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
 from blog import getBlogAddress
+from webapp_themeDesigner import htmlThemeDesigner
 from webapp_minimalbutton import setMinimal
 from webapp_minimalbutton import isMinimal
 from webapp_utils import getAvatarImageUrl
@@ -316,6 +317,8 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
+from theme import resetThemeDesignerSettings
+from theme import setThemeFromDesigner
 from theme import scanThemesForScripts
 from theme import importTheme
 from theme import exportTheme
@@ -2099,6 +2102,92 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.keyShortcuts[nickname] = accessKeys.copy()
 
         # redirect back from key shortcuts screen
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = \
+                'http://' + onionDomain + usersPath + '/' + defaultTimeline
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStr = \
+                'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
+    def _themeDesigner(self, path: str,
+                       callingDomain: str, cookie: str,
+                       baseDir: str, httpPrefix: str, nickname: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str,
+                       debug: bool, accessKeys: {},
+                       defaultTimeline: str, themeName: str,
+                       allowLocalNetworkAccess: bool,
+                       systemLanguage: str) -> None:
+        """Receive POST from webapp_themeDesigner
+        """
+        usersPath = '/users/' + nickname
+        originPathStr = \
+            httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
+        length = int(self.headers['Content-length'])
+
+        try:
+            themeParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST themeParams ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST themeParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST themeParams rfile.read failed, ' + str(e))
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        themeParams = \
+            urllib.parse.unquote_plus(themeParams)
+
+        # theme designer screen, reset button
+        # See htmlThemeDesigner
+        if 'submitThemeDesignerReset=' in themeParams or \
+           'submitThemeDesigner=' not in themeParams:
+            if 'submitThemeDesignerReset=' in themeParams:
+                resetThemeDesignerSettings(baseDir, themeName, domain,
+                                           allowLocalNetworkAccess,
+                                           systemLanguage)
+
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = \
+                    'http://' + onionDomain + usersPath + '/' + defaultTimeline
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                originPathStr = \
+                    'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        fields = {}
+        fieldsList = themeParams.split('&')
+        for fieldStr in fieldsList:
+            if '=' not in fieldStr:
+                continue
+            fields[fieldStr.split('=')[0]] = fieldStr.split('=')[1].strip()
+
+        # get the parameters from the theme designer screen
+        themeDesignerParams = {}
+        for variableName, key in fields.items():
+            if variableName.startswith('themeSetting_'):
+                variableName = variableName.replace('themeSetting_', '')
+                themeDesignerParams[variableName] = key
+
+        setThemeFromDesigner(baseDir, themeName, domain,
+                             themeDesignerParams,
+                             allowLocalNetworkAccess,
+                             systemLanguage)
+
+        # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = \
                 'http://' + onionDomain + usersPath + '/' + defaultTimeline
@@ -10849,6 +10938,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     moderator = isModerator(baseDir, currNickname)
                     editor = isEditor(baseDir, currNickname)
+                    artist = isArtist(baseDir, currNickname)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     minimalNick = isMinimal(baseDir, domain, nickname)
@@ -10881,7 +10971,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.newswire,
-                                      moderator, editor,
+                                      moderator, editor, artist,
                                       self.server.positiveVoting,
                                       self.server.showPublishAsIcon,
                                       fullWidthTimelineButtonHeader,
@@ -14363,6 +14453,33 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.debug)
             return
 
+        if htmlGET and usersInPath and authorized and \
+           self.path.endswith('/themedesigner'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+
+            if not isArtist(self.server.baseDir, nickname):
+                self._403()
+                return
+
+            msg = \
+                htmlThemeDesigner(self.server.cssCache,
+                                  self.server.baseDir,
+                                  nickname, self.server.domain,
+                                  self.server.translate,
+                                  self.server.defaultTimeline,
+                                  self.server.themeName,
+                                  self.server.accessKeys)
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            self._login_headers('text/html', msglen, callingDomain)
+            self._write(msg)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', 'show theme designer screen',
+                               self.server.debug)
+            return
+
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'show about screen done',
                            self.server.debug)
@@ -17728,6 +17845,36 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.defaultTimeline)
                 return
 
+            # theme designer submit/cancel button
+            if usersInPath and \
+               self.path.endswith('/changeThemeSettings'):
+                nickname = self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+
+                if not self.server.keyShortcuts.get(nickname):
+                    accessKeys = self.server.accessKeys
+                    self.server.keyShortcuts[nickname] = accessKeys.copy()
+                accessKeys = self.server.keyShortcuts[nickname]
+
+                self._themeDesigner(self.path,
+                                    callingDomain, cookie,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    nickname,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    self.server.debug,
+                                    accessKeys,
+                                    self.server.defaultTimeline,
+                                    self.server.themeName,
+                                    self.server.allowLocalNetworkAccess,
+                                    self.server.systemLanguage)
+                return
+
         # update the shared item federation token for the calling domain
         # if it is within the permitted federation
         if self.headers.get('Origin') and \
@@ -18330,6 +18477,7 @@ def runDaemon(contentLicenseUrl: str,
         'enterNotes': 'n',
         'menuTimeline': 't',
         'menuEdit': 'e',
+        'menuThemeDesigner': 'z',
         'menuProfile': 'p',
         'menuInbox': 'i',
         'menuSearch': '/',
