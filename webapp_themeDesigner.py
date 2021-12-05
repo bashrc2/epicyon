@@ -235,7 +235,6 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     for variableName, value in themeJson.items():
         if 'font-size' in variableName:
             variableNameStr = variableName.replace('-', ' ')
-            variableNameStr = variableNameStr.replace('font size', '').strip()
             variableNameStr = variableNameStr.title()
             fontStr += \
                 '      <tr><td><label class="labels">' + \
