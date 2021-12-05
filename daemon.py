@@ -2170,6 +2170,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         fields = {}
         print('themeParams: ' + str(themeParams))
+        with open(baseDir + '/teststr.txt') as fp:
+            fp.write(themeParams)
         fieldsList = themeParams.split('&')
         for fieldStr in fieldsList:
             if '=' not in fieldStr:
@@ -2177,6 +2179,8 @@ class PubServer(BaseHTTPRequestHandler):
             fieldValue = fieldStr.split('=')[1].strip()
             if fieldValue == 'on':
                 fieldValue = 'True'
+            elif fieldValue == 'off':
+                fieldValue = 'False'
             if not fieldValue:
                 fieldValue = 'False'
             fields[fieldStr.split('=')[0]] = fieldValue
