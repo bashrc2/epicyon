@@ -2173,7 +2173,12 @@ class PubServer(BaseHTTPRequestHandler):
         for fieldStr in fieldsList:
             if '=' not in fieldStr:
                 continue
-            fields[fieldStr.split('=')[0]] = fieldStr.split('=')[1].strip()
+            fieldValue = fieldStr.split('=')[1].strip()
+            if fieldValue == 'on':
+                fieldValue = 'True'
+            if not fieldValue:
+                fieldValue = 'False'
+            fields[fieldStr.split('=')[0]] = fieldValue
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}

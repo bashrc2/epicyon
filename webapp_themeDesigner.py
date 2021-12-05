@@ -232,6 +232,8 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
 
     fontStr = '    <div class="container">\n' + tableStr
     colorStr = '    <div class="container">\n' + tableStr
+    dimensionStr = '    <div class="container">\n' + tableStr
+    switchStr = '    <div class="container">\n' + tableStr
     for variableName, value in themeJson.items():
         if 'font-size' in variableName:
             variableNameStr = variableName.replace('-', ' ')
@@ -242,7 +244,7 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
             fontStr += \
                 '<td><input type="text" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
-                '" title="' + variableNameStr + '"></p></td></tr>\n'
+                '" title="' + variableNameStr + '"></td></tr>\n'
         elif ('-color' in variableName or
               '-background' in variableName or
               variableName.endswith('-text')):
@@ -268,11 +270,37 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
             colorStr += \
                 '<td><input type="color" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
-                '" title="' + variableNameStr + '"></p></td></tr>\n'
+                '" title="' + variableNameStr + '"></td></tr>\n'
+        elif ('-width' in variableName or
+              '-height' in variableName):
+            variableNameStr = variableName.replace('-', ' ')
+            variableNameStr = variableNameStr.title()
+            dimensionStr += \
+                '      <tr><td><label class="labels">' + \
+                variableNameStr + '</label></td>'
+            dimensionStr += \
+                '<td><input type="text" name="themeSetting_' + \
+                variableName + '" value="' + str(value) + \
+                '" title="' + variableNameStr + '"></td></tr>\n'
+        elif value == 'True' or value == 'False':
+            variableNameStr = variableName.replace('-', ' ')
+            variableNameStr = variableNameStr.title()
+            switchStr += \
+                '      <tr><td><label class="labels">' + \
+                variableNameStr + '</label></td>'
+            checkedStr = ''
+            if value == 'True':
+                checkedStr = ' checked'
+            switchStr += \
+                '<td><input type="checkbox" class="profilecheckbox" ' + \
+                'name="themeSetting_' + variableName + '"' + \
+                checkedStr + '></td></tr>\n'
 
     colorStr += '    </table>\n    </div>\n'
     fontStr += '    </table>\n    </div>\n'
-    themeForm += colorStr + fontStr
+    dimensionStr += '    </table>\n    </div>\n'
+    switchStr += '    </table>\n    </div>\n'
+    themeForm += colorStr + fontStr + dimensionStr + switchStr
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
     themeForm += htmlFooter()
