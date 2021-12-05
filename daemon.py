@@ -2204,6 +2204,33 @@ class PubServer(BaseHTTPRequestHandler):
                              allowLocalNetworkAccess,
                              systemLanguage)
 
+        if 'rss-icon-at-top' in themeDesignerParams:
+            if themeDesignerParams['rss-icon-at-top'].lower() == 'true':
+                self.server.rssIconAtTop = True
+            else:
+                self.server.rssIconAtTop = False
+        if 'publish-button-at-top' in themeDesignerParams:
+            if themeDesignerParams['publish-button-at-top'].lower() == 'true':
+                self.server.publishButtonAtTop = True
+            else:
+                self.server.publishButtonAtTop = False
+        if 'newswire-publish-icon' in themeDesignerParams:
+            if themeDesignerParams['newswire-publish-icon'].lower() == 'true':
+                self.server.showPublishAsIcon = True
+            else:
+                self.server.showPublishAsIcon = False
+        if 'icons-as-buttons' in themeDesignerParams:
+            if themeDesignerParams['icons-as-buttons'].lower() == 'true':
+                self.server.iconsAsButtons = True
+            else:
+                self.server.iconsAsButtons = False
+        if 'full-width-timeline-buttons' in themeDesignerParams:
+            themeValue = themeDesignerParams['full-width-timeline-buttons']
+            if themeValue.lower() == 'true':
+                self.server.fullWidthTimelineButtonHeader = True
+            else:
+                self.server.fullWidthTimelineButtonHeader = False
+
         # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = \
