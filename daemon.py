@@ -2128,7 +2128,6 @@ class PubServer(BaseHTTPRequestHandler):
             httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
         length = int(self.headers['Content-length'])
 
-        print('themeDesigner0')
         try:
             themeParams = self.rfile.read(length).decode('utf-8')
         except SocketError as e:
@@ -2150,7 +2149,6 @@ class PubServer(BaseHTTPRequestHandler):
         themeParams = \
             urllib.parse.unquote_plus(themeParams)
 
-        print('themeDesigner1')
         # theme designer screen, reset button
         # See htmlThemeDesigner
         if 'submitThemeDesignerReset=' in themeParams or \
@@ -2170,14 +2168,12 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        print('themeDesigner2: ' + str(themeParams))
         fields = {}
         fieldsList = themeParams.split('&')
         for fieldStr in fieldsList:
             if '=' not in fieldStr:
                 continue
             fields[fieldStr.split('=')[0]] = fieldStr.split('=')[1].strip()
-        print('themeDesigner3: ' + str(fields))
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
