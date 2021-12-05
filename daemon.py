@@ -2189,7 +2189,7 @@ class PubServer(BaseHTTPRequestHandler):
             for variableName, value in themeJson.items():
                 if value.lower() == 'false' or value.lower() == 'true':
                     if variableName not in fields:
-                        fields[variableName] = 'False'
+                        fields['themeSetting_' + variableName] = 'False'
 
         # get the parameters from the theme designer screen
         themeDesignerParams = {}
