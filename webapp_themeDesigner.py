@@ -240,6 +240,8 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
         if variableName.endswith('-color') or \
            variableName.endswith('-text'):
             variableNameStr = variableName.replace('-', ' ')
+            if variableNameStr.endswith(' color'):
+                variableNameStr = variableNameStr.replace(' color', '')
             themeForm += \
                 '      <tr><td><label class="labels">' + \
                 variableNameStr + '</label></td>'
