@@ -246,6 +246,8 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 variableNameStr = variableNameStr.replace(' bg', ' background')
             elif variableNameStr.endswith(' fg'):
                 variableNameStr = variableNameStr.replace(' fg', ' foreground')
+            if variableNameStr == 'cw':
+                variableNameStr = 'content warning'
             variableNameStr = variableNameStr.title()
             themeForm += \
                 '      <tr><td><label class="labels">' + \
