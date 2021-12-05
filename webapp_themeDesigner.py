@@ -177,6 +177,14 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     if os.path.isfile(themeFilename):
         themeJson = loadJson(themeFilename)
 
+    # set custom theme parameters
+    customVariablesFile = baseDir + '/accounts/theme.json'
+    if os.path.isfile(customVariablesFile):
+        customThemeParams = loadJson(customVariablesFile, 0)
+        if customThemeParams:
+            for variableName, value in customThemeParams.items():
+                themeJson[variableName] = value
+
     themeForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
