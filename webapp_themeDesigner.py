@@ -271,8 +271,9 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 '<td><input type="color" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></td></tr>\n'
-        elif ('-width' in variableName or
-              '-height' in variableName):
+        elif (('-width' in variableName or
+               '-height' in variableName) and
+              (value.lower() != 'true' and value.lower() != 'false')):
             variableNameStr = variableName.replace('-', ' ')
             variableNameStr = variableNameStr.title()
             dimensionStr += \
@@ -282,14 +283,14 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 '<td><input type="text" name="themeSetting_' + \
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></td></tr>\n'
-        elif value == 'True' or value == 'False':
+        elif value.title() == 'True' or value.title() == 'False':
             variableNameStr = variableName.replace('-', ' ')
             variableNameStr = variableNameStr.title()
             switchStr += \
                 '      <tr><td><label class="labels">' + \
                 variableNameStr + '</label></td>'
             checkedStr = ''
-            if value == 'True':
+            if value.title() == 'True':
                 checkedStr = ' checked'
             switchStr += \
                 '<td><input type="checkbox" class="profilecheckbox" ' + \
