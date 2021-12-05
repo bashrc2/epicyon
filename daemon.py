@@ -2170,7 +2170,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         fields = {}
         print('themeParams: ' + str(themeParams))
-        with open(baseDir + '/teststr.txt') as fp:
+        with open(baseDir + '/teststr.txt', 'w+') as fp:
             fp.write(themeParams)
         fieldsList = themeParams.split('&')
         for fieldStr in fieldsList:
