@@ -2169,6 +2169,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         fields = {}
+        print('themeParams: ' + str(themeParams))
         fieldsList = themeParams.split('&')
         for fieldStr in fieldsList:
             if '=' not in fieldStr:
