@@ -317,7 +317,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import getPersonPubKey
 from httpsig import verifyPostHeaders
-# from theme import setThemeFromDesigner
+from theme import setThemeFromDesigner
 from theme import scanThemesForScripts
 from theme import importTheme
 from theme import exportTheme
@@ -2118,7 +2118,8 @@ class PubServer(BaseHTTPRequestHandler):
                        onionDomain: str, i2pDomain: str,
                        debug: bool, accessKeys: {},
                        defaultTimeline: str, themeName: str,
-                       allowLocalNetworkAccess: bool) -> None:
+                       allowLocalNetworkAccess: bool,
+                       systemLanguage: str) -> None:
         """Receive POST from webapp_themeDesigner
         """
         usersPath = '/users/' + nickname
@@ -2174,14 +2175,16 @@ class PubServer(BaseHTTPRequestHandler):
         print('themeDesigner3: ' + str(fields))
 
         # get the parameters from the theme designer screen
-        # themeDesignerParams = {}
+        themeDesignerParams = {}
         for variableName, key in fields.items():
             if variableName.startswith('themeSetting_'):
                 variableName = variableName.replace('themeSetting_', '')
-                # themeDesignerParams[variableName] = key
+                themeDesignerParams[variableName] = key
 
-        # setThemeFromDesigner(baseDir, themeName, themeDesignerParams,
-        #                      allowLocalNetworkAccess)
+        setThemeFromDesigner(baseDir, themeName, domain,
+                             themeDesignerParams,
+                             allowLocalNetworkAccess,
+                             systemLanguage)
 
         # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
@@ -17867,7 +17870,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys,
                                     self.server.defaultTimeline,
                                     self.server.themeName,
-                                    self.server.allowLocalNetworkAccess)
+                                    self.server.allowLocalNetworkAccess,
+                                    self.server.systemLanguage)
                 return
 
         # update the shared item federation token for the calling domain
