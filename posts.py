@@ -1302,6 +1302,30 @@ def _createPostModReport(baseDir: str,
         modFile.write(newPostId + '\n')
 
 
+def _getActorFromInReplyTo(inReplyTo: str) -> str:
+    """Tries to get the replied to actor from the inReplyTo post id
+    Note: this will not always be successful for some instance types
+    """
+    replyNickname = getNicknameFromActor(inReplyTo)
+    if not replyNickname:
+        return None
+    replyActor = None
+    if '/' + replyNickname + '/' in inReplyTo:
+        replyActor = \
+            inReplyTo.split('/' + replyNickname + '/')[0] + \
+            '/' + replyNickname
+    elif '#' + replyNickname + '#' in inReplyTo:
+        replyActor = \
+            inReplyTo.split('#' + replyNickname + '#')[0] + \
+            '#' + replyNickname
+        replyActor = replyActor.replace('#', '/')
+    if not replyActor:
+        return None
+    if '://' not in replyActor:
+        return None
+    return replyActor
+
+
 def _createPostBase(baseDir: str,
                     nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, httpPrefix: str, content: str,
@@ -1433,6 +1457,14 @@ def _createPostBase(baseDir: str,
                 break
     for ccRemoval in removeFromCC:
         toCC.remove(ccRemoval)
+
+    if inReplyTo and isPublic:
+        # If this is a public post then get the actor being
+        # replied to end ensure that it is within the CC list
+        replyActor = _getActorFromInReplyTo(inReplyTo)
+        if replyActor:
+            if replyActor not in toCC:
+                toCC.append(replyActor)
 
     # the type of post to be made
     postObjectType = 'Note'
