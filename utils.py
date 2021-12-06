@@ -600,6 +600,14 @@ def removeIdEnding(idStr: str) -> str:
     return idStr
 
 
+def removeHashFromPostId(postId: str) -> str:
+    """Removes any has from a post id
+    """
+    if '#' not in postId:
+        return postId
+    return postId.split('#')[0]
+
+
 def getProtocolPrefixes() -> []:
     """Returns a list of valid prefixes
     """
@@ -3138,6 +3146,8 @@ def hasActor(postJsonObject: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
     if postJsonObject.get('actor'):
+        if '#' in postJsonObject['actor']:
+            return False
         return True
     if debug:
         if postJsonObject.get('type'):

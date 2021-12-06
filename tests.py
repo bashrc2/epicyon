@@ -36,6 +36,7 @@ from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
 from session import getJson
+from posts import getActorFromInReplyTo
 from posts import regenerateIndexForBox
 from posts import removePostInteractions
 from posts import getMentionedPeople
@@ -4239,6 +4240,7 @@ def _testReplyToPublicPost(baseDir: str) -> None:
     mediaType = None
     imageDescription = 'Some description'
     city = 'London, England'
+    testInReplyTo = postId
     testInReplyToAtomUri = None
     testSubject = None
     testSchedulePost = False
@@ -4254,7 +4256,7 @@ def _testReplyToPublicPost(baseDir: str) -> None:
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
-                         imageDescription, city, postId,
+                         imageDescription, city, testInReplyTo,
                          testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
@@ -4275,8 +4277,20 @@ def _testReplyToPublicPost(baseDir: str) -> None:
     assert len(reply['object']['cc']) >= 1
     assert reply['object']['cc'][0].endswith(nickname + '/followers')
     assert len(reply['object']['tag']) == 1
+    if len(reply['object']['cc']) != 2:
+        print('reply["object"]["cc"]: ' + str(reply['object']['cc']))
     assert len(reply['object']['cc']) == 2
-    assert reply['object']['cc'][1] == httpPrefix + '://rat.site/@ninjarodent'
+    assert reply['object']['cc'][1] == \
+        httpPrefix + '://rat.site/users/ninjarodent'
+
+    assert len(reply['to']) == 1
+    assert reply['to'][0].endswith('#Public')
+    assert len(reply['cc']) >= 1
+    assert reply['cc'][0].endswith(nickname + '/followers')
+    if len(reply['cc']) != 2:
+        print('reply["cc"]: ' + str(reply['cc']))
+    assert len(reply['cc']) == 2
+    assert reply['cc'][1] == httpPrefix + '://rat.site/users/ninjarodent'
 
 
 def _getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
@@ -6013,6 +6027,18 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
     shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
+def _testGetActorFromInReplyTo() -> None:
+    print('testGetActorFromInReplyTo')
+    inReplyTo = \
+        'https://fosstodon.org/users/bashrc/statuses/107400700612621140'
+    replyActor = getActorFromInReplyTo(inReplyTo)
+    assert replyActor == 'https://fosstodon.org/users/bashrc'
+
+    inReplyTo = 'https://fosstodon.org/activity/107400700612621140'
+    replyActor = getActorFromInReplyTo(inReplyTo)
+    assert replyActor is None
+
+
 def runAllTests():
     baseDir = os.getcwd()
     print('Running tests...')
@@ -6020,6 +6046,7 @@ def runAllTests():
     _translateOntology(baseDir)
     _testGetPriceFromString()
     _testFunctions()
+    _testGetActorFromInReplyTo()
     _testValidEmojiContent()
     _testAddCWfromLists(baseDir)
     _testWordsSimilarity()

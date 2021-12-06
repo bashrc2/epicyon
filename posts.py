@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import getUserPaths
 from utils import invalidCiphertext
 from utils import hasObjectStringType
 from utils import removeIdEnding
@@ -1259,6 +1260,29 @@ def _createPostPlaceAndTime(eventDate: str, endDate: str,
     return eventDateStr
 
 
+def _consolidateActorsList(actorsList: []) -> None:
+    """ consolidate duplicated actors
+    https://domain/@nick gets merged with https://domain/users/nick
+    """
+    possibleDuplicateActors = []
+    for ccActor in actorsList:
+        if '/@' in ccActor:
+            if ccActor not in possibleDuplicateActors:
+                possibleDuplicateActors.append(ccActor)
+    if possibleDuplicateActors:
+        uPaths = getUserPaths()
+        removeActors = []
+        for ccActor in possibleDuplicateActors:
+            for usrPath in uPaths:
+                ccActorFull = ccActor.replace('/@', usrPath)
+                if ccActorFull in actorsList:
+                    if ccActor not in removeActors:
+                        removeActors.append(ccActor)
+                    break
+        for ccActor in removeActors:
+            actorsList.remove(ccActor)
+
+
 def _createPostMentions(ccUrl: str, newPost: {},
                         toRecipients: [], tags: []) -> None:
     """Updates mentions for a new post
@@ -1267,9 +1291,10 @@ def _createPostMentions(ccUrl: str, newPost: {},
         return
     if len(ccUrl) == 0:
         return
-    newPost['cc'] = [ccUrl]
+
     if newPost.get('object'):
-        newPost['object']['cc'] = [ccUrl]
+        if ccUrl not in newPost['object']['cc']:
+            newPost['object']['cc'] = [ccUrl] + newPost['object']['cc']
 
         # if this is a public post then include any mentions in cc
         toCC = newPost['object']['cc']
@@ -1282,6 +1307,13 @@ def _createPostMentions(ccUrl: str, newPost: {},
                     continue
                 if tag['href'] not in toCC:
                     newPost['object']['cc'].append(tag['href'])
+
+        _consolidateActorsList(newPost['object']['cc'])
+        newPost['cc'] = newPost['object']['cc']
+    else:
+        if ccUrl not in newPost['cc']:
+            newPost['cc'] = [ccUrl] + newPost['cc']
+        _consolidateActorsList(['cc'])
 
 
 def _createPostModReport(baseDir: str,
@@ -1300,6 +1332,30 @@ def _createPostModReport(baseDir: str,
     moderationIndexFile = baseDir + '/accounts/moderation.txt'
     with open(moderationIndexFile, 'a+') as modFile:
         modFile.write(newPostId + '\n')
+
+
+def getActorFromInReplyTo(inReplyTo: str) -> str:
+    """Tries to get the replied to actor from the inReplyTo post id
+    Note: this will not always be successful for some instance types
+    """
+    replyNickname = getNicknameFromActor(inReplyTo)
+    if not replyNickname:
+        return None
+    replyActor = None
+    if '/' + replyNickname + '/' in inReplyTo:
+        replyActor = \
+            inReplyTo.split('/' + replyNickname + '/')[0] + \
+            '/' + replyNickname
+    elif '#' + replyNickname + '#' in inReplyTo:
+        replyActor = \
+            inReplyTo.split('#' + replyNickname + '#')[0] + \
+            '#' + replyNickname
+        replyActor = replyActor.replace('#', '/')
+    if not replyActor:
+        return None
+    if '://' not in replyActor:
+        return None
+    return replyActor
 
 
 def _createPostBase(baseDir: str,
@@ -1394,14 +1450,15 @@ def _createPostBase(baseDir: str,
             if mention not in toCC:
                 toCC.append(mention)
 
+    isPublic = False
+    for recipient in toRecipients:
+        if recipient.endswith('#Public'):
+            isPublic = True
+            break
+
     # create a list of hashtags
     # Only posts which are #Public are searchable by hashtag
     if hashtagsDict:
-        isPublic = False
-        for recipient in toRecipients:
-            if recipient.endswith('#Public'):
-                isPublic = True
-                break
         for tagName, tag in hashtagsDict.items():
             if not tagExists(tag['type'], tag['name'], tags):
                 tags.append(tag)
@@ -1421,18 +1478,27 @@ def _createPostBase(baseDir: str,
 
     postContext = getIndividualPostContext()
 
-    # make sure that CC doesn't also contain a To address
-    # eg. To: [ "https://mydomain/users/foo/followers" ]
-    #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
-    removeFromCC = []
-    for ccRecipient in toCC:
-        for sendToActor in toRecipients:
-            if ccRecipient in sendToActor and \
-               ccRecipient not in removeFromCC:
-                removeFromCC.append(ccRecipient)
-                break
-    for ccRemoval in removeFromCC:
-        toCC.remove(ccRemoval)
+    if not isPublic:
+        # make sure that CC doesn't also contain a To address
+        # eg. To: [ "https://mydomain/users/foo/followers" ]
+        #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
+        removeFromCC = []
+        for ccRecipient in toCC:
+            for sendToActor in toRecipients:
+                if ccRecipient in sendToActor and \
+                   ccRecipient not in removeFromCC:
+                    removeFromCC.append(ccRecipient)
+                    break
+        for ccRemoval in removeFromCC:
+            toCC.remove(ccRemoval)
+    else:
+        if inReplyTo:
+            # If this is a public post then get the actor being
+            # replied to end ensure that it is within the CC list
+            replyActor = getActorFromInReplyTo(inReplyTo)
+            if replyActor:
+                if replyActor not in toCC:
+                    toCC.append(replyActor)
 
     # the type of post to be made
     postObjectType = 'Note'
