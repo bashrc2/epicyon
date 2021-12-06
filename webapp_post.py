@@ -1630,8 +1630,11 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if postJsonObject['object']['conversation']:
             conversationId = postJsonObject['object']['conversation']
 
+    publicReply = False
+    if isPublicPost(postJsonObject):
+        publicReply = True
     replyStr = _getReplyIconHtml(baseDir, nickname, domain,
-                                 isPublicRepeat,
+                                 publicReply,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
                                  translate, systemLanguage,
