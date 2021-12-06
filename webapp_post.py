@@ -390,7 +390,11 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
         return replyStr
 
     # reply is permitted - create reply icon
-    replyToLink = removeIdEnding(postJsonObject['object']['id'])
+    if '#' not in postJsonObject['object']['id']:
+        replyToLink = removeIdEnding(postJsonObject['object']['id'])
+    else:
+        replyToLink = \
+            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
 
     # see Mike MacGirvin's replyTo suggestion
     if postJsonObject['object'].get('replyTo'):
@@ -571,7 +575,11 @@ def _getAnnounceIconHtml(isAnnounced: bool,
             unannounceLinkStr = '?unannounce=' + \
                 removeIdEnding(announceJsonObject['id'])
 
-    announcePostId = removeIdEnding(postJsonObject['object']['id'])
+    if '#' not in postJsonObject['object']['id']:
+        announcePostId = removeIdEnding(postJsonObject['object']['id'])
+    else:
+        announcePostId = \
+            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
     announceLinkStr = '?' + \
         announceLink + '=' + announcePostId + pageNumberParam
     announceStr = \
@@ -639,7 +647,10 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
         likeStr += '<label class="likesCount">'
         likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
         likeStr += '</label>\n'
-    likePostId = removeIdEnding(postJsonObject['id'])
+    if '#' not in postJsonObject['id']:
+        likePostId = removeIdEnding(postJsonObject['id'])
+    else:
+        likePostId = removeIdEnding(postJsonObject['id'].split('#')[0])
     likeStr += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         likeLink + '=' + likePostId + \
@@ -685,7 +696,11 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
         if translate.get(bookmarkTitle):
             bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
-    bookmarkPostId = removeIdEnding(postJsonObject['object']['id'])
+    if '#' not in postJsonObject['object']['id']:
+        bookmarkPostId = removeIdEnding(postJsonObject['object']['id'])
+    else:
+        bookmarkPostId = \
+            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmarkLink + '=' + bookmarkPostId + \
@@ -722,7 +737,11 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
     if translate.get(reactionTitle):
         reactionTitle = translate[reactionTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.65')
-    reactionPostId = removeIdEnding(postJsonObject['object']['id'])
+    if '#' not in postJsonObject['object']['id']:
+        reactionPostId = removeIdEnding(postJsonObject['object']['id'])
+    else:
+        reactionPostId = \
+            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
     reactionStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
         '?selreact=' + reactionPostId + pageNumberParam + \
@@ -1364,7 +1383,10 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
-        messageId = removeIdEnding(postJsonObject['id'])
+        if '#' not in postJsonObject['id']:
+            messageId = removeIdEnding(postJsonObject['id'])
+        else:
+            messageId = removeIdEnding(postJsonObject['id'].split('#')[0])
 
     _logPostTiming(enableTimingLog, postStartTime, '2')
 

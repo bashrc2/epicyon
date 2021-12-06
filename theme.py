@@ -513,8 +513,6 @@ def resetThemeDesignerSettings(baseDir: str, themeName: str, domain: str,
             os.remove(customVariablesFile)
         except OSError:
             print('EX: unable to remove theme designer settings on reset')
-        setTheme(baseDir, themeName, domain,
-                 allowLocalNetworkAccess, systemLanguage)
 
 
 def _readVariablesFile(baseDir: str, themeName: str,
@@ -826,13 +824,9 @@ def setTheme(baseDir: str, name: str, domain: str,
 
     # if the theme has changed then remove any custom settings
     if prevThemeName != name:
-        customVariablesFile = baseDir + '/accounts/theme.json'
-        if os.path.isfile(customVariablesFile):
-            print('Removing theme designer settings')
-            try:
-                os.remove(customVariablesFile)
-            except OSError:
-                print('EX: removing theme designer settings')
+        resetThemeDesignerSettings(baseDir, name, domain,
+                                   allowLocalNetworkAccess,
+                                   systemLanguage)
 
     _removeTheme(baseDir)
 

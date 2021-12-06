@@ -595,6 +595,8 @@ def removeIdEnding(idStr: str) -> str:
         idStr = idStr[:-len('/event')]
     elif idStr.endswith('/replies'):
         idStr = idStr[:-len('/replies')]
+    if idStr.endswith('#Create'):
+        idStr = idStr.split('#Create')[0]
     return idStr
 
 
