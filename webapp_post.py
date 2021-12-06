@@ -575,7 +575,11 @@ def _getAnnounceIconHtml(isAnnounced: bool,
             unannounceLinkStr = '?unannounce=' + \
                 removeIdEnding(announceJsonObject['id'])
 
-    announcePostId = removeIdEnding(postJsonObject['object']['id'])
+    if '#' not in postJsonObject['object']['id']:
+        announcePostId = removeIdEnding(postJsonObject['object']['id'])
+    else:
+        announcePostId = \
+            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
     announceLinkStr = '?' + \
         announceLink + '=' + announcePostId + pageNumberParam
     announceStr = \
