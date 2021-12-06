@@ -3146,6 +3146,8 @@ def hasActor(postJsonObject: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
     if postJsonObject.get('actor'):
+        if '#' in postJsonObject['actor']:
+            return False
         return True
     if debug:
         if postJsonObject.get('type'):
