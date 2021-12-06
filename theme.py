@@ -516,10 +516,6 @@ def resetThemeDesignerSettings(baseDir: str, themeName: str, domain: str,
         setTheme(baseDir, themeName, domain,
                  allowLocalNetworkAccess, systemLanguage)
 
-    customIconsDir = baseDir + '/accounts/customIcons'
-    if os.path.isdir(customIconsDir):
-        rmtree(customIconsDir, ignore_errors=False, onerror=None)
-
 
 def _readVariablesFile(baseDir: str, themeName: str,
                        variablesFile: str,
