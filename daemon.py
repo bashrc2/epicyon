@@ -2204,6 +2204,7 @@ class PubServer(BaseHTTPRequestHandler):
                              allowLocalNetworkAccess,
                              systemLanguage)
 
+        # set boolean values
         if 'rss-icon-at-top' in themeDesignerParams:
             if themeDesignerParams['rss-icon-at-top'].lower() == 'true':
                 self.server.rssIconAtTop = True
