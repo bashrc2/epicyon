@@ -4240,6 +4240,7 @@ def _testReplyToPublicPost(baseDir: str) -> None:
     mediaType = None
     imageDescription = 'Some description'
     city = 'London, England'
+    testInReplyTo = postId
     testInReplyToAtomUri = None
     testSubject = None
     testSchedulePost = False
@@ -4255,7 +4256,7 @@ def _testReplyToPublicPost(baseDir: str) -> None:
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
-                         imageDescription, city, postId,
+                         imageDescription, city, testInReplyTo,
                          testInReplyToAtomUri,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
@@ -4276,8 +4277,20 @@ def _testReplyToPublicPost(baseDir: str) -> None:
     assert len(reply['object']['cc']) >= 1
     assert reply['object']['cc'][0].endswith(nickname + '/followers')
     assert len(reply['object']['tag']) == 1
+    if len(reply['object']['cc']) != 2:
+        print('reply["object"]["cc"]: ' + str(reply['object']['cc']))
     assert len(reply['object']['cc']) == 2
-    assert reply['object']['cc'][1] == httpPrefix + '://rat.site/@ninjarodent'
+    assert reply['object']['cc'][1] == \
+        httpPrefix + '://rat.site/users/ninjarodent'
+
+    assert len(reply['to']) == 1
+    assert reply['to'][0].endswith('#Public')
+    assert len(reply['cc']) >= 1
+    assert reply['cc'][0].endswith(nickname + '/followers')
+    if len(reply['cc']) != 2:
+        print('reply["cc"]: ' + str(reply['cc']))
+    assert len(reply['cc']) == 2
+    assert reply['cc'][1] == httpPrefix + '://rat.site/users/ninjarodent'
 
 
 def _getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:

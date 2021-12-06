@@ -32,6 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
+from utils import getUserPaths
 from utils import invalidCiphertext
 from utils import hasObjectStringType
 from utils import removeIdEnding
@@ -1259,6 +1260,29 @@ def _createPostPlaceAndTime(eventDate: str, endDate: str,
     return eventDateStr
 
 
+def _consolidateActorsList(actorsList: []) -> None:
+    """ consolidate duplicated actors
+    https://domain/@nick gets merged with https://domain/users/nick
+    """
+    possibleDuplicateActors = []
+    for ccActor in actorsList:
+        if '/@' in ccActor:
+            if ccActor not in possibleDuplicateActors:
+                possibleDuplicateActors.append(ccActor)
+    if possibleDuplicateActors:
+        uPaths = getUserPaths()
+        removeActors = []
+        for ccActor in possibleDuplicateActors:
+            for usrPath in uPaths:
+                ccActorFull = ccActor.replace('/@', usrPath)
+                if ccActorFull in actorsList:
+                    if ccActor not in removeActors:
+                        removeActors.append(ccActor)
+                    break
+        for ccActor in removeActors:
+            actorsList.remove(ccActor)
+
+
 def _createPostMentions(ccUrl: str, newPost: {},
                         toRecipients: [], tags: []) -> None:
     """Updates mentions for a new post
@@ -1267,9 +1291,10 @@ def _createPostMentions(ccUrl: str, newPost: {},
         return
     if len(ccUrl) == 0:
         return
-    newPost['cc'] = [ccUrl]
+
     if newPost.get('object'):
-        newPost['object']['cc'] = [ccUrl]
+        if ccUrl not in newPost['object']['cc']:
+            newPost['object']['cc'] = [ccUrl] + newPost['object']['cc']
 
         # if this is a public post then include any mentions in cc
         toCC = newPost['object']['cc']
@@ -1282,6 +1307,13 @@ def _createPostMentions(ccUrl: str, newPost: {},
                     continue
                 if tag['href'] not in toCC:
                     newPost['object']['cc'].append(tag['href'])
+
+        _consolidateActorsList(newPost['object']['cc'])
+        newPost['cc'] = newPost['object']['cc']
+    else:
+        if ccUrl not in newPost['cc']:
+            newPost['cc'] = [ccUrl] + newPost['cc']
+        _consolidateActorsList(['cc'])
 
 
 def _createPostModReport(baseDir: str,
