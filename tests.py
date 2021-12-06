@@ -36,6 +36,7 @@ from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
 from session import getJson
+from posts import getActorFromInReplyTo
 from posts import regenerateIndexForBox
 from posts import removePostInteractions
 from posts import getMentionedPeople
@@ -6013,6 +6014,18 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
     shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
+def _testGetActorFromInReplyTo() -> None:
+    print('testGetActorFromInReplyTo')
+    inReplyTo = \
+        'https://fosstodon.org/users/bashrc/statuses/107400700612621140'
+    replyActor = getActorFromInReplyTo(inReplyTo)
+    assert replyActor == 'https://fosstodon.org/users/bashrc'
+
+    inReplyTo = 'https://fosstodon.org/activity/107400700612621140'
+    replyActor = getActorFromInReplyTo(inReplyTo)
+    assert replyActor is None
+
+
 def runAllTests():
     baseDir = os.getcwd()
     print('Running tests...')
@@ -6020,6 +6033,7 @@ def runAllTests():
     _translateOntology(baseDir)
     _testGetPriceFromString()
     _testFunctions()
+    _testGetActorFromInReplyTo()
     _testValidEmojiContent()
     _testAddCWfromLists(baseDir)
     _testWordsSimilarity()

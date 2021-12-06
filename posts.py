@@ -1302,7 +1302,7 @@ def _createPostModReport(baseDir: str,
         modFile.write(newPostId + '\n')
 
 
-def _getActorFromInReplyTo(inReplyTo: str) -> str:
+def getActorFromInReplyTo(inReplyTo: str) -> str:
     """Tries to get the replied to actor from the inReplyTo post id
     Note: this will not always be successful for some instance types
     """
@@ -1462,7 +1462,7 @@ def _createPostBase(baseDir: str,
     if inReplyTo and isPublic:
         # If this is a public post then get the actor being
         # replied to end ensure that it is within the CC list
-        replyActor = _getActorFromInReplyTo(inReplyTo)
+        replyActor = getActorFromInReplyTo(inReplyTo)
         if replyActor:
             if replyActor not in toCC:
                 toCC.append(replyActor)
