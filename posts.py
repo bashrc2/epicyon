@@ -1418,14 +1418,15 @@ def _createPostBase(baseDir: str,
             if mention not in toCC:
                 toCC.append(mention)
 
+    isPublic = False
+    for recipient in toRecipients:
+        if recipient.endswith('#Public'):
+            isPublic = True
+            break
+
     # create a list of hashtags
     # Only posts which are #Public are searchable by hashtag
     if hashtagsDict:
-        isPublic = False
-        for recipient in toRecipients:
-            if recipient.endswith('#Public'):
-                isPublic = True
-                break
         for tagName, tag in hashtagsDict.items():
             if not tagExists(tag['type'], tag['name'], tags):
                 tags.append(tag)
@@ -1458,19 +1459,13 @@ def _createPostBase(baseDir: str,
     for ccRemoval in removeFromCC:
         toCC.remove(ccRemoval)
 
-    if inReplyTo:
-        isPublic = False
-        for recipient in toRecipients:
-            if recipient.endswith('#Public'):
-                isPublic = True
-                break
-        if isPublic:
-            # If this is a public post then get the actor being
-            # replied to end ensure that it is within the CC list
-            replyActor = _getActorFromInReplyTo(inReplyTo)
-            if replyActor:
-                if replyActor not in toCC:
-                    toCC.append(replyActor)
+    if inReplyTo and isPublic:
+        # If this is a public post then get the actor being
+        # replied to end ensure that it is within the CC list
+        replyActor = _getActorFromInReplyTo(inReplyTo)
+        if replyActor:
+            if replyActor not in toCC:
+                toCC.append(replyActor)
 
     # the type of post to be made
     postObjectType = 'Note'
