@@ -23,6 +23,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import removeHashFromPostId
 from utils import removeHtml
 from utils import getActorLanguagesList
 from utils import getBaseContentFromPost
@@ -390,11 +391,8 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
         return replyStr
 
     # reply is permitted - create reply icon
-    if '#' not in postJsonObject['object']['id']:
-        replyToLink = removeIdEnding(postJsonObject['object']['id'])
-    else:
-        replyToLink = \
-            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
+    replyToLink = removeHashFromPostId(postJsonObject['object']['id'])
+    replyToLink = removeIdEnding(replyToLink)
 
     # see Mike MacGirvin's replyTo suggestion
     if postJsonObject['object'].get('replyTo'):
@@ -575,11 +573,8 @@ def _getAnnounceIconHtml(isAnnounced: bool,
             unannounceLinkStr = '?unannounce=' + \
                 removeIdEnding(announceJsonObject['id'])
 
-    if '#' not in postJsonObject['object']['id']:
-        announcePostId = removeIdEnding(postJsonObject['object']['id'])
-    else:
-        announcePostId = \
-            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
+    announcePostId = removeHashFromPostId(postJsonObject['object']['id'])
+    announcePostId = removeIdEnding(announcePostId)
     announceLinkStr = '?' + \
         announceLink + '=' + announcePostId + pageNumberParam
     announceStr = \
@@ -647,10 +642,8 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
         likeStr += '<label class="likesCount">'
         likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
         likeStr += '</label>\n'
-    if '#' not in postJsonObject['id']:
-        likePostId = removeIdEnding(postJsonObject['id'])
-    else:
-        likePostId = removeIdEnding(postJsonObject['id'].split('#')[0])
+    likePostId = removeHashFromPostId(postJsonObject['id'])
+    likePostId = removeIdEnding(likePostId)
     likeStr += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         likeLink + '=' + likePostId + \
@@ -696,11 +689,8 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
         if translate.get(bookmarkTitle):
             bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
-    if '#' not in postJsonObject['object']['id']:
-        bookmarkPostId = removeIdEnding(postJsonObject['object']['id'])
-    else:
-        bookmarkPostId = \
-            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
+    bookmarkPostId = removeHashFromPostId(postJsonObject['object']['id'])
+    bookmarkPostId = removeIdEnding(bookmarkPostId)
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmarkLink + '=' + bookmarkPostId + \
@@ -737,11 +727,8 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
     if translate.get(reactionTitle):
         reactionTitle = translate[reactionTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.65')
-    if '#' not in postJsonObject['object']['id']:
-        reactionPostId = removeIdEnding(postJsonObject['object']['id'])
-    else:
-        reactionPostId = \
-            removeIdEnding(postJsonObject['object']['id'].split('#')[0])
+    reactionPostId = removeHashFromPostId(postJsonObject['object']['id'])
+    reactionPostId = removeIdEnding(reactionPostId)
     reactionStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
         '?selreact=' + reactionPostId + pageNumberParam + \
@@ -1383,10 +1370,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
-        if '#' not in postJsonObject['id']:
-            messageId = removeIdEnding(postJsonObject['id'])
-        else:
-            messageId = removeIdEnding(postJsonObject['id'].split('#')[0])
+        messageId = removeHashFromPostId(postJsonObject['id'])
+        messageId = removeIdEnding(messageId)
 
     _logPostTiming(enableTimingLog, postStartTime, '2')
 

@@ -600,6 +600,14 @@ def removeIdEnding(idStr: str) -> str:
     return idStr
 
 
+def removeHashFromPostId(postId: str) -> str:
+    """Removes any has from a post id
+    """
+    if '#' not in postId:
+        return postId
+    return postId.split('#')[0]
+
+
 def getProtocolPrefixes() -> []:
     """Returns a list of valid prefixes
     """
