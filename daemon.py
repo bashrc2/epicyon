@@ -2157,6 +2157,8 @@ class PubServer(BaseHTTPRequestHandler):
                 resetThemeDesignerSettings(baseDir, themeName, domain,
                                            allowLocalNetworkAccess,
                                            systemLanguage)
+                setTheme(baseDir, themeName, domain,
+                         allowLocalNetworkAccess, systemLanguage)
 
             if callingDomain.endswith('.onion') and onionDomain:
                 originPathStr = \
