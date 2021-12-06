@@ -7299,55 +7299,57 @@ class PubServer(BaseHTTPRequestHandler):
                   baseDir: str, GETstartTime) -> None:
         """Shows an icon
         """
-        if path.endswith('.png'):
-            mediaStr = path.split('/icons/')[1]
-            if '/' not in mediaStr:
-                if not self.server.themeName:
-                    theme = 'default'
-                else:
-                    theme = self.server.themeName
-                iconFilename = mediaStr
+        if not path.endswith('.png'):
+            self._404()
+            return
+        mediaStr = path.split('/icons/')[1]
+        if '/' not in mediaStr:
+            if not self.server.themeName:
+                theme = 'default'
             else:
-                theme = mediaStr.split('/')[0]
-                iconFilename = mediaStr.split('/')[1]
-            mediaFilename = \
-                baseDir + '/theme/' + theme + '/icons/' + iconFilename
-            if self._etag_exists(mediaFilename):
-                # The file has not changed
-                self._304()
-                return
-            if self.server.iconsCache.get(mediaStr):
-                mediaBinary = self.server.iconsCache[mediaStr]
-                mimeTypeStr = mediaFileMimeType(mediaFilename)
-                self._set_headers_etag(mediaFilename,
-                                       mimeTypeStr,
-                                       mediaBinary, None,
-                                       self.server.domainFull,
-                                       False, None)
-                self._write(mediaBinary)
+                theme = self.server.themeName
+            iconFilename = mediaStr
+        else:
+            theme = mediaStr.split('/')[0]
+            iconFilename = mediaStr.split('/')[1]
+        mediaFilename = \
+            baseDir + '/theme/' + theme + '/icons/' + iconFilename
+        if self._etag_exists(mediaFilename):
+            # The file has not changed
+            self._304()
+            return
+        if self.server.iconsCache.get(mediaStr):
+            mediaBinary = self.server.iconsCache[mediaStr]
+            mimeTypeStr = mediaFileMimeType(mediaFilename)
+            self._set_headers_etag(mediaFilename,
+                                   mimeTypeStr,
+                                   mediaBinary, None,
+                                   self.server.domainFull,
+                                   False, None)
+            self._write(mediaBinary)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_showIcon', self.server.debug)
+            return
+        else:
+            if os.path.isfile(mediaFilename):
+                mediaBinary = None
+                try:
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                except OSError:
+                    print('EX: unable to read icon image ' + mediaFilename)
+                if mediaBinary:
+                    mimeType = mediaFileMimeType(mediaFilename)
+                    self._set_headers_etag(mediaFilename,
+                                           mimeType,
+                                           mediaBinary, None,
+                                           self.server.domainFull,
+                                           False, None)
+                    self._write(mediaBinary)
+                    self.server.iconsCache[mediaStr] = mediaBinary
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', '_showIcon', self.server.debug)
                 return
-            else:
-                if os.path.isfile(mediaFilename):
-                    mediaBinary = None
-                    try:
-                        with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                    except OSError:
-                        print('EX: unable to read icon image ' + mediaFilename)
-                    if mediaBinary:
-                        mimeType = mediaFileMimeType(mediaFilename)
-                        self._set_headers_etag(mediaFilename,
-                                               mimeType,
-                                               mediaBinary, None,
-                                               self.server.domainFull,
-                                               False, None)
-                        self._write(mediaBinary)
-                        self.server.iconsCache[mediaStr] = mediaBinary
-                    fitnessPerformance(GETstartTime, self.server.fitness,
-                                       '_GET', '_showIcon', self.server.debug)
-                    return
         self._404()
 
     def _showHelpScreenImage(self, callingDomain: str, path: str,
