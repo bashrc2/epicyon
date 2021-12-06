@@ -1446,26 +1446,27 @@ def _createPostBase(baseDir: str,
 
     postContext = getIndividualPostContext()
 
-    # make sure that CC doesn't also contain a To address
-    # eg. To: [ "https://mydomain/users/foo/followers" ]
-    #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
-    removeFromCC = []
-    for ccRecipient in toCC:
-        for sendToActor in toRecipients:
-            if ccRecipient in sendToActor and \
-               ccRecipient not in removeFromCC:
-                removeFromCC.append(ccRecipient)
-                break
-    for ccRemoval in removeFromCC:
-        toCC.remove(ccRemoval)
-
-    if inReplyTo and isPublic:
-        # If this is a public post then get the actor being
-        # replied to end ensure that it is within the CC list
-        replyActor = getActorFromInReplyTo(inReplyTo)
-        if replyActor:
-            if replyActor not in toCC:
-                toCC.append(replyActor)
+    if not isPublic:
+        # make sure that CC doesn't also contain a To address
+        # eg. To: [ "https://mydomain/users/foo/followers" ]
+        #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
+        removeFromCC = []
+        for ccRecipient in toCC:
+            for sendToActor in toRecipients:
+                if ccRecipient in sendToActor and \
+                   ccRecipient not in removeFromCC:
+                    removeFromCC.append(ccRecipient)
+                    break
+        for ccRemoval in removeFromCC:
+            toCC.remove(ccRemoval)
+    else:
+        if inReplyTo:
+            # If this is a public post then get the actor being
+            # replied to end ensure that it is within the CC list
+            replyActor = getActorFromInReplyTo(inReplyTo)
+            if replyActor:
+                if replyActor not in toCC:
+                    toCC.append(replyActor)
 
     # the type of post to be made
     postObjectType = 'Note'
