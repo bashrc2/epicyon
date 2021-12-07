@@ -301,7 +301,25 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     fontStr += '    </table>\n    </div>\n'
     dimensionStr += '    </table>\n    </div>\n'
     switchStr += '    </table>\n    </div>\n'
-    themeForm += colorStr + fontStr + dimensionStr + switchStr
+
+    themeFormats = '.zip, .gz'
+    exportImportStr = '    <div class="container">\n'
+    exportImportStr += \
+        '      <label class="labels">' + \
+        translate['Import Theme'] + '</label>\n'
+    exportImportStr += '      <input type="file" id="importTheme" '
+    exportImportStr += 'name="submitImportTheme" '
+    exportImportStr += 'accept="' + themeFormats + '">\n'
+    exportImportStr += \
+        '      <label class="labels">' + \
+        translate['Export Theme'] + '</label><br>\n'
+    exportImportStr += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportTheme">➤</button><br>\n'
+    exportImportStr += '    </div>\n'
+
+    themeForm += colorStr + fontStr + dimensionStr
+    themeForm += switchStr + exportImportStr
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
     themeForm += htmlFooter()
