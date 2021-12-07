@@ -247,7 +247,9 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 '" title="' + variableNameStr + '"></td></tr>\n'
         elif ('-color' in variableName or
               '-background' in variableName or
-              variableName.endswith('-text')):
+              variableName.endswith('-text') or
+              value.startswith('#') or
+              color_to_hex.get(value)):
             # only use colors defined as hex
             if not value.startswith('#'):
                 if color_to_hex.get(value):
@@ -272,7 +274,10 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></td></tr>\n'
         elif (('-width' in variableName or
-               '-height' in variableName) and
+               '-height' in variableName or
+               '-spacing' in variableName or
+               '-margin' in variableName or
+               '-vertical' in variableName) and
               (value.lower() != 'true' and value.lower() != 'false')):
             variableNameStr = variableName.replace('-', ' ')
             variableNameStr = variableNameStr.title()
