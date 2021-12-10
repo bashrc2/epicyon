@@ -14794,16 +14794,16 @@ class PubServer(BaseHTTPRequestHandler):
         # This busy state helps to avoid flooding
         # Resources which are expected to be called from a web page
         # should be above this
+        currTimeGET = int(time.time() * 1000)
         if self.server.GETbusy:
-            currTimeGET = int(time.time())
-            if currTimeGET - self.server.lastGET == 0:
+            if currTimeGET - self.server.lastGET < 500:
                 if self.server.debug:
                     print('DEBUG: GET Busy')
                 self.send_response(429)
                 self.end_headers()
                 return
-            self.server.lastGET = currTimeGET
         self.server.GETbusy = True
+        self.server.lastGET = currTimeGET
 
         # returns after this point should set GETbusy to False
 
@@ -17395,13 +17395,6 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: POST to ' + self.server.baseDir +
                   ' path: ' + self.path + ' busy: ' +
                   str(self.server.POSTbusy))
-        if self.server.POSTbusy:
-            currTimePOST = int(time.time())
-            if currTimePOST - self.server.lastPOST == 0:
-                self.send_response(429)
-                self.end_headers()
-                return
-            self.server.lastPOST = currTimePOST
 
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -17433,7 +17426,15 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return
 
+        currTimePOST = int(time.time() * 1000)
+        if self.server.POSTbusy:
+            if currTimePOST - self.server.lastPOST < 500:
+                self.send_response(429)
+                self.end_headers()
+                return
         self.server.POSTbusy = True
+        self.server.lastPOST = currTimePOST
+
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
             self._400()
