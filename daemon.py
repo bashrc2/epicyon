@@ -7426,7 +7426,6 @@ class PubServer(BaseHTTPRequestHandler):
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
             self._write(msg)
-            self.server.GETbusy = False
             return
         nickname = None
         if '/users/' in path:
@@ -7479,7 +7478,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_hashtagSearch',
                            self.server.debug)
-        self.server.GETbusy = False
 
     def _hashtagSearchRSS2(self, callingDomain: str,
                            path: str, cookie: str,
@@ -7492,7 +7490,6 @@ class PubServer(BaseHTTPRequestHandler):
         hashtag = path.split('/tags/rss2/')[1]
         if isBlockedHashtag(baseDir, hashtag):
             self._400()
-            self.server.GETbusy = False
             return
         nickname = None
         if '/users/' in path:
@@ -7536,7 +7533,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_hashtagSearchRSS2',
                            self.server.debug)
-        self.server.GETbusy = False
 
     def _announceButton(self, callingDomain: str, path: str,
                         baseDir: str,
@@ -7580,7 +7576,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -7685,7 +7680,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_announceButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _undoAnnounceButton(self, callingDomain: str, path: str,
@@ -7733,7 +7727,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
                 str(pageNumber)
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -7788,7 +7781,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoAnnounceButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _followApproveButton(self, callingDomain: str, path: str,
@@ -7836,7 +7828,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_followApproveButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
 
@@ -7893,7 +7884,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_newswireVote',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
 
@@ -7950,7 +7940,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_newswireUnvote',
                            self.server.debug)
-        self.server.GETbusy = False
 
     def _followDenyButton(self, callingDomain: str, path: str,
                           cookie: str,
@@ -7993,7 +7982,6 @@ class PubServer(BaseHTTPRequestHandler):
                 'http://' + i2pDomain + originPathStr
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
-        self.server.GETbusy = False
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_followDenyButton',
                            self.server.debug)
@@ -8039,13 +8027,11 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
         if not self._establishSession("likeButton"):
             self._404()
-            self.server.GETbusy = False
             return
         likeActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
@@ -8162,7 +8148,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_likeButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
 
@@ -8206,13 +8191,11 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
         if not self._establishSession("undoLikeButton"):
             self._404()
-            self.server.GETbusy = False
             return
         undoActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
@@ -8315,7 +8298,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoLikeButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
 
@@ -8365,7 +8347,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8377,13 +8358,11 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
         if not self._establishSession("reactionButton"):
             self._404()
-            self.server.GETbusy = False
             return
         reactionActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
@@ -8505,7 +8484,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_reactionButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
 
@@ -8549,7 +8527,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8564,14 +8541,12 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
         emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
         if not self._establishSession("undoReactionButton"):
             self._404()
-            self.server.GETbusy = False
             return
         undoActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
@@ -8678,7 +8653,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoReactionButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _reactionPicker(self, callingDomain: str, path: str,
@@ -8721,7 +8695,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie, callingDomain)
             return
 
@@ -8737,7 +8710,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie, callingDomain)
             return
 
@@ -8775,7 +8747,6 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.fitness,
                            '_GET', '_reactionPicker',
                            self.server.debug)
-        self.server.GETbusy = False
 
     def _bookmarkButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -8818,13 +8789,11 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
         if not self._establishSession("bookmarkButton"):
             self._404()
-            self.server.GETbusy = False
             return
         bookmarkActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
@@ -8903,7 +8872,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_bookmarkButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
 
@@ -8947,13 +8915,11 @@ class PubServer(BaseHTTPRequestHandler):
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
-            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
         if not self._establishSession("undoBookmarkButton"):
             self._404()
-            self.server.GETbusy = False
             return
         undoActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
@@ -9033,7 +8999,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoBookmarkButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actorPathStr, cookie,
                                callingDomain)
 
@@ -9049,7 +9014,6 @@ class PubServer(BaseHTTPRequestHandler):
         if not cookie:
             print('ERROR: no cookie given when deleting ' + path)
             self._400()
-            self.server.GETbusy = False
             return
         pageNumber = 1
         if '?page=' in path:
@@ -9082,7 +9046,6 @@ class PubServer(BaseHTTPRequestHandler):
                     actor = 'http://' + onionDomain + usersPath
                 elif callingDomain.endswith('.i2p') and i2pDomain:
                     actor = 'http://' + i2pDomain + usersPath
-                self.server.GETbusy = False
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
@@ -9093,13 +9056,11 @@ class PubServer(BaseHTTPRequestHandler):
                     actor = 'http://' + onionDomain + usersPath
                 elif callingDomain.endswith('.i2p') and i2pDomain:
                     actor = 'http://' + i2pDomain + usersPath
-                self.server.GETbusy = False
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
             if not self._establishSession("deleteButton"):
                 self._404()
-                self.server.GETbusy = False
                 return
 
             deleteStr = \
@@ -9137,7 +9098,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_deleteButton',
                            self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actor + '/' + timelineStr,
                                cookie, callingDomain)
 
@@ -9246,7 +9206,6 @@ class PubServer(BaseHTTPRequestHandler):
                 path.split('?mute=')[0]
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_muteButton', self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actor + '/' +
                                timelineStr + timelineBookmark,
                                cookie, callingDomain)
@@ -9354,7 +9313,6 @@ class PubServer(BaseHTTPRequestHandler):
                 'http://' + i2pDomain + path.split('?unmute=')[0]
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoMuteButton', self.server.debug)
-        self.server.GETbusy = False
         self._redirect_headers(actor + '/' + timelineStr +
                                timelineBookmark,
                                cookie, callingDomain)
@@ -9425,7 +9383,6 @@ class PubServer(BaseHTTPRequestHandler):
             if self._requestHTTP():
                 if not self._establishSession("showRepliesToPost"):
                     self._404()
-                    self.server.GETbusy = False
                     return True
                 recentPostsCache = self.server.recentPostsCache
                 maxRecentPosts = self.server.maxRecentPosts
@@ -9486,7 +9443,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-            self.server.GETbusy = False
             return True
         else:
             # replies exist. Itterate through the
@@ -9519,7 +9475,6 @@ class PubServer(BaseHTTPRequestHandler):
             if self._requestHTTP():
                 if not self._establishSession("showRepliesToPost2"):
                     self._404()
-                    self.server.GETbusy = False
                     return True
                 recentPostsCache = self.server.recentPostsCache
                 maxRecentPosts = self.server.maxRecentPosts
@@ -9581,7 +9536,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -9692,7 +9646,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -9813,11 +9766,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.debug)
                             else:
                                 self._404()
-                        self.server.GETbusy = False
                         return True
         actor = path.replace('/skills', '')
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
-        self.server.GETbusy = False
         self._redirect_headers(actorAbsolute, cookie, callingDomain)
         return True
 
@@ -10245,7 +10196,6 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.fitness,
                                            '_GET', '_showInbox5',
                                            self.server.debug)
-                    self.server.GETbusy = False
                     return True
             else:
                 if debug:
@@ -10259,7 +10209,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to inbox is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -10388,7 +10337,6 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.fitness,
                                            '_GET', '_showDMs json',
                                            self.server.debug)
-                    self.server.GETbusy = False
                     return True
             else:
                 if debug:
@@ -10402,7 +10350,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to DM timeline is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -10531,7 +10478,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showReplies json',
                                        self.server.debug)
-                self.server.GETbusy = False
                 return True
             else:
                 if debug:
@@ -10545,7 +10491,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to inbox is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -10673,7 +10618,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showMediaTimeline json',
                                        self.server.debug)
-                self.server.GETbusy = False
                 return True
             else:
                 if debug:
@@ -10687,7 +10631,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to inbox is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -10816,7 +10759,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showBlogsTimeline json',
                                        self.server.debug)
-                self.server.GETbusy = False
                 return True
             else:
                 if debug:
@@ -10830,7 +10772,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to blogs is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -10968,7 +10909,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showNewsTimeline json',
                                        self.server.debug)
-                self.server.GETbusy = False
                 return True
             else:
                 if debug:
@@ -10981,7 +10921,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to news is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -11117,7 +11056,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showFeaturesTimeline json',
                                        self.server.debug)
-                self.server.GETbusy = False
                 return True
             else:
                 if debug:
@@ -11130,7 +11068,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET access to features is unauthorized')
             self.send_response(405)
             self.end_headers()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -11210,14 +11147,12 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showSharesTimeline',
                                        self.server.debug)
-                    self.server.GETbusy = False
                     return True
         # not the shares timeline
         if debug:
             print('DEBUG: GET access to shares timeline is unauthorized')
         self.send_response(405)
         self.end_headers()
-        self.server.GETbusy = False
         return True
 
     def _showWantedTimeline(self, authorized: bool,
@@ -11296,14 +11231,12 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showWantedTimeline',
                                        self.server.debug)
-                    self.server.GETbusy = False
                     return True
         # not the shares timeline
         if debug:
             print('DEBUG: GET access to wanted timeline is unauthorized')
         self.send_response(405)
         self.end_headers()
-        self.server.GETbusy = False
         return True
 
     def _showBookmarksTimeline(self, authorized: bool,
@@ -11434,7 +11367,6 @@ class PubServer(BaseHTTPRequestHandler):
                                            '_GET',
                                            '_showBookmarksTimeline json',
                                            self.server.debug)
-                    self.server.GETbusy = False
                     return True
             else:
                 if debug:
@@ -11447,7 +11379,6 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: GET access to bookmarks is unauthorized')
         self.send_response(405)
         self.end_headers()
-        self.server.GETbusy = False
         return True
 
     def _showOutboxTimeline(self, authorized: bool,
@@ -11574,7 +11505,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -11704,7 +11634,6 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.fitness,
                                            '_GET', '_showModTimeline json',
                                            self.server.debug)
-                    self.server.GETbusy = False
                     return True
             else:
                 if debug:
@@ -11716,7 +11645,6 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: GET access to moderation feed is unauthorized')
         self.send_response(405)
         self.end_headers()
-        self.server.GETbusy = False
         return True
 
     def _showSharesFeed(self, authorized: bool,
@@ -11832,7 +11760,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-                self.server.GETbusy = False
                 return True
         return False
 
@@ -11877,7 +11804,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if getPerson:
                     if not self._establishSession("showFollowingFeed"):
                         self._404()
-                        self.server.GETbusy = False
                         return True
 
                     accessKeys = self.server.accessKeys
@@ -11938,7 +11864,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showFollowingFeed',
                                        self.server.debug)
-                    self.server.GETbusy = False
                     return True
             else:
                 if self._secureMode():
@@ -11954,7 +11879,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-                self.server.GETbusy = False
                 return True
         return False
 
@@ -11999,7 +11923,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if getPerson:
                     if not self._establishSession("showFollowersFeed"):
                         self._404()
-                        self.server.GETbusy = False
                         return True
 
                     accessKeys = self.server.accessKeys
@@ -12061,7 +11984,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.fitness,
                                        '_GET', '_showFollowersFeed',
                                        self.server.debug)
-                    self.server.GETbusy = False
                     return True
             else:
                 if self._secureMode():
@@ -12077,7 +11999,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                 else:
                     self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -12086,7 +12007,7 @@ class PubServer(BaseHTTPRequestHandler):
                                path: str,
                                httpPrefix: str,
                                nickname: str, domain: str,
-                               domainFull: str, systemLanguage: str):
+                               domainFull: str, systemLanguage: str) -> None:
         """Returns the featured posts collections in
         actor/collections/featured
         """
@@ -12140,7 +12061,6 @@ class PubServer(BaseHTTPRequestHandler):
         if self._requestHTTP():
             if not self._establishSession("showPersonProfile"):
                 self._404()
-                self.server.GETbusy = False
                 return True
 
             accessKeys = self.server.accessKeys
@@ -12220,7 +12140,6 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug)
             else:
                 self._404()
-        self.server.GETbusy = False
         return True
 
     def _showInstanceActor(self, callingDomain: str, path: str,
@@ -12846,7 +12765,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('text/html', msglen,
                           cookie, callingDomain, False)
         self._write(msg)
-        self.server.GETbusy = False
         return True
 
     def _showNewPost(self, callingDomain: str, path: str,
@@ -12878,7 +12796,6 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Reply outside of time window ' + inReplyToUrl +
                           str(replyIntervalHours) + ' hours')
                     self._403()
-                    self.server.GETbusy = False
                     return True
                 elif self.server.debug:
                     print('Reply is within time interval: ' +
@@ -12937,7 +12854,6 @@ class PubServer(BaseHTTPRequestHandler):
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
-                self.server.GETbusy = False
                 return True
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -12947,7 +12863,6 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.fitness,
                                '_GET', '_showNewPost',
                                self.server.debug)
-            self.server.GETbusy = False
             return True
         return False
 
@@ -13026,7 +12941,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -13060,7 +12974,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -13095,7 +13008,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -13131,7 +13043,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 self._404()
-            self.server.GETbusy = False
             return True
         return False
 
@@ -17420,12 +17331,6 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        uaStr = self._getUserAgent()
-
-        if self._blockedUserAgent(callingDomain, uaStr):
-            self._400()
-            return
-
         currTimePOST = int(time.time() * 1000)
         if self.server.POSTbusy:
             if currTimePOST - self.server.lastPOST < 500:
@@ -17434,6 +17339,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self.server.POSTbusy = True
         self.server.lastPOST = currTimePOST
+
+        uaStr = self._getUserAgent()
+
+        if self._blockedUserAgent(callingDomain, uaStr):
+            self._400()
+            self.server.POSTbusy = False
+            return
 
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
