@@ -7476,10 +7476,10 @@ class PubServer(BaseHTTPRequestHandler):
                     'http://' + i2pDomain + originPathStr
             self._redirect_headers(originPathStrAbsolute + '/search',
                                    cookie, callingDomain)
-        self.server.GETbusy = False
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_hashtagSearch',
                            self.server.debug)
+        self.server.GETbusy = False
 
     def _hashtagSearchRSS2(self, callingDomain: str,
                            path: str, cookie: str,
@@ -7533,10 +7533,10 @@ class PubServer(BaseHTTPRequestHandler):
                     'http://' + i2pDomain + originPathStr
             self._redirect_headers(originPathStrAbsolute + '/search',
                                    cookie, callingDomain)
-        self.server.GETbusy = False
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_hashtagSearchRSS2',
                            self.server.debug)
+        self.server.GETbusy = False
 
     def _announceButton(self, callingDomain: str, path: str,
                         baseDir: str,
@@ -7576,11 +7576,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -7678,15 +7678,15 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.CWlists,
                                  self.server.listsEnabled)
 
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_announceButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _undoAnnounceButton(self, callingDomain: str, path: str,
                             baseDir: str,
@@ -7729,11 +7729,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
                 str(pageNumber)
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -7781,15 +7781,15 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(newUndoAnnounce,
                            self.server.projectVersion, self.postToNickname)
 
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoAnnounceButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _followApproveButton(self, callingDomain: str, path: str,
                              cookie: str,
@@ -7833,12 +7833,12 @@ class PubServer(BaseHTTPRequestHandler):
         elif (callingDomain.endswith('.i2p') and i2pDomain):
             originPathStrAbsolute = \
                 'http://' + i2pDomain + originPathStr
-        self._redirect_headers(originPathStrAbsolute,
-                               cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_followApproveButton',
                            self.server.debug)
         self.server.GETbusy = False
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
 
     def _newswireVote(self, callingDomain: str, path: str,
                       cookie: str,
@@ -7890,12 +7890,12 @@ class PubServer(BaseHTTPRequestHandler):
         elif (callingDomain.endswith('.i2p') and i2pDomain):
             originPathStrAbsolute = \
                 'http://' + i2pDomain + originPathStr
-        self._redirect_headers(originPathStrAbsolute,
-                               cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_newswireVote',
                            self.server.debug)
         self.server.GETbusy = False
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
 
     def _newswireUnvote(self, callingDomain: str, path: str,
                         cookie: str,
@@ -8035,11 +8035,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8155,16 +8155,16 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
 
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_likeButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie,
+                               callingDomain)
 
     def _undoLikeButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -8202,11 +8202,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8308,16 +8308,16 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoLikeButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie,
+                               callingDomain)
 
     def _reactionButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -8361,11 +8361,11 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiContentEncoded = emojiContentEncoded.split('?')[0]
         if not emojiContentEncoded:
             print('WARN: no emoji reaction ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8373,11 +8373,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8498,16 +8498,16 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for emoji reaction post ' +
                   reactionUrl)
 
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_reactionButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie,
+                               callingDomain)
 
     def _undoReactionButton(self, callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -8545,11 +8545,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8560,11 +8560,11 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiContentEncoded = emojiContentEncoded.split('?')[0]
         if not emojiContentEncoded:
             print('WARN: no emoji reaction ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8671,15 +8671,15 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unreaction post not found: ' +
                       reactionPostFilename)
 
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoReactionButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _reactionPicker(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -8717,11 +8717,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie, callingDomain)
             return
 
@@ -8733,11 +8733,11 @@ class PubServer(BaseHTTPRequestHandler):
             postJsonObject = loadJson(reactionPostFilename)
         if not reactionPostFilename or not postJsonObject:
             print('WARN: unable to locate reaction post ' + reactionUrl)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie, callingDomain)
             return
 
@@ -8814,11 +8814,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -8896,16 +8896,16 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Bookmarked post not found: ' + bookmarkFilename)
         # self._postToOutbox(bookmarkJson, self.server.projectVersion, None)
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_bookmarkButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie,
+                               callingDomain)
 
     def _undoBookmarkButton(self, callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -8943,11 +8943,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            self.server.GETbusy = False
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
+            self.server.GETbusy = False
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
@@ -9026,16 +9026,16 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.listsEnabled)
             else:
                 print('WARN: Unbookmarked post not found: ' + bookmarkFilename)
-        self.server.GETbusy = False
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
-        self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoBookmarkButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actorPathStr, cookie,
+                               callingDomain)
 
     def _deleteButton(self, callingDomain: str, path: str,
                       baseDir: str, httpPrefix: str,
@@ -9078,22 +9078,22 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: actor=' + actor)
             if actor not in deleteUrl:
                 # You can only delete your own posts
-                self.server.GETbusy = False
                 if callingDomain.endswith('.onion') and onionDomain:
                     actor = 'http://' + onionDomain + usersPath
                 elif callingDomain.endswith('.i2p') and i2pDomain:
                     actor = 'http://' + i2pDomain + usersPath
+                self.server.GETbusy = False
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
             self.postToNickname = getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
                 if callingDomain.endswith('.onion') and onionDomain:
                     actor = 'http://' + onionDomain + usersPath
                 elif callingDomain.endswith('.i2p') and i2pDomain:
                     actor = 'http://' + i2pDomain + usersPath
+                self.server.GETbusy = False
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
@@ -9130,16 +9130,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(deleteStr.encode('utf-8'))
                 self.server.GETbusy = False
                 return
-        self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
             actor = 'http://' + i2pDomain + usersPath
-        self._redirect_headers(actor + '/' + timelineStr,
-                               cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_deleteButton',
                            self.server.debug)
+        self.server.GETbusy = False
+        self._redirect_headers(actor + '/' + timelineStr,
+                               cookie, callingDomain)
 
     def _muteButton(self, callingDomain: str, path: str,
                     baseDir: str, httpPrefix: str,
@@ -9236,7 +9236,6 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Muted post not found: ' + muteFilename)
 
-        self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
                 'http://' + onionDomain + \
@@ -9245,11 +9244,12 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 'http://' + i2pDomain + \
                 path.split('?mute=')[0]
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_muteButton', self.server.debug)
+        self.server.GETbusy = False
         self._redirect_headers(actor + '/' +
                                timelineStr + timelineBookmark,
                                cookie, callingDomain)
-        fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', '_muteButton', self.server.debug)
 
     def _undoMuteButton(self, callingDomain: str, path: str,
                         baseDir: str, httpPrefix: str,
@@ -9346,18 +9346,18 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.listsEnabled)
             else:
                 print('WARN: Unmuted post not found: ' + muteFilename)
-        self.server.GETbusy = False
         if callingDomain.endswith('.onion') and onionDomain:
             actor = \
                 'http://' + onionDomain + path.split('?unmute=')[0]
         elif callingDomain.endswith('.i2p') and i2pDomain:
             actor = \
                 'http://' + i2pDomain + path.split('?unmute=')[0]
+        fitnessPerformance(GETstartTime, self.server.fitness,
+                           '_GET', '_undoMuteButton', self.server.debug)
+        self.server.GETbusy = False
         self._redirect_headers(actor + '/' + timelineStr +
                                timelineBookmark,
                                cookie, callingDomain)
-        fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', '_undoMuteButton', self.server.debug)
 
     def _showRepliesToPost(self, authorized: bool,
                            callingDomain: str, path: str,
@@ -9817,8 +9817,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
         actor = path.replace('/skills', '')
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
-        self._redirect_headers(actorAbsolute, cookie, callingDomain)
         self.server.GETbusy = False
+        self._redirect_headers(actorAbsolute, cookie, callingDomain)
         return True
 
     def _showIndividualAtPost(self, authorized: bool,
@@ -11934,11 +11934,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html',
                                       msglen, cookie, callingDomain, False)
                     self._write(msg)
-                    self.server.GETbusy = False
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
                                        '_GET', '_showFollowingFeed',
                                        self.server.debug)
+                    self.server.GETbusy = False
                     return True
             else:
                 if self._secureMode():
@@ -12057,11 +12057,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html', msglen,
                                       cookie, callingDomain, False)
                     self._write(msg)
-                    self.server.GETbusy = False
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
                                        '_GET', '_showFollowersFeed',
                                        self.server.debug)
+                    self.server.GETbusy = False
                     return True
             else:
                 if self._secureMode():
@@ -12943,11 +12943,11 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
             self._write(msg)
-            self.server.GETbusy = False
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
                                '_GET', '_showNewPost',
                                self.server.debug)
+            self.server.GETbusy = False
             return True
         return False
 
@@ -14805,6 +14805,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.lastGET = currTimeGET
         self.server.GETbusy = True
 
+        # returns after this point should set GETbusy to False
+
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'GET busy time',
                            self.server.debug)
@@ -14818,10 +14820,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get webfinger endpoint for a person
         if self._webfinger(callingDomain):
-            self.server.GETbusy = False
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'webfinger called',
                                self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -14844,10 +14846,10 @@ class PubServer(BaseHTTPRequestHandler):
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
             self._write(msg)
-            self.server.GETbusy = False
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'login shown',
                                self.server.debug)
+            self.server.GETbusy = False
             return
 
         # show the news front page
@@ -14875,6 +14877,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'news front page shown',
                                self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -14980,6 +14983,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.onionDomain,
                                         self.server.i2pDomain,
                                         GETstartTime)
+                self.server.GETbusy = False
                 return
             self._hashtagSearch(callingDomain,
                                 self.path, cookie,
@@ -14991,6 +14995,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.onionDomain,
                                 self.server.i2pDomain,
                                 GETstartTime)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15048,10 +15053,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html', msglen, cookie, callingDomain,
                                   False)
                 self._write(msg)
-                self.server.GETbusy = False
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'search screen shown',
                                    self.server.debug)
+                self.server.GETbusy = False
                 return
 
         # show a hashtag category from the search screen
@@ -15067,10 +15072,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html', msglen, cookie, callingDomain,
                                   False)
                 self._write(msg)
-            self.server.GETbusy = False
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'hashtag category screen shown',
                                self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15101,10 +15106,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html', msglen, cookie, callingDomain,
                                   False)
                 self._write(msg)
-                self.server.GETbusy = False
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'calendar shown',
                                    self.server.debug)
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15125,6 +15130,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.onionDomain,
                                             self.server.i2pDomain,
                                             GETstartTime):
+                    self.server.GETbusy = False
                     return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15143,10 +15149,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain, False)
                 self._write(msg)
-                self.server.GETbusy = False
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'emoji search shown',
                                    self.server.debug)
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15171,6 +15177,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  GETstartTime,
                                  repeatPrivate,
                                  self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15195,6 +15202,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      repeatPrivate,
                                      self.server.debug,
                                      self.server.recentPostsCache)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15217,6 +15225,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.proxyType,
                                self.server.debug,
                                self.server.newswire)
+            self.server.GETbusy = False
             return
 
         # send a newswire moderation unvote from the web interface
@@ -15235,6 +15244,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.proxyType,
                                  self.server.debug,
                                  self.server.newswire)
+            self.server.GETbusy = False
             return
 
         # send a follow request approval from the web interface
@@ -15252,6 +15262,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       GETstartTime,
                                       self.server.proxyType,
                                       self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15273,6 +15284,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    GETstartTime,
                                    self.server.proxyType,
                                    self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15292,6 +15304,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.proxyType,
                              cookie,
                              self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15310,6 +15323,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15331,6 +15345,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.proxyType,
                                  cookie,
                                  self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15351,6 +15366,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      GETstartTime,
                                      self.server.proxyType,
                                      cookie, self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15370,6 +15386,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15389,6 +15406,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15408,6 +15426,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      GETstartTime,
                                      self.server.proxyType, cookie,
                                      self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15427,6 +15446,7 @@ class PubServer(BaseHTTPRequestHandler):
                                GETstartTime,
                                self.server.proxyType, cookie,
                                self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15446,6 +15466,7 @@ class PubServer(BaseHTTPRequestHandler):
                              GETstartTime,
                              self.server.proxyType, cookie,
                              self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15465,6 +15486,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  GETstartTime,
                                  self.server.proxyType, cookie,
                                  self.server.debug)
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15610,6 +15632,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showKnownCrawlers(callingDomain, self.path,
                                        self.server.baseDir,
                                        self.server.knownCrawlers):
+                self.server.GETbusy = False
                 return
 
             # edit profile in web interface
@@ -15620,6 +15643,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.port,
                                  cookie):
+                self.server.GETbusy = False
                 return
 
             # edit links from the left column of the timeline in web interface
@@ -15631,6 +15655,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.port,
                                cookie,
                                self.server.themeName):
+                self.server.GETbusy = False
                 return
 
             # edit newswire from the right column of the timeline
@@ -15641,6 +15666,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.domain,
                                   self.server.port,
                                   cookie):
+                self.server.GETbusy = False
                 return
 
             # edit news post
@@ -15652,6 +15678,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.port,
                                   self.server.domainFull,
                                   cookie):
+                self.server.GETbusy = False
                 return
 
             if self._showNewPost(callingDomain, self.path,
@@ -15666,6 +15693,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  GETstartTime,
                                  cookie, noDropDown, conversationId):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15685,6 +15713,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       GETstartTime,
                                       self.server.proxyType,
                                       cookie, self.server.debug):
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15705,6 +15734,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        GETstartTime,
                                        self.server.proxyType, cookie,
                                        self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15725,6 +15755,7 @@ class PubServer(BaseHTTPRequestHandler):
                                GETstartTime,
                                self.server.proxyType,
                                cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15745,6 +15776,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 GETstartTime,
                                 self.server.proxyType,
                                 cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15764,6 +15796,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     GETstartTime,
                                     self.server.proxyType,
                                     cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         # get an individual post from the path
@@ -15781,6 +15814,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15812,6 +15846,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.projectVersion,
                                self.server.YTReplacementDomain,
                                self.server.twitterReplacementDomain):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15832,6 +15867,7 @@ class PubServer(BaseHTTPRequestHandler):
                              GETstartTime,
                              self.server.proxyType,
                              cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15852,6 +15888,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15872,6 +15909,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        GETstartTime,
                                        self.server.proxyType,
                                        cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15892,6 +15930,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        GETstartTime,
                                        self.server.proxyType,
                                        cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15912,6 +15951,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       GETstartTime,
                                       self.server.proxyType,
                                       cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         # get features (local blogs) for a given person
@@ -15929,6 +15969,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           GETstartTime,
                                           self.server.proxyType,
                                           cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15949,6 +15990,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         # get the wanted items timeline for a given person
@@ -15965,6 +16007,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15980,6 +16023,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
             if not isModerator(self.server.baseDir, nickname):
                 self._400()
+                self.server.GETbusy = False
                 return
             blockDomain = self.path.split('/accountinfo?blockdomain=')[1]
             searchHandle = blockDomain.split('?handle=')[1]
@@ -15989,7 +16033,6 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in blockDomain:
                 blockDomain = blockDomain.split('?')[0]
             addGlobalBlock(self.server.baseDir, '*', blockDomain)
-            self.server.GETbusy = False
             msg = \
                 htmlAccountInfo(self.server.cssCache,
                                 self.server.translate,
@@ -16007,6 +16050,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._login_headers('text/html',
                                 msglen, callingDomain)
             self._write(msg)
+            self.server.GETbusy = False
             return
 
         # unblock a domain from htmlAccountInfo
@@ -16018,6 +16062,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
             if not isModerator(self.server.baseDir, nickname):
                 self._400()
+                self.server.GETbusy = False
                 return
             blockDomain = self.path.split('/accountinfo?unblockdomain=')[1]
             searchHandle = blockDomain.split('?handle=')[1]
@@ -16025,7 +16070,6 @@ class PubServer(BaseHTTPRequestHandler):
             blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             removeGlobalBlock(self.server.baseDir, '*', blockDomain)
-            self.server.GETbusy = False
             msg = \
                 htmlAccountInfo(self.server.cssCache,
                                 self.server.translate,
@@ -16043,6 +16087,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._login_headers('text/html',
                                 msglen, callingDomain)
             self._write(msg)
+            self.server.GETbusy = False
             return
 
         # get the bookmarks timeline for a given person
@@ -16062,6 +16107,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            GETstartTime,
                                            self.server.proxyType,
                                            cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -16083,6 +16129,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -16104,6 +16151,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      GETstartTime,
                                      self.server.proxyType,
                                      cookie, self.server.debug):
+                self.server.GETbusy = False
                 return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -16122,6 +16170,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 GETstartTime,
                                 self.server.proxyType,
                                 cookie, self.server.debug, 'shares'):
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -16140,6 +16189,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    GETstartTime,
                                    self.server.proxyType,
                                    cookie, self.server.debug):
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -16158,6 +16208,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    GETstartTime,
                                    self.server.proxyType,
                                    cookie, self.server.debug):
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -16177,6 +16228,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    GETstartTime,
                                    self.server.proxyType,
                                    cookie, self.server.debug):
+            self.server.GETbusy = False
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -17388,6 +17440,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        # returns after this point should set POSTbusy to False
+
         # remove any trailing slashes from the path
         if not self.path.endswith('confirm'):
             self.path = self.path.replace('/outbox/', '/outbox')
@@ -17434,6 +17488,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               self.server.onionDomain, self.server.i2pDomain,
                               self.server.debug)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17452,6 +17507,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug,
                                      self.server.defaultTimeline,
                                      self.server.allowLocalNetworkAccess)
+            self.server.POSTbusy = False
             return
 
         # update of profile/avatar from web interface,
@@ -17466,6 +17522,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.allowLocalNetworkAccess,
                                 self.server.systemLanguage,
                                 self.server.contentLicenseUrl)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -17477,6 +17534,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.i2pDomain, self.server.debug,
                               self.server.defaultTimeline,
                               self.server.allowLocalNetworkAccess)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/newswiredata'):
@@ -17487,6 +17545,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain, self.server.debug,
                                  self.server.defaultTimeline)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/citationsdata'):
@@ -17498,6 +17557,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.i2pDomain, self.server.debug,
                                   self.server.defaultTimeline,
                                   self.server.newswire)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/newseditdata'):
@@ -17508,6 +17568,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onionDomain,
                                self.server.i2pDomain, self.server.debug,
                                self.server.defaultTimeline)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17530,6 +17591,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17565,6 +17627,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.i2pDomain,
                                      POSTstartTime, {},
                                      self.server.debug)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17591,6 +17654,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.onionDomain,
                                   self.server.i2pDomain,
                                   self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             # removes a shared item
@@ -17604,6 +17668,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.onionDomain,
                                   self.server.i2pDomain,
                                   self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             # removes a wanted item
@@ -17617,6 +17682,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17641,6 +17707,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain,
                                  self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17659,6 +17726,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onionDomain,
                                     self.server.i2pDomain,
                                     self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17677,6 +17745,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onionDomain,
                                       self.server.i2pDomain,
                                       self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17695,6 +17764,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onionDomain,
                                      self.server.i2pDomain,
                                      self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17713,6 +17783,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17732,6 +17803,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onionDomain,
                                     self.server.i2pDomain,
                                     self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             # Change the key shortcuts
@@ -17759,6 +17831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug,
                                    accessKeys,
                                    self.server.defaultTimeline)
+                self.server.POSTbusy = False
                 return
 
             # theme designer submit/cancel button
@@ -17789,6 +17862,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.themeName,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.systemLanguage)
+                self.server.POSTbusy = False
                 return
 
         # update the shared item federation token for the calling domain
@@ -17962,6 +18036,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onionDomain,
                                self.server.i2pDomain,
                                self.server.debug)
+            self.server.POSTbusy = False
             return
 
         # refuse to receive non-json content
@@ -18156,6 +18231,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._updateInboxQueue(self.postToNickname,
                                                messageJson, messageBytes)
                     if queueStatus >= 0 and queueStatus <= 3:
+                        self.server.POSTbusy = False
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited ' +
@@ -18174,6 +18250,7 @@ class PubServer(BaseHTTPRequestHandler):
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
                 if queueStatus >= 0 and queueStatus <= 3:
+                    self.server.POSTbusy = False
                     return
         self._200()
         self.server.POSTbusy = False
