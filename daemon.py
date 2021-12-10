@@ -17440,6 +17440,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        # returns after this point should set POSTbusy to False
+
         # remove any trailing slashes from the path
         if not self.path.endswith('confirm'):
             self.path = self.path.replace('/outbox/', '/outbox')
@@ -17486,6 +17488,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               self.server.onionDomain, self.server.i2pDomain,
                               self.server.debug)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17504,6 +17507,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug,
                                      self.server.defaultTimeline,
                                      self.server.allowLocalNetworkAccess)
+            self.server.POSTbusy = False
             return
 
         # update of profile/avatar from web interface,
@@ -17518,6 +17522,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.allowLocalNetworkAccess,
                                 self.server.systemLanguage,
                                 self.server.contentLicenseUrl)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -17529,6 +17534,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.i2pDomain, self.server.debug,
                               self.server.defaultTimeline,
                               self.server.allowLocalNetworkAccess)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/newswiredata'):
@@ -17539,6 +17545,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain, self.server.debug,
                                  self.server.defaultTimeline)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/citationsdata'):
@@ -17550,6 +17557,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.i2pDomain, self.server.debug,
                                   self.server.defaultTimeline,
                                   self.server.newswire)
+            self.server.POSTbusy = False
             return
 
         if authorized and self.path.endswith('/newseditdata'):
@@ -17560,6 +17568,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onionDomain,
                                self.server.i2pDomain, self.server.debug,
                                self.server.defaultTimeline)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17582,6 +17591,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17617,6 +17627,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.i2pDomain,
                                      POSTstartTime, {},
                                      self.server.debug)
+            self.server.POSTbusy = False
             return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17643,6 +17654,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.onionDomain,
                                   self.server.i2pDomain,
                                   self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             # removes a shared item
@@ -17656,6 +17668,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.onionDomain,
                                   self.server.i2pDomain,
                                   self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             # removes a wanted item
@@ -17669,6 +17682,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17693,6 +17707,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain,
                                  self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17711,6 +17726,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onionDomain,
                                     self.server.i2pDomain,
                                     self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17729,6 +17745,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onionDomain,
                                       self.server.i2pDomain,
                                       self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17747,6 +17764,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onionDomain,
                                      self.server.i2pDomain,
                                      self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17765,6 +17783,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onionDomain,
                                    self.server.i2pDomain,
                                    self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             fitnessPerformance(POSTstartTime, self.server.fitness,
@@ -17784,6 +17803,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onionDomain,
                                     self.server.i2pDomain,
                                     self.server.debug)
+                self.server.POSTbusy = False
                 return
 
             # Change the key shortcuts
@@ -17811,6 +17831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug,
                                    accessKeys,
                                    self.server.defaultTimeline)
+                self.server.POSTbusy = False
                 return
 
             # theme designer submit/cancel button
@@ -17841,6 +17862,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.themeName,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.systemLanguage)
+                self.server.POSTbusy = False
                 return
 
         # update the shared item federation token for the calling domain
@@ -18014,6 +18036,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onionDomain,
                                self.server.i2pDomain,
                                self.server.debug)
+            self.server.POSTbusy = False
             return
 
         # refuse to receive non-json content
@@ -18208,6 +18231,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._updateInboxQueue(self.postToNickname,
                                                messageJson, messageBytes)
                     if queueStatus >= 0 and queueStatus <= 3:
+                        self.server.POSTbusy = False
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited ' +
@@ -18226,6 +18250,7 @@ class PubServer(BaseHTTPRequestHandler):
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
                 if queueStatus >= 0 and queueStatus <= 3:
+                    self.server.POSTbusy = False
                     return
         self._200()
         self.server.POSTbusy = False
