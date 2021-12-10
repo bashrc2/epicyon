@@ -247,7 +247,9 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 '" title="' + variableNameStr + '"></td></tr>\n'
         elif ('-color' in variableName or
               '-background' in variableName or
-              variableName.endswith('-text')):
+              variableName.endswith('-text') or
+              value.startswith('#') or
+              color_to_hex.get(value)):
             # only use colors defined as hex
             if not value.startswith('#'):
                 if color_to_hex.get(value):
@@ -272,7 +274,10 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 variableName + '" value="' + str(value) + \
                 '" title="' + variableNameStr + '"></td></tr>\n'
         elif (('-width' in variableName or
-               '-height' in variableName) and
+               '-height' in variableName or
+               '-spacing' in variableName or
+               '-margin' in variableName or
+               '-vertical' in variableName) and
               (value.lower() != 'true' and value.lower() != 'false')):
             variableNameStr = variableName.replace('-', ' ')
             variableNameStr = variableNameStr.title()
@@ -301,7 +306,25 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
     fontStr += '    </table>\n    </div>\n'
     dimensionStr += '    </table>\n    </div>\n'
     switchStr += '    </table>\n    </div>\n'
-    themeForm += colorStr + fontStr + dimensionStr + switchStr
+
+    themeFormats = '.zip, .gz'
+    exportImportStr = '    <div class="container">\n'
+    exportImportStr += \
+        '      <label class="labels">' + \
+        translate['Import Theme'] + '</label>\n'
+    exportImportStr += '      <input type="file" id="importTheme" '
+    exportImportStr += 'name="submitImportTheme" '
+    exportImportStr += 'accept="' + themeFormats + '">\n'
+    exportImportStr += \
+        '      <label class="labels">' + \
+        translate['Export Theme'] + '</label><br>\n'
+    exportImportStr += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportTheme">➤</button><br>\n'
+    exportImportStr += '    </div>\n'
+
+    themeForm += colorStr + fontStr + dimensionStr
+    themeForm += switchStr + exportImportStr
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
     themeForm += htmlFooter()

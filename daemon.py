@@ -693,6 +693,19 @@ class PubServer(BaseHTTPRequestHandler):
                     return keyId
         return None
 
+    def _establishSession(self, callingFunction: str) -> bool:
+        """Recreates session if needed
+        """
+        if self.server.session:
+            return True
+        print('DEBUG: creating new session during ' + callingFunction)
+        self.server.session = createSession(self.server.proxyType)
+        if self.server.session:
+            return True
+        print('ERROR: GET failed to create session during ' +
+              callingFunction)
+        return False
+
     def _secureMode(self, force: bool = False) -> bool:
         """http authentication of GET requests for json
         """
@@ -712,14 +725,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('AUTH: Secure mode GET request not permitted: ' + keyId)
             return False
 
-        # make sure we have a session
-        if not self.server.session:
-            print('DEBUG: creating new session during authorized fetch')
-            self.server.session = createSession(self.server.proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session during ' +
-                      'secure mode')
-                return False
+        if not self._establishSession("secure mode"):
+            return False
 
         # obtain the public key
         pubKey = \
@@ -3485,16 +3492,9 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 # profile search
                 nickname = getNicknameFromActor(actorStr)
-                if not self.server.session:
-                    print('Starting new session during handle search')
-                    self.server.session = \
-                        createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: POST failed to create session ' +
-                              'during handle search')
-                        self._404()
-                        self.server.POSTbusy = False
-                        return
+                if not self._establishSession("handle search"):
+                    self.server.POSTbusy = False
+                    return
                 profilePathStr = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
@@ -6809,15 +6809,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not nickname.startswith('rss.'):
             accountDir = acctDir(self.server.baseDir, nickname, domain)
             if os.path.isdir(accountDir):
-                if not self.server.session:
-                    print('Starting new session during RSS request')
-                    self.server.session = \
-                        createSession(proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during RSS request')
-                        self._404()
-                        return
+                if not self._establishSession("RSS request"):
+                    return
 
                 msg = \
                     htmlBlogPageRSS2(authorized,
@@ -6858,15 +6851,9 @@ class PubServer(BaseHTTPRequestHandler):
                      debug: bool) -> None:
         """Returns an RSS2 feed for all blogs on this instance
         """
-        if not self.server.session:
-            print('Starting new session during RSS request')
-            self.server.session = \
-                createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during RSS request')
-                self._404()
-                return
+        if not self._establishSession("getRSS2site"):
+            self._404()
+            return
 
         msg = ''
         for subdir, dirs, files in os.walk(baseDir + '/accounts'):
@@ -6918,13 +6905,7 @@ class PubServer(BaseHTTPRequestHandler):
                          debug: bool) -> None:
         """Returns the newswire feed
         """
-        if not self.server.session:
-            print('Starting new session during RSS request')
-            self.server.session = \
-                createSession(proxyType)
-        if not self.server.session:
-            print('ERROR: GET failed to create session ' +
-                  'during RSS request')
+        if not self._establishSession("getNewswireFeed"):
             self._404()
             return
 
@@ -6958,13 +6939,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   debug: bool) -> None:
         """Returns the hashtag categories feed
         """
-        if not self.server.session:
-            print('Starting new session during RSS categories request')
-            self.server.session = \
-                createSession(proxyType)
-        if not self.server.session:
-            print('ERROR: GET failed to create session ' +
-                  'during RSS categories request')
+        if not self._establishSession("getHashtagCategoriesFeed"):
             self._404()
             return
 
@@ -7002,15 +6977,9 @@ class PubServer(BaseHTTPRequestHandler):
         if not nickname.startswith('rss.'):
             accountDir = acctDir(baseDir, nickname, domain)
             if os.path.isdir(accountDir):
-                if not self.server.session:
-                    print('Starting new session during RSS3 request')
-                    self.server.session = \
-                        createSession(proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during RSS3 request')
-                        self._404()
-                        return
+                if not self._establishSession("getRSS3Feed"):
+                    self._404()
+                    return
                 msg = \
                     htmlBlogPageRSS3(authorized,
                                      self.server.session,
@@ -7615,15 +7584,9 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during repeat button')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during repeat button')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("announceButton"):
+            self._404()
+            return
         self.server.actorRepeat = path.split('?actor=')[1]
         announceToStr = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull) + \
@@ -7733,7 +7696,7 @@ class PubServer(BaseHTTPRequestHandler):
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
                             repeatPrivate: bool, debug: bool,
-                            recentPostsCache: {}):
+                            recentPostsCache: {}) -> None:
         """Undo announce/repeat button was pressed
         """
         pageNumber = 1
@@ -7774,15 +7737,9 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during undo repeat')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during undo repeat')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("undoAnnounceButton"):
+            self._404()
+            return
         undoAnnounceActor = \
             httpPrefix + '://' + domainFull + \
             '/users/' + self.postToNickname
@@ -7840,7 +7797,7 @@ class PubServer(BaseHTTPRequestHandler):
                              domain: str, domainFull: str, port: int,
                              onionDomain: str, i2pDomain: str,
                              GETstartTime,
-                             proxyType: str, debug: bool):
+                             proxyType: str, debug: bool) -> None:
         """Follow approve button was pressed
         """
         originPathStr = path.split('/followapprove=')[0]
@@ -7852,15 +7809,9 @@ class PubServer(BaseHTTPRequestHandler):
             followingHandle = \
                 handleNickname + '@' + getFullDomain(handleDomain, handlePort)
         if '@' in followingHandle:
-            if not self.server.session:
-                print('Starting new session during follow approval')
-                self.server.session = createSession(proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during follow approval')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
+            if not self._establishSession("followApproveButton"):
+                self._404()
+                return
             manualApproveFollowRequestThread(self.server.session,
                                              baseDir, httpPrefix,
                                              followerNickname,
@@ -8007,7 +7958,7 @@ class PubServer(BaseHTTPRequestHandler):
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           GETstartTime,
-                          proxyType: str, debug: bool):
+                          proxyType: str, debug: bool) -> None:
         """Follow deny button was pressed
         """
         originPathStr = path.split('/followdeny=')[0]
@@ -8053,7 +8004,7 @@ class PubServer(BaseHTTPRequestHandler):
                     onionDomain: str, i2pDomain: str,
                     GETstartTime,
                     proxyType: str, cookie: str,
-                    debug: str):
+                    debug: str) -> None:
         """Press the like button
         """
         pageNumber = 1
@@ -8092,14 +8043,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during like')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session during like')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("likeButton"):
+            self._404()
+            self.server.GETbusy = False
+            return
         likeActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
@@ -8225,7 +8172,7 @@ class PubServer(BaseHTTPRequestHandler):
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
-                        debug: str):
+                        debug: str) -> None:
         """A button is pressed to undo
         """
         pageNumber = 1
@@ -8263,15 +8210,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during undo like')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during undo like')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("undoLikeButton"):
+            self._404()
+            self.server.GETbusy = False
+            return
         undoActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
@@ -8383,7 +8325,7 @@ class PubServer(BaseHTTPRequestHandler):
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
-                        debug: str):
+                        debug: str) -> None:
         """Press an emoji reaction button
         Note that this is not the emoji reaction selection icon at the
         bottom of the post
@@ -8439,15 +8381,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during emoji reaction')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: ' +
-                      'GET failed to create session during emoji reaction')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("reactionButton"):
+            self._404()
+            self.server.GETbusy = False
+            return
         reactionActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorReaction = path.split('?actor=')[1]
@@ -8578,7 +8515,7 @@ class PubServer(BaseHTTPRequestHandler):
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
-                            debug: str):
+                            debug: str) -> None:
         """A button is pressed to undo emoji reaction
         """
         pageNumber = 1
@@ -8632,15 +8569,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    callingDomain)
             return
         emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
-        if not self.server.session:
-            print('Starting new session during undo emoji reaction')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during undo emoji reaction')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("undoReactionButton"):
+            self._404()
+            self.server.GETbusy = False
+            return
         undoActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         actorReaction = path.split('?actor=')[1]
@@ -8851,7 +8783,7 @@ class PubServer(BaseHTTPRequestHandler):
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
-                        debug: str):
+                        debug: str) -> None:
         """Bookmark button was pressed
         """
         pageNumber = 1
@@ -8890,15 +8822,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during bookmark')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during bookmark')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("bookmarkButton"):
+            self._404()
+            self.server.GETbusy = False
+            return
         bookmarkActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         ccList = []
@@ -8986,7 +8913,7 @@ class PubServer(BaseHTTPRequestHandler):
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
-                            debug: str):
+                            debug: str) -> None:
         """Button pressed to undo a bookmark
         """
         pageNumber = 1
@@ -9024,15 +8951,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie,
                                    callingDomain)
             return
-        if not self.server.session:
-            print('Starting new session during undo bookmark')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during undo bookmark')
-                self._404()
-                self.server.GETbusy = False
-                return
+        if not self._establishSession("undoBookmarkButton"):
+            self._404()
+            self.server.GETbusy = False
+            return
         undoActor = \
             localActorUrl(httpPrefix, self.postToNickname, domainFull)
         ccList = []
@@ -9121,7 +9043,7 @@ class PubServer(BaseHTTPRequestHandler):
                       onionDomain: str, i2pDomain: str,
                       GETstartTime,
                       proxyType: str, cookie: str,
-                      debug: str):
+                      debug: str) -> None:
         """Delete button is pressed on a post
         """
         if not cookie:
@@ -9175,15 +9097,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
-            if not self.server.session:
-                print('Starting new session during delete')
-                self.server.session = createSession(proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during delete')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
+            if not self._establishSession("deleteButton"):
+                self._404()
+                self.server.GETbusy = False
+                return
 
             deleteStr = \
                 htmlConfirmDelete(self.server.cssCache,
@@ -9506,15 +9423,10 @@ class PubServer(BaseHTTPRequestHandler):
             }
 
             if self._requestHTTP():
-                if not self.server.session:
-                    print('DEBUG: creating new session during get replies')
-                    self.server.session = createSession(proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during get replies')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
+                if not self._establishSession("showRepliesToPost"):
+                    self._404()
+                    self.server.GETbusy = False
+                    return True
                 recentPostsCache = self.server.recentPostsCache
                 maxRecentPosts = self.server.maxRecentPosts
                 translate = self.server.translate
@@ -9605,17 +9517,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             # send the replies json
             if self._requestHTTP():
-                if not self.server.session:
-                    print('DEBUG: creating new session ' +
-                          'during get replies 2')
-                    self.server.session = createSession(proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to ' +
-                              'create session ' +
-                              'during get replies 2')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
+                if not self._establishSession("showRepliesToPost2"):
+                    self._404()
+                    self.server.GETbusy = False
+                    return True
                 recentPostsCache = self.server.recentPostsCache
                 maxRecentPosts = self.server.maxRecentPosts
                 translate = self.server.translate
@@ -11850,15 +11755,10 @@ class PubServer(BaseHTTPRequestHandler):
                                  searchPath.replace('/' + sharesFileType, ''),
                                  baseDir)
                 if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during profile')
-                        self.server.session = createSession(proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during profile')
-                            self._404()
-                            self.server.GETbusy = False
-                            return True
+                    if not self._establishSession("showSharesFeed"):
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
 
                     accessKeys = self.server.accessKeys
                     if '/users/' in path:
@@ -11975,15 +11875,10 @@ class PubServer(BaseHTTPRequestHandler):
                                  searchPath.replace('/following', ''),
                                  baseDir)
                 if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during following')
-                        self.server.session = createSession(proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during following')
-                            self._404()
-                            self.server.GETbusy = False
-                            return True
+                    if not self._establishSession("showFollowingFeed"):
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
 
                     accessKeys = self.server.accessKeys
                     city = None
@@ -12102,15 +11997,10 @@ class PubServer(BaseHTTPRequestHandler):
                                  searchPath.replace('/followers', ''),
                                  baseDir)
                 if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during following2')
-                        self.server.session = createSession(proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during following2')
-                            self._404()
-                            self.server.GETbusy = False
-                            return True
+                    if not self._establishSession("showFollowersFeed"):
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
 
                     accessKeys = self.server.accessKeys
                     city = None
@@ -12248,15 +12138,10 @@ class PubServer(BaseHTTPRequestHandler):
         if not actorJson:
             return False
         if self._requestHTTP():
-            if not self.server.session:
-                print('Starting new session during person lookup')
-                self.server.session = createSession(proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during person lookup')
-                    self._404()
-                    self.server.GETbusy = False
-                    return True
+            if not self._establishSession("showPersonProfile"):
+                self._404()
+                self.server.GETbusy = False
+                return True
 
             accessKeys = self.server.accessKeys
             city = None
@@ -12442,14 +12327,10 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber = 1
                 elif pageNumber > 10:
                     pageNumber = 10
-        if not self.server.session:
-            print('Starting new session during blog page')
-            self.server.session = createSession(proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session ' +
-                      'during blog page')
-                self._404()
-                return True
+        if not self._establishSession("showBlogPage"):
+            self._404()
+            self.server.GETbusy = False
+            return True
         msg = htmlBlogPage(authorized,
                            self.server.session,
                            baseDir,
@@ -13764,16 +13645,13 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_mastoApi[callingDomain]',
                            self.server.debug)
 
-        if not self.server.session:
-            print('Starting new session during GET')
-            self.server.session = createSession(self.server.proxyType)
-            if not self.server.session:
-                print('ERROR: GET failed to create session duing GET')
-                self._404()
-                fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_GET', 'session fail',
-                                   self.server.debug)
-                return
+        if not self._establishSession("GET"):
+            self._404()
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', 'session fail',
+                               self.server.debug)
+            self.server.GETbusy = False
+            return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'create session',
@@ -14095,15 +13973,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.path == '/blogs' or
                         self.path == '/blogs/'):
             if '/rss.xml' not in self.path:
-                if not self.server.session:
-                    print('Starting new session during blog view')
-                    self.server.session = \
-                        createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during blog view')
-                        self._404()
-                        return
+                if not self._establishSession("show the main blog page"):
+                    self._404()
+                    return
                 msg = htmlBlogView(authorized,
                                    self.server.session,
                                    self.server.baseDir,
@@ -17460,17 +17332,12 @@ class PubServer(BaseHTTPRequestHandler):
     def do_POST(self):
         POSTstartTime = time.time()
 
-        if not self.server.session:
-            print('Starting new session from POST')
-            self.server.session = \
-                createSession(self.server.proxyType)
+        if not self._establishSession("POST"):
             fitnessPerformance(POSTstartTime, self.server.fitness,
                                '_POST', 'createSession',
                                self.server.debug)
-            if not self.server.session:
-                print('ERROR: POST failed to create session during POST')
-                self._404()
-                return
+            self._404()
+            return
 
         if self.server.debug:
             print('DEBUG: POST to ' + self.server.baseDir +
