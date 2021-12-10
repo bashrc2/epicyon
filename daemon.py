@@ -17420,12 +17420,6 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        uaStr = self._getUserAgent()
-
-        if self._blockedUserAgent(callingDomain, uaStr):
-            self._400()
-            return
-
         currTimePOST = int(time.time() * 1000)
         if self.server.POSTbusy:
             if currTimePOST - self.server.lastPOST < 500:
@@ -17434,6 +17428,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self.server.POSTbusy = True
         self.server.lastPOST = currTimePOST
+
+        uaStr = self._getUserAgent()
+
+        if self._blockedUserAgent(callingDomain, uaStr):
+            self._400()
+            self.server.POSTbusy = False
+            return
 
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
