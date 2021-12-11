@@ -1857,9 +1857,6 @@ def _htmlEditProfileContactInfo(nickname: str,
                                 briarAddress: str,
                                 jamiAddress: str,
                                 cwtchAddress: str,
-                                PGPfingerprint: str,
-                                PGPpubKey: str,
-                                EnigmaPubKey: str,
                                 translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
@@ -1876,6 +1873,23 @@ def _htmlEditProfileContactInfo(nickname: str,
     editProfileForm += editTextField('Briar', 'briarAddress', briarAddress)
     editProfileForm += editTextField('Jami', 'jamiAddress', jamiAddress)
     editProfileForm += editTextField('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += \
+        '<a href="/users/' + nickname + \
+        '/followingaccounts"><label class="labels">' + \
+        translate['Following'] + '</label></a><br>\n'
+
+    editProfileForm += endEditSection()
+    return editProfileForm
+
+
+def _htmlEditProfileEncryptionKeys(PGPfingerprint: str,
+                                   PGPpubKey: str,
+                                   EnigmaPubKey: str,
+                                   translate: {}) -> str:
+    """Contact Information section of edit profile screen
+    """
+    editProfileForm = beginEditSection(translate['Encryption Keys'])
+
     enigmaUrl = 'https://github.com/enigma-reloaded/enigma-reloaded'
     editProfileForm += \
         editTextField('<a href="' + enigmaUrl + '">Enigma</a>',
@@ -1885,10 +1899,6 @@ def _htmlEditProfileContactInfo(nickname: str,
     editProfileForm += \
         editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
                      '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
-    editProfileForm += \
-        '<a href="/users/' + nickname + \
-        '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>\n'
 
     editProfileForm += endEditSection()
     return editProfileForm
@@ -2252,8 +2262,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, toxAddress,
                                     briarAddress, jamiAddress,
-                                    cwtchAddress, PGPfingerprint,
-                                    PGPpubKey, EnigmaPubKey, translate)
+                                    cwtchAddress, translate)
+
+    # Encryption Keys
+    editProfileForm += \
+        _htmlEditProfileEncryptionKeys(PGPfingerprint,
+                                       PGPpubKey, EnigmaPubKey, translate)
 
     # Customize images and banners
     editProfileForm += _htmlEditProfileBackground(newsInstance, translate)
