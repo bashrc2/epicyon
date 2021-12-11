@@ -29,6 +29,8 @@ from webfinger import webfingerUpdate
 from mastoapiv1 import mastoApiV1Response
 from metadata import metaDataNodeInfo
 from metadata import metadataCustomEmoji
+from enigma import getEnigmaPubKey
+from enigma import setEnigmaPubKey
 from pgp import getEmailAddress
 from pgp import setEmailAddress
 from pgp import getPGPpubKey
@@ -5379,6 +5381,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setCwtchAddress(actorJson, '')
                             actorChanged = True
 
+                    # change Enigma public key
+                    currentEnigmaPubKey = getEnigmaPubKey(actorJson)
+                    if fields.get('enigmapubkey'):
+                        if fields['enigmapubkey'] != currentEnigmaPubKey:
+                            setEnigmaPubKey(actorJson,
+                                            fields['enigmapubkey'])
+                            actorChanged = True
+                    else:
+                        if currentEnigmaPubKey:
+                            setEnigmaPubKey(actorJson, '')
+                            actorChanged = True
+
                     # change PGP public key
                     currentPGPpubKey = getPGPpubKey(actorJson)
                     if fields.get('pgp'):
@@ -7039,6 +7053,7 @@ class PubServer(BaseHTTPRequestHandler):
             isGroup = False
             donateUrl = None
             websiteUrl = None
+            EnigmaPubKey = None
             PGPpubKey = None
             PGPfingerprint = None
             xmppAddress = None
@@ -7076,6 +7091,7 @@ class PubServer(BaseHTTPRequestHandler):
                 jamiAddress = getJamiAddress(actorJson)
                 cwtchAddress = getCwtchAddress(actorJson)
                 emailAddress = getEmailAddress(actorJson)
+                EnigmaPubKey = getEnigmaPubKey(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
                 if actorJson.get('alsoKnownAs'):
@@ -7110,6 +7126,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     ssbAddress, blogAddress,
                                     toxAddress, briarAddress,
                                     jamiAddress, cwtchAddress,
+                                    EnigmaPubKey,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
                                     self.server.dormantMonths,

@@ -47,6 +47,7 @@ from ssb import getSSBAddress
 from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
+from enigma import getEnigmaPubKey
 from tox import getToxAddress
 from briar import getBriarAddress
 from jami import getJamiAddress
@@ -631,6 +632,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     donateUrl = getDonationUrl(profileJson)
     websiteUrl = getWebsite(profileJson, translate)
     blogAddress = getBlogAddress(profileJson)
+    EnigmaPubKey = getEnigmaPubKey(profileJson)
     PGPpubKey = getPGPpubKey(profileJson)
     PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
@@ -643,7 +645,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     cwtchAddress = getCwtchAddress(profileJson)
     if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
-       jamiAddress or cwtchAddress or PGPpubKey or \
+       jamiAddress or cwtchAddress or PGPpubKey or EnigmaPubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -696,6 +698,10 @@ def htmlProfile(signingPrivateKeyPem: str,
             donateSection += \
                 '<p>Cwtch: <label class="toxaddr">' + \
                 cwtchAddress + '</label></p>\n'
+        if EnigmaPubKey:
+            donateSection += \
+                '<p>Enigma: <label class="toxaddr">' + \
+                EnigmaPubKey + '</label></p>\n'
         if PGPfingerprint:
             donateSection += \
                 '<p class="pgp">PGP: ' + \
@@ -1851,8 +1857,6 @@ def _htmlEditProfileContactInfo(nickname: str,
                                 briarAddress: str,
                                 jamiAddress: str,
                                 cwtchAddress: str,
-                                PGPfingerprint: str,
-                                PGPpubKey: str,
                                 translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
@@ -1869,15 +1873,32 @@ def _htmlEditProfileContactInfo(nickname: str,
     editProfileForm += editTextField('Briar', 'briarAddress', briarAddress)
     editProfileForm += editTextField('Jami', 'jamiAddress', jamiAddress)
     editProfileForm += editTextField('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += \
+        '<a href="/users/' + nickname + \
+        '/followingaccounts"><label class="labels">' + \
+        translate['Following'] + '</label></a><br>\n'
+
+    editProfileForm += endEditSection()
+    return editProfileForm
+
+
+def _htmlEditProfileEncryptionKeys(PGPfingerprint: str,
+                                   PGPpubKey: str,
+                                   EnigmaPubKey: str,
+                                   translate: {}) -> str:
+    """Contact Information section of edit profile screen
+    """
+    editProfileForm = beginEditSection(translate['Encryption Keys'])
+
+    enigmaUrl = 'https://github.com/enigma-reloaded/enigma-reloaded'
+    editProfileForm += \
+        editTextField('<a href="' + enigmaUrl + '">Enigma</a>',
+                      'enigmapubkey', EnigmaPubKey)
     editProfileForm += editTextField(translate['PGP Fingerprint'],
                                      'openpgp', PGPfingerprint)
     editProfileForm += \
         editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
                      '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
-    editProfileForm += \
-        '<a href="/users/' + nickname + \
-        '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>\n'
 
     editProfileForm += endEditSection()
     return editProfileForm
@@ -2079,7 +2100,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     notifyLikes = notifyReactions = ''
     hideLikeButton = hideReactionButton = mediaInstanceStr = ''
     blogsInstanceStr = newsInstanceStr = movedTo = twitterStr = ''
-    bioStr = donateUrl = websiteUrl = emailAddress = PGPpubKey = ''
+    bioStr = donateUrl = websiteUrl = emailAddress = ''
+    PGPpubKey = EnigmaPubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
     cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
@@ -2099,6 +2121,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         jamiAddress = getJamiAddress(actorJson)
         cwtchAddress = getCwtchAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
+        EnigmaPubKey = getEnigmaPubKey(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
         if actorJson.get('name'):
@@ -2239,8 +2262,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, toxAddress,
                                     briarAddress, jamiAddress,
-                                    cwtchAddress, PGPfingerprint,
-                                    PGPpubKey, translate)
+                                    cwtchAddress, translate)
+
+    # Encryption Keys
+    editProfileForm += \
+        _htmlEditProfileEncryptionKeys(PGPfingerprint,
+                                       PGPpubKey, EnigmaPubKey, translate)
 
     # Customize images and banners
     editProfileForm += _htmlEditProfileBackground(newsInstance, translate)
