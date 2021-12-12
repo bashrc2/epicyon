@@ -1,6 +1,6 @@
-If you are setting up a media instance then this could be used as the Terms of Service. It's the original Indymedia principles from 2001.
+# PRINCIPLES OF UNITY
 
-PRINCIPLES OF UNITY
+If you are setting up a media instance then this could be used as the Terms of Service. It's the original Indymedia principles from 2001.
 
 1. The Independent Media Center Network (IMCN) is based upon principles of equality, decentralization and local autonomy. The IMCN is not derived from a centralized bureaucratic process, but from the self-organization of autonomous collectives that recognize the importance in developing a union of networks.
 
