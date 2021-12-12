@@ -8,7 +8,7 @@ Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant s
 
 Corporate social media gives you an audience, with reach, celebrity, spectacle, lack of control, professional influencers, anxiety, alienation and competition. It's designed for fast growth regardless of social consequences. Epicyon is designed for community, in which you have voice, agency, discussions and comradery. The community approach is the better way to build a habitable internet for the long term.
 
-[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md)
+[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md) - [Principles of Unity](principlesofunity.md)
 
 Matrix room: **#epicyon:matrix.libreserver.org**
 
@@ -27,8 +27,8 @@ On Arch/Parabola:
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-cryptography \
                imagemagick python-requests \
-           perl-image-exiftool python-dateutil \
-           certbot flake8 bandit
+               perl-image-exiftool python-dateutil \
+               certbot flake8 bandit
 sudo pip3 install pyqrcode pypng
 ```
 
