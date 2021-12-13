@@ -324,15 +324,16 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
     """TTS using picospeaker
     """
     speakerLang = 'en-GB'
-    if systemLanguage:
-        if systemLanguage.startswith('fr'):
-            speakerLang = 'fr-FR'
-        elif systemLanguage.startswith('es'):
-            speakerLang = 'es-ES'
-        elif systemLanguage.startswith('de'):
-            speakerLang = 'de-DE'
-        elif systemLanguage.startswith('it'):
-            speakerLang = 'it-IT'
+    supportedLanguages = {
+        "fr": "fr-FR",
+        "es": "es-ES",
+        "de": "de-DE",
+        "it": "it-IT"
+    }
+    for lang, speakerStr in supportedLanguages.items():
+        if systemLanguage.startswith(lang):
+            speakerLang = speakerStr
+            break
     sayText = str(sayText).replace('"', "'")
     speakerCmd = 'picospeaker ' + \
         '-l ' + speakerLang + \
