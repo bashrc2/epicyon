@@ -624,15 +624,16 @@ def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
         return
     if not postJsonObject['object'].get('likes'):
         return
-    if not isinstance(postJsonObject['object']['likes'], dict):
+    objectLikes = postJsonObject['object']['likes']
+    if not isinstance(objectLikes, dict):
         return
-    if not postJsonObject['object']['likes'].get('items'):
+    if not objectLikes.get('items'):
         return
-    if not isinstance(postJsonObject['object']['likes']['items'], list):
+    if not isinstance(objectLikes['items'], list):
         return
     print('')
     ctr = 0
-    for item in postJsonObject['object']['likes']['items']:
+    for item in objectLikes['items']:
         print('  ❤ ' + str(item['actor']))
         ctr += 1
         if ctr >= maxLikes:
@@ -646,15 +647,16 @@ def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
         return
     if not postJsonObject['object'].get('replies'):
         return
-    if not isinstance(postJsonObject['object']['replies'], dict):
+    objectReplies = postJsonObject['object']['replies']
+    if not isinstance(objectReplies, dict):
         return
-    if not postJsonObject['object']['replies'].get('items'):
+    if not objectReplies.get('items'):
         return
-    if not isinstance(postJsonObject['object']['replies']['items'], list):
+    if not isinstance(objectReplies['items'], list):
         return
     print('')
     ctr = 0
-    for item in postJsonObject['object']['replies']['items']:
+    for item in objectReplies['items']:
         print('  ↰ ' + str(item['url']))
         ctr += 1
         if ctr >= maxReplies:
