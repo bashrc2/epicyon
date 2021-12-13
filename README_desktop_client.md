@@ -1,4 +1,6 @@
-# Desktop client
+# C2S Desktop client
+
+<img src="https://libreserver.org/epicyon/img/desktop_client.jpg" width="80%"/>
 
 ## Installing and running
 
