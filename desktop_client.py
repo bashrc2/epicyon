@@ -387,8 +387,7 @@ def _textToSpeech(sayStr: str, screenreader: str,
     if screenreader == 'espeak':
         _speakerEspeak(espeak, pitch, rate, srange, sayStr)
     elif screenreader == 'picospeaker':
-        _speakerPicospeaker(pitch, rate,
-                            systemLanguage, sayStr)
+        _speakerPicospeaker(pitch, rate, systemLanguage, sayStr)
 
 
 def _sayCommand(content: str, sayStr: str, screenreader: str,
