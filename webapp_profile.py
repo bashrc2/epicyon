@@ -151,7 +151,7 @@ def htmlProfileAfterSearch(cssCache: {},
         gnunet = True
     profileJson, asHeader = \
         getActorJson(domain, profileHandle, http, gnunet, debug, False,
-                     signingPrivateKeyPem)
+                     signingPrivateKeyPem, session)
     if not profileJson:
         return None
 

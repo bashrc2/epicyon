@@ -343,7 +343,7 @@ def _getPGPPublicKeyFromActor(signingPrivateKeyPem: str,
     if not actorJson:
         actorJson, asHeader = \
             getActorJson(domain, handle, False, False, False, True,
-                         signingPrivateKeyPem)
+                         signingPrivateKeyPem, None)
     if not actorJson:
         return None
     if not actorJson.get('attachment'):
@@ -491,7 +491,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
 
     actorJson, asHeader = \
         getActorJson(domainFull, handle, False, False, debug, True,
-                     signingPrivateKeyPem)
+                     signingPrivateKeyPem, session)
     if not actorJson:
         if debug:
             print('No actor returned for ' + handle)

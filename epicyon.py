@@ -2086,7 +2086,7 @@ if args.actor:
         else:
             print('Did not obtain instance actor key for ' + domain)
     getActorJson(domain, args.actor, args.http, args.gnunet,
-                 debug, False, signingPrivateKeyPem)
+                 debug, False, signingPrivateKeyPem, None)
     sys.exit()
 
 if args.followers:

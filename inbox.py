@@ -113,6 +113,7 @@ from notifyOnPost import notifyWhenPersonPosts
 from conversation import updateConversation
 from content import validHashTag
 from webapp_hashtagswarm import htmlHashTagSwarm
+from person import validSendingActor
 
 
 def _storeLastPostId(baseDir: str, nickname: str, domain: str,
@@ -3408,6 +3409,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                          allowLocalNetworkAccess, debug,
                          systemLanguage, httpPrefix,
                          domainFull, personCache):
+        # is the sending actor valid?
+        if not validSendingActor(session, baseDir, nickname, domain,
+                                 personCache, postJsonObject,
+                                 signingPrivateKeyPem, debug, unitTest):
+            return False
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']

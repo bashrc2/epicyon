@@ -869,7 +869,7 @@ def _desktopShowProfile(session, nickname: str, domain: str,
         isHttp = True
     actorJson, asHeader = \
         getActorJson(domain, actor, isHttp, False, False, True,
-                     signingPrivateKeyPem)
+                     signingPrivateKeyPem, session)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
@@ -890,7 +890,7 @@ def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
     """
     actorJson, asHeader = \
         getActorJson(domain, handle, False, False, False, True,
-                     signingPrivateKeyPem)
+                     signingPrivateKeyPem, session)
 
     _desktopShowActor(baseDir, actorJson, translate,
                       systemLanguage, screenreader, espeak)

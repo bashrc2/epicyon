@@ -144,6 +144,20 @@ def isFilteredGlobally(baseDir: str, content: str) -> bool:
     return False
 
 
+def isFilteredBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
+    """Should the given actor bio be filtered out?
+    """
+    if isFilteredGlobally(baseDir, bio):
+        return True
+
+    if not nickname or not domain:
+        return False
+
+    accountFiltersFilename = \
+        acctDir(baseDir, nickname, domain) + '/filters_bio.txt'
+    return _isFilteredBase(accountFiltersFilename, bio)
+
+
 def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex

@@ -86,7 +86,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         gnunet = True
     personJson = \
         getActorJson(domain, personUrl, httpPrefix, gnunet, debug, False,
-                     signingPrivateKeyPem)
+                     signingPrivateKeyPem, None)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):

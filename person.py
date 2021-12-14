@@ -38,6 +38,8 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
+from utils import removeHtml
+from utils import containsInvalidChars
 from utils import replaceUsersWithAt
 from utils import removeLineEndings
 from utils import removeDomainPort
@@ -63,6 +65,8 @@ from session import getJson
 from webfinger import webfingerHandle
 from pprint import pprint
 from cache import getPersonFromCache
+from cache import storePersonInCache
+from filters import isFilteredBio
 
 
 def generateRSAKey() -> (str, str):
@@ -1415,7 +1419,8 @@ def _detectUsersPath(url: str) -> str:
 
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                  debug: bool, quiet: bool,
-                 signingPrivateKeyPem: str) -> ({}, {}):
+                 signingPrivateKeyPem: str,
+                 existingSession) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1498,7 +1503,10 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             httpPrefix = 'https'
         else:
             httpPrefix = 'http'
-    session = createSession(proxyType)
+    if existingSession:
+        session = existingSession
+    else:
+        session = createSession(proxyType)
     if nickname == 'inbox':
         nickname = domain
 
@@ -1634,3 +1642,102 @@ def addActorUpdateTimestamp(actorJson: {}) -> None:
     # add updated timestamp to avatar and banner
     actorJson['icon']['updated'] = currDateStr
     actorJson['image']['updated'] = currDateStr
+
+
+def validSendingActor(session, baseDir: str,
+                      nickname: str, domain: str,
+                      personCache: {},
+                      postJsonObject: {},
+                      signingPrivateKeyPem: str,
+                      debug: bool, unitTest: bool) -> bool:
+    """When a post arrives in the inbox this is used to check that
+    the sending actor is valid
+    """
+    # who sent this post?
+    sendingActor = postJsonObject['actor']
+
+    # sending to yourself (reminder)
+    if sendingActor.endswith(domain + '/users/' + nickname):
+        return True
+
+    # get their actor
+    actorJson = getPersonFromCache(baseDir, sendingActor, personCache, True)
+    downloadedActor = False
+    if not actorJson:
+        # download the actor
+        actorJson, _ = getActorJson(domain, sendingActor,
+                                    True, False, debug, True,
+                                    signingPrivateKeyPem, session)
+        if actorJson:
+            downloadedActor = True
+    if not actorJson:
+        # if the actor couldn't be obtained then proceed anyway
+        return True
+    if not actorJson.get('name'):
+        print('REJECT: no name within actor ' + str(actorJson))
+        return False
+    if not actorJson.get('preferredUsername'):
+        print('REJECT: no preferredUsername within actor ' + str(actorJson))
+        return False
+    # does the actor have a bio ?
+    if not unitTest:
+        if not actorJson.get('summary'):
+            # allow no bio if it's an actor in this instance
+            if domain not in sendingActor:
+                # probably a spam actor with no bio
+                print('REJECT: spam actor ' + sendingActor)
+                return False
+        bioStr = removeHtml(actorJson['summary'])
+        bioStr += ' ' + removeHtml(actorJson['preferredUsername'])
+        bioStr += ' ' + removeHtml(actorJson['name'])
+        if containsInvalidChars(bioStr):
+            print('REJECT: post actor bio contains invalid characters')
+            return False
+        if isFilteredBio(baseDir, nickname, domain, bioStr):
+            print('REJECT: post actor bio contains filtered text')
+            return False
+    else:
+        print('Skipping check for missing bio in ' + sendingActor)
+
+    # Check any attached fields for the actor.
+    # Spam actors will sometimes have attached fields which are all empty
+    if actorJson.get('attachment'):
+        if isinstance(actorJson['attachment'], list):
+            noOfTags = 0
+            tagsWithoutValue = 0
+            for tag in actorJson['attachment']:
+                if not isinstance(tag, dict):
+                    continue
+                if not tag.get('name'):
+                    continue
+                noOfTags += 1
+                if not tag.get('value'):
+                    tagsWithoutValue += 1
+                    continue
+                if not isinstance(tag['value'], str):
+                    tagsWithoutValue += 1
+                    continue
+                if not tag['value'].strip():
+                    tagsWithoutValue += 1
+                    continue
+                if len(tag['value']) < 2:
+                    tagsWithoutValue += 1
+                    continue
+                if containsInvalidChars(tag['name']):
+                    tagsWithoutValue += 1
+                    continue
+                if containsInvalidChars(tag['value']):
+                    tagsWithoutValue += 1
+                    continue
+            if noOfTags > 0:
+                if int(tagsWithoutValue * 100 / noOfTags) > 50:
+                    print('REJECT: actor has empty attachments ' +
+                          sendingActor)
+                    return False
+
+    if downloadedActor:
+        # if the actor is valid and was downloaded then
+        # store it in the cache, but don't write it to file
+        storePersonInCache(baseDir, sendingActor, actorJson, personCache,
+                           False)
+    return True
