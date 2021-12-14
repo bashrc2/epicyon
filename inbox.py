@@ -17,6 +17,9 @@ from languages import understoodPostLanguage
 from like import updateLikesCollection
 from reaction import updateReactionCollection
 from reaction import validEmojiContent
+from utils import domainPermitted
+from utils import isGroupAccount
+from utils import isSystemAccount
 from utils import invalidCiphertext
 from utils import removeHtml
 from utils import fileLastModified
@@ -65,9 +68,14 @@ from httpsig import verifyPostHeaders
 from session import createSession
 from follow import followerApprovalActive
 from follow import isFollowingActor
-from follow import receiveFollowRequest
 from follow import getFollowersOfActor
 from follow import unfollowerOfAccount
+from follow import isFollowerOfPerson
+from follow import followedAccountAccepts
+from follow import storeFollowRequest
+from follow import noOfFollowRequests
+from follow import getNoOfFollowers
+from follow import followApprovalRequired
 from pprint import pprint
 from cache import storePersonInCache
 from cache import getPersonPubKey
@@ -113,6 +121,7 @@ from notifyOnPost import notifyWhenPersonPosts
 from conversation import updateConversation
 from content import validHashTag
 from webapp_hashtagswarm import htmlHashTagSwarm
+from person import validSendingActor
 
 
 def _storeLastPostId(baseDir: str, nickname: str, domain: str,
@@ -2184,7 +2193,9 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
-    Check number of tags is reasonable
+    Check that the language is understood
+    Check if it's a git patch
+    Check number of tags and mentions is reasonable
     """
     if not hasObjectDict(messageJson):
         return True
@@ -3406,6 +3417,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                          allowLocalNetworkAccess, debug,
                          systemLanguage, httpPrefix,
                          domainFull, personCache):
+        # is the sending actor valid?
+        if not validSendingActor(session, baseDir, nickname, domain,
+                                 personCache, postJsonObject,
+                                 signingPrivateKeyPem, debug, unitTest):
+            return False
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -3826,6 +3842,221 @@ def _checkJsonSignature(baseDir: str, queueJson: {}) -> (bool, bool):
     return hasJsonSignature, jwebsigType
 
 
+def _receiveFollowRequest(session, baseDir: str, httpPrefix: str,
+                          port: int, sendThreads: [], postLog: [],
+                          cachedWebfingers: {}, personCache: {},
+                          messageJson: {}, federationList: [],
+                          debug: bool, projectVersion: str,
+                          maxFollowers: int, onionDomain: str,
+                          signingPrivateKeyPem: str, unitTest: bool) -> bool:
+    """Receives a follow request within the POST section of HTTPServer
+    """
+    if not messageJson['type'].startswith('Follow'):
+        if not messageJson['type'].startswith('Join'):
+            return False
+    print('Receiving follow request')
+    if not hasActor(messageJson, debug):
+        return False
+    if not hasUsersPath(messageJson['actor']):
+        if debug:
+            print('DEBUG: users/profile/accounts/channel missing from actor')
+        return False
+    domain, tempPort = getDomainFromActor(messageJson['actor'])
+    fromPort = port
+    domainFull = getFullDomain(domain, tempPort)
+    if tempPort:
+        fromPort = tempPort
+    if not domainPermitted(domain, federationList):
+        if debug:
+            print('DEBUG: follower from domain not permitted - ' + domain)
+        return False
+    nickname = getNicknameFromActor(messageJson['actor'])
+    if not nickname:
+        # single user instance
+        nickname = 'dev'
+        if debug:
+            print('DEBUG: follow request does not contain a ' +
+                  'nickname. Assuming single user instance.')
+    if not messageJson.get('to'):
+        messageJson['to'] = messageJson['object']
+    if not hasUsersPath(messageJson['object']):
+        if debug:
+            print('DEBUG: users/profile/channel/accounts ' +
+                  'not found within object')
+        return False
+    domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
+    if not domainPermitted(domainToFollow, federationList):
+        if debug:
+            print('DEBUG: follow domain not permitted ' + domainToFollow)
+        return True
+    domainToFollowFull = getFullDomain(domainToFollow, tempPort)
+    nicknameToFollow = getNicknameFromActor(messageJson['object'])
+    if not nicknameToFollow:
+        if debug:
+            print('DEBUG: follow request does not contain a ' +
+                  'nickname for the account followed')
+        return True
+    if isSystemAccount(nicknameToFollow):
+        if debug:
+            print('DEBUG: Cannot follow system account - ' +
+                  nicknameToFollow)
+        return True
+    if maxFollowers > 0:
+        if getNoOfFollowers(baseDir,
+                            nicknameToFollow, domainToFollow,
+                            True) > maxFollowers:
+            print('WARN: ' + nicknameToFollow +
+                  ' has reached their maximum number of followers')
+            return True
+    handleToFollow = nicknameToFollow + '@' + domainToFollow
+    if domainToFollow == domain:
+        if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):
+            if debug:
+                print('DEBUG: followed account not found - ' +
+                      baseDir + '/accounts/' + handleToFollow)
+            return True
+
+    if isFollowerOfPerson(baseDir,
+                          nicknameToFollow, domainToFollowFull,
+                          nickname, domainFull):
+        if debug:
+            print('DEBUG: ' + nickname + '@' + domain +
+                  ' is already a follower of ' +
+                  nicknameToFollow + '@' + domainToFollow)
+        return True
+
+    approveHandle = nickname + '@' + domainFull
+
+    # is the actor sending the request valid?
+    if not validSendingActor(session, baseDir,
+                             nicknameToFollow, domainToFollow,
+                             personCache, messageJson,
+                             signingPrivateKeyPem, debug, unitTest):
+        print('REJECT spam follow request ' + approveHandle)
+        return False
+
+    # what is the followers policy?
+    if followApprovalRequired(baseDir, nicknameToFollow,
+                              domainToFollow, debug, approveHandle):
+        print('Follow approval is required')
+        if domain.endswith('.onion'):
+            if noOfFollowRequests(baseDir,
+                                  nicknameToFollow, domainToFollow,
+                                  nickname, domain, fromPort,
+                                  'onion') > 5:
+                print('Too many follow requests from onion addresses')
+                return False
+        elif domain.endswith('.i2p'):
+            if noOfFollowRequests(baseDir,
+                                  nicknameToFollow, domainToFollow,
+                                  nickname, domain, fromPort,
+                                  'i2p') > 5:
+                print('Too many follow requests from i2p addresses')
+                return False
+        else:
+            if noOfFollowRequests(baseDir,
+                                  nicknameToFollow, domainToFollow,
+                                  nickname, domain, fromPort,
+                                  '') > 10:
+                print('Too many follow requests')
+                return False
+
+        # Get the actor for the follower and add it to the cache.
+        # Getting their public key has the same result
+        if debug:
+            print('Obtaining the following actor: ' + messageJson['actor'])
+        if not getPersonPubKey(baseDir, session, messageJson['actor'],
+                               personCache, debug, projectVersion,
+                               httpPrefix, domainToFollow, onionDomain,
+                               signingPrivateKeyPem):
+            if debug:
+                print('Unable to obtain following actor: ' +
+                      messageJson['actor'])
+
+        groupAccount = \
+            hasGroupType(baseDir, messageJson['actor'], personCache)
+        if groupAccount and isGroupAccount(baseDir, nickname, domain):
+            print('Group cannot follow a group')
+            return False
+
+        print('Storing follow request for approval')
+        return storeFollowRequest(baseDir,
+                                  nicknameToFollow, domainToFollow, port,
+                                  nickname, domain, fromPort,
+                                  messageJson, debug, messageJson['actor'],
+                                  groupAccount)
+    else:
+        print('Follow request does not require approval ' + approveHandle)
+        # update the followers
+        accountToBeFollowed = \
+            acctDir(baseDir, nicknameToFollow, domainToFollow)
+        if os.path.isdir(accountToBeFollowed):
+            followersFilename = accountToBeFollowed + '/followers.txt'
+
+            # for actors which don't follow the mastodon
+            # /users/ path convention store the full actor
+            if '/users/' not in messageJson['actor']:
+                approveHandle = messageJson['actor']
+
+            # Get the actor for the follower and add it to the cache.
+            # Getting their public key has the same result
+            if debug:
+                print('Obtaining the following actor: ' + messageJson['actor'])
+            if not getPersonPubKey(baseDir, session, messageJson['actor'],
+                                   personCache, debug, projectVersion,
+                                   httpPrefix, domainToFollow, onionDomain,
+                                   signingPrivateKeyPem):
+                if debug:
+                    print('Unable to obtain following actor: ' +
+                          messageJson['actor'])
+
+            print('Updating followers file: ' +
+                  followersFilename + ' adding ' + approveHandle)
+            if os.path.isfile(followersFilename):
+                if approveHandle not in open(followersFilename).read():
+                    groupAccount = \
+                        hasGroupType(baseDir,
+                                     messageJson['actor'], personCache)
+                    if debug:
+                        print(approveHandle + ' / ' + messageJson['actor'] +
+                              ' is Group: ' + str(groupAccount))
+                    if groupAccount and \
+                       isGroupAccount(baseDir, nickname, domain):
+                        print('Group cannot follow a group')
+                        return False
+                    try:
+                        with open(followersFilename, 'r+') as followersFile:
+                            content = followersFile.read()
+                            if approveHandle + '\n' not in content:
+                                followersFile.seek(0, 0)
+                                if not groupAccount:
+                                    followersFile.write(approveHandle +
+                                                        '\n' + content)
+                                else:
+                                    followersFile.write('!' + approveHandle +
+                                                        '\n' + content)
+                    except Exception as e:
+                        print('WARN: ' +
+                              'Failed to write entry to followers file ' +
+                              str(e))
+            else:
+                try:
+                    with open(followersFilename, 'w+') as followersFile:
+                        followersFile.write(approveHandle + '\n')
+                except OSError:
+                    print('EX: unable to write ' + followersFilename)
+
+    print('Beginning follow accept')
+    return followedAccountAccepts(session, baseDir, httpPrefix,
+                                  nicknameToFollow, domainToFollow, port,
+                                  nickname, domain, fromPort,
+                                  messageJson['actor'], federationList,
+                                  messageJson, sendThreads, postLog,
+                                  cachedWebfingers, personCache,
+                                  debug, projectVersion, True,
+                                  signingPrivateKeyPem)
+
+
 def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   projectVersion: str,
                   baseDir: str, httpPrefix: str, sendThreads: [], postLog: [],
@@ -4126,16 +4357,16 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
         if debug:
             print('DEBUG: checking for follow requests')
-        if receiveFollowRequest(session,
-                                baseDir, httpPrefix, port,
-                                sendThreads, postLog,
-                                cachedWebfingers,
-                                personCache,
-                                queueJson['post'],
-                                federationList,
-                                debug, projectVersion,
-                                maxFollowers, onionDomain,
-                                signingPrivateKeyPem):
+        if _receiveFollowRequest(session,
+                                 baseDir, httpPrefix, port,
+                                 sendThreads, postLog,
+                                 cachedWebfingers,
+                                 personCache,
+                                 queueJson['post'],
+                                 federationList,
+                                 debug, projectVersion,
+                                 maxFollowers, onionDomain,
+                                 signingPrivateKeyPem, unitTest):
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)

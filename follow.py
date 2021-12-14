@@ -11,11 +11,9 @@ from pprint import pprint
 import os
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
-from utils import hasActor
 from utils import removeDomainPort
 from utils import hasUsersPath
 from utils import getFullDomain
-from utils import isSystemAccount
 from utils import getFollowersList
 from utils import validNickname
 from utils import domainPermitted
@@ -31,7 +29,6 @@ from utils import isAccountDir
 from utils import getUserPaths
 from utils import acctDir
 from utils import hasGroupType
-from utils import isGroupAccount
 from utils import localActorUrl
 from acceptreject import createAccept
 from acceptreject import createReject
@@ -39,7 +36,6 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from session import getJson
 from session import postJson
-from cache import getPersonPubKey
 
 
 def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
@@ -418,8 +414,8 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
     return ctr
 
 
-def _getNoOfFollowers(baseDir: str,
-                      nickname: str, domain: str, authenticated: bool) -> int:
+def getNoOfFollowers(baseDir: str,
+                     nickname: str, domain: str, authenticated: bool) -> int:
     """Returns the number of followers of the given person
     """
     return _getNoOfFollows(baseDir, nickname, domain,
@@ -562,9 +558,9 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     return following
 
 
-def _followApprovalRequired(baseDir: str, nicknameToFollow: str,
-                            domainToFollow: str, debug: bool,
-                            followRequestHandle: str) -> bool:
+def followApprovalRequired(baseDir: str, nicknameToFollow: str,
+                           domainToFollow: str, debug: bool,
+                           followRequestHandle: str) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
@@ -591,10 +587,10 @@ def _followApprovalRequired(baseDir: str, nicknameToFollow: str,
     return manuallyApproveFollows
 
 
-def _noOfFollowRequests(baseDir: str,
-                        nicknameToFollow: str, domainToFollow: str,
-                        nickname: str, domain: str, fromPort: int,
-                        followType: str) -> int:
+def noOfFollowRequests(baseDir: str,
+                       nicknameToFollow: str, domainToFollow: str,
+                       nickname: str, domain: str, fromPort: int,
+                       followType: str) -> int:
     """Returns the current number of follow requests
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -608,7 +604,7 @@ def _noOfFollowRequests(baseDir: str,
         with open(approveFollowsFilename, 'r') as f:
             lines = f.readlines()
     except OSError:
-        print('EX: _noOfFollowRequests ' + approveFollowsFilename)
+        print('EX: noOfFollowRequests ' + approveFollowsFilename)
     if lines:
         if followType == "onion":
             for fileLine in lines:
@@ -623,12 +619,12 @@ def _noOfFollowRequests(baseDir: str,
     return ctr
 
 
-def _storeFollowRequest(baseDir: str,
-                        nicknameToFollow: str, domainToFollow: str, port: int,
-                        nickname: str, domain: str, fromPort: int,
-                        followJson: {},
-                        debug: bool, personUrl: str,
-                        groupAccount: bool) -> bool:
+def storeFollowRequest(baseDir: str,
+                       nicknameToFollow: str, domainToFollow: str, port: int,
+                       nickname: str, domain: str, fromPort: int,
+                       followJson: {},
+                       debug: bool, personUrl: str,
+                       groupAccount: bool) -> bool:
     """Stores the follow request for later use
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -651,7 +647,7 @@ def _storeFollowRequest(baseDir: str,
             with open(followersFilename, 'r') as fpFollowers:
                 followersStr = fpFollowers.read()
         except OSError:
-            print('EX: _storeFollowRequest ' + followersFilename)
+            print('EX: storeFollowRequest ' + followersFilename)
 
         if approveHandle in followersStr:
             alreadyFollowing = True
@@ -696,7 +692,7 @@ def _storeFollowRequest(baseDir: str,
                 with open(approveFollowsFilename, 'a+') as fp:
                     fp.write(approveHandleStored + '\n')
             except OSError:
-                print('EX: _storeFollowRequest 2 ' + approveFollowsFilename)
+                print('EX: storeFollowRequest 2 ' + approveFollowsFilename)
         else:
             if debug:
                 print('DEBUG: ' + approveHandleStored +
@@ -706,7 +702,7 @@ def _storeFollowRequest(baseDir: str,
             with open(approveFollowsFilename, 'w+') as fp:
                 fp.write(approveHandleStored + '\n')
         except OSError:
-            print('EX: _storeFollowRequest 3 ' + approveFollowsFilename)
+            print('EX: storeFollowRequest 3 ' + approveFollowsFilename)
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -715,212 +711,6 @@ def _storeFollowRequest(baseDir: str,
         os.mkdir(requestsDir)
     followActivityfilename = requestsDir + '/' + approveHandle + '.follow'
     return saveJson(followJson, followActivityfilename)
-
-
-def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
-                         port: int, sendThreads: [], postLog: [],
-                         cachedWebfingers: {}, personCache: {},
-                         messageJson: {}, federationList: [],
-                         debug: bool, projectVersion: str,
-                         maxFollowers: int, onionDomain: str,
-                         signingPrivateKeyPem: str) -> bool:
-    """Receives a follow request within the POST section of HTTPServer
-    """
-    if not messageJson['type'].startswith('Follow'):
-        if not messageJson['type'].startswith('Join'):
-            return False
-    print('Receiving follow request')
-    if not hasActor(messageJson, debug):
-        return False
-    if not hasUsersPath(messageJson['actor']):
-        if debug:
-            print('DEBUG: users/profile/accounts/channel missing from actor')
-        return False
-    domain, tempPort = getDomainFromActor(messageJson['actor'])
-    fromPort = port
-    domainFull = getFullDomain(domain, tempPort)
-    if tempPort:
-        fromPort = tempPort
-    if not domainPermitted(domain, federationList):
-        if debug:
-            print('DEBUG: follower from domain not permitted - ' + domain)
-        return False
-    nickname = getNicknameFromActor(messageJson['actor'])
-    if not nickname:
-        # single user instance
-        nickname = 'dev'
-        if debug:
-            print('DEBUG: follow request does not contain a ' +
-                  'nickname. Assuming single user instance.')
-    if not messageJson.get('to'):
-        messageJson['to'] = messageJson['object']
-    if not hasUsersPath(messageJson['object']):
-        if debug:
-            print('DEBUG: users/profile/channel/accounts ' +
-                  'not found within object')
-        return False
-    domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
-    if not domainPermitted(domainToFollow, federationList):
-        if debug:
-            print('DEBUG: follow domain not permitted ' + domainToFollow)
-        return True
-    domainToFollowFull = getFullDomain(domainToFollow, tempPort)
-    nicknameToFollow = getNicknameFromActor(messageJson['object'])
-    if not nicknameToFollow:
-        if debug:
-            print('DEBUG: follow request does not contain a ' +
-                  'nickname for the account followed')
-        return True
-    if isSystemAccount(nicknameToFollow):
-        if debug:
-            print('DEBUG: Cannot follow system account - ' +
-                  nicknameToFollow)
-        return True
-    if maxFollowers > 0:
-        if _getNoOfFollowers(baseDir,
-                             nicknameToFollow, domainToFollow,
-                             True) > maxFollowers:
-            print('WARN: ' + nicknameToFollow +
-                  ' has reached their maximum number of followers')
-            return True
-    handleToFollow = nicknameToFollow + '@' + domainToFollow
-    if domainToFollow == domain:
-        if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):
-            if debug:
-                print('DEBUG: followed account not found - ' +
-                      baseDir + '/accounts/' + handleToFollow)
-            return True
-
-    if isFollowerOfPerson(baseDir,
-                          nicknameToFollow, domainToFollowFull,
-                          nickname, domainFull):
-        if debug:
-            print('DEBUG: ' + nickname + '@' + domain +
-                  ' is already a follower of ' +
-                  nicknameToFollow + '@' + domainToFollow)
-        return True
-
-    # what is the followers policy?
-    approveHandle = nickname + '@' + domainFull
-    if _followApprovalRequired(baseDir, nicknameToFollow,
-                               domainToFollow, debug, approveHandle):
-        print('Follow approval is required')
-        if domain.endswith('.onion'):
-            if _noOfFollowRequests(baseDir,
-                                   nicknameToFollow, domainToFollow,
-                                   nickname, domain, fromPort,
-                                   'onion') > 5:
-                print('Too many follow requests from onion addresses')
-                return False
-        elif domain.endswith('.i2p'):
-            if _noOfFollowRequests(baseDir,
-                                   nicknameToFollow, domainToFollow,
-                                   nickname, domain, fromPort,
-                                   'i2p') > 5:
-                print('Too many follow requests from i2p addresses')
-                return False
-        else:
-            if _noOfFollowRequests(baseDir,
-                                   nicknameToFollow, domainToFollow,
-                                   nickname, domain, fromPort,
-                                   '') > 10:
-                print('Too many follow requests')
-                return False
-
-        # Get the actor for the follower and add it to the cache.
-        # Getting their public key has the same result
-        if debug:
-            print('Obtaining the following actor: ' + messageJson['actor'])
-        if not getPersonPubKey(baseDir, session, messageJson['actor'],
-                               personCache, debug, projectVersion,
-                               httpPrefix, domainToFollow, onionDomain,
-                               signingPrivateKeyPem):
-            if debug:
-                print('Unable to obtain following actor: ' +
-                      messageJson['actor'])
-
-        groupAccount = \
-            hasGroupType(baseDir, messageJson['actor'], personCache)
-        if groupAccount and isGroupAccount(baseDir, nickname, domain):
-            print('Group cannot follow a group')
-            return False
-
-        print('Storing follow request for approval')
-        return _storeFollowRequest(baseDir,
-                                   nicknameToFollow, domainToFollow, port,
-                                   nickname, domain, fromPort,
-                                   messageJson, debug, messageJson['actor'],
-                                   groupAccount)
-    else:
-        print('Follow request does not require approval ' + approveHandle)
-        # update the followers
-        accountToBeFollowed = \
-            acctDir(baseDir, nicknameToFollow, domainToFollow)
-        if os.path.isdir(accountToBeFollowed):
-            followersFilename = accountToBeFollowed + '/followers.txt'
-
-            # for actors which don't follow the mastodon
-            # /users/ path convention store the full actor
-            if '/users/' not in messageJson['actor']:
-                approveHandle = messageJson['actor']
-
-            # Get the actor for the follower and add it to the cache.
-            # Getting their public key has the same result
-            if debug:
-                print('Obtaining the following actor: ' + messageJson['actor'])
-            if not getPersonPubKey(baseDir, session, messageJson['actor'],
-                                   personCache, debug, projectVersion,
-                                   httpPrefix, domainToFollow, onionDomain,
-                                   signingPrivateKeyPem):
-                if debug:
-                    print('Unable to obtain following actor: ' +
-                          messageJson['actor'])
-
-            print('Updating followers file: ' +
-                  followersFilename + ' adding ' + approveHandle)
-            if os.path.isfile(followersFilename):
-                if approveHandle not in open(followersFilename).read():
-                    groupAccount = \
-                        hasGroupType(baseDir,
-                                     messageJson['actor'], personCache)
-                    if debug:
-                        print(approveHandle + ' / ' + messageJson['actor'] +
-                              ' is Group: ' + str(groupAccount))
-                    if groupAccount and \
-                       isGroupAccount(baseDir, nickname, domain):
-                        print('Group cannot follow a group')
-                        return False
-                    try:
-                        with open(followersFilename, 'r+') as followersFile:
-                            content = followersFile.read()
-                            if approveHandle + '\n' not in content:
-                                followersFile.seek(0, 0)
-                                if not groupAccount:
-                                    followersFile.write(approveHandle +
-                                                        '\n' + content)
-                                else:
-                                    followersFile.write('!' + approveHandle +
-                                                        '\n' + content)
-                    except Exception as e:
-                        print('WARN: ' +
-                              'Failed to write entry to followers file ' +
-                              str(e))
-            else:
-                try:
-                    with open(followersFilename, 'w+') as followersFile:
-                        followersFile.write(approveHandle + '\n')
-                except OSError:
-                    print('EX: unable to write ' + followersFilename)
-
-    print('Beginning follow accept')
-    return followedAccountAccepts(session, baseDir, httpPrefix,
-                                  nicknameToFollow, domainToFollow, port,
-                                  nickname, domain, fromPort,
-                                  messageJson['actor'], federationList,
-                                  messageJson, sendThreads, postLog,
-                                  cachedWebfingers, personCache,
-                                  debug, projectVersion, True,
-                                  signingPrivateKeyPem)
 
 
 def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
@@ -1124,8 +914,8 @@ def sendFollowRequest(session, baseDir: str,
         newFollowJson['to'] = followedId
         print('Follow request: ' + str(newFollowJson))
 
-    if _followApprovalRequired(baseDir, nickname, domain, debug,
-                               followHandle):
+    if followApprovalRequired(baseDir, nickname, domain, debug,
+                              followHandle):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected

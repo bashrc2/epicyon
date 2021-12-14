@@ -151,7 +151,7 @@ def htmlProfileAfterSearch(cssCache: {},
         gnunet = True
     profileJson, asHeader = \
         getActorJson(domain, profileHandle, http, gnunet, debug, False,
-                     signingPrivateKeyPem)
+                     signingPrivateKeyPem, session)
     if not profileJson:
         return None
 
@@ -1604,6 +1604,13 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         with open(filterFilename, 'r') as filterfile:
             filterStr = filterfile.read()
 
+    filterBioStr = ''
+    filterBioFilename = \
+        acctDir(baseDir, nickname, domain) + '/filters_bio.txt'
+    if os.path.isfile(filterBioFilename):
+        with open(filterBioFilename, 'r') as filterfile:
+            filterBioStr = filterfile.read()
+
     switchStr = ''
     switchFilename = \
         acctDir(baseDir, nickname, domain) + '/replacewords.txt'
@@ -1699,6 +1706,13 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         '      <textarea id="message" ' + \
         'name="filteredWords" style="height:200px" spellcheck="false">' + \
         filterStr + '</textarea>\n' + \
+        '      <br><b><label class="labels">' + \
+        translate['Filtered words within bio'] + '</label></b>\n' + \
+        '      <br><label class="labels">' + \
+        translate['One per line'] + '</label>\n' + \
+        '      <textarea id="message" ' + \
+        'name="filteredWordsBio" style="height:200px" spellcheck="false">' + \
+        filterBioStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
         translate['Word Replacements'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> B</label>\n' + \
