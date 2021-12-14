@@ -6221,8 +6221,28 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(filterFilename)
                             except OSError:
                                 print('EX: _profileUpdate ' +
-                                      'unable to delete ' +
+                                      'unable to delete filter ' +
                                       filterFilename)
+
+                    # save filtered words within bio list
+                    filterBioFilename = \
+                        acctDir(baseDir, nickname, domain) + \
+                        '/filters_bio.txt'
+                    if fields.get('filteredWordsBio'):
+                        try:
+                            with open(filterBioFilename, 'w+') as filterfile:
+                                filterfile.write(fields['filteredWordsBio'])
+                        except OSError:
+                            print('EX: unable to write bio filter ' +
+                                  filterBioFilename)
+                    else:
+                        if os.path.isfile(filterBioFilename):
+                            try:
+                                os.remove(filterBioFilename)
+                            except OSError:
+                                print('EX: _profileUpdate ' +
+                                      'unable to delete bio filter ' +
+                                      filterBioFilename)
 
                     # word replacements
                     switchFilename = \

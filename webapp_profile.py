@@ -1700,6 +1700,13 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         'name="filteredWords" style="height:200px" spellcheck="false">' + \
         filterStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
+        translate['Filtered words within bio'] + '</label></b>\n' + \
+        '      <br><label class="labels">' + \
+        translate['One per line'] + '</label>\n' + \
+        '      <textarea id="message" ' + \
+        'name="filteredWordsBio" style="height:200px" spellcheck="false">' + \
+        filterStr + '</textarea>\n' + \
+        '      <br><b><label class="labels">' + \
         translate['Word Replacements'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="switchWords" ' + \
