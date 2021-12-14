@@ -2184,7 +2184,9 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
-    Check number of tags is reasonable
+    Check that the language is understood
+    Check if it's a git patch
+    Check number of tags and mentions is reasonable
     """
     if not hasObjectDict(messageJson):
         return True
