@@ -1673,9 +1673,6 @@ def validSendingActor(session, baseDir: str,
     if not actorJson:
         # if the actor couldn't be obtained then proceed anyway
         return True
-    if not actorJson.get('name'):
-        print('REJECT: no name within actor ' + str(actorJson))
-        return False
     if not actorJson.get('preferredUsername'):
         print('REJECT: no preferredUsername within actor ' + str(actorJson))
         return False
@@ -1689,7 +1686,8 @@ def validSendingActor(session, baseDir: str,
                 return False
         bioStr = removeHtml(actorJson['summary'])
         bioStr += ' ' + removeHtml(actorJson['preferredUsername'])
-        bioStr += ' ' + removeHtml(actorJson['name'])
+        if actorJson.get('name'):
+            bioStr += ' ' + removeHtml(actorJson['name'])
         if containsInvalidChars(bioStr):
             print('REJECT: post actor bio contains invalid characters')
             return False
