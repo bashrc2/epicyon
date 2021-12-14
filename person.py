@@ -1686,6 +1686,21 @@ def validSendingActor(session, baseDir: str,
                 return False
         bioStr = removeHtml(actorJson['summary'])
         bioStr += ' ' + removeHtml(actorJson['preferredUsername'])
+
+        if actorJson.get('attachment'):
+            if isinstance(actorJson['attachment'], list):
+                for tag in actorJson['attachment']:
+                    if not isinstance(tag, dict):
+                        continue
+                    if not tag.get('name'):
+                        continue
+                    if isinstance(tag['name'], str):
+                        bioStr += ' ' + tag['name']
+                    if tag.get('value'):
+                        continue
+                    if isinstance(tag['value'], str):
+                        bioStr += ' ' + tag['value']
+
         if actorJson.get('name'):
             bioStr += ' ' + removeHtml(actorJson['name'])
         if containsInvalidChars(bioStr):
@@ -1719,12 +1734,6 @@ def validSendingActor(session, baseDir: str,
                     tagsWithoutValue += 1
                     continue
                 if len(tag['value']) < 2:
-                    tagsWithoutValue += 1
-                    continue
-                if containsInvalidChars(tag['name']):
-                    tagsWithoutValue += 1
-                    continue
-                if containsInvalidChars(tag['value']):
                     tagsWithoutValue += 1
                     continue
             if noOfTags > 0:
