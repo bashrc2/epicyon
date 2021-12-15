@@ -12717,10 +12717,10 @@ class PubServer(BaseHTTPRequestHandler):
             acctDir(baseDir, avatarNickname, domain) + '/' + avatarFile
         if not os.path.isfile(avatarFilename):
             return False
-        if self._etag_exists(avatarFilename):
-            # The file has not changed
-            self._304()
-            return True
+        # if self._etag_exists(avatarFilename):
+        #     # The file has not changed
+        #     self._304()
+        #     return True
 
         t = os.path.getmtime(avatarFilename)
         lastModifiedTime = datetime.datetime.fromtimestamp(t)
