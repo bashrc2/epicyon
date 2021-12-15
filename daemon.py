@@ -12716,12 +12716,23 @@ class PubServer(BaseHTTPRequestHandler):
         avatarFilename = \
             acctDir(baseDir, avatarNickname, domain) + '/' + avatarFile
         if not os.path.isfile(avatarFilename):
-            if avatarFileExt == 'png':
-                return False
-            avatarFile = avatarFile.replace('.' + avatarFileExt, '.png')
-            avatarFilename = \
-                acctDir(baseDir, avatarNickname, domain) + '/' + avatarFile
-            if not os.path.isfile(avatarFilename):
+            originalExt = avatarFileExt
+            originalAvatarFile = avatarFile
+            altExt = getImageExtensions()
+            altFound = False
+            for alt in altExt:
+                if alt == originalExt:
+                    continue
+                avatarFile = \
+                    originalAvatarFile.replace('.' + originalExt,
+                                               '.' + alt)
+                avatarFilename = \
+                    acctDir(baseDir, avatarNickname, domain) + \
+                    '/' + avatarFile
+                if os.path.isfile(avatarFilename):
+                    altFound = True
+                    break
+            if not altFound:
                 return False
         if self._etag_exists(avatarFilename):
             # The file has not changed
