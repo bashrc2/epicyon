@@ -1562,7 +1562,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.authorizedNickname = None
 
         notAuthPaths = (
-            '/icons/', '/avatars/',
+            '/icons/', '/avatars/', '/favicons/',
             '/system/accounts/avatars/',
             '/system/accounts/headers/',
             '/system/media_attachments/files/',
@@ -7407,6 +7407,36 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self._404()
 
+    def _showCachedFavicon(self, refererDomain: str, path: str,
+                           baseDir: str, GETstartTime) -> None:
+        """Shows a favicon image obtained from the cache
+        """
+        mediaFilename = baseDir + '/favicons' + path
+        if os.path.isfile(mediaFilename):
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
+            mediaBinary = None
+            try:
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+            except OSError:
+                print('EX: unable to read cached favicon ' + mediaFilename)
+            if mediaBinary:
+                mimeType = mediaFileMimeType(mediaFilename)
+                self._set_headers_etag(mediaFilename,
+                                       mimeType,
+                                       mediaBinary, None,
+                                       refererDomain,
+                                       False, None)
+                self._write(mediaBinary)
+                fitnessPerformance(GETstartTime, self.server.fitness,
+                                   '_GET', '_showCachedFavicon',
+                                   self.server.debug)
+                return
+        self._404()
+
     def _showCachedAvatar(self, refererDomain: str, path: str,
                           baseDir: str, GETstartTime) -> None:
         """Shows an avatar image obtained from the cache
@@ -12329,6 +12359,7 @@ class PubServer(BaseHTTPRequestHandler):
            '/emoji/' not in path and \
            '/tags/' not in path and \
            '/avatars/' not in path and \
+           '/favicons/' not in path and \
            '/headers/' not in path and \
            '/fonts/' not in path and \
            '/icons/' not in path:
@@ -14731,6 +14762,14 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'help screen image done',
                            self.server.debug)
+
+        # cached favicon images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/favicons/'):
+            self._showCachedFavicon(refererDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime)
+            return
 
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
