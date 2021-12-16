@@ -462,7 +462,16 @@ def getImageBinaryFromUrl(session, url: str, timeoutSec: int, debug: bool):
         if result.status_code != 200:
             print('WARN: getImageFromUrl: ' + url +
                   ' failed with error code ' + str(result.status_code))
-        return result.content
+        mimeType = 'image/png'
+        if 'image/x-icon' in result.headers['content-length']:
+            mimeType = 'image/x-icon'
+        elif 'image/webp' in result.headers['content-length']:
+            mimeType = 'image/webp'
+        elif 'image/jpeg' in result.headers['content-length']:
+            mimeType = 'image/jpeg'
+        elif 'image/gif' in result.headers['content-length']:
+            mimeType = 'image/gif'
+        return result.content, mimeType
     except requests.exceptions.RequestException as e:
         if debug:
             print('ERROR: getImageFromUrl failed: ' + str(url) + ', ' +
@@ -475,4 +484,4 @@ def getImageBinaryFromUrl(session, url: str, timeoutSec: int, debug: bool):
         if e.errno == errno.ECONNRESET:
             print('WARN: getImageFromUrl failed, ' +
                   'connection was reset ' + str(e))
-    return None
+    return None, None

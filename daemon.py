@@ -7416,8 +7416,9 @@ class PubServer(BaseHTTPRequestHandler):
         print('showCachedFavicon: ' + mediaFilename)
         if self.server.faviconsCache.get(favFile):
             mediaBinary = self.server.faviconsCache[favFile]
+            mimeType = mediaFileMimeType(mediaFilename)
             self._set_headers_etag(mediaFilename,
-                                   'image/x-icon',
+                                   mimeType,
                                    mediaBinary, None,
                                    refererDomain,
                                    False, None)
@@ -7427,8 +7428,11 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.debug)
             return
         if not os.path.isfile(mediaFilename):
-            self._404()
-            return
+            originalMediaFilename = mediaFilename
+            mediaFilename = originalMediaFilename.replace('.ico', '.png')
+            if not os.path.isfile(mediaFilename):
+                self._404()
+                return
         if self._etag_exists(mediaFilename):
             # The file has not changed
             self._304()
@@ -7440,8 +7444,9 @@ class PubServer(BaseHTTPRequestHandler):
         except OSError:
             print('EX: unable to read cached favicon ' + mediaFilename)
         if mediaBinary:
+            mimeType = mediaFileMimeType(mediaFilename)
             self._set_headers_etag(mediaFilename,
-                                   'image/x-icon',
+                                   mimeType,
                                    mediaBinary, None,
                                    refererDomain,
                                    False, None)

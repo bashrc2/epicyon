@@ -151,7 +151,14 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
     if '://' not in link:
         return False
     timeoutSec = 10
-    imageData = getImageBinaryFromUrl(session, favUrl, timeoutSec, debug)
+    imageData, mimeType = \
+        getImageBinaryFromUrl(session, favUrl, timeoutSec, debug)
+    if 'image/png' in mimeType:
+        favUrl = favUrl.replace('.ico', '.png')
+    elif 'image/webp' in mimeType:
+        favUrl = favUrl.replace('.ico', '.webp')
+    elif 'image/gif' in mimeType:
+        favUrl = favUrl.replace('.ico', '.gif')
     if not imageData:
         return False
     if not os.path.isdir(baseDir + '/favicons'):
