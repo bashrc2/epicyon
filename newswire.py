@@ -147,16 +147,16 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
                                  link: str, debug: bool) -> bool:
     """Downloads the favicon for the given feed link
     """
-    url = getNewswireFaviconUrl(link)
+    favUrl = getNewswireFaviconUrl(link)
     if '://' not in link:
         return False
     timeoutSec = 10
-    imageData = getImageBinaryFromUrl(session, url, timeoutSec, debug)
+    imageData = getImageBinaryFromUrl(session, favUrl, timeoutSec, debug)
     if not imageData:
         return False
     if not os.path.isdir(baseDir + '/favicons'):
         os.mkdir(baseDir + '/favicons')
-    linkFilename = url.replace('/', '#')
+    linkFilename = favUrl.replace('/', '#')
     imageFilename = baseDir + '/favicons/' + linkFilename
     if os.path.isfile(imageFilename):
         return True
@@ -164,7 +164,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
         with open(imageFilename, 'wb+') as fp:
             fp.write(imageData)
     except OSError:
-        print('EX: failed writing favicon ' + url)
+        print('EX: failed writing favicon ' + favUrl)
         return False
     return True
 

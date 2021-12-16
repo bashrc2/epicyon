@@ -7411,7 +7411,7 @@ class PubServer(BaseHTTPRequestHandler):
                            baseDir: str, GETstartTime) -> None:
         """Shows a favicon image obtained from the cache
         """
-        mediaFilename = baseDir + '/favicons' + path
+        mediaFilename = baseDir + path
         if os.path.isfile(mediaFilename):
             if self._etag_exists(mediaFilename):
                 # The file has not changed
