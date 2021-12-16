@@ -7411,7 +7411,8 @@ class PubServer(BaseHTTPRequestHandler):
                            baseDir: str, GETstartTime) -> None:
         """Shows a favicon image obtained from the cache
         """
-        mediaFilename = baseDir + path
+        mediaFilename = baseDir + urllib.parse.unquote_plus(path)
+        print('showCachedFavicon: ' + showCachedFavicon)
         if os.path.isfile(mediaFilename):
             if self._etag_exists(mediaFilename):
                 # The file has not changed
@@ -13678,6 +13679,14 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'hasAccept',
                            self.server.debug)
 
+        # cached favicon images
+        # Note that this comes before the busy flag to avoid conflicts
+        if htmlGET and self.path.startswith('/favicons/'):
+            self._showCachedFavicon(refererDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime)
+            return
+
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
@@ -14047,14 +14056,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'registered devices done',
                            self.server.debug)
-
-        # cached favicon images
-        # Note that this comes before the busy flag to avoid conflicts
-        if self.path.startswith('/favicons/'):
-            self._showCachedFavicon(refererDomain, self.path,
-                                    self.server.baseDir,
-                                    GETstartTime)
-            return
 
         if htmlGET and usersInPath:
             # show the person options screen with view/follow/block/report
