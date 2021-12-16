@@ -7413,6 +7413,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         favFile = path.replace('/favicons/', '')
         mediaFilename = baseDir + urllib.parse.unquote_plus(path)
+        print('showCachedFavicon: ' + mediaFilename)
         if self.server.faviconsCache.get(favFile):
             mediaBinary = self.server.faviconsCache[favFile]
             self._set_headers_etag(mediaFilename,
