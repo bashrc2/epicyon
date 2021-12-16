@@ -7412,7 +7412,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows a favicon image obtained from the cache
         """
         mediaFilename = baseDir + urllib.parse.unquote_plus(path)
-        print('showCachedFavicon: ' + showCachedFavicon)
+        print('showCachedFavicon: ' + mediaFilename)
         if os.path.isfile(mediaFilename):
             if self._etag_exists(mediaFilename):
                 # The file has not changed
