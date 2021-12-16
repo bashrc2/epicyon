@@ -158,6 +158,8 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
         os.mkdir(baseDir + '/favicons')
     linkFilename = url.replace('/', '#')
     imageFilename = baseDir + '/favicons/' + linkFilename
+    if os.path.isfile(imageFilename):
+        return True
     try:
         with open(imageFilename, 'wb+') as fp:
             fp.write(imageData)
