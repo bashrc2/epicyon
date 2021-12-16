@@ -34,6 +34,7 @@ from utils import localActorUrl
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
+from session import getImageBinaryFromUrl
 
 
 def _removeCDATA(text: str) -> str:
@@ -126,6 +127,46 @@ def limitWordLengths(text: str, maxWordLength: int) -> str:
     return result
 
 
+def _getNewswireFaviconUrl(url: str) -> str:
+    """Returns a favicon url from the given article link
+    """
+    if '://' not in url:
+        return '/newswire_favicon.ico'
+    if url.startswith('http://'):
+        if not (url.endswith('.onion') or url.endswith('.i2p')):
+            return '/newswire_favicon.ico'
+    domain = url.split('://')[1]
+    if '/' not in domain:
+        return url + '/favicon.ico'
+    else:
+        domain = domain.split('/')[0]
+    return url.split('://')[0] + '://' + domain + '/favicon.ico'
+
+
+def _downloadNewswireFeedFavicon(session, baseDir: str,
+                                 link: str, debug: bool) -> bool:
+    """Downloads the favicon for the given feed link
+    """
+    url = _getNewswireFaviconUrl(link)
+    if '://' not in link:
+        return False
+    timeoutSec = 10
+    imageData = getImageBinaryFromUrl(session, url, timeoutSec, debug)
+    if not imageData:
+        return False
+    if not os.path.isdir(baseDir + '/favicons'):
+        os.mkdir(baseDir + '/favicons')
+    linkFilename = url.replace('/', '#')
+    imageFilename = baseDir + '/favicons/' + linkFilename
+    try:
+        with open(imageFilename, 'wb+') as fp:
+            fp.write(imageData)
+    except OSError:
+        print('EX: failed writing favicon ' + url)
+        return False
+    return True
+
+
 def _addNewswireDictEntry(baseDir: str, domain: str,
                           newswire: {}, dateStr: str,
                           title: str, link: str,
@@ -133,7 +174,7 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
                           description: str, moderated: bool,
                           mirrored: bool,
                           tags: [],
-                          maxTags: int) -> None:
+                          maxTags: int, session, debug: bool) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -165,6 +206,8 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     for tag in postTags:
         if isBlockedHashtag(baseDir, tag):
             return
+
+    _downloadNewswireFeedFavicon(session, baseDir, link, debug)
 
     newswire[dateStr] = [
         title,
@@ -309,7 +352,8 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
                    maxPostsPerSource: int,
                    maxFeedItemSizeKb: int,
-                   maxCategoriesFeedItemSizeKb: int) -> {}:
+                   maxCategoriesFeedItemSizeKb: int,
+                   session, debug: bool) -> {}:
     """Converts an xml RSS 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
@@ -378,7 +422,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored, [], 32)
+                                      mirrored, [], 32, session, debug)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -392,7 +436,8 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
                    maxPostsPerSource: int,
                    maxFeedItemSizeKb: int,
-                   maxCategoriesFeedItemSizeKb: int) -> {}:
+                   maxCategoriesFeedItemSizeKb: int,
+                   session, debug: bool) -> {}:
     """Converts an xml RSS 1.0 string to a dictionary
     https://validator.w3.org/feed/docs/rss1.html
     """
@@ -465,7 +510,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored, [], 32)
+                                      mirrored, [], 32, session, debug)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -478,7 +523,8 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
 def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                     moderated: bool, mirrored: bool,
                     maxPostsPerSource: int,
-                    maxFeedItemSizeKb: int) -> {}:
+                    maxFeedItemSizeKb: int,
+                    session, debug: bool) -> {}:
     """Converts an atom feed string to a dictionary
     """
     if '<entry>' not in xmlStr:
@@ -540,7 +586,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored, [], 32)
+                                      mirrored, [], 32, session, debug)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -553,7 +599,8 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
 def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
                       moderated: bool, mirrored: bool,
                       maxPostsPerSource: int,
-                      maxFeedItemSizeKb: int) -> {}:
+                      maxFeedItemSizeKb: int,
+                      session, debug: bool) -> {}:
     """Converts a json feed string to a dictionary
     See https://jsonfeed.org/version/1.1
     """
@@ -651,7 +698,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated,
-                                      mirrored, [], 32)
+                                      mirrored, [], 32, session, debug)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -664,7 +711,8 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
 def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                       moderated: bool, mirrored: bool,
                       maxPostsPerSource: int,
-                      maxFeedItemSizeKb: int) -> {}:
+                      maxFeedItemSizeKb: int,
+                      session, debug: bool) -> {}:
     """Converts an atom-style YouTube feed string to a dictionary
     """
     if '<entry>' not in xmlStr:
@@ -723,7 +771,7 @@ def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                                       title, link,
                                       votesStatus, postFilename,
                                       description, moderated, mirrored,
-                                      [], 32)
+                                      [], 32, session, debug)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -736,32 +784,38 @@ def _xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
                   maxFeedItemSizeKb: int,
-                  maxCategoriesFeedItemSizeKb: int) -> {}:
+                  maxCategoriesFeedItemSizeKb: int,
+                  session, debug: bool) -> {}:
     """Converts an xml string to a dictionary
     """
     if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
         print('YouTube feed: reading')
         return _atomFeedYTToDict(baseDir, domain,
                                  xmlStr, moderated, mirrored,
-                                 maxPostsPerSource, maxFeedItemSizeKb)
+                                 maxPostsPerSource, maxFeedItemSizeKb,
+                                 session, debug)
     elif 'rss version="2.0"' in xmlStr:
         return _xml2StrToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb,
-                              maxCategoriesFeedItemSizeKb)
+                              maxCategoriesFeedItemSizeKb,
+                              session, debug)
     elif '<?xml version="1.0"' in xmlStr:
         return _xml1StrToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb,
-                              maxCategoriesFeedItemSizeKb)
+                              maxCategoriesFeedItemSizeKb,
+                              session, debug)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return _atomFeedToDict(baseDir, domain,
                                xmlStr, moderated, mirrored,
-                               maxPostsPerSource, maxFeedItemSizeKb)
+                               maxPostsPerSource, maxFeedItemSizeKb,
+                               session, debug)
     elif 'https://jsonfeed.org/version/1' in xmlStr:
         return _jsonFeedV1ToDict(baseDir, domain,
                                  xmlStr, moderated, mirrored,
-                                 maxPostsPerSource, maxFeedItemSizeKb)
+                                 maxPostsPerSource, maxFeedItemSizeKb,
+                                 session, debug)
     return {}
 
 
@@ -781,7 +835,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
            maxPostsPerSource: int, maxFeedSizeKb: int,
            maxFeedItemSizeKb: int,
-           maxCategoriesFeedItemSizeKb: int) -> {}:
+           maxCategoriesFeedItemSizeKb: int, debug: bool) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -812,7 +866,8 @@ def getRSS(baseDir: str, domain: str, session, url: str,
                                      moderated, mirrored,
                                      maxPostsPerSource,
                                      maxFeedItemSizeKb,
-                                     maxCategoriesFeedItemSizeKb)
+                                     maxCategoriesFeedItemSizeKb,
+                                     session, debug)
             else:
                 print('WARN: feed is too large, ' +
                       'or contains invalid characters: ' + url)
@@ -923,7 +978,8 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                                newswire: {},
                                maxBlogsPerAccount: int,
                                indexFilename: str,
-                               maxTags: int, systemLanguage: str) -> None:
+                               maxTags: int, systemLanguage: str,
+                               session, debug: bool) -> None:
     """Adds blogs for the given account to the newswire
     """
     if not os.path.isfile(indexFilename):
@@ -987,7 +1043,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                                           votes, fullPostFilename,
                                           description, moderated, False,
                                           tagsFromPost,
-                                          maxTags)
+                                          maxTags, session, debug)
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
@@ -996,7 +1052,8 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
 def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                         maxBlogsPerAccount: int,
-                        maxTags: int, systemLanguage: str) -> None:
+                        maxTags: int, systemLanguage: str,
+                        session, debug: bool) -> None:
     """Adds blogs from each user account into the newswire
     """
     moderationDict = {}
@@ -1025,7 +1082,8 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                 _addAccountBlogsToNewswire(baseDir, nickname, domain,
                                            newswire, maxBlogsPerAccount,
                                            blogsIndex, maxTags,
-                                           systemLanguage)
+                                           systemLanguage, session,
+                                           debug)
         break
 
     # sort the moderation dict into chronological order, latest first
@@ -1050,7 +1108,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxTags: int, maxFeedItemSizeKb: int,
                         maxNewswirePosts: int,
                         maxCategoriesFeedItemSizeKb: int,
-                        systemLanguage: str) -> {}:
+                        systemLanguage: str, debug: bool) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -1091,14 +1149,15 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
                            moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb,
                            maxFeedItemSizeKb,
-                           maxCategoriesFeedItemSizeKb)
+                           maxCategoriesFeedItemSizeKb, debug)
         if itemsList:
             for dateStr, item in itemsList.items():
                 result[dateStr] = item
 
     # add blogs from each user account
     _addBlogsToNewswire(baseDir, domain, result,
-                        maxPostsPerSource, maxTags, systemLanguage)
+                        maxPostsPerSource, maxTags, systemLanguage,
+                        session, debug)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))

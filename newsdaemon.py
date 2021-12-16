@@ -801,7 +801,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.maxFeedItemSizeKb,
                                 httpd.maxNewswirePosts,
                                 httpd.maxCategoriesFeedItemSizeKb,
-                                httpd.systemLanguage)
+                                httpd.systemLanguage,
+                                httpd.debug)
 
         if not httpd.newswire:
             print('Newswire feeds not updated')

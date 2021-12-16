@@ -452,3 +452,27 @@ def downloadImage(session, baseDir: str, url: str,
             print('EX: Failed to download image: ' +
                   str(url) + ' ' + str(e))
     return False
+
+
+def getImageBinaryFromUrl(session, url: str, timeoutSec: int, debug: bool):
+    """http GET for an image
+    """
+    try:
+        result = session.get(url, timeout=timeoutSec)
+        if result.status_code != 200:
+            print('WARN: getImageFromUrl: ' + url +
+                  ' failed with error code ' + str(result.status_code))
+        return result.content
+    except requests.exceptions.RequestException as e:
+        if debug:
+            print('ERROR: getImageFromUrl failed: ' + str(url) + ', ' +
+                  str(e))
+    except ValueError as e:
+        if debug:
+            print('ERROR: getImageFromUrl failed: ' + str(url) + ', ' +
+                  str(e))
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: getImageFromUrl failed, ' +
+                  'connection was reset ' + str(e))
+    return None
