@@ -127,7 +127,7 @@ def limitWordLengths(text: str, maxWordLength: int) -> str:
     return result
 
 
-def _getNewswireFaviconUrl(url: str) -> str:
+def getNewswireFaviconUrl(url: str) -> str:
     """Returns a favicon url from the given article link
     """
     if '://' not in url:
@@ -147,7 +147,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
                                  link: str, debug: bool) -> bool:
     """Downloads the favicon for the given feed link
     """
-    url = _getNewswireFaviconUrl(link)
+    url = getNewswireFaviconUrl(link)
     if '://' not in link:
         return False
     timeoutSec = 10

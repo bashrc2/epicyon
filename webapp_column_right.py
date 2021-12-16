@@ -22,6 +22,7 @@ from utils import getConfigParam
 from utils import removeDomainPort
 from utils import acctDir
 from posts import isModerator
+from newswire import getNewswireFaviconUrl
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -210,22 +211,6 @@ def _getBrokenFavSubstitute() -> str:
     return " onerror=\"this.onerror=null; this.src='/newswire_favicon.ico'\""
 
 
-def _getNewswireFavicon(url: str) -> str:
-    """Returns a favicon url from the given article link
-    """
-    if '://' not in url:
-        return '/newswire_favicon.ico'
-    if url.startswith('http://'):
-        if not (url.endswith('.onion') or url.endswith('.i2p')):
-            return '/newswire_favicon.ico'
-    domain = url.split('://')[1]
-    if '/' not in domain:
-        return url + '/favicon.ico'
-    else:
-        domain = domain.split('/')[0]
-    return url.split('://')[0] + '://' + domain + '/favicon.ico'
-
-
 def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                   translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
@@ -252,7 +237,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         url = item[1]
-        faviconUrl = _getNewswireFavicon(url)
+        faviconUrl = getNewswireFaviconUrl(url)
         faviconLink = ''
         if faviconUrl:
             faviconLink = \
