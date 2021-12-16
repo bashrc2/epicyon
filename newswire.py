@@ -156,7 +156,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
         return False
     if not os.path.isdir(baseDir + '/favicons'):
         os.mkdir(baseDir + '/favicons')
-    linkFilename = favUrl.replace('/', '#')
+    linkFilename = favUrl.replace('/', '-')
     imageFilename = baseDir + '/favicons/' + linkFilename
     if os.path.isfile(imageFilename):
         return True

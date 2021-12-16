@@ -240,7 +240,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         faviconUrl = getNewswireFaviconUrl(url)
         faviconLink = ''
         if faviconUrl:
-            favBase = '/favicons/' + faviconUrl.replace('/', '#')
+            favBase = '/favicons/' + faviconUrl.replace('/', '-')
             cachedFaviconFilename = baseDir + favBase
             if os.path.isfile(cachedFaviconFilename):
                 faviconUrl = favBase

@@ -7412,7 +7412,6 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows a favicon image obtained from the cache
         """
         mediaFilename = baseDir + urllib.parse.unquote_plus(path)
-        print('showCachedFavicon: ' + mediaFilename)
         if not os.path.isfile(mediaFilename):
             self._404()
             return
