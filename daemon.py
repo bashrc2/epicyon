@@ -7413,29 +7413,31 @@ class PubServer(BaseHTTPRequestHandler):
         """
         mediaFilename = baseDir + urllib.parse.unquote_plus(path)
         print('showCachedFavicon: ' + mediaFilename)
-        if os.path.isfile(mediaFilename):
-            if self._etag_exists(mediaFilename):
-                # The file has not changed
-                self._304()
-                return
-            mediaBinary = None
-            try:
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
-            except OSError:
-                print('EX: unable to read cached favicon ' + mediaFilename)
-            if mediaBinary:
-                mimeType = mediaFileMimeType(mediaFilename)
-                self._set_headers_etag(mediaFilename,
-                                       mimeType,
-                                       mediaBinary, None,
-                                       refererDomain,
-                                       False, None)
-                self._write(mediaBinary)
-                fitnessPerformance(GETstartTime, self.server.fitness,
-                                   '_GET', '_showCachedFavicon',
-                                   self.server.debug)
-                return
+        if not os.path.isfile(mediaFilename):
+            self._404()
+            return
+        if self._etag_exists(mediaFilename):
+            # The file has not changed
+            self._304()
+            return
+        mediaBinary = None
+        try:
+            with open(mediaFilename, 'rb') as avFile:
+                mediaBinary = avFile.read()
+        except OSError:
+            print('EX: unable to read cached favicon ' + mediaFilename)
+        if mediaBinary:
+            mimeType = mediaFileMimeType(mediaFilename)
+            self._set_headers_etag(mediaFilename,
+                                   mimeType,
+                                   mediaBinary, None,
+                                   refererDomain,
+                                   False, None)
+            self._write(mediaBinary)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_showCachedFavicon',
+                               self.server.debug)
+            return
         self._404()
 
     def _showCachedAvatar(self, refererDomain: str, path: str,
