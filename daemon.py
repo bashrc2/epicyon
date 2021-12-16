@@ -14048,6 +14048,14 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'registered devices done',
                            self.server.debug)
 
+        # cached favicon images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/favicons/'):
+            self._showCachedFavicon(refererDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime)
+            return
+
         if htmlGET and usersInPath:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
@@ -14744,14 +14752,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'share image done',
                            self.server.debug)
-
-        # cached favicon images
-        # Note that this comes before the busy flag to avoid conflicts
-        if self.path.startswith('/favicons/'):
-            self._showCachedFavicon(refererDomain, self.path,
-                                    self.server.baseDir,
-                                    GETstartTime)
-            return
 
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
