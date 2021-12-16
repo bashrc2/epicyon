@@ -2482,6 +2482,7 @@ def mediaFileMimeType(filename: str) -> str:
         'svg': 'image/svg+xml',
         'webp': 'image/webp',
         'avif': 'image/avif',
+        'ico': 'image/x-icon',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
         'flac': 'audio/flac',
