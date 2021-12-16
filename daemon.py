@@ -14745,6 +14745,14 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'share image done',
                            self.server.debug)
 
+        # cached favicon images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/favicons/'):
+            self._showCachedFavicon(refererDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime)
+            return
+
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
@@ -14762,14 +14770,6 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'help screen image done',
                            self.server.debug)
-
-        # cached favicon images
-        # Note that this comes before the busy flag to avoid conflicts
-        if self.path.startswith('/favicons/'):
-            self._showCachedFavicon(refererDomain, self.path,
-                                    self.server.baseDir,
-                                    GETstartTime)
-            return
 
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
