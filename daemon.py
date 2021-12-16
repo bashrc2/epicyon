@@ -7411,7 +7411,20 @@ class PubServer(BaseHTTPRequestHandler):
                            baseDir: str, GETstartTime) -> None:
         """Shows a favicon image obtained from the cache
         """
+        favFile = path.replace('/favicons/', '')
         mediaFilename = baseDir + urllib.parse.unquote_plus(path)
+        if self.server.faviconsCache.get(favFile):
+            mediaBinary = self.server.faviconsCache[favFile]
+            self._set_headers_etag(mediaFilename,
+                                   'image/x-icon',
+                                   mediaBinary, None,
+                                   refererDomain,
+                                   False, None)
+            self._write(mediaBinary)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_showCachedFavicon2',
+                               self.server.debug)
+            return
         if not os.path.isfile(mediaFilename):
             self._404()
             return
@@ -7426,9 +7439,8 @@ class PubServer(BaseHTTPRequestHandler):
         except OSError:
             print('EX: unable to read cached favicon ' + mediaFilename)
         if mediaBinary:
-            mimeType = mediaFileMimeType(mediaFilename)
             self._set_headers_etag(mediaFilename,
-                                   mimeType,
+                                   'image/x-icon',
                                    mediaBinary, None,
                                    refererDomain,
                                    False, None)
@@ -7436,6 +7448,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_showCachedFavicon',
                                self.server.debug)
+            self.server.faviconsCache[favFile] = mediaBinary
             return
         self._404()
 
@@ -18664,6 +18677,7 @@ def runDaemon(contentLicenseUrl: str,
     httpd.instanceId = instanceId
     httpd.personCache = {}
     httpd.cachedWebfingers = {}
+    httpd.faviconsCache = {}
     httpd.proxyType = proxyType
     httpd.session = None
     httpd.sessionLastUpdate = 0
