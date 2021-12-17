@@ -457,19 +457,28 @@ def downloadImage(session, baseDir: str, url: str,
 def getImageBinaryFromUrl(session, url: str, timeoutSec: int, debug: bool):
     """http GET for an image
     """
+    mimeType = 'image/png'
+    contentType = None
     try:
         result = session.get(url, timeout=timeoutSec)
         if result.status_code != 200:
             print('WARN: getImageFromUrl: ' + url +
                   ' failed with error code ' + str(result.status_code))
-        mimeType = 'image/png'
-        if 'image/x-icon' in result.headers['content-length']:
+        if result.headers.get('content-type'):
+            contentType = result.headers['content-type']
+        elif result.headers.get('Content-type'):
+            contentType = result.headers['Content-type']
+        elif result.headers.get('Content-Type'):
+            contentType = result.headers['Content-Type']
+        if not contentType:
+            return None, None
+        if 'image/x-icon' in contentType:
             mimeType = 'image/x-icon'
-        elif 'image/webp' in result.headers['content-length']:
+        elif 'image/webp' in contentType:
             mimeType = 'image/webp'
-        elif 'image/jpeg' in result.headers['content-length']:
+        elif 'image/jpeg' in contentType:
             mimeType = 'image/jpeg'
-        elif 'image/gif' in result.headers['content-length']:
+        elif 'image/gif' in contentType:
             mimeType = 'image/gif'
         return result.content, mimeType
     except requests.exceptions.RequestException as e:
