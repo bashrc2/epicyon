@@ -346,7 +346,7 @@ def getAudioExtensions() -> []:
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """
-    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg')
+    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico')
 
 
 def getImageMimeType(imageFilename: str) -> str:
@@ -358,7 +358,8 @@ def getImageMimeType(imageFilename: str) -> str:
         'gif': 'gif',
         'avif': 'avif',
         'svg': 'svg+xml',
-        'webp': 'webp'
+        'webp': 'webp',
+        'ico': 'x-icon'
     }
     for ext, mimeExt in extensionsToMime.items():
         if imageFilename.endswith('.' + ext):
@@ -375,7 +376,8 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
         'gif': 'gif',
         'svg+xml': 'svg',
         'webp': 'webp',
-        'avif': 'avif'
+        'avif': 'avif',
+        'x-icon': 'ico'
     }
     for mimeExt, ext in imageMedia.items():
         if contentType.endswith(mimeExt):
@@ -2482,6 +2484,7 @@ def mediaFileMimeType(filename: str) -> str:
         'svg': 'image/svg+xml',
         'webp': 'image/webp',
         'avif': 'image/avif',
+        'ico': 'image/x-icon',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
         'flac': 'audio/flac',
@@ -3219,3 +3222,13 @@ def getNewPostEndpoints() -> []:
         'newreminder', 'newreport', 'newquestion', 'newshare', 'newwanted',
         'editblogpost'
     )
+
+
+def getFavFilenameFromUrl(baseDir: str, faviconUrl: str) -> str:
+    """Returns the cached filename for a favicon based upon its url
+    """
+    if '://' in faviconUrl:
+        faviconUrl = faviconUrl.split('://')[1]
+    if '/favicon.' in faviconUrl:
+        faviconUrl = faviconUrl.replace('/favicon.', '.')
+    return baseDir + '/favicons/' + faviconUrl.replace('/', '-')

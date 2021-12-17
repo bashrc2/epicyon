@@ -1562,7 +1562,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.authorizedNickname = None
 
         notAuthPaths = (
-            '/icons/', '/avatars/',
+            '/icons/', '/avatars/', '/favicons/',
             '/system/accounts/avatars/',
             '/system/accounts/headers/',
             '/system/media_attachments/files/',
@@ -7407,6 +7407,54 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self._404()
 
+    def _showCachedFavicon(self, refererDomain: str, path: str,
+                           baseDir: str, GETstartTime) -> None:
+        """Shows a favicon image obtained from the cache
+        """
+        favFile = path.replace('/favicons/', '')
+        favFilename = baseDir + urllib.parse.unquote_plus(path)
+        print('showCachedFavicon: ' + favFilename)
+        if self.server.faviconsCache.get(favFile):
+            mediaBinary = self.server.faviconsCache[favFile]
+            mimeType = mediaFileMimeType(favFilename)
+            self._set_headers_etag(favFilename,
+                                   mimeType,
+                                   mediaBinary, None,
+                                   refererDomain,
+                                   False, None)
+            self._write(mediaBinary)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_showCachedFavicon2',
+                               self.server.debug)
+            return
+        if not os.path.isfile(favFilename):
+            self._404()
+            return
+        if self._etag_exists(favFilename):
+            # The file has not changed
+            self._304()
+            return
+        mediaBinary = None
+        try:
+            with open(favFilename, 'rb') as avFile:
+                mediaBinary = avFile.read()
+        except OSError:
+            print('EX: unable to read cached favicon ' + favFilename)
+        if mediaBinary:
+            mimeType = mediaFileMimeType(favFilename)
+            self._set_headers_etag(favFilename,
+                                   mimeType,
+                                   mediaBinary, None,
+                                   refererDomain,
+                                   False, None)
+            self._write(mediaBinary)
+            fitnessPerformance(GETstartTime, self.server.fitness,
+                               '_GET', '_showCachedFavicon',
+                               self.server.debug)
+            self.server.faviconsCache[favFile] = mediaBinary
+            return
+        self._404()
+
     def _showCachedAvatar(self, refererDomain: str, path: str,
                           baseDir: str, GETstartTime) -> None:
         """Shows an avatar image obtained from the cache
@@ -12329,6 +12377,7 @@ class PubServer(BaseHTTPRequestHandler):
            '/emoji/' not in path and \
            '/tags/' not in path and \
            '/avatars/' not in path and \
+           '/favicons/' not in path and \
            '/headers/' not in path and \
            '/fonts/' not in path and \
            '/icons/' not in path:
@@ -13378,18 +13427,19 @@ class PubServer(BaseHTTPRequestHandler):
 
         # default newswire favicon, for links to sites which
         # have no favicon
-        if 'newswire_favicon.ico' in self.path:
-            self._getFavicon(callingDomain, self.server.baseDir,
-                             self.server.debug,
-                             'newswire_favicon.ico')
-            return
+        if not self.path.startswith('/favicons/'):
+            if 'newswire_favicon.ico' in self.path:
+                self._getFavicon(callingDomain, self.server.baseDir,
+                                 self.server.debug,
+                                 'newswire_favicon.ico')
+                return
 
-        # favicon image
-        if 'favicon.ico' in self.path:
-            self._getFavicon(callingDomain, self.server.baseDir,
-                             self.server.debug,
-                             'favicon.ico')
-            return
+            # favicon image
+            if 'favicon.ico' in self.path:
+                self._getFavicon(callingDomain, self.server.baseDir,
+                                 self.server.debug,
+                                 'favicon.ico')
+                return
 
         # check authorization
         authorized = self._isAuthorized()
@@ -13646,6 +13696,20 @@ class PubServer(BaseHTTPRequestHandler):
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', 'hasAccept',
                            self.server.debug)
+
+        # cached favicon images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/favicons/'):
+            if self.server.domainFull in self.path:
+                # favicon for this instance
+                self._getFavicon(callingDomain, self.server.baseDir,
+                                 self.server.debug,
+                                 'favicon.ico')
+                return
+            self._showCachedFavicon(refererDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime)
+            return
 
         # get css
         # Note that this comes before the busy flag to avoid conflicts
@@ -18623,6 +18687,7 @@ def runDaemon(contentLicenseUrl: str,
     httpd.instanceId = instanceId
     httpd.personCache = {}
     httpd.cachedWebfingers = {}
+    httpd.faviconsCache = {}
     httpd.proxyType = proxyType
     httpd.session = None
     httpd.sessionLastUpdate = 0

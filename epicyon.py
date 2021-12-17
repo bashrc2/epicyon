@@ -1016,7 +1016,7 @@ if args.domain:
 if args.rss:
     session = createSession(None)
     testRSS = getRSS(baseDir, domain, session, args.rss,
-                     False, False, 1000, 1000, 1000, 1000)
+                     False, False, 1000, 1000, 1000, 1000, debug)
     pprint(testRSS)
     sys.exit()
 

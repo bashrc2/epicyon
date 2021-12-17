@@ -394,7 +394,7 @@ def postImage(session, attachImageFilename: str, federationList: [],
 def downloadImage(session, baseDir: str, url: str,
                   imageFilename: str, debug: bool,
                   force: bool = False) -> bool:
-    """Downloads an image
+    """Downloads an image with an expected mime type
     """
     if not url:
         return None
@@ -407,7 +407,8 @@ def downloadImage(session, baseDir: str, url: str,
         'gif': 'gif',
         'svg': 'svg+xml',
         'webp': 'webp',
-        'avif': 'avif'
+        'avif': 'avif',
+        'ico': 'x-icon'
     }
     sessionHeaders = None
     for imFormat, mimeType in imageFormats.items():
@@ -452,3 +453,62 @@ def downloadImage(session, baseDir: str, url: str,
             print('EX: Failed to download image: ' +
                   str(url) + ' ' + str(e))
     return False
+
+
+def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
+    """http GET for an image with any mime type
+    """
+    mimeType = None
+    contentType = None
+    result = None
+    sessionHeaders = {
+        'Accept': 'image/x-icon, image/png, image/webp, image/jpeg, image/gif'
+    }
+    try:
+        result = session.get(url, headers=sessionHeaders, timeout=timeoutSec)
+    except requests.exceptions.RequestException as e:
+        print('ERROR: downloadImageAnyMimeType failed: ' +
+              str(url) + ', ' + str(e))
+        return None, None
+    except ValueError as e:
+        print('ERROR: downloadImageAnyMimeType failed: ' +
+              str(url) + ', ' + str(e))
+        return None, None
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: downloadImageAnyMimeType failed, ' +
+                  'connection was reset ' + str(e))
+        return None, None
+
+    if not result:
+        return None, None
+
+    if result.status_code != 200:
+        print('WARN: downloadImageAnyMimeType: ' + url +
+              ' failed with error code ' + str(result.status_code))
+        return None, None
+
+    if result.headers.get('content-type'):
+        contentType = result.headers['content-type']
+    elif result.headers.get('Content-type'):
+        contentType = result.headers['Content-type']
+    elif result.headers.get('Content-Type'):
+        contentType = result.headers['Content-Type']
+
+    if not contentType:
+        return None, None
+
+    imageFormats = {
+        'ico': 'x-icon',
+        'png': 'png',
+        'jpg': 'jpeg',
+        'jpeg': 'jpeg',
+        'gif': 'gif',
+        'svg': 'svg+xml',
+        'webp': 'webp',
+        'avif': 'avif'
+    }
+    for imFormat, mType in imageFormats.items():
+        if 'image/' + mType in contentType:
+            mimeType = 'image/' + mType
+    return result.content, mimeType
