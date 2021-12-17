@@ -244,6 +244,12 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             cachedFaviconFilename = baseDir + favBase
             if os.path.isfile(cachedFaviconFilename):
                 faviconUrl = favBase
+            else:
+                favBase = favBase.replace('.ico', '.png')
+                cachedFaviconFilename = baseDir + favBase
+                if os.path.isfile(cachedFaviconFilename):
+                    faviconUrl = favBase
+
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
                 'alt="" ' + _getBrokenFavSubstitute() + '/>'
