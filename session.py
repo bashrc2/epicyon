@@ -493,12 +493,17 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
     if not contentType:
         return None, None
 
-    if 'image/x-icon' in contentType:
-        mimeType = 'image/x-icon'
-    elif 'image/webp' in contentType:
-        mimeType = 'image/webp'
-    elif 'image/jpeg' in contentType:
-        mimeType = 'image/jpeg'
-    elif 'image/gif' in contentType:
-        mimeType = 'image/gif'
+    imageFormats = {
+        'ico': 'x-icon',
+        'png': 'png',
+        'jpg': 'jpeg',
+        'jpeg': 'jpeg',
+        'gif': 'gif',
+        'svg': 'svg+xml',
+        'webp': 'webp',
+        'avif': 'avif'
+    }
+    for imFormat, mType in imageFormats.items():
+        if 'image/' + mType in contentType:
+            mimeType = 'image/' + mType
     return result.content, mimeType
