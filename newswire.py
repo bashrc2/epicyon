@@ -169,7 +169,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
     }
     for ext, mimeExt in extensionsToMime.items():
         if 'image/' + mimeExt in mimeType:
-            favUrl = favUrl.replace('.ico', '.' + mimeExt)
+            favUrl = favUrl.replace('.ico', '.' + ext)
             break
 
     # create cached favicons directory if needed
