@@ -11,6 +11,7 @@ import os
 from datetime import datetime
 from content import removeLongWords
 from content import limitRepeatedWords
+from utils import getFavFilenameFromUrl
 from utils import getBaseContentFromPost
 from utils import removeHtml
 from utils import locatePost
@@ -240,15 +241,21 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         faviconUrl = getNewswireFaviconUrl(url)
         faviconLink = ''
         if faviconUrl:
-            favBase = '/favicons/' + faviconUrl.replace('/', '-')
-            cachedFaviconFilename = baseDir + favBase
+            cachedFaviconFilename = getFavFilenameFromUrl(baseDir, faviconUrl)
             if os.path.isfile(cachedFaviconFilename):
-                faviconUrl = favBase
+                faviconUrl = \
+                    cachedFaviconFilename.replace(baseDir + '/favicons', '')
             else:
-                favBase = favBase.replace('.ico', '.png')
-                cachedFaviconFilename = baseDir + favBase
-                if os.path.isfile(cachedFaviconFilename):
-                    faviconUrl = favBase
+                extensions = ('png', 'jpg', 'gif', 'avif', 'svg', 'webp')
+                for ext in extensions:
+                    cachedFaviconFilename = \
+                        getFavFilenameFromUrl(baseDir, faviconUrl)
+                    cachedFaviconFilename = \
+                        cachedFaviconFilename.replace('.ico', '.' + ext)
+                    if os.path.isfile(cachedFaviconFilename):
+                        faviconUrl = \
+                            cachedFaviconFilename.replace(baseDir +
+                                                          '/favicons', '')
 
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \

@@ -18,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
 from categories import setHashtagCategory
+from utils import getFavFilenameFromUrl
 from utils import getBaseContentFromPost
 from utils import hasObjectDict
 from utils import firstParagraphFromString
@@ -155,23 +156,35 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
         downloadImageAnyMimeType(session, favUrl, timeoutSec, debug)
     if not imageData or not mimeType:
         return False
-    if 'image/png' in mimeType:
-        favUrl = favUrl.replace('.ico', '.png')
-    elif 'image/webp' in mimeType:
-        favUrl = favUrl.replace('.ico', '.webp')
-    elif 'image/gif' in mimeType:
-        favUrl = favUrl.replace('.ico', '.gif')
+
+    # update the favicon url
+    extensionsToMime = {
+        'ico': 'x-icon',
+        'png': 'png',
+        'jpg': 'jpeg',
+        'gif': 'gif',
+        'avif': 'avif',
+        'svg': 'svg+xml',
+        'webp': 'webp'
+    }
+    for ext, mimeExt in extensionsToMime.items():
+        if 'image/' + mimeExt in mimeType:
+            favUrl = favUrl.replace('.ico', '.' + mimeExt)
+            break
+
+    # create cached favicons directory if needed
     if not os.path.isdir(baseDir + '/favicons'):
         os.mkdir(baseDir + '/favicons')
-    linkFilename = favUrl.replace('/', '-')
-    imageFilename = baseDir + '/favicons/' + linkFilename
-    if os.path.isfile(imageFilename):
+
+    # save to the cache
+    favFilename = getFavFilenameFromUrl(baseDir, favUrl)
+    if os.path.isfile(favFilename):
         return True
     try:
-        with open(imageFilename, 'wb+') as fp:
+        with open(favFilename, 'wb+') as fp:
             fp.write(imageData)
     except OSError:
-        print('EX: failed writing favicon ' + favUrl)
+        print('EX: failed writing favicon ' + favFilename)
         return False
     return True
 

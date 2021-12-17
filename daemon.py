@@ -7412,12 +7412,12 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows a favicon image obtained from the cache
         """
         favFile = path.replace('/favicons/', '')
-        mediaFilename = baseDir + urllib.parse.unquote_plus(path)
-        print('showCachedFavicon: ' + mediaFilename)
+        favFilename = baseDir + urllib.parse.unquote_plus(path)
+        print('showCachedFavicon: ' + favFilename)
         if self.server.faviconsCache.get(favFile):
             mediaBinary = self.server.faviconsCache[favFile]
-            mimeType = mediaFileMimeType(mediaFilename)
-            self._set_headers_etag(mediaFilename,
+            mimeType = mediaFileMimeType(favFilename)
+            self._set_headers_etag(favFilename,
                                    mimeType,
                                    mediaBinary, None,
                                    refererDomain,
@@ -7427,25 +7427,22 @@ class PubServer(BaseHTTPRequestHandler):
                                '_GET', '_showCachedFavicon2',
                                self.server.debug)
             return
-        if not os.path.isfile(mediaFilename):
-            originalMediaFilename = mediaFilename
-            mediaFilename = originalMediaFilename.replace('.ico', '.png')
-            if not os.path.isfile(mediaFilename):
-                self._404()
-                return
-        if self._etag_exists(mediaFilename):
+        if not os.path.isfile(favFilename):
+            self._404()
+            return
+        if self._etag_exists(favFilename):
             # The file has not changed
             self._304()
             return
         mediaBinary = None
         try:
-            with open(mediaFilename, 'rb') as avFile:
+            with open(favFilename, 'rb') as avFile:
                 mediaBinary = avFile.read()
         except OSError:
-            print('EX: unable to read cached favicon ' + mediaFilename)
+            print('EX: unable to read cached favicon ' + favFilename)
         if mediaBinary:
-            mimeType = mediaFileMimeType(mediaFilename)
-            self._set_headers_etag(mediaFilename,
+            mimeType = mediaFileMimeType(favFilename)
+            self._set_headers_etag(favFilename,
                                    mimeType,
                                    mediaBinary, None,
                                    refererDomain,
