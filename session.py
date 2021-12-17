@@ -462,7 +462,7 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
     contentType = None
     result = None
     sessionHeaders = {
-        'Accept': 'image/x-icon; image/png'
+        'Accept': 'image/x-icon, image/png'
     }
     try:
         result = session.get(url, headers=sessionHeaders, timeout=timeoutSec)
