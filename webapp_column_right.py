@@ -197,7 +197,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show the newswire lines
     newswireContentStr = \
         _htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                      positiveVoting)
+                      positiveVoting, httpPrefix, domainFull)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -213,7 +213,8 @@ def _getBrokenFavSubstitute() -> str:
 
 
 def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
-                  translate: {}, positiveVoting: bool) -> str:
+                  translate: {}, positiveVoting: bool,
+                  httpPrefix: str, domainFull: str) -> str:
     """Converts a newswire dict into html
     """
     separatorStr = htmlPostSeparator(baseDir, 'right')
@@ -244,6 +245,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             cachedFaviconFilename = getFavFilenameFromUrl(baseDir, faviconUrl)
             if os.path.isfile(cachedFaviconFilename):
                 faviconUrl = \
+                    httpPrefix + '://' + domainFull + \
                     cachedFaviconFilename.replace(baseDir, '')
             else:
                 extensions = ('png', 'jpg', 'gif', 'avif', 'svg', 'webp')
@@ -254,6 +256,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                         cachedFaviconFilename.replace('.ico', '.' + ext)
                     if os.path.isfile(cachedFaviconFilename):
                         faviconUrl = \
+                            httpPrefix + '://' + domainFull + \
                             cachedFaviconFilename.replace(baseDir, '')
 
             faviconLink = \
