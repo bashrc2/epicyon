@@ -464,24 +464,26 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
     try:
         result = session.get(url, timeout=timeoutSec)
     except requests.exceptions.RequestException as e:
-        if debug:
-            print('ERROR: getImageFromUrl failed: ' + str(url) + ', ' +
-                  str(e))
+        print('ERROR: downloadImageAnyMimeType failed: ' +
+              str(url) + ', ' + str(e))
+        return None, None
     except ValueError as e:
-        if debug:
-            print('ERROR: getImageFromUrl failed: ' + str(url) + ', ' +
-                  str(e))
+        print('ERROR: downloadImageAnyMimeType failed: ' +
+              str(url) + ', ' + str(e))
+        return None, None
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
-            print('WARN: getImageFromUrl failed, ' +
+            print('WARN: downloadImageAnyMimeType failed, ' +
                   'connection was reset ' + str(e))
+        return None, None
 
     if not result:
         return None, None
 
     if result.status_code != 200:
-        print('WARN: getImageFromUrl: ' + url +
+        print('WARN: downloadImageAnyMimeType: ' + url +
               ' failed with error code ' + str(result.status_code))
+        return None, None
 
     if result.headers.get('content-type'):
         contentType = result.headers['content-type']
