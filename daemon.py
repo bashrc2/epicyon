@@ -13699,7 +13699,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # cached favicon images
         # Note that this comes before the busy flag to avoid conflicts
-        if htmlGET and self.path.startswith('/favicons/'):
+        if self.path.startswith('/favicons/'):
             if self.server.domainFull in self.path:
                 # favicon for this instance
                 self._getFavicon(callingDomain, self.server.baseDir,
