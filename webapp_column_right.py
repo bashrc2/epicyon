@@ -244,7 +244,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             cachedFaviconFilename = getFavFilenameFromUrl(baseDir, faviconUrl)
             if os.path.isfile(cachedFaviconFilename):
                 faviconUrl = \
-                    cachedFaviconFilename.replace(baseDir + '/favicons', '')
+                    cachedFaviconFilename.replace(baseDir, '')
             else:
                 extensions = ('png', 'jpg', 'gif', 'avif', 'svg', 'webp')
                 for ext in extensions:
@@ -254,8 +254,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                         cachedFaviconFilename.replace('.ico', '.' + ext)
                     if os.path.isfile(cachedFaviconFilename):
                         faviconUrl = \
-                            cachedFaviconFilename.replace(baseDir +
-                                                          '/favicons', '')
+                            cachedFaviconFilename.replace(baseDir, '')
 
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
