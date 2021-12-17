@@ -394,7 +394,7 @@ def postImage(session, attachImageFilename: str, federationList: [],
 def downloadImage(session, baseDir: str, url: str,
                   imageFilename: str, debug: bool,
                   force: bool = False) -> bool:
-    """Downloads an image
+    """Downloads an image with an expected mime type
     """
     if not url:
         return None
@@ -407,7 +407,8 @@ def downloadImage(session, baseDir: str, url: str,
         'gif': 'gif',
         'svg': 'svg+xml',
         'webp': 'webp',
-        'avif': 'avif'
+        'avif': 'avif',
+        'ico': 'x-icon'
     }
     sessionHeaders = None
     for imFormat, mimeType in imageFormats.items():
@@ -454,8 +455,8 @@ def downloadImage(session, baseDir: str, url: str,
     return False
 
 
-def getImageBinaryFromUrl(session, url: str, timeoutSec: int, debug: bool):
-    """http GET for an image
+def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
+    """http GET for an image with any mime type
     """
     mimeType = 'image/png'
     contentType = None

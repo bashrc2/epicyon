@@ -34,7 +34,7 @@ from utils import localActorUrl
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
-from session import getImageBinaryFromUrl
+from session import downloadImageAnyMimeType
 
 
 def _removeCDATA(text: str) -> str:
@@ -152,7 +152,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
         return False
     timeoutSec = 10
     imageData, mimeType = \
-        getImageBinaryFromUrl(session, favUrl, timeoutSec, debug)
+        downloadImageAnyMimeType(session, favUrl, timeoutSec, debug)
     if not imageData:
         return False
     if 'image/png' in mimeType:
