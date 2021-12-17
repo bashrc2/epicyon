@@ -31,7 +31,7 @@ This system will not federate with instances whose moderation policy is incompat
 ### Use by Research Organizations and Universities
 Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts from any researcher publishing data obtained from this instance without consent.
 
-The administrator of this instance does not agree to paricipate in human subjects research, or research to study website policies and practices, carried out by academic institutions or their executors without prior written informed consent.
+The administrator of this instance does not agree to participate in human subjects research, or research to study website policies and practices, carried out by academic institutions or their executors without prior written consent.
 
 ### Commercial Use
 Commercial use of original content on this instance is strictly forbidden without the prior written permission of individual account holders. The instance administrator does not hold copyright on any original content posted by account holders. Publication or federation of content does not imply permission for commercial use.
