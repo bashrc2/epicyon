@@ -461,8 +461,11 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
     mimeType = None
     contentType = None
     result = None
+    sessionHeaders = {
+        'Accept': 'image/x-icon; image/png'
+    }
     try:
-        result = session.get(url, timeout=timeoutSec)
+        result = session.get(url, headers=sessionHeaders, timeout=timeoutSec)
     except requests.exceptions.RequestException as e:
         print('ERROR: downloadImageAnyMimeType failed: ' +
               str(url) + ', ' + str(e))
