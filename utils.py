@@ -3229,6 +3229,6 @@ def getFavFilenameFromUrl(baseDir: str, faviconUrl: str) -> str:
     """
     if '://' in faviconUrl:
         faviconUrl = faviconUrl.split('://')[1]
-    if '/favicon' in faviconUrl:
-        faviconUrl = faviconUrl.replace('/favicon', '')
+    if '/favicon.' in faviconUrl:
+        faviconUrl = faviconUrl.replace('/favicon.', '.')
     return baseDir + '/favicons/' + faviconUrl.replace('/', '-')
