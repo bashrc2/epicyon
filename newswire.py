@@ -153,7 +153,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
     timeoutSec = 10
     imageData, mimeType = \
         downloadImageAnyMimeType(session, favUrl, timeoutSec, debug)
-    if not imageData:
+    if not imageData or not mimeType:
         return False
     if 'image/png' in mimeType:
         favUrl = favUrl.replace('.ico', '.png')

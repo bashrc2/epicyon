@@ -458,7 +458,7 @@ def downloadImage(session, baseDir: str, url: str,
 def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
     """http GET for an image with any mime type
     """
-    mimeType = 'image/png'
+    mimeType = None
     contentType = None
     result = None
     try:
