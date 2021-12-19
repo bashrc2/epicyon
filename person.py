@@ -1685,13 +1685,19 @@ def validSendingActor(session, baseDir: str,
         return False
     # does the actor have a bio ?
     if not unitTest:
-        if not actorJson.get('summary'):
+        bioStr = ''
+        if actorJson.get('summary'):
+            bioStr = removeHtml(actorJson['summary']).strip()
+        if not bioStr:
             # allow no bio if it's an actor in this instance
             if domain not in sendingActor:
                 # probably a spam actor with no bio
                 print('REJECT: spam actor ' + sendingActor)
                 return False
-        bioStr = removeHtml(actorJson['summary'])
+        if len(bioStr) < 10:
+            print('REJECT: actor bio is not long enough ' +
+                  sendingActor + ' ' + bioStr)
+            return False
         bioStr += ' ' + removeHtml(actorJson['preferredUsername'])
 
         if actorJson.get('attachment'):
