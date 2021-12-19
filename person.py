@@ -1010,6 +1010,8 @@ def setDisplayNickname(baseDir: str, nickname: str, domain: str,
 
 
 def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
+    """Only used within tests
+    """
     if len(bio) > 32:
         return False
     handle = nickname + '@' + domain
