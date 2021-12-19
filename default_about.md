@@ -2,8 +2,5 @@
 ### Origin Story
 How your instance began.
 
-### Lore
-Customs and rituals.
-
-### Epic Tales
-Heroic deeds and dastardly foes.
+### Research Uses
+The administrator of this instance does not agree to participate in human subjects research, or research to study website policies and practices, carried out by academic institutions or their executors without prior written consent.
