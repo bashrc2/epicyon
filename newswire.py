@@ -18,6 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
 from categories import setHashtagCategory
+from utils import dangerousSVG
 from utils import getFavFilenameFromUrl
 from utils import getBaseContentFromPost
 from utils import hasObjectDict
@@ -176,6 +177,11 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
     if not os.path.isdir(baseDir + '/favicons'):
         os.mkdir(baseDir + '/favicons')
 
+    # check svg for dubious scripts
+    if favUrl.endswith('.svg'):
+        if dangerousSVG(imageData, False):
+            return False
+
     # save to the cache
     favFilename = getFavFilenameFromUrl(baseDir, favUrl)
     if os.path.isfile(favFilename):
@@ -186,6 +192,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
     except OSError:
         print('EX: failed writing favicon ' + favFilename)
         return False
+
     return True
 
 
