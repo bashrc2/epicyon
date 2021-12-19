@@ -179,7 +179,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
 
     # check svg for dubious scripts
     if favUrl.endswith('.svg'):
-        if dangerousSVG(imageData, False):
+        if dangerousSVG(str(imageData), False):
             return False
 
     # save to the cache
