@@ -88,7 +88,8 @@ def urlExists(session, url: str, timeoutSec: int = 3,
 
 def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                     sessionParams: {}, timeoutSec: int,
-                    signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
+                    signingPrivateKeyPem: str, quiet: bool, debug: bool,
+                    returnJson: bool) -> {}:
     """http GET for json
     """
     try:
@@ -108,7 +109,9 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                       ' failed with error code ' +
                       str(result.status_code) +
                       ' headers: ' + str(sessionHeaders))
-        return result.json()
+        if returnJson:
+            return result.json()
+        return result.content
     except requests.exceptions.RequestException as e:
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
@@ -199,8 +202,12 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     if debug:
         print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
+    returnJson = True
+    if 'json' not in contentType:
+        returnJson = False
     return _getJsonRequest(session, url, domainFull, sessionHeaders,
-                           sessionParams, timeoutSec, None, quiet, debug)
+                           sessionParams, timeoutSec, None, quiet,
+                           debug, returnJson)
 
 
 def getJson(signingPrivateKeyPem: str,
@@ -239,7 +246,48 @@ def getJson(signingPrivateKeyPem: str,
     else:
         return _getJsonRequest(session, url, domain, sessionHeaders,
                                sessionParams, timeoutSec,
-                               None, quiet, debug)
+                               None, quiet, debug, True)
+
+
+def downloadHtml(signingPrivateKeyPem: str,
+                 session, url: str, headers: {}, params: {}, debug: bool,
+                 version: str = '1.2.0', httpPrefix: str = 'https',
+                 domain: str = 'testdomain',
+                 timeoutSec: int = 20, quiet: bool = False) -> {}:
+    if not isinstance(url, str):
+        if debug and not quiet:
+            print('url: ' + str(url))
+            print('ERROR: downloadHtml failed, url should be a string')
+        return None
+    sessionParams = {}
+    sessionHeaders = {}
+    if headers:
+        sessionHeaders = headers
+    if params:
+        sessionParams = params
+    sessionHeaders['Accept'] = 'text/html'
+    sessionHeaders['User-Agent'] = 'Epicyon/' + version
+    if domain:
+        sessionHeaders['User-Agent'] += \
+            '; +' + httpPrefix + '://' + domain + '/'
+    if not session:
+        if not quiet:
+            print('WARN: downloadHtml failed, ' +
+                  'no session specified for downloadHtml')
+        return None
+
+    if debug:
+        HTTPConnection.debuglevel = 1
+
+    if signingPrivateKeyPem:
+        return _getJsonSigned(session, url, domain,
+                              sessionHeaders, sessionParams,
+                              timeoutSec, signingPrivateKeyPem,
+                              quiet, debug)
+    else:
+        return _getJsonRequest(session, url, domain, sessionHeaders,
+                               sessionParams, timeoutSec,
+                               None, quiet, debug, False)
 
 
 def postJson(httpPrefix: str, domainFull: str,
