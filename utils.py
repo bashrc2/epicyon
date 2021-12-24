@@ -263,8 +263,15 @@ def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
     if not os.path.isfile(lastSeenFilename):
         return False
 
-    with open(lastSeenFilename, 'r') as lastSeenFile:
-        daysSinceEpochStr = lastSeenFile.read()
+    daysSinceEpochStr = None
+    try:
+        with open(lastSeenFilename, 'r') as lastSeenFile:
+            daysSinceEpochStr = lastSeenFile.read()
+    except OSError:
+        print('EX: failed to read last seen ' + lastSeenFilename)
+        return False
+
+    if daysSinceEpochStr:
         daysSinceEpoch = int(daysSinceEpochStr)
         currTime = datetime.datetime.utcnow()
         currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
