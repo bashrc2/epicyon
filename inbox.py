@@ -3064,7 +3064,7 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
                                  handle: str, debug: bool, postIsDM: bool,
                                  postJsonObject: {}, actor: str,
                                  updateIndexList: [], http_prefix: str,
-                                 defaultReplyIntervalHours: int) -> bool:
+                                 default_reply_interval_hrs: int) -> bool:
     """Generates a file indicating that a new reply has arrived
     The file can then be used by other systems to create a notification
     xmpp, matrix, email, etc
@@ -3095,7 +3095,7 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
         # after publication
         replyIntervalHours = \
             getReplyIntervalHours(base_dir, nickname, domain,
-                                  defaultReplyIntervalHours)
+                                  default_reply_interval_hrs)
         if canReplyTo(base_dir, nickname, domain, inReplyTo,
                       replyIntervalHours):
             actUrl = localActorUrl(http_prefix, nickname, domain)
@@ -3196,7 +3196,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        themeName: str, systemLanguage: str,
                        maxLikeCount: int,
                        signingPrivateKeyPem: str,
-                       defaultReplyIntervalHours: int,
+                       default_reply_interval_hrs: int,
                        CWlists: {}, listsEnabled: str,
                        content_license_url: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
@@ -3493,7 +3493,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                              handle, debug, postIsDM,
                                              postJsonObject, actor,
                                              updateIndexList, http_prefix,
-                                             defaultReplyIntervalHours)
+                                             default_reply_interval_hrs)
 
             if isImageMedia(session, base_dir, http_prefix,
                             nickname, domain, postJsonObject,
@@ -4080,7 +4080,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   verifyAllSignatures: bool,
                   themeName: str, systemLanguage: str,
                   maxLikeCount: int, signingPrivateKeyPem: str,
-                  defaultReplyIntervalHours: int,
+                  default_reply_interval_hrs: int,
                   CWlists: {}) -> None:
     """Processes received items and moves them to the appropriate
     directories
@@ -4511,7 +4511,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                themeName, systemLanguage,
                                maxLikeCount,
                                signingPrivateKeyPem,
-                               defaultReplyIntervalHours,
+                               default_reply_interval_hrs,
                                CWlists, listsEnabled,
                                content_license_url)
             if debug:

@@ -12903,7 +12903,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = getNicknameFromActor(path)
 
             if inReplyToUrl:
-                replyIntervalHours = self.server.defaultReplyIntervalHours
+                replyIntervalHours = self.server.default_reply_interval_hrs
                 if not canReplyTo(base_dir, nickname, domain,
                                   inReplyToUrl, replyIntervalHours):
                     print('Reply outside of time window ' + inReplyToUrl +
@@ -13030,7 +13030,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
-            defaultReplyIntervalHours = self.server.defaultReplyIntervalHours
+            default_reply_interval_hrs = self.server.default_reply_interval_hrs
             msg = htmlEditProfile(self.server.cssCache,
                                   translate,
                                   base_dir,
@@ -13044,7 +13044,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   city,
                                   self.server.userAgentsBlocked,
                                   accessKeys,
-                                  defaultReplyIntervalHours,
+                                  default_reply_interval_hrs,
                                   self.server.CWlists,
                                   self.server.listsEnabled).encode('utf-8')
             if msg:
@@ -18392,7 +18392,7 @@ def loadTokens(base_dir: str, tokensDict: {}, tokensLookup: {}) -> None:
 
 def runDaemon(content_license_url: str,
               listsEnabled: str,
-              defaultReplyIntervalHours: int,
+              default_reply_interval_hrs: int,
               lowBandwidth: bool,
               maxLikeCount: int,
               sharedItemsFederatedDomains: [],
@@ -18542,8 +18542,8 @@ def runDaemon(content_license_url: str,
     }
 
     # how many hours after a post was publushed can a reply be made
-    defaultReplyIntervalHours = 9999999
-    httpd.defaultReplyIntervalHours = defaultReplyIntervalHours
+    default_reply_interval_hrs = 9999999
+    httpd.default_reply_interval_hrs = default_reply_interval_hrs
 
     httpd.keyShortcuts = {}
     loadAccessKeysForAccounts(base_dir, httpd.keyShortcuts, httpd.accessKeys)
@@ -18900,7 +18900,7 @@ def runDaemon(content_license_url: str,
                               httpd.systemLanguage,
                               httpd.maxLikeCount,
                               httpd.signingPrivateKeyPem,
-                              httpd.defaultReplyIntervalHours,
+                              httpd.default_reply_interval_hrs,
                               httpd.CWlists), daemon=True)
 
     print('Creating scheduled post thread')

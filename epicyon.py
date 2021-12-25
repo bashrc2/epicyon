@@ -181,8 +181,8 @@ parser.add_argument('--dormantMonths',
                     default=3,
                     help='How many months does a followed account need to ' +
                     'be unseen for before being considered dormant')
-parser.add_argument('--defaultReplyIntervalHours',
-                    dest='defaultReplyIntervalHours', type=int,
+parser.add_argument('--default_reply_interval_hrs',
+                    dest='default_reply_interval_hrs', type=int,
                     default=1000,
                     help='How many hours after publication of a post ' +
                     'are replies to it permitted')
@@ -3212,7 +3212,7 @@ if args.defaultCurrency:
 if __name__ == "__main__":
     runDaemon(content_license_url,
               listsEnabled,
-              args.defaultReplyIntervalHours,
+              args.default_reply_interval_hrs,
               args.lowBandwidth, args.maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,

@@ -792,12 +792,12 @@ def createServerAlice(path: str, domain: str, port: int,
     logLoginFailures = False
     userAgentsBlocked = []
     maxLikeCount = 10
-    defaultReplyIntervalHours = 9999999999
+    default_reply_interval_hrs = 9999999999
     listsEnabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Alice')
     runDaemon(content_license_url,
-              listsEnabled, defaultReplyIntervalHours,
+              listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
@@ -934,12 +934,12 @@ def createServerBob(path: str, domain: str, port: int,
     logLoginFailures = False
     userAgentsBlocked = []
     maxLikeCount = 10
-    defaultReplyIntervalHours = 9999999999
+    default_reply_interval_hrs = 9999999999
     listsEnabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Bob')
     runDaemon(content_license_url,
-              listsEnabled, defaultReplyIntervalHours,
+              listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
@@ -1004,12 +1004,12 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     userAgentsBlocked = []
     maxLikeCount = 10
     lowBandwidth = True
-    defaultReplyIntervalHours = 9999999999
+    default_reply_interval_hrs = 9999999999
     listsEnabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Eve')
     runDaemon(content_license_url,
-              listsEnabled, defaultReplyIntervalHours,
+              listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,
@@ -1076,12 +1076,12 @@ def createServerGroup(path: str, domain: str, port: int,
     userAgentsBlocked = []
     maxLikeCount = 10
     lowBandwidth = True
-    defaultReplyIntervalHours = 9999999999
+    default_reply_interval_hrs = 9999999999
     listsEnabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Group')
     runDaemon(content_license_url,
-              listsEnabled, defaultReplyIntervalHours,
+              listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
               userAgentsBlocked,

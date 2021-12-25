@@ -2090,7 +2090,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                     textModeBanner: str, city: str,
                     userAgentsBlocked: str,
                     accessKeys: {},
-                    defaultReplyIntervalHours: int,
+                    default_reply_interval_hrs: int,
                     CWlists: {}, listsEnabled: str) -> str:
     """Shows the edit profile screen
     """
@@ -2297,7 +2297,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
 
     # Filtering and blocking section
     replyIntervalHours = getReplyIntervalHours(base_dir, nickname, domain,
-                                               defaultReplyIntervalHours)
+                                               default_reply_interval_hrs)
     editProfileForm += \
         _htmlEditProfileFiltering(base_dir, nickname, domain,
                                   userAgentsBlocked, translate,

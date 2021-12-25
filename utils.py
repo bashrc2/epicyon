@@ -1376,7 +1376,7 @@ def _getPublishedDate(postJsonObject: {}) -> str:
 
 
 def getReplyIntervalHours(base_dir: str, nickname: str, domain: str,
-                          defaultReplyIntervalHours: int) -> int:
+                          default_reply_interval_hrs: int) -> int:
     """Returns the reply interval for the given account.
     The reply interval is the number of hours after a post being made
     during which replies are allowed
@@ -1388,7 +1388,7 @@ def getReplyIntervalHours(base_dir: str, nickname: str, domain: str,
             hoursStr = fp.read()
             if hoursStr.isdigit():
                 return int(hoursStr)
-    return defaultReplyIntervalHours
+    return default_reply_interval_hrs
 
 
 def setReplyIntervalHours(base_dir: str, nickname: str, domain: str,
