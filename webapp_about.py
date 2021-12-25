@@ -16,7 +16,7 @@ from markdown import markdownToHtml
 
 
 def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
-              domainFull: str, onionDomain: str, translate: {},
+              domainFull: str, onion_domain: str, translate: {},
               systemLanguage: str) -> str:
     """Show the about screen
     """
@@ -47,11 +47,11 @@ def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
                                     http_prefix, domainFull,
                                     systemLanguage)
     aboutForm += '<div class="container">' + aboutText + '</div>'
-    if onionDomain:
+    if onion_domain:
         aboutForm += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
-            'http://' + onionDomain + '</p>\n</center></div>\n'
+            'http://' + onion_domain + '</p>\n</center></div>\n'
     if adminNickname:
         adminActor = '/users/' + adminNickname
         aboutForm += \

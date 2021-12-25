@@ -684,7 +684,7 @@ def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
     return jsonObject
 
 
-def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
+def loadJsonOnionify(filename: str, domain: str, onion_domain: str,
                      delaySec: int = 2) -> {}:
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
@@ -696,7 +696,7 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
             with open(filename, 'r') as fp:
                 data = fp.read()
                 if data:
-                    data = data.replace(domain, onionDomain)
+                    data = data.replace(domain, onion_domain)
                     data = data.replace('https:', 'http:')
                     print('*****data: ' + data)
                 jsonObject = json.loads(data)

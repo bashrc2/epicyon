@@ -215,7 +215,7 @@ def webfingerMeta(http_prefix: str, domainFull: str) -> str:
 
 
 def webfingerLookup(path: str, base_dir: str,
-                    domain: str, onionDomain: str,
+                    domain: str, onion_domain: str,
                     port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
@@ -253,9 +253,9 @@ def webfingerLookup(path: str, base_dir: str,
     # if this is a lookup for a handle using its onion domain
     # then swap the onion domain for the clearnet version
     onionify = False
-    if onionDomain:
-        if onionDomain in handle:
-            handle = handle.replace(onionDomain, domain)
+    if onion_domain:
+        if onion_domain in handle:
+            handle = handle.replace(onion_domain, domain)
             onionify = True
     # instance actor
     if handle.startswith('actor@'):
@@ -273,7 +273,7 @@ def webfingerLookup(path: str, base_dir: str,
         wfJson = loadJson(filename)
     else:
         print('Webfinger request for onionified ' + handle)
-        wfJson = loadJsonOnionify(filename, domain, onionDomain)
+        wfJson = loadJsonOnionify(filename, domain, onion_domain)
     if not wfJson:
         wfJson = {"nickname": "unknown"}
     return wfJson
@@ -421,7 +421,7 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
 
 
 def webfingerUpdate(base_dir: str, nickname: str, domain: str,
-                    onionDomain: str,
+                    onion_domain: str,
                     cachedWebfingers: {}) -> None:
     handle = nickname + '@' + domain
     wfSubdir = '/wfendpoints'
@@ -430,14 +430,14 @@ def webfingerUpdate(base_dir: str, nickname: str, domain: str,
 
     filename = base_dir + wfSubdir + '/' + handle + '.json'
     onionify = False
-    if onionDomain:
-        if onionDomain in handle:
-            handle = handle.replace(onionDomain, domain)
+    if onion_domain:
+        if onion_domain in handle:
+            handle = handle.replace(onion_domain, domain)
             onionify = True
     if not onionify:
         wfJson = loadJson(filename)
     else:
-        wfJson = loadJsonOnionify(filename, domain, onionDomain)
+        wfJson = loadJsonOnionify(filename, domain, onion_domain)
     if not wfJson:
         return
 

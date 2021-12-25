@@ -1055,8 +1055,8 @@ if args.onion:
         sys.exit()
     if '://' in args.onion:
         args.onion = args.onion.split('://')[1]
-    onionDomain = args.onion
-    setConfigParam(base_dir, 'onion', onionDomain)
+    onion_domain = args.onion
+    setConfigParam(base_dir, 'onion', onion_domain)
 
 i2pDomain = None
 if args.i2pDomain:
@@ -1116,9 +1116,9 @@ else:
 # get onion domain name from configuration
 configOnionDomain = getConfigParam(base_dir, 'onion')
 if configOnionDomain:
-    onionDomain = configOnionDomain
+    onion_domain = configOnionDomain
 else:
-    onionDomain = None
+    onion_domain = None
 
 # get i2p domain name from configuration
 configi2pDomain = getConfigParam(base_dir, 'i2pDomain')
@@ -3247,7 +3247,7 @@ if __name__ == "__main__":
               not args.nosharedinbox,
               registration, args.language, __version__,
               instance_id, args.client, base_dir,
-              domain, onionDomain, i2pDomain,
+              domain, onion_domain, i2pDomain,
               args.yt_replace_domain,
               args.twitterReplacementDomain,
               port, proxyPort, http_prefix,

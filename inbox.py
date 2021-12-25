@@ -992,7 +992,7 @@ def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
 def _receiveLike(recentPostsCache: {},
                  session, handle: str, isGroup: bool, base_dir: str,
                  http_prefix: str, domain: str, port: int,
-                 onionDomain: str,
+                 onion_domain: str,
                  sendThreads: [], postLog: [], cachedWebfingers: {},
                  personCache: {}, messageJson: {}, federationList: [],
                  debug: bool,
@@ -1050,7 +1050,7 @@ def _receiveLike(recentPostsCache: {},
                          handleName, handleDom,
                          postLikedId,
                          likeActor):
-        _likeNotify(base_dir, domain, onionDomain, handle,
+        _likeNotify(base_dir, domain, onion_domain, handle,
                     likeActor, postLikedId)
     updateLikesCollection(recentPostsCache, base_dir, postFilename,
                           postLikedId, likeActor,
@@ -1226,7 +1226,7 @@ def _receiveUndoLike(recentPostsCache: {},
 def _receiveReaction(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
-                     onionDomain: str,
+                     onion_domain: str,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
                      debug: bool,
@@ -1308,7 +1308,7 @@ def _receiveReaction(recentPostsCache: {},
                            postReactionId,
                            reactionActor,
                            emojiContent):
-        _reactionNotify(base_dir, domain, onionDomain, handle,
+        _reactionNotify(base_dir, domain, onion_domain, handle,
                         reactionActor, postReactionId, emojiContent)
     updateReactionCollection(recentPostsCache, base_dir, postFilename,
                              postReactionId, reactionActor,
@@ -1796,7 +1796,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
 def _receiveAnnounce(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str,
-                     domain: str, onionDomain: str, port: int,
+                     domain: str, onion_domain: str, port: int,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
                      debug: bool, translate: {},
@@ -1946,8 +1946,8 @@ def _receiveAnnounce(recentPostsCache: {},
     if not postJsonObject:
         print('WARN: unable to download announce: ' + str(messageJson))
         notInOnion = True
-        if onionDomain:
-            if onionDomain in messageJson['object']:
+        if onion_domain:
+            if onion_domain in messageJson['object']:
                 notInOnion = False
         if domain not in messageJson['object'] and notInOnion:
             if os.path.isfile(postFilename):
@@ -2004,7 +2004,7 @@ def _receiveAnnounce(recentPostsCache: {},
                         getPersonPubKey(base_dir, session, lookupActor,
                                         personCache, debug,
                                         __version__, http_prefix,
-                                        domain, onionDomain,
+                                        domain, onion_domain,
                                         signingPrivateKeyPem)
                     if pubKey:
                         if debug:
@@ -2290,7 +2290,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
 
 
 def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
-                              domain: str, onionDomain: str, personCache: {},
+                              domain: str, onion_domain: str, personCache: {},
                               postJsonObject: {}, debug: bool,
                               signingPrivateKeyPem: str) -> None:
     """Tries to obtain the actor for the person being replied to
@@ -2323,7 +2323,7 @@ def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
             getPersonPubKey(base_dir, session, lookupActor,
                             personCache, debug,
                             __version__, http_prefix,
-                            domain, onionDomain, signingPrivateKeyPem)
+                            domain, onion_domain, signingPrivateKeyPem)
         if pubKey:
             if debug:
                 print('DEBUG: public key obtained for reply: ' + lookupActor)
@@ -2413,7 +2413,7 @@ def _alreadyReacted(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def _likeNotify(base_dir: str, domain: str, onionDomain: str,
+def _likeNotify(base_dir: str, domain: str, onion_domain: str,
                 handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
@@ -2424,9 +2424,9 @@ def _likeNotify(base_dir: str, domain: str, onionDomain: str,
     # check that the liked post was by this handle
     nickname = handle.split('@')[0]
     if '/' + domain + '/users/' + nickname not in url:
-        if not onionDomain:
+        if not onion_domain:
             return
-        if '/' + onionDomain + '/users/' + nickname not in url:
+        if '/' + onion_domain + '/users/' + nickname not in url:
             return
 
     accountDir = base_dir + '/accounts/' + handle
@@ -2474,7 +2474,7 @@ def _likeNotify(base_dir: str, domain: str, onionDomain: str,
                   likeFile)
 
 
-def _reactionNotify(base_dir: str, domain: str, onionDomain: str,
+def _reactionNotify(base_dir: str, domain: str, onion_domain: str,
                     handle: str, actor: str,
                     url: str, emojiContent: str) -> None:
     """Creates a notification that an emoji reaction has arrived
@@ -2486,9 +2486,9 @@ def _reactionNotify(base_dir: str, domain: str, onionDomain: str,
     # check that the reaction post was by this handle
     nickname = handle.split('@')[0]
     if '/' + domain + '/users/' + nickname not in url:
-        if not onionDomain:
+        if not onion_domain:
             return
-        if '/' + onionDomain + '/users/' + nickname not in url:
+        if '/' + onion_domain + '/users/' + nickname not in url:
             return
 
     accountDir = base_dir + '/accounts/' + handle
@@ -2611,7 +2611,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, debug: bool,
                         systemLanguage: str,
-                        onionDomain: str, i2pDomain: str,
+                        onion_domain: str, i2pDomain: str,
                         signingPrivateKeyPem: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
@@ -2666,7 +2666,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                        debug, __version__, signingPrivateKeyPem)
 
     sendToFollowersThread(session, base_dir, nickname, domain,
-                          onionDomain, i2pDomain, port,
+                          onion_domain, i2pDomain, port,
                           http_prefix, federationList,
                           sendThreads, postLog,
                           cachedWebfingers, personCache,
@@ -2974,7 +2974,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
 def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          http_prefix: str, handle: str, debug: bool,
                          postJsonObject: {}, recentPostsCache: {},
-                         session, onionDomain: str, i2pDomain: str, port: int,
+                         session, onion_domain: str, i2pDomain: str, port: int,
                          federationList: [], sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          signingPrivateKeyPem: str,
@@ -3050,7 +3050,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     shared_items_federated_domains = []
     sharedItemFederationTokens = {}
     sendToFollowersThread(session, base_dir, nickname, domain,
-                          onionDomain, i2pDomain, port,
+                          onion_domain, i2pDomain, port,
                           http_prefix, federationList,
                           sendThreads, postLog,
                           cachedWebfingers, personCache,
@@ -3180,7 +3180,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        base_dir: str, http_prefix: str, sendThreads: [],
                        postLog: [], cachedWebfingers: {}, personCache: {},
                        queue: [], domain: str,
-                       onionDomain: str, i2pDomain: str,
+                       onion_domain: str, i2pDomain: str,
                        port: int, proxyType: str,
                        federationList: [], debug: bool,
                        queueFilename: str, destinationFilename: str,
@@ -3214,7 +3214,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     session, handle, isGroup,
                     base_dir, http_prefix,
                     domain, port,
-                    onionDomain,
+                    onion_domain,
                     sendThreads, postLog,
                     cachedWebfingers,
                     personCache,
@@ -3259,7 +3259,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         session, handle, isGroup,
                         base_dir, http_prefix,
                         domain, port,
-                        onionDomain,
+                        onion_domain,
                         sendThreads, postLog,
                         cachedWebfingers,
                         personCache,
@@ -3350,7 +3350,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     if _receiveAnnounce(recentPostsCache,
                         session, handle, isGroup,
                         base_dir, http_prefix,
-                        domain, onionDomain, port,
+                        domain, onion_domain, port,
                         sendThreads, postLog,
                         cachedWebfingers,
                         personCache,
@@ -3450,7 +3450,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
         _receiveQuestionVote(base_dir, nickname, domain,
                              http_prefix, handle, debug,
                              postJsonObject, recentPostsCache,
-                             session, onionDomain, i2pDomain, port,
+                             session, onion_domain, i2pDomain, port,
                              federationList, sendThreads, postLog,
                              cachedWebfingers, personCache,
                              signingPrivateKeyPem,
@@ -3511,7 +3511,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
         # get the avatar for a reply/announce
         _obtainAvatarForReplyPost(session, base_dir,
-                                  http_prefix, domain, onionDomain,
+                                  http_prefix, domain, onion_domain,
                                   personCache, postJsonObject, debug,
                                   signingPrivateKeyPem)
 
@@ -3610,7 +3610,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                     http_prefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
                                     debug, systemLanguage,
-                                    onionDomain, i2pDomain,
+                                    onion_domain, i2pDomain,
                                     signingPrivateKeyPem)
 
     # if the post wasn't saved
@@ -3848,7 +3848,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           cachedWebfingers: {}, personCache: {},
                           messageJson: {}, federationList: [],
                           debug: bool, project_version: str,
-                          max_followers: int, onionDomain: str,
+                          max_followers: int, onion_domain: str,
                           signingPrivateKeyPem: str, unitTest: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
@@ -3968,7 +3968,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             print('Obtaining the following actor: ' + messageJson['actor'])
         if not getPersonPubKey(base_dir, session, messageJson['actor'],
                                personCache, debug, project_version,
-                               http_prefix, domainToFollow, onionDomain,
+                               http_prefix, domainToFollow, onion_domain,
                                signingPrivateKeyPem):
             if debug:
                 print('Unable to obtain following actor: ' +
@@ -4005,7 +4005,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                 print('Obtaining the following actor: ' + messageJson['actor'])
             if not getPersonPubKey(base_dir, session, messageJson['actor'],
                                    personCache, debug, project_version,
-                                   http_prefix, domainToFollow, onionDomain,
+                                   http_prefix, domainToFollow, onion_domain,
                                    signingPrivateKeyPem):
                 if debug:
                     print('Unable to obtain following actor: ' +
@@ -4064,7 +4064,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   sendThreads: [], postLog: [],
                   cachedWebfingers: {}, personCache: {}, queue: [],
                   domain: str,
-                  onionDomain: str, i2pDomain: str,
+                  onion_domain: str, i2pDomain: str,
                   port: int, proxyType: str,
                   federationList: [], maxReplies: int,
                   domainMaxPostsPerDay: int,
@@ -4233,7 +4233,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                 getPersonPubKey(base_dir, session, keyId,
                                 personCache, debug,
                                 project_version, http_prefix,
-                                domain, onionDomain, signingPrivateKeyPem)
+                                domain, onion_domain, signingPrivateKeyPem)
             if pubKey:
                 if debug:
                     print('DEBUG: public key: ' + str(pubKey))
@@ -4371,7 +4371,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                  queueJson['post'],
                                  federationList,
                                  debug, project_version,
-                                 max_followers, onionDomain,
+                                 max_followers, onion_domain,
                                  signingPrivateKeyPem, unitTest):
             if os.path.isfile(queueFilename):
                 try:
@@ -4494,7 +4494,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                cachedWebfingers,
                                personCache, queue,
                                domain,
-                               onionDomain, i2pDomain,
+                               onion_domain, i2pDomain,
                                port, proxyType,
                                federationList,
                                debug,

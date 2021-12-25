@@ -2858,7 +2858,7 @@ def _isProfileUpdate(postJsonObject: {}) -> bool:
 
 def _sendToNamedAddresses(session, base_dir: str,
                           nickname: str, domain: str,
-                          onionDomain: str, i2pDomain: str, port: int,
+                          onion_domain: str, i2pDomain: str, port: int,
                           http_prefix: str, federationList: [],
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
@@ -2974,10 +2974,10 @@ def _sendToNamedAddresses(session, base_dir: str,
         fromDomain = domain
         fromDomainFull = getFullDomain(domain, port)
         fromHttpPrefix = http_prefix
-        if onionDomain:
+        if onion_domain:
             if toDomain.endswith('.onion'):
-                fromDomain = onionDomain
-                fromDomainFull = onionDomain
+                fromDomain = onion_domain
+                fromDomainFull = onion_domain
                 fromHttpPrefix = 'http'
         elif i2pDomain:
             if toDomain.endswith('.i2p'):
@@ -3009,7 +3009,7 @@ def _sendToNamedAddresses(session, base_dir: str,
 
 def sendToNamedAddressesThread(session, base_dir: str,
                                nickname: str, domain: str,
-                               onionDomain: str, i2pDomain: str, port: int,
+                               onion_domain: str, i2pDomain: str, port: int,
                                http_prefix: str, federationList: [],
                                sendThreads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
@@ -3024,7 +3024,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
         threadWithTrace(target=_sendToNamedAddresses,
                         args=(session, base_dir,
                               nickname, domain,
-                              onionDomain, i2pDomain, port,
+                              onion_domain, i2pDomain, port,
                               http_prefix, federationList,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,
@@ -3085,7 +3085,7 @@ def _sendingProfileUpdate(postJsonObject: {}) -> bool:
 def sendToFollowers(session, base_dir: str,
                     nickname: str,
                     domain: str,
-                    onionDomain: str, i2pDomain: str, port: int,
+                    onion_domain: str, i2pDomain: str, port: int,
                     http_prefix: str, federationList: [],
                     sendThreads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
@@ -3174,9 +3174,9 @@ def sendToFollowers(session, base_dir: str,
         # have an alt onion domain then use the alt
         fromDomain = domain
         fromHttpPrefix = http_prefix
-        if onionDomain:
+        if onion_domain:
             if toDomain.endswith('.onion'):
-                fromDomain = onionDomain
+                fromDomain = onion_domain
                 fromHttpPrefix = 'http'
         elif i2pDomain:
             if toDomain.endswith('.i2p'):
@@ -3258,7 +3258,7 @@ def sendToFollowers(session, base_dir: str,
 def sendToFollowersThread(session, base_dir: str,
                           nickname: str,
                           domain: str,
-                          onionDomain: str, i2pDomain: str, port: int,
+                          onion_domain: str, i2pDomain: str, port: int,
                           http_prefix: str, federationList: [],
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
@@ -3273,7 +3273,7 @@ def sendToFollowersThread(session, base_dir: str,
         threadWithTrace(target=sendToFollowers,
                         args=(session, base_dir,
                               nickname, domain,
-                              onionDomain, i2pDomain, port,
+                              onion_domain, i2pDomain, port,
                               http_prefix, federationList,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,

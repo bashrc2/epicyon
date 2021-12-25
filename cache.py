@@ -139,7 +139,7 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
 def getPersonPubKey(base_dir: str, session, personUrl: str,
                     personCache: {}, debug: bool,
                     project_version: str, http_prefix: str,
-                    domain: str, onionDomain: str,
+                    domain: str, onion_domain: str,
                     signingPrivateKeyPem: str) -> str:
     if not personUrl:
         return None
@@ -158,9 +158,9 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
         if debug:
             print('DEBUG: Obtaining public key for ' + personUrl)
         personDomain = domain
-        if onionDomain:
+        if onion_domain:
             if '.onion/' in personUrl:
-                personDomain = onionDomain
+                personDomain = onion_domain
         profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
