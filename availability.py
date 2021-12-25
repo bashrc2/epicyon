@@ -81,7 +81,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
                               domain: str, port: int,
                               http_prefix: str,
                               status: str,
-                              cachedWebfingers: {}, personCache: {},
+                              cachedWebfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
                               signingPrivateKeyPem: str) -> {}:
     """Sets the availability for a person via c2s
@@ -127,7 +127,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, project_version,
+                                    person_cache, project_version,
                                     http_prefix, nickname,
                                     domain, postToBox, 57262)
 

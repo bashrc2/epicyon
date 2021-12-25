@@ -900,17 +900,17 @@ def dangerousSVG(content: str, allow_local_network_access: bool) -> bool:
                               separators, invalidStrings)
 
 
-def getDisplayName(base_dir: str, actor: str, personCache: {}) -> str:
+def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:
     """Returns the display name for the given actor
     """
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
-    if not personCache.get(actor):
+    if not person_cache.get(actor):
         return None
     nameFound = None
-    if personCache[actor].get('actor'):
-        if personCache[actor]['actor'].get('name'):
-            nameFound = personCache[actor]['actor']['name']
+    if person_cache[actor].get('actor'):
+        if person_cache[actor]['actor'].get('name'):
+            nameFound = person_cache[actor]['actor']['name']
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
@@ -950,7 +950,7 @@ def _genderFromString(translate: {}, text: str) -> str:
     return gender
 
 
-def getGenderFromBio(base_dir: str, actor: str, personCache: {},
+def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
                      translate: {}) -> str:
     """Tries to ascertain gender from bio description
     This is for use by text-to-speech for pitch setting
@@ -958,7 +958,7 @@ def getGenderFromBio(base_dir: str, actor: str, personCache: {},
     defaultGender = 'They/Them'
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
-    if not personCache.get(actor):
+    if not person_cache.get(actor):
         return defaultGender
     bioFound = None
     if translate:
@@ -966,8 +966,8 @@ def getGenderFromBio(base_dir: str, actor: str, personCache: {},
     else:
         pronounStr = 'pronoun'
     actorJson = None
-    if personCache[actor].get('actor'):
-        actorJson = personCache[actor]['actor']
+    if person_cache[actor].get('actor'):
+        actorJson = person_cache[actor]['actor']
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
@@ -2982,7 +2982,7 @@ def dateSecondsToString(dateSec: int) -> str:
     return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def hasGroupType(base_dir: str, actor: str, personCache: {},
+def hasGroupType(base_dir: str, actor: str, person_cache: {},
                  debug: bool = False) -> bool:
     """Does the given actor url have a group type?
     """
@@ -2995,18 +2995,18 @@ def hasGroupType(base_dir: str, actor: str, personCache: {},
                 print('grpPath ' + grpPath + ' in ' + actor)
             return True
     # is there a cached actor which can be examined for Group type?
-    return isGroupActor(base_dir, actor, personCache, debug)
+    return isGroupActor(base_dir, actor, person_cache, debug)
 
 
-def isGroupActor(base_dir: str, actor: str, personCache: {},
+def isGroupActor(base_dir: str, actor: str, person_cache: {},
                  debug: bool = False) -> bool:
     """Is the given actor a group?
     """
-    if personCache:
-        if personCache.get(actor):
-            if personCache[actor].get('actor'):
-                if personCache[actor]['actor'].get('type'):
-                    if personCache[actor]['actor']['type'] == 'Group':
+    if person_cache:
+        if person_cache.get(actor):
+            if person_cache[actor].get('actor'):
+                if person_cache[actor]['actor'].get('type'):
+                    if person_cache[actor]['actor']['type'] == 'Group':
                         if debug:
                             print('Cached actor ' + actor + ' has Group type')
                         return True

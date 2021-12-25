@@ -456,7 +456,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
                        nickname: str, password: str,
                        domain: str, port: int,
                        http_prefix: str,
-                       cachedWebfingers: {}, personCache: {},
+                       cachedWebfingers: {}, person_cache: {},
                        debug: bool, test: str,
                        signingPrivateKeyPem: str) -> {}:
     if debug:
@@ -577,7 +577,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    base_dir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, person_cache,
                                     __version__, http_prefix, nickname,
                                     domain, postToBox, 35725)
 

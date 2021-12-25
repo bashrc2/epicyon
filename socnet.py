@@ -31,7 +31,7 @@ def instancesGraph(base_dir: str, handles: str,
     if not session:
         return dotGraphStr + '}\n'
 
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     federationList = []
     max_mentions = 99
@@ -68,7 +68,7 @@ def instancesGraph(base_dir: str, handles: str,
          displayName, _) = getPersonBox(signingPrivateKeyPem,
                                         originDomain,
                                         base_dir, session, wfRequest,
-                                        personCache,
+                                        person_cache,
                                         project_version, http_prefix,
                                         nickname, domain, 'outbox',
                                         27261)
@@ -76,7 +76,7 @@ def instancesGraph(base_dir: str, handles: str,
         postDomains = \
             getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
                            maxAttachments, federationList,
-                           personCache, debug,
+                           person_cache, debug,
                            project_version, http_prefix, domain,
                            wordFrequency, [], systemLanguage,
                            signingPrivateKeyPem)

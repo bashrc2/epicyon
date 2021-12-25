@@ -176,7 +176,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
                        domain: str, port: int,
                        http_prefix: str,
                        skill: str, skillLevelPercent: int,
-                       cachedWebfingers: {}, personCache: {},
+                       cachedWebfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
                        signingPrivateKeyPem: str) -> {}:
     """Sets a skill for a person via c2s
@@ -229,7 +229,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, project_version,
+                                    person_cache, project_version,
                                     http_prefix, nickname, domain,
                                     postToBox, 76121)
 

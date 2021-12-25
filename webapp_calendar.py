@@ -96,7 +96,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     return deletePostStr
 
 
-def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
+def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
                      base_dir: str, path: str,
                      year: int, monthNumber: int, dayNumber: int,
                      nickname: str, domain: str, dayEvents: [],
@@ -160,7 +160,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                             senderActor = ev['sender']
                             dispName = \
                                 getDisplayName(base_dir, senderActor,
-                                               personCache)
+                                               person_cache)
                             if dispName:
                                 senderName = \
                                     '<a href="' + senderActor + '">' + \
@@ -243,7 +243,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
     return calendarStr
 
 
-def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
+def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
                  base_dir: str, path: str,
                  http_prefix: str, domainFull: str,
                  textModeBanner: str, accessKeys: {}) -> str:
@@ -298,7 +298,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return _htmlCalendarDay(personCache, cssCache,
+        return _htmlCalendarDay(person_cache, cssCache,
                                 translate, base_dir, path,
                                 year, monthNumber, dayNumber,
                                 nickname, domain, dayEvents,

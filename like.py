@@ -75,7 +75,7 @@ def _like(recentPostsCache: {},
           objectUrl: str, actorLiked: str,
           client_to_server: bool,
           send_threads: [], postLog: [],
-          personCache: {}, cachedWebfingers: {},
+          person_cache: {}, cachedWebfingers: {},
           debug: bool, project_version: str,
           signingPrivateKeyPem: str) -> {}:
     """Creates a like
@@ -106,7 +106,7 @@ def _like(recentPostsCache: {},
     if actorLiked:
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
-        groupAccount = hasGroupType(base_dir, actorLiked, personCache)
+        groupAccount = hasGroupType(base_dir, actorLiked, person_cache)
     else:
         if hasUsersPath(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
@@ -115,7 +115,7 @@ def _like(recentPostsCache: {},
                 actorLiked = \
                     objectUrl.split('/' + likedPostNickname + '/')[0] + \
                     '/' + likedPostNickname
-                groupAccount = hasGroupType(base_dir, actorLiked, personCache)
+                groupAccount = hasGroupType(base_dir, actorLiked, person_cache)
 
     if likedPostNickname:
         postFilename = locatePost(base_dir, nickname, domain, objectUrl)
@@ -136,7 +136,7 @@ def _like(recentPostsCache: {},
                        likedPostNickname, likedPostDomain, likedPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, client_to_server, federationList,
-                       send_threads, postLog, cachedWebfingers, personCache,
+                       send_threads, postLog, cachedWebfingers, person_cache,
                        debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 7367374)
 
@@ -150,7 +150,7 @@ def likePost(recentPostsCache: {},
              ccList: [],
              likeStatusNumber: int, client_to_server: bool,
              send_threads: [], postLog: [],
-             personCache: {}, cachedWebfingers: {},
+             person_cache: {}, cachedWebfingers: {},
              debug: bool, project_version: str,
              signingPrivateKeyPem: str) -> {}:
     """Likes a given status post. This is only used by unit tests
@@ -163,7 +163,7 @@ def likePost(recentPostsCache: {},
     return _like(recentPostsCache,
                  session, base_dir, federationList, nickname, domain, port,
                  ccList, http_prefix, objectUrl, actorLiked, client_to_server,
-                 send_threads, postLog, personCache, cachedWebfingers,
+                 send_threads, postLog, person_cache, cachedWebfingers,
                  debug, project_version, signingPrivateKeyPem)
 
 
@@ -171,7 +171,7 @@ def sendLikeViaServer(base_dir: str, session,
                       fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       http_prefix: str, likeUrl: str,
-                      cachedWebfingers: {}, personCache: {},
+                      cachedWebfingers: {}, person_cache: {},
                       debug: bool, project_version: str,
                       signingPrivateKeyPem: str) -> {}:
     """Creates a like via c2s
@@ -215,7 +215,7 @@ def sendLikeViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 72873)
@@ -254,7 +254,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           http_prefix: str, likeUrl: str,
-                          cachedWebfingers: {}, personCache: {},
+                          cachedWebfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Undo a like via c2s
@@ -303,7 +303,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, project_version,
+                                    person_cache, project_version,
                                     http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     72625)

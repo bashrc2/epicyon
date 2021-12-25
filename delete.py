@@ -30,7 +30,7 @@ def sendDeleteViaServer(base_dir: str, session,
                         fromNickname: str, password: str,
                         fromDomain: str, fromPort: int,
                         http_prefix: str, deleteObjectUrl: str,
-                        cachedWebfingers: {}, personCache: {},
+                        cachedWebfingers: {}, person_cache: {},
                         debug: bool, project_version: str,
                         signingPrivateKeyPem: str) -> {}:
     """Creates a delete request message via c2s
@@ -77,7 +77,7 @@ def sendDeleteViaServer(base_dir: str, session,
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    base_dir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, person_cache,
                                     project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 53036)
 

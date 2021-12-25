@@ -734,7 +734,7 @@ class PubServer(BaseHTTPRequestHandler):
         pubKey = \
             getPersonPubKey(self.server.base_dir,
                             self.server.session, keyId,
-                            self.server.personCache, self.server.debug,
+                            self.server.person_cache, self.server.debug,
                             self.server.project_version,
                             self.server.http_prefix,
                             self.server.domain, self.server.onion_domain,
@@ -1289,7 +1289,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.send_threads,
                                    self.server.postLog,
                                    self.server.cachedWebfingers,
-                                   self.server.personCache,
+                                   self.server.person_cache,
                                    self.server.allow_deletion,
                                    self.server.proxy_type, version,
                                    self.server.debug,
@@ -2718,7 +2718,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.max_recent_posts,
                               self.server.session,
                               self.server.cachedWebfingers,
-                              self.server.personCache,
+                              self.server.person_cache,
                               self.server.port,
                               None,
                               self.server.project_version,
@@ -2852,7 +2852,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.max_recent_posts,
                               self.server.session,
                               self.server.cachedWebfingers,
-                              self.server.personCache,
+                              self.server.person_cache,
                               self.server.port,
                               None,
                               self.server.project_version,
@@ -2956,7 +2956,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.postToNickname = pathUsersSection.split('/')[0]
                 groupAccount = hasGroupType(self.server.base_dir,
                                             followingActor,
-                                            self.server.personCache)
+                                            self.server.person_cache)
                 unfollowAccount(self.server.base_dir, self.postToNickname,
                                 self.server.domain,
                                 followingNickname, followingDomainFull,
@@ -3050,7 +3050,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.send_threads,
                                   self.server.postLog,
                                   self.server.cachedWebfingers,
-                                  self.server.personCache, debug,
+                                  self.server.person_cache, debug,
                                   self.server.project_version,
                                   self.server.signingPrivateKeyPem)
         if callingDomain.endswith('.onion') and onion_domain:
@@ -3302,7 +3302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       maxPostsInHashtagFeed,
                                       self.server.session,
                                       self.server.cachedWebfingers,
-                                      self.server.personCache,
+                                      self.server.person_cache,
                                       http_prefix,
                                       self.server.project_version,
                                       self.server.yt_replace_domain,
@@ -3398,7 +3398,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.max_recent_posts,
                                       self.server.session,
                                       self.server.cachedWebfingers,
-                                      self.server.personCache,
+                                      self.server.person_cache,
                                       port,
                                       self.server.yt_replace_domain,
                                       self.server.twitter_replacement_domain,
@@ -3466,7 +3466,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.max_recent_posts,
                                       self.server.session,
                                       self.server.cachedWebfingers,
-                                      self.server.personCache,
+                                      self.server.person_cache,
                                       port,
                                       self.server.yt_replace_domain,
                                       self.server.twitter_replacement_domain,
@@ -3522,7 +3522,7 @@ class PubServer(BaseHTTPRequestHandler):
                         getAvatarImageUrl(self.server.session,
                                           base_dir, http_prefix,
                                           actor,
-                                          self.server.personCache,
+                                          self.server.person_cache,
                                           None, True,
                                           self.server.signingPrivateKeyPem)
                     profilePathStr += \
@@ -3563,7 +3563,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                searchStr,
                                                self.server.session,
                                                self.server.cachedWebfingers,
-                                               self.server.personCache,
+                                               self.server.person_cache,
                                                self.server.debug,
                                                self.server.project_version,
                                                self.server.yt_replace_domain,
@@ -6498,10 +6498,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         onion_domain,
                                         self.server.cachedWebfingers)
                         # also copy to the actors cache and
-                        # personCache in memory
+                        # person_cache in memory
                         storePersonInCache(base_dir,
                                            actorJson['id'], actorJson,
-                                           self.server.personCache,
+                                           self.server.person_cache,
                                            True)
                         # clear any cached images for this actor
                         idStr = actorJson['id'].replace('/', '-')
@@ -7104,7 +7104,7 @@ class PubServer(BaseHTTPRequestHandler):
             movedTo = ''
             actorJson = getPersonFromCache(base_dir,
                                            optionsActor,
-                                           self.server.personCache,
+                                           self.server.person_cache,
                                            True)
             if actorJson:
                 if actorJson.get('movedTo'):
@@ -7137,7 +7137,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.http_prefix,
                                      self.server.domainFull,
                                      optionsActor, optionsProfileUrl,
-                                     self.server.personCache, 5)
+                                     self.server.person_cache, 5)
 
             accessKeys = self.server.accessKeys
             if '/users/' in path:
@@ -7542,7 +7542,7 @@ class PubServer(BaseHTTPRequestHandler):
                               base_dir, hashtag, pageNumber,
                               maxPostsInHashtagFeed, self.server.session,
                               self.server.cachedWebfingers,
-                              self.server.personCache,
+                              self.server.person_cache,
                               http_prefix,
                               self.server.project_version,
                               self.server.yt_replace_domain,
@@ -7605,7 +7605,7 @@ class PubServer(BaseHTTPRequestHandler):
                              base_dir, hashtag,
                              maxPostsInFeed, self.server.session,
                              self.server.cachedWebfingers,
-                             self.server.personCache,
+                             self.server.person_cache,
                              http_prefix,
                              self.server.project_version,
                              self.server.yt_replace_domain,
@@ -7698,7 +7698,7 @@ class PubServer(BaseHTTPRequestHandler):
                            repeatUrl, False, False,
                            self.server.send_threads,
                            self.server.postLog,
-                           self.server.personCache,
+                           self.server.person_cache,
                            self.server.cachedWebfingers,
                            debug,
                            self.server.project_version,
@@ -7751,7 +7751,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  pageNumber, base_dir,
                                  self.server.session,
                                  self.server.cachedWebfingers,
-                                 self.server.personCache,
+                                 self.server.person_cache,
                                  self.postToNickname, domain,
                                  self.server.port, announceJson,
                                  None, True,
@@ -7913,7 +7913,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.send_threads,
                                              self.server.postLog,
                                              self.server.cachedWebfingers,
-                                             self.server.personCache,
+                                             self.server.person_cache,
                                              debug,
                                              self.server.project_version,
                                              self.server.signingPrivateKeyPem)
@@ -8068,7 +8068,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.send_threads,
                                           self.server.postLog,
                                           self.server.cachedWebfingers,
-                                          self.server.personCache,
+                                          self.server.person_cache,
                                           debug,
                                           self.server.project_version,
                                           self.server.signingPrivateKeyPem)
@@ -8210,7 +8210,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      self.postToNickname, domain,
                                      self.server.port, likedPostJson,
                                      None, True,
@@ -8365,7 +8365,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      self.postToNickname, domain,
                                      self.server.port, likedPostJson,
                                      None, True,
@@ -8548,7 +8548,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      self.postToNickname, domain,
                                      self.server.port, reactionPostJson,
                                      None, True,
@@ -8721,7 +8721,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      self.postToNickname, domain,
                                      self.server.port, reactionPostJson,
                                      None, True,
@@ -8821,7 +8821,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.base_dir,
                                     self.server.session,
                                     self.server.cachedWebfingers,
-                                    self.server.personCache,
+                                    self.server.person_cache,
                                     self.postToNickname,
                                     domain, port, post_json_object,
                                     self.server.http_prefix,
@@ -8909,7 +8909,7 @@ class PubServer(BaseHTTPRequestHandler):
                  bookmarkUrl, bookmarkActor, False,
                  self.server.send_threads,
                  self.server.postLog,
-                 self.server.personCache,
+                 self.server.person_cache,
                  self.server.cachedWebfingers,
                  self.server.debug,
                  self.server.project_version)
@@ -8941,7 +8941,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      self.postToNickname, domain,
                                      self.server.port, bookmarkPostJson,
                                      None, True,
@@ -9035,7 +9035,7 @@ class PubServer(BaseHTTPRequestHandler):
                      bookmarkUrl, undoActor, False,
                      self.server.send_threads,
                      self.server.postLog,
-                     self.server.personCache,
+                     self.server.person_cache,
                      self.server.cachedWebfingers,
                      debug,
                      self.server.project_version)
@@ -9069,7 +9069,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      self.postToNickname, domain,
                                      self.server.port, bookmarkPostJson,
                                      None, True,
@@ -9172,7 +9172,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   deleteUrl, http_prefix,
                                   self.server.project_version,
                                   self.server.cachedWebfingers,
-                                  self.server.personCache, callingDomain,
+                                  self.server.person_cache, callingDomain,
                                   self.server.yt_replace_domain,
                                   self.server.twitter_replacement_domain,
                                   self.server.show_published_date_only,
@@ -9271,7 +9271,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      nickname, domain,
                                      self.server.port, mutePostJson,
                                      avatarUrl, showAvatarOptions,
@@ -9381,7 +9381,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      pageNumber, base_dir,
                                      self.server.session,
                                      self.server.cachedWebfingers,
-                                     self.server.personCache,
+                                     self.server.person_cache,
                                      nickname, domain,
                                      self.server.port, mutePostJson,
                                      avatarUrl, showAvatarOptions,
@@ -9489,7 +9489,7 @@ class PubServer(BaseHTTPRequestHandler):
                 translate = self.server.translate
                 session = self.server.session
                 cachedWebfingers = self.server.cachedWebfingers
-                personCache = self.server.personCache
+                person_cache = self.server.person_cache
                 project_version = self.server.project_version
                 ytDomain = self.server.yt_replace_domain
                 twitter_replacement_domain = \
@@ -9503,7 +9503,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     base_dir,
                                     session,
                                     cachedWebfingers,
-                                    personCache,
+                                    person_cache,
                                     nickname,
                                     domain,
                                     port,
@@ -9581,7 +9581,7 @@ class PubServer(BaseHTTPRequestHandler):
                 translate = self.server.translate
                 session = self.server.session
                 cachedWebfingers = self.server.cachedWebfingers
-                personCache = self.server.personCache
+                person_cache = self.server.person_cache
                 project_version = self.server.project_version
                 ytDomain = self.server.yt_replace_domain
                 twitter_replacement_domain = \
@@ -9595,7 +9595,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     base_dir,
                                     session,
                                     cachedWebfingers,
-                                    personCache,
+                                    person_cache,
                                     nickname,
                                     domain,
                                     port,
@@ -9704,7 +9704,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     getPerson, 'roles',
                                     self.server.session,
                                     cachedWebfingers,
-                                    self.server.personCache,
+                                    self.server.person_cache,
                                     yt_replace_domain,
                                     twitter_replacement_domain,
                                     self.server.show_published_date_only,
@@ -9820,7 +9820,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 getPerson, 'skills',
                                                 self.server.session,
                                                 cachedWebfingers,
-                                                self.server.personCache,
+                                                self.server.person_cache,
                                                 yt_replace_domain,
                                                 twitter_replacement_domain,
                                                 show_published_date_only,
@@ -9985,7 +9985,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    base_dir,
                                    self.server.session,
                                    self.server.cachedWebfingers,
-                                   self.server.personCache,
+                                   self.server.person_cache,
                                    nickname, domain, port,
                                    authorized,
                                    post_json_object,
@@ -10158,7 +10158,7 @@ class PubServer(BaseHTTPRequestHandler):
                    max_recent_posts: int,
                    translate: {},
                    cachedWebfingers: {},
-                   personCache: {},
+                   person_cache: {},
                    allow_deletion: bool,
                    project_version: str,
                    yt_replace_domain: str,
@@ -10237,7 +10237,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         session,
                                         base_dir,
                                         cachedWebfingers,
-                                        personCache,
+                                        person_cache,
                                         nickname,
                                         domain,
                                         port,
@@ -10390,7 +10390,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.session,
                                          base_dir,
                                          self.server.cachedWebfingers,
-                                         self.server.personCache,
+                                         self.server.person_cache,
                                          nickname,
                                          domain,
                                          port,
@@ -10535,7 +10535,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.session,
                                          base_dir,
                                          self.server.cachedWebfingers,
-                                         self.server.personCache,
+                                         self.server.person_cache,
                                          nickname,
                                          domain,
                                          port,
@@ -10676,7 +10676,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.session,
                                        base_dir,
                                        self.server.cachedWebfingers,
-                                       self.server.personCache,
+                                       self.server.person_cache,
                                        nickname,
                                        domain,
                                        port,
@@ -10818,7 +10818,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.session,
                                        base_dir,
                                        self.server.cachedWebfingers,
-                                       self.server.personCache,
+                                       self.server.person_cache,
                                        nickname,
                                        domain,
                                        port,
@@ -10969,7 +10969,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.session,
                                       base_dir,
                                       self.server.cachedWebfingers,
-                                      self.server.personCache,
+                                      self.server.person_cache,
                                       nickname,
                                       domain,
                                       port,
@@ -11121,7 +11121,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.session,
                                           base_dir,
                                           self.server.cachedWebfingers,
-                                          self.server.personCache,
+                                          self.server.person_cache,
                                           nickname,
                                           domain,
                                           port,
@@ -11232,7 +11232,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.session,
                                    base_dir,
                                    self.server.cachedWebfingers,
-                                   self.server.personCache,
+                                   self.server.person_cache,
                                    nickname,
                                    domain,
                                    port,
@@ -11317,7 +11317,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.session,
                                    base_dir,
                                    self.server.cachedWebfingers,
-                                   self.server.personCache,
+                                   self.server.person_cache,
                                    nickname,
                                    domain,
                                    port,
@@ -11439,7 +11439,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.session,
                                           base_dir,
                                           self.server.cachedWebfingers,
-                                          self.server.personCache,
+                                          self.server.person_cache,
                                           nickname,
                                           domain,
                                           port,
@@ -11579,7 +11579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.session,
                                base_dir,
                                self.server.cachedWebfingers,
-                               self.server.personCache,
+                               self.server.person_cache,
                                nickname, domain, port,
                                outboxFeed,
                                self.server.allow_deletion,
@@ -11712,7 +11712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.session,
                                            base_dir,
                                            self.server.cachedWebfingers,
-                                           self.server.personCache,
+                                           self.server.person_cache,
                                            nickname,
                                            domain,
                                            port,
@@ -11845,7 +11845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     getPerson, sharesFileType,
                                     self.server.session,
                                     self.server.cachedWebfingers,
-                                    self.server.personCache,
+                                    self.server.person_cache,
                                     self.server.yt_replace_domain,
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
@@ -11966,7 +11966,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     getPerson, 'following',
                                     self.server.session,
                                     self.server.cachedWebfingers,
-                                    self.server.personCache,
+                                    self.server.person_cache,
                                     self.server.yt_replace_domain,
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
@@ -12086,7 +12086,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     getPerson, 'followers',
                                     self.server.session,
                                     self.server.cachedWebfingers,
-                                    self.server.personCache,
+                                    self.server.person_cache,
                                     self.server.yt_replace_domain,
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
@@ -12222,7 +12222,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson, 'posts',
                             self.server.session,
                             self.server.cachedWebfingers,
-                            self.server.personCache,
+                            self.server.person_cache,
                             self.server.yt_replace_domain,
                             self.server.twitter_replacement_domain,
                             self.server.show_published_date_only,
@@ -12391,7 +12391,7 @@ class PubServer(BaseHTTPRequestHandler):
                            maxPostsInBlogsFeed, pageNumber,
                            self.server.peertubeInstances,
                            self.server.systemLanguage,
-                           self.server.personCache,
+                           self.server.person_cache,
                            self.server.debug)
         if msg is not None:
             msg = msg.encode('utf-8')
@@ -12986,7 +12986,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.max_recent_posts,
                               self.server.session,
                               self.server.cachedWebfingers,
-                              self.server.personCache,
+                              self.server.person_cache,
                               self.server.port,
                               post_json_object,
                               self.server.project_version,
@@ -14062,7 +14062,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    maxPostsInBlogsFeed,
                                    self.server.peertubeInstances,
                                    self.server.systemLanguage,
-                                   self.server.personCache,
+                                   self.server.person_cache,
                                    self.server.debug)
                 if msg is not None:
                     msg = msg.encode('utf-8')
@@ -14166,7 +14166,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        post_json_object,
                                        self.server.peertubeInstances,
                                        self.server.systemLanguage,
-                                       self.server.personCache,
+                                       self.server.person_cache,
                                        self.server.debug,
                                        self.server.content_license_url)
                     if msg is not None:
@@ -15170,7 +15170,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
                 # show the calendar screen
-                msg = htmlCalendar(self.server.personCache,
+                msg = htmlCalendar(self.server.person_cache,
                                    self.server.cssCache,
                                    self.server.translate,
                                    self.server.base_dir, self.path,
@@ -15917,7 +15917,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.max_recent_posts,
                                self.server.translate,
                                self.server.cachedWebfingers,
-                               self.server.personCache,
+                               self.server.person_cache,
                                self.server.allow_deletion,
                                self.server.project_version,
                                self.server.yt_replace_domain,
@@ -18739,7 +18739,7 @@ def runDaemon(content_license_url: str,
         shared_items_federated_domains.copy()
     httpd.base_dir = base_dir
     httpd.instance_id = instance_id
-    httpd.personCache = {}
+    httpd.person_cache = {}
     httpd.cachedWebfingers = {}
     httpd.faviconsCache = {}
     httpd.proxy_type = proxy_type
@@ -18863,7 +18863,7 @@ def runDaemon(content_license_url: str,
     print('Creating cache expiry thread')
     httpd.thrCache = \
         threadWithTrace(target=expireCache,
-                        args=(base_dir, httpd.personCache,
+                        args=(base_dir, httpd.person_cache,
                               httpd.http_prefix,
                               archiveDir,
                               httpd.maxPostsInBox), daemon=True)
@@ -18925,7 +18925,7 @@ def runDaemon(content_license_url: str,
                               project_version,
                               base_dir, http_prefix, httpd.send_threads,
                               httpd.postLog, httpd.cachedWebfingers,
-                              httpd.personCache, httpd.inboxQueue,
+                              httpd.person_cache, httpd.inboxQueue,
                               domain, onion_domain, i2p_domain,
                               port, proxy_type,
                               httpd.federationList,

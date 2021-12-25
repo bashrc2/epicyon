@@ -404,7 +404,7 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
 
 def _postToSpeakerJson(base_dir: str, http_prefix: str,
                        nickname: str, domain: str, domainFull: str,
-                       post_json_object: {}, personCache: {},
+                       post_json_object: {}, person_cache: {},
                        translate: {}, announcingActor: str,
                        themeName: str) -> {}:
     """Converts an ActivityPub post into some Json containing
@@ -470,14 +470,14 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
             summary = html.unescape(summary)
 
     speakerName = \
-        getDisplayName(base_dir, post_json_object['actor'], personCache)
+        getDisplayName(base_dir, post_json_object['actor'], person_cache)
     if not speakerName:
         return
     speakerName = _removeEmojiFromText(speakerName)
     speakerName = speakerName.replace('_', ' ')
     speakerName = camelCaseSplit(speakerName)
     gender = getGenderFromBio(base_dir, post_json_object['actor'],
-                              personCache, translate)
+                              person_cache, translate)
     if announcingActor:
         announcedNickname = getNicknameFromActor(announcingActor)
         announcedDomain, announcedport = getDomainFromActor(announcingActor)
@@ -536,7 +536,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
 
 def updateSpeaker(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, domainFull: str,
-                  post_json_object: {}, personCache: {},
+                  post_json_object: {}, person_cache: {},
                   translate: {}, announcingActor: str,
                   themeName: str) -> None:
     """ Generates a json file which can be used for TTS announcement
@@ -545,7 +545,7 @@ def updateSpeaker(base_dir: str, http_prefix: str,
     speakerJson = \
         _postToSpeakerJson(base_dir, http_prefix,
                            nickname, domain, domainFull,
-                           post_json_object, personCache,
+                           post_json_object, person_cache,
                            translate, announcingActor,
                            themeName)
     speakerFilename = acctDir(base_dir, nickname, domain) + '/speaker.json'

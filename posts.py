@@ -299,13 +299,13 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
                        profileStr: str, asHeader: {},
                        debug: bool, project_version: str,
                        http_prefix: str, originDomain: str,
-                       personCache: {},
+                       person_cache: {},
                        signingPrivateKeyPem: str,
                        sourceId: int) -> {}:
     """Returns the actor json for the given actor url
     """
     personJson = \
-        getPersonFromCache(base_dir, actor, personCache, True)
+        getPersonFromCache(base_dir, actor, person_cache, True)
     if personJson:
         return personJson
 
@@ -331,7 +331,7 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
 
 
 def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
-                 base_dir: str, session, wfRequest: {}, personCache: {},
+                 base_dir: str, session, wfRequest: {}, person_cache: {},
                  project_version: str, http_prefix: str,
                  nickname: str, domain: str,
                  boxName: str = 'inbox',
@@ -369,7 +369,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                            profileStr, asHeader,
                            debug, project_version,
                            http_prefix, originDomain,
-                           personCache, signingPrivateKeyPem,
+                           person_cache, signingPrivateKeyPem,
                            sourceId)
     if not personJson:
         return None, None, None, None, None, None, None, None
@@ -424,7 +424,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
         if personJson.get('movedTo'):
             displayName += ' ⌂'
 
-    storePersonInCache(base_dir, personUrl, personJson, personCache, True)
+    storePersonInCache(base_dir, personUrl, personJson, person_cache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
         avatarUrl, displayName, isGroup
@@ -527,7 +527,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               max_mentions: int,
               max_emoji: int, maxAttachments: int,
               federationList: [],
-              personCache: {}, raw: bool,
+              person_cache: {}, raw: bool,
               simple: bool, debug: bool,
               project_version: str, http_prefix: str,
               originDomain: str, systemLanguage: str,
@@ -746,7 +746,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    max_mentions: int,
                    max_emoji: int, maxAttachments: int,
                    federationList: [],
-                   personCache: {},
+                   person_cache: {},
                    debug: bool,
                    project_version: str, http_prefix: str,
                    domain: str,
@@ -813,7 +813,7 @@ def _getPostsForBlockedDomains(base_dir: str,
                                max_mentions: int,
                                max_emoji: int, maxAttachments: int,
                                federationList: [],
-                               personCache: {},
+                               person_cache: {},
                                debug: bool,
                                project_version: str, http_prefix: str,
                                domain: str,
@@ -2272,7 +2272,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
              attachImageFilename: str, mediaType: str,
              imageDescription: str, city: str,
              federationList: [], send_threads: [], postLog: [],
-             cachedWebfingers: {}, personCache: {},
+             cachedWebfingers: {}, person_cache: {},
              isArticle: bool, systemLanguage: str,
              shared_items_federated_domains: [],
              sharedItemFederationTokens: {},
@@ -2317,7 +2317,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     nickname, domain, postToBox,
                                     72533)
@@ -2422,7 +2422,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
                       commentsEnabled: bool,
                       attachImageFilename: str, mediaType: str,
                       imageDescription: str, city: str,
-                      cachedWebfingers: {}, personCache: {},
+                      cachedWebfingers: {}, person_cache: {},
                       isArticle: bool, systemLanguage: str,
                       low_bandwidth: bool,
                       content_license_url: str,
@@ -2465,7 +2465,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     fromNickname,
                                     fromDomainFull, postToBox,
@@ -2614,7 +2614,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
                    http_prefix: str, saveToFile: bool, client_to_server: bool,
                    federationList: [],
                    send_threads: [], postLog: [], cachedWebfingers: {},
-                   personCache: {}, debug: bool, project_version: str,
+                   person_cache: {}, debug: bool, project_version: str,
                    sharedItemsToken: str, groupAccount: bool,
                    signingPrivateKeyPem: str,
                    sourceId: int) -> int:
@@ -2680,7 +2680,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     nickname, domain, postToBox,
                                     sourceId)
@@ -2862,7 +2862,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                           onion_domain: str, i2p_domain: str, port: int,
                           http_prefix: str, federationList: [],
                           send_threads: [], postLog: [],
-                          cachedWebfingers: {}, personCache: {},
+                          cachedWebfingers: {}, person_cache: {},
                           post_json_object: {}, debug: bool,
                           project_version: str,
                           shared_items_federated_domains: [],
@@ -2997,7 +2997,7 @@ def _sendToNamedAddresses(session, base_dir: str,
             if sharedItemFederationTokens.get(fromDomainFull):
                 sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
 
-        groupAccount = hasGroupType(base_dir, address, personCache)
+        groupAccount = hasGroupType(base_dir, address, person_cache)
 
         sendSignedJson(post_json_object, session, base_dir,
                        nickname, fromDomain, port,
@@ -3005,7 +3005,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                        cc, fromHttpPrefix, True, client_to_server,
                        federationList,
                        send_threads, postLog, cachedWebfingers,
-                       personCache, debug, project_version,
+                       person_cache, debug, project_version,
                        sharedItemsToken, groupAccount,
                        signingPrivateKeyPem, 34436782)
 
@@ -3015,7 +3015,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                                onion_domain: str, i2p_domain: str, port: int,
                                http_prefix: str, federationList: [],
                                send_threads: [], postLog: [],
-                               cachedWebfingers: {}, personCache: {},
+                               cachedWebfingers: {}, person_cache: {},
                                post_json_object: {}, debug: bool,
                                project_version: str,
                                shared_items_federated_domains: [],
@@ -3030,7 +3030,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                               onion_domain, i2p_domain, port,
                               http_prefix, federationList,
                               send_threads, postLog,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               post_json_object, debug,
                               project_version,
                               shared_items_federated_domains,
@@ -3091,7 +3091,7 @@ def sendToFollowers(session, base_dir: str,
                     onion_domain: str, i2p_domain: str, port: int,
                     http_prefix: str, federationList: [],
                     send_threads: [], postLog: [],
-                    cachedWebfingers: {}, personCache: {},
+                    cachedWebfingers: {}, person_cache: {},
                     post_json_object: {}, debug: bool,
                     project_version: str,
                     shared_items_federated_domains: [],
@@ -3215,7 +3215,7 @@ def sendToFollowers(session, base_dir: str,
                            cc, fromHttpPrefix, True, client_to_server,
                            federationList,
                            send_threads, postLog, cachedWebfingers,
-                           personCache, debug, project_version,
+                           person_cache, debug, project_version,
                            sharedItemsToken, groupAccount,
                            signingPrivateKeyPem, 639342)
         else:
@@ -3244,7 +3244,7 @@ def sendToFollowers(session, base_dir: str,
                                cc, fromHttpPrefix, True, client_to_server,
                                federationList,
                                send_threads, postLog, cachedWebfingers,
-                               personCache, debug, project_version,
+                               person_cache, debug, project_version,
                                sharedItemsToken, groupAccount,
                                signingPrivateKeyPem, 634219)
 
@@ -3264,7 +3264,7 @@ def sendToFollowersThread(session, base_dir: str,
                           onion_domain: str, i2p_domain: str, port: int,
                           http_prefix: str, federationList: [],
                           send_threads: [], postLog: [],
-                          cachedWebfingers: {}, personCache: {},
+                          cachedWebfingers: {}, person_cache: {},
                           post_json_object: {}, debug: bool,
                           project_version: str,
                           shared_items_federated_domains: [],
@@ -3279,7 +3279,7 @@ def sendToFollowersThread(session, base_dir: str,
                               onion_domain, i2p_domain, port,
                               http_prefix, federationList,
                               send_threads, postLog,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               post_json_object.copy(), debug,
                               project_version,
                               shared_items_federated_domains,
@@ -3461,7 +3461,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                  allow_local_network_access: bool,
                  recentPostsCache: {}, debug: bool,
                  systemLanguage: str,
-                 domainFull: str, personCache: {},
+                 domainFull: str, person_cache: {},
                  signingPrivateKeyPem: str) -> bool:
     """Returns true if the given post has attached image media
     """
@@ -3476,7 +3476,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                              allow_local_network_access,
                              recentPostsCache, debug,
                              systemLanguage,
-                             domainFull, personCache,
+                             domainFull, person_cache,
                              signingPrivateKeyPem,
                              blockedCache)
         if postJsonAnnounce:
@@ -3874,7 +3874,7 @@ def _createBoxIndexed(recentPostsCache: {},
     return boxItems
 
 
-def expireCache(base_dir: str, personCache: {},
+def expireCache(base_dir: str, person_cache: {},
                 http_prefix: str, archiveDir: str,
                 recentPostsCache: {},
                 maxPostsInBox=32000):
@@ -3883,7 +3883,7 @@ def expireCache(base_dir: str, personCache: {},
     while True:
         # once per day
         time.sleep(60 * 60 * 24)
-        expirePersonCache(personCache)
+        expirePersonCache(person_cache)
         archivePosts(base_dir, http_prefix, archiveDir, recentPostsCache,
                      maxPostsInBox)
 
@@ -4078,7 +4078,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
         if debug:
             print('Session was not created')
         return
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     federationList = []
     groupAccount = False
@@ -4107,7 +4107,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     nickname, domain, 'outbox',
                                     62524)
@@ -4121,7 +4121,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     maxAttachments = 5
     _getPosts(session, personUrl, 30, max_mentions, max_emoji,
               maxAttachments, federationList,
-              personCache, raw, simple, debug,
+              person_cache, raw, simple, debug,
               project_version, http_prefix, originDomain, systemLanguage,
               signingPrivateKeyPem)
 
@@ -4139,7 +4139,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
         session = createSession(proxy_type)
     if not session:
         return domainList
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     federationList = []
 
@@ -4160,7 +4160,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     nickname, domain, 'outbox',
                                     92522)
@@ -4170,7 +4170,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     postDomains = \
         getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
                        maxAttachments, federationList,
-                       personCache, debug,
+                       person_cache, debug,
                        project_version, http_prefix, domain,
                        wordFrequency, domainList, systemLanguage,
                        signingPrivateKeyPem)
@@ -4235,7 +4235,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
         session = createSession(proxy_type)
     if not session:
         return {}
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     federationList = []
 
@@ -4256,7 +4256,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     nickname, domain, 'outbox',
                                     13863)
@@ -4267,7 +4267,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     postDomains = \
         getPostDomains(session, personUrl, maxPosts, max_mentions, max_emoji,
                        maxAttachments, federationList,
-                       personCache, debug,
+                       person_cache, debug,
                        project_version, http_prefix, domain,
                        wordFrequency, [], systemLanguage, signingPrivateKeyPem)
     postDomains.sort()
@@ -4281,7 +4281,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                                    max_mentions,
                                    max_emoji, maxAttachments,
                                    federationList,
-                                   personCache,
+                                   person_cache,
                                    debug,
                                    project_version, http_prefix,
                                    domain, signingPrivateKeyPem)
@@ -4512,7 +4512,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      allow_local_network_access: bool,
                      recentPostsCache: {}, debug: bool,
                      systemLanguage: str,
-                     domainFull: str, personCache: {},
+                     domainFull: str, person_cache: {},
                      signingPrivateKeyPem: str,
                      blockedCache: {}) -> {}:
     """Download the post referenced by an announce
@@ -4662,7 +4662,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if not understoodPostLanguage(base_dir, nickname, domain,
                                       announcedJson, systemLanguage,
                                       http_prefix, domainFull,
-                                      personCache):
+                                      person_cache):
             return None
         # Check the content of the announce
         contentStr = announcedJson['content']
@@ -4758,7 +4758,7 @@ def sendBlockViaServer(base_dir: str, session,
                        fromNickname: str, password: str,
                        fromDomain: str, fromPort: int,
                        http_prefix: str, blockedUrl: str,
-                       cachedWebfingers: {}, personCache: {},
+                       cachedWebfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
                        signingPrivateKeyPem: str) -> {}:
     """Creates a block via c2s
@@ -4806,7 +4806,7 @@ def sendBlockViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 72652)
 
@@ -4842,7 +4842,7 @@ def sendMuteViaServer(base_dir: str, session,
                       fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       http_prefix: str, mutedUrl: str,
-                      cachedWebfingers: {}, personCache: {},
+                      cachedWebfingers: {}, person_cache: {},
                       debug: bool, project_version: str,
                       signingPrivateKeyPem: str) -> {}:
     """Creates a mute via c2s
@@ -4886,7 +4886,7 @@ def sendMuteViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 72652)
 
@@ -4922,7 +4922,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           http_prefix: str, mutedUrl: str,
-                          cachedWebfingers: {}, personCache: {},
+                          cachedWebfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Undoes a mute via c2s
@@ -4971,7 +4971,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 72652)
 
@@ -5008,7 +5008,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
                            fromNickname: str, password: str,
                            fromDomain: str, fromPort: int,
                            http_prefix: str, blockedUrl: str,
-                           cachedWebfingers: {}, personCache: {},
+                           cachedWebfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
                            signingPrivateKeyPem: str) -> {}:
     """Creates a block via c2s
@@ -5059,7 +5059,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    base_dir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, person_cache,
                                     project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 53892)
 

@@ -236,7 +236,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 def updateAvatarImageCache(signingPrivateKeyPem: str,
                            session, base_dir: str, http_prefix: str,
                            actor: str, avatarUrl: str,
-                           personCache: {}, allowDownloads: bool,
+                           person_cache: {}, allowDownloads: bool,
                            force: bool = False, debug: bool = False) -> str:
     """Updates the cached avatar for the given actor
     """
@@ -316,17 +316,17 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                 return None
             if personJson['id'] != actor:
                 return None
-            if not personCache.get(actor):
+            if not person_cache.get(actor):
                 return None
-            if personCache[actor]['actor']['publicKey']['publicKeyPem'] != \
+            if person_cache[actor]['actor']['publicKey']['publicKeyPem'] != \
                personJson['publicKey']['publicKeyPem']:
                 print("ERROR: " +
                       "public keys don't match when downloading actor for " +
                       actor)
                 return None
-            storePersonInCache(base_dir, actor, personJson, personCache,
+            storePersonInCache(base_dir, actor, personJson, person_cache,
                                allowDownloads)
-            return getPersonAvatarUrl(base_dir, actor, personCache,
+            return getPersonAvatarUrl(base_dir, actor, person_cache,
                                       allowDownloads)
         return None
     return avatarImageFilename.replace(base_dir + '/cache', '')
@@ -1232,7 +1232,7 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 def getAvatarImageUrl(session,
                       base_dir: str, http_prefix: str,
-                      postActor: str, personCache: {},
+                      postActor: str, person_cache: {},
                       avatarUrl: str, allowDownloads: bool,
                       signingPrivateKeyPem: str) -> str:
     """Returns the avatar image url
@@ -1240,17 +1240,17 @@ def getAvatarImageUrl(session,
     # get the avatar image url for the post actor
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(base_dir, postActor, personCache,
+            getPersonAvatarUrl(base_dir, postActor, person_cache,
                                allowDownloads)
         avatarUrl = \
             updateAvatarImageCache(signingPrivateKeyPem,
                                    session, base_dir, http_prefix,
-                                   postActor, avatarUrl, personCache,
+                                   postActor, avatarUrl, person_cache,
                                    allowDownloads)
     else:
         updateAvatarImageCache(signingPrivateKeyPem,
                                session, base_dir, http_prefix,
-                               postActor, avatarUrl, personCache,
+                               postActor, avatarUrl, person_cache,
                                allowDownloads)
 
     if not avatarUrl:

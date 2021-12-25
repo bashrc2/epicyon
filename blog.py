@@ -192,7 +192,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                          handle: str, restrictToDomain: bool,
                          peertubeInstances: [],
                          systemLanguage: str,
-                         personCache: {},
+                         person_cache: {},
                          blogSeparator: str = '<hr>') -> str:
     """Returns the content for a single blog post
     """
@@ -267,7 +267,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 
     personUrl = localActorUrl(http_prefix, nickname, domainFull)
     actorJson = \
-        getPersonFromCache(base_dir, personUrl, personCache, False)
+        getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
@@ -445,7 +445,7 @@ def htmlBlogPost(session, authorized: bool,
                  nickname: str, domain: str, domainFull: str,
                  post_json_object: {},
                  peertubeInstances: [],
-                 systemLanguage: str, personCache: {},
+                 systemLanguage: str, person_cache: {},
                  debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
     """
@@ -478,7 +478,7 @@ def htmlBlogPost(session, authorized: bool,
                                     domainFull, post_json_object,
                                     None, False,
                                     peertubeInstances, systemLanguage,
-                                    personCache)
+                                    person_cache)
 
     # show rss links
     blogStr += '<p class="rssfeed">'
@@ -507,7 +507,7 @@ def htmlBlogPage(authorized: bool, session,
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
                  peertubeInstances: [], systemLanguage: str,
-                 personCache: {}, debug: bool) -> str:
+                 person_cache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -571,7 +571,7 @@ def htmlBlogPage(authorized: bool, session,
                                         None, True,
                                         peertubeInstances,
                                         systemLanguage,
-                                        personCache)
+                                        person_cache)
 
     if len(timelineJson['orderedItems']) >= noOfItems:
         blogStr += navigateStr
@@ -730,7 +730,7 @@ def htmlBlogView(authorized: bool,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
                  peertubeInstances: [], systemLanguage: str,
-                 personCache: {}, debug: bool) -> str:
+                 person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
     blogStr = ''
@@ -749,7 +749,7 @@ def htmlBlogView(authorized: bool,
                                 base_dir, http_prefix, translate,
                                 nickname, domain, port,
                                 noOfItems, 1, peertubeInstances,
-                                systemLanguage, personCache, debug)
+                                systemLanguage, person_cache, debug)
 
     domainFull = getFullDomain(domain, port)
 

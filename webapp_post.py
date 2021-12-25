@@ -273,7 +273,7 @@ def _getPostFromRecentCache(session,
                             nickname: str, domain: str,
                             post_json_object: {},
                             postActor: str,
-                            personCache: {},
+                            person_cache: {},
                             allowDownloads: bool,
                             showPublicOnly: bool,
                             storeToCache: bool,
@@ -304,14 +304,14 @@ def _getPostFromRecentCache(session,
     # update avatar if needed
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(base_dir, postActor, personCache,
+            getPersonAvatarUrl(base_dir, postActor, person_cache,
                                allowDownloads)
 
         _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
     updateAvatarImageCache(signingPrivateKeyPem,
                            session, base_dir, http_prefix,
-                           postActor, avatarUrl, personCache,
+                           postActor, avatarUrl, person_cache,
                            allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '2.2')
@@ -955,7 +955,7 @@ def _getPostTitleAnnounceHtml(base_dir: str,
                               enableTimingLog: bool,
                               postStartTime,
                               boxName: str,
-                              personCache: {},
+                              person_cache: {},
                               allowDownloads: bool,
                               avatarPosition: str,
                               pageNumber: int,
@@ -996,8 +996,8 @@ def _getPostTitleAnnounceHtml(base_dir: str,
                 containerClassIcons, containerClass)
 
     announceDomain, announcePort = getDomainFromActor(attributedTo)
-    getPersonFromCache(base_dir, attributedTo, personCache, allowDownloads)
-    announceDisplayName = getDisplayName(base_dir, attributedTo, personCache)
+    getPersonFromCache(base_dir, attributedTo, person_cache, allowDownloads)
+    announceDisplayName = getDisplayName(base_dir, attributedTo, person_cache)
     if not announceDisplayName:
         announceDisplayName = announceNickname + '@' + announceDomain
 
@@ -1017,7 +1017,7 @@ def _getPostTitleAnnounceHtml(base_dir: str,
     announceActor = attributedTo
     announceAvatarUrl = \
         getPersonAvatarUrl(base_dir, announceActor,
-                           personCache, allowDownloads)
+                           person_cache, allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.4')
 
@@ -1122,7 +1122,7 @@ def _getPostTitleReplyHtml(base_dir: str,
                            enableTimingLog: bool,
                            postStartTime,
                            boxName: str,
-                           personCache: {},
+                           person_cache: {},
                            allowDownloads: bool,
                            avatarPosition: str,
                            pageNumber: int,
@@ -1179,8 +1179,8 @@ def _getPostTitleReplyHtml(base_dir: str,
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    getPersonFromCache(base_dir, replyActor, personCache, allowDownloads)
-    replyDisplayName = getDisplayName(base_dir, replyActor, personCache)
+    getPersonFromCache(base_dir, replyActor, person_cache, allowDownloads)
+    replyDisplayName = getDisplayName(base_dir, replyActor, person_cache)
     if not replyDisplayName:
         replyDisplayName = replyNickname + '@' + replyDomain
 
@@ -1200,7 +1200,7 @@ def _getPostTitleReplyHtml(base_dir: str,
 
     # show avatar of person replied to
     replyAvatarUrl = \
-        getPersonAvatarUrl(base_dir, replyActor, personCache, allowDownloads)
+        getPersonAvatarUrl(base_dir, replyActor, person_cache, allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
@@ -1234,7 +1234,7 @@ def _getPostTitleHtml(base_dir: str,
                       enableTimingLog: bool,
                       postStartTime,
                       boxName: str,
-                      personCache: {},
+                      person_cache: {},
                       allowDownloads: bool,
                       avatarPosition: str,
                       pageNumber: int,
@@ -1262,7 +1262,7 @@ def _getPostTitleHtml(base_dir: str,
                                          enableTimingLog,
                                          postStartTime,
                                          boxName,
-                                         personCache,
+                                         person_cache,
                                          allowDownloads,
                                          avatarPosition,
                                          pageNumber,
@@ -1281,7 +1281,7 @@ def _getPostTitleHtml(base_dir: str,
                                   enableTimingLog,
                                   postStartTime,
                                   boxName,
-                                  personCache,
+                                  person_cache,
                                   allowDownloads,
                                   avatarPosition,
                                   pageNumber,
@@ -1324,7 +1324,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          recentPostsCache: {}, max_recent_posts: int,
                          translate: {},
                          pageNumber: int, base_dir: str,
-                         session, cachedWebfingers: {}, personCache: {},
+                         session, cachedWebfingers: {}, person_cache: {},
                          nickname: str, domain: str, port: int,
                          post_json_object: {},
                          avatarUrl: str, showAvatarOptions: bool,
@@ -1393,7 +1393,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                 http_prefix, nickname, domain,
                                 post_json_object,
                                 postActor,
-                                personCache,
+                                person_cache,
                                 allowDownloads,
                                 showPublicOnly,
                                 storeToCache,
@@ -1415,7 +1415,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     avatarUrl = \
         getAvatarImageUrl(session,
                           base_dir, http_prefix,
-                          postActor, personCache,
+                          postActor, person_cache,
                           avatarUrl, allowDownloads,
                           signingPrivateKeyPem)
 
@@ -1443,7 +1443,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                             originDomain,
                                             base_dir, session,
                                             postActorWf,
-                                            personCache,
+                                            person_cache,
                                             project_version,
                                             http_prefix,
                                             nickname, domain,
@@ -1504,7 +1504,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                              allow_local_network_access,
                              recentPostsCache, False,
                              systemLanguage,
-                             domainFull, personCache,
+                             domainFull, person_cache,
                              signingPrivateKeyPem,
                              blockedCache)
         if not postJsonAnnounce:
@@ -1521,7 +1521,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                     http_prefix, nickname, domain,
                                     post_json_object,
                                     postActor,
-                                    personCache,
+                                    person_cache,
                                     allowDownloads,
                                     showPublicOnly,
                                     storeToCache,
@@ -1549,7 +1549,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                     if not os.path.isfile(announceFilename + '.tts'):
                         updateSpeaker(base_dir, http_prefix,
                                       nickname, domain, domainFull,
-                                      post_json_object, personCache,
+                                      post_json_object, person_cache,
                                       translate, post_json_object['actor'],
                                       themeName)
                         with open(announceFilename + '.tts', 'w+') as ttsFile:
@@ -1579,7 +1579,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         actorNickname = 'dev'
     actorDomain, actorPort = getDomainFromActor(postActor)
 
-    displayName = getDisplayName(base_dir, postActor, personCache)
+    displayName = getDisplayName(base_dir, postActor, person_cache)
     if displayName:
         if ':' in displayName:
             displayName = \
@@ -1762,7 +1762,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                          enableTimingLog,
                                          postStartTime,
                                          boxName,
-                                         personCache,
+                                         person_cache,
                                          allowDownloads,
                                          avatarPosition,
                                          pageNumber,
@@ -1851,7 +1851,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     domainFull = getFullDomain(domain, port)
     personUrl = localActorUrl(http_prefix, nickname, domainFull)
     actorJson = \
-        getPersonFromCache(base_dir, personUrl, personCache, False)
+        getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
@@ -1994,7 +1994,7 @@ def htmlIndividualPost(cssCache: {},
                        recentPostsCache: {}, max_recent_posts: int,
                        translate: {},
                        base_dir: str, session, cachedWebfingers: {},
-                       personCache: {},
+                       person_cache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
                        post_json_object: {}, http_prefix: str,
                        project_version: str, likedBy: str,
@@ -2060,7 +2060,7 @@ def htmlIndividualPost(cssCache: {},
         individualPostAsHtml(signingPrivateKeyPem,
                              True, recentPostsCache, max_recent_posts,
                              translate, None,
-                             base_dir, session, cachedWebfingers, personCache,
+                             base_dir, session, cachedWebfingers, person_cache,
                              nickname, domain, port, post_json_object,
                              None, True, False,
                              http_prefix, project_version, 'inbox',
@@ -2090,7 +2090,7 @@ def htmlIndividualPost(cssCache: {},
                                          max_recent_posts,
                                          translate, None,
                                          base_dir, session, cachedWebfingers,
-                                         personCache,
+                                         person_cache,
                                          nickname, domain, port,
                                          post_json_object,
                                          None, True, False,
@@ -2126,7 +2126,7 @@ def htmlIndividualPost(cssCache: {},
                                          max_recent_posts,
                                          translate, None,
                                          base_dir, session, cachedWebfingers,
-                                         personCache,
+                                         person_cache,
                                          nickname, domain, port, item,
                                          None, True, False,
                                          http_prefix, project_version, 'inbox',
@@ -2155,7 +2155,7 @@ def htmlIndividualPost(cssCache: {},
 def htmlPostReplies(cssCache: {},
                     recentPostsCache: {}, max_recent_posts: int,
                     translate: {}, base_dir: str,
-                    session, cachedWebfingers: {}, personCache: {},
+                    session, cachedWebfingers: {}, person_cache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     http_prefix: str, project_version: str,
                     yt_replace_domain: str,
@@ -2178,7 +2178,7 @@ def htmlPostReplies(cssCache: {},
                                      max_recent_posts,
                                      translate, None,
                                      base_dir, session, cachedWebfingers,
-                                     personCache,
+                                     person_cache,
                                      nickname, domain, port, item,
                                      None, True, False,
                                      http_prefix, project_version, 'inbox',
@@ -2207,7 +2207,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             recentPostsCache: {}, max_recent_posts: int,
                             translate: {},
                             base_dir: str, session, cachedWebfingers: {},
-                            personCache: {},
+                            person_cache: {},
                             nickname: str, domain: str, port: int,
                             post_json_object: {}, http_prefix: str,
                             project_version: str,
@@ -2230,7 +2230,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              max_recent_posts,
                              translate, None,
                              base_dir, session, cachedWebfingers,
-                             personCache,
+                             person_cache,
                              nickname, domain, port, post_json_object,
                              None, True, False,
                              http_prefix, project_version, 'inbox',

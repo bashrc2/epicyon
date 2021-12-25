@@ -121,7 +121,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
                    objectUrl: str, saveToFile: bool,
                    client_to_server: bool,
                    send_threads: [], postLog: [],
-                   personCache: {}, cachedWebfingers: {},
+                   person_cache: {}, cachedWebfingers: {},
                    debug: bool, project_version: str,
                    signingPrivateKeyPem: str) -> {}:
     """Creates an announce message
@@ -171,7 +171,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
             announceActor = \
                 objectUrl.split('/' + announceNickname + '/')[0] + \
                 '/' + announceNickname
-            if hasGroupType(base_dir, announceActor, personCache):
+            if hasGroupType(base_dir, announceActor, person_cache):
                 groupAccount = True
 
     if announceNickname and announceDomain:
@@ -179,7 +179,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
                        nickname, domain, port,
                        announceNickname, announceDomain, announcePort, None,
                        http_prefix, True, client_to_server, federationList,
-                       send_threads, postLog, cachedWebfingers, personCache,
+                       send_threads, postLog, cachedWebfingers, person_cache,
                        debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 639633)
 
@@ -190,7 +190,7 @@ def announcePublic(session, base_dir: str, federationList: [],
                    nickname: str, domain: str, port: int, http_prefix: str,
                    objectUrl: str, client_to_server: bool,
                    send_threads: [], postLog: [],
-                   personCache: {}, cachedWebfingers: {},
+                   person_cache: {}, cachedWebfingers: {},
                    debug: bool, project_version: str,
                    signingPrivateKeyPem: str) -> {}:
     """Makes a public announcement
@@ -204,7 +204,7 @@ def announcePublic(session, base_dir: str, federationList: [],
                           toUrl, ccUrl, http_prefix,
                           objectUrl, True, client_to_server,
                           send_threads, postLog,
-                          personCache, cachedWebfingers,
+                          person_cache, cachedWebfingers,
                           debug, project_version,
                           signingPrivateKeyPem)
 
@@ -213,7 +213,7 @@ def sendAnnounceViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           http_prefix: str, repeatObjectUrl: str,
-                          cachedWebfingers: {}, personCache: {},
+                          cachedWebfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Creates an announce message via c2s
@@ -267,7 +267,7 @@ def sendAnnounceViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 73528)
@@ -306,7 +306,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
                               nickname: str, password: str,
                               domain: str, port: int,
                               http_prefix: str, repeatObjectUrl: str,
-                              cachedWebfingers: {}, personCache: {},
+                              cachedWebfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
                               signingPrivateKeyPem: str) -> {}:
     """Undo an announce message via c2s
@@ -352,7 +352,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache,
+                                    person_cache,
                                     project_version, http_prefix,
                                     nickname, domain,
                                     postToBox, 73528)

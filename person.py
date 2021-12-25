@@ -1603,12 +1603,12 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     return None, None
 
 
-def getPersonAvatarUrl(base_dir: str, personUrl: str, personCache: {},
+def getPersonAvatarUrl(base_dir: str, personUrl: str, person_cache: {},
                        allowDownloads: bool) -> str:
     """Returns the avatar url for the person
     """
     personJson = \
-        getPersonFromCache(base_dir, personUrl, personCache, allowDownloads)
+        getPersonFromCache(base_dir, personUrl, person_cache, allowDownloads)
     if not personJson:
         return None
 
@@ -1656,7 +1656,7 @@ def addActorUpdateTimestamp(actorJson: {}) -> None:
 
 def validSendingActor(session, base_dir: str,
                       nickname: str, domain: str,
-                      personCache: {},
+                      person_cache: {},
                       post_json_object: {},
                       signingPrivateKeyPem: str,
                       debug: bool, unit_test: bool) -> bool:
@@ -1675,7 +1675,7 @@ def validSendingActor(session, base_dir: str,
         return True
 
     # get their actor
-    actorJson = getPersonFromCache(base_dir, sendingActor, personCache, True)
+    actorJson = getPersonFromCache(base_dir, sendingActor, person_cache, True)
     downloadedActor = False
     if not actorJson:
         # download the actor
@@ -1765,6 +1765,6 @@ def validSendingActor(session, base_dir: str,
     if downloadedActor:
         # if the actor is valid and was downloaded then
         # store it in the cache, but don't write it to file
-        storePersonInCache(base_dir, sendingActor, actorJson, personCache,
+        storePersonInCache(base_dir, sendingActor, actorJson, person_cache,
                            False)
     return True

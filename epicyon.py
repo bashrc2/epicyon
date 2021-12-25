@@ -1185,7 +1185,7 @@ if args.approve:
     send_threads = []
     postLog = []
     cachedWebfingers = {}
-    personCache = {}
+    person_cache = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
@@ -1197,7 +1197,7 @@ if args.approve:
                                args.approve,
                                federationList,
                                send_threads, postLog,
-                               cachedWebfingers, personCache,
+                               cachedWebfingers, person_cache,
                                debug, __version__,
                                signingPrivateKeyPem)
     sys.exit()
@@ -1213,7 +1213,7 @@ if args.deny:
     send_threads = []
     postLog = []
     cachedWebfingers = {}
-    personCache = {}
+    person_cache = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
@@ -1225,7 +1225,7 @@ if args.deny:
                             args.deny,
                             federationList,
                             send_threads, postLog,
-                            cachedWebfingers, personCache,
+                            cachedWebfingers, person_cache,
                             debug, __version__,
                             signingPrivateKeyPem)
     sys.exit()
@@ -1297,7 +1297,7 @@ if args.message:
     city = 'London, England'
     send_threads = []
     postLog = []
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     subject = args.subject
     attach = args.attach
@@ -1321,7 +1321,7 @@ if args.message:
                       http_prefix, sendMessage, followersOnly,
                       args.commentsEnabled, attach, mediaType,
                       attachedImageDescription, city,
-                      cachedWebfingers, personCache, isArticle,
+                      cachedWebfingers, person_cache, isArticle,
                       args.language, args.low_bandwidth,
                       args.content_license_url, args.debug,
                       replyTo, replyTo, args.conversationId, subject)
@@ -1343,7 +1343,7 @@ if args.announce:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1355,7 +1355,7 @@ if args.announce:
     sendAnnounceViaServer(base_dir, session, args.nickname, args.password,
                           domain, port,
                           http_prefix, args.announce,
-                          cachedWebfingers, personCache,
+                          cachedWebfingers, person_cache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1448,7 +1448,7 @@ if args.itemName:
         sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1469,7 +1469,7 @@ if args.itemName:
                        args.itemCategory,
                        args.location,
                        args.duration,
-                       cachedWebfingers, personCache,
+                       cachedWebfingers, person_cache,
                        debug, __version__,
                        args.itemPrice, args.itemCurrency,
                        signingPrivateKeyPem)
@@ -1491,7 +1491,7 @@ if args.undoItemName:
         sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1505,7 +1505,7 @@ if args.undoItemName:
                            domain, port,
                            http_prefix,
                            args.undoItemName,
-                           cachedWebfingers, personCache,
+                           cachedWebfingers, person_cache,
                            debug, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1553,7 +1553,7 @@ if args.wantedItemName:
         sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1574,7 +1574,7 @@ if args.wantedItemName:
                         args.itemCategory,
                         args.location,
                         args.duration,
-                        cachedWebfingers, personCache,
+                        cachedWebfingers, person_cache,
                         debug, __version__,
                         args.itemPrice, args.itemCurrency,
                         signingPrivateKeyPem)
@@ -1596,7 +1596,7 @@ if args.undoWantedItemName:
         sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1610,7 +1610,7 @@ if args.undoWantedItemName:
                             domain, port,
                             http_prefix,
                             args.undoWantedItemName,
-                            cachedWebfingers, personCache,
+                            cachedWebfingers, person_cache,
                             debug, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1630,7 +1630,7 @@ if args.like:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1643,7 +1643,7 @@ if args.like:
                       args.nickname, args.password,
                       domain, port,
                       http_prefix, args.like,
-                      cachedWebfingers, personCache,
+                      cachedWebfingers, person_cache,
                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1669,7 +1669,7 @@ if args.react:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1682,7 +1682,7 @@ if args.react:
                           args.nickname, args.password,
                           domain, port,
                           http_prefix, args.react, args.emoji,
-                          cachedWebfingers, personCache,
+                          cachedWebfingers, person_cache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1702,7 +1702,7 @@ if args.undolike:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1715,7 +1715,7 @@ if args.undolike:
                           args.nickname, args.password,
                           domain, port,
                           http_prefix, args.undolike,
-                          cachedWebfingers, personCache,
+                          cachedWebfingers, person_cache,
                           True, __version__,
                           signingPrivateKeyPem)
     for i in range(10):
@@ -1742,7 +1742,7 @@ if args.undoreact:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1755,7 +1755,7 @@ if args.undoreact:
                               args.nickname, args.password,
                               domain, port,
                               http_prefix, args.undoreact, args.emoji,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               True, __version__,
                               signingPrivateKeyPem)
     for i in range(10):
@@ -1776,7 +1776,7 @@ if args.bookmark:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1789,7 +1789,7 @@ if args.bookmark:
                           args.nickname, args.password,
                           domain, port,
                           http_prefix, args.bookmark,
-                          cachedWebfingers, personCache,
+                          cachedWebfingers, person_cache,
                           True, __version__,
                           signingPrivateKeyPem)
     for i in range(10):
@@ -1810,7 +1810,7 @@ if args.unbookmark:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1823,7 +1823,7 @@ if args.unbookmark:
                               args.nickname, args.password,
                               domain, port,
                               http_prefix, args.unbookmark,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1843,7 +1843,7 @@ if args.delete:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -1856,7 +1856,7 @@ if args.delete:
                         args.nickname, args.password,
                         domain, port,
                         http_prefix, args.delete,
-                        cachedWebfingers, personCache,
+                        cachedWebfingers, person_cache,
                         True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -1885,7 +1885,7 @@ if args.follow:
     followDomain, followPort = getDomainFromActor(args.follow)
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
     if args.follow.startswith('https'):
@@ -1901,7 +1901,7 @@ if args.follow:
                                domain, port,
                                followNickname, followDomain, followPort,
                                http_prefix,
-                               cachedWebfingers, personCache,
+                               cachedWebfingers, person_cache,
                                debug, __version__, signingPrivateKeyPem)
     for t in range(20):
         time.sleep(1)
@@ -1931,7 +1931,7 @@ if args.unfollow:
     followDomain, followPort = getDomainFromActor(args.unfollow)
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
     if args.follow.startswith('https'):
@@ -1947,7 +1947,7 @@ if args.unfollow:
                                  domain, port,
                                  followNickname, followDomain, followPort,
                                  http_prefix,
-                                 cachedWebfingers, personCache,
+                                 cachedWebfingers, person_cache,
                                  debug, __version__, signingPrivateKeyPem)
     for t in range(20):
         time.sleep(1)
@@ -1968,7 +1968,7 @@ if args.followingList:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
     if not domain:
@@ -1982,7 +1982,7 @@ if args.followingList:
                               args.nickname, args.password,
                               domain, port,
                               http_prefix, args.pageNumber,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               debug, __version__, signingPrivateKeyPem)
     if followingJson:
         pprint(followingJson)
@@ -2001,7 +2001,7 @@ if args.followersList:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
     if not domain:
@@ -2015,7 +2015,7 @@ if args.followersList:
                               args.nickname, args.password,
                               domain, port,
                               http_prefix, args.pageNumber,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               debug, __version__,
                               signingPrivateKeyPem)
     if followersJson:
@@ -2035,7 +2035,7 @@ if args.followRequestsList:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
     if not domain:
@@ -2049,7 +2049,7 @@ if args.followRequestsList:
                                    args.nickname, args.password,
                                    domain, port,
                                    http_prefix, args.pageNumber,
-                                   cachedWebfingers, personCache,
+                                   cachedWebfingers, person_cache,
                                    debug, __version__, signingPrivateKeyPem)
     if followRequestsJson:
         pprint(followRequestsJson)
@@ -2496,7 +2496,7 @@ if args.skill:
         sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -2511,7 +2511,7 @@ if args.skill:
                        domain, port,
                        http_prefix,
                        args.skill, args.skillLevelPercent,
-                       cachedWebfingers, personCache,
+                       cachedWebfingers, person_cache,
                        True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -2531,7 +2531,7 @@ if args.availability:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -2545,7 +2545,7 @@ if args.availability:
                               domain, port,
                               http_prefix,
                               args.availability,
-                              cachedWebfingers, personCache,
+                              cachedWebfingers, person_cache,
                               True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -2645,7 +2645,7 @@ if args.block:
             sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -2657,7 +2657,7 @@ if args.block:
     sendBlockViaServer(base_dir, session, nickname, args.password,
                        domain, port,
                        http_prefix, args.block,
-                       cachedWebfingers, personCache,
+                       cachedWebfingers, person_cache,
                        True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -2677,7 +2677,7 @@ if args.mute:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -2689,7 +2689,7 @@ if args.mute:
     sendMuteViaServer(base_dir, session, nickname, args.password,
                       domain, port,
                       http_prefix, args.mute,
-                      cachedWebfingers, personCache,
+                      cachedWebfingers, person_cache,
                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -2709,7 +2709,7 @@ if args.unmute:
     args.password = args.password.replace('\n', '')
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -2721,7 +2721,7 @@ if args.unmute:
     sendUndoMuteViaServer(base_dir, session, nickname, args.password,
                           domain, port,
                           http_prefix, args.unmute,
-                          cachedWebfingers, personCache,
+                          cachedWebfingers, person_cache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail
@@ -2753,7 +2753,7 @@ if args.unblock:
             sys.exit()
 
     session = createSession(proxy_type)
-    personCache = {}
+    person_cache = {}
     cachedWebfingers = {}
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
@@ -2765,7 +2765,7 @@ if args.unblock:
     sendUndoBlockViaServer(base_dir, session, nickname, args.password,
                            domain, port,
                            http_prefix, args.unblock,
-                           cachedWebfingers, personCache,
+                           cachedWebfingers, person_cache,
                            True, __version__, signingPrivateKeyPem)
     for i in range(10):
         # TODO detect send success/fail

@@ -18,7 +18,7 @@ from utils import getUserPaths
 
 
 def _removePersonFromCache(base_dir: str, personUrl: str,
-                           personCache: {}) -> bool:
+                           person_cache: {}) -> bool:
     """Removes an actor from the cache
     """
     cacheFilename = base_dir + '/cache/actors/' + \
@@ -28,13 +28,13 @@ def _removePersonFromCache(base_dir: str, personUrl: str,
             os.remove(cacheFilename)
         except OSError:
             print('EX: unable to delete cached actor ' + str(cacheFilename))
-    if personCache.get(personUrl):
-        del personCache[personUrl]
+    if person_cache.get(personUrl):
+        del person_cache[personUrl]
 
 
 def checkForChangedActor(session, base_dir: str,
                          http_prefix: str, domainFull: str,
-                         personUrl: str, avatarUrl: str, personCache: {},
+                         personUrl: str, avatarUrl: str, person_cache: {},
                          timeoutSec: int):
     """Checks if the avatar url exists and if not then
     the actor has probably changed without receiving an actor/Person Update.
@@ -47,11 +47,11 @@ def checkForChangedActor(session, base_dir: str,
         return
     if urlExists(session, avatarUrl, timeoutSec, http_prefix, domainFull):
         return
-    _removePersonFromCache(base_dir, personUrl, personCache)
+    _removePersonFromCache(base_dir, personUrl, person_cache)
 
 
 def storePersonInCache(base_dir: str, personUrl: str,
-                       personJson: {}, personCache: {},
+                       personJson: {}, person_cache: {},
                        allowWriteToFile: bool) -> None:
     """Store an actor in the cache
     """
@@ -60,7 +60,7 @@ def storePersonInCache(base_dir: str, personUrl: str,
         return
 
     currTime = datetime.datetime.utcnow()
-    personCache[personUrl] = {
+    person_cache[personUrl] = {
         "actor": personJson,
         "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     }
@@ -77,13 +77,13 @@ def storePersonInCache(base_dir: str, personUrl: str,
             saveJson(personJson, cacheFilename)
 
 
-def getPersonFromCache(base_dir: str, personUrl: str, personCache: {},
+def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},
                        allowWriteToFile: bool) -> {}:
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
     loadedFromFile = False
-    if not personCache.get(personUrl):
+    if not person_cache.get(personUrl):
         # does the person exist as a cached file?
         cacheFilename = base_dir + '/cache/actors/' + \
             personUrl.replace('/', '#') + '.json'
@@ -92,25 +92,25 @@ def getPersonFromCache(base_dir: str, personUrl: str, personCache: {},
             personJson = loadJson(actorFilename)
             if personJson:
                 storePersonInCache(base_dir, personUrl, personJson,
-                                   personCache, False)
+                                   person_cache, False)
                 loadedFromFile = True
 
-    if personCache.get(personUrl):
+    if person_cache.get(personUrl):
         if not loadedFromFile:
             # update the timestamp for the last time the actor was retrieved
             currTime = datetime.datetime.utcnow()
             currTimeStr = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-            personCache[personUrl]['timestamp'] = currTimeStr
-        return personCache[personUrl]['actor']
+            person_cache[personUrl]['timestamp'] = currTimeStr
+        return person_cache[personUrl]['actor']
     return None
 
 
-def expirePersonCache(personCache: {}):
+def expirePersonCache(person_cache: {}):
     """Expires old entries from the cache in memory
     """
     currTime = datetime.datetime.utcnow()
     removals = []
-    for personUrl, cacheJson in personCache.items():
+    for personUrl, cacheJson in person_cache.items():
         cacheTime = datetime.datetime.strptime(cacheJson['timestamp'],
                                                "%Y-%m-%dT%H:%M:%SZ")
         daysSinceCached = (currTime - cacheTime).days
@@ -118,7 +118,7 @@ def expirePersonCache(personCache: {}):
             removals.append(personUrl)
     if len(removals) > 0:
         for personUrl in removals:
-            del personCache[personUrl]
+            del person_cache[personUrl]
         print(str(len(removals)) + ' actors were expired from the cache')
 
 
@@ -137,7 +137,7 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
 
 
 def getPersonPubKey(base_dir: str, session, personUrl: str,
-                    personCache: {}, debug: bool,
+                    person_cache: {}, debug: bool,
                     project_version: str, http_prefix: str,
                     domain: str, onion_domain: str,
                     signingPrivateKeyPem: str) -> str:
@@ -153,7 +153,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
                 personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
             break
     personJson = \
-        getPersonFromCache(base_dir, personUrl, personCache, True)
+        getPersonFromCache(base_dir, personUrl, person_cache, True)
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for ' + personUrl)
@@ -183,5 +183,5 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
         if debug:
             print('DEBUG: Public key not found for ' + personUrl)
 
-    storePersonInCache(base_dir, personUrl, personJson, personCache, True)
+    storePersonInCache(base_dir, personUrl, personJson, person_cache, True)
     return pubKey
