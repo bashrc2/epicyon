@@ -190,7 +190,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                          nickname: str, domain: str, domainFull: str,
                          post_json_object: {},
                          handle: str, restrictToDomain: bool,
-                         peertubeInstances: [],
+                         peertube_instances: [],
                          system_language: str,
                          person_cache: {},
                          blogSeparator: str = '<hr>') -> str:
@@ -275,7 +275,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                                      languagesUnderstood)
     if jsonContent:
         contentStr = addEmbeddedElements(translate, jsonContent,
-                                         peertubeInstances)
+                                         peertube_instances)
         if post_json_object['object'].get('tag'):
             post_json_object_tags = post_json_object['object']['tag']
             contentStr = replaceEmojiFromTags(session, base_dir, contentStr,
@@ -444,7 +444,7 @@ def htmlBlogPost(session, authorized: bool,
                  base_dir: str, http_prefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
                  post_json_object: {},
-                 peertubeInstances: [],
+                 peertube_instances: [],
                  system_language: str, person_cache: {},
                  debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
@@ -477,7 +477,7 @@ def htmlBlogPost(session, authorized: bool,
                                     nickname, domain,
                                     domainFull, post_json_object,
                                     None, False,
-                                    peertubeInstances, system_language,
+                                    peertube_instances, system_language,
                                     person_cache)
 
     # show rss links
@@ -506,7 +506,7 @@ def htmlBlogPage(authorized: bool, session,
                  base_dir: str, http_prefix: str, translate: {},
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
-                 peertubeInstances: [], system_language: str,
+                 peertube_instances: [], system_language: str,
                  person_cache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
     """
@@ -569,7 +569,7 @@ def htmlBlogPage(authorized: bool, session,
                                         nickname, domain,
                                         domainFull, item,
                                         None, True,
-                                        peertubeInstances,
+                                        peertube_instances,
                                         system_language,
                                         person_cache)
 
@@ -729,7 +729,7 @@ def htmlBlogView(authorized: bool,
                  session, base_dir: str, http_prefix: str,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
-                 peertubeInstances: [], system_language: str,
+                 peertube_instances: [], system_language: str,
                  person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
@@ -748,7 +748,7 @@ def htmlBlogView(authorized: bool,
             return htmlBlogPage(authorized, session,
                                 base_dir, http_prefix, translate,
                                 nickname, domain, port,
-                                noOfItems, 1, peertubeInstances,
+                                noOfItems, 1, peertube_instances,
                                 system_language, person_cache, debug)
 
     domainFull = getFullDomain(domain, port)

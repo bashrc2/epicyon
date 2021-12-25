@@ -11,13 +11,13 @@ import os
 from utils import validUrlPrefix
 
 
-def loadPeertubeInstances(base_dir: str, peertubeInstances: []) -> None:
+def loadPeertubeInstances(base_dir: str, peertube_instances: []) -> None:
     """Loads peertube instances from file into the given list
     """
     peertubeList = None
-    peertubeInstancesFilename = base_dir + '/accounts/peertube.txt'
-    if os.path.isfile(peertubeInstancesFilename):
-        with open(peertubeInstancesFilename, 'r') as fp:
+    peertube_instancesFilename = base_dir + '/accounts/peertube.txt'
+    if os.path.isfile(peertube_instancesFilename):
+        with open(peertube_instancesFilename, 'r') as fp:
             peertubeStr = fp.read()
             if peertubeStr:
                 peertubeStr = peertubeStr.replace('\r', '')
@@ -25,13 +25,13 @@ def loadPeertubeInstances(base_dir: str, peertubeInstances: []) -> None:
     if not peertubeList:
         return
     for url in peertubeList:
-        if url in peertubeInstances:
+        if url in peertube_instances:
             continue
-        peertubeInstances.append(url)
+        peertube_instances.append(url)
 
 
 def _addEmbeddedVideoFromSites(translate: {}, content: str,
-                               peertubeInstances: [],
+                               peertube_instances: [],
                                width: int, height: int) -> str:
     """Adds embedded videos
     """
@@ -110,10 +110,10 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
             return content
 
     if '"https://' in content:
-        if peertubeInstances:
+        if peertube_instances:
             # only create an embedded video for a limited set of
             # peertube sites.
-            peerTubeSites = peertubeInstances
+            peerTubeSites = peertube_instances
         else:
             # A default minimal set of peertube instances
             # Also see https://peertube_isolation.frama.io/list/ for
@@ -246,10 +246,10 @@ def _addEmbeddedVideo(translate: {}, content: str) -> str:
 
 
 def addEmbeddedElements(translate: {}, content: str,
-                        peertubeInstances: []) -> str:
+                        peertube_instances: []) -> str:
     """Adds embedded elements for various media types
     """
     content = _addEmbeddedVideoFromSites(translate, content,
-                                         peertubeInstances, 400, 300)
+                                         peertube_instances, 400, 300)
     content = _addEmbeddedAudio(translate, content)
     return _addEmbeddedVideo(translate, content)

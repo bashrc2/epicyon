@@ -1302,7 +1302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.sharedItemFederationTokens,
                                    self.server.low_bandwidth,
                                    self.server.signing_priv_key_pem,
-                                   self.server.peertubeInstances,
+                                   self.server.peertube_instances,
                                    self.server.theme_name,
                                    self.server.max_like_count,
                                    self.server.max_recent_posts,
@@ -2725,7 +2725,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.yt_replace_domain,
                               self.server.twitter_replacement_domain,
                               self.server.show_published_date_only,
-                              self.server.peertubeInstances,
+                              self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
                               self.server.max_like_count,
@@ -2859,7 +2859,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.yt_replace_domain,
                               self.server.twitter_replacement_domain,
                               self.server.show_published_date_only,
-                              self.server.peertubeInstances,
+                              self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
                               self.server.max_like_count,
@@ -3308,7 +3308,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.yt_replace_domain,
                                       self.server.twitter_replacement_domain,
                                       self.server.show_published_date_only,
-                                      self.server.peertubeInstances,
+                                      self.server.peertube_instances,
                                       self.server.allow_local_network_access,
                                       self.server.theme_name,
                                       self.server.system_language,
@@ -3403,7 +3403,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.yt_replace_domain,
                                       self.server.twitter_replacement_domain,
                                       self.server.show_published_date_only,
-                                      self.server.peertubeInstances,
+                                      self.server.peertube_instances,
                                       self.server.allow_local_network_access,
                                       self.server.theme_name, 'outbox',
                                       self.server.system_language,
@@ -3471,7 +3471,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.yt_replace_domain,
                                       self.server.twitter_replacement_domain,
                                       self.server.show_published_date_only,
-                                      self.server.peertubeInstances,
+                                      self.server.peertube_instances,
                                       self.server.allow_local_network_access,
                                       self.server.theme_name, 'bookmarks',
                                       self.server.system_language,
@@ -3570,7 +3570,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                twitter_replacement_domain,
                                                show_published_date_only,
                                                self.server.defaultTimeline,
-                                               self.server.peertubeInstances,
+                                               self.server.peertube_instances,
                                                allow_local_network_access,
                                                self.server.theme_name,
                                                accessKeys,
@@ -6422,17 +6422,17 @@ class PubServer(BaseHTTPRequestHandler):
                                            user_agents_blockedStr)
 
                         # save peertube instances list
-                        peertubeInstancesFile = \
+                        peertube_instancesFile = \
                             base_dir + '/accounts/peertube.txt'
                         if fields.get('ptInstances'):
-                            self.server.peertubeInstances.clear()
+                            self.server.peertube_instances.clear()
                             try:
-                                with open(peertubeInstancesFile,
+                                with open(peertube_instancesFile,
                                           'w+') as aFile:
                                     aFile.write(fields['ptInstances'])
                             except OSError:
                                 print('EX: unable to write peertube ' +
-                                      peertubeInstancesFile)
+                                      peertube_instancesFile)
                             ptInstancesList = \
                                 fields['ptInstances'].split('\n')
                             if ptInstancesList:
@@ -6440,18 +6440,18 @@ class PubServer(BaseHTTPRequestHandler):
                                     url = url.strip()
                                     if not url:
                                         continue
-                                    if url in self.server.peertubeInstances:
+                                    if url in self.server.peertube_instances:
                                         continue
-                                    self.server.peertubeInstances.append(url)
+                                    self.server.peertube_instances.append(url)
                         else:
-                            if os.path.isfile(peertubeInstancesFile):
+                            if os.path.isfile(peertube_instancesFile):
                                 try:
-                                    os.remove(peertubeInstancesFile)
+                                    os.remove(peertube_instancesFile)
                                 except OSError:
                                     print('EX: _profileUpdate ' +
                                           'unable to delete ' +
-                                          peertubeInstancesFile)
-                            self.server.peertubeInstances.clear()
+                                          peertube_instancesFile)
+                            self.server.peertube_instances.clear()
 
                     # save git project names list
                     gitProjectsFilename = \
@@ -7548,7 +7548,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.yt_replace_domain,
                               self.server.twitter_replacement_domain,
                               self.server.show_published_date_only,
-                              self.server.peertubeInstances,
+                              self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.theme_name,
                               self.server.system_language,
@@ -7761,7 +7761,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.yt_replace_domain,
                                  self.server.twitter_replacement_domain,
                                  self.server.show_published_date_only,
-                                 self.server.peertubeInstances,
+                                 self.server.peertube_instances,
                                  self.server.allow_local_network_access,
                                  self.server.theme_name,
                                  self.server.system_language,
@@ -8221,7 +8221,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -8375,7 +8375,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -8559,7 +8559,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -8731,7 +8731,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -8829,7 +8829,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.yt_replace_domain,
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
-                                    self.server.peertubeInstances,
+                                    self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.theme_name,
                                     self.server.system_language,
@@ -8951,7 +8951,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -9079,7 +9079,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -9176,7 +9176,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.yt_replace_domain,
                                   self.server.twitter_replacement_domain,
                                   self.server.show_published_date_only,
-                                  self.server.peertubeInstances,
+                                  self.server.peertube_instances,
                                   self.server.allow_local_network_access,
                                   self.server.theme_name,
                                   self.server.system_language,
@@ -9281,7 +9281,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -9391,7 +9391,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.yt_replace_domain,
                                      self.server.twitter_replacement_domain,
                                      self.server.show_published_date_only,
-                                     self.server.peertubeInstances,
+                                     self.server.peertube_instances,
                                      self.server.allow_local_network_access,
                                      self.server.theme_name,
                                      self.server.system_language,
@@ -9494,7 +9494,7 @@ class PubServer(BaseHTTPRequestHandler):
                 ytDomain = self.server.yt_replace_domain
                 twitter_replacement_domain = \
                     self.server.twitter_replacement_domain
-                peertubeInstances = self.server.peertubeInstances
+                peertube_instances = self.server.peertube_instances
                 msg = \
                     htmlPostReplies(self.server.cssCache,
                                     recentPostsCache,
@@ -9513,7 +9513,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     ytDomain,
                                     twitter_replacement_domain,
                                     self.server.show_published_date_only,
-                                    peertubeInstances,
+                                    peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.theme_name,
                                     self.server.system_language,
@@ -9586,7 +9586,7 @@ class PubServer(BaseHTTPRequestHandler):
                 ytDomain = self.server.yt_replace_domain
                 twitter_replacement_domain = \
                     self.server.twitter_replacement_domain
-                peertubeInstances = self.server.peertubeInstances
+                peertube_instances = self.server.peertube_instances
                 msg = \
                     htmlPostReplies(self.server.cssCache,
                                     recentPostsCache,
@@ -9605,7 +9605,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     ytDomain,
                                     twitter_replacement_domain,
                                     self.server.show_published_date_only,
-                                    peertubeInstances,
+                                    peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.theme_name,
                                     self.server.system_language,
@@ -9711,7 +9711,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.theme_name,
                                     self.server.dormant_months,
-                                    self.server.peertubeInstances,
+                                    self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.text_mode_banner,
                                     self.server.debug,
@@ -9827,7 +9827,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.newswire,
                                                 self.server.theme_name,
                                                 self.server.dormant_months,
-                                                self.server.peertubeInstances,
+                                                self.server.peertube_instances,
                                                 allow_local_network_access,
                                                 self.server.text_mode_banner,
                                                 self.server.debug,
@@ -9995,7 +9995,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.yt_replace_domain,
                                    self.server.twitter_replacement_domain,
                                    self.server.show_published_date_only,
-                                   self.server.peertubeInstances,
+                                   self.server.peertube_instances,
                                    self.server.allow_local_network_access,
                                    self.server.theme_name,
                                    self.server.system_language,
@@ -10258,7 +10258,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.publish_button_at_top,
                                         authorized,
                                         self.server.theme_name,
-                                        self.server.peertubeInstances,
+                                        self.server.peertube_instances,
                                         self.server.allow_local_network_access,
                                         self.server.text_mode_banner,
                                         accessKeys,
@@ -10410,7 +10410,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
                                          authorized, self.server.theme_name,
-                                         self.server.peertubeInstances,
+                                         self.server.peertube_instances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
                                          accessKeys,
@@ -10555,7 +10555,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
                                          authorized, self.server.theme_name,
-                                         self.server.peertubeInstances,
+                                         self.server.peertube_instances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
                                          accessKeys,
@@ -10697,7 +10697,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.publish_button_at_top,
                                        authorized,
                                        self.server.theme_name,
-                                       self.server.peertubeInstances,
+                                       self.server.peertube_instances,
                                        self.server.allow_local_network_access,
                                        self.server.text_mode_banner,
                                        accessKeys,
@@ -10839,7 +10839,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.publish_button_at_top,
                                        authorized,
                                        self.server.theme_name,
-                                       self.server.peertubeInstances,
+                                       self.server.peertube_instances,
                                        self.server.allow_local_network_access,
                                        self.server.text_mode_banner,
                                        accessKeys,
@@ -10991,7 +10991,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.publish_button_at_top,
                                       authorized,
                                       self.server.theme_name,
-                                      self.server.peertubeInstances,
+                                      self.server.peertube_instances,
                                       self.server.allow_local_network_access,
                                       self.server.text_mode_banner,
                                       accessKeys,
@@ -11142,7 +11142,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.publish_button_at_top,
                                           authorized,
                                           self.server.theme_name,
-                                          self.server.peertubeInstances,
+                                          self.server.peertube_instances,
                                           allow_local_network_access,
                                           self.server.text_mode_banner,
                                           accessKeys,
@@ -11250,7 +11250,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
                                    authorized, self.server.theme_name,
-                                   self.server.peertubeInstances,
+                                   self.server.peertube_instances,
                                    self.server.allow_local_network_access,
                                    self.server.text_mode_banner,
                                    accessKeys,
@@ -11335,7 +11335,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
                                    authorized, self.server.theme_name,
-                                   self.server.peertubeInstances,
+                                   self.server.peertube_instances,
                                    self.server.allow_local_network_access,
                                    self.server.text_mode_banner,
                                    accessKeys,
@@ -11460,7 +11460,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.publish_button_at_top,
                                           authorized,
                                           self.server.theme_name,
-                                          self.server.peertubeInstances,
+                                          self.server.peertube_instances,
                                           allow_local_network_access,
                                           self.server.text_mode_banner,
                                           accessKeys,
@@ -11598,7 +11598,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.publish_button_at_top,
                                authorized,
                                self.server.theme_name,
-                               self.server.peertubeInstances,
+                               self.server.peertube_instances,
                                self.server.allow_local_network_access,
                                self.server.text_mode_banner,
                                accessKeys,
@@ -11732,7 +11732,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.publish_button_at_top,
                                            authorized, moderationActionStr,
                                            self.server.theme_name,
-                                           self.server.peertubeInstances,
+                                           self.server.peertube_instances,
                                            allow_local_network_access,
                                            self.server.text_mode_banner,
                                            accessKeys,
@@ -11852,7 +11852,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.theme_name,
                                     self.server.dormant_months,
-                                    self.server.peertubeInstances,
+                                    self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.text_mode_banner,
                                     self.server.debug,
@@ -11973,7 +11973,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.theme_name,
                                     self.server.dormant_months,
-                                    self.server.peertubeInstances,
+                                    self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.text_mode_banner,
                                     self.server.debug,
@@ -12093,7 +12093,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.theme_name,
                                     self.server.dormant_months,
-                                    self.server.peertubeInstances,
+                                    self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.text_mode_banner,
                                     self.server.debug,
@@ -12229,7 +12229,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.newswire,
                             self.server.theme_name,
                             self.server.dormant_months,
-                            self.server.peertubeInstances,
+                            self.server.peertube_instances,
                             self.server.allow_local_network_access,
                             self.server.text_mode_banner,
                             self.server.debug,
@@ -12389,7 +12389,7 @@ class PubServer(BaseHTTPRequestHandler):
                            nickname,
                            domain, port,
                            maxPostsInBlogsFeed, pageNumber,
-                           self.server.peertubeInstances,
+                           self.server.peertube_instances,
                            self.server.system_language,
                            self.server.person_cache,
                            self.server.debug)
@@ -12993,7 +12993,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.yt_replace_domain,
                               self.server.twitter_replacement_domain,
                               self.server.show_published_date_only,
-                              self.server.peertubeInstances,
+                              self.server.peertube_instances,
                               self.server.allow_local_network_access,
                               self.server.system_language,
                               self.server.max_like_count,
@@ -13054,7 +13054,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the edit profile screen
         """
         if '/users/' in path and path.endswith('/editprofile'):
-            peertubeInstances = self.server.peertubeInstances
+            peertube_instances = self.server.peertube_instances
             nickname = getNicknameFromActor(path)
             if nickname:
                 city = getSpoofedCity(self.server.city,
@@ -13076,7 +13076,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   self.server.defaultTimeline,
                                   self.server.theme_name,
-                                  peertubeInstances,
+                                  peertube_instances,
                                   self.server.text_mode_banner,
                                   city,
                                   self.server.user_agents_blocked,
@@ -14060,7 +14060,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain,
                                    self.server.port,
                                    maxPostsInBlogsFeed,
-                                   self.server.peertubeInstances,
+                                   self.server.peertube_instances,
                                    self.server.system_language,
                                    self.server.person_cache,
                                    self.server.debug)
@@ -14164,7 +14164,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname, self.server.domain,
                                        self.server.domainFull,
                                        post_json_object,
-                                       self.server.peertubeInstances,
+                                       self.server.peertube_instances,
                                        self.server.system_language,
                                        self.server.person_cache,
                                        self.server.debug,
@@ -18912,8 +18912,8 @@ def runDaemon(content_license_url: str,
                                         httpd.sharedItemFederationTokens)
 
     # load peertube instances from file into a list
-    httpd.peertubeInstances = []
-    loadPeertubeInstances(base_dir, httpd.peertubeInstances)
+    httpd.peertube_instances = []
+    loadPeertubeInstances(base_dir, httpd.peertube_instances)
 
     createInitialLastSeen(base_dir, http_prefix)
 
@@ -18940,7 +18940,7 @@ def runDaemon(content_license_url: str,
                               httpd.show_published_date_only,
                               httpd.max_followers,
                               httpd.allow_local_network_access,
-                              httpd.peertubeInstances,
+                              httpd.peertube_instances,
                               verify_all_signatures,
                               httpd.theme_name,
                               httpd.system_language,

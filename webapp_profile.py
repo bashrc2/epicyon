@@ -133,7 +133,7 @@ def htmlProfileAfterSearch(cssCache: {},
                            twitter_replacement_domain: str,
                            show_published_date_only: bool,
                            defaultTimeline: str,
-                           peertubeInstances: [],
+                           peertube_instances: [],
                            allow_local_network_access: bool,
                            theme_name: str,
                            accessKeys: {},
@@ -345,7 +345,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      yt_replace_domain,
                                      twitter_replacement_domain,
                                      show_published_date_only,
-                                     peertubeInstances,
+                                     peertube_instances,
                                      allow_local_network_access,
                                      theme_name, system_language,
                                      max_like_count,
@@ -554,7 +554,7 @@ def htmlProfile(signing_priv_key_pem: str,
                 twitter_replacement_domain: str,
                 show_published_date_only: bool,
                 newswire: {}, theme: str, dormant_months: int,
-                peertubeInstances: [],
+                peertube_instances: [],
                 allow_local_network_access: bool,
                 text_mode_banner: str,
                 debug: bool, accessKeys: {}, city: str,
@@ -964,7 +964,7 @@ def htmlProfile(signing_priv_key_pem: str,
                               yt_replace_domain,
                               twitter_replacement_domain,
                               show_published_date_only,
-                              peertubeInstances,
+                              peertube_instances,
                               allow_local_network_access,
                               theme, system_language,
                               max_like_count,
@@ -1034,7 +1034,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                       yt_replace_domain: str,
                       twitter_replacement_domain: str,
                       show_published_date_only: bool,
-                      peertubeInstances: [],
+                      peertube_instances: [],
                       allow_local_network_access: bool,
                       theme_name: str, system_language: str,
                       max_like_count: int,
@@ -1079,7 +1079,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                                          yt_replace_domain,
                                          twitter_replacement_domain,
                                          show_published_date_only,
-                                         peertubeInstances,
+                                         peertube_instances,
                                          allow_local_network_access,
                                          theme_name, system_language,
                                          max_like_count,
@@ -1300,7 +1300,7 @@ def _htmlEditProfileTwitter(base_dir: str, translate: {},
 
 
 def _htmlEditProfileInstance(base_dir: str, translate: {},
-                             peertubeInstances: [],
+                             peertube_instances: [],
                              media_instanceStr: str,
                              blogs_instanceStr: str,
                              news_instanceStr: str) -> (str, str, str, str):
@@ -1458,12 +1458,12 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
 
     # Video section
     peertubeStr = beginEditSection(translate['Video Settings'])
-    peertubeInstancesStr = ''
-    for url in peertubeInstances:
-        peertubeInstancesStr += url + '\n'
+    peertube_instancesStr = ''
+    for url in peertube_instances:
+        peertube_instancesStr += url + '\n'
     peertubeStr += \
         editTextArea(translate['Peertube Instances'], 'ptInstances',
-                     peertubeInstancesStr, 200, '', False)
+                     peertube_instancesStr, 200, '', False)
     peertubeStr += \
         '      <br>\n'
     yt_replace_domain = getConfigParam(base_dir, "youtubedomain")
@@ -2091,7 +2091,7 @@ def _htmlEditProfileTopBanner(base_dir: str,
 def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                     domain: str, port: int, http_prefix: str,
                     defaultTimeline: str, theme: str,
-                    peertubeInstances: [],
+                    peertube_instances: [],
                     text_mode_banner: str, city: str,
                     user_agents_blocked: str,
                     accessKeys: {},
@@ -2225,7 +2225,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                                             domain, translate)
             instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
                 _htmlEditProfileInstance(base_dir, translate,
-                                         peertubeInstances,
+                                         peertube_instances,
                                          media_instanceStr,
                                          blogs_instanceStr,
                                          news_instanceStr)
