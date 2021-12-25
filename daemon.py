@@ -1473,7 +1473,7 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # if the inbox queue is full then return a busy code
-        if len(self.server.inboxQueue) >= self.server.maxQueueLength:
+        if len(self.server.inboxQueue) >= self.server.max_queue_length:
             if messageDomain:
                 print('Queue: Inbox queue is full. Incoming post from ' +
                       messageJson['actor'])
@@ -18753,7 +18753,7 @@ def runDaemon(content_license_url: str,
     httpd.inboxQueue = []
     httpd.send_threads = send_threads
     httpd.postLog = []
-    httpd.maxQueueLength = 64
+    httpd.max_queue_length = 64
     httpd.allow_deletion = allow_deletion
     httpd.last_login_time = 0
     httpd.last_login_failure = 0
