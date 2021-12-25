@@ -208,13 +208,13 @@ def getMutualsOfPerson(base_dir: str,
 
 def followerOfPerson(base_dir: str, nickname: str, domain: str,
                      followerNickname: str, followerDomain: str,
-                     federationList: [], debug: bool,
+                     federation_list: [], debug: bool,
                      groupAccount: bool) -> bool:
     """Adds a follower of the given person
     """
     return followPerson(base_dir, nickname, domain,
                         followerNickname, followerDomain,
-                        federationList, debug, groupAccount, 'followers.txt')
+                        federation_list, debug, groupAccount, 'followers.txt')
 
 
 def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:
@@ -717,7 +717,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                            nicknameToFollow: str, domainToFollow: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
-                           personUrl: str, federationList: [],
+                           personUrl: str, federation_list: [],
                            followJson: {}, send_threads: [], postLog: [],
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
@@ -734,7 +734,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
               'follow request which arrived at ' +
               nicknameToFollow + '@' + domainToFollow +
               ' back to ' + acceptHandle)
-    acceptJson = createAccept(base_dir, federationList,
+    acceptJson = createAccept(base_dir, federation_list,
                               nicknameToFollow, domainToFollow, port,
                               personUrl, '', http_prefix,
                               followJson)
@@ -769,7 +769,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
                           http_prefix, True, client_to_server,
-                          federationList,
+                          federation_list,
                           send_threads, postLog, cached_webfingers,
                           person_cache, debug, project_version, None,
                           groupAccount, signing_priv_key_pem,
@@ -780,7 +780,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
                            nicknameToFollow: str, domainToFollow: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
-                           federationList: [],
+                           federation_list: [],
                            send_threads: [], postLog: [],
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
@@ -809,7 +809,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
 
     # create the reject activity
     rejectJson = \
-        createReject(base_dir, federationList,
+        createReject(base_dir, federation_list,
                      nicknameToFollow, domainToFollow, port,
                      personUrl, '', http_prefix, followJson)
     if debug:
@@ -837,7 +837,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
                           http_prefix, True, client_to_server,
-                          federationList,
+                          federation_list,
                           send_threads, postLog, cached_webfingers,
                           person_cache, debug, project_version, None,
                           groupAccount, signing_priv_key_pem,
@@ -849,7 +849,7 @@ def sendFollowRequest(session, base_dir: str,
                       followNickname: str, followDomain: str,
                       followedActor: str,
                       followPort: int, followHttpPrefix: str,
-                      client_to_server: bool, federationList: [],
+                      client_to_server: bool, federation_list: [],
                       send_threads: [], postLog: [], cached_webfingers: {},
                       person_cache: {}, debug: bool,
                       project_version: str, signing_priv_key_pem: str) -> {}:
@@ -858,7 +858,7 @@ def sendFollowRequest(session, base_dir: str,
     if not signing_priv_key_pem:
         print('WARN: follow request without signing key')
 
-    if not domainPermitted(followDomain, federationList):
+    if not domainPermitted(followDomain, federation_list):
         print('You are not permitted to follow the domain ' + followDomain)
         return None
 
@@ -929,7 +929,7 @@ def sendFollowRequest(session, base_dir: str,
                    followNickname, followDomain, followPort,
                    'https://www.w3.org/ns/activitystreams#Public',
                    http_prefix, True, client_to_server,
-                   federationList,
+                   federation_list,
                    send_threads, postLog, cached_webfingers, person_cache,
                    debug, project_version, None, groupAccount,
                    signing_priv_key_pem, 8234389)

@@ -23,10 +23,10 @@ from utils import hasActor
 from utils import hasObjectStringType
 
 
-def _createAcceptReject(base_dir: str, federationList: [],
-                        nickname: str, domain: str, port: int,
-                        toUrl: str, ccUrl: str, http_prefix: str,
-                        objectJson: {}, acceptType: str) -> {}:
+def _create_accept_reject(base_dir: str, federation_list: [],
+                          nickname: str, domain: str, port: int,
+                          toUrl: str, ccUrl: str, http_prefix: str,
+                          objectJson: {}, acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and
@@ -36,7 +36,7 @@ def _createAcceptReject(base_dir: str, federationList: [],
     if not objectJson.get('actor'):
         return None
 
-    if not urlPermitted(objectJson['actor'], federationList):
+    if not urlPermitted(objectJson['actor'], federation_list):
         return None
 
     domain = getFullDomain(domain, port)
@@ -55,28 +55,28 @@ def _createAcceptReject(base_dir: str, federationList: [],
     return newAccept
 
 
-def createAccept(base_dir: str, federationList: [],
+def createAccept(base_dir: str, federation_list: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, http_prefix: str,
                  objectJson: {}) -> {}:
-    return _createAcceptReject(base_dir, federationList,
-                               nickname, domain, port,
-                               toUrl, ccUrl, http_prefix,
-                               objectJson, 'Accept')
+    return _create_accept_reject(base_dir, federation_list,
+                                 nickname, domain, port,
+                                 toUrl, ccUrl, http_prefix,
+                                 objectJson, 'Accept')
 
 
-def createReject(base_dir: str, federationList: [],
+def createReject(base_dir: str, federation_list: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, http_prefix: str,
                  objectJson: {}) -> {}:
-    return _createAcceptReject(base_dir, federationList,
-                               nickname, domain, port,
-                               toUrl, ccUrl,
-                               http_prefix, objectJson, 'Reject')
+    return _create_accept_reject(base_dir, federation_list,
+                                 nickname, domain, port,
+                                 toUrl, ccUrl,
+                                 http_prefix, objectJson, 'Reject')
 
 
 def _acceptFollow(base_dir: str, domain: str, messageJson: {},
-                  federationList: [], debug: bool) -> None:
+                  federation_list: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
     if not hasObjectStringType(messageJson, debug):
@@ -170,7 +170,7 @@ def _acceptFollow(base_dir: str, domain: str, messageJson: {},
     if followPerson(base_dir,
                     nickname, acceptedDomainFull,
                     followedNickname, followedDomainFull,
-                    federationList, debug, groupAccount):
+                    federation_list, debug, groupAccount):
         if debug:
             print('DEBUG: ' + nickname + '@' + acceptedDomainFull +
                   ' followed ' + followedNickname + '@' + followedDomainFull)
@@ -184,7 +184,7 @@ def _acceptFollow(base_dir: str, domain: str, messageJson: {},
 def receiveAcceptReject(session, base_dir: str,
                         http_prefix: str, domain: str, port: int,
                         send_threads: [], postLog: [], cached_webfingers: {},
-                        person_cache: {}, messageJson: {}, federationList: [],
+                        person_cache: {}, messageJson: {}, federation_list: [],
                         debug: bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
@@ -197,7 +197,7 @@ def receiveAcceptReject(session, base_dir: str,
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   messageJson['type'] + '. Assuming single user instance.')
     domain, tempPort = getDomainFromActor(messageJson['actor'])
-    if not domainPermitted(domain, federationList):
+    if not domainPermitted(domain, federation_list):
         if debug:
             print('DEBUG: ' + messageJson['type'] +
                   ' from domain not permitted - ' + domain)
@@ -211,7 +211,7 @@ def receiveAcceptReject(session, base_dir: str,
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
     # receive follow accept
-    _acceptFollow(base_dir, domain, messageJson, federationList, debug)
+    _acceptFollow(base_dir, domain, messageJson, federation_list, debug)
     if debug:
         print('DEBUG: Uh, ' + messageJson['type'] + ', I guess')
     return True

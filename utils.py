@@ -807,21 +807,21 @@ def createInboxQueueDir(nickname: str, domain: str, base_dir: str) -> str:
     return createPersonDir(nickname, domain, base_dir, 'queue')
 
 
-def domainPermitted(domain: str, federationList: []):
-    if len(federationList) == 0:
+def domainPermitted(domain: str, federation_list: []):
+    if len(federation_list) == 0:
         return True
     domain = removeDomainPort(domain)
-    if domain in federationList:
+    if domain in federation_list:
         return True
     return False
 
 
-def urlPermitted(url: str, federationList: []):
+def urlPermitted(url: str, federation_list: []):
     if isEvil(url):
         return False
-    if not federationList:
+    if not federation_list:
         return True
-    for domain in federationList:
+    for domain in federation_list:
         if domain in url:
             return True
     return False
@@ -1130,14 +1130,14 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
 
 def followPerson(base_dir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
-                 federationList: [], debug: bool,
+                 federation_list: [], debug: bool,
                  groupAccount: bool,
                  followFile: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
     followDomainStrLower = followDomain.lower().replace('\n', '')
     if not domainPermitted(followDomainStrLower,
-                           federationList):
+                           federation_list):
         if debug:
             print('DEBUG: follow of domain ' +
                   followDomain + ' not permitted')

@@ -249,7 +249,7 @@ def updateBookmarksCollection(recentPostsCache: {},
 
 
 def bookmark(recentPostsCache: {},
-             session, base_dir: str, federationList: [],
+             session, base_dir: str, federation_list: [],
              nickname: str, domain: str, port: int,
              ccList: [], http_prefix: str,
              objectUrl: str, actorBookmarked: str,
@@ -262,7 +262,7 @@ def bookmark(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was bookmarked
     object is typically the url of the message which was bookmarked
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not urlPermitted(objectUrl, federation_list):
         return None
 
     fullDomain = getFullDomain(domain, port)
@@ -308,7 +308,7 @@ def bookmark(recentPostsCache: {},
 
 
 def undoBookmark(recentPostsCache: {},
-                 session, base_dir: str, federationList: [],
+                 session, base_dir: str, federation_list: [],
                  nickname: str, domain: str, port: int,
                  ccList: [], http_prefix: str,
                  objectUrl: str, actorBookmarked: str,
@@ -321,7 +321,7 @@ def undoBookmark(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was bookmarked
     object is typically the url of the message which was bookmarked
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not urlPermitted(objectUrl, federation_list):
         return None
 
     fullDomain = getFullDomain(domain, port)

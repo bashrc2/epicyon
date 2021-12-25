@@ -419,7 +419,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
 
 
 def inboxPermittedMessage(domain: str, messageJson: {},
-                          federationList: []) -> bool:
+                          federation_list: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     if not hasActor(messageJson, False):
@@ -430,7 +430,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     if domain in actor:
         return True
 
-    if not urlPermitted(actor, federationList):
+    if not urlPermitted(actor, federation_list):
         return False
 
     alwaysAllowedTypes = (
@@ -443,7 +443,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
             inReplyTo = messageJson['object']['inReplyTo']
             if not isinstance(inReplyTo, str):
                 return False
-            if not urlPermitted(inReplyTo, federationList):
+            if not urlPermitted(inReplyTo, federation_list):
                 return False
 
     return True
@@ -740,7 +740,7 @@ def _inboxPostRecipients(base_dir: str, post_json_object: {},
 
 def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
                        port: int, messageJson: {},
-                       federationList: [],
+                       federation_list: [],
                        debug: bool) -> bool:
     if not messageJson['object'].get('actor'):
         if debug:
@@ -796,7 +796,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
 def _receiveUndo(session, base_dir: str, http_prefix: str,
                  port: int, send_threads: [], postLog: [],
                  cached_webfingers: {}, person_cache: {},
-                 messageJson: {}, federationList: [],
+                 messageJson: {}, federation_list: [],
                  debug: bool) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
@@ -818,7 +818,7 @@ def _receiveUndo(session, base_dir: str, http_prefix: str,
        messageJson['object']['type'] == 'Join':
         return _receiveUndoFollow(session, base_dir, http_prefix,
                                   port, messageJson,
-                                  federationList, debug)
+                                  federation_list, debug)
     return False
 
 
@@ -942,7 +942,7 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
 def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    send_threads: [], postLog: [], cached_webfingers: {},
-                   person_cache: {}, messageJson: {}, federationList: [],
+                   person_cache: {}, messageJson: {}, federation_list: [],
                    nickname: str, debug: bool) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
@@ -996,7 +996,7 @@ def _receiveLike(recentPostsCache: {},
                  http_prefix: str, domain: str, port: int,
                  onion_domain: str,
                  send_threads: [], postLog: [], cached_webfingers: {},
-                 person_cache: {}, messageJson: {}, federationList: [],
+                 person_cache: {}, messageJson: {}, federation_list: [],
                  debug: bool,
                  signing_priv_key_pem: str,
                  max_recent_posts: int, translate: {},
@@ -1118,7 +1118,7 @@ def _receiveUndoLike(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federationList: [],
+                     person_cache: {}, messageJson: {}, federation_list: [],
                      debug: bool,
                      signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
@@ -1230,7 +1230,7 @@ def _receiveReaction(recentPostsCache: {},
                      http_prefix: str, domain: str, port: int,
                      onion_domain: str,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federationList: [],
+                     person_cache: {}, messageJson: {}, federation_list: [],
                      debug: bool,
                      signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
@@ -1376,8 +1376,10 @@ def _receiveReaction(recentPostsCache: {},
 def _receiveUndoReaction(recentPostsCache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
                          http_prefix: str, domain: str, port: int,
-                         send_threads: [], postLog: [], cached_webfingers: {},
-                         person_cache: {}, messageJson: {}, federationList: [],
+                         send_threads: [], postLog: [],
+                         cached_webfingers: {},
+                         person_cache: {}, messageJson: {},
+                         federation_list: [],
                          debug: bool,
                          signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
@@ -1504,7 +1506,7 @@ def _receiveBookmark(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federationList: [],
+                     person_cache: {}, messageJson: {}, federation_list: [],
                      debug: bool, signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
                      allow_deletion: bool,
@@ -1613,8 +1615,10 @@ def _receiveBookmark(recentPostsCache: {},
 def _receiveUndoBookmark(recentPostsCache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
                          http_prefix: str, domain: str, port: int,
-                         send_threads: [], postLog: [], cached_webfingers: {},
-                         person_cache: {}, messageJson: {}, federationList: [],
+                         send_threads: [], postLog: [],
+                         cached_webfingers: {},
+                         person_cache: {}, messageJson: {},
+                         federation_list: [],
                          debug: bool, signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
                          allow_deletion: bool,
@@ -1723,7 +1727,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
 def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    send_threads: [], postLog: [], cached_webfingers: {},
-                   person_cache: {}, messageJson: {}, federationList: [],
+                   person_cache: {}, messageJson: {}, federation_list: [],
                    debug: bool, allow_deletion: bool,
                    recentPostsCache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
@@ -1800,7 +1804,7 @@ def _receiveAnnounce(recentPostsCache: {},
                      http_prefix: str,
                      domain: str, onion_domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federationList: [],
+                     person_cache: {}, messageJson: {}, federation_list: [],
                      debug: bool, translate: {},
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
@@ -2026,8 +2030,10 @@ def _receiveAnnounce(recentPostsCache: {},
 def _receiveUndoAnnounce(recentPostsCache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
                          http_prefix: str, domain: str, port: int,
-                         send_threads: [], postLog: [], cached_webfingers: {},
-                         person_cache: {}, messageJson: {}, federationList: [],
+                         send_threads: [], postLog: [],
+                         cached_webfingers: {},
+                         person_cache: {}, messageJson: {},
+                         federation_list: [],
                          debug: bool) -> bool:
     """Receives an undo announce activity within the POST section of HTTPServer
     """
@@ -2609,7 +2615,7 @@ def _groupHandle(base_dir: str, handle: str) -> bool:
 
 def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                         post_json_object: {},
-                        http_prefix: str, federationList: [],
+                        http_prefix: str, federation_list: [],
                         send_threads: [], postLog: [], cached_webfingers: {},
                         person_cache: {}, debug: bool,
                         system_language: str,
@@ -2659,7 +2665,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     if debug:
         print('Group announce: ' + postId)
     announceJson = \
-        createAnnounce(session, base_dir, federationList,
+        createAnnounce(session, base_dir, federation_list,
                        nickname, domain, port,
                        groupActor + '/followers', cc,
                        http_prefix, postId, False, False,
@@ -2669,7 +2675,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
 
     sendToFollowersThread(session, base_dir, nickname, domain,
                           onion_domain, i2p_domain, port,
-                          http_prefix, federationList,
+                          http_prefix, federation_list,
                           send_threads, postLog,
                           cached_webfingers, person_cache,
                           announceJson, debug, __version__,
@@ -2791,7 +2797,7 @@ def _updateLastSeen(base_dir: str, handle: str, actor: str) -> None:
 
 def _bounceDM(senderPostId: str, session, http_prefix: str,
               base_dir: str, nickname: str, domain: str, port: int,
-              sendingHandle: str, federationList: [],
+              sendingHandle: str, federation_list: [],
               send_threads: [], postLog: [],
               cached_webfingers: {}, person_cache: {},
               translate: {}, debug: bool,
@@ -2866,7 +2872,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     sendSignedJson(post_json_object, session, base_dir,
                    nickname, domain, port,
                    senderNickname, senderDomain, senderPort, cc,
-                   http_prefix, False, False, federationList,
+                   http_prefix, False, False, federation_list,
                    send_threads, postLog, cached_webfingers,
                    person_cache, debug, __version__, None, groupAccount,
                    signing_priv_key_pem, 7238634)
@@ -2876,7 +2882,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
 def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                post_json_object: {}, updateIndexList: [],
                session, http_prefix: str,
-               federationList: [],
+               federation_list: [],
                send_threads: [], postLog: [],
                cached_webfingers: {},
                person_cache: {},
@@ -2955,7 +2961,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                                       base_dir,
                                       nickname, domain,
                                       port, sendH,
-                                      federationList,
+                                      federation_list,
                                       send_threads, postLog,
                                       cached_webfingers,
                                       person_cache,
@@ -2978,7 +2984,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          post_json_object: {}, recentPostsCache: {},
                          session, onion_domain: str,
                          i2p_domain: str, port: int,
-                         federationList: [], send_threads: [], postLog: [],
+                         federation_list: [], send_threads: [], postLog: [],
                          cached_webfingers: {}, person_cache: {},
                          signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
@@ -3054,7 +3060,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     sharedItemFederationTokens = {}
     sendToFollowersThread(session, base_dir, nickname, domain,
                           onion_domain, i2p_domain, port,
-                          http_prefix, federationList,
+                          http_prefix, federation_list,
                           send_threads, postLog,
                           cached_webfingers, person_cache,
                           post_json_object, debug, __version__,
@@ -3185,7 +3191,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        queue: [], domain: str,
                        onion_domain: str, i2p_domain: str,
                        port: int, proxy_type: str,
-                       federationList: [], debug: bool,
+                       federation_list: [], debug: bool,
                        queueFilename: str, destinationFilename: str,
                        max_replies: int, allow_deletion: bool,
                        max_mentions: int, max_emoji: int, translate: {},
@@ -3222,7 +3228,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     cached_webfingers,
                     person_cache,
                     messageJson,
-                    federationList,
+                    federation_list,
                     debug, signing_priv_key_pem,
                     max_recent_posts, translate,
                     allow_deletion,
@@ -3244,7 +3250,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         cached_webfingers,
                         person_cache,
                         messageJson,
-                        federationList,
+                        federation_list,
                         debug, signing_priv_key_pem,
                         max_recent_posts, translate,
                         allow_deletion,
@@ -3267,7 +3273,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         cached_webfingers,
                         person_cache,
                         messageJson,
-                        federationList,
+                        federation_list,
                         debug, signing_priv_key_pem,
                         max_recent_posts, translate,
                         allow_deletion,
@@ -3289,7 +3295,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             cached_webfingers,
                             person_cache,
                             messageJson,
-                            federationList,
+                            federation_list,
                             debug, signing_priv_key_pem,
                             max_recent_posts, translate,
                             allow_deletion,
@@ -3311,7 +3317,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         cached_webfingers,
                         person_cache,
                         messageJson,
-                        federationList,
+                        federation_list,
                         debug, signing_priv_key_pem,
                         max_recent_posts, translate,
                         allow_deletion,
@@ -3333,7 +3339,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             cached_webfingers,
                             person_cache,
                             messageJson,
-                            federationList,
+                            federation_list,
                             debug, signing_priv_key_pem,
                             max_recent_posts, translate,
                             allow_deletion,
@@ -3358,7 +3364,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         cached_webfingers,
                         person_cache,
                         messageJson,
-                        federationList,
+                        federation_list,
                         debug, translate,
                         yt_replace_domain,
                         twitter_replacement_domain,
@@ -3380,7 +3386,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             cached_webfingers,
                             person_cache,
                             messageJson,
-                            federationList,
+                            federation_list,
                             debug):
         if debug:
             print('DEBUG: Undo announce accepted from ' + actor)
@@ -3393,7 +3399,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                       cached_webfingers,
                       person_cache,
                       messageJson,
-                      federationList,
+                      federation_list,
                       debug, allow_deletion,
                       recentPostsCache):
         if debug:
@@ -3454,7 +3460,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                              http_prefix, handle, debug,
                              post_json_object, recentPostsCache,
                              session, onion_domain, i2p_domain, port,
-                             federationList, send_threads, postLog,
+                             federation_list, send_threads, postLog,
                              cached_webfingers, person_cache,
                              signing_priv_key_pem,
                              max_recent_posts, translate,
@@ -3476,7 +3482,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                 if not _isValidDM(base_dir, nickname, domain, port,
                                   post_json_object, updateIndexList,
                                   session, http_prefix,
-                                  federationList,
+                                  federation_list,
                                   send_threads, postLog,
                                   cached_webfingers,
                                   person_cache,
@@ -3610,7 +3616,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             if isGroup:
                 _sendToGroupMembers(session, base_dir, handle, port,
                                     post_json_object,
-                                    http_prefix, federationList, send_threads,
+                                    http_prefix, federation_list, send_threads,
                                     postLog, cached_webfingers, person_cache,
                                     debug, system_language,
                                     onion_domain, i2p_domain,
@@ -3849,7 +3855,7 @@ def _checkJsonSignature(base_dir: str, queueJson: {}) -> (bool, bool):
 def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           port: int, send_threads: [], postLog: [],
                           cached_webfingers: {}, person_cache: {},
-                          messageJson: {}, federationList: [],
+                          messageJson: {}, federation_list: [],
                           debug: bool, project_version: str,
                           max_followers: int, onion_domain: str,
                           signing_priv_key_pem: str, unit_test: bool) -> bool:
@@ -3870,7 +3876,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     domainFull = getFullDomain(domain, tempPort)
     if tempPort:
         fromPort = tempPort
-    if not domainPermitted(domain, federationList):
+    if not domainPermitted(domain, federation_list):
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
         return False
@@ -3889,7 +3895,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                   'not found within object')
         return False
     domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
-    if not domainPermitted(domainToFollow, federationList):
+    if not domainPermitted(domainToFollow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domainToFollow)
         return True
@@ -4054,7 +4060,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     return followedAccountAccepts(session, base_dir, http_prefix,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
-                                  messageJson['actor'], federationList,
+                                  messageJson['actor'], federation_list,
                                   messageJson, send_threads, postLog,
                                   cached_webfingers, person_cache,
                                   debug, project_version, True,
@@ -4069,7 +4075,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   domain: str,
                   onion_domain: str, i2p_domain: str,
                   port: int, proxy_type: str,
-                  federationList: [], max_replies: int,
+                  federation_list: [], max_replies: int,
                   domain_max_posts_per_day: int,
                   account_max_posts_per_day: int,
                   allow_deletion: bool, debug: bool, max_mentions: int,
@@ -4351,7 +4357,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                         cached_webfingers,
                         person_cache,
                         queueJson['post'],
-                        federationList,
+                        federation_list,
                         debug):
             print('Queue: Undo accepted from ' + keyId)
             if os.path.isfile(queueFilename):
@@ -4372,7 +4378,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                  cached_webfingers,
                                  person_cache,
                                  queueJson['post'],
-                                 federationList,
+                                 federation_list,
                                  debug, project_version,
                                  max_followers, onion_domain,
                                  signing_priv_key_pem, unit_test):
@@ -4396,7 +4402,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                send_threads, postLog,
                                cached_webfingers, person_cache,
                                queueJson['post'],
-                               federationList, debug):
+                               federation_list, debug):
             print('Queue: Accept/Reject received from ' + keyId)
             if os.path.isfile(queueFilename):
                 try:
@@ -4415,7 +4421,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                           cached_webfingers,
                           person_cache,
                           queueJson['post'],
-                          federationList,
+                          federation_list,
                           queueJson['postNickname'],
                           debug):
             if debug:
@@ -4499,7 +4505,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                domain,
                                onion_domain, i2p_domain,
                                port, proxy_type,
-                               federationList,
+                               federation_list,
                                debug,
                                queueFilename, destination,
                                max_replies, allow_deletion,

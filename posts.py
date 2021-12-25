@@ -526,7 +526,7 @@ def isCreateInsideAnnounce(item: {}) -> bool:
 def _getPosts(session, outboxUrl: str, maxPosts: int,
               max_mentions: int,
               max_emoji: int, maxAttachments: int,
-              federationList: [],
+              federation_list: [],
               person_cache: {}, raw: bool,
               simple: bool, debug: bool,
               project_version: str, http_prefix: str,
@@ -611,7 +611,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
                                 if urlPermitted(tagItem['icon']['url'],
-                                                federationList):
+                                                federation_list):
                                     emojiName = tagItem['name']
                                     emojiIcon = tagItem['icon']['url']
                                     emoji[emojiName] = emojiIcon
@@ -641,7 +641,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     if isinstance(thisItem['inReplyTo'], str):
                         # No replies to non-permitted domains
                         if not urlPermitted(thisItem['inReplyTo'],
-                                            federationList):
+                                            federation_list):
                             if debug:
                                 print('url not permitted ' +
                                       thisItem['inReplyTo'])
@@ -654,7 +654,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             if urlPermitted(attach['url'],
-                                            federationList):
+                                            federation_list):
                                 attachment.append([attach['name'],
                                                    attach['url']])
                             else:
@@ -745,7 +745,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
 def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    max_mentions: int,
                    max_emoji: int, maxAttachments: int,
-                   federationList: [],
+                   federation_list: [],
                    person_cache: {},
                    debug: bool,
                    project_version: str, http_prefix: str,
@@ -812,7 +812,7 @@ def _getPostsForBlockedDomains(base_dir: str,
                                session, outboxUrl: str, maxPosts: int,
                                max_mentions: int,
                                max_emoji: int, maxAttachments: int,
-                               federationList: [],
+                               federation_list: [],
                                person_cache: {},
                                debug: bool,
                                project_version: str, http_prefix: str,
@@ -2198,7 +2198,7 @@ def createReportPost(base_dir: str,
     return post_json_object
 
 
-def threadSendPost(session, postJsonStr: str, federationList: [],
+def threadSendPost(session, postJsonStr: str, federation_list: [],
                    inboxUrl: str, base_dir: str,
                    signatureHeaderJson: {}, postLog: [],
                    debug: bool) -> None:
@@ -2213,7 +2213,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
             print('Getting postJsonString for ' + inboxUrl)
         try:
             postResult, unauthorized, returnCode = \
-                postJsonString(session, postJsonStr, federationList,
+                postJsonString(session, postJsonStr, federation_list,
                                inboxUrl, signatureHeaderJson,
                                debug)
             if returnCode >= 500 and returnCode < 600:
@@ -2271,7 +2271,7 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
              commentsEnabled: bool,
              attachImageFilename: str, mediaType: str,
              imageDescription: str, city: str,
-             federationList: [], send_threads: [], postLog: [],
+             federation_list: [], send_threads: [], postLog: [],
              cached_webfingers: {}, person_cache: {},
              isArticle: bool, system_language: str,
              shared_items_federated_domains: [],
@@ -2404,7 +2404,7 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
         threadWithTrace(target=threadSendPost,
                         args=(session,
                               postJsonStr,
-                              federationList,
+                              federation_list,
                               inboxUrl, base_dir,
                               signatureHeaderJson.copy(),
                               postLog,
@@ -2612,7 +2612,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
                    nickname: str, domain: str, port: int,
                    toNickname: str, toDomain: str, toPort: int, cc: str,
                    http_prefix: str, saveToFile: bool, client_to_server: bool,
-                   federationList: [],
+                   federation_list: [],
                    send_threads: [], postLog: [], cached_webfingers: {},
                    person_cache: {}, debug: bool, project_version: str,
                    sharedItemsToken: str, groupAccount: bool,
@@ -2769,7 +2769,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
         threadWithTrace(target=threadSendPost,
                         args=(session,
                               postJsonStr,
-                              federationList,
+                              federation_list,
                               inboxUrl, base_dir,
                               signatureHeaderJson.copy(),
                               postLog,
@@ -2861,7 +2861,7 @@ def _isProfileUpdate(post_json_object: {}) -> bool:
 def _sendToNamedAddresses(session, base_dir: str,
                           nickname: str, domain: str,
                           onion_domain: str, i2p_domain: str, port: int,
-                          http_prefix: str, federationList: [],
+                          http_prefix: str, federation_list: [],
                           send_threads: [], postLog: [],
                           cached_webfingers: {}, person_cache: {},
                           post_json_object: {}, debug: bool,
@@ -3004,7 +3004,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
                        cc, fromHttpPrefix, True, client_to_server,
-                       federationList,
+                       federation_list,
                        send_threads, postLog, cached_webfingers,
                        person_cache, debug, project_version,
                        sharedItemsToken, groupAccount,
@@ -3014,7 +3014,7 @@ def _sendToNamedAddresses(session, base_dir: str,
 def sendToNamedAddressesThread(session, base_dir: str,
                                nickname: str, domain: str,
                                onion_domain: str, i2p_domain: str, port: int,
-                               http_prefix: str, federationList: [],
+                               http_prefix: str, federation_list: [],
                                send_threads: [], postLog: [],
                                cached_webfingers: {}, person_cache: {},
                                post_json_object: {}, debug: bool,
@@ -3029,7 +3029,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                         args=(session, base_dir,
                               nickname, domain,
                               onion_domain, i2p_domain, port,
-                              http_prefix, federationList,
+                              http_prefix, federation_list,
                               send_threads, postLog,
                               cached_webfingers, person_cache,
                               post_json_object, debug,
@@ -3090,7 +3090,7 @@ def sendToFollowers(session, base_dir: str,
                     nickname: str,
                     domain: str,
                     onion_domain: str, i2p_domain: str, port: int,
-                    http_prefix: str, federationList: [],
+                    http_prefix: str, federation_list: [],
                     send_threads: [], postLog: [],
                     cached_webfingers: {}, person_cache: {},
                     post_json_object: {}, debug: bool,
@@ -3214,7 +3214,7 @@ def sendToFollowers(session, base_dir: str,
                            nickname, fromDomain, port,
                            toNickname, toDomain, toPort,
                            cc, fromHttpPrefix, True, client_to_server,
-                           federationList,
+                           federation_list,
                            send_threads, postLog, cached_webfingers,
                            person_cache, debug, project_version,
                            sharedItemsToken, groupAccount,
@@ -3243,7 +3243,7 @@ def sendToFollowers(session, base_dir: str,
                                nickname, fromDomain, port,
                                toNickname, toDomain, toPort,
                                cc, fromHttpPrefix, True, client_to_server,
-                               federationList,
+                               federation_list,
                                send_threads, postLog, cached_webfingers,
                                person_cache, debug, project_version,
                                sharedItemsToken, groupAccount,
@@ -3263,7 +3263,7 @@ def sendToFollowersThread(session, base_dir: str,
                           nickname: str,
                           domain: str,
                           onion_domain: str, i2p_domain: str, port: int,
-                          http_prefix: str, federationList: [],
+                          http_prefix: str, federation_list: [],
                           send_threads: [], postLog: [],
                           cached_webfingers: {}, person_cache: {},
                           post_json_object: {}, debug: bool,
@@ -3278,7 +3278,7 @@ def sendToFollowersThread(session, base_dir: str,
                         args=(session, base_dir,
                               nickname, domain,
                               onion_domain, i2p_domain, port,
-                              http_prefix, federationList,
+                              http_prefix, federation_list,
                               send_threads, postLog,
                               cached_webfingers, person_cache,
                               post_json_object.copy(), debug,
@@ -4081,7 +4081,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
         return
     person_cache = {}
     cached_webfingers = {}
-    federationList = []
+    federation_list = []
     groupAccount = False
     if nickname.startswith('!'):
         nickname = nickname[1:]
@@ -4121,7 +4121,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     max_emoji = 10
     maxAttachments = 5
     _getPosts(session, personUrl, 30, max_mentions, max_emoji,
-              maxAttachments, federationList,
+              maxAttachments, federation_list,
               person_cache, raw, simple, debug,
               project_version, http_prefix, originDomain, system_language,
               signing_priv_key_pem)
@@ -4142,7 +4142,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
         return domainList
     person_cache = {}
     cached_webfingers = {}
-    federationList = []
+    federation_list = []
 
     domainFull = getFullDomain(domain, port)
     handle = http_prefix + "://" + domainFull + "/@" + nickname
@@ -4170,7 +4170,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     maxAttachments = 5
     postDomains = \
         getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
-                       maxAttachments, federationList,
+                       maxAttachments, federation_list,
                        person_cache, debug,
                        project_version, http_prefix, domain,
                        wordFrequency, domainList, system_language,
@@ -4238,7 +4238,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
         return {}
     person_cache = {}
     cached_webfingers = {}
-    federationList = []
+    federation_list = []
 
     domainFull = getFullDomain(domain, port)
     handle = http_prefix + "://" + domainFull + "/@" + nickname
@@ -4268,7 +4268,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     postDomains = \
         getPostDomains(session, personUrl, maxPosts,
                        max_mentions, max_emoji,
-                       maxAttachments, federationList,
+                       maxAttachments, federation_list,
                        person_cache, debug,
                        project_version, http_prefix, domain,
                        wordFrequency, [], system_language,
@@ -4283,7 +4283,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
         _getPostsForBlockedDomains(base_dir, session, personUrl, maxPosts,
                                    max_mentions,
                                    max_emoji, maxAttachments,
-                                   federationList,
+                                   federation_list,
                                    person_cache,
                                    debug,
                                    project_version, http_prefix,

@@ -722,7 +722,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # is the keyId (actor) valid?
-        if not urlPermitted(keyId, self.server.federationList):
+        if not urlPermitted(keyId, self.server.federation_list):
             if self.server.debug:
                 print('AUTH: Secure mode GET request not permitted: ' + keyId)
             return False
@@ -1285,7 +1285,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.port,
                                    self.server.recentPostsCache,
                                    self.server.followers_threads,
-                                   self.server.federationList,
+                                   self.server.federation_list,
                                    self.server.send_threads,
                                    self.server.postLog,
                                    self.server.cached_webfingers,
@@ -3046,7 +3046,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   followingDomain,
                                   followingActor,
                                   followingPort, http_prefix,
-                                  False, self.server.federationList,
+                                  False, self.server.federation_list,
                                   self.server.send_threads,
                                   self.server.postLog,
                                   self.server.cached_webfingers,
@@ -7690,7 +7690,7 @@ class PubServer(BaseHTTPRequestHandler):
         announceJson = \
             createAnnounce(self.server.session,
                            base_dir,
-                           self.server.federationList,
+                           self.server.federation_list,
                            self.postToNickname,
                            domain, port,
                            announceToStr,
@@ -7909,7 +7909,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              followerNickname,
                                              domain, port,
                                              followingHandle,
-                                             self.server.federationList,
+                                             self.server.federation_list,
                                              self.server.send_threads,
                                              self.server.postLog,
                                              self.server.cached_webfingers,
@@ -8064,7 +8064,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           followerNickname,
                                           domain, port,
                                           followingHandle,
-                                          self.server.federationList,
+                                          self.server.federation_list,
                                           self.server.send_threads,
                                           self.server.postLog,
                                           self.server.cached_webfingers,
@@ -8901,7 +8901,7 @@ class PubServer(BaseHTTPRequestHandler):
         bookmark(self.server.recentPostsCache,
                  self.server.session,
                  base_dir,
-                 self.server.federationList,
+                 self.server.federation_list,
                  self.postToNickname,
                  domain, port,
                  ccList,
@@ -9027,7 +9027,7 @@ class PubServer(BaseHTTPRequestHandler):
         undoBookmark(self.server.recentPostsCache,
                      self.server.session,
                      base_dir,
-                     self.server.federationList,
+                     self.server.federation_list,
                      self.postToNickname,
                      domain, port,
                      ccList,
@@ -18288,7 +18288,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.unit_test:
             if not inboxPermittedMessage(self.server.domain,
                                          messageJson,
-                                         self.server.federationList):
+                                         self.server.federation_list):
                 if self.server.debug:
                     # https://www.youtube.com/watch?v=K3PrSj9XEu4
                     print('DEBUG: Ah Ah Ah')
@@ -18734,7 +18734,7 @@ def runDaemon(content_license_url: str,
     saveDomainQrcode(base_dir, http_prefix, httpd.domainFull)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
-    httpd.federationList = fed_list.copy()
+    httpd.federation_list = fed_list.copy()
     httpd.shared_items_federated_domains = \
         shared_items_federated_domains.copy()
     httpd.base_dir = base_dir
@@ -18928,7 +18928,7 @@ def runDaemon(content_license_url: str,
                               httpd.person_cache, httpd.inbox_queue,
                               domain, onion_domain, i2p_domain,
                               port, proxy_type,
-                              httpd.federationList,
+                              httpd.federation_list,
                               max_replies,
                               domain_max_posts_per_day,
                               account_max_posts_per_day,

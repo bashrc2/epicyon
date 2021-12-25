@@ -115,7 +115,7 @@ def announcedByPerson(isAnnounced: bool, postActor: str,
     return False
 
 
-def createAnnounce(session, base_dir: str, federationList: [],
+def createAnnounce(session, base_dir: str, federation_list: [],
                    nickname: str, domain: str, port: int,
                    toUrl: str, ccUrl: str, http_prefix: str,
                    objectUrl: str, saveToFile: bool,
@@ -130,7 +130,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
     followers url objectUrl is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not urlPermitted(objectUrl, federation_list):
         return None
 
     domain = removeDomainPort(domain)
@@ -178,7 +178,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
         sendSignedJson(newAnnounce, session, base_dir,
                        nickname, domain, port,
                        announceNickname, announceDomain, announcePort, None,
-                       http_prefix, True, client_to_server, federationList,
+                       http_prefix, True, client_to_server, federation_list,
                        send_threads, postLog, cached_webfingers, person_cache,
                        debug, project_version, None, groupAccount,
                        signing_priv_key_pem, 639633)
@@ -186,7 +186,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
     return newAnnounce
 
 
-def announcePublic(session, base_dir: str, federationList: [],
+def announcePublic(session, base_dir: str, federation_list: [],
                    nickname: str, domain: str, port: int, http_prefix: str,
                    objectUrl: str, client_to_server: bool,
                    send_threads: [], postLog: [],
@@ -199,7 +199,7 @@ def announcePublic(session, base_dir: str, federationList: [],
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = localActorUrl(http_prefix, nickname, fromDomain) + '/followers'
-    return createAnnounce(session, base_dir, federationList,
+    return createAnnounce(session, base_dir, federation_list,
                           nickname, domain, port,
                           toUrl, ccUrl, http_prefix,
                           objectUrl, True, client_to_server,

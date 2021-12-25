@@ -679,7 +679,7 @@ def _testThreads():
 
 
 def createServerAlice(path: str, domain: str, port: int,
-                      bobAddress: str, federationList: [],
+                      bobAddress: str, federation_list: [],
                       hasFollows: bool, hasPosts: bool,
                       send_threads: []):
     print('Creating test server: Alice on port ' + str(port))
@@ -707,9 +707,9 @@ def createServerAlice(path: str, domain: str, port: int,
     assert setRole(path, nickname, domain, 'guru')
     if hasFollows:
         followPerson(path, nickname, domain, 'bob', bobAddress,
-                     federationList, False, False)
+                     federation_list, False, False)
         followerOfPerson(path, nickname, domain, 'bob', bobAddress,
-                         federationList, False, False)
+                         federation_list, False, False)
     if hasPosts:
         testFollowersOnly = False
         testSaveToFile = True
@@ -815,7 +815,7 @@ def createServerAlice(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, max_mentions, max_emoji, False,
+              http_prefix, federation_list, max_mentions, max_emoji, False,
               proxy_type, max_replies,
               domain_max_posts_per_day, account_max_posts_per_day,
               allow_deletion, True, True, False, send_threads,
@@ -823,7 +823,7 @@ def createServerAlice(path: str, domain: str, port: int,
 
 
 def createServerBob(path: str, domain: str, port: int,
-                    aliceAddress: str, federationList: [],
+                    aliceAddress: str, federation_list: [],
                     hasFollows: bool, hasPosts: bool,
                     send_threads: []):
     print('Creating test server: Bob on port ' + str(port))
@@ -850,9 +850,9 @@ def createServerBob(path: str, domain: str, port: int,
     deleteAllPosts(path, nickname, domain, 'outbox')
     if hasFollows and aliceAddress:
         followPerson(path, nickname, domain,
-                     'alice', aliceAddress, federationList, False, False)
+                     'alice', aliceAddress, federation_list, False, False)
         followerOfPerson(path, nickname, domain,
-                         'alice', aliceAddress, federationList, False, False)
+                         'alice', aliceAddress, federation_list, False, False)
     if hasPosts:
         testFollowersOnly = False
         testSaveToFile = True
@@ -957,14 +957,14 @@ def createServerBob(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, max_mentions, max_emoji, False,
+              http_prefix, federation_list, max_mentions, max_emoji, False,
               proxy_type, max_replies,
               domain_max_posts_per_day, account_max_posts_per_day,
               allow_deletion, True, True, False, send_threads,
               False)
 
 
-def createServerEve(path: str, domain: str, port: int, federationList: [],
+def createServerEve(path: str, domain: str, port: int, federation_list: [],
                     hasFollows: bool, hasPosts: bool,
                     send_threads: []):
     print('Creating test server: Eve on port ' + str(port))
@@ -1027,13 +1027,13 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, max_mentions, max_emoji, False,
+              http_prefix, federation_list, max_mentions, max_emoji, False,
               proxy_type, max_replies, allow_deletion, True, True, False,
               send_threads, False)
 
 
 def createServerGroup(path: str, domain: str, port: int,
-                      federationList: [],
+                      federation_list: [],
                       hasFollows: bool, hasPosts: bool,
                       send_threads: []):
     print('Creating test server: Group on port ' + str(port))
@@ -1099,7 +1099,7 @@ def createServerGroup(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, max_mentions, max_emoji, False,
+              http_prefix, federation_list, max_mentions, max_emoji, False,
               proxy_type, max_replies,
               domain_max_posts_per_day, account_max_posts_per_day,
               allow_deletion, True, True, False, send_threads,
@@ -1132,7 +1132,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     bobDir = base_dir + '/.tests/bob'
     bobDomain = '127.0.0.100'
     bobPort = 61936
-    federationList = [bobDomain, aliceDomain]
+    federation_list = [bobDomain, aliceDomain]
     aliceSendThreads = []
     bobSendThreads = []
     bobAddress = bobDomain + ':' + str(bobPort)
@@ -1147,7 +1147,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     thrAlice = \
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               aliceSendThreads),
                         daemon=True)
 
@@ -1161,7 +1161,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     thrBob = \
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               bobSendThreads),
                         daemon=True)
 
@@ -1216,7 +1216,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
                  followersOnly,
                  saveToFile, client_to_server, True,
                  attachedImageFilename, mediaType,
-                 attachedImageDescription, city, federationList,
+                 attachedImageDescription, city, federation_list,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, system_language,
                  aliceSharedItemsFederatedDomains,
@@ -1308,10 +1308,10 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
 
     aliceDomainStr = aliceDomain + ':' + str(alicePort)
     followerOfPerson(bobDir, 'bob', bobDomain, 'alice',
-                     aliceDomainStr, federationList, False, False)
+                     aliceDomainStr, federation_list, False, False)
     bobDomainStr = bobDomain + ':' + str(bobPort)
     followPerson(aliceDir, 'alice', aliceDomain, 'bob',
-                 bobDomainStr, federationList, False, False)
+                 bobDomainStr, federation_list, False, False)
 
     sessionBob = createSession(proxy_type)
     bobPostLog = []
@@ -1327,7 +1327,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
             outboxPostFilename = outboxPath + '/' + name
     assert statusNumber > 0
     assert outboxPostFilename
-    assert likePost({}, sessionBob, bobDir, federationList,
+    assert likePost({}, sessionBob, bobDir, federation_list,
                     'bob', bobDomain, bobPort, http_prefix,
                     'alice', aliceDomain, alicePort, [],
                     statusNumber, False, bobSendThreads, bobPostLog,
@@ -1348,7 +1348,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print("Bob reacts to Alice's post")
 
-    assert reactionPost({}, sessionBob, bobDir, federationList,
+    assert reactionPost({}, sessionBob, bobDir, federation_list,
                         'bob', bobDomain, bobPort, http_prefix,
                         'alice', aliceDomain, alicePort, [],
                         statusNumber, '😀',
@@ -1384,7 +1384,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     print('outbox items before announce: ' + str(outboxBeforeAnnounceCount))
     assert outboxBeforeAnnounceCount == 0
     assert beforeAnnounceCount == 0
-    announcePublic(sessionBob, bobDir, federationList,
+    announcePublic(sessionBob, bobDir, federation_list,
                    'bob', bobDomain, bobPort, http_prefix,
                    objectUrl,
                    False, bobSendThreads, bobPostLog,
@@ -1441,7 +1441,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     system_language = 'en'
     http_prefix = 'http'
     proxy_type = None
-    federationList = []
+    federation_list = []
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -1471,7 +1471,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     thrAlice = \
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               aliceSendThreads),
                         daemon=True)
 
@@ -1485,7 +1485,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     thrBob = \
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               bobSendThreads),
                         daemon=True)
 
@@ -1530,7 +1530,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                           'alice', aliceDomain, alicePort, http_prefix,
                           'bob', bobDomain, bobActor,
                           bobPort, http_prefix,
-                          client_to_server, federationList,
+                          client_to_server, federation_list,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
                           True, __version__, signing_priv_key_pem)
@@ -1577,7 +1577,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                  'bob', bobDomain, bobPort, ccUrl,
                  http_prefix, 'Alice message', followersOnly, saveToFile,
                  client_to_server, True,
-                 None, None, None, city, federationList,
+                 None, None, None, city, federation_list,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, system_language,
                  aliceSharedItemsFederatedDomains,
@@ -1630,7 +1630,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     system_language = 'en'
     http_prefix = 'http'
     proxy_type = None
-    federationList = []
+    federation_list = []
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -1663,7 +1663,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     thrAlice = \
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               aliceSendThreads),
                         daemon=True)
 
@@ -1677,7 +1677,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     thrBob = \
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               bobSendThreads),
                         daemon=True)
 
@@ -1747,7 +1747,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                           'alice', aliceDomain, alicePort, http_prefix,
                           'bob', bobDomain, bobActor,
                           bobPort, http_prefix,
-                          client_to_server, federationList,
+                          client_to_server, federation_list,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
                           True, __version__, signing_priv_key_pem)
@@ -1928,7 +1928,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                  'bob', bobDomain, bobPort, ccUrl,
                  http_prefix, 'Alice message', followersOnly, saveToFile,
                  client_to_server, True,
-                 None, None, None, city, federationList,
+                 None, None, None, city, federation_list,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, system_language,
                  aliceSharedItemsFederatedDomains,
@@ -2036,7 +2036,7 @@ def testGroupFollow(base_dir: str) -> None:
     # system_language = 'en'
     http_prefix = 'http'
     proxy_type = None
-    federationList = []
+    federation_list = []
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -2073,7 +2073,7 @@ def testGroupFollow(base_dir: str) -> None:
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort,
                               testgroupAddress,
-                              federationList, False, True,
+                              federation_list, False, True,
                               aliceSendThreads),
                         daemon=True)
 
@@ -2087,7 +2087,7 @@ def testGroupFollow(base_dir: str) -> None:
     thrBob = \
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, None,
-                              federationList, False, False,
+                              federation_list, False, False,
                               bobSendThreads),
                         daemon=True)
 
@@ -2101,7 +2101,7 @@ def testGroupFollow(base_dir: str) -> None:
     thrGroup = \
         threadWithTrace(target=createServerGroup,
                         args=(testgroupDir, testgroupDomain, testgroupPort,
-                              federationList, False, False,
+                              federation_list, False, False,
                               testgroupSendThreads),
                         daemon=True)
 
@@ -2186,7 +2186,7 @@ def testGroupFollow(base_dir: str) -> None:
                           'alice', aliceDomain, alicePort, http_prefix,
                           'testgroup', testgroupDomain, testgroupActor,
                           testgroupPort, http_prefix,
-                          client_to_server, federationList,
+                          client_to_server, federation_list,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
                           True, __version__, signing_priv_key_pem)
@@ -2263,7 +2263,7 @@ def testGroupFollow(base_dir: str) -> None:
                           'bob', bobDomain, bobPort, http_prefix,
                           'testgroup', testgroupDomain, testgroupActor,
                           testgroupPort, http_prefix,
-                          client_to_server, federationList,
+                          client_to_server, federation_list,
                           bobSendThreads, bobPostLog,
                           bobCachedWebfingers, bobPersonCache,
                           True, __version__, signing_priv_key_pem)
@@ -2351,7 +2351,7 @@ def testGroupFollow(base_dir: str) -> None:
                  'testgroup', testgroupDomain, testgroupPort, ccUrl,
                  http_prefix, "Alice group message", followersOnly,
                  saveToFile, client_to_server, True,
-                 None, None, None, city, federationList,
+                 None, None, None, city, federation_list,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, system_language,
                  aliceSharedItemsFederatedDomains,
@@ -2441,7 +2441,7 @@ def _testFollowersOfPerson(base_dir: str) -> None:
     password = 'birb'
     port = 80
     http_prefix = 'https'
-    federationList = []
+    federation_list = []
     base_dir = currDir + '/.tests_followersofperson'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2460,18 +2460,18 @@ def _testFollowersOfPerson(base_dir: str) -> None:
 
     clearFollows(base_dir, nickname, domain)
     followPerson(base_dir, nickname, domain, 'maxboardroom', domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, 'drokk', domain, 'ultrapancake', domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     # deliberate duplication
     followPerson(base_dir, 'drokk', domain, 'ultrapancake', domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, 'sausagedog', domain, 'ultrapancake', domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'ultrapancake', domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'someother', 'randodomain.net',
-                 federationList, False, False)
+                 federation_list, False, False)
 
     followList = getFollowersOfPerson(base_dir, 'ultrapancake', domain)
     assert len(followList) == 3
@@ -2491,7 +2491,7 @@ def _testNoOfFollowersOnDomain(base_dir: str) -> None:
     password = 'birb'
     port = 80
     http_prefix = 'https'
-    federationList = []
+    federation_list = []
     base_dir = currDir + '/.tests_nooffollowersOndomain'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2509,26 +2509,26 @@ def _testNoOfFollowersOnDomain(base_dir: str) -> None:
                  http_prefix, True, False, password)
 
     followPerson(base_dir, 'drokk', otherdomain, nickname, domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, 'sausagedog', otherdomain, nickname, domain,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, 'maxboardroom', otherdomain, nickname, domain,
-                 federationList, False, False)
+                 federation_list, False, False)
 
     followerOfPerson(base_dir, nickname, domain,
                      'cucumber', 'sandwiches.party',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain,
                      'captainsensible', 'damned.zone',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'pilchard', 'zombies.attack',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'drokk', otherdomain,
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'sausagedog', otherdomain,
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'maxboardroom', otherdomain,
-                     federationList, False, False)
+                     federation_list, False, False)
 
     followersOnOtherDomain = \
         noOfFollowersOnDomain(base_dir, nickname + '@' + domain, otherdomain)
@@ -2553,7 +2553,7 @@ def _testGroupFollowers(base_dir: str) -> None:
     password = 'somepass'
     port = 80
     http_prefix = 'https'
-    federationList = []
+    federation_list = []
     base_dir = currDir + '/.tests_testgroupfollowers'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2564,17 +2564,17 @@ def _testGroupFollowers(base_dir: str) -> None:
 
     clearFollowers(base_dir, nickname, domain)
     followerOfPerson(base_dir, nickname, domain, 'badger', 'wild.domain',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'squirrel', 'wild.domain',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'rodent', 'wild.domain',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'utterly', 'clutterly.domain',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'zonked', 'zzz.domain',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'nap', 'zzz.domain',
-                     federationList, False, False)
+                     federation_list, False, False)
 
     grouped = groupFollowersByDomain(base_dir, nickname, domain)
     assert len(grouped.items()) == 3
@@ -2597,7 +2597,7 @@ def _testFollows(base_dir: str) -> None:
     password = 'mypass'
     port = 80
     http_prefix = 'https'
-    federationList = ['wild.com', 'mesh.com']
+    federation_list = ['wild.com', 'mesh.com']
     base_dir = currDir + '/.tests_testfollows'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2608,15 +2608,15 @@ def _testFollows(base_dir: str) -> None:
 
     clearFollows(base_dir, nickname, domain)
     followPerson(base_dir, nickname, domain, 'badger', 'wild.com',
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'squirrel', 'secret.com',
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'rodent', 'drainpipe.com',
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'batman', 'mesh.com',
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
-                 federationList, False, False)
+                 federation_list, False, False)
 
     accountDir = acctDir(base_dir, nickname, domain)
     f = open(accountDir + '/following.txt', 'r')
@@ -2626,7 +2626,7 @@ def _testFollows(base_dir: str) -> None:
         testDomain = testDomain.replace('\n', '').replace('\r', '')
         if testDomain == 'mesh.com':
             domainFound = True
-        if testDomain not in federationList:
+        if testDomain not in federation_list:
             print(testDomain)
             assert(False)
 
@@ -2644,22 +2644,22 @@ def _testFollows(base_dir: str) -> None:
 
     clearFollowers(base_dir, nickname, domain)
     followerOfPerson(base_dir, nickname, domain, 'badger', 'wild.com',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'squirrel', 'secret.com',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'rodent', 'drainpipe.com',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'batman', 'mesh.com',
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
-                     federationList, False, False)
+                     federation_list, False, False)
 
     accountDir = acctDir(base_dir, nickname, domain)
     f = open(accountDir + '/followers.txt', 'r')
     for followerDomain in f:
         testDomain = followerDomain.split('@')[1]
         testDomain = testDomain.replace('\n', '').replace('\r', '')
-        if testDomain not in federationList:
+        if testDomain not in federation_list:
             print(testDomain)
             assert(False)
 
@@ -2788,7 +2788,7 @@ def testClientToServer(base_dir: str):
     system_language = 'en'
     http_prefix = 'http'
     proxy_type = None
-    federationList = []
+    federation_list = []
     low_bandwidth = False
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -2818,7 +2818,7 @@ def testClientToServer(base_dir: str):
     thrAlice = \
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               aliceSendThreads),
                         daemon=True)
 
@@ -2832,7 +2832,7 @@ def testClientToServer(base_dir: str):
     thrBob = \
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               bobSendThreads),
                         daemon=True)
 
@@ -5068,7 +5068,7 @@ def testUpdateActor(base_dir: str):
 
     http_prefix = 'http'
     proxy_type = None
-    federationList = []
+    federation_list = []
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests',
@@ -5092,7 +5092,7 @@ def testUpdateActor(base_dir: str):
     thrAlice = \
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federationList, False, False,
+                              federation_list, False, False,
                               aliceSendThreads),
                         daemon=True)
 

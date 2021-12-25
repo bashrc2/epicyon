@@ -69,7 +69,7 @@ def likedByPerson(post_json_object: {}, nickname: str, domain: str) -> bool:
 
 
 def _like(recentPostsCache: {},
-          session, base_dir: str, federationList: [],
+          session, base_dir: str, federation_list: [],
           nickname: str, domain: str, port: int,
           ccList: [], http_prefix: str,
           objectUrl: str, actorLiked: str,
@@ -83,7 +83,7 @@ def _like(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was liked
     object is typically the url of the message which was liked
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not urlPermitted(objectUrl, federation_list):
         return None
 
     fullDomain = getFullDomain(domain, port)
@@ -135,7 +135,7 @@ def _like(recentPostsCache: {},
                        nickname, domain, port,
                        likedPostNickname, likedPostDomain, likedPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
-                       http_prefix, True, client_to_server, federationList,
+                       http_prefix, True, client_to_server, federation_list,
                        send_threads, postLog, cached_webfingers, person_cache,
                        debug, project_version, None, groupAccount,
                        signing_priv_key_pem, 7367374)
@@ -144,7 +144,7 @@ def _like(recentPostsCache: {},
 
 
 def likePost(recentPostsCache: {},
-             session, base_dir: str, federationList: [],
+             session, base_dir: str, federation_list: [],
              nickname: str, domain: str, port: int, http_prefix: str,
              likeNickname: str, likeDomain: str, likePort: int,
              ccList: [],
@@ -161,7 +161,7 @@ def likePost(recentPostsCache: {},
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
     return _like(recentPostsCache,
-                 session, base_dir, federationList, nickname, domain, port,
+                 session, base_dir, federation_list, nickname, domain, port,
                  ccList, http_prefix, objectUrl, actorLiked, client_to_server,
                  send_threads, postLog, person_cache, cached_webfingers,
                  debug, project_version, signing_priv_key_pem)

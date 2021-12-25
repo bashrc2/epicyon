@@ -291,13 +291,13 @@ def downloadHtml(signing_priv_key_pem: str,
 
 
 def postJson(http_prefix: str, domainFull: str,
-             session, post_json_object: {}, federationList: [],
+             session, post_json_object: {}, federation_list: [],
              inboxUrl: str, headers: {}, timeoutSec: int = 60,
              quiet: bool = False) -> str:
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
-    if not urlPermitted(inboxUrl, federationList):
+    if not urlPermitted(inboxUrl, federation_list):
         if not quiet:
             print('postJson: ' + inboxUrl + ' not permitted')
         return None
@@ -340,7 +340,7 @@ def postJson(http_prefix: str, domainFull: str,
 
 
 def postJsonString(session, postJsonStr: str,
-                   federationList: [],
+                   federation_list: [],
                    inboxUrl: str,
                    headers: {},
                    debug: bool,
@@ -389,12 +389,12 @@ def postJsonString(session, postJsonStr: str,
     return True, False, 0
 
 
-def postImage(session, attachImageFilename: str, federationList: [],
+def postImage(session, attachImageFilename: str, federation_list: [],
               inboxUrl: str, headers: {}) -> str:
     """Post an image to the inbox of another person or outbox via c2s
     """
     # check that we are posting to a permitted domain
-    if not urlPermitted(inboxUrl, federationList):
+    if not urlPermitted(inboxUrl, federation_list):
         print('postJson: ' + inboxUrl + ' not permitted')
         return None
 

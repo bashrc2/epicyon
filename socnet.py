@@ -33,7 +33,7 @@ def instancesGraph(base_dir: str, handles: str,
 
     person_cache = {}
     cached_webfingers = {}
-    federationList = []
+    federation_list = []
     max_mentions = 99
     max_emoji = 99
     maxAttachments = 5
@@ -75,7 +75,7 @@ def instancesGraph(base_dir: str, handles: str,
         wordFrequency = {}
         postDomains = \
             getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
-                           maxAttachments, federationList,
+                           maxAttachments, federation_list,
                            person_cache, debug,
                            project_version, http_prefix, domain,
                            wordFrequency, [], system_language,

@@ -61,7 +61,7 @@ def validEmojiContent(emojiContent: str) -> bool:
 
 
 def _reaction(recentPostsCache: {},
-              session, base_dir: str, federationList: [],
+              session, base_dir: str, federation_list: [],
               nickname: str, domain: str, port: int,
               ccList: [], http_prefix: str,
               objectUrl: str, emojiContent: str,
@@ -76,7 +76,7 @@ def _reaction(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was reaction
     object is typically the url of the message which was reaction
     """
-    if not urlPermitted(objectUrl, federationList):
+    if not urlPermitted(objectUrl, federation_list):
         return None
     if not validEmojiContent(emojiContent):
         print('_reaction: Invalid emoji reaction: "' + emojiContent + '"')
@@ -137,7 +137,7 @@ def _reaction(recentPostsCache: {},
                        reactionPostNickname,
                        reactionPostDomain, reactionPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
-                       http_prefix, True, client_to_server, federationList,
+                       http_prefix, True, client_to_server, federation_list,
                        send_threads, postLog, cached_webfingers, person_cache,
                        debug, project_version, None, groupAccount,
                        signing_priv_key_pem, 7165392)
@@ -146,7 +146,7 @@ def _reaction(recentPostsCache: {},
 
 
 def reactionPost(recentPostsCache: {},
-                 session, base_dir: str, federationList: [],
+                 session, base_dir: str, federation_list: [],
                  nickname: str, domain: str, port: int, http_prefix: str,
                  reactionNickname: str, reactionDomain: str, reactionPort: int,
                  ccList: [],
@@ -165,7 +165,7 @@ def reactionPost(recentPostsCache: {},
     objectUrl = actorReaction + '/statuses/' + str(reactionStatusNumber)
 
     return _reaction(recentPostsCache,
-                     session, base_dir, federationList,
+                     session, base_dir, federation_list,
                      nickname, domain, port,
                      ccList, http_prefix, objectUrl, emojiContent,
                      actorReaction, client_to_server,

@@ -295,7 +295,7 @@ parser.add_argument('--htmlpost', dest='htmlpost', type=str, default=None,
                     help='Show the html for a given activitypub url')
 parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
-parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
+parser.add_argument('-f', '--federate', nargs='+', dest='federation_list',
                     help='Specify federation list separated by spaces')
 parser.add_argument('--federateshares', nargs='+',
                     dest='shared_items_federated_domains',
@@ -1148,23 +1148,23 @@ nickname = None
 if args.nickname:
     nickname = nickname
 
-federationList = []
-if args.federationList:
-    if len(args.federationList) == 1:
-        if not (args.federationList[0].lower() == 'any' or
-                args.federationList[0].lower() == 'all' or
-                args.federationList[0].lower() == '*'):
-            for federationDomain in args.federationList:
+federation_list = []
+if args.federation_list:
+    if len(args.federation_list) == 1:
+        if not (args.federation_list[0].lower() == 'any' or
+                args.federation_list[0].lower() == 'all' or
+                args.federation_list[0].lower() == '*'):
+            for federationDomain in args.federation_list:
                 if '@' in federationDomain:
                     print(federationDomain +
                           ': Federate with domains, not individual accounts')
                     sys.exit()
-            federationList = args.federationList.copy()
-        setConfigParam(base_dir, 'federationList', federationList)
+            federation_list = args.federation_list.copy()
+        setConfigParam(base_dir, 'federation_list', federation_list)
 else:
-    configFederationList = getConfigParam(base_dir, 'federationList')
+    configFederationList = getConfigParam(base_dir, 'federation_list')
     if configFederationList:
-        federationList = configFederationList
+        federation_list = configFederationList
 
 proxy_type = None
 if args.tor or domain.endswith('.onion'):
@@ -1195,7 +1195,7 @@ if args.approve:
                                http_prefix,
                                args.nickname, domain, port,
                                args.approve,
-                               federationList,
+                               federation_list,
                                send_threads, postLog,
                                cached_webfingers, person_cache,
                                debug, __version__,
@@ -1223,7 +1223,7 @@ if args.deny:
                             http_prefix,
                             args.nickname, domain, port,
                             args.deny,
-                            federationList,
+                            federation_list,
                             send_threads, postLog,
                             cached_webfingers, person_cache,
                             debug, __version__,
@@ -2601,8 +2601,8 @@ if args.desktop:
                      args.debug, args.low_bandwidth)
     sys.exit()
 
-if federationList:
-    print('Federating with: ' + str(federationList))
+if federation_list:
+    print('Federating with: ' + str(federation_list))
 if args.shared_items_federated_domains:
     print('Federating shared items with: ' +
           args.shared_items_federated_domains)
@@ -2983,17 +2983,17 @@ if args.testdata:
     domainFull = domain + ':' + str(port)
     clearFollows(base_dir, nickname, domain)
     followPerson(base_dir, nickname, domain, 'maxboardroom', domainFull,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'ultrapancake', domainFull,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'sausagedog', domainFull,
-                 federationList, False, False)
+                 federation_list, False, False)
     followPerson(base_dir, nickname, domain, 'drokk', domainFull,
-                 federationList, False, False)
+                 federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'drokk', domainFull,
-                     federationList, False, False)
+                     federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'maxboardroom', domainFull,
-                     federationList, False, False)
+                     federation_list, False, False)
     setConfigParam(base_dir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions
@@ -3251,7 +3251,7 @@ if __name__ == "__main__":
               args.yt_replace_domain,
               args.twitter_replacement_domain,
               port, proxy_port, http_prefix,
-              federationList, args.max_mentions,
+              federation_list, args.max_mentions,
               args.max_emoji, args.secure_mode,
               proxy_type, args.max_replies,
               args.domain_max_posts_per_day,
