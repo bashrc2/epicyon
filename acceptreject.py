@@ -183,7 +183,7 @@ def _acceptFollow(base_dir: str, domain: str, messageJson: {},
 
 def receiveAcceptReject(session, base_dir: str,
                         http_prefix: str, domain: str, port: int,
-                        sendThreads: [], postLog: [], cachedWebfingers: {},
+                        send_threads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, messageJson: {}, federationList: [],
                         debug: bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer

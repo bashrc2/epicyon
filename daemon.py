@@ -1286,7 +1286,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.recentPostsCache,
                                    self.server.followersThreads,
                                    self.server.federationList,
-                                   self.server.sendThreads,
+                                   self.server.send_threads,
                                    self.server.postLog,
                                    self.server.cachedWebfingers,
                                    self.server.personCache,
@@ -3047,7 +3047,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   followingActor,
                                   followingPort, http_prefix,
                                   False, self.server.federationList,
-                                  self.server.sendThreads,
+                                  self.server.send_threads,
                                   self.server.postLog,
                                   self.server.cachedWebfingers,
                                   self.server.personCache, debug,
@@ -7696,7 +7696,7 @@ class PubServer(BaseHTTPRequestHandler):
                            announceToStr,
                            None, http_prefix,
                            repeatUrl, False, False,
-                           self.server.sendThreads,
+                           self.server.send_threads,
                            self.server.postLog,
                            self.server.personCache,
                            self.server.cachedWebfingers,
@@ -7910,7 +7910,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              domain, port,
                                              followingHandle,
                                              self.server.federationList,
-                                             self.server.sendThreads,
+                                             self.server.send_threads,
                                              self.server.postLog,
                                              self.server.cachedWebfingers,
                                              self.server.personCache,
@@ -8065,7 +8065,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain, port,
                                           followingHandle,
                                           self.server.federationList,
-                                          self.server.sendThreads,
+                                          self.server.send_threads,
                                           self.server.postLog,
                                           self.server.cachedWebfingers,
                                           self.server.personCache,
@@ -8907,7 +8907,7 @@ class PubServer(BaseHTTPRequestHandler):
                  ccList,
                  http_prefix,
                  bookmarkUrl, bookmarkActor, False,
-                 self.server.sendThreads,
+                 self.server.send_threads,
                  self.server.postLog,
                  self.server.personCache,
                  self.server.cachedWebfingers,
@@ -9033,7 +9033,7 @@ class PubServer(BaseHTTPRequestHandler):
                      ccList,
                      http_prefix,
                      bookmarkUrl, undoActor, False,
-                     self.server.sendThreads,
+                     self.server.send_threads,
                      self.server.postLog,
                      self.server.personCache,
                      self.server.cachedWebfingers,
@@ -18357,13 +18357,13 @@ class EpicyonServer(ThreadingHTTPServer):
             return HTTPServer.handle_error(self, request, client_address)
 
 
-def runPostsQueue(base_dir: str, sendThreads: [], debug: bool,
+def runPostsQueue(base_dir: str, send_threads: [], debug: bool,
                   timeoutMins: int) -> None:
     """Manages the threads used to send posts
     """
     while True:
         time.sleep(1)
-        removeDormantThreads(base_dir, sendThreads, debug, timeoutMins)
+        removeDormantThreads(base_dir, send_threads, debug, timeoutMins)
 
 
 def runSharesExpire(versionNumber: str, base_dir: str) -> None:
@@ -18482,7 +18482,7 @@ def runDaemon(content_license_url: str,
               allow_deletion: bool = False,
               debug: bool = False, unit_test: bool = False,
               instance_only_skills_search: bool = False,
-              sendThreads: [] = [],
+              send_threads: [] = [],
               manualFollowerApproval: bool = True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
@@ -18749,7 +18749,7 @@ def runDaemon(content_license_url: str,
     httpd.POSTbusy = False
     httpd.receivedMessage = False
     httpd.inboxQueue = []
-    httpd.sendThreads = sendThreads
+    httpd.send_threads = send_threads
     httpd.postLog = []
     httpd.maxQueueLength = 64
     httpd.allow_deletion = allow_deletion
@@ -18873,7 +18873,7 @@ def runDaemon(content_license_url: str,
     print('Creating posts queue')
     httpd.thrPostsQueue = \
         threadWithTrace(target=runPostsQueue,
-                        args=(base_dir, httpd.sendThreads, debug,
+                        args=(base_dir, httpd.send_threads, debug,
                               httpd.send_threads_timeout_mins), daemon=True)
     if not unit_test:
         httpd.thrPostsWatchdog = \
@@ -18921,7 +18921,7 @@ def runDaemon(content_license_url: str,
                         args=(httpd.recentPostsCache,
                               httpd.max_recent_posts,
                               project_version,
-                              base_dir, http_prefix, httpd.sendThreads,
+                              base_dir, http_prefix, httpd.send_threads,
                               httpd.postLog, httpd.cachedWebfingers,
                               httpd.personCache, httpd.inboxQueue,
                               domain, onion_domain, i2p_domain,

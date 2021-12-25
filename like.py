@@ -74,7 +74,7 @@ def _like(recentPostsCache: {},
           ccList: [], http_prefix: str,
           objectUrl: str, actorLiked: str,
           client_to_server: bool,
-          sendThreads: [], postLog: [],
+          send_threads: [], postLog: [],
           personCache: {}, cachedWebfingers: {},
           debug: bool, project_version: str,
           signingPrivateKeyPem: str) -> {}:
@@ -136,7 +136,7 @@ def _like(recentPostsCache: {},
                        likedPostNickname, likedPostDomain, likedPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, client_to_server, federationList,
-                       sendThreads, postLog, cachedWebfingers, personCache,
+                       send_threads, postLog, cachedWebfingers, personCache,
                        debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 7367374)
 
@@ -149,7 +149,7 @@ def likePost(recentPostsCache: {},
              likeNickname: str, likeDomain: str, likePort: int,
              ccList: [],
              likeStatusNumber: int, client_to_server: bool,
-             sendThreads: [], postLog: [],
+             send_threads: [], postLog: [],
              personCache: {}, cachedWebfingers: {},
              debug: bool, project_version: str,
              signingPrivateKeyPem: str) -> {}:
@@ -163,7 +163,7 @@ def likePost(recentPostsCache: {},
     return _like(recentPostsCache,
                  session, base_dir, federationList, nickname, domain, port,
                  ccList, http_prefix, objectUrl, actorLiked, client_to_server,
-                 sendThreads, postLog, personCache, cachedWebfingers,
+                 send_threads, postLog, personCache, cachedWebfingers,
                  debug, project_version, signingPrivateKeyPem)
 
 

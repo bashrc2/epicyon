@@ -67,7 +67,7 @@ def _reaction(recentPostsCache: {},
               objectUrl: str, emojiContent: str,
               actorReaction: str,
               client_to_server: bool,
-              sendThreads: [], postLog: [],
+              send_threads: [], postLog: [],
               personCache: {}, cachedWebfingers: {},
               debug: bool, project_version: str,
               signingPrivateKeyPem: str) -> {}:
@@ -138,7 +138,7 @@ def _reaction(recentPostsCache: {},
                        reactionPostDomain, reactionPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, client_to_server, federationList,
-                       sendThreads, postLog, cachedWebfingers, personCache,
+                       send_threads, postLog, cachedWebfingers, personCache,
                        debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 7165392)
 
@@ -152,7 +152,7 @@ def reactionPost(recentPostsCache: {},
                  ccList: [],
                  reactionStatusNumber: int, emojiContent: str,
                  client_to_server: bool,
-                 sendThreads: [], postLog: [],
+                 send_threads: [], postLog: [],
                  personCache: {}, cachedWebfingers: {},
                  debug: bool, project_version: str,
                  signingPrivateKeyPem: str) -> {}:
@@ -169,7 +169,7 @@ def reactionPost(recentPostsCache: {},
                      nickname, domain, port,
                      ccList, http_prefix, objectUrl, emojiContent,
                      actorReaction, client_to_server,
-                     sendThreads, postLog, personCache, cachedWebfingers,
+                     send_threads, postLog, personCache, cachedWebfingers,
                      debug, project_version, signingPrivateKeyPem)
 
 

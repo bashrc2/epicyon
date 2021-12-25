@@ -1182,7 +1182,7 @@ if args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
     session = createSession(proxy_type)
-    sendThreads = []
+    send_threads = []
     postLog = []
     cachedWebfingers = {}
     personCache = {}
@@ -1196,7 +1196,7 @@ if args.approve:
                                args.nickname, domain, port,
                                args.approve,
                                federationList,
-                               sendThreads, postLog,
+                               send_threads, postLog,
                                cachedWebfingers, personCache,
                                debug, __version__,
                                signingPrivateKeyPem)
@@ -1210,7 +1210,7 @@ if args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
     session = createSession(proxy_type)
-    sendThreads = []
+    send_threads = []
     postLog = []
     cachedWebfingers = {}
     personCache = {}
@@ -1224,7 +1224,7 @@ if args.deny:
                             args.nickname, domain, port,
                             args.deny,
                             federationList,
-                            sendThreads, postLog,
+                            send_threads, postLog,
                             cachedWebfingers, personCache,
                             debug, __version__,
                             signingPrivateKeyPem)
@@ -1295,7 +1295,7 @@ if args.message:
     client_to_server = args.client
     attachedImageDescription = args.imageDescription
     city = 'London, England'
-    sendThreads = []
+    send_threads = []
     postLog = []
     personCache = {}
     cachedWebfingers = {}

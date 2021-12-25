@@ -681,7 +681,7 @@ def _testThreads():
 def createServerAlice(path: str, domain: str, port: int,
                       bobAddress: str, federationList: [],
                       hasFollows: bool, hasPosts: bool,
-                      sendThreads: []):
+                      send_threads: []):
     print('Creating test server: Alice on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
@@ -818,14 +818,14 @@ def createServerAlice(path: str, domain: str, port: int,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
               domain_max_posts_per_day, account_max_posts_per_day,
-              allow_deletion, True, True, False, sendThreads,
+              allow_deletion, True, True, False, send_threads,
               False)
 
 
 def createServerBob(path: str, domain: str, port: int,
                     aliceAddress: str, federationList: [],
                     hasFollows: bool, hasPosts: bool,
-                    sendThreads: []):
+                    send_threads: []):
     print('Creating test server: Bob on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
@@ -960,13 +960,13 @@ def createServerBob(path: str, domain: str, port: int,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
               domain_max_posts_per_day, account_max_posts_per_day,
-              allow_deletion, True, True, False, sendThreads,
+              allow_deletion, True, True, False, send_threads,
               False)
 
 
 def createServerEve(path: str, domain: str, port: int, federationList: [],
                     hasFollows: bool, hasPosts: bool,
-                    sendThreads: []):
+                    send_threads: []):
     print('Creating test server: Eve on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
@@ -1029,13 +1029,13 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies, allow_deletion, True, True, False,
-              sendThreads, False)
+              send_threads, False)
 
 
 def createServerGroup(path: str, domain: str, port: int,
                       federationList: [],
                       hasFollows: bool, hasPosts: bool,
-                      sendThreads: []):
+                      send_threads: []):
     print('Creating test server: Group on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
@@ -1102,7 +1102,7 @@ def createServerGroup(path: str, domain: str, port: int,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
               domain_max_posts_per_day, account_max_posts_per_day,
-              allow_deletion, True, True, False, sendThreads,
+              allow_deletion, True, True, False, send_threads,
               False)
 
 

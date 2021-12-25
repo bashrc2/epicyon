@@ -2271,7 +2271,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
              commentsEnabled: bool,
              attachImageFilename: str, mediaType: str,
              imageDescription: str, city: str,
-             federationList: [], sendThreads: [], postLog: [],
+             federationList: [], send_threads: [], postLog: [],
              cachedWebfingers: {}, personCache: {},
              isArticle: bool, systemLanguage: str,
              shared_items_federated_domains: [],
@@ -2395,10 +2395,10 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
         print('signatureHeaderJson: ' + str(signatureHeaderJson))
 
     # Keep the number of threads being used small
-    while len(sendThreads) > 1000:
+    while len(send_threads) > 1000:
         print('WARN: Maximum threads reached - killing send thread')
-        sendThreads[0].kill()
-        sendThreads.pop(0)
+        send_threads[0].kill()
+        send_threads.pop(0)
         print('WARN: thread killed')
     thr = \
         threadWithTrace(target=threadSendPost,
@@ -2409,7 +2409,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
                               signatureHeaderJson.copy(),
                               postLog,
                               debug), daemon=True)
-    sendThreads.append(thr)
+    send_threads.append(thr)
     thr.start()
     return 0
 
@@ -2612,7 +2612,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
                    toNickname: str, toDomain: str, toPort: int, cc: str,
                    http_prefix: str, saveToFile: bool, client_to_server: bool,
                    federationList: [],
-                   sendThreads: [], postLog: [], cachedWebfingers: {},
+                   send_threads: [], postLog: [], cachedWebfingers: {},
                    personCache: {}, debug: bool, project_version: str,
                    sharedItemsToken: str, groupAccount: bool,
                    signingPrivateKeyPem: str,
@@ -2754,10 +2754,10 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
         print('Not sending shared items federation token')
 
     # Keep the number of threads being used small
-    while len(sendThreads) > 1000:
+    while len(send_threads) > 1000:
         print('WARN: Maximum threads reached - killing send thread')
-        sendThreads[0].kill()
-        sendThreads.pop(0)
+        send_threads[0].kill()
+        send_threads.pop(0)
         print('WARN: thread killed')
 
     if debug:
@@ -2772,7 +2772,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
                               signatureHeaderJson.copy(),
                               postLog,
                               debug), daemon=True)
-    sendThreads.append(thr)
+    send_threads.append(thr)
     # thr.start()
     return 0
 
@@ -2860,7 +2860,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                           nickname: str, domain: str,
                           onion_domain: str, i2p_domain: str, port: int,
                           http_prefix: str, federationList: [],
-                          sendThreads: [], postLog: [],
+                          send_threads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
                           project_version: str,
@@ -3001,7 +3001,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                        toNickname, toDomain, toPort,
                        cc, fromHttpPrefix, True, client_to_server,
                        federationList,
-                       sendThreads, postLog, cachedWebfingers,
+                       send_threads, postLog, cachedWebfingers,
                        personCache, debug, project_version,
                        sharedItemsToken, groupAccount,
                        signingPrivateKeyPem, 34436782)
@@ -3011,7 +3011,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                                nickname: str, domain: str,
                                onion_domain: str, i2p_domain: str, port: int,
                                http_prefix: str, federationList: [],
-                               sendThreads: [], postLog: [],
+                               send_threads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
                                postJsonObject: {}, debug: bool,
                                project_version: str,
@@ -3026,7 +3026,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                               nickname, domain,
                               onion_domain, i2p_domain, port,
                               http_prefix, federationList,
-                              sendThreads, postLog,
+                              send_threads, postLog,
                               cachedWebfingers, personCache,
                               postJsonObject, debug,
                               project_version,
@@ -3087,7 +3087,7 @@ def sendToFollowers(session, base_dir: str,
                     domain: str,
                     onion_domain: str, i2p_domain: str, port: int,
                     http_prefix: str, federationList: [],
-                    sendThreads: [], postLog: [],
+                    send_threads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
                     postJsonObject: {}, debug: bool,
                     project_version: str,
@@ -3211,7 +3211,7 @@ def sendToFollowers(session, base_dir: str,
                            toNickname, toDomain, toPort,
                            cc, fromHttpPrefix, True, client_to_server,
                            federationList,
-                           sendThreads, postLog, cachedWebfingers,
+                           send_threads, postLog, cachedWebfingers,
                            personCache, debug, project_version,
                            sharedItemsToken, groupAccount,
                            signingPrivateKeyPem, 639342)
@@ -3240,7 +3240,7 @@ def sendToFollowers(session, base_dir: str,
                                toNickname, toDomain, toPort,
                                cc, fromHttpPrefix, True, client_to_server,
                                federationList,
-                               sendThreads, postLog, cachedWebfingers,
+                               send_threads, postLog, cachedWebfingers,
                                personCache, debug, project_version,
                                sharedItemsToken, groupAccount,
                                signingPrivateKeyPem, 634219)
@@ -3260,7 +3260,7 @@ def sendToFollowersThread(session, base_dir: str,
                           domain: str,
                           onion_domain: str, i2p_domain: str, port: int,
                           http_prefix: str, federationList: [],
-                          sendThreads: [], postLog: [],
+                          send_threads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
                           project_version: str,
@@ -3275,7 +3275,7 @@ def sendToFollowersThread(session, base_dir: str,
                               nickname, domain,
                               onion_domain, i2p_domain, port,
                               http_prefix, federationList,
-                              sendThreads, postLog,
+                              send_threads, postLog,
                               cachedWebfingers, personCache,
                               postJsonObject.copy(), debug,
                               project_version,

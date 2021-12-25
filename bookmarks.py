@@ -252,7 +252,7 @@ def bookmark(recentPostsCache: {},
              ccList: [], http_prefix: str,
              objectUrl: str, actorBookmarked: str,
              client_to_server: bool,
-             sendThreads: [], postLog: [],
+             send_threads: [], postLog: [],
              personCache: {}, cachedWebfingers: {},
              debug: bool, project_version: str) -> {}:
     """Creates a bookmark
@@ -311,7 +311,7 @@ def undoBookmark(recentPostsCache: {},
                  ccList: [], http_prefix: str,
                  objectUrl: str, actorBookmarked: str,
                  client_to_server: bool,
-                 sendThreads: [], postLog: [],
+                 send_threads: [], postLog: [],
                  personCache: {}, cachedWebfingers: {},
                  debug: bool, project_version: str) -> {}:
     """Removes a bookmark
